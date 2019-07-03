@@ -2,13 +2,13 @@
 #  application:
 #    name: tsc
 #  cloud:
-#    config:
+#    swagger:
 #      name: tsc
 #      profile: prod
 #      label: master
 #      discovery:
 #        enabled: true
-#        service-id: qinjee-config-server
+#        service-id: qinjee-swagger-server
 #
 ##注册中心指向start            
 #eureka: 

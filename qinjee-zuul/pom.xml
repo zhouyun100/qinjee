@@ -44,6 +44,19 @@
             <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
         </dependency>
 
+        <!-- json 相关依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.58</version>
+        </dependency>
+
+        <!-- redis v3.0.504 相关 -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.qinjee</groupId>
             <artifactId>qinjee-consts</artifactId>
@@ -59,14 +72,6 @@
             <artifactId>qinjee-utils</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <!-- json 相关依赖 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.58</version>
-        </dependency>
-
     </dependencies>
 
     <build>
