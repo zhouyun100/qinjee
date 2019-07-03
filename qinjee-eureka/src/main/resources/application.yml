@@ -1,0 +1,5 @@
+spring: 
+  application: 
+    name: qinjee-eureka-server
+  profiles:
+    active: dev

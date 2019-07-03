@@ -1,0 +1,26 @@
+#spring: 
+#  application:
+#    name: tsc
+#  cloud:
+#    config:
+#      name: tsc
+#      profile: prod
+#      label: master
+#      discovery:
+#        enabled: true
+#        service-id: qinjee-config-server
+#
+##注册中心指向start            
+#eureka: 
+#  instance: 
+#    appname: ${spring.application.name}
+#    #以IP地址进行注册
+#    prefer-ip-address: true
+#    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+#    #表示eureka client发送心跳给server的频率
+#    lease-renewal-interval-in-seconds: 30
+#    #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
+#    lease-expiration-duration-in-seconds: 90
+#  client:
+#    service-url: 
+#      defaultZone: http://qinjee:qinjee2019@192.168.99.100:8888/eureka/

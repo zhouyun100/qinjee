@@ -1,0 +1,27 @@
+spring: 
+  application: 
+    name: qinjee-eureka-server
+  profiles:
+    active: dev
+
+server:
+  port: 8888
+
+security: 
+    user: 
+        name: qinjee
+        password: qinjee2019
+        
+eureka:
+  instance:
+    instance-id: qinjee-eureka-server-${server.port}
+    appname: ${spring.application.name}
+    prefer-ip-address: true
+    hostname: 127.0.0.1
+  server:
+    enable-self-preservation: false #eureka自我保护机制，默认true开启，生产环境打开，开发测试环境关闭
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url: 
+      defaultZone: http://qinjee:qinjee2019@${eureka.instance.hostname}:8888/eureka/
