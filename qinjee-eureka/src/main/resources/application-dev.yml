@@ -1,27 +1,26 @@
 spring: 
   application: 
-    name: qinjee-eureka-server
+    name: qinjee-eureka
   profiles:
     active: dev
 
 server:
   port: 8888
 
-security: 
-    user: 
-        name: qinjee
-        password: qinjee2019
-        
 eureka:
   instance:
-    instance-id: qinjee-eureka-server-${server.port}
     appname: ${spring.application.name}
+#    使用IP地址进行注册
     prefer-ip-address: true
-    hostname: 127.0.0.1
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    #表示eureka client发送心跳给server的频率
+    lease-renewal-interval-in-seconds: 30
+    #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
+    lease-expiration-duration-in-seconds: 90
   server:
     enable-self-preservation: false #eureka自我保护机制，默认true开启，生产环境打开，开发测试环境关闭
   client:
     register-with-eureka: false
     fetch-registry: false
     service-url: 
-      defaultZone: http://qinjee:qinjee2019@${eureka.instance.hostname}:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@${spring.cloud.client.ip-address}:8888/eureka/
