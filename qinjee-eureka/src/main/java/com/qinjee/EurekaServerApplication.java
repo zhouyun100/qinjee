@@ -18,15 +18,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
-/**
- * spring cloud eureka regist center
- *
- * @author 周赟
- *
- * @version
- *
- * @since 2019年5月15日
- */
 @SpringBootApplication
 @EnableEurekaServer
 public class EurekaServerApplication {

@@ -1,9 +1,9 @@
 #spring:
 #  application:
-#    name: tsc
+#    name: masterdata
 #  cloud:
 #    config:
-#      name: tsc
+#      name: masterdata
 #      profile: dev
 #      label: master
 #      discovery:

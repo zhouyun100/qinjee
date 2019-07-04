@@ -21,15 +21,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-/**
- * 人才供应链应用程序启动入口
- *
- * @author 周赟
- *
- * @version 
- *
- * @since 2019年5月15日
- */
 @EnableSwagger2
 @SpringBootApplication
 @EnableEurekaClient

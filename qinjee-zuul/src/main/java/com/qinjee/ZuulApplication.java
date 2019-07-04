@@ -19,15 +19,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
-/**
- * 
- *
- * @author 周赟
- *
- * @version 
- *
- * @since 2019年5月25日
- */
 @SpringBootApplication
 @EnableEurekaClient
 @EnableZuulProxy

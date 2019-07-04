@@ -1,5 +1,3 @@
 spring:
-  application:
-    name: qinjee-eureka
   profiles:
     active: dev
