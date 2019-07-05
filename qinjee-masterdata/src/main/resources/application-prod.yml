@@ -49,13 +49,11 @@ spring:
         enabled: true
       cluster-nodes: 127.0.0.1:9300
 
-  #Redis
+#  redis集群
   redis:
-    host: 127.0.0.1
-    port: 6379
-    password: 123456
-    database: 0
-    timeout: 0
+    cluster:
+      nodes: 192.168.252.129:8001,192.168.252.129:8002,192.168.252.129:8003,192.168.252.129:8004,192.168.252.129:8005,192.168.252.129:8006
+      max-redirects: 6
 
 #security:
 #  basic:

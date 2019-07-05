@@ -1,13 +1,11 @@
 package com.qinjee.tsc.redis;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.JedisCluster;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * redis常用方法工具类
@@ -20,20 +18,10 @@ import redis.clients.jedis.JedisPool;
  * @since 2019年5月15日
  */
 @Component
-public class RedisService{
+public class RedisClusterService {
 
 	@Autowired
-	private JedisPool jedisPool;
-
-	public Jedis getResource() {
-		return jedisPool.getResource();
-	}
-
-	public void returnResource(Jedis jedis) {
-		if(jedis != null){
-            jedis.close();
-        }
-	}
+	private JedisCluster jedisCluster;
 
 	/**
 	 * 设置key值，无过期时间，永久有效
@@ -41,14 +29,10 @@ public class RedisService{
 	 * @param value
 	 */
 	public void set(String key, String value) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			jedis.set(key, value);
+			jedisCluster.set(key, value);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 	}
 	
@@ -59,14 +43,10 @@ public class RedisService{
 	 * @param value
 	 */
 	public void setex(String key, Integer seconds, String value) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			jedis.setex(key, seconds, value);
+			jedisCluster.setex(key, seconds, value);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 	}
 	
@@ -75,14 +55,10 @@ public class RedisService{
 	 * @param keys
 	 */
 	public void del(String... keys) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			jedis.del(keys);
+			jedisCluster.del(keys);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 	}
 
@@ -93,18 +69,14 @@ public class RedisService{
 	 * @return
 	 */
 	public boolean expire(String key, Integer time) {
-        Jedis jedis=null;
         try{
         	if (time > 0) {
-        		jedis = getResource();
-        		jedis.expire(key, time);
+				jedisCluster.expire(key, time);
         	}
         	return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }finally{
-            returnResource(jedis);
         }
 	}
 	
@@ -115,15 +87,11 @@ public class RedisService{
 	 * @return
 	 */
 	public Long getExpire(String key) {
-		Jedis jedis=null;
         try{
-        	jedis = getResource();
-        	return jedis.ttl(key);
+        	return jedisCluster.ttl(key);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }finally{
-            returnResource(jedis);
         }
 	}
 	
@@ -134,14 +102,10 @@ public class RedisService{
 	 */
 	public String get(String key) {
 		String result = null;
-        Jedis jedis=null;
         try{
-            jedis = getResource();
-            result = jedis.get(key);
+            result = jedisCluster.get(key);
         } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            returnResource(jedis);
         }
         return result;
 	}
@@ -152,15 +116,11 @@ public class RedisService{
 	 * @return
 	 */
 	public boolean exists(String key) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			return jedis.exists(key);
+			return jedisCluster.exists(key);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		} finally {
-			returnResource(jedis);
 		}
 	}
 	
@@ -171,14 +131,10 @@ public class RedisService{
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void hmset(String key, Map map) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			jedis.hmset(key, map);
+			jedisCluster.hmset(key, map);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 	}
 	
@@ -189,14 +145,10 @@ public class RedisService{
 	 */
 	public Long scard(String key) {
 		Long count = null;
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			count = jedis.scard(key);
+			count = jedisCluster.scard(key);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 		return count;
 	}
@@ -208,14 +160,10 @@ public class RedisService{
 	 */
 	public Set<String> smembers(String key) {
 		Set<String> strSet = null;
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			strSet = jedis.smembers(key);
+			strSet = jedisCluster.smembers(key);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 		return strSet;
 	}
@@ -226,14 +174,10 @@ public class RedisService{
 	 * @param value
 	 */
 	public void srem(String key, String value) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			jedis.srem(key, value); 
+			jedisCluster.srem(key, value);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 	}
 	
@@ -243,14 +187,10 @@ public class RedisService{
 	 * @param value
 	 */
 	public void sadd(String key, String value) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			jedis.sadd(key, value);
+			jedisCluster.sadd(key, value);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			returnResource(jedis);
 		}
 	}
 	
@@ -261,15 +201,11 @@ public class RedisService{
 	 * @return
 	 */
 	public boolean exists(String key,String value) {
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			return jedis.sismember(key, value);
+			return jedisCluster.sismember(key, value);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		} finally {
-			returnResource(jedis);
 		}
 	}
 }
