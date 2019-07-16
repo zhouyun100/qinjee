@@ -51,12 +51,12 @@ public class RedisClusterService {
 	}
 	
 	/**
-	 * 移除给定的一个或多个key,如果key不存在,则忽略该命令.
-	 * @param keys
+	 * 移除给定的一个key,如果key不存在,则忽略该命令.
+	 * @param key
 	 */
-	public void del(String... keys) {
+	public void del(String key) {
 		try {
-			jedisCluster.del(keys);
+			jedisCluster.del(key);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
