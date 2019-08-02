@@ -8,5 +8,37 @@
     <artifactId>qinjee-utils</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>5.5.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tencent.cloud</groupId>
+            <artifactId>cos-sts-java</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.58</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>bintray-qcloud-maven-repo</id>
+            <name>qcloud-maven-repo</name>
+            <url>https://dl.bintray.com/qcloud/maven-repo/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>
