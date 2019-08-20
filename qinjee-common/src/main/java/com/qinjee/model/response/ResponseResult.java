@@ -19,4 +19,8 @@ public class ResponseResult<T> extends Response {
        this.result = result;
     }
 
+    public ResponseResult(ResultCode resultCode){
+        super(resultCode);
+    }
+
 }
