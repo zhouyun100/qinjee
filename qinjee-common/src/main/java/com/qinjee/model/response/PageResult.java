@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @ToString
-public class QueryResult<T> {
+public class PageResult<T> {
 
     /**
      * 数据列表

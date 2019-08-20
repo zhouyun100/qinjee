@@ -12,11 +12,11 @@ import lombok.ToString;
 @ToString
 public class PageResponseResult<T> extends Response {
 
-    QueryResult<T> queryResult;
+    PageResult<T> pageResult;
 
-    public PageResponseResult(ResultCode resultCode, QueryResult queryResult){
+    public PageResponseResult(ResultCode resultCode, PageResult pageResult){
         super(resultCode);
-       this.queryResult = queryResult;
+       this.pageResult = pageResult;
     }
 
 }
