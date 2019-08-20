@@ -19,13 +19,4 @@ public class ResponseConsts {
 	public static final Integer SESSION_INVALID_SECCOND = 1800;
 	public static final Integer SESSION_CHECK_SECCOND = 300;
 
-
-
-
-
-
-
-
-
-
 }
