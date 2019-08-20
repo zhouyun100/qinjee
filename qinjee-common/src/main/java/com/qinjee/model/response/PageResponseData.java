@@ -10,11 +10,11 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class PageResponseResult<T> extends Response {
+public class PageResponseData<T> extends ResponseResult {
 
     PageResult<T> pageResult;
 
-    public PageResponseResult(ResultCode resultCode, PageResult pageResult){
+    public PageResponseData(ResultCode resultCode, PageResult pageResult){
         super(resultCode);
        this.pageResult = pageResult;
     }

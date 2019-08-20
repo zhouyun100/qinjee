@@ -1,26 +1,44 @@
 package com.qinjee.model.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * 响应结果类
- * @param <T>
  */
 
 @Data
 @ToString
-public class ResponseResult<T> extends Response {
+@NoArgsConstructor
+public class ResponseResult{
 
-    T result;
+    /**
+     * 操作是否成功
+     */
+    boolean success;
 
-    public ResponseResult(ResultCode resultCode,T result){
-        super(resultCode);
-       this.result = result;
-    }
+    /**
+     * 操作代码
+     */
+    int code;
+
+    /**
+     * 提示信息
+     */
+    String message;
 
     public ResponseResult(ResultCode resultCode){
-        super(resultCode);
+        this.success = resultCode.success();
+        this.code = resultCode.code();
+        this.message = resultCode.message();
+    }
+
+    public static ResponseResult SUCCESS(){
+        return new ResponseResult(CommonCode.SUCCESS);
+    }
+    public static ResponseResult FAIL(){
+        return new ResponseResult(CommonCode.FAIL);
     }
 
 }
