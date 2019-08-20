@@ -33,7 +33,6 @@ public enum CommonCode implements ResultCode{
     public int code() {
         return code;
     }
-
     @Override
     public String message() {
         return message;
