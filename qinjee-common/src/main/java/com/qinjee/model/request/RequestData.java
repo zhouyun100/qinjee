@@ -7,4 +7,6 @@ import lombok.ToString;
 @Data
 @ToString
 public class RequestData {
+    Integer pageCurrent;
+    Integer pageSize;
 }
