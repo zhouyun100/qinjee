@@ -1,16 +1,44 @@
 package com.qinjee.model.response;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-public interface Response {
+/**
+ * 响应结果类
+ */
+
+@Data
+@ToString
+@NoArgsConstructor
+public class Response{
 
     /**
-     * 操作是否成功,true为成功，false操作失败
-     * @return
+     * 操作是否成功
      */
-    public static final boolean SUCCESS = true;
+    boolean success = true;
 
     /**
-     * 操作成功代码 10000
+     * 操作代码
      */
-    public static final int SUCCESS_CODE = 10000;
+    int code = 10000;
+
+    /**
+     * 提示信息
+     */
+    String message;
+
+    public Response(ResultCode resultCode){
+        this.success = resultCode.success();
+        this.code = resultCode.code();
+        this.message = resultCode.message();
+    }
+
+    public static Response SUCCESS(){
+        return new Response(CommonCode.SUCCESS);
+    }
+    public static Response FAIL(){
+        return new Response(CommonCode.FAIL);
+    }
+
 }
