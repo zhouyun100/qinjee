@@ -13,6 +13,6 @@ public class ExceptionCast {
      * @param resultCode
      */
     public static void cast(ResultCode resultCode){
-        throw new CustomException(resultCode);
+        throw new BusinessException(resultCode);
     }
 }

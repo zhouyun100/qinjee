@@ -32,17 +32,17 @@ public class ExceptionCatch {
     protected static ImmutableMap.Builder<Class<? extends Throwable>,ResultCode> builder = ImmutableMap.builder();
 
     /**
-     * 捕获CustomException此类异常
-     * @param customException
+     * 捕获BusinessException此类异常
+     * @param businessException
      * @return
      */
-    @ExceptionHandler(CustomException.class)
+    @ExceptionHandler(BusinessException.class)
     @ResponseBody
-    public ResponseResult customException(CustomException customException){
-        customException.printStackTrace();
+    public ResponseResult customException(BusinessException businessException){
+//        businessException.printStackTrace();
         //记录日志
-        LOGGER.error("catch exception:{}",customException.getMessage());
-        ResultCode resultCode = customException.getResultCode();
+        LOGGER.error("catch exception:{}",businessException.getMessage());
+        ResultCode resultCode = businessException.getResultCode();
         return new ResponseResult(resultCode);
     }
 
@@ -54,7 +54,7 @@ public class ExceptionCatch {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseResult exception(Exception exception){
-        exception.printStackTrace();
+//        exception.printStackTrace();
         //记录日志
         LOGGER.error("catch exception:{}",exception.getMessage());
         if(EXCEPTIONS == null){
