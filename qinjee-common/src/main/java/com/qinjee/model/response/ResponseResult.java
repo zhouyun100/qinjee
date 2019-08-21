@@ -4,18 +4,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * 响应结果类
+ */
+
 @Data
 @ToString
 @NoArgsConstructor
-public class ResponseResult implements Response {
+public class ResponseResult{
 
-    //操作是否成功
-    boolean success = SUCCESS;
+    /**
+     * 操作是否成功
+     */
+    boolean success;
 
-    //操作代码
-    int code = SUCCESS_CODE;
+    /**
+     * 操作代码
+     */
+    int code;
 
-    //提示信息
+    /**
+     * 提示信息
+     */
     String message;
 
     public ResponseResult(ResultCode resultCode){
