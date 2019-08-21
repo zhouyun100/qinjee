@@ -30,7 +30,7 @@ public enum CommonCode implements ResultCode{
      */
     String message;
 
-    private CommonCode(boolean success,int code, String message){
+   private CommonCode(boolean success,int code, String message){
         this.success = success;
         this.code = code;
         this.message = message;
