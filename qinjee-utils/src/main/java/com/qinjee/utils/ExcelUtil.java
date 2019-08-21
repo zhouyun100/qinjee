@@ -19,10 +19,10 @@ import java.util.*;
  * @author Administrator
  * 注意：此excel的导入导出方法需要用到三个参数，即装好数据的集合List，以及每个对象所需要展示对应的以map形式存储的字段名（key为数据库中对应的字段名，value为
  * 需要展示在excel中的列名），以及需要将excel输出到指定的文件位置
- *
+ * <p>
  * 在自定义表中，先根据自定义表的id可以查出所需要展示的字段放进map形式中的field中
- *
- *
+ * <p>
+ * <p>
  * excel导出为JsonObject时，需要通过自定义表的自定义字段类型来确定是否满足类型，精度以及长度的需要
  * 1，编写获得自定义字段表的类型数据
  * 2，存入到集合中，通过字段名与excel表头来筛选所需要的字段
@@ -188,14 +188,12 @@ public class ExcelUtil {
                     String cnNormalName = entry.getKey();
                     // 获取英文字段名
                     String enNormalName = entry.getValue();
-                    // 根据中文字段名获取列号
-                    int col = colMap.get(cnNormalName);
                     // 获取当前单元格中的内容
 //                    String content = row.getCell(col).toString().trim();
 
                     //TODO 此处为了防止报错，将自定义字段集合写死了，后期连接数据库查询
 
-                    String content = getCellValue(getCustomFieldList(1),row,colMap).trim();
+                    String content = getCellValue(getCustomFieldList(1), row, cnNormalName, colMap).trim();
 
                     // 给对象赋值
 //                    setFieldValueByName(enNormalName, content, entity);
@@ -210,78 +208,75 @@ public class ExcelUtil {
     }
 
 
-    /**
-     * @param list
-     * @param row
-     * @param map
-     * @return
-     * @throws ParseException
-     */
-    private static String getCellValue(List<CustomField> list, HSSFRow row, LinkedHashMap<String, Integer> map) throws ParseException {
+    private static String getCellValue(List<CustomField> list, HSSFRow row, String colName, LinkedHashMap<String, Integer> map) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
         String cellValue = "";
+        HSSFCell cell = null;
+        String codeName = "";
         for (int i = 0; i < list.size(); i++) {
-            String codeName = list.get(i).getCodeName();
-            HSSFCell cell = row.getCell(map.get(list.get(i).getCodeName()));
-            if (cell == null) {
-                return cellValue;
+            codeName = list.get(i).getCodeName();
+            if (colName.equals(codeName)) {
+                cell = row.getCell(map.get(colName));
             }
-            switch (codeName) {
-                case "数字类型":
-                    cell.setCellType(CellType.NUMERIC);
-                    break;
-                case "字符串类型":
-                    cell.setCellType(CellType.STRING);
-                    break;
-                case "日期类型":
-                    cell.setCellType(CellType.NUMERIC);
-                    break;
-                default:
-            }
-            //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
-            CellType cellType = cell.getCellTypeEnum();
-            // 判断数据的类型
-            switch (cellType) {
-                // 数字、日期
-                case NUMERIC:
-                    if (DateUtil.isCellDateFormatted(cell)) {
-                        // 日期型
-                        cellValue = fmt.format(cell.getDateCellValue());
-                    } else {
-                        // 数字
-                        cellValue = String.valueOf(cell.getNumericCellValue());
-                        if (cellValue.contains("E")) {
-                            // 数字
-                            cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
-                        }
-                    }
-                    break;
-                // 字符串
-                case STRING:
-                    cellValue = String.valueOf(cell.getStringCellValue());
-                    break;
-                // Boolean
-                case BOOLEAN:
-                    cellValue = String.valueOf(cell.getBooleanCellValue());
-                    break;
-                // 公式
-                case FORMULA:
-                    cellValue = String.valueOf(cell.getCellFormula());
-                    break;
-                // 空值
-                case BLANK:
-                    cellValue = cell.getStringCellValue();
-                    break;
-                // 故障
-                case ERROR:
-                    cellValue = "非法字符";
-                    break;
-                default:
-                    cellValue = "未知类型";
-                    break;
-            }
-
         }
+        if (cell == null) {
+            return cellValue;
+        }
+        switch (codeName) {
+            case "数字类型":
+                cell.setCellType(CellType.NUMERIC);
+                break;
+            case "字符串类型":
+                cell.setCellType(CellType.STRING);
+                break;
+            case "日期类型":
+                cell.setCellType(CellType.NUMERIC);
+                break;
+            default:
+        }
+        //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
+        CellType cellType = cell.getCellTypeEnum();
+        // 判断数据的类型
+        switch (cellType) {
+            // 数字、日期
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    // 日期型
+                    cellValue = fmt.format(cell.getDateCellValue());
+                } else {
+                    // 数字
+                    cellValue = String.valueOf(cell.getNumericCellValue());
+                    if (cellValue.contains("E")) {
+                        // 数字
+                        cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
+                    }
+                }
+                break;
+            // 字符串
+            case STRING:
+                cellValue = String.valueOf(cell.getStringCellValue());
+                break;
+            // Boolean
+            case BOOLEAN:
+                cellValue = String.valueOf(cell.getBooleanCellValue());
+                break;
+            // 公式
+            case FORMULA:
+                cellValue = String.valueOf(cell.getCellFormula());
+                break;
+            // 空值
+            case BLANK:
+                cellValue = cell.getStringCellValue();
+                break;
+            // 故障
+            case ERROR:
+                cellValue = "非法字符";
+                break;
+            default:
+                cellValue = "未知类型";
+                break;
+        }
+
         return cellValue;
     }
 //    public static void main(String[] args) throws Exception {
@@ -324,27 +319,29 @@ public class ExcelUtil {
 //    }
 
 
-        /**
-         * 获取自定义表字段集合
-         * @param tableId
-         * @return
-         */
-        private static List<CustomField> getCustomFieldList (Integer tableId){
-            //TODO 通过连接数据库，获得自定义表的所有自定义字段，并且存储到List集合中
-            return null;
-        }
-
-        /**
-         * 获取自定义表字段中精度，长度，类型等属性
-         * @param fieldId
-         * @return
-         */
-        private static String[] getCustomField(Integer fieldId){
-            //TODO 通过连接数据库，获得自定义字段的字段类型，精度，长度
-            return null;
-        }
-
+    /**
+     * 获取自定义表字段集合
+     *
+     * @param tableId
+     * @return
+     */
+    private static List<CustomField> getCustomFieldList(Integer tableId) {
+        //TODO 通过连接数据库，获得自定义表的所有自定义字段，并且存储到List集合中
+        return null;
     }
+
+    /**
+     * 获取自定义表字段中精度，长度，类型等属性
+     *
+     * @param fieldId
+     * @return
+     */
+    private static String[] getCustomField(Integer fieldId) {
+        //TODO 通过连接数据库，获得自定义字段的字段类型，精度，长度
+        return null;
+    }
+
+}
 
 
 
