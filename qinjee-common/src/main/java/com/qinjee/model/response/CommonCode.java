@@ -1,7 +1,5 @@
 package com.qinjee.model.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 import lombok.ToString;
 
 /**
