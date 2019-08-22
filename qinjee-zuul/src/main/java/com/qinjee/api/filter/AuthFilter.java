@@ -14,28 +14,25 @@
  */
 package com.qinjee.api.filter;
 
-import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.RateLimiter;
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
+import com.qinjee.consts.ResponseConsts;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.zull.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
-
-import com.alibaba.fastjson.JSON;
-import com.google.common.util.concurrent.RateLimiter;
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.qinjee.consts.ResponseConsts;
-import com.qinjee.entity.ResultJsonEntity;
-import com.qinjee.zull.redis.RedisService;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 /**
  *
@@ -76,7 +73,8 @@ public class AuthFilter extends ZuulFilter{
 	@Override
 	public Object run(){
 		RequestContext requestContext = RequestContext.getCurrentContext();
-
+		HttpServletResponse response = requestContext.getResponse();
+		response.setContentType("application/json;charset=utf-8");
 		//就相当于每调用一次tryAcquire()方法，令牌数量减1，当1000个用完后，那么后面进来的用户无法访问上面接口
         //当然这里只写类上面一个接口，可以这么写，实际可以在这里要加一层接口判断。
         if (!RATE_LIMITER.tryAcquire()) {
