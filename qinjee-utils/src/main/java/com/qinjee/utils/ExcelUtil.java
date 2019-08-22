@@ -21,6 +21,12 @@ import java.util.*;
  * 需要展示在excel中的列名），以及需要将excel输出到指定的文件位置
  *
  * 在自定义表中，先根据自定义表的id可以查出所需要展示的字段放进map形式中的field中
+ * 注意：excel2003版与2007版解析方式不一样，
+ * poi解析Excel文件时有两种格式：
+ * HSSFWorkbook格式用来解析Excel2003（xls）的文件
+ * XSSFWorkbook格式用来解析Excel2007（xlsx）的文件
+ *
+ * 因为HSSFWorkbook和XSSFWorkbook都实现了Workbook接口，所以我们可以用Workbook来解析两个版本的Excel。
  *
  * excel导出为JsonObject时，需要通过自定义表的自定义字段类型来确定是否满足类型，精度以及长度的需要
  * 1，编写获得自定义字段表的类型数据
@@ -55,15 +61,7 @@ public class ExcelUtil {
         // 提取表格的字段名（英文字段名是为了对照中文字段名的）
         String[] egtitles = new String[fields.size()];
         String[] cntitles = new String[fields.size()];
-        Iterator<String> it = fields.keySet().iterator();
-        int count = 0;
-        while (it.hasNext()) {
-            String egtitle = (String) it.next();
-            String cntitle = fields.get(egtitle);
-            egtitles[count] = egtitle;
-            cntitles[count] = cntitle;
-            count++;
-        }
+        getExcelField(fields, egtitles, cntitles);
         // 添加数据
         for (int i = 0; i < pages; i++) {
             int rownum = 0;
@@ -99,6 +97,8 @@ public class ExcelUtil {
         workbook.close();
     }
 
+
+
     /**
      * 　　* @author hkt
      * 　　* @param entityClass excel中每一行数据的实体类
@@ -119,16 +119,7 @@ public class ExcelUtil {
         // excel中字段的中英文名字数组
         String[] egtitles = new String[fields.size()];
         String[] cntitles = new String[fields.size()];
-        Iterator<String> it = fields.keySet().iterator();
-        int count = 0;
-        while (it.hasNext()) {
-            String cntitle = (String) it.next();
-            String egtitle = fields.get(cntitle);
-            egtitles[count] = egtitle;
-            cntitles[count] = cntitle;
-            count++;
-        }
-
+        getExcelField(fields, egtitles, cntitles);
         // 得到excel中sheet总数
         int sheetcount = workbook.getNumberOfSheets();
 
@@ -203,6 +194,17 @@ public class ExcelUtil {
         workbook.close();
         return resultList;
 
+    }
+    private static void getExcelField(Map<String, String> fields, String[] egtitles, String[] cntitles) {
+        Iterator<String> it = fields.keySet().iterator();
+        int count = 0;
+        while (it.hasNext()) {
+            String egtitle = (String) it.next();
+            String cntitle = fields.get(egtitle);
+            egtitles[count] = egtitle;
+            cntitles[count] = cntitle;
+            count++;
+        }
     }
 
 
