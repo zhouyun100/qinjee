@@ -19,10 +19,9 @@ import java.util.*;
  * @author Administrator
  * 注意：此excel的导入导出方法需要用到三个参数，即装好数据的集合List，以及每个对象所需要展示对应的以map形式存储的字段名（key为数据库中对应的字段名，value为
  * 需要展示在excel中的列名），以及需要将excel输出到指定的文件位置
- * <p>
+ *
  * 在自定义表中，先根据自定义表的id可以查出所需要展示的字段放进map形式中的field中
- * <p>
- * <p>
+ *
  * excel导出为JsonObject时，需要通过自定义表的自定义字段类型来确定是否满足类型，精度以及长度的需要
  * 1，编写获得自定义字段表的类型数据
  * 2，存入到集合中，通过字段名与excel表头来筛选所需要的字段
@@ -40,7 +39,7 @@ public class ExcelUtil {
      * @throws Exception
      * @author Lyy
      */
-    public static <T> void ListtoExecl(List<JSONObject> data, OutputStream out,
+    public static  void ListtoExecl(List<JSONObject> data, OutputStream out,
                                        Map<String, String> fields) throws Exception {
         HSSFWorkbook workbook = new HSSFWorkbook();
         // 如果导入数据为空，则抛出异常。
@@ -109,7 +108,6 @@ public class ExcelUtil {
      * 　　*             excel表格中每一列名为键，每一列对应的实体类的英文名为值
      * 　　 * @throws Exception
      */
-//    public static <T> List<T> ExecltoList(InputStream in, Class<T> entityClass,Map<String, String> fields) throws Exception {
     public static List<JSONObject> ExecltoList(InputStream in, Map<String, String> fields) throws Exception {
 
 
@@ -211,18 +209,20 @@ public class ExcelUtil {
     private static String getCellValue(List<CustomField> list, HSSFRow row, String colName, LinkedHashMap<String, Integer> map) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
         String cellValue = "";
+        String codeType="";
         HSSFCell cell = null;
         String codeName = "";
         for (int i = 0; i < list.size(); i++) {
             codeName = list.get(i).getCodeName();
             if (colName.equals(codeName)) {
                 cell = row.getCell(map.get(colName));
+                codeType=list.get(i).getFieldType();
             }
         }
         if (cell == null) {
             return cellValue;
         }
-        switch (codeName) {
+        switch (codeType) {
             case "数字类型":
                 cell.setCellType(CellType.NUMERIC);
                 break;

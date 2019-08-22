@@ -72,4 +72,8 @@ public class WordUtil {
            closeStream(fis);
         }
     }
-}
+    //TODO 在生成word文档中，需要表单录入信息，然后根据表单数据来确定一个word文档模板。需要产品定义表单的录入内容以及word的呈现方式
+
+    }
+
+
