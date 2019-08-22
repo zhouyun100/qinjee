@@ -221,7 +221,56 @@ public class ExcelUtil {
         }
         if (cell == null) {
             return cellValue;
+        }else {
+            setCellType(codeType, cell);
+            //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
+            CellType cellType = cell.getCellTypeEnum();
+            // 判断数据的类型
+            switch (cellType) {
+                // 数字、日期
+                case NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        // 日期型
+                        cellValue = fmt.format(cell.getDateCellValue());
+                    } else {
+                        // 数字
+                        cellValue = String.valueOf(cell.getNumericCellValue());
+                        if (cellValue.contains("E")) {
+                            // 数字
+                            cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
+                        }
+                    }
+                    break;
+                // 字符串
+                case STRING:
+                    cellValue = String.valueOf(cell.getStringCellValue());
+                    break;
+                // Boolean
+                case BOOLEAN:
+                    cellValue = String.valueOf(cell.getBooleanCellValue());
+                    break;
+                // 公式
+                case FORMULA:
+                    cellValue = String.valueOf(cell.getCellFormula());
+                    break;
+                // 空值
+                case BLANK:
+                    cellValue = cell.getStringCellValue();
+                    break;
+                // 故障
+                case ERROR:
+                    cellValue = "非法字符";
+                    break;
+                default:
+                    cellValue = "未知类型";
+                    break;
+            }
         }
+
+        return cellValue;
+    }
+    private static void setCellType(String codeType, HSSFCell cell){
+
         switch (codeType) {
             case "数字类型":
                 cell.setCellType(CellType.NUMERIC);
@@ -234,50 +283,10 @@ public class ExcelUtil {
                 break;
             default:
         }
-        //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
-        CellType cellType = cell.getCellTypeEnum();
-        // 判断数据的类型
-        switch (cellType) {
-            // 数字、日期
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    // 日期型
-                    cellValue = fmt.format(cell.getDateCellValue());
-                } else {
-                    // 数字
-                    cellValue = String.valueOf(cell.getNumericCellValue());
-                    if (cellValue.contains("E")) {
-                        // 数字
-                        cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
-                    }
-                }
-                break;
-            // 字符串
-            case STRING:
-                cellValue = String.valueOf(cell.getStringCellValue());
-                break;
-            // Boolean
-            case BOOLEAN:
-                cellValue = String.valueOf(cell.getBooleanCellValue());
-                break;
-            // 公式
-            case FORMULA:
-                cellValue = String.valueOf(cell.getCellFormula());
-                break;
-            // 空值
-            case BLANK:
-                cellValue = cell.getStringCellValue();
-                break;
-            // 故障
-            case ERROR:
-                cellValue = "非法字符";
-                break;
-            default:
-                cellValue = "未知类型";
-                break;
-        }
 
-        return cellValue;
+    }
+    private static void getCellVlue(String cellType){
+
     }
 //    public static void main(String[] args) throws Exception {
 //        List<JSONObject> li = new ArrayList<JSONObject>();
