@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.ResponseResult;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,13 +43,6 @@ import com.qinjee.entity.ResultJsonEntity;
  */
 @Component
 public class ApiFallbackProvider implements FallbackProvider {
-
-	public static void main(String[] args) {
-		SerializeConfig config = new SerializeConfig();
-		config.configEnumAsJavaBean(CommonCode.class);
-		String result = JSON.toJSONString(CommonCode.NET_EXCEPTION,config);
-		System.out.println(result);
-	}
 
 	@Override
 	public String getRoute() {
@@ -83,9 +77,7 @@ public class ApiFallbackProvider implements FallbackProvider {
 
 			@Override
 			public String getStatusText() throws IOException {
-				SerializeConfig config = new SerializeConfig();
-				config.configEnumAsJavaBean(CommonCode.class);
-				String result = JSON.toJSONString(CommonCode.NET_EXCEPTION,config);
+				String result = JSON.toJSONString(new ResponseResult(CommonCode.NET_EXCEPTION));
 				return result;
 			}
 
