@@ -1,6 +1,6 @@
 /*
  * 文件名： AuthFilter.java
- * 
+ *
  * 工程名称: qinjee-zuul
  *
  * Qinjee
@@ -14,6 +14,8 @@
  */
 package com.qinjee.api.filter;
 
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.qinjee.model.response.CommonCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -35,11 +37,11 @@ import com.qinjee.entity.ResultJsonEntity;
 import com.qinjee.zull.redis.RedisService;
 
 /**
- * 
+ *
  *
  * @author 周赟
  *
- * @version 
+ * @version
  *
  * @since 2019年5月25日
  */
@@ -48,11 +50,11 @@ public class AuthFilter extends ZuulFilter{
 
 	@Autowired
 	private RedisService redisService;
-	
+
 	//排除过滤的 uri 地址
     private static final String LOGIN_URI = "/api/tsc/user/login";
     private static final String REGISTER_URI = "/api/tsc/user/register";
-    
+
 	// 每秒产生1000个令牌
 	private static final RateLimiter RATE_LIMITER = RateLimiter.create(1000);
 
@@ -69,11 +71,11 @@ public class AuthFilter extends ZuulFilter{
         return true;
 	}
 
-	
+
 	@Override
 	public Object run(){
 		RequestContext requestContext = RequestContext.getCurrentContext();
-		
+
 		//就相当于每调用一次tryAcquire()方法，令牌数量减1，当1000个用完后，那么后面进来的用户无法访问上面接口
         //当然这里只写类上面一个接口，可以这么写，实际可以在这里要加一层接口判断。
         if (!RATE_LIMITER.tryAcquire()) {
@@ -82,9 +84,9 @@ public class AuthFilter extends ZuulFilter{
             requestContext.setResponseStatusCode(HttpStatus.TOO_MANY_REQUESTS.value());
             return null;
         }
-        
+
         HttpServletRequest request = requestContext.getRequest();
-        
+
         //token对象,有可能在请求头传递过来，也有可能是通过参数传过来，实际开发一般都是请求头方式
 //        String token = request.getHeader("token");
 //        if (StringUtils.isEmpty((token))) {
@@ -93,7 +95,7 @@ public class AuthFilter extends ZuulFilter{
 //        if (StringUtils.isEmpty((token))) {
 //        	setUnauthorizedResponse(requestContext);
 //        }
-        
+
         //先从 cookie 中取 SESSION_KEY
         Cookie sessionKey = getCookie(request, ResponseConsts.SESSION_KEY);
         if (sessionKey == null || StringUtils.isEmpty(sessionKey.getValue())) {
@@ -111,28 +113,28 @@ public class AuthFilter extends ZuulFilter{
 				setUnauthorizedResponse(requestContext);
 			}
         }
-        
+
 		return null;
 	}
 
-	
+
 	@Override
 	public String filterType() {
 		return PRE_TYPE;
 	}
 
-	
+
 	@Override
 	public int filterOrder() {
 		return PRE_DECORATION_FILTER_ORDER - 1;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * 功能描述：设置 401 无权限状态
 	 *
 	 * @param requestContext
-	 * 
+	 *
 	 * @author 周赟
 	 *
 	 * @since 2019年5月25日
@@ -142,14 +144,12 @@ public class AuthFilter extends ZuulFilter{
     private void setUnauthorizedResponse(RequestContext requestContext){
     	requestContext.setSendZuulResponse(false);
         requestContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-        ResultJsonEntity resultJson = new ResultJsonEntity();
-		resultJson.setResultCode(ResponseConsts.SESSION_INVALID_CODE);
-		resultJson.setResultStatus(ResponseConsts.SESSION_INVALID_STATUS);
-		resultJson.setResult(ResponseConsts.SESSION_INVALID_MES);
-        String result = JSON.toJSONString(resultJson);
+		SerializeConfig config = new SerializeConfig();
+		config.configEnumAsJavaBean(CommonCode.class);
+        String result = JSON.toJSONString(CommonCode.INVALID_SESSION,config);
         requestContext.setResponseBody(result);
     }
-	
+
 	public Cookie getCookie(HttpServletRequest request,String cookieName) {
 		Cookie cookies[] = request.getCookies();
 		if (cookies != null) {

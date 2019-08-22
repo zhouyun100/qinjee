@@ -1,11 +1,12 @@
 package com.qinjee.model.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import lombok.ToString;
 
 /**
  * 公共的响应代码枚举类
  */
-
 @ToString
 public enum CommonCode implements ResultCode{
 
@@ -54,5 +55,27 @@ public enum CommonCode implements ResultCode{
         return message;
     }
 
+    public boolean isSuccess() {
+        return success;
+    }
 
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
