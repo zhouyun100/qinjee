@@ -16,6 +16,7 @@ package com.qinjee.api.filter;
 
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -144,9 +145,7 @@ public class AuthFilter extends ZuulFilter{
     private void setUnauthorizedResponse(RequestContext requestContext){
     	requestContext.setSendZuulResponse(false);
         requestContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-		SerializeConfig config = new SerializeConfig();
-		config.configEnumAsJavaBean(CommonCode.class);
-        String result = JSON.toJSONString(CommonCode.INVALID_SESSION,config);
+        String result = JSON.toJSONString(new ResponseResult(CommonCode.INVALID_SESSION));
         requestContext.setResponseBody(result);
     }
 
