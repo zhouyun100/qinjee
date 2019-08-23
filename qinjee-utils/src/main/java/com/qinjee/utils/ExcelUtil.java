@@ -19,10 +19,15 @@ import java.util.*;
  * @author Administrator
  * 注意：此excel的导入导出方法需要用到三个参数，即装好数据的集合List，以及每个对象所需要展示对应的以map形式存储的字段名（key为数据库中对应的字段名，value为
  * 需要展示在excel中的列名），以及需要将excel输出到指定的文件位置
- * <p>
+ *
  * 在自定义表中，先根据自定义表的id可以查出所需要展示的字段放进map形式中的field中
- * <p>
- * <p>
+ * 注意：excel2003版与2007版解析方式不一样，
+ * poi解析Excel文件时有两种格式：
+ * HSSFWorkbook格式用来解析Excel2003（xls）的文件
+ * XSSFWorkbook格式用来解析Excel2007（xlsx）的文件
+ *
+ * 因为HSSFWorkbook和XSSFWorkbook都实现了Workbook接口，所以我们可以用Workbook来解析两个版本的Excel。
+ *
  * excel导出为JsonObject时，需要通过自定义表的自定义字段类型来确定是否满足类型，精度以及长度的需要
  * 1，编写获得自定义字段表的类型数据
  * 2，存入到集合中，通过字段名与excel表头来筛选所需要的字段
@@ -40,7 +45,7 @@ public class ExcelUtil {
      * @throws Exception
      * @author Lyy
      */
-    public static <T> void ListtoExecl(List<JSONObject> data, OutputStream out,
+    public static  void ListtoExecl(List<JSONObject> data, OutputStream out,
                                        Map<String, String> fields) throws Exception {
         HSSFWorkbook workbook = new HSSFWorkbook();
         // 如果导入数据为空，则抛出异常。
@@ -56,15 +61,7 @@ public class ExcelUtil {
         // 提取表格的字段名（英文字段名是为了对照中文字段名的）
         String[] egtitles = new String[fields.size()];
         String[] cntitles = new String[fields.size()];
-        Iterator<String> it = fields.keySet().iterator();
-        int count = 0;
-        while (it.hasNext()) {
-            String egtitle = (String) it.next();
-            String cntitle = fields.get(egtitle);
-            egtitles[count] = egtitle;
-            cntitles[count] = cntitle;
-            count++;
-        }
+        getExcelField(fields, egtitles, cntitles);
         // 添加数据
         for (int i = 0; i < pages; i++) {
             int rownum = 0;
@@ -100,6 +97,8 @@ public class ExcelUtil {
         workbook.close();
     }
 
+
+
     /**
      * 　　* @author hkt
      * 　　* @param entityClass excel中每一行数据的实体类
@@ -109,7 +108,6 @@ public class ExcelUtil {
      * 　　*             excel表格中每一列名为键，每一列对应的实体类的英文名为值
      * 　　 * @throws Exception
      */
-//    public static <T> List<T> ExecltoList(InputStream in, Class<T> entityClass,Map<String, String> fields) throws Exception {
     public static List<JSONObject> ExecltoList(InputStream in, Map<String, String> fields) throws Exception {
 
 
@@ -121,16 +119,7 @@ public class ExcelUtil {
         // excel中字段的中英文名字数组
         String[] egtitles = new String[fields.size()];
         String[] cntitles = new String[fields.size()];
-        Iterator<String> it = fields.keySet().iterator();
-        int count = 0;
-        while (it.hasNext()) {
-            String cntitle = (String) it.next();
-            String egtitle = fields.get(cntitle);
-            egtitles[count] = egtitle;
-            cntitles[count] = cntitle;
-            count++;
-        }
-
+        getExcelField(fields, egtitles, cntitles);
         // 得到excel中sheet总数
         int sheetcount = workbook.getNumberOfSheets();
 
@@ -206,23 +195,85 @@ public class ExcelUtil {
         return resultList;
 
     }
+    private static void getExcelField(Map<String, String> fields, String[] egtitles, String[] cntitles) {
+        Iterator<String> it = fields.keySet().iterator();
+        int count = 0;
+        while (it.hasNext()) {
+            String egtitle = (String) it.next();
+            String cntitle = fields.get(egtitle);
+            egtitles[count] = egtitle;
+            cntitles[count] = cntitle;
+            count++;
+        }
+    }
 
 
     private static String getCellValue(List<CustomField> list, HSSFRow row, String colName, LinkedHashMap<String, Integer> map) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
         String cellValue = "";
+        String codeType="";
         HSSFCell cell = null;
         String codeName = "";
         for (int i = 0; i < list.size(); i++) {
             codeName = list.get(i).getCodeName();
             if (colName.equals(codeName)) {
                 cell = row.getCell(map.get(colName));
+                codeType=list.get(i).getFieldType();
             }
         }
         if (cell == null) {
             return cellValue;
+        }else {
+            setCellType(codeType, cell);
+            //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
+            CellType cellType = cell.getCellTypeEnum();
+            // 判断数据的类型
+            switch (cellType) {
+                // 数字、日期
+                case NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        // 日期型
+                        cellValue = fmt.format(cell.getDateCellValue());
+                    } else {
+                        // 数字
+                        cellValue = String.valueOf(cell.getNumericCellValue());
+                        if (cellValue.contains("E")) {
+                            // 数字
+                            cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
+                        }
+                    }
+                    break;
+                // 字符串
+                case STRING:
+                    cellValue = String.valueOf(cell.getStringCellValue());
+                    break;
+                // Boolean
+                case BOOLEAN:
+                    cellValue = String.valueOf(cell.getBooleanCellValue());
+                    break;
+                // 公式
+                case FORMULA:
+                    cellValue = String.valueOf(cell.getCellFormula());
+                    break;
+                // 空值
+                case BLANK:
+                    cellValue = cell.getStringCellValue();
+                    break;
+                // 故障
+                case ERROR:
+                    cellValue = "非法字符";
+                    break;
+                default:
+                    cellValue = "未知类型";
+                    break;
+            }
         }
-        switch (codeName) {
+
+        return cellValue;
+    }
+    private static void setCellType(String codeType, HSSFCell cell){
+
+        switch (codeType) {
             case "数字类型":
                 cell.setCellType(CellType.NUMERIC);
                 break;
@@ -234,50 +285,10 @@ public class ExcelUtil {
                 break;
             default:
         }
-        //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
-        CellType cellType = cell.getCellTypeEnum();
-        // 判断数据的类型
-        switch (cellType) {
-            // 数字、日期
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    // 日期型
-                    cellValue = fmt.format(cell.getDateCellValue());
-                } else {
-                    // 数字
-                    cellValue = String.valueOf(cell.getNumericCellValue());
-                    if (cellValue.contains("E")) {
-                        // 数字
-                        cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
-                    }
-                }
-                break;
-            // 字符串
-            case STRING:
-                cellValue = String.valueOf(cell.getStringCellValue());
-                break;
-            // Boolean
-            case BOOLEAN:
-                cellValue = String.valueOf(cell.getBooleanCellValue());
-                break;
-            // 公式
-            case FORMULA:
-                cellValue = String.valueOf(cell.getCellFormula());
-                break;
-            // 空值
-            case BLANK:
-                cellValue = cell.getStringCellValue();
-                break;
-            // 故障
-            case ERROR:
-                cellValue = "非法字符";
-                break;
-            default:
-                cellValue = "未知类型";
-                break;
-        }
 
-        return cellValue;
+    }
+    private static void getCellVlue(String cellType){
+
     }
 //    public static void main(String[] args) throws Exception {
 //        List<JSONObject> li = new ArrayList<JSONObject>();
