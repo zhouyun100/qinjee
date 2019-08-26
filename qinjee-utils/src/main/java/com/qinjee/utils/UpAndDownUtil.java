@@ -9,6 +9,7 @@ import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
+import entity.CosStsClient;
 
 import java.io.File;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.TreeMap;
 /**
  * @author Administrator
  */
-public class UpAndDown {
+public class UpAndDownUtil {
 
     /**
      腾讯云对象存储 COS 中的对象需具有合法的对象键，对象键（ObjectKey）是对象在存储桶中的唯一标识。
@@ -101,7 +102,7 @@ public class UpAndDown {
 //     */
 //    public static COSClient InitClient(String secretId,String secretKey,String bucketName,String regionName) {
 //        //获取临时连接所需要的接送对象
-//        JSONObject credential = UpAndDown.getCredential(secretId, secretKey, bucketName, regionName);
+//        JSONObject credential = UpAndDownUtil.getCredential(secretId, secretKey, bucketName, regionName);
 //        //解析获取临时参数
 //        String s = credential.getString("credentials");
 //        JSONObject jsonObject = JSON.parseObject(s);

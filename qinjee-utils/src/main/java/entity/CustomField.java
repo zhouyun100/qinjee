@@ -1,16 +1,15 @@
-package com.qinjee.entity;
+package entity;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author Administrator
+ */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Setter
-@Getter
-public class CustomField {
+public class CustomField implements Serializable {
     private Integer fieldId;
     private String fieldName;
     private String fieldType;

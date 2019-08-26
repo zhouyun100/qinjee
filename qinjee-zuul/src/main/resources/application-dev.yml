@@ -1,13 +1,13 @@
 server:
   port: 5555
 
-spring:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    password: 123456
-    database: 0
-    timeout: 0
+#spring:
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#    password: 123456
+#    database: 0
+#    timeout: 0
 
 zuul:
   host:
@@ -46,4 +46,4 @@ eureka:
     lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://qinjee:qinjee2019@192.168.99.100:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@localhost:8888/eureka/

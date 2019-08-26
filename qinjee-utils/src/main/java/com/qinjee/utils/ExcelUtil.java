@@ -1,7 +1,7 @@
 package com.qinjee.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.qinjee.entity.CustomField;
+import entity.CustomField;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
