@@ -210,20 +210,21 @@ public class ExcelUtil {
 
     private static String getCellValue(List<CustomField> list, HSSFRow row, String colName, LinkedHashMap<String, Integer> map) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+        HSSFCell cell = row.getCell(map.get(colName));
         String cellValue = "";
         String codeType="";
-        HSSFCell cell = null;
         String codeName = "";
-        for (int i = 0; i < list.size(); i++) {
-            codeName = list.get(i).getCodeName();
-            if (colName.equals(codeName)) {
-                cell = row.getCell(map.get(colName));
-                codeType=list.get(i).getFieldType();
-            }
-        }
-        if (cell == null) {
+        if(cell==null){
             return cellValue;
-        }else {
+        }
+        else {
+            for (int i = 0; i < list.size(); i++) {
+                codeName = list.get(i).getCodeName();
+                if (colName.equals(codeName)) {
+                    codeType = list.get(i).getFieldType();
+                    break;
+                }
+            }
             setCellType(codeType, cell);
             //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
             CellType cellType = cell.getCellTypeEnum();
@@ -267,6 +268,7 @@ public class ExcelUtil {
                     cellValue = "未知类型";
                     break;
             }
+
         }
 
         return cellValue;

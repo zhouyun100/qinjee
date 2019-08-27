@@ -13,7 +13,7 @@ import java.util.Properties;
  * @author hkt
  * @version 1.0
  *此处以后根据数据库查询的内容来确定发件人
- * 使用额韩式单例模式应对高并发
+ * 使用恶汉式单例模式应对高并发
  *
  */
 public class SendManyMailsUtil {
