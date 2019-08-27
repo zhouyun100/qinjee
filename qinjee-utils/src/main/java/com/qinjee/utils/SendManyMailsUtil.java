@@ -13,6 +13,7 @@ import java.util.Properties;
  * @author hkt
  * @version 1.0
  *此处以后根据数据库查询的内容来确定发件人
+ * 使用额韩式单例模式应对高并发
  *
  */
 public class SendManyMailsUtil {
@@ -31,9 +32,10 @@ public class SendManyMailsUtil {
     // Multipart对象,邮件内容,标题,附件等内容均添加到其中后再生成MimeMessage对象
     private MimeMessage mimeMsg;
 
-    private static SendManyMailsUtil instance = null;
+    private static SendManyMailsUtil instance = new SendManyMailsUtil();
 
-    public SendManyMailsUtil() {
+    private SendManyMailsUtil() {
+        //对发送放进行数据库查询进行匹配
         props = System.getProperties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.transport.protocol", "smtp");
@@ -47,10 +49,7 @@ public class SendManyMailsUtil {
     }
 
     public static SendManyMailsUtil getInstance() {
-        if (instance == null) {
-            instance = new SendManyMailsUtil();
-        }
-        return instance;
+       return instance;
     }
 
     /**
@@ -156,12 +155,12 @@ public class SendManyMailsUtil {
     }
     public static void main(String[] args) {
         String from = username;
-        String[] to = {"1055465282@qq.com", "huangkt@qinjee.cn","1360414553@qq.com"};
-        String[] copyto = {"gx@qinjee.cn"};
+        String[] to = {"huangkt@qinjee.cn"};
+        String[] copyto = null;
         String subject = "测试一下";
         String content = "这是邮件内容，仅仅是测试，不需要回复.";
-        String[] fileList = {"C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-utils\\src\\main\\resources\\timg.jpg",
-                "C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-utils\\src\\main\\resources\\timg.jpg"};
+        String[] fileList = {"C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-utils\\src\\main\\resources\\timg.jpg"};
+        //发送邮件需要获取实例再发送
         SendManyMailsUtil.getInstance().sendMail(from, to, copyto, subject, content, fileList);
     }
 
