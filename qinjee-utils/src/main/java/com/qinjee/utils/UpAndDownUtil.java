@@ -19,6 +19,11 @@ import java.util.TreeMap;
  * @author Administrator
  */
 public class UpAndDownUtil {
+    private static final String secretId = "AKIDMi3OgwqoGh8YvMu7C6ovseEdy87v3s56";
+    private static final String secretKey = "1pU9icMvJWm1A7wa7SgKrGVbWfgVaVFo";
+    private static final String bucket = "qinjee-datacenter-1253673776";
+    private static final String regionName = "ap-guangzhou";
+    private static final COSClient cosClient=UpAndDownUtil.InitClient();
 
     /**
      腾讯云对象存储 COS 中的对象需具有合法的对象键，对象键（ObjectKey）是对象在存储桶中的唯一标识。
@@ -34,21 +39,13 @@ public class UpAndDownUtil {
      鉴于后期需要对异常捕获，这里异常很多，影响性能比较严重
      */
 
-
-    /**
-     * 获取临时对象
-     * @param secretId
-     * @param secretKey
-     * @param bucketName
-     * @param regionName
-     */
-    public static  JSONObject getCredential(String secretId,String secretKey,String bucketName,String regionName){
+    public static  JSONObject getCredential(){
         TreeMap<String, Object> config = new TreeMap<String, Object>();
         try {
             config.put("SecretId",secretId );
             config.put("SecretKey", secretKey);
             config.put("durationSeconds", 1800);
-            config.put("bucket", bucketName);
+            config.put("bucket", bucket);
             config.put("region", regionName);
             // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的目录，例子：* 或者 doc/* 或者 picture.jpg
             config.put("allowPrefix", "*");
@@ -82,7 +79,7 @@ public class UpAndDownUtil {
      *
      * @return
      */
-    public static   COSClient InitClient(String secretId,String secretKey,String regionName) {
+    public static   COSClient InitClient() {
         // 1 初始化用户身份信息（secretId, secretKey）。
         COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
         // 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
@@ -93,49 +90,20 @@ public class UpAndDownUtil {
         // 3 生成 cos 客户端。
         return new COSClient(cred, clientConfig);
     }
-
-
-//    /**
-//     * 初始化客户端
-//     *
-//     * @return
-//     */
-//    public static COSClient InitClient(String secretId,String secretKey,String bucketName,String regionName) {
-//        //获取临时连接所需要的接送对象
-//        JSONObject credential = UpAndDownUtil.getCredential(secretId, secretKey, bucketName, regionName);
-//        //解析获取临时参数
-//        String s = credential.getString("credentials");
-//        JSONObject jsonObject = JSON.parseObject(s);
-//        String tmpSecretId = jsonObject.getString("tmpSecretId");
-//        String tmpSecretKey= jsonObject.getString("tmpSecretKey");
-//        String sessionToken= jsonObject.getString("sessionToken");
-//        //初始化用户身份信息
-//        BasicSessionCredentials cred = new BasicSessionCredentials(tmpSecretId, tmpSecretKey, sessionToken);
-//        //设置bucket的地域信息
-//        Region region = new Region(regionName);
-//        ClientConfig clientConfig = new ClientConfig(region);
-//        //生成客户端
-//        return new COSClient(cred, clientConfig);
-//
-//    }
-
-
-
-
     /**
      * 上传文件到指定存储桶
      *
      * @param path
-     * @param bucketName
+     * @param
      * @param key        对象键，详情见上方说明
-     * @param cosClient
+     * @param
      */
-    public static void putFile(String path, String bucketName, String key, COSClient cosClient) {
+    public static void putFile(String path,String key) {
         try {
             // 指定要上传的文件
             File localFile = new File(path);
             // 指定要上传到 COS 上对象键
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, localFile);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, localFile);
             PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
@@ -150,12 +118,12 @@ public class UpAndDownUtil {
     /**
      * 获取桶中符合的对象集合，可以通过遍历来定位到制定对象
      *
-     * @param bucket
+     * @param
      * @param prefix    对象键的前缀
      * @param cosClient
      * @return
      */
-    public static List<COSObjectSummary> getFileList(String bucket, String prefix, COSClient cosClient) {
+    public static List<COSObjectSummary> getFileList( String prefix, COSClient cosClient) {
         try {
             ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
             // 设置 bucket 名称
@@ -191,14 +159,14 @@ public class UpAndDownUtil {
     /**
      * 下载文件到指定路径
      *
-     * @param bucketName
+     * @param
      * @param key          对象键
      * @param downFilePath 下载到指定的路径
      * @param cosClient
      */
-    public static void downFile(String bucketName, String key, String downFilePath, COSClient cosClient) {
+    public static void downFile(String key, String downFilePath, COSClient cosClient) {
         try {
-            GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
+            GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, key);
             File downFile = new File(downFilePath);
             ObjectMetadata downObjectMeta = cosClient.getObject(getObjectRequest, downFile);
         } catch (CosServiceException serverException) {
@@ -230,4 +198,6 @@ public class UpAndDownUtil {
             cosClient.shutdown();
         }
     }
+
+
 }
