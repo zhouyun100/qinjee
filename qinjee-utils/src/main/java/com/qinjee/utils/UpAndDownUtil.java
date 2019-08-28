@@ -14,6 +14,18 @@ import entity.CosStsClient;
 import java.io.File;
 import java.util.List;
 import java.util.TreeMap;
+/**
+ 腾讯云对象存储 COS 中的对象需具有合法的对象键，对象键（ObjectKey）是对象在存储桶中的唯一标识。
+ 例如：在对象的访问地址examplebucket-1250000000.cos.ap-guangzhou.myqcloud.com/folder/picture.jpg 中，对象键为folder/picture.jpg。
+
+ 在相应的操作结束后，需要调用cosclient的shutdown方法进行关闭客户端。
+
+ 手动创建的文件夹，如果里面没有内容的话文件夹还存在与存储桶中
+ 若是通过demo创建的文件夹，里面没有内容会默认删除，这就要求我们对比较重要的目录进行手动创建
+
+ 临时签名在删除文件跟获取文件信息会报权限不够的错误。所以这是不能用临时的客户端
+
+ */
 
 /**
  * @author Administrator
@@ -26,19 +38,8 @@ public class UpAndDownUtil {
     private static final COSClient cosClient=UpAndDownUtil.InitClient();
 
     /**
-     腾讯云对象存储 COS 中的对象需具有合法的对象键，对象键（ObjectKey）是对象在存储桶中的唯一标识。
-     例如：在对象的访问地址examplebucket-1250000000.cos.ap-guangzhou.myqcloud.com/folder/picture.jpg 中，对象键为folder/picture.jpg。
-
-     在相应的操作结束后，需要调用cosclient的shutdown方法进行关闭客户端。
-
-     手动创建的文件夹，如果里面没有内容的话文件夹还存在与存储桶中
-     若是通过demo创建的文件夹，里面没有内容会默认删除，这就要求我们对比较重要的目录进行手动创建
-
-     临时签名在删除文件跟获取文件信息会报权限不够的错误。所以这是不能用临时的客户端
-
-     鉴于后期需要对异常捕获，这里异常很多，影响性能比较严重
+     * @return  前端需要调用的方法
      */
-
     public static  JSONObject getCredential(){
         TreeMap<String, Object> config = new TreeMap<String, Object>();
         try {
@@ -79,7 +80,7 @@ public class UpAndDownUtil {
      *
      * @return
      */
-    public static   COSClient InitClient() {
+    public static COSClient InitClient() {
         // 1 初始化用户身份信息（secretId, secretKey）。
         COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
         // 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
@@ -162,9 +163,9 @@ public class UpAndDownUtil {
      * @param
      * @param key          对象键
      * @param downFilePath 下载到指定的路径
-     * @param cosClient
+     * @param
      */
-    public static void downFile(String key, String downFilePath, COSClient cosClient) {
+    public static void downFile(String key, String downFilePath) {
         try {
             GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, key);
             File downFile = new File(downFilePath);
@@ -183,13 +184,13 @@ public class UpAndDownUtil {
     /**
      * 说明：在业务场景中，删除应该是改变数据库里面的某个相对于显示的字段，进行逻辑删除，调用此方法是
      * 数据库中将此文件进行抹除
-     * @param bucketName
+     * @param
      * @param key        对象键
-     * @param cosClient
+     * @param
      */
-    public static void delFile(String bucketName, String key, COSClient cosClient) {
+    public static void delFile( String key) {
         try {
-            cosClient.deleteObject(bucketName, key);
+            cosClient.deleteObject(bucket, key);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
         } catch (CosClientException clientException) {
@@ -198,6 +199,4 @@ public class UpAndDownUtil {
             cosClient.shutdown();
         }
     }
-
-
 }
