@@ -1,19 +1,22 @@
 package com.qinjee.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.auth.COSCredentials;
+import com.qcloud.cos.auth.COSSigner;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
+import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
 import entity.CosStsClient;
 
 import java.io.File;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 /**
  腾讯云对象存储 COS 中的对象需具有合法的对象键，对象键（ObjectKey）是对象在存储桶中的唯一标识。
  例如：在对象的访问地址examplebucket-1250000000.cos.ap-guangzhou.myqcloud.com/folder/picture.jpg 中，对象键为folder/picture.jpg。
@@ -66,6 +69,7 @@ public class UpAndDownUtil {
             config.put("allowActions", allowActions);
 
             JSONObject credential = CosStsClient.getCredential(config);
+            System.out.println(credential.toJSONString());
              return  credential;
             //成功返回临时密钥信息，如下打印密钥信息
         } catch (Exception e) {
@@ -73,6 +77,40 @@ public class UpAndDownUtil {
             throw new IllegalArgumentException("no valid secret !");
         }
 
+    }
+    /**
+     //     * 根据前端要求返回的数据
+     //     *
+     //     * @return
+     //     */
+    public static String TransToForward() {
+        //获取临时连接所需要的接送对象
+        JSONObject credential = UpAndDownUtil.getCredential();
+        Map<String,String> map=new HashMap<>();
+        //解析获取临时参数
+        String s = credential.getString("credentials");
+        JSONObject jsonObject = JSON.parseObject(s);
+        String tmpSecretId = jsonObject.getString("tmpSecretId");
+        String tmpSecretKey= jsonObject.getString("tmpSecretKey");
+        String sessionToken= jsonObject.getString("sessionToken");
+        map.put("sessionToken",sessionToken);
+        //初始化用户身份信息
+        BasicSessionCredentials cred = new BasicSessionCredentials(tmpSecretId, tmpSecretKey, sessionToken);
+        //设置bucket的地域信息
+        String cosAccessKeyId = cred.getCOSAccessKeyId();
+        Region region = new Region(regionName);
+        ClientConfig clientConfig = new ClientConfig(region);
+        //生成客户端
+        COSClient cosClient = new COSClient(cred, clientConfig);
+        //根据此对象获取认证信息
+        COSSigner cosSigner=new COSSigner();
+        Date expirationDate = new Date(System.currentTimeMillis() + 30 * 60 * 1000);
+        String authorizationStr = cosSigner.buildAuthorizationStr(HttpMethodName.POST, "/",
+                cred, expirationDate);
+        map.put("Authorization",authorizationStr);
+        System.out.println(authorizationStr);
+        cosClient.shutdown();
+        return JSON.toJSONString(map);
     }
 
     /**
@@ -87,9 +125,9 @@ public class UpAndDownUtil {
         // clientConfig 中包含了设置 region, https(默认 http), 超时, 代理等 set 方法, 使用可参见源码或者常见问题 Java SDK 部分。
         Region region = new Region(regionName);
         ClientConfig clientConfig = new ClientConfig(region);
-
         // 3 生成 cos 客户端。
         return new COSClient(cred, clientConfig);
+
     }
     /**
      * 上传文件到指定存储桶
@@ -199,4 +237,9 @@ public class UpAndDownUtil {
             cosClient.shutdown();
         }
     }
+    public static String getKey(){
+        //TODO 此时对象键的生成，是根据文件桶里面的路径。目前讨论的是根据项目来定义桶，根据公司新建文件夹,在公司文件夹下根据模块再定义文件夹。
+        return null;
+    }
+
 }
