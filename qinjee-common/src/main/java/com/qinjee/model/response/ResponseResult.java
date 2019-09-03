@@ -11,17 +11,17 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-public class ResponseResult implements Response {
+public class ResponseResult{
 
     /**
      * 操作是否成功
      */
-    boolean success = SUCCESS;
+    boolean success;
 
     /**
      * 操作代码
      */
-    int code = SUCCESS_CODE;
+    int code;
 
     /**
      * 提示信息

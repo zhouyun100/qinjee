@@ -1,6 +1,6 @@
 /*
  * 文件名： ApiFallbackProvider.java
- * 
+ *
  * 工程名称: qinjee-zuul
  *
  * Qinjee
@@ -18,6 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.ResponseResult;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -74,11 +77,7 @@ public class ApiFallbackProvider implements FallbackProvider {
 
 			@Override
 			public String getStatusText() throws IOException {
-				ResultJsonEntity resultJson = new ResultJsonEntity();
-				resultJson.setResultCode(ResponseConsts.RESULT_CODE_NET_EXCEPTION);
-				resultJson.setResultStatus(ResponseConsts.RESULT_STATUS_NET_EXCEPTION);
-				resultJson.setResult(ResponseConsts.RESULT_RESULT_NET_MESSAGE);
-				String result = JSON.toJSONString(resultJson);
+				String result = JSON.toJSONString(new ResponseResult(CommonCode.NET_EXCEPTION));
 				return result;
 			}
 
