@@ -104,7 +104,9 @@ public class UpAndDownUtil {
         COSClient cosClient = new COSClient(cred, clientConfig);
         //根据此对象获取认证信息
         COSSigner cosSigner=new COSSigner();
+        //设置过期时间为半小时
         Date expirationDate = new Date(System.currentTimeMillis() + 30 * 60 * 1000);
+        //使用post方式上传到”“”“‘/’目录下。
         String authorizationStr = cosSigner.buildAuthorizationStr(HttpMethodName.POST, "/",
                 cred, expirationDate);
         map.put("Authorization",authorizationStr);
