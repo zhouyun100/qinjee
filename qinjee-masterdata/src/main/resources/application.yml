@@ -1,4 +1,4 @@
 spring:
   #资源文件
   profiles:
-    active: dev
+    active: ${profileActive}
