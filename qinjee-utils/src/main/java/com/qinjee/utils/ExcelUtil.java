@@ -1,362 +1,329 @@
 package com.qinjee.utils;
 
-import com.alibaba.fastjson.JSONObject;
-import entity.CustomField;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-/**
- * @author Administrator
- * 注意：此excel的导入导出方法需要用到三个参数，即装好数据的集合List，以及每个对象所需要展示对应的以map形式存储的字段名（key为数据库中对应的字段名，value为
- * 需要展示在excel中的列名），以及需要将excel输出到指定的文件位置
- *
- * 在自定义表中，先根据自定义表的id可以查出所需要展示的字段放进map形式中的field中
- * 注意：excel2003版与2007版解析方式不一样，
- * poi解析Excel文件时有两种格式：
- * HSSFWorkbook格式用来解析Excel2003（xls）的文件
- * XSSFWorkbook格式用来解析Excel2007（xlsx）的文件
- *
- * 因为HSSFWorkbook和XSSFWorkbook都实现了Workbook接口，所以我们可以用Workbook来解析两个版本的Excel。
- *
- * excel导出为JsonObject时，需要通过自定义表的自定义字段类型来确定是否满足类型，精度以及长度的需要
- * 1，编写获得自定义字段表的类型数据
- * 2，存入到集合中，通过字段名与excel表头来筛选所需要的字段
- * 3，获取excel对应的单元格中的内容
- * 4，内容格式与自定义字段需求的规范相比较，符合则取，不符合则放弃
- */
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class ExcelUtil {
-    public static int sheetsize = 5000;
+    /**
+     * @param title
+     * 工作簿名称
+     * @param heads
+     * 表格第一行名称数组
+     * @param dates
+     * 要导入表格的数据
+     * @param url
+     * 临时存放excel文件的文件夹
+     * 导出excel
+     */
+    private final static String xls = "xls";
+    private final static String xlsx = "xlsx";
 
     /**
-     * @param data   导入到excel中的数据
-     * @param out    数据写入的文件
-     * @param fields 需要注意的是这个方法中的map中：每一列对应的实体类的英文名为键，excel表格中每一列名为值
-     * @throws Exception
-     * @author Lyy
+     * @param title 主题
+     * @param heads 这个参数是所有字段的内容，座为表头显示
+     * @param dates 这个是存储信息的字段，
+     * 示例：
+     * Map<String, String> map = new LinkedHashMap<String,String>();
+     *             map.put("ID", String.valueOf(i+1));
+     *             map.put("Name", "name"+(i+1));
+     *             map.put("Pass", "pass"+(i+1));
+     *             dates.add(map);
+     * @param url 文件存储路径
+     * @param map 以表头信息为key，类型为value的Map集合
      */
-    public static  void ListtoExecl(List<JSONObject> data, OutputStream out,
-                                       Map<String, String> fields) throws Exception {
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        // 如果导入数据为空，则抛出异常。
-        if (data == null || data.size() == 0) {
-            workbook.close();
-            throw new Exception("导入的数据为空");
-        }
-        // 根据data计算有多少页sheet
-        int pages = data.size() / sheetsize;
-        if (data.size() % sheetsize > 0) {
-            pages += 1;
-        }
-        // 提取表格的字段名（英文字段名是为了对照中文字段名的）
-        String[] egtitles = new String[fields.size()];
-        String[] cntitles = new String[fields.size()];
-        getExcelField(fields, egtitles, cntitles);
-        // 添加数据
-        for (int i = 0; i < pages; i++) {
-            int rownum = 0;
-            // 计算每页的起始数据和结束数据
-            int startIndex = i * sheetsize;
-            int endIndex = (i + 1) * sheetsize - 1 > data.size() ? data.size()
-                    : (i + 1) * sheetsize - 1;
-            // 创建每页，并创建第一行
-            HSSFSheet sheet = workbook.createSheet();
-            HSSFRow row = sheet.createRow(rownum);
+    private static void exportExcel(String title, String[] heads,
+                                    List<Map<String, String>> dates, String url, Map<String,String> map) {
+        // 新建excel报表
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+        // 添加一个sheet名称
+        HSSFSheet hssfSheet = hssfWorkbook.createSheet(title);
 
-            // 在每页sheet的第一行中，添加字段名
-            for (int f = 0; f < cntitles.length; f++) {
-                HSSFCell cell = row.createCell(f);
-                cell.setCellValue(cntitles[f]);
-            }
-            rownum++;
-            // 将数据添加进表格
-            for (int j = startIndex; j < endIndex; j++) {
-                row = sheet.createRow(rownum);
-                JSONObject item = data.get(j);
-                for (int h = 0; h < cntitles.length; h++) {
-                    String value = item.getString(egtitles[h]);
-                    HSSFCell cell = row.createCell(h);
-                    cell.setCellValue(value);
-                }
-                rownum++;
+        //设置单元格样式
+        HSSFCellStyle style = hssfWorkbook.createCellStyle();
+        //水平居中
+        style.setAlignment(CellStyle.ALIGN_CENTER);
+        // 垂直居中
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+
+        /*
+         * 设定合并单元格区域范围 firstRow 0-based lastRow 0-based firstCol 0-based lastCol
+         * 0-based
+         */
+        CellRangeAddress cra = new CellRangeAddress(0, 0, 0, heads.length - 1);
+        // 在sheet里增加合并单元格
+        hssfSheet.addMergedRegion(cra);
+        HSSFRow row = hssfSheet.createRow(0);
+        HSSFCell cell_1 = row.createCell(0);
+        cell_1.setCellValue(title);
+        //设置样式
+        cell_1.setCellStyle(style);
+        HSSFRow hssfRow = hssfSheet.createRow(1);
+        for (int i = 0; i < heads.length; i++) {
+            HSSFCell hssfCell = hssfRow.createCell(i);
+            hssfCell.setCellValue(heads[i]);
+            hssfCell.setCellType(getCellType(map.get(heads[i]),cell_1));
+        }
+
+        // 循环将list里面的值取出来放进excel中
+        for (int i = 0; i < dates.size(); i++) {
+            HSSFRow hssfRow1 = hssfSheet.createRow(i + 2);
+            int j = 0;
+            Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> entry = it.next();
+                HSSFCell hssfCell = hssfRow1.createCell(j);
+                hssfCell.setCellValue(entry.getValue());
+                j++;
             }
         }
-        // 将创建好的数据写入输出流
-        workbook.write(out);
-        // 关闭workbook
-        workbook.close();
+
+        FileOutputStream fout = null;
+        try {
+            // 用流将其写到D盘
+            fout = new FileOutputStream(url);
+            hssfWorkbook.write(fout);
+            fout.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-
 
     /**
-     * 　　* @author hkt
-     * 　　* @param entityClass excel中每一行数据的实体类
-     * 　　* @param in          excel文件
-     * 　　* @param fields     字段名字
-     * 　　*             需要注意的是这个方法中的map中：
-     * 　　*             excel表格中每一列名为键，每一列对应的实体类的英文名为值
-     * 　　 * @throws Exception
+     * @param path  临时存放excel文件路径
+     * @param title 工作簿名称
+     * @param heads 表格第一行名称数组
+     * @param dates 要写入表格的数据
+     *              下载excel
      */
-    public static List<JSONObject> ExecltoList(InputStream in, Map<String, String> fields) throws Exception {
-
-
-//        List<T> resultList = new ArrayList<T>();
-        List<JSONObject> resultList = new ArrayList<JSONObject>();
-
-        HSSFWorkbook workbook = new HSSFWorkbook(in);
-
-        // excel中字段的中英文名字数组
-        String[] egtitles = new String[fields.size()];
-        String[] cntitles = new String[fields.size()];
-        getExcelField(fields, egtitles, cntitles);
-        // 得到excel中sheet总数
-        int sheetcount = workbook.getNumberOfSheets();
-
-        if (sheetcount == 0) {
-            workbook.close();
-            throw new Exception("Excel文件中没有任何数据");
-        }
-
-        // 数据的导出
-        for (int i = 0; i < sheetcount; i++) {
-            HSSFSheet sheet = workbook.getSheetAt(i);
-            if (sheet == null) {
-                continue;
-            }
-            // 每页中的第一行为标题行，对标题行的特殊处理
-            HSSFRow firstRow = sheet.getRow(0);
-            int celllength = firstRow.getLastCellNum();
-
-            String[] excelFieldNames = new String[celllength];
-            LinkedHashMap<String, Integer> colMap = new LinkedHashMap<String, Integer>();
-
-            // 获取Excel中的列名
-            for (int f = 0; f < celllength; f++) {
-                HSSFCell cell = firstRow.getCell(f);
-                excelFieldNames[f] = cell.getStringCellValue().trim();
-                // 将列名和列号放入Map中,这样通过列名就可以拿到列号
-                for (int g = 0; g < excelFieldNames.length; g++) {
-                    colMap.put(excelFieldNames[g], g);
-                }
-            }
-            // 由于数组是根据长度创建的，所以值是空值，这里对列名map做了去空键的处理
-            colMap.remove(null);
-            // 判断需要的字段在Excel中是否都存在
-            // 需要注意的是这个方法中的map中：中文名为键，英文名为值
-            boolean isExist = true;
-            List<String> excelFieldList = Arrays.asList(excelFieldNames);
-            for (String cnName : fields.keySet()) {
-                if (!excelFieldList.contains(cnName)) {
-                    isExist = false;
-                    break;
-                }
-            }
-            // 如果有列名不存在，则抛出异常，提示错误
-            if (!isExist) {
-                workbook.close();
-                throw new Exception("Excel中缺少必要的字段，或字段名称有误");
-            }
-            // 将sheet转换为list
-            for (int j = 1; j <= sheet.getLastRowNum(); j++) {
-                HSSFRow row = sheet.getRow(j);
-                JSONObject posJson = new JSONObject();
-                // 给对象中的字段赋值
-                for (Map.Entry<String, String> entry : fields.entrySet()) {
-                    // 获取中文字段名
-                    String cnNormalName = entry.getKey();
-                    // 获取英文字段名
-                    String enNormalName = entry.getValue();
-                    // 获取当前单元格中的内容
-//                    String content = row.getCell(col).toString().trim();
-
-                    //TODO 此处为了防止报错，将自定义字段集合写死了，后期连接数据库查询
-
-                    String content = getCellValue(getCustomFieldList(1), row, cnNormalName, colMap).trim();
-
-                    // 给对象赋值
-//                    setFieldValueByName(enNormalName, content, entity);
-                    posJson.put(enNormalName, content);
-                }
-                resultList.add(posJson);
-            }
-        }
-        workbook.close();
-        return resultList;
-
-    }
-    private static void getExcelField(Map<String, String> fields, String[] egtitles, String[] cntitles) {
-        Iterator<String> it = fields.keySet().iterator();
-        int count = 0;
-        while (it.hasNext()) {
-            String egtitle = (String) it.next();
-            String cntitle = fields.get(egtitle);
-            egtitles[count] = egtitle;
-            cntitles[count] = cntitle;
-            count++;
+    public static void download(String path, HttpServletResponse response,
+                                String title, String[] heads, List<Map<String, String>> dates, Map<String ,String> map) {
+        exportExcel(title, heads, dates, path, map);
+        try {
+            // path是指欲下载的文件的路径。
+            File file = new File(path);
+            // 取得文件名。
+            String filename = file.getName();
+            // 以流的形式下载文件。
+            InputStream fis = new BufferedInputStream(new FileInputStream(path));
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            fis.close();
+            // 清空response
+            response.reset();
+            // 设置response的Header
+            response.addHeader("Content-Disposition", "attachment;filename="
+                    + new String(filename.getBytes()));
+            response.addHeader("Content-Length", "" + file.length());
+            OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+            response.setContentType("application/vnd.ms-excel;charset=gb2312");
+            toClient.write(buffer);
+            toClient.flush();
+            toClient.close();
+            // 删除d:/test文件夹下面临时存放的文件
+            File file2 = new File(path);
+            file2.delete();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
+    /**
+     * 读入excel文件，解析后返回
+     *
+     * @param file
+     * @throws IOException
+     */
+    public static List<String[]> readExcel(MultipartFile file)
+            throws IOException {
+        // 检查文件
+        checkFile(file);
+        // 获得Workbook工作薄对象
+        Workbook workbook = getWorkBook(file);
+        // 创建返回对象，把每行中的值作为一个数组，所有行作为一个集合返回
+        List<String[]> list = new ArrayList<String[]>();
+        if (workbook != null) {
+            for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
+                // 获得当前sheet工作表
+                Sheet sheet = workbook.getSheetAt(sheetNum);
+                if (sheet == null) {
+                    continue;
+                }
+                // 获得当前sheet的开始行
+                int firstRowNum = sheet.getFirstRowNum();
+                // 获得当前sheet的结束行
+                int lastRowNum = sheet.getLastRowNum();
+                // 循环除了第一行的所有行
+                for (int rowNum = firstRowNum + 1; rowNum <= lastRowNum; rowNum++) {
+                    // 获得当前行
+                    Row row = sheet.getRow(rowNum);
+                    if (row == null) {
+                        continue;
+                    }
+                    // 获得当前行的开始列
+                    int firstCellNum = row.getFirstCellNum();
+                    // 获得当前行的列数
+                    int lastCellNum = row.getPhysicalNumberOfCells();
+                    String[] cells = new String[row.getPhysicalNumberOfCells()];
+                    // 循环当前行
+                    for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
+                        Cell cell = row.getCell(cellNum);
+                        cells[cellNum] = getCellValue(cell);
+                    }
+                    list.add(cells);
+                }
+            }
+        }
+        return list;
+    }
 
-    private static String getCellValue(List<CustomField> list, HSSFRow row, String colName, LinkedHashMap<String, Integer> map) throws ParseException {
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-        HSSFCell cell = row.getCell(map.get(colName));
+    /**
+     * @param file
+     * @throws IOException 检查传过来的文件是不是excel文件
+     */
+    public static void checkFile(MultipartFile file) throws IOException {
+        // 判断文件是否存在
+        if (null == file) {
+            throw new FileNotFoundException("文件不存在！");
+        }
+        // 获得文件名
+        String fileName = file.getOriginalFilename();
+        // 判断文件是否是excel文件
+        if (!fileName.endsWith(xls) && !fileName.endsWith(xlsx)) {
+            throw new IOException(fileName + "不是excel文件");
+        }
+    }
+
+    /**
+     * @param file
+     * @return 创建并返回一个workBook（兼容xls和xlsx）
+     */
+    public static Workbook getWorkBook(MultipartFile file) {
+        // 获得文件名
+        String fileName = file.getOriginalFilename();
+        // 创建Workbook工作薄对象，表示整个excel
+        Workbook workbook = null;
+        try {
+            // 获取excel文件的io流
+            InputStream is = file.getInputStream();
+            // 根据文件后缀名不同(xls和xlsx)获得不同的Workbook实现类对象
+            if (fileName.endsWith(xls)) {
+                // 2003
+                workbook = new HSSFWorkbook(is);
+            } else if (fileName.endsWith(xlsx)) {
+                // 2007
+                workbook = new XSSFWorkbook(is);
+            }
+        } catch (IOException e) {
+        }
+        return workbook;
+    }
+
+    /**
+     * @param cell
+     * @return 根据excel表格中的数据类型和数据值返回相对应的数据值
+     */
+    public static String getCellValue(Cell cell) {
         String cellValue = "";
-        String codeType="";
-        String codeName = "";
-        if(cell==null){
+        if (cell == null) {
             return cellValue;
         }
-        else {
-            for (int i = 0; i < list.size(); i++) {
-                codeName = list.get(i).getCodeName();
-                if (colName.equals(codeName)) {
-                    codeType = list.get(i).getFieldType();
-                    break;
-                }
-            }
-            setCellType(codeType, cell);
-            //TODO 在此需要获取到自定义字段的自定义类型，而且还要考虑精度，位数，一次性查询出来存储。根据Switch case取值
-            CellType cellType = cell.getCellTypeEnum();
-            // 判断数据的类型
-            switch (cellType) {
-                // 数字、日期
-                case NUMERIC:
-                    if (DateUtil.isCellDateFormatted(cell)) {
-                        // 日期型
-                        cellValue = fmt.format(cell.getDateCellValue());
-                    } else {
-                        // 数字
-                        cellValue = String.valueOf(cell.getNumericCellValue());
-                        if (cellValue.contains("E")) {
-                            // 数字
-                            cellValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue());
-                        }
-                    }
-                    break;
-                // 字符串
-                case STRING:
-                    cellValue = String.valueOf(cell.getStringCellValue());
-                    break;
-                // Boolean
-                case BOOLEAN:
-                    cellValue = String.valueOf(cell.getBooleanCellValue());
-                    break;
-                // 公式
-                case FORMULA:
-                    cellValue = String.valueOf(cell.getCellFormula());
-                    break;
-                // 空值
-                case BLANK:
-                    cellValue = cell.getStringCellValue();
-                    break;
-                // 故障
-                case ERROR:
-                    cellValue = "非法字符";
-                    break;
-                default:
-                    cellValue = "未知类型";
-                    break;
-            }
-
+        // 把数字当成String来读，避免出现1读成1.0的情况
+        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+            cell.setCellType(Cell.CELL_TYPE_STRING);
         }
-
-        return cellValue;
-    }
-    private static void setCellType(String codeType, HSSFCell cell){
-
-        switch (codeType) {
-            case "数字类型":
-                cell.setCellType(CellType.NUMERIC);
+        // 判断数据的类型
+        switch (cell.getCellType()) {
+            // 数字
+            case Cell.CELL_TYPE_NUMERIC:
+                cellValue = String.valueOf(cell.getNumericCellValue());
                 break;
-            case "字符串类型":
-                cell.setCellType(CellType.STRING);
+            // 字符串
+            case Cell.CELL_TYPE_STRING:
+                cellValue = String.valueOf(cell.getStringCellValue());
                 break;
-            case "日期类型":
-                cell.setCellType(CellType.NUMERIC);
+            // Boolean
+            case Cell.CELL_TYPE_BOOLEAN:
+                cellValue = String.valueOf(cell.getBooleanCellValue());
+                break;
+            // 公式
+            case Cell.CELL_TYPE_FORMULA:
+                cellValue = String.valueOf(cell.getCellFormula());
+                break;
+            // 空值
+            case Cell.CELL_TYPE_BLANK:
+                cellValue = "";
+                break;
+            // 故障
+            case Cell.CELL_TYPE_ERROR:
+                cellValue = "非法字符";
                 break;
             default:
+                cellValue = "未知类型";
+                break;
+        }
+        return cellValue;
+    }
+
+    /**
+     * CellType 类型 值
+     * CELL_TYPE_NUMERIC	数值型	0
+     * CELL_TYPE_STRING	字符串型	1
+     * CELL_TYPE_FORMULA	公式型	2
+     * CELL_TYPE_BLANK	空值	3
+     * CELL_TYPE_BOOLEAN	布尔型	4
+     * CELL_TYPE_ERROR	错误	5
+     *
+     * @param type
+     * @return
+     */
+    public static Integer getCellType(String type , HSSFCell cell) {
+            switch (type) {
+                case "Integer":
+                    return HSSFCell.CELL_TYPE_NUMERIC;
+                case "String":
+                    return HSSFCell.CELL_TYPE_STRING;
+                case "Boolean":
+                    return HSSFCell.CELL_TYPE_BOOLEAN;
+                case "":
+                    return HSSFCell.CELL_TYPE_BLANK;
+                case "Date":
+                    return HSSFCell.CELL_TYPE_NUMERIC;
+                default:
+                    return HSSFCell.CELL_TYPE_STRING;
+            }
         }
 
+
+
+    public static void main(String[] args) throws IOException {
+        MultipartFile multipartFile = null;
+        File file = new File("C:\\Users\\Administrator\\Desktop\\hello.xls");
+        FileInputStream fileInput = new FileInputStream(file);
+        multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
+        List<String[]> list = null;
+        try {
+            list = ExcelUtil.readExcel(multipartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (String[] strings : list) {
+            for (int i = 0; i < strings.length; i++) {
+                //这里可以获取excel的数据，然后将数据添加进数据库里面
+                System.out.print(strings[i] + "\t");
+            }
+            System.out.println();
+        }
     }
-    private static void getCellVlue(String cellType){
-
-    }
-//    public static void main(String[] args) throws Exception {
-//        List<JSONObject> li = new ArrayList<JSONObject>();
-//        JSONObject jsonObject=new JSONObject();
-//        jsonObject.put("name","zss");
-//        jsonObject.put("password","123");
-//        jsonObject.put("id",55);
-//        jsonObject.put("data",new Date());
-//        jsonObject.put("phoneNumber","17629926998");
-//        jsonObject.put("myid","411111111111111111");
-//        li.add(jsonObject);
-//        OutputStream out = new FileOutputStream("d://版本.xls");
-//        Map<String, String> fields = new HashMap<String, String>();
-//        fields.put("name", "姓名");
-//        fields.put("password", "密码");
-//        fields.put("id", "序号");
-//        fields.put("data","时间");
-//        fields.put("phoneNumber","手机号");
-//        fields.put("myid","身份证号");
-//        ExcelUtil.ListtoExecl(li, out, fields);
-//        out.close();
-//    }
-
-
-//    public static void main(String[] args) throws Exception {
-//        InputStream in = new FileInputStream("d://版本.xls");
-//        Map<String, String> fieldd = new HashMap<String, String>();
-//        fieldd.put("姓名", "name");
-//        fieldd.put("密码", "password");
-//        fieldd.put("序号", "id");
-//        fieldd.put("时间","data");
-//        fieldd.put("手机号","phoneNumber");
-//        fieldd.put("身份证号","myid");
-//        List<JSONObject> resultList = new ArrayList<JSONObject>();
-//        List<JSONObject> jsonObjects = ExecltoList(in, fieldd);
-//        for (JSONObject jsonObject : jsonObjects) {
-//            System.out.println(jsonObject);
-//        }
-//    }
-
-
-    /**
-     * 获取自定义表字段集合
-     *
-     * @param tableId
-     * @return
-     */
-    private static List<CustomField> getCustomFieldList(Integer tableId) {
-        //TODO 通过连接数据库，获得自定义表的所有自定义字段，并且存储到List集合中
-        return null;
-    }
-
-    /**
-     * 获取自定义表字段中精度，长度，类型等属性
-     *
-     * @param fieldId
-     * @return
-     */
-    private static String[] getCustomField(Integer fieldId) {
-        //TODO 通过连接数据库，获得自定义字段的字段类型，精度，长度
-        return null;
-    }
-
 }
-
-
-
-
-
