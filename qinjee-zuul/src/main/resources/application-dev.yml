@@ -46,4 +46,4 @@ eureka:
     lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://qinjee:qinjee2019@localhost:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@192.168.99.100:8888/eureka/
