@@ -152,6 +152,10 @@
             <artifactId>qinjee-utils</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
     </dependencies>
 
     <!-- Maven控制Spring Profile -->
