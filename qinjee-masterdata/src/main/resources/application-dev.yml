@@ -1,8 +1,4 @@
 spring:
-  #资源文件
-  profiles:
-    active: dev
-
   #应用名
   application:
     name: qinjee-masterdata
@@ -79,7 +75,7 @@ eureka:
       defaultZone: http://qinjee:qinjee2019@localhost:8888/eureka/
 
 server:
-  port: 8083
+  port: 8080
   tomcat:
     accesslog:
       enabled: false

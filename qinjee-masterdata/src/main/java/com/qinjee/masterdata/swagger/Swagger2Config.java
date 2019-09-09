@@ -17,7 +17,6 @@ package com.qinjee.masterdata.swagger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -25,6 +24,8 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Collections;
 
 /**
  *
@@ -37,25 +38,29 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
-@Profile({"dev","test"})
+@Profile({"dev", "test"})
 public class Swagger2Config {
 
     @Bean
-    public Docket createRestApi() {
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
+    public Docket apiDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                // 扫描的路径包
-                .apis(RequestHandlerSelectors.basePackage("com.qinjee.tsc.controller"))
-                // 指定路径处理PathSelectors.any()代表所有的路径
-                .paths(PathSelectors.any()).build().pathMapping("/");
+                .apis(RequestHandlerSelectors.basePackage("com.qinjee.masterdata.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(getApiInfo());
     }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("tsc接口文档")
-                .description("管理员：周赟 | zhouyun@qinjee.cn")
-                .contact(new Contact("周赟","https://github.com/orgs/qinjeecode/teams/tsc_team","zhouyun@qinjee.cn"))
-                .version("1.0.0")
-                .build();
+    private ApiInfo getApiInfo() {
+        return new ApiInfo(
+                "masterdata接口文档",
+                "管理员：周赟 | zhouyun@qinjee.cn",
+                "v1.0.0",
+                "TERMS OF SERVICE URL",
+                new Contact("周赟","https://github.com/orgs/qinjeecode/teams/tsc_team","zhouyun@qinjee.cn"),
+                "QinJee",
+                "http://www.qinjee.cn/",
+                Collections.emptyList()
+        );
     }
 }

@@ -1,8 +1,4 @@
 spring:
-  #资源文件
-  profiles:
-    active: prod
-
   #应用名
   application:
     name: qinjee-masterdata
@@ -15,9 +11,9 @@ spring:
 
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql://localhost:3306/qinjee_ehr?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
     username: root
-    password: qinjee2019
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 
     # oracle 12c 数据库配置
@@ -47,12 +43,12 @@ spring:
     elasticsearch:
       repositories:
         enabled: true
-      cluster-nodes: 127.0.0.1:9300
+      cluster-nodes: 192.168.245.128:9300
 
-#  redis集群
+  #  redis集群
   redis:
     cluster:
-      nodes: 192.168.252.129:8001,192.168.252.129:8002,192.168.252.129:8003,192.168.252.129:8004,192.168.252.129:8005,192.168.252.129:8006
+      nodes: 192.168.245.128:6300,192.168.245.128:6301,192.168.245.128:6302
       max-redirects: 6
 
 #security:
@@ -76,7 +72,7 @@ eureka:
     lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://qinjee:qinjee2019@192.168.99.100:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@localhost:8888/eureka/
 
 server:
   port: 8080
@@ -84,9 +80,8 @@ server:
     accesslog:
       enabled: false
 
-logging:
-  config: classpath:log4j/log4j2_prod.xml
+#logging:
+#  config: classpath:log4j/log4j2_dev.xml
 
-#公共配置与profiles选择无关
 mybatis:
   mapperLocations: classpath:mapper/*.xml
