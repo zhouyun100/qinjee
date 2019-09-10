@@ -1,12 +1,17 @@
 package com.qinjee.masterdata.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_position_grade_relation
- * @author 
+ * 职位职等关系表
+ * @author
  */
+@Data
+@NoArgsConstructor
 public class TPositionGradeRelation implements Serializable {
     /**
      * 主键ID
@@ -40,51 +45,4 @@ public class TPositionGradeRelation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getPositionId() {
-        return positionId;
-    }
-
-    public void setPositionId(Integer positionId) {
-        this.positionId = positionId;
-    }
-
-    public Integer getPositionGradeId() {
-        return positionGradeId;
-    }
-
-    public void setPositionGradeId(Integer positionGradeId) {
-        this.positionGradeId = positionGradeId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

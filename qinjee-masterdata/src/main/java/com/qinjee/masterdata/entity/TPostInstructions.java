@@ -1,12 +1,17 @@
 package com.qinjee.masterdata.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_post_instructions
- * @author 
+ * 岗位说明书表
+ * @author
  */
+@Data
+@NoArgsConstructor
 public class TPostInstructions implements Serializable {
     /**
      * ID
@@ -45,59 +50,4 @@ public class TPostInstructions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getInstructionId() {
-        return instructionId;
-    }
-
-    public void setInstructionId(Integer instructionId) {
-        this.instructionId = instructionId;
-    }
-
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public String getInstructionAttachmentUrl() {
-        return instructionAttachmentUrl;
-    }
-
-    public void setInstructionAttachmentUrl(String instructionAttachmentUrl) {
-        this.instructionAttachmentUrl = instructionAttachmentUrl;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
-
-    public byte[] getInstructionContent() {
-        return instructionContent;
-    }
-
-    public void setInstructionContent(byte[] instructionContent) {
-        this.instructionContent = instructionContent;
-    }
 }

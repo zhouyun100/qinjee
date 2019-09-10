@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.TOrganationDao">
+  <resultMap id="BaseResultMap" type="entity.TOrganation">
+    <id column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_type" jdbcType="VARCHAR" property="orgType" />
+    <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
+    <result column="org_fullname" jdbcType="VARCHAR" property="orgFullname" />
+    <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    org_id, org_code, org_name, org_type, org_parent_id, org_fullname, org_manager_id, 
+    company_id, sort_id, operator_id, create_time, is_enable
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_organation
+    where org_id = #{orgId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_organation
+    where org_id = #{orgId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="org_id" keyProperty="orgId" parameterType="entity.TOrganation" useGeneratedKeys="true">
+    insert into t_organation (org_code, org_name, org_type, 
+      org_parent_id, org_fullname, org_manager_id, 
+      company_id, sort_id, operator_id, 
+      create_time, is_enable)
+    values (#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR}, 
+      #{orgParentId,jdbcType=INTEGER}, #{orgFullname,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER}, 
+      #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId" parameterType="entity.TOrganation" useGeneratedKeys="true">
+    insert into t_organation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orgCode != null">
+        org_code,
+      </if>
+      <if test="orgName != null">
+        org_name,
+      </if>
+      <if test="orgType != null">
+        org_type,
+      </if>
+      <if test="orgParentId != null">
+        org_parent_id,
+      </if>
+      <if test="orgFullname != null">
+        org_fullname,
+      </if>
+      <if test="orgManagerId != null">
+        org_manager_id,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="sortId != null">
+        sort_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orgCode != null">
+        #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null">
+        #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="orgType != null">
+        #{orgType,jdbcType=VARCHAR},
+      </if>
+      <if test="orgParentId != null">
+        #{orgParentId,jdbcType=INTEGER},
+      </if>
+      <if test="orgFullname != null">
+        #{orgFullname,jdbcType=VARCHAR},
+      </if>
+      <if test="orgManagerId != null">
+        #{orgManagerId,jdbcType=INTEGER},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="sortId != null">
+        #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="entity.TOrganation">
+    update t_organation
+    <set>
+      <if test="orgCode != null">
+        org_code = #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null">
+        org_name = #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="orgType != null">
+        org_type = #{orgType,jdbcType=VARCHAR},
+      </if>
+      <if test="orgParentId != null">
+        org_parent_id = #{orgParentId,jdbcType=INTEGER},
+      </if>
+      <if test="orgFullname != null">
+        org_fullname = #{orgFullname,jdbcType=VARCHAR},
+      </if>
+      <if test="orgManagerId != null">
+        org_manager_id = #{orgManagerId,jdbcType=INTEGER},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="sortId != null">
+        sort_id = #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where org_id = #{orgId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="entity.TOrganation">
+    update t_organation
+    set org_code = #{orgCode,jdbcType=VARCHAR},
+      org_name = #{orgName,jdbcType=VARCHAR},
+      org_type = #{orgType,jdbcType=VARCHAR},
+      org_parent_id = #{orgParentId,jdbcType=INTEGER},
+      org_fullname = #{orgFullname,jdbcType=VARCHAR},
+      org_manager_id = #{orgManagerId,jdbcType=INTEGER},
+      company_id = #{companyId,jdbcType=INTEGER},
+      sort_id = #{sortId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_enable = #{isEnable,jdbcType=SMALLINT}
+    where org_id = #{orgId,jdbcType=INTEGER}
+  </update>
+</mapper>

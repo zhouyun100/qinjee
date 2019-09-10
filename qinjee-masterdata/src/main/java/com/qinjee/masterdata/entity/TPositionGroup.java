@@ -1,12 +1,17 @@
 package com.qinjee.masterdata.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_position_group
+ * 职位族表
  * @author
  */
+@Data
+@NoArgsConstructor
 public class TPositionGroup implements Serializable {
     /**
      * 职位族ID
@@ -45,59 +50,5 @@ public class TPositionGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getPositionGroupId() {
-        return positionGroupId;
-    }
 
-    public void setPositionGroupId(Integer positionGroupId) {
-        this.positionGroupId = positionGroupId;
-    }
-
-    public String getPositionGroupName() {
-        return positionGroupName;
-    }
-
-    public void setPositionGroupName(String positionGroupName) {
-        this.positionGroupName = positionGroupName;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getSortId() {
-        return sortId;
-    }
-
-    public void setSortId(Integer sortId) {
-        this.sortId = sortId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }
