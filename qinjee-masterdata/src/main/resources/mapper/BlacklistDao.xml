@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.BlacklistDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.Blacklist">
+    <id column="blacklist_id" jdbcType="INTEGER" property="blacklistId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="birth_date" jdbcType="DATE" property="birthDate" />
+    <result column="nationality" jdbcType="VARCHAR" property="nationality" />
+    <result column="id_type" jdbcType="VARCHAR" property="idType" />
+    <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
+    <result column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="graduate_university" jdbcType="VARCHAR" property="graduateUniversity" />
+    <result column="degree" jdbcType="VARCHAR" property="degree" />
+    <result column="block_reason" jdbcType="VARCHAR" property="blockReason" />
+    <result column="block_time" jdbcType="TIMESTAMP" property="blockTime" />
+    <result column="data_source" jdbcType="VARCHAR" property="dataSource" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    blacklist_id, user_name, gender, birth_date, nationality, id_type, id_number, phone, 
+    business_unit_id, org_id, post_id, graduate_university, `degree`, block_reason, block_time, 
+    data_source, company_id, operator_id, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_blacklist
+    where blacklist_id = #{blacklistId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_blacklist
+    where blacklist_id = #{blacklistId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.entity.Blacklist" useGeneratedKeys="true">
+    insert into t_blacklist (user_name, gender, birth_date, 
+      nationality, id_type, id_number, 
+      phone, business_unit_id, org_id, 
+      post_id, graduate_university, `degree`, 
+      block_reason, block_time, data_source, 
+      company_id, operator_id, create_time
+      )
+    values (#{userName,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{birthDate,jdbcType=DATE}, 
+      #{nationality,jdbcType=VARCHAR}, #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{businessUnitId,jdbcType=INTEGER}, #{orgId,jdbcType=INTEGER}, 
+      #{postId,jdbcType=INTEGER}, #{graduateUniversity,jdbcType=VARCHAR}, #{degree,jdbcType=VARCHAR}, 
+      #{blockReason,jdbcType=VARCHAR}, #{blockTime,jdbcType=TIMESTAMP}, #{dataSource,jdbcType=VARCHAR}, 
+      #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.entity.Blacklist" useGeneratedKeys="true">
+    insert into t_blacklist
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="birthDate != null">
+        birth_date,
+      </if>
+      <if test="nationality != null">
+        nationality,
+      </if>
+      <if test="idType != null">
+        id_type,
+      </if>
+      <if test="idNumber != null">
+        id_number,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="businessUnitId != null">
+        business_unit_id,
+      </if>
+      <if test="orgId != null">
+        org_id,
+      </if>
+      <if test="postId != null">
+        post_id,
+      </if>
+      <if test="graduateUniversity != null">
+        graduate_university,
+      </if>
+      <if test="degree != null">
+        `degree`,
+      </if>
+      <if test="blockReason != null">
+        block_reason,
+      </if>
+      <if test="blockTime != null">
+        block_time,
+      </if>
+      <if test="dataSource != null">
+        data_source,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null">
+        #{birthDate,jdbcType=DATE},
+      </if>
+      <if test="nationality != null">
+        #{nationality,jdbcType=VARCHAR},
+      </if>
+      <if test="idType != null">
+        #{idType,jdbcType=VARCHAR},
+      </if>
+      <if test="idNumber != null">
+        #{idNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="businessUnitId != null">
+        #{businessUnitId,jdbcType=INTEGER},
+      </if>
+      <if test="orgId != null">
+        #{orgId,jdbcType=INTEGER},
+      </if>
+      <if test="postId != null">
+        #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="graduateUniversity != null">
+        #{graduateUniversity,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null">
+        #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="blockReason != null">
+        #{blockReason,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        #{blockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataSource != null">
+        #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.Blacklist">
+    update t_blacklist
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null">
+        birth_date = #{birthDate,jdbcType=DATE},
+      </if>
+      <if test="nationality != null">
+        nationality = #{nationality,jdbcType=VARCHAR},
+      </if>
+      <if test="idType != null">
+        id_type = #{idType,jdbcType=VARCHAR},
+      </if>
+      <if test="idNumber != null">
+        id_number = #{idNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="businessUnitId != null">
+        business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+      </if>
+      <if test="orgId != null">
+        org_id = #{orgId,jdbcType=INTEGER},
+      </if>
+      <if test="postId != null">
+        post_id = #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="graduateUniversity != null">
+        graduate_university = #{graduateUniversity,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null">
+        `degree` = #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="blockReason != null">
+        block_reason = #{blockReason,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        block_time = #{blockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataSource != null">
+        data_source = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where blacklist_id = #{blacklistId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.Blacklist">
+    update t_blacklist
+    set user_name = #{userName,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      birth_date = #{birthDate,jdbcType=DATE},
+      nationality = #{nationality,jdbcType=VARCHAR},
+      id_type = #{idType,jdbcType=VARCHAR},
+      id_number = #{idNumber,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+      org_id = #{orgId,jdbcType=INTEGER},
+      post_id = #{postId,jdbcType=INTEGER},
+      graduate_university = #{graduateUniversity,jdbcType=VARCHAR},
+      `degree` = #{degree,jdbcType=VARCHAR},
+      block_reason = #{blockReason,jdbcType=VARCHAR},
+      block_time = #{blockTime,jdbcType=TIMESTAMP},
+      data_source = #{dataSource,jdbcType=VARCHAR},
+      company_id = #{companyId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where blacklist_id = #{blacklistId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -29,9 +29,6 @@ public class ResponseResult<T>{
     String message;
 
 
-    PageResult<T> pageResult;
-
-
     T result;
 
     public ResponseResult(ResultCode resultCode){
@@ -42,11 +39,6 @@ public class ResponseResult<T>{
         this.success = resultCode.success();
         this.code = resultCode.code();
         this.message = resultCode.message();
-    }
-
-    public ResponseResult(PageResult<T> pageResult, ResultCode resultCode){
-        this.pageResult = pageResult;
-        setResuktCode(resultCode);
     }
 
     public ResponseResult(T result, ResultCode resultCode){

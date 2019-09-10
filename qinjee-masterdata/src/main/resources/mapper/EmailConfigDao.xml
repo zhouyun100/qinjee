@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.EmailConfigDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.EmailConfig">
+    <id column="email_config_id" jdbcType="INTEGER" property="emailConfigId" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="port" jdbcType="INTEGER" property="port" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="auth_code" jdbcType="VARCHAR" property="authCode" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    email_config_id, `host`, port, account, `password`, auth_code, company_id, operator_id, 
+    create_time, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_email_config
+    where email_config_id = #{emailConfigId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_email_config
+    where email_config_id = #{emailConfigId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="email_config_id" keyProperty="emailConfigId" parameterType="com.qinjee.masterdata.entity.EmailConfig" useGeneratedKeys="true">
+    insert into t_email_config (`host`, port, account, 
+      `password`, auth_code, company_id, 
+      operator_id, create_time, is_delete
+      )
+    values (#{host,jdbcType=VARCHAR}, #{port,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{authCode,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, 
+      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="email_config_id" keyProperty="emailConfigId" parameterType="com.qinjee.masterdata.entity.EmailConfig" useGeneratedKeys="true">
+    insert into t_email_config
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="host != null">
+        `host`,
+      </if>
+      <if test="port != null">
+        port,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="password != null">
+        `password`,
+      </if>
+      <if test="authCode != null">
+        auth_code,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="host != null">
+        #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        #{port,jdbcType=INTEGER},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="authCode != null">
+        #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.EmailConfig">
+    update t_email_config
+    <set>
+      <if test="host != null">
+        `host` = #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        port = #{port,jdbcType=INTEGER},
+      </if>
+      <if test="account != null">
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        `password` = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="authCode != null">
+        auth_code = #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where email_config_id = #{emailConfigId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.EmailConfig">
+    update t_email_config
+    set `host` = #{host,jdbcType=VARCHAR},
+      port = #{port,jdbcType=INTEGER},
+      account = #{account,jdbcType=VARCHAR},
+      `password` = #{password,jdbcType=VARCHAR},
+      auth_code = #{authCode,jdbcType=VARCHAR},
+      company_id = #{companyId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=SMALLINT}
+    where email_config_id = #{emailConfigId,jdbcType=INTEGER}
+  </update>
+</mapper>

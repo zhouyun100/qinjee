@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.CompanyInfoDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.CompanyInfo">
+    <id column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="business_license_id" jdbcType="VARCHAR" property="businessLicenseId" />
+    <result column="regist_address" jdbcType="VARCHAR" property="registAddress" />
+    <result column="office_address" jdbcType="VARCHAR" property="officeAddress" />
+    <result column="welcome_title" jdbcType="VARCHAR" property="welcomeTitle" />
+    <result column="welcome_content" jdbcType="VARCHAR" property="welcomeContent" />
+    <result column="logo_img_url" jdbcType="VARCHAR" property="logoImgUrl" />
+    <result column="background_img_url" jdbcType="VARCHAR" property="backgroundImgUrl" />
+    <result column="user_number" jdbcType="INTEGER" property="userNumber" />
+    <result column="valid_end_date" jdbcType="DATE" property="validEndDate" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_saas" jdbcType="SMALLINT" property="isSaas" />
+    <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    company_id, company_name, business_license_id, regist_address, office_address, welcome_title, 
+    welcome_content, logo_img_url, background_img_url, user_number, valid_end_date, create_time, 
+    is_saas, is_enable
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_company_info
+    where company_id = #{companyId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_company_info
+    where company_id = #{companyId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="company_id" keyProperty="companyId" parameterType="com.qinjee.masterdata.entity.CompanyInfo" useGeneratedKeys="true">
+    insert into t_company_info (company_name, business_license_id, regist_address, 
+      office_address, welcome_title, welcome_content, 
+      logo_img_url, background_img_url, user_number, 
+      valid_end_date, create_time, is_saas, 
+      is_enable)
+    values (#{companyName,jdbcType=VARCHAR}, #{businessLicenseId,jdbcType=VARCHAR}, #{registAddress,jdbcType=VARCHAR}, 
+      #{officeAddress,jdbcType=VARCHAR}, #{welcomeTitle,jdbcType=VARCHAR}, #{welcomeContent,jdbcType=VARCHAR}, 
+      #{logoImgUrl,jdbcType=VARCHAR}, #{backgroundImgUrl,jdbcType=VARCHAR}, #{userNumber,jdbcType=INTEGER}, 
+      #{validEndDate,jdbcType=DATE}, #{createTime,jdbcType=TIMESTAMP}, #{isSaas,jdbcType=SMALLINT}, 
+      #{isEnable,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" keyColumn="company_id" keyProperty="companyId" parameterType="com.qinjee.masterdata.entity.CompanyInfo" useGeneratedKeys="true">
+    insert into t_company_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyName != null">
+        company_name,
+      </if>
+      <if test="businessLicenseId != null">
+        business_license_id,
+      </if>
+      <if test="registAddress != null">
+        regist_address,
+      </if>
+      <if test="officeAddress != null">
+        office_address,
+      </if>
+      <if test="welcomeTitle != null">
+        welcome_title,
+      </if>
+      <if test="welcomeContent != null">
+        welcome_content,
+      </if>
+      <if test="logoImgUrl != null">
+        logo_img_url,
+      </if>
+      <if test="backgroundImgUrl != null">
+        background_img_url,
+      </if>
+      <if test="userNumber != null">
+        user_number,
+      </if>
+      <if test="validEndDate != null">
+        valid_end_date,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isSaas != null">
+        is_saas,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyName != null">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicenseId != null">
+        #{businessLicenseId,jdbcType=VARCHAR},
+      </if>
+      <if test="registAddress != null">
+        #{registAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="officeAddress != null">
+        #{officeAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="welcomeTitle != null">
+        #{welcomeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="welcomeContent != null">
+        #{welcomeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="logoImgUrl != null">
+        #{logoImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="backgroundImgUrl != null">
+        #{backgroundImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="userNumber != null">
+        #{userNumber,jdbcType=INTEGER},
+      </if>
+      <if test="validEndDate != null">
+        #{validEndDate,jdbcType=DATE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSaas != null">
+        #{isSaas,jdbcType=SMALLINT},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.CompanyInfo">
+    update t_company_info
+    <set>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicenseId != null">
+        business_license_id = #{businessLicenseId,jdbcType=VARCHAR},
+      </if>
+      <if test="registAddress != null">
+        regist_address = #{registAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="officeAddress != null">
+        office_address = #{officeAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="welcomeTitle != null">
+        welcome_title = #{welcomeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="welcomeContent != null">
+        welcome_content = #{welcomeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="logoImgUrl != null">
+        logo_img_url = #{logoImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="backgroundImgUrl != null">
+        background_img_url = #{backgroundImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="userNumber != null">
+        user_number = #{userNumber,jdbcType=INTEGER},
+      </if>
+      <if test="validEndDate != null">
+        valid_end_date = #{validEndDate,jdbcType=DATE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSaas != null">
+        is_saas = #{isSaas,jdbcType=SMALLINT},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where company_id = #{companyId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.CompanyInfo">
+    update t_company_info
+    set company_name = #{companyName,jdbcType=VARCHAR},
+      business_license_id = #{businessLicenseId,jdbcType=VARCHAR},
+      regist_address = #{registAddress,jdbcType=VARCHAR},
+      office_address = #{officeAddress,jdbcType=VARCHAR},
+      welcome_title = #{welcomeTitle,jdbcType=VARCHAR},
+      welcome_content = #{welcomeContent,jdbcType=VARCHAR},
+      logo_img_url = #{logoImgUrl,jdbcType=VARCHAR},
+      background_img_url = #{backgroundImgUrl,jdbcType=VARCHAR},
+      user_number = #{userNumber,jdbcType=INTEGER},
+      valid_end_date = #{validEndDate,jdbcType=DATE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_saas = #{isSaas,jdbcType=SMALLINT},
+      is_enable = #{isEnable,jdbcType=SMALLINT}
+    where company_id = #{companyId,jdbcType=INTEGER}
+  </update>
+</mapper>
