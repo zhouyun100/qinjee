@@ -3,7 +3,7 @@ package com.qinjee.masterdata.model.entity;
 import java.io.Serializable;
 
 /**
- * t_custom_org_field_check
+ * 字段验证类型
  * @author
  */
 public class CustomOrgFieldCheck implements Serializable {

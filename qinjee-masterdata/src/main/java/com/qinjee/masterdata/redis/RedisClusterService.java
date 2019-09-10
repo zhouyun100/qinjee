@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.Map;
@@ -9,15 +8,15 @@ import java.util.Set;
 
 /**
  * redis常用方法工具类
- * 
+ *
  *
  * @author 周赟
  *
- * @version 
+ * @version
  *
  * @since 2019年5月15日
  */
-@Component
+//@Component
 public class RedisClusterService {
 
 	@Autowired
@@ -35,7 +34,7 @@ public class RedisClusterService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 设置key-value，并设置有效时间，单位秒
 	 * @param key
@@ -49,7 +48,7 @@ public class RedisClusterService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 移除给定的一个key,如果key不存在,则忽略该命令.
 	 * @param key
@@ -79,10 +78,10 @@ public class RedisClusterService {
             return false;
         }
 	}
-	
+
 	/**
 	 * 获取key的过期时间
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -94,7 +93,7 @@ public class RedisClusterService {
             return null;
         }
 	}
-	
+
 	/**
 	 * 获取key的value值
 	 * @param key
@@ -123,7 +122,7 @@ public class RedisClusterService {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 新增哈希key-value
 	 * @param key
@@ -137,7 +136,7 @@ public class RedisClusterService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 返回集合key的元素数量
 	 * @param key
@@ -152,7 +151,7 @@ public class RedisClusterService {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * 返回集合key中的所有成员
 	 * @param key
@@ -167,7 +166,7 @@ public class RedisClusterService {
 		}
 		return strSet;
 	}
-	
+
 	/**
 	 * 移除集合中的value元素
 	 * @param key
@@ -180,7 +179,7 @@ public class RedisClusterService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 将value元素加入到集合key当中
 	 * @param key
@@ -193,7 +192,7 @@ public class RedisClusterService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 判断元素value是否是集合key的成员
 	 * @param key

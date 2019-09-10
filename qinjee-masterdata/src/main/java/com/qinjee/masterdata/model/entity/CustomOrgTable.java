@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_custom_org_table
+ * 自定义表
  * @author
  */
 public class CustomOrgTable implements Serializable {
