@@ -11,7 +11,7 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-public class ResponseResult{
+public class ResponseResult<T>{
 
     /**
      * 操作是否成功
@@ -28,10 +28,30 @@ public class ResponseResult{
      */
     String message;
 
+
+    PageResult<T> pageResult;
+
+
+    T result;
+
     public ResponseResult(ResultCode resultCode){
+        setResuktCode(resultCode);
+    }
+
+    private void setResuktCode(ResultCode resultCode) {
         this.success = resultCode.success();
         this.code = resultCode.code();
         this.message = resultCode.message();
+    }
+
+    public ResponseResult(PageResult<T> pageResult, ResultCode resultCode){
+        this.pageResult = pageResult;
+        setResuktCode(resultCode);
+    }
+
+    public ResponseResult(T result, ResultCode resultCode){
+        this.result = result;
+        setResuktCode(resultCode);
     }
 
     public static ResponseResult SUCCESS(){

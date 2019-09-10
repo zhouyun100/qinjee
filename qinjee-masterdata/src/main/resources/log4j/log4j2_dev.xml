@@ -3,7 +3,7 @@
 <!-- status log4j2内部日志级别 -->
 <Configuration status="WARN">
     <properties>
-        <property name="log_home">D:/eTalent/masterdata</property>
+        <property name="log_home">E:/eTalent/masterdata</property>
         <property name="file_name">qinjee-tsc</property>
         <property name="pattern_layout">%d{HH:mm:ss.SSS} [%t] %-5level %l - %msg%n</property>
     </properties>
