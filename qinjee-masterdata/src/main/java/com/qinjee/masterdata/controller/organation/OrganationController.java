@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.organation;
 
+import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organation;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/organation")
 @RestController
 @Api("机构相关接口")
-public class OrganationController {
+public class OrganationController extends BaseController {
 
 
     @GetMapping("/getAllOrganation")
