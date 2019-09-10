@@ -1,12 +1,17 @@
 package com.qinjee.masterdata.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * t_attachment_record
- * @author 
+ * @author
  */
+@Data
+@NoArgsConstructor
 public class AttachmentRecord implements Serializable {
     /**
      * 附件ID
@@ -65,91 +70,4 @@ public class AttachmentRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getAttachmentId() {
-        return attachmentId;
-    }
-
-    public void setAttachmentId(Integer attachmentId) {
-        this.attachmentId = attachmentId;
-    }
-
-    public String getAttachmentName() {
-        return attachmentName;
-    }
-
-    public void setAttachmentName(String attachmentName) {
-        this.attachmentName = attachmentName;
-    }
-
-    public String getAttachmentUrl() {
-        return attachmentUrl;
-    }
-
-    public void setAttachmentUrl(String attachmentUrl) {
-        this.attachmentUrl = attachmentUrl;
-    }
-
-    public Integer getAttachmentSize() {
-        return attachmentSize;
-    }
-
-    public void setAttachmentSize(Integer attachmentSize) {
-        this.attachmentSize = attachmentSize;
-    }
-
-    public String getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(String businessType) {
-        this.businessType = businessType;
-    }
-
-    public Integer getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Integer businessId) {
-        this.businessId = businessId;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }
