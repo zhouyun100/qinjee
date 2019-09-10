@@ -1,13 +1,11 @@
 package com.qinjee.zull.redis;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * redis常用方法工具类
@@ -19,7 +17,7 @@ import redis.clients.jedis.JedisPool;
  *
  * @since 2019年5月15日
  */
-@Component
+//@Component
 public class RedisService{
 
 	@Autowired

@@ -2,10 +2,6 @@ package com.qinjee.zull.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -18,8 +14,8 @@ import redis.clients.jedis.JedisPoolConfig;
  *
  * @since 2019年5月15日
  */
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
 
 	@Value("${spring.redis.host}")
@@ -46,7 +42,7 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @Bean注解将一个配置类的方法的返回值定义为一个bean，注册到spring里面
      * @return
      */
-    @Bean
+//    @Bean
     public JedisPool getJedisPool(){
         JedisPoolConfig config = getRedisConfig();
         JedisPool pool = new JedisPool(config,host,port,timeout,password,database);
