@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.QuerySchemeFieldDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.QuerySchemeField">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.QuerySchemeField">
     <id column="query_scheme_field_id" jdbcType="INTEGER" property="querySchemeFieldId" />
     <result column="query_scheme_id" jdbcType="INTEGER" property="querySchemeId" />
     <result column="field_id" jdbcType="INTEGER" property="fieldId" />
@@ -12,7 +12,7 @@
     query_scheme_field_id, query_scheme_id, field_id, sort, create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_query_scheme_field
     where query_scheme_field_id = #{querySchemeFieldId,jdbcType=INTEGER}
@@ -21,13 +21,13 @@
     delete from t_query_scheme_field
     where query_scheme_field_id = #{querySchemeFieldId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="query_scheme_field_id" keyProperty="querySchemeFieldId" parameterType="com.qinjee.masterdata.entity.QuerySchemeField" useGeneratedKeys="true">
-    insert into t_query_scheme_field (query_scheme_id, field_id, sort, 
+  <insert id="insert" keyColumn="query_scheme_field_id" keyProperty="querySchemeFieldId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeField" useGeneratedKeys="true">
+    insert into t_query_scheme_field (query_scheme_id, field_id, sort,
       create_time)
-    values (#{querySchemeId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+    values (#{querySchemeId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" keyColumn="query_scheme_field_id" keyProperty="querySchemeFieldId" parameterType="com.qinjee.masterdata.entity.QuerySchemeField" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="query_scheme_field_id" keyProperty="querySchemeFieldId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeField" useGeneratedKeys="true">
     insert into t_query_scheme_field
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="querySchemeId != null">
@@ -58,7 +58,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.QuerySchemeField">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeField">
     update t_query_scheme_field
     <set>
       <if test="querySchemeId != null">
@@ -76,7 +76,7 @@
     </set>
     where query_scheme_field_id = #{querySchemeFieldId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.QuerySchemeField">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeField">
     update t_query_scheme_field
     set query_scheme_id = #{querySchemeId,jdbcType=INTEGER},
       field_id = #{fieldId,jdbcType=INTEGER},

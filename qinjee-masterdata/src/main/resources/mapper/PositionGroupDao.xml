@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.PositionGroupDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.PositionGroup">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionGroup">
     <id column="position_group_id" jdbcType="INTEGER" property="positionGroupId" />
     <result column="position_group_name" jdbcType="VARCHAR" property="positionGroupName" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
@@ -11,11 +11,11 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    position_group_id, position_group_name, company_id, sort_id, operator_id, create_time, 
+    position_group_id, position_group_name, company_id, sort_id, operator_id, create_time,
     is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_position_group
     where position_group_id = #{positionGroupId,jdbcType=INTEGER}
@@ -24,15 +24,15 @@
     delete from t_position_group
     where position_group_id = #{positionGroupId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="position_group_id" keyProperty="positionGroupId" parameterType="com.qinjee.masterdata.entity.PositionGroup" useGeneratedKeys="true">
-    insert into t_position_group (position_group_name, company_id, sort_id, 
+  <insert id="insert" keyColumn="position_group_id" keyProperty="positionGroupId" parameterType="com.qinjee.masterdata.model.entity.PositionGroup" useGeneratedKeys="true">
+    insert into t_position_group (position_group_name, company_id, sort_id,
       operator_id, create_time, is_delete
       )
-    values (#{positionGroupName,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, 
+    values (#{positionGroupName,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER},
       #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="position_group_id" keyProperty="positionGroupId" parameterType="com.qinjee.masterdata.entity.PositionGroup" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="position_group_id" keyProperty="positionGroupId" parameterType="com.qinjee.masterdata.model.entity.PositionGroup" useGeneratedKeys="true">
     insert into t_position_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="positionGroupName != null">
@@ -75,7 +75,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.PositionGroup">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.PositionGroup">
     update t_position_group
     <set>
       <if test="positionGroupName != null">
@@ -99,7 +99,7 @@
     </set>
     where position_group_id = #{positionGroupId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.PositionGroup">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PositionGroup">
     update t_position_group
     set position_group_name = #{positionGroupName,jdbcType=VARCHAR},
       company_id = #{companyId,jdbcType=INTEGER},

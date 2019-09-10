@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.CustomArchiveTableDataDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.CustomArchiveTableData">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="table_id" jdbcType="INTEGER" property="tableId" />
     <result column="business_id" jdbcType="INTEGER" property="businessId" />
@@ -9,7 +9,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.entity.CustomArchiveTableData">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     <result column="big_data" jdbcType="LONGVARBINARY" property="bigData" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -19,7 +19,7 @@
     big_data
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -30,15 +30,15 @@
     delete from t_custom_archive_table_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.CustomArchiveTableData" useGeneratedKeys="true">
-    insert into t_custom_archive_table_data (table_id, business_id, operator_id, 
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" useGeneratedKeys="true">
+    insert into t_custom_archive_table_data (table_id, business_id, operator_id,
       create_time, update_time, big_data
       )
-    values (#{tableId,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, 
+    values (#{tableId,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{bigData,jdbcType=LONGVARBINARY}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.CustomArchiveTableData" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" useGeneratedKeys="true">
     insert into t_custom_archive_table_data
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="tableId != null">
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.CustomArchiveTableData">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     update t_custom_archive_table_data
     <set>
       <if test="tableId != null">
@@ -105,7 +105,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.entity.CustomArchiveTableData">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     update t_custom_archive_table_data
     set table_id = #{tableId,jdbcType=INTEGER},
       business_id = #{businessId,jdbcType=INTEGER},
@@ -115,7 +115,7 @@
       big_data = #{bigData,jdbcType=LONGVARBINARY}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.CustomArchiveTableData">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     update t_custom_archive_table_data
     set table_id = #{tableId,jdbcType=INTEGER},
       business_id = #{businessId,jdbcType=INTEGER},

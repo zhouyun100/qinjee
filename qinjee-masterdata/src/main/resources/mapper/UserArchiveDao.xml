@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.UserArchiveDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.UserArchive">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.UserArchive">
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
@@ -40,15 +40,15 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, 
-    user_name, id_type, id_number, gender, birthdate, age, nationality, birthplace, political_status, 
-    marital_status, first_work_date, hiredate, serving_age, working_period, probation_due_date, 
-    probation_period, converse_date, first_degree, highest_degree, tel, email, address, 
-    professional_certification, professional_title, professional_level, attrition_date, 
+    archive_id, user_id, employee_number, company_id, user_category, business_unit_id,
+    user_name, id_type, id_number, gender, birthdate, age, nationality, birthplace, political_status,
+    marital_status, first_work_date, hiredate, serving_age, working_period, probation_due_date,
+    probation_period, converse_date, first_degree, highest_degree, tel, email, address,
+    professional_certification, professional_title, professional_level, attrition_date,
     attrition_type, operator_id, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
@@ -57,35 +57,35 @@
     delete from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.entity.UserArchive" useGeneratedKeys="true">
-    insert into t_user_archive (user_id, employee_number, company_id, 
-      user_category, business_unit_id, user_name, 
-      id_type, id_number, gender, 
-      birthdate, age, nationality, 
-      birthplace, political_status, marital_status, 
-      first_work_date, hiredate, serving_age, 
-      working_period, probation_due_date, probation_period, 
-      converse_date, first_degree, highest_degree, 
-      tel, email, address, 
-      professional_certification, professional_title, 
-      professional_level, attrition_date, attrition_type, 
+  <insert id="insert" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
+    insert into t_user_archive (user_id, employee_number, company_id,
+      user_category, business_unit_id, user_name,
+      id_type, id_number, gender,
+      birthdate, age, nationality,
+      birthplace, political_status, marital_status,
+      first_work_date, hiredate, serving_age,
+      working_period, probation_due_date, probation_period,
+      converse_date, first_degree, highest_degree,
+      tel, email, address,
+      professional_certification, professional_title,
+      professional_level, attrition_date, attrition_type,
       operator_id, create_time, update_time
       )
-    values (#{userId,jdbcType=INTEGER}, #{employeeNumber,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, 
-      #{userCategory,jdbcType=VARCHAR}, #{businessUnitId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
-      #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, 
-      #{birthdate,jdbcType=DATE}, #{age,jdbcType=SMALLINT}, #{nationality,jdbcType=INTEGER}, 
-      #{birthplace,jdbcType=VARCHAR}, #{politicalStatus,jdbcType=INTEGER}, #{maritalStatus,jdbcType=VARCHAR}, 
-      #{firstWorkDate,jdbcType=DATE}, #{hiredate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL}, 
-      #{workingPeriod,jdbcType=DECIMAL}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER}, 
-      #{converseDate,jdbcType=DATE}, #{firstDegree,jdbcType=VARCHAR}, #{highestDegree,jdbcType=VARCHAR}, 
-      #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{professionalCertification,jdbcType=VARCHAR}, #{professionalTitle,jdbcType=VARCHAR}, 
-      #{professionalLevel,jdbcType=VARCHAR}, #{attritionDate,jdbcType=DATE}, #{attritionType,jdbcType=VARCHAR}, 
+    values (#{userId,jdbcType=INTEGER}, #{employeeNumber,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER},
+      #{userCategory,jdbcType=VARCHAR}, #{businessUnitId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
+      #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR},
+      #{birthdate,jdbcType=DATE}, #{age,jdbcType=SMALLINT}, #{nationality,jdbcType=INTEGER},
+      #{birthplace,jdbcType=VARCHAR}, #{politicalStatus,jdbcType=INTEGER}, #{maritalStatus,jdbcType=VARCHAR},
+      #{firstWorkDate,jdbcType=DATE}, #{hiredate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL},
+      #{workingPeriod,jdbcType=DECIMAL}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER},
+      #{converseDate,jdbcType=DATE}, #{firstDegree,jdbcType=VARCHAR}, #{highestDegree,jdbcType=VARCHAR},
+      #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+      #{professionalCertification,jdbcType=VARCHAR}, #{professionalTitle,jdbcType=VARCHAR},
+      #{professionalLevel,jdbcType=VARCHAR}, #{attritionDate,jdbcType=DATE}, #{attritionType,jdbcType=VARCHAR},
       #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.entity.UserArchive" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
     insert into t_user_archive
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId != null">
@@ -302,7 +302,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.UserArchive">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
     update t_user_archive
     <set>
       <if test="userId != null">
@@ -413,7 +413,7 @@
     </set>
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.UserArchive">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
     update t_user_archive
     set user_id = #{userId,jdbcType=INTEGER},
       employee_number = #{employeeNumber,jdbcType=VARCHAR},

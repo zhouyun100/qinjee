@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.PostGradeRelation;
+import com.qinjee.masterdata.model.entity.PostGradeRelation;
 
 public interface PostGradeRelationDao {
     int deleteByPrimaryKey(Integer id);

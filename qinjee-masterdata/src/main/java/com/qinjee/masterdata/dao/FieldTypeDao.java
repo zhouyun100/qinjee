@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.FieldType;
+import com.qinjee.masterdata.model.entity.FieldType;
 
 public interface FieldTypeDao {
     int deleteByPrimaryKey(String typeCode);

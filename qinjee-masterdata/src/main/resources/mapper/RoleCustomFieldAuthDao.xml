@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.RoleCustomFieldAuthDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.RoleCustomFieldAuth">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.RoleCustomFieldAuth">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="role_id" jdbcType="INTEGER" property="roleId" />
     <result column="field_id" jdbcType="INTEGER" property="fieldId" />
@@ -15,7 +15,7 @@
     id, role_id, field_id, read_write_code, operator_id, create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_role_custom_field_auth
     where id = #{id,jdbcType=INTEGER}
@@ -24,15 +24,15 @@
     delete from t_role_custom_field_auth
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.RoleCustomFieldAuth" useGeneratedKeys="true">
-    insert into t_role_custom_field_auth (role_id, field_id, read_write_code, 
-      operator_id, create_time, update_time, 
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.RoleCustomFieldAuth" useGeneratedKeys="true">
+    insert into t_role_custom_field_auth (role_id, field_id, read_write_code,
+      operator_id, create_time, update_time,
       is_delete)
-    values (#{roleId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{readWriteCode,jdbcType=VARCHAR}, 
-      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+    values (#{roleId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{readWriteCode,jdbcType=VARCHAR},
+      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
       #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.RoleCustomFieldAuth" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.RoleCustomFieldAuth" useGeneratedKeys="true">
     insert into t_role_custom_field_auth
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="roleId != null">
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.RoleCustomFieldAuth">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.RoleCustomFieldAuth">
     update t_role_custom_field_auth
     <set>
       <if test="roleId != null">
@@ -108,7 +108,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.RoleCustomFieldAuth">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.RoleCustomFieldAuth">
     update t_role_custom_field_auth
     set role_id = #{roleId,jdbcType=INTEGER},
       field_id = #{fieldId,jdbcType=INTEGER},

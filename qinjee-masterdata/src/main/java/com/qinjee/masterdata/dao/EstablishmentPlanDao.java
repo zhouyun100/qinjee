@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EstablishmentPlan;
+import com.qinjee.masterdata.model.entity.EstablishmentPlan;
 
 public interface EstablishmentPlanDao {
     int deleteByPrimaryKey(Integer epId);

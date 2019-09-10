@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.StandingBook;
+import com.qinjee.masterdata.model.entity.StandingBook;
 
 public interface StandingBookDao {
     int deleteByPrimaryKey(Integer standingBookId);

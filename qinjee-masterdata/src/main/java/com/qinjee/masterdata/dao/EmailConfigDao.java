@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EmailConfig;
+import com.qinjee.masterdata.model.entity.EmailConfig;
 
 public interface EmailConfigDao {
     int deleteByPrimaryKey(Integer emailConfigId);

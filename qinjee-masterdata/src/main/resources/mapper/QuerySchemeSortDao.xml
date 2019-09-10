@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.QuerySchemeSortDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.QuerySchemeSort">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.QuerySchemeSort">
     <id column="query_scheme_sort_id" jdbcType="INTEGER" property="querySchemeSortId" />
     <result column="query_scheme_id" jdbcType="INTEGER" property="querySchemeId" />
     <result column="field_id" jdbcType="INTEGER" property="fieldId" />
@@ -13,7 +13,7 @@
     query_scheme_sort_id, query_scheme_id, field_id, order_by_rule, sort, create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_query_scheme_sort
     where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
@@ -22,13 +22,13 @@
     delete from t_query_scheme_sort
     where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="query_scheme_sort_id" keyProperty="querySchemeSortId" parameterType="com.qinjee.masterdata.entity.QuerySchemeSort" useGeneratedKeys="true">
-    insert into t_query_scheme_sort (query_scheme_id, field_id, order_by_rule, 
+  <insert id="insert" keyColumn="query_scheme_sort_id" keyProperty="querySchemeSortId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort" useGeneratedKeys="true">
+    insert into t_query_scheme_sort (query_scheme_id, field_id, order_by_rule,
       sort, create_time)
-    values (#{querySchemeId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{orderByRule,jdbcType=VARCHAR}, 
+    values (#{querySchemeId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{orderByRule,jdbcType=VARCHAR},
       #{sort,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" keyColumn="query_scheme_sort_id" keyProperty="querySchemeSortId" parameterType="com.qinjee.masterdata.entity.QuerySchemeSort" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="query_scheme_sort_id" keyProperty="querySchemeSortId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort" useGeneratedKeys="true">
     insert into t_query_scheme_sort
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="querySchemeId != null">
@@ -65,7 +65,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.QuerySchemeSort">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort">
     update t_query_scheme_sort
     <set>
       <if test="querySchemeId != null">
@@ -86,7 +86,7 @@
     </set>
     where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.QuerySchemeSort">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort">
     update t_query_scheme_sort
     set query_scheme_id = #{querySchemeId,jdbcType=INTEGER},
       field_id = #{fieldId,jdbcType=INTEGER},

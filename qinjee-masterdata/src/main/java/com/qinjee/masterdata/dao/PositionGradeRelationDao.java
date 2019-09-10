@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.PositionGradeRelation;
+import com.qinjee.masterdata.model.entity.PositionGradeRelation;
 
 public interface PositionGradeRelationDao {
     int deleteByPrimaryKey(Integer id);

@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.PreEmployment;
+import com.qinjee.masterdata.model.entity.PreEmployment;
 
 public interface PreEmploymentDao {
     int deleteByPrimaryKey(Integer employmentId);

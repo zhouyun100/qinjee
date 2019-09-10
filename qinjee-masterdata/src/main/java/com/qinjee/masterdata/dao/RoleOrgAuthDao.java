@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.RoleOrgAuth;
+import com.qinjee.masterdata.model.entity.RoleOrgAuth;
 
 public interface RoleOrgAuthDao {
     int deleteByPrimaryKey(Integer authId);

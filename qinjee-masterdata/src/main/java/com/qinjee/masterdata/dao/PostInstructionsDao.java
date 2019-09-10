@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.PostInstructions;
+import com.qinjee.masterdata.model.entity.PostInstructions;
 
 public interface PostInstructionsDao {
     int deleteByPrimaryKey(Integer instructionId);

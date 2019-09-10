@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.CompanyInfoDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.CompanyInfo">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CompanyInfo">
     <id column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="company_name" jdbcType="VARCHAR" property="companyName" />
     <result column="business_license_id" jdbcType="VARCHAR" property="businessLicenseId" />
@@ -18,12 +18,12 @@
     <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
   </resultMap>
   <sql id="Base_Column_List">
-    company_id, company_name, business_license_id, regist_address, office_address, welcome_title, 
-    welcome_content, logo_img_url, background_img_url, user_number, valid_end_date, create_time, 
+    company_id, company_name, business_license_id, regist_address, office_address, welcome_title,
+    welcome_content, logo_img_url, background_img_url, user_number, valid_end_date, create_time,
     is_saas, is_enable
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_company_info
     where company_id = #{companyId,jdbcType=INTEGER}
@@ -32,19 +32,19 @@
     delete from t_company_info
     where company_id = #{companyId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="company_id" keyProperty="companyId" parameterType="com.qinjee.masterdata.entity.CompanyInfo" useGeneratedKeys="true">
-    insert into t_company_info (company_name, business_license_id, regist_address, 
-      office_address, welcome_title, welcome_content, 
-      logo_img_url, background_img_url, user_number, 
-      valid_end_date, create_time, is_saas, 
+  <insert id="insert" keyColumn="company_id" keyProperty="companyId" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo" useGeneratedKeys="true">
+    insert into t_company_info (company_name, business_license_id, regist_address,
+      office_address, welcome_title, welcome_content,
+      logo_img_url, background_img_url, user_number,
+      valid_end_date, create_time, is_saas,
       is_enable)
-    values (#{companyName,jdbcType=VARCHAR}, #{businessLicenseId,jdbcType=VARCHAR}, #{registAddress,jdbcType=VARCHAR}, 
-      #{officeAddress,jdbcType=VARCHAR}, #{welcomeTitle,jdbcType=VARCHAR}, #{welcomeContent,jdbcType=VARCHAR}, 
-      #{logoImgUrl,jdbcType=VARCHAR}, #{backgroundImgUrl,jdbcType=VARCHAR}, #{userNumber,jdbcType=INTEGER}, 
-      #{validEndDate,jdbcType=DATE}, #{createTime,jdbcType=TIMESTAMP}, #{isSaas,jdbcType=SMALLINT}, 
+    values (#{companyName,jdbcType=VARCHAR}, #{businessLicenseId,jdbcType=VARCHAR}, #{registAddress,jdbcType=VARCHAR},
+      #{officeAddress,jdbcType=VARCHAR}, #{welcomeTitle,jdbcType=VARCHAR}, #{welcomeContent,jdbcType=VARCHAR},
+      #{logoImgUrl,jdbcType=VARCHAR}, #{backgroundImgUrl,jdbcType=VARCHAR}, #{userNumber,jdbcType=INTEGER},
+      #{validEndDate,jdbcType=DATE}, #{createTime,jdbcType=TIMESTAMP}, #{isSaas,jdbcType=SMALLINT},
       #{isEnable,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="company_id" keyProperty="companyId" parameterType="com.qinjee.masterdata.entity.CompanyInfo" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="company_id" keyProperty="companyId" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo" useGeneratedKeys="true">
     insert into t_company_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="companyName != null">
@@ -129,7 +129,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.CompanyInfo">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo">
     update t_company_info
     <set>
       <if test="companyName != null">
@@ -174,7 +174,7 @@
     </set>
     where company_id = #{companyId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.CompanyInfo">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo">
     update t_company_info
     set company_name = #{companyName,jdbcType=VARCHAR},
       business_license_id = #{businessLicenseId,jdbcType=VARCHAR},

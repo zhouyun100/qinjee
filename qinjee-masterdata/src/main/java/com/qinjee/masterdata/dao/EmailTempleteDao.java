@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EmailTemplete;
+import com.qinjee.masterdata.model.entity.EmailTemplete;
 
 public interface EmailTempleteDao {
     int deleteByPrimaryKey(Integer emailTempleteId);

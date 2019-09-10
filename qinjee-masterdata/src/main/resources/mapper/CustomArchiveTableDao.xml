@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.CustomArchiveTableDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.CustomArchiveTable">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveTable">
     <id column="table_id" jdbcType="INTEGER" property="tableId" />
     <result column="table_name" jdbcType="VARCHAR" property="tableName" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
@@ -14,11 +14,11 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    table_id, `table_name`, company_id, is_system_define, is_enable, sort, creator_id, 
+    table_id, `table_name`, company_id, is_system_define, is_enable, sort, creator_id,
     create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_custom_archive_table
     where table_id = #{tableId,jdbcType=INTEGER}
@@ -27,17 +27,17 @@
     delete from t_custom_archive_table
     where table_id = #{tableId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.entity.CustomArchiveTable" useGeneratedKeys="true">
-    insert into t_custom_archive_table (`table_name`, company_id, is_system_define, 
-      is_enable, sort, creator_id, 
+  <insert id="insert" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable" useGeneratedKeys="true">
+    insert into t_custom_archive_table (`table_name`, company_id, is_system_define,
+      is_enable, sort, creator_id,
       create_time, update_time, is_delete
       )
-    values (#{tableName,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{isSystemDefine,jdbcType=SMALLINT}, 
-      #{isEnable,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{creatorId,jdbcType=INTEGER}, 
+    values (#{tableName,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{isSystemDefine,jdbcType=SMALLINT},
+      #{isEnable,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{creatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.entity.CustomArchiveTable" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable" useGeneratedKeys="true">
     insert into t_custom_archive_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="tableName != null">
@@ -98,7 +98,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.CustomArchiveTable">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
     update t_custom_archive_table
     <set>
       <if test="tableName != null">
@@ -131,7 +131,7 @@
     </set>
     where table_id = #{tableId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.CustomArchiveTable">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
     update t_custom_archive_table
     set `table_name` = #{tableName,jdbcType=VARCHAR},
       company_id = #{companyId,jdbcType=INTEGER},

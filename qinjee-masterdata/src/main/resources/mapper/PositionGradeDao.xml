@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.PositionGradeDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.PositionGrade">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionGrade">
     <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId" />
     <result column="position_grade_name" jdbcType="VARCHAR" property="positionGradeName" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
@@ -13,7 +13,7 @@
     position_grade_id, position_grade_name, sort_id, operator_id, create_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_position_grade
     where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
@@ -22,13 +22,13 @@
     delete from t_position_grade
     where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="position_grade_id" keyProperty="positionGradeId" parameterType="com.qinjee.masterdata.entity.PositionGrade" useGeneratedKeys="true">
-    insert into t_position_grade (position_grade_name, sort_id, operator_id, 
+  <insert id="insert" keyColumn="position_grade_id" keyProperty="positionGradeId" parameterType="com.qinjee.masterdata.model.entity.PositionGrade" useGeneratedKeys="true">
+    insert into t_position_grade (position_grade_name, sort_id, operator_id,
       create_time, is_delete)
-    values (#{positionGradeName,jdbcType=VARCHAR}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, 
+    values (#{positionGradeName,jdbcType=VARCHAR}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="position_grade_id" keyProperty="positionGradeId" parameterType="com.qinjee.masterdata.entity.PositionGrade" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="position_grade_id" keyProperty="positionGradeId" parameterType="com.qinjee.masterdata.model.entity.PositionGrade" useGeneratedKeys="true">
     insert into t_position_grade
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="positionGradeName != null">
@@ -65,7 +65,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.PositionGrade">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.PositionGrade">
     update t_position_grade
     <set>
       <if test="positionGradeName != null">
@@ -86,7 +86,7 @@
     </set>
     where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.PositionGrade">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PositionGrade">
     update t_position_grade
     set position_grade_name = #{positionGradeName,jdbcType=VARCHAR},
       sort_id = #{sortId,jdbcType=INTEGER},

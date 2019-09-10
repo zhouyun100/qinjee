@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.AttachmentRecord;
+import com.qinjee.masterdata.model.entity.AttachmentRecord;
 
 public interface AttachmentRecordDao {
     int deleteByPrimaryKey(Integer attachmentId);

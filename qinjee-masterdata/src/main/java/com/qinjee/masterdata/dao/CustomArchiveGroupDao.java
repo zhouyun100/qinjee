@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CustomArchiveGroup;
+import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 
 public interface CustomArchiveGroupDao {
     int deleteByPrimaryKey(Integer groupId);

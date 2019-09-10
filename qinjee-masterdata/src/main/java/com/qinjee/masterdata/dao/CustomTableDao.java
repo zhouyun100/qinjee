@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CustomTable;
+import com.qinjee.masterdata.model.entity.CustomTable;
 
 public interface CustomTableDao {
     int deleteByPrimaryKey(Integer tableId);

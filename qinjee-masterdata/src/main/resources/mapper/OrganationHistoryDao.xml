@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.OrganationHistoryDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.OrganationHistory">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.OrganationHistory">
     <id column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
@@ -17,11 +17,11 @@
     <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
   </resultMap>
   <sql id="Base_Column_List">
-    org_id, org_code, org_name, org_type, org_parent_id, org_fullname, org_manager_id, 
+    org_id, org_code, org_name, org_type, org_parent_id, org_fullname, org_manager_id,
     company_id, sort_id, operator_id, create_time, update_time, is_enable
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_organation_history
     where org_id = #{orgId,jdbcType=INTEGER}
@@ -30,19 +30,19 @@
     delete from t_organation_history
     where org_id = #{orgId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.entity.OrganationHistory" useGeneratedKeys="true">
-    insert into t_organation_history (org_code, org_name, org_type, 
-      org_parent_id, org_fullname, org_manager_id, 
-      company_id, sort_id, operator_id, 
+  <insert id="insert" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.entity.OrganationHistory" useGeneratedKeys="true">
+    insert into t_organation_history (org_code, org_name, org_type,
+      org_parent_id, org_fullname, org_manager_id,
+      company_id, sort_id, operator_id,
       create_time, update_time, is_enable
       )
-    values (#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR}, 
-      #{orgParentId,jdbcType=INTEGER}, #{orgFullname,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER}, 
-      #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, 
+    values (#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR},
+      #{orgParentId,jdbcType=INTEGER}, #{orgFullname,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER},
+      #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.entity.OrganationHistory" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.entity.OrganationHistory" useGeneratedKeys="true">
     insert into t_organation_history
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="orgCode != null">
@@ -121,7 +121,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.OrganationHistory">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.OrganationHistory">
     update t_organation_history
     <set>
       <if test="orgCode != null">
@@ -163,7 +163,7 @@
     </set>
     where org_id = #{orgId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.OrganationHistory">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.OrganationHistory">
     update t_organation_history
     set org_code = #{orgCode,jdbcType=VARCHAR},
       org_name = #{orgName,jdbcType=VARCHAR},

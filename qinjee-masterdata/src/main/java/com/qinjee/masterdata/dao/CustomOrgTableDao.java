@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CustomOrgTable;
+import com.qinjee.masterdata.model.entity.CustomOrgTable;
 
 public interface CustomOrgTableDao {
     int deleteByPrimaryKey(Integer tableId);

@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.Blacklist;
 
 public interface BlacklistDao {
     int deleteByPrimaryKey(Integer blacklistId);

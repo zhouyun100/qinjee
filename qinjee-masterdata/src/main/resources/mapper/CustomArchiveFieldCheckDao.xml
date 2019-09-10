@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.CustomArchiveFieldCheckDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.CustomArchiveFieldCheck">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveFieldCheck">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="check_code" jdbcType="VARCHAR" property="checkCode" />
@@ -10,7 +10,7 @@
     id, field_id, check_code
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_custom_archive_field_check
     where id = #{id,jdbcType=INTEGER}
@@ -19,11 +19,11 @@
     delete from t_custom_archive_field_check
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.CustomArchiveFieldCheck" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveFieldCheck" useGeneratedKeys="true">
     insert into t_custom_archive_field_check (field_id, check_code)
     values (#{fieldId,jdbcType=INTEGER}, #{checkCode,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.CustomArchiveFieldCheck" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveFieldCheck" useGeneratedKeys="true">
     insert into t_custom_archive_field_check
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="fieldId != null">
@@ -42,7 +42,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.CustomArchiveFieldCheck">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveFieldCheck">
     update t_custom_archive_field_check
     <set>
       <if test="fieldId != null">
@@ -54,7 +54,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.CustomArchiveFieldCheck">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveFieldCheck">
     update t_custom_archive_field_check
     set field_id = #{fieldId,jdbcType=INTEGER},
       check_code = #{checkCode,jdbcType=VARCHAR}

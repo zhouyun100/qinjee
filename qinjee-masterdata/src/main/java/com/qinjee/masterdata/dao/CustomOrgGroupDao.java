@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CustomOrgGroup;
+import com.qinjee.masterdata.model.entity.CustomOrgGroup;
 
 public interface CustomOrgGroupDao {
     int deleteByPrimaryKey(Integer groupId);

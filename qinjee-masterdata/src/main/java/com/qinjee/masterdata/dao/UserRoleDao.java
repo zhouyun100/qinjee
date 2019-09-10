@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.UserRole;
+import com.qinjee.masterdata.model.entity.UserRole;
 
 public interface UserRoleDao {
     int deleteByPrimaryKey(Integer id);

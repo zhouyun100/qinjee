@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.RoleDataLevelAuthDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.RoleDataLevelAuth">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.RoleDataLevelAuth">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="role_id" jdbcType="INTEGER" property="roleId" />
     <result column="is_left_brackets" jdbcType="SMALLINT" property="isLeftBrackets" />
@@ -17,11 +17,11 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, role_id, is_left_brackets, filed_id, operate_symbol, field_value, is_right_brackets, 
+    id, role_id, is_left_brackets, filed_id, operate_symbol, field_value, is_right_brackets,
     link_symbol, sql_str, operator_id, create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_role_data_level_auth
     where id = #{id,jdbcType=INTEGER}
@@ -30,19 +30,19 @@
     delete from t_role_data_level_auth
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.RoleDataLevelAuth" useGeneratedKeys="true">
-    insert into t_role_data_level_auth (role_id, is_left_brackets, filed_id, 
-      operate_symbol, field_value, is_right_brackets, 
-      link_symbol, sql_str, operator_id, 
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.RoleDataLevelAuth" useGeneratedKeys="true">
+    insert into t_role_data_level_auth (role_id, is_left_brackets, filed_id,
+      operate_symbol, field_value, is_right_brackets,
+      link_symbol, sql_str, operator_id,
       create_time, update_time, is_delete
       )
-    values (#{roleId,jdbcType=INTEGER}, #{isLeftBrackets,jdbcType=SMALLINT}, #{filedId,jdbcType=INTEGER}, 
-      #{operateSymbol,jdbcType=VARCHAR}, #{fieldValue,jdbcType=VARCHAR}, #{isRightBrackets,jdbcType=SMALLINT}, 
-      #{linkSymbol,jdbcType=VARCHAR}, #{sqlStr,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, 
+    values (#{roleId,jdbcType=INTEGER}, #{isLeftBrackets,jdbcType=SMALLINT}, #{filedId,jdbcType=INTEGER},
+      #{operateSymbol,jdbcType=VARCHAR}, #{fieldValue,jdbcType=VARCHAR}, #{isRightBrackets,jdbcType=SMALLINT},
+      #{linkSymbol,jdbcType=VARCHAR}, #{sqlStr,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.entity.RoleDataLevelAuth" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.RoleDataLevelAuth" useGeneratedKeys="true">
     insert into t_role_data_level_auth
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="roleId != null">
@@ -121,7 +121,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.RoleDataLevelAuth">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.RoleDataLevelAuth">
     update t_role_data_level_auth
     <set>
       <if test="roleId != null">
@@ -163,7 +163,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.RoleDataLevelAuth">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.RoleDataLevelAuth">
     update t_role_data_level_auth
     set role_id = #{roleId,jdbcType=INTEGER},
       is_left_brackets = #{isLeftBrackets,jdbcType=SMALLINT},

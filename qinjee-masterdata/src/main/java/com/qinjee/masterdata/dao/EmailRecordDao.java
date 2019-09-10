@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EmailRecord;
+import com.qinjee.masterdata.model.entity.EmailRecord;
 
 public interface EmailRecordDao {
     int deleteByPrimaryKey(Integer emailRecordId);

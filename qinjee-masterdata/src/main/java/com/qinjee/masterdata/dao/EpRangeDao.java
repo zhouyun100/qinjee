@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EpRange;
+import com.qinjee.masterdata.model.entity.EpRange;
 
 public interface EpRangeDao {
     int deleteByPrimaryKey(Integer rangeId);

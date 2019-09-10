@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.QuerySchemeSort;
+import com.qinjee.masterdata.model.entity.QuerySchemeSort;
 
 public interface QuerySchemeSortDao {
     int deleteByPrimaryKey(Integer querySchemeSortId);

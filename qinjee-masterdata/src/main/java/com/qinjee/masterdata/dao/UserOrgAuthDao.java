@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.UserOrgAuth;
+import com.qinjee.masterdata.model.entity.UserOrgAuth;
 
 public interface UserOrgAuthDao {
     int deleteByPrimaryKey(Integer authId);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.EmployeeNumberRuleDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.EmployeeNumberRule">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.EmployeeNumberRule">
     <id column="en_rule_id" jdbcType="INTEGER" property="enRuleId" />
     <result column="employee_number_prefix" jdbcType="VARCHAR" property="employeeNumberPrefix" />
     <result column="date_rule" jdbcType="VARCHAR" property="dateRule" />
@@ -13,11 +13,11 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    en_rule_id, employee_number_prefix, date_rule, digit_capacity, company_id, operator_id, 
+    en_rule_id, employee_number_prefix, date_rule, digit_capacity, company_id, operator_id,
     create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_employee_number_rule
     where en_rule_id = #{enRuleId,jdbcType=INTEGER}
@@ -26,15 +26,15 @@
     delete from t_employee_number_rule
     where en_rule_id = #{enRuleId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="en_rule_id" keyProperty="enRuleId" parameterType="com.qinjee.masterdata.entity.EmployeeNumberRule" useGeneratedKeys="true">
-    insert into t_employee_number_rule (employee_number_prefix, date_rule, digit_capacity, 
-      company_id, operator_id, create_time, 
+  <insert id="insert" keyColumn="en_rule_id" keyProperty="enRuleId" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule" useGeneratedKeys="true">
+    insert into t_employee_number_rule (employee_number_prefix, date_rule, digit_capacity,
+      company_id, operator_id, create_time,
       update_time, is_delete)
-    values (#{employeeNumberPrefix,jdbcType=VARCHAR}, #{dateRule,jdbcType=VARCHAR}, #{digitCapacity,jdbcType=SMALLINT}, 
-      #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{employeeNumberPrefix,jdbcType=VARCHAR}, #{dateRule,jdbcType=VARCHAR}, #{digitCapacity,jdbcType=SMALLINT},
+      #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
       #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="en_rule_id" keyProperty="enRuleId" parameterType="com.qinjee.masterdata.entity.EmployeeNumberRule" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="en_rule_id" keyProperty="enRuleId" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule" useGeneratedKeys="true">
     insert into t_employee_number_rule
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="employeeNumberPrefix != null">
@@ -89,7 +89,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.EmployeeNumberRule">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule">
     update t_employee_number_rule
     <set>
       <if test="employeeNumberPrefix != null">
@@ -119,7 +119,7 @@
     </set>
     where en_rule_id = #{enRuleId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.EmployeeNumberRule">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule">
     update t_employee_number_rule
     set employee_number_prefix = #{employeeNumberPrefix,jdbcType=VARCHAR},
       date_rule = #{dateRule,jdbcType=VARCHAR},

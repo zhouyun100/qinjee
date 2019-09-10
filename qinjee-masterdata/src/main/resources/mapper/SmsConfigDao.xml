@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.SmsConfigDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.SmsConfig">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.SmsConfig">
     <id column="sms_config_id" jdbcType="INTEGER" property="smsConfigId" />
     <result column="app_id" jdbcType="INTEGER" property="appId" />
     <result column="app_key" jdbcType="VARCHAR" property="appKey" />
@@ -14,11 +14,11 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    sms_config_id, app_id, app_key, sms_sign, template_id, template_msg, business_type, 
+    sms_config_id, app_id, app_key, sms_sign, template_id, template_msg, business_type,
     operator_id, create_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_sms_config
     where sms_config_id = #{smsConfigId,jdbcType=INTEGER}
@@ -27,17 +27,17 @@
     delete from t_sms_config
     where sms_config_id = #{smsConfigId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="sms_config_id" keyProperty="smsConfigId" parameterType="com.qinjee.masterdata.entity.SmsConfig" useGeneratedKeys="true">
-    insert into t_sms_config (app_id, app_key, sms_sign, 
-      template_id, template_msg, business_type, 
+  <insert id="insert" keyColumn="sms_config_id" keyProperty="smsConfigId" parameterType="com.qinjee.masterdata.model.entity.SmsConfig" useGeneratedKeys="true">
+    insert into t_sms_config (app_id, app_key, sms_sign,
+      template_id, template_msg, business_type,
       operator_id, create_time, is_delete
       )
-    values (#{appId,jdbcType=INTEGER}, #{appKey,jdbcType=VARCHAR}, #{smsSign,jdbcType=VARCHAR}, 
-      #{templateId,jdbcType=INTEGER}, #{templateMsg,jdbcType=VARCHAR}, #{businessType,jdbcType=VARCHAR}, 
+    values (#{appId,jdbcType=INTEGER}, #{appKey,jdbcType=VARCHAR}, #{smsSign,jdbcType=VARCHAR},
+      #{templateId,jdbcType=INTEGER}, #{templateMsg,jdbcType=VARCHAR}, #{businessType,jdbcType=VARCHAR},
       #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="sms_config_id" keyProperty="smsConfigId" parameterType="com.qinjee.masterdata.entity.SmsConfig" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="sms_config_id" keyProperty="smsConfigId" parameterType="com.qinjee.masterdata.model.entity.SmsConfig" useGeneratedKeys="true">
     insert into t_sms_config
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="appId != null">
@@ -98,7 +98,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.SmsConfig">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.SmsConfig">
     update t_sms_config
     <set>
       <if test="appId != null">
@@ -131,7 +131,7 @@
     </set>
     where sms_config_id = #{smsConfigId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.SmsConfig">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.SmsConfig">
     update t_sms_config
     set app_id = #{appId,jdbcType=INTEGER},
       app_key = #{appKey,jdbcType=VARCHAR},

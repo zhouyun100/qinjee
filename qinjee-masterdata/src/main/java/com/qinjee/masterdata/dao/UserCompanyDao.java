@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.UserCompany;
+import com.qinjee.masterdata.model.entity.UserCompany;
 
 public interface UserCompanyDao {
     int deleteByPrimaryKey(Integer id);

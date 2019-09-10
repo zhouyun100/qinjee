@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.StandingBookDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.StandingBook">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.StandingBook">
     <id column="standing_book_id" jdbcType="INTEGER" property="standingBookId" />
     <result column="standing_book_name" jdbcType="VARCHAR" property="standingBookName" />
     <result column="standing_book_remark" jdbcType="VARCHAR" property="standingBookRemark" />
@@ -17,12 +17,12 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    standing_book_id, standing_book_name, standing_book_remark, standing_book_describe, 
-    company_id, archive_id, is_share, sort, is_enable, creator_id, create_time, update_time, 
+    standing_book_id, standing_book_name, standing_book_remark, standing_book_describe,
+    company_id, archive_id, is_share, sort, is_enable, creator_id, create_time, update_time,
     is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_standing_book
     where standing_book_id = #{standingBookId,jdbcType=INTEGER}
@@ -31,19 +31,19 @@
     delete from t_standing_book
     where standing_book_id = #{standingBookId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="standing_book_id" keyProperty="standingBookId" parameterType="com.qinjee.masterdata.entity.StandingBook" useGeneratedKeys="true">
-    insert into t_standing_book (standing_book_name, standing_book_remark, 
-      standing_book_describe, company_id, archive_id, 
-      is_share, sort, is_enable, 
-      creator_id, create_time, update_time, 
+  <insert id="insert" keyColumn="standing_book_id" keyProperty="standingBookId" parameterType="com.qinjee.masterdata.model.entity.StandingBook" useGeneratedKeys="true">
+    insert into t_standing_book (standing_book_name, standing_book_remark,
+      standing_book_describe, company_id, archive_id,
+      is_share, sort, is_enable,
+      creator_id, create_time, update_time,
       is_delete)
-    values (#{standingBookName,jdbcType=VARCHAR}, #{standingBookRemark,jdbcType=VARCHAR}, 
-      #{standingBookDescribe,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{archiveId,jdbcType=INTEGER}, 
-      #{isShare,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{isEnable,jdbcType=SMALLINT}, 
-      #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+    values (#{standingBookName,jdbcType=VARCHAR}, #{standingBookRemark,jdbcType=VARCHAR},
+      #{standingBookDescribe,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{archiveId,jdbcType=INTEGER},
+      #{isShare,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{isEnable,jdbcType=SMALLINT},
+      #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
       #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="standing_book_id" keyProperty="standingBookId" parameterType="com.qinjee.masterdata.entity.StandingBook" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="standing_book_id" keyProperty="standingBookId" parameterType="com.qinjee.masterdata.model.entity.StandingBook" useGeneratedKeys="true">
     insert into t_standing_book
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="standingBookName != null">
@@ -122,7 +122,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.StandingBook">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.StandingBook">
     update t_standing_book
     <set>
       <if test="standingBookName != null">
@@ -164,7 +164,7 @@
     </set>
     where standing_book_id = #{standingBookId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.StandingBook">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.StandingBook">
     update t_standing_book
     set standing_book_name = #{standingBookName,jdbcType=VARCHAR},
       standing_book_remark = #{standingBookRemark,jdbcType=VARCHAR},

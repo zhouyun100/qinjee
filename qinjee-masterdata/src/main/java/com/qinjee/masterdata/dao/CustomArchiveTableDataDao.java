@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 
 public interface CustomArchiveTableDataDao {
     int deleteByPrimaryKey(Integer id);

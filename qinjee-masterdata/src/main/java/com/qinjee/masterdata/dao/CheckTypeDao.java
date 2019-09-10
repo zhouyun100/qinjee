@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CheckType;
+import com.qinjee.masterdata.model.entity.CheckType;
 
 public interface CheckTypeDao {
     int deleteByPrimaryKey(String checkCode);

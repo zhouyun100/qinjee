@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.SmsRecord;
+import com.qinjee.masterdata.model.entity.SmsRecord;
 
 public interface SmsRecordDao {
     int deleteByPrimaryKey(Integer smsRecordId);

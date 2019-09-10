@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.SmsConfig;
+import com.qinjee.masterdata.model.entity.SmsConfig;
 
 public interface SmsConfigDao {
     int deleteByPrimaryKey(Integer smsConfigId);
