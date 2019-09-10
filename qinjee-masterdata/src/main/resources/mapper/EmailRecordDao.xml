@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.EmailRecordDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.EmailRecord">
+    <id column="email_record_id" jdbcType="INTEGER" property="emailRecordId" />
+    <result column="email_templete_id" jdbcType="INTEGER" property="emailTempleteId" />
+    <result column="email_config_id" jdbcType="INTEGER" property="emailConfigId" />
+    <result column="email_title" jdbcType="VARCHAR" property="emailTitle" />
+    <result column="business_type" jdbcType="VARCHAR" property="businessType" />
+    <result column="from_user" jdbcType="VARCHAR" property="fromUser" />
+    <result column="to_user" jdbcType="VARCHAR" property="toUser" />
+    <result column="cc_user" jdbcType="VARCHAR" property="ccUser" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="send_status" jdbcType="VARCHAR" property="sendStatus" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.entity.EmailRecord">
+    <result column="email_content" jdbcType="LONGVARBINARY" property="emailContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    email_record_id, email_templete_id, email_config_id, email_title, business_type, 
+    from_user, to_user, cc_user, operator_id, create_time, send_status
+  </sql>
+  <sql id="Blob_Column_List">
+    email_content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_email_record
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_email_record
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.entity.EmailRecord" useGeneratedKeys="true">
+    insert into t_email_record (email_templete_id, email_config_id, email_title, 
+      business_type, from_user, to_user, 
+      cc_user, operator_id, create_time, 
+      send_status, email_content)
+    values (#{emailTempleteId,jdbcType=INTEGER}, #{emailConfigId,jdbcType=INTEGER}, #{emailTitle,jdbcType=VARCHAR}, 
+      #{businessType,jdbcType=VARCHAR}, #{fromUser,jdbcType=VARCHAR}, #{toUser,jdbcType=VARCHAR}, 
+      #{ccUser,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{sendStatus,jdbcType=VARCHAR}, #{emailContent,jdbcType=LONGVARBINARY})
+  </insert>
+  <insert id="insertSelective" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.entity.EmailRecord" useGeneratedKeys="true">
+    insert into t_email_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="emailTempleteId != null">
+        email_templete_id,
+      </if>
+      <if test="emailConfigId != null">
+        email_config_id,
+      </if>
+      <if test="emailTitle != null">
+        email_title,
+      </if>
+      <if test="businessType != null">
+        business_type,
+      </if>
+      <if test="fromUser != null">
+        from_user,
+      </if>
+      <if test="toUser != null">
+        to_user,
+      </if>
+      <if test="ccUser != null">
+        cc_user,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="sendStatus != null">
+        send_status,
+      </if>
+      <if test="emailContent != null">
+        email_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="emailTempleteId != null">
+        #{emailTempleteId,jdbcType=INTEGER},
+      </if>
+      <if test="emailConfigId != null">
+        #{emailConfigId,jdbcType=INTEGER},
+      </if>
+      <if test="emailTitle != null">
+        #{emailTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="businessType != null">
+        #{businessType,jdbcType=VARCHAR},
+      </if>
+      <if test="fromUser != null">
+        #{fromUser,jdbcType=VARCHAR},
+      </if>
+      <if test="toUser != null">
+        #{toUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ccUser != null">
+        #{ccUser,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendStatus != null">
+        #{sendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="emailContent != null">
+        #{emailContent,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.EmailRecord">
+    update t_email_record
+    <set>
+      <if test="emailTempleteId != null">
+        email_templete_id = #{emailTempleteId,jdbcType=INTEGER},
+      </if>
+      <if test="emailConfigId != null">
+        email_config_id = #{emailConfigId,jdbcType=INTEGER},
+      </if>
+      <if test="emailTitle != null">
+        email_title = #{emailTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="businessType != null">
+        business_type = #{businessType,jdbcType=VARCHAR},
+      </if>
+      <if test="fromUser != null">
+        from_user = #{fromUser,jdbcType=VARCHAR},
+      </if>
+      <if test="toUser != null">
+        to_user = #{toUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ccUser != null">
+        cc_user = #{ccUser,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendStatus != null">
+        send_status = #{sendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="emailContent != null">
+        email_content = #{emailContent,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.entity.EmailRecord">
+    update t_email_record
+    set email_templete_id = #{emailTempleteId,jdbcType=INTEGER},
+      email_config_id = #{emailConfigId,jdbcType=INTEGER},
+      email_title = #{emailTitle,jdbcType=VARCHAR},
+      business_type = #{businessType,jdbcType=VARCHAR},
+      from_user = #{fromUser,jdbcType=VARCHAR},
+      to_user = #{toUser,jdbcType=VARCHAR},
+      cc_user = #{ccUser,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      send_status = #{sendStatus,jdbcType=VARCHAR},
+      email_content = #{emailContent,jdbcType=LONGVARBINARY}
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.EmailRecord">
+    update t_email_record
+    set email_templete_id = #{emailTempleteId,jdbcType=INTEGER},
+      email_config_id = #{emailConfigId,jdbcType=INTEGER},
+      email_title = #{emailTitle,jdbcType=VARCHAR},
+      business_type = #{businessType,jdbcType=VARCHAR},
+      from_user = #{fromUser,jdbcType=VARCHAR},
+      to_user = #{toUser,jdbcType=VARCHAR},
+      cc_user = #{ccUser,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      send_status = #{sendStatus,jdbcType=VARCHAR}
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </update>
+</mapper>

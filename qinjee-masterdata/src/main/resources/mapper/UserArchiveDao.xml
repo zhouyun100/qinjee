@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.UserArchiveDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.UserArchive">
+    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="user_category" jdbcType="VARCHAR" property="userCategory" />
+    <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="id_type" jdbcType="VARCHAR" property="idType" />
+    <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="birthdate" jdbcType="DATE" property="birthdate" />
+    <result column="age" jdbcType="SMALLINT" property="age" />
+    <result column="nationality" jdbcType="INTEGER" property="nationality" />
+    <result column="birthplace" jdbcType="VARCHAR" property="birthplace" />
+    <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
+    <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
+    <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
+    <result column="hiredate" jdbcType="DATE" property="hiredate" />
+    <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
+    <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
+    <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
+    <result column="probation_period" jdbcType="INTEGER" property="probationPeriod" />
+    <result column="converse_date" jdbcType="DATE" property="converseDate" />
+    <result column="first_degree" jdbcType="VARCHAR" property="firstDegree" />
+    <result column="highest_degree" jdbcType="VARCHAR" property="highestDegree" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="professional_certification" jdbcType="VARCHAR" property="professionalCertification" />
+    <result column="professional_title" jdbcType="VARCHAR" property="professionalTitle" />
+    <result column="professional_level" jdbcType="VARCHAR" property="professionalLevel" />
+    <result column="attrition_date" jdbcType="DATE" property="attritionDate" />
+    <result column="attrition_type" jdbcType="VARCHAR" property="attritionType" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, 
+    user_name, id_type, id_number, gender, birthdate, age, nationality, birthplace, political_status, 
+    marital_status, first_work_date, hiredate, serving_age, working_period, probation_due_date, 
+    probation_period, converse_date, first_degree, highest_degree, tel, email, address, 
+    professional_certification, professional_title, professional_level, attrition_date, 
+    attrition_type, operator_id, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_archive
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user_archive
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.entity.UserArchive" useGeneratedKeys="true">
+    insert into t_user_archive (user_id, employee_number, company_id, 
+      user_category, business_unit_id, user_name, 
+      id_type, id_number, gender, 
+      birthdate, age, nationality, 
+      birthplace, political_status, marital_status, 
+      first_work_date, hiredate, serving_age, 
+      working_period, probation_due_date, probation_period, 
+      converse_date, first_degree, highest_degree, 
+      tel, email, address, 
+      professional_certification, professional_title, 
+      professional_level, attrition_date, attrition_type, 
+      operator_id, create_time, update_time
+      )
+    values (#{userId,jdbcType=INTEGER}, #{employeeNumber,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, 
+      #{userCategory,jdbcType=VARCHAR}, #{businessUnitId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
+      #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, 
+      #{birthdate,jdbcType=DATE}, #{age,jdbcType=SMALLINT}, #{nationality,jdbcType=INTEGER}, 
+      #{birthplace,jdbcType=VARCHAR}, #{politicalStatus,jdbcType=INTEGER}, #{maritalStatus,jdbcType=VARCHAR}, 
+      #{firstWorkDate,jdbcType=DATE}, #{hiredate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL}, 
+      #{workingPeriod,jdbcType=DECIMAL}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER}, 
+      #{converseDate,jdbcType=DATE}, #{firstDegree,jdbcType=VARCHAR}, #{highestDegree,jdbcType=VARCHAR}, 
+      #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{professionalCertification,jdbcType=VARCHAR}, #{professionalTitle,jdbcType=VARCHAR}, 
+      #{professionalLevel,jdbcType=VARCHAR}, #{attritionDate,jdbcType=DATE}, #{attritionType,jdbcType=VARCHAR}, 
+      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.entity.UserArchive" useGeneratedKeys="true">
+    insert into t_user_archive
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="employeeNumber != null">
+        employee_number,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="userCategory != null">
+        user_category,
+      </if>
+      <if test="businessUnitId != null">
+        business_unit_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="idType != null">
+        id_type,
+      </if>
+      <if test="idNumber != null">
+        id_number,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="birthdate != null">
+        birthdate,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="nationality != null">
+        nationality,
+      </if>
+      <if test="birthplace != null">
+        birthplace,
+      </if>
+      <if test="politicalStatus != null">
+        political_status,
+      </if>
+      <if test="maritalStatus != null">
+        marital_status,
+      </if>
+      <if test="firstWorkDate != null">
+        first_work_date,
+      </if>
+      <if test="hiredate != null">
+        hiredate,
+      </if>
+      <if test="servingAge != null">
+        serving_age,
+      </if>
+      <if test="workingPeriod != null">
+        working_period,
+      </if>
+      <if test="probationDueDate != null">
+        probation_due_date,
+      </if>
+      <if test="probationPeriod != null">
+        probation_period,
+      </if>
+      <if test="converseDate != null">
+        converse_date,
+      </if>
+      <if test="firstDegree != null">
+        first_degree,
+      </if>
+      <if test="highestDegree != null">
+        highest_degree,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="professionalCertification != null">
+        professional_certification,
+      </if>
+      <if test="professionalTitle != null">
+        professional_title,
+      </if>
+      <if test="professionalLevel != null">
+        professional_level,
+      </if>
+      <if test="attritionDate != null">
+        attrition_date,
+      </if>
+      <if test="attritionType != null">
+        attrition_type,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="employeeNumber != null">
+        #{employeeNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="userCategory != null">
+        #{userCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="businessUnitId != null">
+        #{businessUnitId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="idType != null">
+        #{idType,jdbcType=VARCHAR},
+      </if>
+      <if test="idNumber != null">
+        #{idNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthdate != null">
+        #{birthdate,jdbcType=DATE},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=SMALLINT},
+      </if>
+      <if test="nationality != null">
+        #{nationality,jdbcType=INTEGER},
+      </if>
+      <if test="birthplace != null">
+        #{birthplace,jdbcType=VARCHAR},
+      </if>
+      <if test="politicalStatus != null">
+        #{politicalStatus,jdbcType=INTEGER},
+      </if>
+      <if test="maritalStatus != null">
+        #{maritalStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="firstWorkDate != null">
+        #{firstWorkDate,jdbcType=DATE},
+      </if>
+      <if test="hiredate != null">
+        #{hiredate,jdbcType=DATE},
+      </if>
+      <if test="servingAge != null">
+        #{servingAge,jdbcType=DECIMAL},
+      </if>
+      <if test="workingPeriod != null">
+        #{workingPeriod,jdbcType=DECIMAL},
+      </if>
+      <if test="probationDueDate != null">
+        #{probationDueDate,jdbcType=DATE},
+      </if>
+      <if test="probationPeriod != null">
+        #{probationPeriod,jdbcType=INTEGER},
+      </if>
+      <if test="converseDate != null">
+        #{converseDate,jdbcType=DATE},
+      </if>
+      <if test="firstDegree != null">
+        #{firstDegree,jdbcType=VARCHAR},
+      </if>
+      <if test="highestDegree != null">
+        #{highestDegree,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalCertification != null">
+        #{professionalCertification,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalTitle != null">
+        #{professionalTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalLevel != null">
+        #{professionalLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="attritionDate != null">
+        #{attritionDate,jdbcType=DATE},
+      </if>
+      <if test="attritionType != null">
+        #{attritionType,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.UserArchive">
+    update t_user_archive
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="employeeNumber != null">
+        employee_number = #{employeeNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="userCategory != null">
+        user_category = #{userCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="businessUnitId != null">
+        business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="idType != null">
+        id_type = #{idType,jdbcType=VARCHAR},
+      </if>
+      <if test="idNumber != null">
+        id_number = #{idNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthdate != null">
+        birthdate = #{birthdate,jdbcType=DATE},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=SMALLINT},
+      </if>
+      <if test="nationality != null">
+        nationality = #{nationality,jdbcType=INTEGER},
+      </if>
+      <if test="birthplace != null">
+        birthplace = #{birthplace,jdbcType=VARCHAR},
+      </if>
+      <if test="politicalStatus != null">
+        political_status = #{politicalStatus,jdbcType=INTEGER},
+      </if>
+      <if test="maritalStatus != null">
+        marital_status = #{maritalStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="firstWorkDate != null">
+        first_work_date = #{firstWorkDate,jdbcType=DATE},
+      </if>
+      <if test="hiredate != null">
+        hiredate = #{hiredate,jdbcType=DATE},
+      </if>
+      <if test="servingAge != null">
+        serving_age = #{servingAge,jdbcType=DECIMAL},
+      </if>
+      <if test="workingPeriod != null">
+        working_period = #{workingPeriod,jdbcType=DECIMAL},
+      </if>
+      <if test="probationDueDate != null">
+        probation_due_date = #{probationDueDate,jdbcType=DATE},
+      </if>
+      <if test="probationPeriod != null">
+        probation_period = #{probationPeriod,jdbcType=INTEGER},
+      </if>
+      <if test="converseDate != null">
+        converse_date = #{converseDate,jdbcType=DATE},
+      </if>
+      <if test="firstDegree != null">
+        first_degree = #{firstDegree,jdbcType=VARCHAR},
+      </if>
+      <if test="highestDegree != null">
+        highest_degree = #{highestDegree,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalCertification != null">
+        professional_certification = #{professionalCertification,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalTitle != null">
+        professional_title = #{professionalTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="professionalLevel != null">
+        professional_level = #{professionalLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="attritionDate != null">
+        attrition_date = #{attritionDate,jdbcType=DATE},
+      </if>
+      <if test="attritionType != null">
+        attrition_type = #{attritionType,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.UserArchive">
+    update t_user_archive
+    set user_id = #{userId,jdbcType=INTEGER},
+      employee_number = #{employeeNumber,jdbcType=VARCHAR},
+      company_id = #{companyId,jdbcType=INTEGER},
+      user_category = #{userCategory,jdbcType=VARCHAR},
+      business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+      user_name = #{userName,jdbcType=VARCHAR},
+      id_type = #{idType,jdbcType=VARCHAR},
+      id_number = #{idNumber,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      birthdate = #{birthdate,jdbcType=DATE},
+      age = #{age,jdbcType=SMALLINT},
+      nationality = #{nationality,jdbcType=INTEGER},
+      birthplace = #{birthplace,jdbcType=VARCHAR},
+      political_status = #{politicalStatus,jdbcType=INTEGER},
+      marital_status = #{maritalStatus,jdbcType=VARCHAR},
+      first_work_date = #{firstWorkDate,jdbcType=DATE},
+      hiredate = #{hiredate,jdbcType=DATE},
+      serving_age = #{servingAge,jdbcType=DECIMAL},
+      working_period = #{workingPeriod,jdbcType=DECIMAL},
+      probation_due_date = #{probationDueDate,jdbcType=DATE},
+      probation_period = #{probationPeriod,jdbcType=INTEGER},
+      converse_date = #{converseDate,jdbcType=DATE},
+      first_degree = #{firstDegree,jdbcType=VARCHAR},
+      highest_degree = #{highestDegree,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      professional_certification = #{professionalCertification,jdbcType=VARCHAR},
+      professional_title = #{professionalTitle,jdbcType=VARCHAR},
+      professional_level = #{professionalLevel,jdbcType=VARCHAR},
+      attrition_date = #{attritionDate,jdbcType=DATE},
+      attrition_type = #{attritionType,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+  </update>
+</mapper>

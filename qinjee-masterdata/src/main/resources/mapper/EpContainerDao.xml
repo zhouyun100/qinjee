@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.EpContainerDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.EpContainer">
+    <id column="container_id" jdbcType="INTEGER" property="containerId" />
+    <result column="range_id" jdbcType="INTEGER" property="rangeId" />
+    <result column="cp_month" jdbcType="INTEGER" property="cpMonth" />
+    <result column="cp_number" jdbcType="INTEGER" property="cpNumber" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    container_id, range_id, cp_month, cp_number
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_ep_container
+    where container_id = #{containerId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_ep_container
+    where container_id = #{containerId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="container_id" keyProperty="containerId" parameterType="com.qinjee.masterdata.entity.EpContainer" useGeneratedKeys="true">
+    insert into t_ep_container (range_id, cp_month, cp_number
+      )
+    values (#{rangeId,jdbcType=INTEGER}, #{cpMonth,jdbcType=INTEGER}, #{cpNumber,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="container_id" keyProperty="containerId" parameterType="com.qinjee.masterdata.entity.EpContainer" useGeneratedKeys="true">
+    insert into t_ep_container
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="rangeId != null">
+        range_id,
+      </if>
+      <if test="cpMonth != null">
+        cp_month,
+      </if>
+      <if test="cpNumber != null">
+        cp_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="rangeId != null">
+        #{rangeId,jdbcType=INTEGER},
+      </if>
+      <if test="cpMonth != null">
+        #{cpMonth,jdbcType=INTEGER},
+      </if>
+      <if test="cpNumber != null">
+        #{cpNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.EpContainer">
+    update t_ep_container
+    <set>
+      <if test="rangeId != null">
+        range_id = #{rangeId,jdbcType=INTEGER},
+      </if>
+      <if test="cpMonth != null">
+        cp_month = #{cpMonth,jdbcType=INTEGER},
+      </if>
+      <if test="cpNumber != null">
+        cp_number = #{cpNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where container_id = #{containerId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.EpContainer">
+    update t_ep_container
+    set range_id = #{rangeId,jdbcType=INTEGER},
+      cp_month = #{cpMonth,jdbcType=INTEGER},
+      cp_number = #{cpNumber,jdbcType=INTEGER}
+    where container_id = #{containerId,jdbcType=INTEGER}
+  </update>
+</mapper>
