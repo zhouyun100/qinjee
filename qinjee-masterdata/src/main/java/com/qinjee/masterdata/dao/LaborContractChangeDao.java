@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.LaborContractChange;
+import com.qinjee.masterdata.model.entity.LaborContractChange;
 
 public interface LaborContractChangeDao {
     int deleteByPrimaryKey(Integer changeId);

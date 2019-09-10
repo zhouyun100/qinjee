@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.Position;
+import com.qinjee.masterdata.model.entity.Position;
 
 public interface PositionDao {
     int deleteByPrimaryKey(Integer positionId);

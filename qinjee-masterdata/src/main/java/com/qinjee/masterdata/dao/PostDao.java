@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.Post;
+import com.qinjee.masterdata.model.entity.Post;
 
 public interface PostDao {
     int deleteByPrimaryKey(Integer postId);

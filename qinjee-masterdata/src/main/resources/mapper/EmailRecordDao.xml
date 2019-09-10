@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.EmailRecordDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.EmailRecord">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.EmailRecord">
     <id column="email_record_id" jdbcType="INTEGER" property="emailRecordId" />
     <result column="email_templete_id" jdbcType="INTEGER" property="emailTempleteId" />
     <result column="email_config_id" jdbcType="INTEGER" property="emailConfigId" />
@@ -14,18 +14,18 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="send_status" jdbcType="VARCHAR" property="sendStatus" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.entity.EmailRecord">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.model.entity.EmailRecord">
     <result column="email_content" jdbcType="LONGVARBINARY" property="emailContent" />
   </resultMap>
   <sql id="Base_Column_List">
-    email_record_id, email_templete_id, email_config_id, email_title, business_type, 
+    email_record_id, email_templete_id, email_config_id, email_title, business_type,
     from_user, to_user, cc_user, operator_id, create_time, send_status
   </sql>
   <sql id="Blob_Column_List">
     email_content
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -36,17 +36,17 @@
     delete from t_email_record
     where email_record_id = #{emailRecordId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.entity.EmailRecord" useGeneratedKeys="true">
-    insert into t_email_record (email_templete_id, email_config_id, email_title, 
-      business_type, from_user, to_user, 
-      cc_user, operator_id, create_time, 
+  <insert id="insert" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.model.entity.EmailRecord" useGeneratedKeys="true">
+    insert into t_email_record (email_templete_id, email_config_id, email_title,
+      business_type, from_user, to_user,
+      cc_user, operator_id, create_time,
       send_status, email_content)
-    values (#{emailTempleteId,jdbcType=INTEGER}, #{emailConfigId,jdbcType=INTEGER}, #{emailTitle,jdbcType=VARCHAR}, 
-      #{businessType,jdbcType=VARCHAR}, #{fromUser,jdbcType=VARCHAR}, #{toUser,jdbcType=VARCHAR}, 
-      #{ccUser,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{emailTempleteId,jdbcType=INTEGER}, #{emailConfigId,jdbcType=INTEGER}, #{emailTitle,jdbcType=VARCHAR},
+      #{businessType,jdbcType=VARCHAR}, #{fromUser,jdbcType=VARCHAR}, #{toUser,jdbcType=VARCHAR},
+      #{ccUser,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
       #{sendStatus,jdbcType=VARCHAR}, #{emailContent,jdbcType=LONGVARBINARY})
   </insert>
-  <insert id="insertSelective" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.entity.EmailRecord" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.model.entity.EmailRecord" useGeneratedKeys="true">
     insert into t_email_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="emailTempleteId != null">
@@ -119,7 +119,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.EmailRecord">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.EmailRecord">
     update t_email_record
     <set>
       <if test="emailTempleteId != null">
@@ -158,7 +158,7 @@
     </set>
     where email_record_id = #{emailRecordId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.entity.EmailRecord">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.model.entity.EmailRecord">
     update t_email_record
     set email_templete_id = #{emailTempleteId,jdbcType=INTEGER},
       email_config_id = #{emailConfigId,jdbcType=INTEGER},
@@ -173,7 +173,7 @@
       email_content = #{emailContent,jdbcType=LONGVARBINARY}
     where email_record_id = #{emailRecordId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.EmailRecord">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.EmailRecord">
     update t_email_record
     set email_templete_id = #{emailTempleteId,jdbcType=INTEGER},
       email_config_id = #{emailConfigId,jdbcType=INTEGER},

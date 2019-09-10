@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.RoleCustomFieldAuth;
+import com.qinjee.masterdata.model.entity.RoleCustomFieldAuth;
 
 public interface RoleCustomFieldAuthDao {
     int deleteByPrimaryKey(Integer id);

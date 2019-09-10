@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.EpRangeDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.EpRange">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.EpRange">
     <id column="range_id" jdbcType="INTEGER" property="rangeId" />
     <result column="ep_id" jdbcType="INTEGER" property="epId" />
     <result column="range_type" jdbcType="VARCHAR" property="rangeType" />
@@ -11,7 +11,7 @@
     range_id, ep_id, range_type, range_business_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_ep_range
     where range_id = #{rangeId,jdbcType=INTEGER}
@@ -20,13 +20,13 @@
     delete from t_ep_range
     where range_id = #{rangeId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="range_id" keyProperty="rangeId" parameterType="com.qinjee.masterdata.entity.EpRange" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="range_id" keyProperty="rangeId" parameterType="com.qinjee.masterdata.model.entity.EpRange" useGeneratedKeys="true">
     insert into t_ep_range (ep_id, range_type, range_business_id
       )
     values (#{epId,jdbcType=INTEGER}, #{rangeType,jdbcType=VARCHAR}, #{rangeBusinessId,jdbcType=INTEGER}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="range_id" keyProperty="rangeId" parameterType="com.qinjee.masterdata.entity.EpRange" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="range_id" keyProperty="rangeId" parameterType="com.qinjee.masterdata.model.entity.EpRange" useGeneratedKeys="true">
     insert into t_ep_range
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="epId != null">
@@ -51,7 +51,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.EpRange">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.EpRange">
     update t_ep_range
     <set>
       <if test="epId != null">
@@ -66,7 +66,7 @@
     </set>
     where range_id = #{rangeId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.EpRange">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.EpRange">
     update t_ep_range
     set ep_id = #{epId,jdbcType=INTEGER},
       range_type = #{rangeType,jdbcType=VARCHAR},

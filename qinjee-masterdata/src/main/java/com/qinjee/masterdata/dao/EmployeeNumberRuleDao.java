@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EmployeeNumberRule;
+import com.qinjee.masterdata.model.entity.EmployeeNumberRule;
 
 public interface EmployeeNumberRuleDao {
     int deleteByPrimaryKey(Integer enRuleId);

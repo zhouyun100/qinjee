@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CompanyCode;
+import com.qinjee.masterdata.model.entity.CompanyCode;
 
 public interface CompanyCodeDao {
     int deleteByPrimaryKey(Integer codeId);

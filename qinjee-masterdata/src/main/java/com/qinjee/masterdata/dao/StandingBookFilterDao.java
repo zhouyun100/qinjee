@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.entity.StandingBookFilter;
 
 public interface StandingBookFilterDao {
     int deleteByPrimaryKey(Integer filterId);

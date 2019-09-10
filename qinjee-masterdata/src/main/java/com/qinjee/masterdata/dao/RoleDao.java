@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.Role;
+import com.qinjee.masterdata.model.entity.Role;
 
 public interface RoleDao {
     int deleteByPrimaryKey(Integer roleId);

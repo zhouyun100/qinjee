@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CompanyMenu;
+import com.qinjee.masterdata.model.entity.CompanyMenu;
 
 public interface CompanyMenuDao {
     int deleteByPrimaryKey(Integer id);

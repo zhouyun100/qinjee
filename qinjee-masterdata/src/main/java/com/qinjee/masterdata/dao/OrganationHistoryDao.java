@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.OrganationHistory;
+import com.qinjee.masterdata.model.entity.OrganationHistory;
 
 public interface OrganationHistoryDao {
     int deleteByPrimaryKey(Integer orgId);

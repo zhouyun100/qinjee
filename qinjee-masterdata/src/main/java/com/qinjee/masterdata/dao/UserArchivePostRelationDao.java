@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 
 public interface UserArchivePostRelationDao {
     int deleteByPrimaryKey(Integer id);

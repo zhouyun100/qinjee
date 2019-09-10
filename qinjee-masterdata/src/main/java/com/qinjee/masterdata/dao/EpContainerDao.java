@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.EpContainer;
+import com.qinjee.masterdata.model.entity.EpContainer;
 
 public interface EpContainerDao {
     int deleteByPrimaryKey(Integer containerId);

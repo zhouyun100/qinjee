@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.PostInstructionsDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.PostInstructions">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PostInstructions">
     <id column="instruction_id" jdbcType="INTEGER" property="instructionId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="instruction_attachment_url" jdbcType="VARCHAR" property="instructionAttachmentUrl" />
@@ -9,7 +9,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.entity.PostInstructions">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.model.entity.PostInstructions">
     <result column="instruction_content" jdbcType="LONGVARBINARY" property="instructionContent" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -19,7 +19,7 @@
     instruction_content
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -30,15 +30,15 @@
     delete from t_post_instructions
     where instruction_id = #{instructionId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="instruction_id" keyProperty="instructionId" parameterType="com.qinjee.masterdata.entity.PostInstructions" useGeneratedKeys="true">
-    insert into t_post_instructions (post_id, instruction_attachment_url, 
-      operator_id, create_time, is_delete, 
+  <insert id="insert" keyColumn="instruction_id" keyProperty="instructionId" parameterType="com.qinjee.masterdata.model.entity.PostInstructions" useGeneratedKeys="true">
+    insert into t_post_instructions (post_id, instruction_attachment_url,
+      operator_id, create_time, is_delete,
       instruction_content)
-    values (#{postId,jdbcType=INTEGER}, #{instructionAttachmentUrl,jdbcType=VARCHAR}, 
-      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}, 
+    values (#{postId,jdbcType=INTEGER}, #{instructionAttachmentUrl,jdbcType=VARCHAR},
+      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT},
       #{instructionContent,jdbcType=LONGVARBINARY})
   </insert>
-  <insert id="insertSelective" keyColumn="instruction_id" keyProperty="instructionId" parameterType="com.qinjee.masterdata.entity.PostInstructions" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="instruction_id" keyProperty="instructionId" parameterType="com.qinjee.masterdata.model.entity.PostInstructions" useGeneratedKeys="true">
     insert into t_post_instructions
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="postId != null">
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.PostInstructions">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.PostInstructions">
     update t_post_instructions
     <set>
       <if test="postId != null">
@@ -105,7 +105,7 @@
     </set>
     where instruction_id = #{instructionId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.entity.PostInstructions">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.model.entity.PostInstructions">
     update t_post_instructions
     set post_id = #{postId,jdbcType=INTEGER},
       instruction_attachment_url = #{instructionAttachmentUrl,jdbcType=VARCHAR},
@@ -115,7 +115,7 @@
       instruction_content = #{instructionContent,jdbcType=LONGVARBINARY}
     where instruction_id = #{instructionId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.PostInstructions">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PostInstructions">
     update t_post_instructions
     set post_id = #{postId,jdbcType=INTEGER},
       instruction_attachment_url = #{instructionAttachmentUrl,jdbcType=VARCHAR},

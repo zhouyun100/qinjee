@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.CustomOrgGroupDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.CustomOrgGroup">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomOrgGroup">
     <id column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
     <result column="table_id" jdbcType="INTEGER" property="tableId" />
@@ -15,7 +15,7 @@
     group_id, group_name, table_id, sort, creator_id, create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_custom_org_group
     where group_id = #{groupId,jdbcType=INTEGER}
@@ -24,15 +24,15 @@
     delete from t_custom_org_group
     where group_id = #{groupId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.entity.CustomOrgGroup" useGeneratedKeys="true">
-    insert into t_custom_org_group (group_name, table_id, sort, 
-      creator_id, create_time, update_time, 
+  <insert id="insert" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomOrgGroup" useGeneratedKeys="true">
+    insert into t_custom_org_group (group_name, table_id, sort,
+      creator_id, create_time, update_time,
       is_delete)
-    values (#{groupName,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
-      #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+    values (#{groupName,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER},
+      #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
       #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.entity.CustomOrgGroup" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomOrgGroup" useGeneratedKeys="true">
     insert into t_custom_org_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="groupName != null">
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.CustomOrgGroup">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomOrgGroup">
     update t_custom_org_group
     <set>
       <if test="groupName != null">
@@ -108,7 +108,7 @@
     </set>
     where group_id = #{groupId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.CustomOrgGroup">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomOrgGroup">
     update t_custom_org_group
     set group_name = #{groupName,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=INTEGER},

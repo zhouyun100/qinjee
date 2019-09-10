@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.RoleDataLevelAuth;
+import com.qinjee.masterdata.model.entity.RoleDataLevelAuth;
 
 public interface RoleDataLevelAuthDao {
     int deleteByPrimaryKey(Integer id);

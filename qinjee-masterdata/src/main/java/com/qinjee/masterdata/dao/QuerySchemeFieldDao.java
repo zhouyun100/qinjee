@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.QuerySchemeField;
+import com.qinjee.masterdata.model.entity.QuerySchemeField;
 
 public interface QuerySchemeFieldDao {
     int deleteByPrimaryKey(Integer querySchemeFieldId);

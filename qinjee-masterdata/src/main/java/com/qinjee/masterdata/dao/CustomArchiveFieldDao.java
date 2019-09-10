@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
 
 public interface CustomArchiveFieldDao {
     int deleteByPrimaryKey(Integer fieldId);
