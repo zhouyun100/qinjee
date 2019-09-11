@@ -25,8 +25,9 @@ public class OrganationController extends BaseController {
 
 
     @GetMapping("/getAllOrganation")
-    @ApiOperation(value = "查询用户下所有的机构",notes = "高雄")
-    public ResponseResult<PageResult<Organation>> getAllOrganation(@RequestParam("isEnable") @ApiParam(value = "是否含有封存",example = "0") Short isEnable){
+    @ApiOperation(value = "根据是否封存查询用户下所有的机构",notes = "高雄")
+    public ResponseResult<PageResult<Organation>> getAllOrganation(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+
 
         return null;
     }
@@ -51,7 +52,7 @@ public class OrganationController extends BaseController {
     @PostMapping("/editOrganation")
     @ApiOperation(value = "编辑机构",notes = "高雄")
     public ResponseResult editOrganation(@RequestBody OrganationVo organationVo){
-
+        //编辑机构旧的信息存入机构历史表
         return null;
     }
 
@@ -119,16 +120,31 @@ public class OrganationController extends BaseController {
     }
 
 
-    @ApiOperation(value = "导入Excel", notes = "高雄")
-    @GetMapping("/downloadExcel")
-    public ResponseResult downloadExcel(@ApiParam(value = "是否含有封存",example = "0") MultipartFile file){
+    @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
+    @PostMapping("/downloadExcel")
+    public ResponseResult downloadExcelByCondition(@RequestBody OrganationPageVo organationPageVo){
 
         return null;
     }
 
-    @ApiOperation(value = "导出", notes = "高雄")
+    @ApiOperation(value = "根据选择的机构编码导出Excel", notes = "高雄")
+    @GetMapping("/downloadExcelByOrgCode")
+    public ResponseResult downloadExcel(@RequestParam("orgCodes") @ApiParam(value = "所选机构的编码") List<String> orgCodes){
+
+        return null;
+    }
+
+    @ApiOperation(value = "导入Excel", notes = "高雄")
     @GetMapping("/uploadExcelExcel")
-    public ResponseResult uploadExcel(){
+    public ResponseResult uploadExcel(@ApiParam(value = "是否含有封存", allowMultiple = true) MultipartFile file){
+
+        return null;
+    }
+
+
+    @ApiOperation(value = "根据机构编码查询本级及以下的机构")
+    @GetMapping("/getOrganationListByorgCode")
+    public ResponseResult<List<Organation>> getOrganationListByorgCode(@RequestParam("orgCode") @ApiParam(value = "选择的机构编码、如没选则查所有", example = "0101") String orgCode){
 
         return null;
     }

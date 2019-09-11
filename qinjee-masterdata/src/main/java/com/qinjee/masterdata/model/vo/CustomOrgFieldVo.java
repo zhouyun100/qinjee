@@ -32,5 +32,8 @@ public class CustomOrgFieldVo {
     @ApiModelProperty("是否筛选空值")
     private Boolean isFilterNull;
 
+    @ApiModelProperty("是否正向排序、true正序(默认)、false逆序")
+    private Boolean isAscSort;
+
     private static final long serialVersionUID = 1L;
 }

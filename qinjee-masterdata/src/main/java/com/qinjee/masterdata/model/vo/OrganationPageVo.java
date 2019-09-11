@@ -22,6 +22,9 @@ public class OrganationPageVo extends PageVo implements Serializable {
     @ApiModelProperty(value = "需要查询的字段")
     private List<CustomOrgFieldVo> customOrgFieldVos;
 
+    @ApiModelProperty("是否含有封存 0不含有、1含有")
+    private Short isEnable;
+
     private static final long serialVersionUID = 1L;
 
 }
