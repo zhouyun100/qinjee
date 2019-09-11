@@ -1,90 +1,57 @@
 package com.qinjee.masterdata.model.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_position_grade
+ * 职等表
  * @author
  */
+@Data
+@NoArgsConstructor
+@ApiModel(description = "职等表实体类")
 public class PositionGrade implements Serializable {
     /**
      * 职等ID
      */
+    @ApiModelProperty("职等ID")
     private Integer positionGradeId;
 
     /**
      * 职等名称
      */
+    @ApiModelProperty("职等名称")
     private String positionGradeName;
 
     /**
      * 排序ID
      */
+    @ApiModelProperty("排序ID")
     private Integer sortId;
 
     /**
      * 操作人ID
      */
+    @ApiModelProperty("操作人ID")
     private Integer operatorId;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty("创建时间")
     private Date createTime;
 
     /**
      * 是否删除
      */
+    @ApiModelProperty("是否删除")
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getPositionGradeId() {
-        return positionGradeId;
-    }
-
-    public void setPositionGradeId(Integer positionGradeId) {
-        this.positionGradeId = positionGradeId;
-    }
-
-    public String getPositionGradeName() {
-        return positionGradeName;
-    }
-
-    public void setPositionGradeName(String positionGradeName) {
-        this.positionGradeName = positionGradeName;
-    }
-
-    public Integer getSortId() {
-        return sortId;
-    }
-
-    public void setSortId(Integer sortId) {
-        this.sortId = sortId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

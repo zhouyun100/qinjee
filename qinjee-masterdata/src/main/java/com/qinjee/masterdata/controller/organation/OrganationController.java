@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RequestMapping("/organation")
 @RestController
-@Api("机构相关接口")
+@Api(tags = "机构相关接口")
 public class OrganationController extends BaseController {
 
 
@@ -129,14 +129,14 @@ public class OrganationController extends BaseController {
 
     @ApiOperation(value = "根据选择的机构编码导出Excel", notes = "高雄")
     @GetMapping("/downloadExcelByOrgCode")
-    public ResponseResult downloadExcelByOrgCode(@RequestParam("orgCodes") @ApiParam(value = "所选机构的编码") List<String> orgCodes){
+    public ResponseResult downloadExcelByOrgCode(@RequestParam("orgCodes") @ApiParam(value = "所选机构的编码",required = true) List<String> orgCodes){
 
         return null;
     }
 
     @ApiOperation(value = "导入Excel", notes = "高雄")
     @PostMapping("/uploadExcel")
-    public ResponseResult uploadExcel(@ApiParam(value = "需要导入的Excel文件") MultipartFile file){
+    public ResponseResult uploadExcel(@ApiParam(value = "需要导入的Excel文件", required = true) MultipartFile file){
 
         return null;
     }
@@ -144,7 +144,7 @@ public class OrganationController extends BaseController {
 
     @ApiOperation(value = "根据机构编码查询本级及以下的机构")
     @GetMapping("/getOrganationListByorgCode")
-    public ResponseResult<List<Organation>> getOrganationListByorgCode(@RequestParam("orgCode") @ApiParam(value = "选择的机构编码、如没选则查所有", example = "0101") String orgCode){
+    public ResponseResult<List<Organation>> getOrganationListByorgCode(@RequestParam("orgCode") @ApiParam(value = "选择的机构编码", example = "0101", required = true) String orgCode){
 
         return null;
     }
