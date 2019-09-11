@@ -121,7 +121,7 @@ public class OrganationController extends BaseController {
 
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
-    @PostMapping("/downloadExcel")
+    @PostMapping("/downloadExcelByCondition")
     public ResponseResult downloadExcelByCondition(@RequestBody OrganationPageVo organationPageVo){
 
         return null;
@@ -129,14 +129,14 @@ public class OrganationController extends BaseController {
 
     @ApiOperation(value = "根据选择的机构编码导出Excel", notes = "高雄")
     @GetMapping("/downloadExcelByOrgCode")
-    public ResponseResult downloadExcel(@RequestParam("orgCodes") @ApiParam(value = "所选机构的编码") List<String> orgCodes){
+    public ResponseResult downloadExcelByOrgCode(@RequestParam("orgCodes") @ApiParam(value = "所选机构的编码") List<String> orgCodes){
 
         return null;
     }
 
     @ApiOperation(value = "导入Excel", notes = "高雄")
-    @GetMapping("/uploadExcelExcel")
-    public ResponseResult uploadExcel(@ApiParam(value = "是否含有封存", allowMultiple = true) MultipartFile file){
+    @PostMapping("/uploadExcel")
+    public ResponseResult uploadExcel(@ApiParam(value = "需要导入的Excel文件") MultipartFile file){
 
         return null;
     }
