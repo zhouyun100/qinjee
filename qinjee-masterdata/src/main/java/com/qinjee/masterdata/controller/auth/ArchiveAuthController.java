@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -43,7 +44,7 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="根据角色ID查询员工列表", notes="根据角色ID查询员工")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.GET)
     public ResponseResult searchArchiveListByRoleId(HttpServletRequest request, Integer roleId) {
@@ -53,22 +54,22 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="角色新增员工", notes="角色新增员工")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/addArchiveRole",method = RequestMethod.GET)
-    public ResponseResult addArchiveRole(HttpServletRequest request, Integer roleId, Integer archiveId) {
+    public ResponseResult addArchiveRole(HttpServletRequest request, Integer roleId, List<Integer> archiveIdList) {
 
         return null;
     }
 
     @ApiOperation(value="角色移除员工", notes="角色移除员工")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/delArchiveRole",method = RequestMethod.GET)
-    public ResponseResult delArchiveRole(HttpServletRequest request, Integer roleId, Integer archiveId) {
+    public ResponseResult delArchiveRole(HttpServletRequest request, Integer roleId, List<Integer> archiveIdList) {
 
         return null;
     }
