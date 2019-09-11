@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Api(tags = "权限移交API")
 @RestController
-@RequestMapping("/authMove")
-public class AuthMoveController extends BaseController{
+@RequestMapping("/authHandover")
+public class AuthHandoverController extends BaseController{
 
     @ApiOperation(value="查询角色功能权限树", notes="根据角色ID查询菜单功能权限树")
     @ApiImplicitParams({
@@ -96,7 +96,6 @@ public class AuthMoveController extends BaseController{
 
         return null;
     }
-
 
     @ApiOperation(value="角色托管", notes="根据档案托管角色")
     @ApiImplicitParams({
