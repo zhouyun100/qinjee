@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.organation;
 
+import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organation;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
@@ -22,7 +23,7 @@ import java.util.List;
 @Api(tags = "岗位相关接口")
 @RestController
 @RequestMapping("/post")
-public class PostController {
+public class PostController extends BaseController {
 
     @GetMapping("/getPostTree")
     @ApiOperation(value = "根据是否封存查询用户下所有的机构岗位,树形结构展示",notes = "高雄")
