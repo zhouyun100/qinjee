@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.dao;
 
+
 import com.qinjee.masterdata.model.entity.PositionGrade;
 
 public interface PositionGradeDao {

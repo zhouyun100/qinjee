@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_position_grade_relation
+ * 职位职等关系表
  * @author
  */
 public class PositionGradeRelation implements Serializable {

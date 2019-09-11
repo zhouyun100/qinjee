@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.entity;
+package com.qinjee.masterdata.model.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "职位表实体类")
-public class Position implements Serializable {
+public class PositionVo implements Serializable {
     /**
      * 职位ID
      */
@@ -35,36 +34,14 @@ public class Position implements Serializable {
     @ApiModelProperty("职位族ID")
     private Integer positionGroupId;
 
-    /**
-     * 排序ID
-     */
-    @ApiModelProperty("排序ID")
-    private Integer sortId;
-
-    /**
-     * 操作人ID
-     */
-    @ApiModelProperty("操作人ID")
-    private Integer operatorId;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
-
-    /**
-     * 是否删除
-     */
-    @ApiModelProperty("是否删除")
-    private Short isDelete;
 
     @ApiModelProperty("职位对应的职级")
-    List<PositionLevel> positionLevels;
+    List<Integer> positionLevels;
 
     @ApiModelProperty("职位对应的职等")
-    List<PositionGrade> positionGrades;
+    List<Integer> positionGrades;
 
     private static final long serialVersionUID = 1L;
 
 }
+

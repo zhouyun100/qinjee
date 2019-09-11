@@ -9,17 +9,19 @@
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="position_id" jdbcType="INTEGER" property="positionId" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+    <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    post_id, post_name, post_code, parent_post_id, org_id, company_id, position_id, operator_id,
-    create_time, update_time, is_delete
+    post_id, post_name, post_code, parent_post_id, org_id, company_id, position_id, sort_id, 
+    is_enable, operator_id, create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
+    select 
     <include refid="Base_Column_List" />
     from t_post
     where post_id = #{postId,jdbcType=INTEGER}
@@ -29,14 +31,16 @@
     where post_id = #{postId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post" useGeneratedKeys="true">
-    insert into t_post (post_name, post_code, parent_post_id,
-      org_id, company_id, position_id,
-      operator_id, create_time, update_time,
-      is_delete)
-    values (#{postName,jdbcType=VARCHAR}, #{postCode,jdbcType=VARCHAR}, #{parentPostId,jdbcType=INTEGER},
-      #{orgId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{positionId,jdbcType=INTEGER},
-      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-      #{isDelete,jdbcType=SMALLINT})
+    insert into t_post (post_name, post_code, parent_post_id, 
+      org_id, company_id, position_id, 
+      sort_id, is_enable, operator_id, 
+      create_time, update_time, is_delete
+      )
+    values (#{postName,jdbcType=VARCHAR}, #{postCode,jdbcType=VARCHAR}, #{parentPostId,jdbcType=INTEGER}, 
+      #{orgId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{positionId,jdbcType=INTEGER}, 
+      #{sortId,jdbcType=INTEGER}, #{isEnable,jdbcType=SMALLINT}, #{operatorId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post" useGeneratedKeys="true">
     insert into t_post
@@ -58,6 +62,12 @@
       </if>
       <if test="positionId != null">
         position_id,
+      </if>
+      <if test="sortId != null">
+        sort_id,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
       </if>
       <if test="operatorId != null">
         operator_id,
@@ -90,6 +100,12 @@
       </if>
       <if test="positionId != null">
         #{positionId,jdbcType=INTEGER},
+      </if>
+      <if test="sortId != null">
+        #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=SMALLINT},
       </if>
       <if test="operatorId != null">
         #{operatorId,jdbcType=INTEGER},
@@ -126,6 +142,12 @@
       <if test="positionId != null">
         position_id = #{positionId,jdbcType=INTEGER},
       </if>
+      <if test="sortId != null">
+        sort_id = #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=SMALLINT},
+      </if>
       <if test="operatorId != null">
         operator_id = #{operatorId,jdbcType=INTEGER},
       </if>
@@ -149,6 +171,8 @@
       org_id = #{orgId,jdbcType=INTEGER},
       company_id = #{companyId,jdbcType=INTEGER},
       position_id = #{positionId,jdbcType=INTEGER},
+      sort_id = #{sortId,jdbcType=INTEGER},
+      is_enable = #{isEnable,jdbcType=SMALLINT},
       operator_id = #{operatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},

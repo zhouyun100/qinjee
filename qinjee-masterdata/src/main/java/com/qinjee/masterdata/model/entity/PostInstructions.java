@@ -1,103 +1,63 @@
 package com.qinjee.masterdata.model.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_post_instructions
+ * 岗位说明书表
  * @author
  */
+@Data
+@NoArgsConstructor
+@ApiModel(description = "岗位说明书表实体类")
 public class PostInstructions implements Serializable {
     /**
      * ID
      */
+    @ApiModelProperty("岗位说明书ID")
     private Integer instructionId;
 
     /**
      * 岗位ID
      */
+    @ApiModelProperty("岗位说明书ID")
     private Integer postId;
 
     /**
      * 说明书附件地址
      */
+    @ApiModelProperty("岗位说明书ID")
     private String instructionAttachmentUrl;
 
     /**
      * 操作人ID
      */
+    @ApiModelProperty("岗位说明书ID")
     private Integer operatorId;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty("岗位说明书ID")
     private Date createTime;
 
     /**
      * 是否删除
      */
+    @ApiModelProperty("岗位说明书ID")
     private Short isDelete;
 
     /**
      * 说明书内容
      */
+    @ApiModelProperty("岗位说明书ID")
     private byte[] instructionContent;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getInstructionId() {
-        return instructionId;
-    }
-
-    public void setInstructionId(Integer instructionId) {
-        this.instructionId = instructionId;
-    }
-
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public String getInstructionAttachmentUrl() {
-        return instructionAttachmentUrl;
-    }
-
-    public void setInstructionAttachmentUrl(String instructionAttachmentUrl) {
-        this.instructionAttachmentUrl = instructionAttachmentUrl;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
-
-    public byte[] getInstructionContent() {
-        return instructionContent;
-    }
-
-    public void setInstructionContent(byte[] instructionContent) {
-        this.instructionContent = instructionContent;
-    }
 }

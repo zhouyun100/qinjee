@@ -1,90 +1,61 @@
 package com.qinjee.masterdata.model.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_position_level
+ * 职级表
  * @author
  */
+@Data
+@ApiModel(description = "职级表实体类")
 public class PositionLevel implements Serializable {
     /**
      * 职级ID
      */
+    @ApiModelProperty("职级ID")
     private Integer positionLevelId;
 
     /**
      * 职级名称
      */
+    @ApiModelProperty("职级名称")
     private String positionLevelName;
 
     /**
      * 排序ID
      */
+    @ApiModelProperty("排序ID")
     private Integer sortId;
+
+    /**
+     * 职级描述
+     */
+    @ApiModelProperty("职级描述")
+    private String positionLevelRemark;
 
     /**
      * 操作人ID
      */
+    @ApiModelProperty("操作人ID")
     private Integer operatorId;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty("创建时间")
     private Date createTime;
 
     /**
      * 是否删除
      */
+    @ApiModelProperty("是否删除")
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getPositionLevelId() {
-        return positionLevelId;
-    }
-
-    public void setPositionLevelId(Integer positionLevelId) {
-        this.positionLevelId = positionLevelId;
-    }
-
-    public String getPositionLevelName() {
-        return positionLevelName;
-    }
-
-    public void setPositionLevelName(String positionLevelName) {
-        this.positionLevelName = positionLevelName;
-    }
-
-    public Integer getSortId() {
-        return sortId;
-    }
-
-    public void setSortId(Integer sortId) {
-        this.sortId = sortId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }
