@@ -56,9 +56,9 @@ public class Swagger2Config {
                 "masterdata接口文档",
                 "管理员：周赟 | zhouyun@qinjee.cn",
                 "v1.0.0",
-                "TERMS OF SERVICE URL",
+                "http://192.168.1.178:8080/swagger-ui.html#/",
                 new Contact("周赟","https://github.com/orgs/qinjeecode/teams/tsc_team","zhouyun@qinjee.cn"),
-                "QinJee",
+                "勤杰官网",
                 "http://www.qinjee.cn/",
                 Collections.emptyList()
         );

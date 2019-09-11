@@ -18,10 +18,12 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+@Component
 public class BaseController {
 
     @Autowired
@@ -29,7 +31,6 @@ public class BaseController {
 
     public UserSession userSession;
 
-    public ResponseResult<T> responseResult = new ResponseResult<T>();
 
     /**
      * 获取当前登录用户基本信息
