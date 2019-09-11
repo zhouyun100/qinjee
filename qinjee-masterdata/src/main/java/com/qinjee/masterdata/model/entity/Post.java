@@ -77,6 +77,18 @@ public class Post implements Serializable {
     private Date createTime;
 
     /**
+     * 排序ID
+     */
+    @ApiModelProperty("排序ID")
+    private Integer sortId;
+
+    /**
+     * 是否启用
+     */
+    @ApiModelProperty("是否启用")
+    private Short isEnable;
+
+    /**
      * 修改时间
      */
     @ApiModelProperty("修改时间")
