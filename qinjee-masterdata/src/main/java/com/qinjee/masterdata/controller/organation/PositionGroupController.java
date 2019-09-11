@@ -43,7 +43,8 @@ public class PositionGroupController extends BaseController {
 
     @ApiOperation(value = "删除职位族", notes = "高雄")
     @PostMapping("/deletePositionGroup")
-    public ResponseResult deletePositionGroup(@RequestParam("positionGroupId") @ApiParam(value = "职位族id", example = "1",required = true) Integer positionGroupId){
+    @ApiImplicitParam(name="positionGroupIds", value = "职位族id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
+    public ResponseResult deletePositionGroup(@RequestParam("positionGroupId")  List<Integer> positionGroupIds){
 
         return null;
     }

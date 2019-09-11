@@ -33,6 +33,12 @@ public class PositionLevel implements Serializable {
     private Integer sortId;
 
     /**
+     * 职级描述
+     */
+    @ApiModelProperty("职级描述")
+    private String positionLevelRemark;
+
+    /**
      * 操作人ID
      */
     @ApiModelProperty("操作人ID")

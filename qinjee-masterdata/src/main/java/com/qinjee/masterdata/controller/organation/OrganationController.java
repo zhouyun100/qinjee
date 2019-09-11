@@ -24,10 +24,9 @@ import java.util.List;
 public class OrganationController extends BaseController {
 
 
-    @GetMapping("/getAllOrganation")
-    @ApiOperation(value = "根据是否封存查询用户下所有的机构",notes = "高雄")
-    public ResponseResult<PageResult<Organation>> getAllOrganation(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
-
+    @GetMapping("/getOrganationTree")
+    @ApiOperation(value = "根据是否封存查询用户下所有的机构,树形结构展示",notes = "高雄")
+    public ResponseResult<PageResult<Organation>> getOrganationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
 
         return null;
     }
@@ -58,14 +57,15 @@ public class OrganationController extends BaseController {
 
     @GetMapping("/deleteOrganationById")
     @ApiOperation(value = "删除机构",notes = "高雄")
-    public ResponseResult deleteOrganationById(@RequestParam("orgId") @ApiParam(value = "机构id",example = "1",required = true) Integer orgId){
+    @ApiImplicitParam(name="orgIds", value = "机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
+    public ResponseResult deleteOrganationById(List<Integer> orgIds){
 
         return null;
     }
 
-    @GetMapping("/sealOrganationById")
+    @GetMapping("/sealOrganationByIds")
     @ApiOperation(value = "封存/封存机构", notes = "高雄")
-    public ResponseResult sealOrganationById(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",required = true) String orgCode,
+    public ResponseResult sealOrganationByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",allowMultiple = true, required = true) List<String> orgCodes,
                                              @RequestParam("isEnable") @ApiParam(value = "0 封存、1 解封",example = "0") Short isEnable){
 
         return null;
@@ -87,15 +87,15 @@ public class OrganationController extends BaseController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "preOrgCode", value = "上个机构编码", paramType = "query", dataType = "String",  required = true, example = "0103"),
-            @ApiImplicitParam(name = "midOrgCode", value = "需要排序机构的编码", paramType = "query", dataType = "String", required = true, example = "0101"),
-            @ApiImplicitParam(name = "nextOrgCode", value = "下一个机构编码", paramType = "query", dataType = "String", required = true, example = "0102"),
+            @ApiImplicitParam(name = "preOrgId", value = "上个机构id", paramType = "query", dataType = "int",  required = true, example = "0103"),
+            @ApiImplicitParam(name = "midOrgId", value = "需要排序机构的id", paramType = "query", dataType = "int", required = true, example = "0101"),
+            @ApiImplicitParam(name = "nextOrgId", value = "下一个机构id", paramType = "query", dataType = "int", required = true, example = "0102"),
     })
     @GetMapping("/sortOrganation")
     @ApiOperation(value = "机构排序", notes = "高雄")
-    public ResponseResult sortOrganation(@RequestParam("preOrgCode")String preOrgCode,
-                                         @RequestParam("midOrgCode")String midOrgCode,
-                                         @RequestParam("nextOrgCode")String nextOrgCode){
+    public ResponseResult sortOrganation(@RequestParam("preOrgId")Integer preOrgId,
+                                         @RequestParam("midOrgId")Integer midOrgId,
+                                         @RequestParam("nextOrgId")Integer nextOrgId){
 
         return null;
     }
@@ -127,9 +127,9 @@ public class OrganationController extends BaseController {
         return null;
     }
 
-    @ApiOperation(value = "根据选择的机构编码导出Excel", notes = "高雄")
-    @GetMapping("/downloadExcelByOrgCode")
-    public ResponseResult downloadExcelByOrgCode(@RequestParam("orgCodes") @ApiParam(value = "所选机构的编码",required = true) List<String> orgCodes){
+    @ApiOperation(value = "根据选择的机构id导出Excel", notes = "高雄")
+    @GetMapping("/downloadExcelByOrgId")
+    public ResponseResult downloadExcelByOrgCode(@RequestParam("orgIds") @ApiParam(value = "所选机构的id",required = true) List<Integer> orgIds){
 
         return null;
     }
@@ -142,9 +142,9 @@ public class OrganationController extends BaseController {
     }
 
 
-    @ApiOperation(value = "根据机构编码查询本级及以下的机构")
-    @GetMapping("/getOrganationListByorgCode")
-    public ResponseResult<List<Organation>> getOrganationListByorgCode(@RequestParam("orgCode") @ApiParam(value = "选择的机构编码", example = "0101", required = true) String orgCode){
+    @ApiOperation(value = "根据机构id查询本级及以下的机构")
+    @GetMapping("/getOrganationListByOrgId")
+    public ResponseResult<List<Organation>> getOrganationListByOrgId(@RequestParam("orgId") @ApiParam(value = "选择的机构id", example = "0101", required = true) String orgId){
 
         return null;
     }

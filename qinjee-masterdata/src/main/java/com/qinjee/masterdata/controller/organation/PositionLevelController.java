@@ -7,12 +7,14 @@ import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author 高雄
@@ -56,7 +58,8 @@ public class PositionLevelController extends BaseController {
 
     @GetMapping("/deletePositionLevel")
     @ApiOperation(value = "删除职级", notes = "高雄")
-    public ResponseResult deletePositionLevel(@ApiParam(value = "职级id", example = "1", required = true) Integer positionLevelId){
+    @ApiImplicitParam(name="positionLevelIds", value = "职级id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
+    public ResponseResult deletePositionLevel(List<Integer> positionLevelIds){
 
 
         return null;

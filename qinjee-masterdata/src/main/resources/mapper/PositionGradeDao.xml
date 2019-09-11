@@ -4,13 +4,15 @@
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionGrade">
     <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId" />
     <result column="position_grade_name" jdbcType="VARCHAR" property="positionGradeName" />
+    <result column="position_grade_remark" jdbcType="VARCHAR" property="positionGradeRemark" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    position_grade_id, position_grade_name, sort_id, operator_id, create_time, is_delete
+    position_grade_id, position_grade_name, position_grade_remark, sort_id, operator_id,
+    create_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
@@ -23,16 +25,21 @@
     where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="position_grade_id" keyProperty="positionGradeId" parameterType="com.qinjee.masterdata.model.entity.PositionGrade" useGeneratedKeys="true">
-    insert into t_position_grade (position_grade_name, sort_id, operator_id,
-      create_time, is_delete)
-    values (#{positionGradeName,jdbcType=VARCHAR}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
-      #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT})
+    insert into t_position_grade (position_grade_name, position_grade_remark,
+      sort_id, operator_id, create_time,
+      is_delete)
+    values (#{positionGradeName,jdbcType=VARCHAR}, #{positionGradeRemark,jdbcType=VARCHAR},
+      #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+      #{isDelete,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" keyColumn="position_grade_id" keyProperty="positionGradeId" parameterType="com.qinjee.masterdata.model.entity.PositionGrade" useGeneratedKeys="true">
     insert into t_position_grade
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="positionGradeName != null">
         position_grade_name,
+      </if>
+      <if test="positionGradeRemark != null">
+        position_grade_remark,
       </if>
       <if test="sortId != null">
         sort_id,
@@ -50,6 +57,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="positionGradeName != null">
         #{positionGradeName,jdbcType=VARCHAR},
+      </if>
+      <if test="positionGradeRemark != null">
+        #{positionGradeRemark,jdbcType=VARCHAR},
       </if>
       <if test="sortId != null">
         #{sortId,jdbcType=INTEGER},
@@ -71,6 +81,9 @@
       <if test="positionGradeName != null">
         position_grade_name = #{positionGradeName,jdbcType=VARCHAR},
       </if>
+      <if test="positionGradeRemark != null">
+        position_grade_remark = #{positionGradeRemark,jdbcType=VARCHAR},
+      </if>
       <if test="sortId != null">
         sort_id = #{sortId,jdbcType=INTEGER},
       </if>
@@ -89,6 +102,7 @@
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PositionGrade">
     update t_position_grade
     set position_grade_name = #{positionGradeName,jdbcType=VARCHAR},
+      position_grade_remark = #{positionGradeRemark,jdbcType=VARCHAR},
       sort_id = #{sortId,jdbcType=INTEGER},
       operator_id = #{operatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},

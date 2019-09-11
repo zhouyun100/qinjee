@@ -1,12 +1,13 @@
-package com.qinjee.masterdata.model.entity;
+package com.qinjee.masterdata.model.vo;
 
+import com.qinjee.model.request.PageVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 /**
  * 岗位表
@@ -15,7 +16,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "岗位表实体类")
-public class Post implements Serializable {
+public class PostVo extends PageVo implements Serializable {
+
     /**
      * 岗位ID
      */
@@ -34,17 +36,12 @@ public class Post implements Serializable {
     @ApiModelProperty("岗位编码")
     private String postCode;
 
+
     /**
      * 父级岗位
      */
     @ApiModelProperty("父级岗位")
     private Integer parentPostId;
-
-    /**
-     * 父级岗位名称
-     */
-    @ApiModelProperty("父级岗位名称")
-    private String parentPostName;
 
     /**
      * 机构ID
@@ -53,40 +50,22 @@ public class Post implements Serializable {
     private Integer orgId;
 
     /**
-     * 企业ID
+     * 职级
      */
-    @ApiModelProperty("企业ID")
-    private Integer companyId;
+    @ApiModelProperty("职级")
+    private List<Integer> positionLevels;
 
     /**
-     * 职位ID
+     * 职等
      */
-    @ApiModelProperty("职位ID")
-    private Integer positionId;
-
-    /**
-     * 操作人ID
-     */
-    @ApiModelProperty("操作人ID")
-    private Integer operatorId;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-    @ApiModelProperty("修改时间")
-    private Date updateTime;
+    @ApiModelProperty("职等")
+    private List<Integer> positionGrades;
 
     /**
      * 是否删除
      */
     @ApiModelProperty("是否删除")
-    private Short isDelete;
+    private Integer isDelete;
 
     private static final long serialVersionUID = 1L;
 

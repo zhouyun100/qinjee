@@ -52,7 +52,8 @@ public class PositionController extends BaseController {
 
     @ApiOperation(value = "删除职位", notes = "高雄")
     @GetMapping("/deletePosition")
-    public ResponseResult editPosition(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
+    @ApiImplicitParam(name="positionIds", value = "职位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
+    public ResponseResult editPosition(List<Integer> positionIds){
 
         return null;
     }

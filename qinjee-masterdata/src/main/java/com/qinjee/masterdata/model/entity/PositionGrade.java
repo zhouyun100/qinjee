@@ -35,6 +35,12 @@ public class PositionGrade implements Serializable {
     private Integer sortId;
 
     /**
+     * 职等描述
+     */
+    @ApiModelProperty("职等描述")
+    private String positionGradeRemark;
+
+    /**
      * 操作人ID
      */
     @ApiModelProperty("操作人ID")
