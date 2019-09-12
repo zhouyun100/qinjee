@@ -1,8 +1,8 @@
-package com.qinjee.masterdata.controller.organation;
+package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PositionGroup;
-import com.qinjee.masterdata.model.vo.organation.PositionGroupVo;
+import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;

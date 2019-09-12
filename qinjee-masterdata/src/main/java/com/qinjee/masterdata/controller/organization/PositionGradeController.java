@@ -1,7 +1,7 @@
-package com.qinjee.masterdata.controller.organation;
+package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.model.entity.PositionGrade;
-import com.qinjee.masterdata.model.vo.organation.PositionGradeVo;
+import com.qinjee.masterdata.model.vo.organization.PositionGradeVo;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;

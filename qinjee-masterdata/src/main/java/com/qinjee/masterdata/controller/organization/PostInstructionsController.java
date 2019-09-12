@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.controller.organation;
+package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PostInstructions;
