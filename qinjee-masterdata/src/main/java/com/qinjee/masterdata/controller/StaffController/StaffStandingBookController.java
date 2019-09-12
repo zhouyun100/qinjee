@@ -39,7 +39,7 @@ public class StaffStandingBookController {
     //修改台账
 
     @RequestMapping(value = "/updateStandingBook", method = RequestMethod.GET)
-    @ApiOperation(value = "查询台账", notes = "hkt")
+    @ApiOperation(value = "修改台账", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "StandingBook", value = "员工台账", paramType = "form", required = true),
             @ApiImplicitParam(name = "StandingBookFliter", value = "员工台账筛选", paramType = "form", required = true,example = "1"),
@@ -84,7 +84,7 @@ public class StaffStandingBookController {
     }
     //查询台账操作
     @RequestMapping(value = "/selectStaff", method = RequestMethod.GET)
-    @ApiOperation(value = "查询台账操作", notes = "hkt")
+    @ApiOperation(value = "通过台账查询", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "IsShare", value = "是否共享", paramType = "query", required = true),
             @ApiImplicitParam(name = "StandingBookId", value = "员工台账id", paramType = "query", required = true),
