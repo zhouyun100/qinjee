@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_organation_history
+ * t_organization_history
  * @author
  */
-public class OrganationHistory implements Serializable {
+public class OrganizationHistory implements Serializable {
     /**
      * 机构ID
      */

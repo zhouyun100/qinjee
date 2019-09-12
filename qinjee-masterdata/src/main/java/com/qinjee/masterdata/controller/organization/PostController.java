@@ -1,14 +1,16 @@
-package com.qinjee.masterdata.controller.organation;
+package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Organation;
+import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.organation.PostPageVo;
-import com.qinjee.masterdata.model.vo.organation.PostVo;
+import com.qinjee.masterdata.model.vo.organization.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,9 +27,12 @@ import java.util.List;
 @RequestMapping("/post")
 public class PostController extends BaseController {
 
+    @Autowired
+    private PostDao postDao;
+
     @GetMapping("/getPostTree")
     @ApiOperation(value = "根据是否封存查询用户下所有的机构岗位,树形结构展示",notes = "高雄")
-    public ResponseResult<PageResult<Organation>> getPostTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+    public ResponseResult<PageResult<Organization>> getPostTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         //调用机构service查询组织机构树的方法 ,通过标识判断是否要查询岗位
         return null;
     }
@@ -88,9 +93,9 @@ public class PostController extends BaseController {
             @ApiImplicitParam(name = "midPostId", value = "需要排序岗位id", paramType = "query", dataType = "int", required = true, example = "0101"),
             @ApiImplicitParam(name = "nextPostId", value = "下一个岗位id", paramType = "query", dataType = "int", required = true, example = "0102"),
     })
-    @GetMapping("/sortOrganation")
+    @GetMapping("/sortOrganization")
     @ApiOperation(value = "岗位排序", notes = "高雄")
-    public ResponseResult sortOrganation(@RequestParam("prePostId")Integer prePostId,
+    public ResponseResult sortOrganization(@RequestParam("prePostId")Integer prePostId,
                                          @RequestParam("midPostId")Integer midPostId,
                                          @RequestParam("nextPostId")Integer nextPostId){
 
