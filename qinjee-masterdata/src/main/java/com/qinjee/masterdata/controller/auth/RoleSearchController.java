@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -43,7 +44,7 @@ public class RoleSearchController extends BaseController{
 
     @ApiOperation(value="根据档案ID查询角色列表", notes="根据档案ID查询角色列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleListByArchiveId",method = RequestMethod.GET)
     public ResponseResult searchRoleListByArchiveId(HttpServletRequest request, Integer archiveId) {
@@ -54,11 +55,11 @@ public class RoleSearchController extends BaseController{
 
     @ApiOperation(value="修改用户角色", notes="修改用户角色")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateArchiveRole",method = RequestMethod.GET)
-    public ResponseResult updateArchiveRole(HttpServletRequest request, Integer archiveId, Integer roleId) {
+    public ResponseResult updateArchiveRole(HttpServletRequest request, Integer archiveId, List<Integer> roleIdList) {
 
         return null;
     }

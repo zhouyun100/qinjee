@@ -80,8 +80,8 @@ server:
     accesslog:
       enabled: false
 
-#logging:
-#  config: classpath:log4j/log4j2_dev.xml
+logging:
+  config: classpath:log4j/log4j2_dev.xml
 
 mybatis:
   mapperLocations: classpath:mapper/*.xml
