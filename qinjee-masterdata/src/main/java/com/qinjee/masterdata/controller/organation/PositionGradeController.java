@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RequestMapping("/positionGrade")
 @RestController
-@Api(tags = "职等接口")
+@Api(tags = "【机构管理】职等接口")
 public class PositionGradeController {
 
     @GetMapping("/getPositionGradeList")

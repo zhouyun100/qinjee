@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Description TODO
  * @createTime 2019年09月12日 10:44:00
  */
-@Api(tags = "岗位用户信息接口")
+@Api(tags = "【机构管理】岗位用户信息接口")
 @RequestMapping("/userArchive")
 @RestController
 public class UserArchiveController {

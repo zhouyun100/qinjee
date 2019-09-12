@@ -17,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/positionGroup")
-@Api(tags = "职位族接口")
+@Api(tags = "【机构管理】职位族接口")
 public class PositionGroupController extends BaseController {
 
 

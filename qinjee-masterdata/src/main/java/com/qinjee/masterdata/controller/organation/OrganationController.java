@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RequestMapping("/organation")
 @RestController
-@Api(tags = "机构接口")
+@Api(tags = "【机构管理】机构接口")
 public class OrganationController extends BaseController {
 
 

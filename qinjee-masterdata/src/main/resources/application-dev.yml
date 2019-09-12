@@ -48,7 +48,7 @@ spring:
 #  redis集群
   redis:
     cluster:
-      nodes: 192.168.245.128:6300,192.168.245.128:6301,192.168.245.128:6302
+      nodes: localhost
       max-redirects: 6
 
 #security:
