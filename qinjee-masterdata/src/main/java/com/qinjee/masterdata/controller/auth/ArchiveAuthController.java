@@ -11,6 +11,8 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,7 +29,7 @@ import java.util.List;
  * @author 周赟
  * @date 2019/9/10
  */
-@Api(tags = "用户授权API")
+@Api(tags = "【权限管理】用户授权接口")
 @RestController
 @RequestMapping("/archiveAuth")
 public class ArchiveAuthController extends BaseController {
@@ -37,7 +39,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
-    public ResponseResult searchRoleTree(HttpServletRequest request, String roleName) {
+    public ResponseResult<RoleGroupVO> searchRoleTree(HttpServletRequest request, String roleName) {
 
         return null;
     }
@@ -47,7 +49,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.GET)
-    public ResponseResult searchArchiveListByRoleId(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<UserArchive> searchArchiveListByRoleId(HttpServletRequest request, Integer roleId) {
 
         return null;
     }

@@ -11,6 +11,12 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
+import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
+import com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,12 +27,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author 周赟
  * @date 2019/9/10
  */
-@Api(tags = "角色授权API")
+@Api(tags = "【权限管理】角色授权接口")
 @RestController
 @RequestMapping("/roleAuth")
 public class RoleAuthController extends BaseController{
@@ -36,7 +43,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
-    public ResponseResult searchRoleTree(HttpServletRequest request, String roleName) {
+    public ResponseResult<RoleGroupVO> searchRoleTree(HttpServletRequest request, String roleName) {
 
         return null;
     }
@@ -87,7 +94,7 @@ public class RoleAuthController extends BaseController{
         return null;
     }
 
-    @ApiOperation(value="删除角色", notes="删除角色")
+    @ApiOperation(value="根据角色ID删除角色", notes="根据角色ID删除角色")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
@@ -97,7 +104,7 @@ public class RoleAuthController extends BaseController{
         return null;
     }
 
-    @ApiOperation(value="删除角色组", notes="删除角色组")
+    @ApiOperation(value="根据角色组ID删除角色组", notes="根据角色组ID删除角色组")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int")
     })
@@ -108,12 +115,24 @@ public class RoleAuthController extends BaseController{
     }
 
 
-    @ApiOperation(value="查询角色功能权限树", notes="根据角色ID查询菜单功能权限树")
+    @ApiOperation(value="根据角色ID查询角色功能权限树", notes="根据角色ID查询菜单功能权限树")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
-    public ResponseResult searchRoleAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<MenuVO> searchRoleAuthTree(HttpServletRequest request, Integer roleId) {
+
+        return null;
+    }
+
+
+    @ApiOperation(value="修改角色功能权限", notes="修改角色功能权限")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "menuIdList", value = "功能ID集合", required = true, dataType = "int", allowMultiple = true)
+    })
+    @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.GET)
+    public ResponseResult updateRoleMenuAuth(HttpServletRequest request, Integer roleId, List<Integer> menuIdList) {
 
         return null;
     }
@@ -124,7 +143,20 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
-    public ResponseResult searchOrgAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<OrganizationVO> searchOrgAuthTree(HttpServletRequest request, Integer roleId) {
+
+        return null;
+    }
+
+
+
+    @ApiOperation(value="修改角色机构权限", notes="修改角色机构权限")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
+    })
+    @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.GET)
+    public ResponseResult updateRoleOrgAuth(HttpServletRequest request, Integer roleId, List<Integer> orgIdList) {
 
         return null;
     }
@@ -135,18 +167,18 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.GET)
-    public ResponseResult searchCustomArchiveTableList(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<CustomArchiveTable> searchCustomArchiveTableList(HttpServletRequest request, Integer roleId) {
 
         return null;
     }
 
 
-    @ApiOperation(value="根据字段义表ID查询自定义字段列表", notes="根据字段义表ID查询自定义字段列表")
+    @ApiOperation(value="根据字定义表ID查询自定义字段列表", notes="根据字段义表ID查询自定义字段列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "tableId", value = "自定义表ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableFieldListByTableId",method = RequestMethod.GET)
-    public ResponseResult searchCustomArchiveTableFieldListByTableId(HttpServletRequest request, Integer tableId) {
+    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByTableId(HttpServletRequest request, Integer tableId) {
 
         return null;
     }
@@ -157,25 +189,27 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableFieldListByRoleId",method = RequestMethod.GET)
-    public ResponseResult searchCustomArchiveTableFieldListByRoleId(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByRoleId(HttpServletRequest request, Integer roleId) {
 
         return null;
     }
 
 
-    @ApiOperation(value="添加数据级权限定义", notes="添加数据级权限定义")
+    @ApiOperation(value="修改角色自定义人员表字段权限", notes="修改角色自定义人员表字段权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "isLeftBrackets", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "fieldId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "operateSymbol", value = "角色ID", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "fieldValue", value = "角色ID", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "isRightBrackets", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "linkSymbol", value = "角色ID", required = true, dataType = "String")
+            @ApiImplicitParam(name = "fieldIdList", value = "字段ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/addRoleDataLevelAuth",method = RequestMethod.GET)
-    public ResponseResult addRoleDataLevelAuth(HttpServletRequest request, Integer roleId, Integer isLeftBrackets, Integer fieldId,
-                                               String operateSymbol, String fieldValue , Integer isRightBrackets, String linkSymbol) {
+    @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.GET)
+    public ResponseResult updateRoleCustomArchiveTableFieldAuth(HttpServletRequest request, Integer roleId, List<Integer> fieldIdList) {
+
+        return null;
+    }
+
+
+    @ApiOperation(value="保存数据级权限定义", notes="保存数据级权限定义")
+    @RequestMapping(value = "/saveRoleDataLevelAuth",method = RequestMethod.POST)
+    public ResponseResult saveRoleDataLevelAuth(HttpServletRequest request, RoleDataLevelAuthVO roleDataLevelAuthVO) {
 
         return null;
     }

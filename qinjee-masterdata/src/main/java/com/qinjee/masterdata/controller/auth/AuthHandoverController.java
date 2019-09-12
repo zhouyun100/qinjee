@@ -11,6 +11,8 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
+import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,7 +29,7 @@ import java.util.List;
  * @author 周赟
  * @date 2019/9/10
  */
-@Api(tags = "权限移交API")
+@Api(tags = "【权限管理】权限移交接口")
 @RestController
 @RequestMapping("/authHandover")
 public class AuthHandoverController extends BaseController{
@@ -37,7 +39,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
-    public ResponseResult searchRoleAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<MenuVO> searchRoleAuthTree(HttpServletRequest request, Integer roleId) {
 
         return null;
     }
@@ -47,7 +49,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
-    public ResponseResult searchOrgAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<OrganizationVO> searchOrgAuthTree(HttpServletRequest request, Integer roleId) {
 
         return null;
     }

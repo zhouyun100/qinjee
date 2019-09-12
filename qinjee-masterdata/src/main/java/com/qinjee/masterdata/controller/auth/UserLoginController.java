@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -29,12 +30,12 @@ import javax.servlet.http.HttpServletRequest;
  * @author 周赟
  * @date 2019/9/10
  */
-@Api(tags = "用户登录API")
+@Api(tags = "【登录注册】用户登录接口")
 @RestController
 @RequestMapping("/userLogin")
 public class UserLoginController extends BaseController{
 
-    private static Logger logger = LogManager.getLogger(UserLoginController.class);
+//    private static Logger logger = LogManager.getLogger(UserLoginController.class);
 
     @ApiOperation(value="手机号验证码登录", notes="根据手机号、验证码来登录")
     @ApiImplicitParams({
@@ -76,6 +77,14 @@ public class UserLoginController extends BaseController{
     })
     @RequestMapping(value = "/updatePasswordByAccount",method = RequestMethod.GET)
     public ResponseResult<UserSession> updatePasswordByAccount(HttpServletRequest request, String account, String oldPassword, String newPassword) {
+
+        return null;
+    }
+
+
+    @ApiOperation(value="加载当前登录用户菜单树", notes="加载当前登录用户菜单树")
+    @RequestMapping(value = "/loadMenuTreeByCurrentLoginUser",method = RequestMethod.GET)
+    public ResponseResult<MenuVO> loadMenuTreeByCurrentLoginUser(HttpServletRequest request) {
 
         return null;
     }
