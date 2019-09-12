@@ -53,10 +53,6 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -191,12 +187,6 @@
             <properties>
                 <profileActive>dev</profileActive>
             </properties>
-            <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-tomcat</artifactId>
-            </dependency>
-        </dependencies>
         </profile>
         <profile>
             <id>test</id>
