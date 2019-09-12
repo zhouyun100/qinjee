@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RequestMapping("/organation")
 @RestController
-@Api(tags = "机构相关接口")
+@Api(tags = "机构接口")
 public class OrganationController extends BaseController {
 
 
@@ -32,9 +32,9 @@ public class OrganationController extends BaseController {
     }
 
 
-    @PostMapping("/getOrganationList")
+    @GetMapping("/getOrganationList")
     @ApiOperation(value = "根据条件分页查询用户下所有的机构",notes = "高雄")
-    public ResponseResult<PageResult<Organation>> getOrganationList(@RequestBody OrganationPageVo organationPageVo){
+    public ResponseResult<PageResult<Organation>> getOrganationList(OrganationPageVo organationPageVo){
 
         return null;
     }

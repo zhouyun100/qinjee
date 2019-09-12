@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/postInstructions")
-@Api(tags = "岗位说明书表")
+@Api(tags = "岗位说明书表接口")
 public class PostInstructionsController extends BaseController {
 
     @GetMapping("showPostInstructions")

@@ -24,7 +24,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/positionLevel")
-@Api(tags = "职级相关接口")
+@Api(tags = "职级接口")
 public class PositionLevelController extends BaseController {
 
     @ApiOperation(value = "按职级展示职位体系", notes = "高雄")

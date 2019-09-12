@@ -17,7 +17,7 @@ import java.util.List;
  * @Description TODO
  * @createTime 2019年09月11日 10:23:00
  */
-@Api(tags = "职位相关接口")
+@Api(tags = "职位接口")
 @RestController
 @RequestMapping("/position")
 public class PositionController extends BaseController {
