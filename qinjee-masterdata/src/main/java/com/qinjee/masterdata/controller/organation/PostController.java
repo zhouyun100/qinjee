@@ -20,7 +20,7 @@ import java.util.List;
  * @Description TODO
  * @createTime 2019年09月11日 15:17:00
  */
-@Api(tags = "岗位相关接口")
+@Api(tags = "【机构管理】岗位接口")
 @RestController
 @RequestMapping("/post")
 public class PostController extends BaseController {
