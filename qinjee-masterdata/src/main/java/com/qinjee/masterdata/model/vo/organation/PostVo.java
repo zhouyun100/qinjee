@@ -1,18 +1,29 @@
-package com.qinjee.masterdata.model.vo;
+package com.qinjee.masterdata.model.vo.organation;
 
+import com.qinjee.model.request.PageVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月11日 16:39:00
+ * 岗位表
+ * @author
  */
-@ApiModel(description = "岗位分页实体Vo类")
-public class PostPageVo {
+@Data
+@NoArgsConstructor
+@ApiModel(description = "岗位表实体类")
+public class PostVo extends PageVo implements Serializable {
+
+    /**
+     * 岗位ID
+     */
+    @ApiModelProperty("岗位ID")
+    private Integer postId;
+
     /**
      * 岗位名称
      */
@@ -25,11 +36,18 @@ public class PostPageVo {
     @ApiModelProperty("岗位编码")
     private String postCode;
 
+
     /**
-     * 父级岗位名称
+     * 父级岗位
      */
-    @ApiModelProperty("父级岗位名称")
-    private String parentPostName;
+    @ApiModelProperty("父级岗位")
+    private Integer parentPostId;
+
+    /**
+     * 机构ID
+     */
+    @ApiModelProperty("机构ID")
+    private Integer orgId;
 
     /**
      * 职级
@@ -50,4 +68,5 @@ public class PostPageVo {
     private Integer isDelete;
 
     private static final long serialVersionUID = 1L;
+
 }

@@ -4,8 +4,8 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organation;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.PostPageVo;
-import com.qinjee.masterdata.model.vo.PostVo;
+import com.qinjee.masterdata.model.vo.organation.PostPageVo;
+import com.qinjee.masterdata.model.vo.organation.PostVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -44,7 +44,7 @@ public class PostController extends BaseController {
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", dataType = "int", required = true, example = "1"),
             @ApiImplicitParam(name = "postId", value = "岗位Id", paramType = "query", dataType = "int", required = true, example = "1")
     })
-    @ApiOperation("根据岗位id查询员工档案岗位关系表")
+    @ApiOperation(value = "根据岗位id查询员工档案岗位关系表", notes = "高雄")
     @GetMapping("/getUserArchivePostRelationList")
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize,
                                                                                               Integer currentPage,

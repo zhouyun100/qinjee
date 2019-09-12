@@ -1,8 +1,9 @@
-package com.qinjee.masterdata.model.vo;
+package com.qinjee.masterdata.model.vo.organation;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 @Data
 @ApiModel(description = "职级表实体Vo类")
+@NoArgsConstructor
 public class PositionLevelVo implements Serializable {
     /**
      * 职级ID

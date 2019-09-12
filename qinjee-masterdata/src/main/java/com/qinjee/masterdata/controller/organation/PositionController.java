@@ -2,7 +2,7 @@ package com.qinjee.masterdata.controller.organation;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Position;
-import com.qinjee.masterdata.model.vo.PositionVo;
+import com.qinjee.masterdata.model.vo.organation.PositionVo;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;

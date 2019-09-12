@@ -2,8 +2,8 @@ package com.qinjee.masterdata.controller.organation;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organation;
-import com.qinjee.masterdata.model.vo.OrganationPageVo;
-import com.qinjee.masterdata.model.vo.OrganationVo;
+import com.qinjee.masterdata.model.vo.organation.OrganationPageVo;
+import com.qinjee.masterdata.model.vo.organation.OrganationVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
