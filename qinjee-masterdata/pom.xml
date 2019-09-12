@@ -121,6 +121,20 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>2.9.2</version>
+            <!-- 解决swagger 2.9.2官方BUG：
+             BUG现状：@ApiModelProperty注解在字段上时，如果字段的类型为Long或是int类型，那么程序启动后，访问swagger-ui.html的页面，程序会报错，但不影响使用
+             解决办法：2.9.2中移除swagger-annotations、swagger-models包，然后引入对应的1.5.21版本
+             -->
+            <exclusions>
+                <exclusion>
+                    <groupId>io.swagger</groupId>
+                    <artifactId>swagger-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.swagger</groupId>
+                    <artifactId>swagger-models</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -130,8 +144,12 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.5.20</version>
-            <scope>compile</scope>
+            <version>1.5.21</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.21</version>
         </dependency>
 
         <dependency>
