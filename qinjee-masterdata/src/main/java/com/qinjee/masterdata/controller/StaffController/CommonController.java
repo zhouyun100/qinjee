@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.controller.StaffController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.qinjee.masterdata.dao.CustomTableDao;
 import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.CustomGroup;
 import com.qinjee.masterdata.model.entity.CustomTable;
@@ -12,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,8 @@ import java.util.List;
 @RequestMapping("/staffarc")
 @Api(tags = "【人员管理】公用设计相关接口")
 public class CommonController {
+    @Autowired
+    private CustomTableDao customTableDao;
     /**
      * 新增自定义表
      */
@@ -33,8 +37,17 @@ public class CommonController {
     @ApiOperation(value = "新增自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTable", value = "自定义表", paramType = "form", required = true)
     public ResponseResult<Boolean> insertCustomTable(CustomTable customTable) {
-        ResponseResult<Boolean> insertResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return insertResponseResult;
+        if (customTable instanceof CustomTable) {
+            int insert = customTableDao.insert(customTable);
+            if (insert > 0) {
+                return new ResponseResult<>(true, CommonCode.SUCCESS);
+            } else {
+                return new ResponseResult<>(false, CommonCode.FAIL);
+            }
+        } else {
+            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+        }
+
     }
 
     /**
@@ -44,8 +57,20 @@ public class CommonController {
     @ApiOperation(value = "删除自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTableId", value = "自定义表id组成集合", paramType = "form", required = true, example = "{1,2}")
     public ResponseResult<Boolean> deleteCustomTable(List list) {
-        ResponseResult<Boolean> deleteResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return deleteResponseResult;
+        int max = customTableDao.selectMaxPrimaryKey();
+        for (int i = 0; i < list.size(); i++) {
+           if(!(list.get(i) instanceof Integer) ){
+              return new ResponseResult<>(false,CommonCode.INVALID_PARAM);
+           }
+           if((Integer)list.get(i) > max){
+               return new ResponseResult<>(false,CommonCode.INVALID_PARAM);
+           }
+            int delete = customTableDao.PretenddeleteByPrimaryKey((Integer) list.get(i));
+           if(delete<0){
+               return  new ResponseResult<>(false,CommonCode.FAIL);
+           }
+        }
+        return   new ResponseResult<>(true, CommonCode.SUCCESS);
     }
 
     /**
@@ -53,13 +78,17 @@ public class CommonController {
      */
     @RequestMapping(value = "/updateCustomTable", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义表", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "customTableId", value = "自定义表id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "customTable", value = "自定义字段表", paramType = "form", required = true)
-    })
-    public ResponseResult<Boolean> updateCustomTable(Integer id, CustomTable customTable) {
-        ResponseResult<Boolean> updateResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return updateResponseResult;
+    @ApiImplicitParam(name = "customTable", value = "自定义字段表", paramType = "form", required = true)
+    public ResponseResult<Boolean> updateCustomTable(CustomTable customTable) {
+        if (customTable instanceof CustomTable) {
+            int i = customTableDao.updateByPrimaryKey(customTable);
+            if (i > 0) {
+                return new ResponseResult<>(true, CommonCode.SUCCESS);
+            } else {
+                return new ResponseResult<>(false, CommonCode.FAIL);
+            }
+        }
+        return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
     }
 
     /**

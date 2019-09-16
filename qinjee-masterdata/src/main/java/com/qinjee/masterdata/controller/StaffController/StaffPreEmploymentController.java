@@ -82,6 +82,7 @@ public class StaffPreEmploymentController extends BaseController {
 
     /**
      * 延期入职以及放弃入职(延期入职时间还需要添加时间)
+     * 延期入职需要更新预入职信息的入职时间，同时更新预入职更改表
      */
 
     @RequestMapping(value = "/updatePreEmploymentChange", method = RequestMethod.POST)
