@@ -1,10 +1,13 @@
 package com.qinjee.masterdata.service.organation.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qinjee.masterdata.dao.OrganizationDao;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
+import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +32,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
         Integer archiveId = userSession.getArchiveId();
-        List<Organization> organizationList = organizationDao.getOrganizatioList(archiveId);
+        Integer companyId = userSession.getCompanyId();
+        List<Organization> organizationList = organizationDao.getAllOrganization(archiveId, isEnable);
 
         //获取第一级机构
         List<Organization> organizations = organizationList.stream().filter(organization -> {
             Integer orgParentId = organization.getOrgParentId();
             if (orgParentId != null && orgParentId > 0) {
-                return orgParentId == 1;
+                return companyId == 0;
             }
             return false;
         }).collect(Collectors.toList());
@@ -49,15 +53,20 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo) {
-        List<QueryFieldVo> querFieldVos = organizationPageVo.getQuerFieldVos();
-        Optional<List<QueryFieldVo>> querFieldVos1 = Optional.of(querFieldVos);
-//        querFieldVos1.isPresent()
-//        if()
+    public PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession) {
+//        Integer archiveId = userSession.getArchiveId();
+        Integer archiveId = 1;
+        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
+        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
+        List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo,sortFieldStr,archiveId);
+        PageInfo<Organization> pageInfo = new PageInfo<>(organizationList);
 
-
-        return null;
+        PageResult<Organization> pageResult = new PageResult<>(organizationList);
+        return pageResult;
     }
+
+
 
     /**
      * 处理所有机构以树形结构展示

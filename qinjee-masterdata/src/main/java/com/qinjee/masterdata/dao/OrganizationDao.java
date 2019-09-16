@@ -2,6 +2,8 @@ package com.qinjee.masterdata.dao;
 
 
 import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,5 +25,17 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<Organization> getOrganizatioList(Integer archiveId);
+    List<Organization> getAllOrganization(@Param("archiveId") Integer archiveId, @Param("isEnable") Short isEnable);
+
+    /**
+     * 根据查询条件查询机构
+     * @param organizationPageVo
+     * @param sortFieldStr
+     * @param archiveId
+     * @return
+     */
+    List<Organization> getOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
+                                           @Param("sortFieldStr") String sortFieldStr,
+                                           @Param("archiveId") Integer archiveId);
+
 }

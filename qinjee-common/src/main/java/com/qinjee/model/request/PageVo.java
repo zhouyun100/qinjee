@@ -13,7 +13,7 @@ import lombok.ToString;
 public class PageVo {
 
     @ApiModelProperty(name = "pageSize", value = "每页大小", required = true, example = "10")
-    Integer pageCurrent;
-    @ApiModelProperty(name = "currentPage", value = "当前页", required = true, example = "1")
     Integer pageSize;
+    @ApiModelProperty(name = "currentPage", value = "当前页", required = true, example = "1")
+    Integer currentPage;
 }

@@ -11,9 +11,9 @@ spring:
 
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql://192.168.252.129:3306/qinjee?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    url: jdbc:mysql:///qinjee?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
     username: root
-    password: qinjee2019
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 
     # oracle 12c 数据库配置
@@ -112,6 +112,11 @@ server:
 
 logging:
    config: classpath:log4j/log4j2_dev.xml
+   level:
+     com:
+       qinjee:
+         masterdata:
+           dao: DEBUG
 
 mybatis:
   mapperLocations: classpath:mapper/*.xml

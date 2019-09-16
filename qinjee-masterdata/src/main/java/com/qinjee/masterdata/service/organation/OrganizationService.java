@@ -26,5 +26,5 @@ public interface OrganizationService {
      * @param organizationPageVo
      * @return
      */
-    PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo);
+    PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession);
 }
