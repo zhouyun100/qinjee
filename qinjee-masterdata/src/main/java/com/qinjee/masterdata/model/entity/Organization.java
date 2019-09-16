@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 机构表
@@ -87,6 +88,12 @@ public class Organization implements Serializable {
      */
     @ApiModelProperty("是否启用")
     private Short isEnable;
+
+    /**
+     * 子机机构
+     */
+    @ApiModelProperty("子机机构")
+    private List<Organization> childList;
 
     private static final long serialVersionUID = 1L;
 

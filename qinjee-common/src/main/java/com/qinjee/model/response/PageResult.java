@@ -23,4 +23,11 @@ public class PageResult<T> {
      * 数据总数
      */
     private long total;
+
+    public PageResult(List<T> list){
+        this.list = list;
+    }
+
+    public PageResult(){
+    }
 }

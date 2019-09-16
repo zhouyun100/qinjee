@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * t_role
+ * 角色表
  * @author
  */
 public class Role implements Serializable {

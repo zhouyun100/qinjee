@@ -2,11 +2,16 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
+import com.qinjee.masterdata.service.organation.OrganizationService;
+import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,19 +28,23 @@ import java.util.List;
 @Api(tags = "【机构管理】机构接口")
 public class OrganizationController extends BaseController {
 
+    @Autowired
+    private OrganizationService organizationService;
+
     @GetMapping("/getOrganizationTree")
     @ApiOperation(value = "根据是否封存查询用户下所有的机构,树形结构展示",notes = "高雄")
     public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
-
-        return null;
+        UserSession userSession = getUserSession();
+        PageResult<Organization> pageResult = organizationService.getOrganizationTree(userSession,isEnable);
+        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
     }
 
 
     @GetMapping("/getOrganizationList")
     @ApiOperation(value = "根据条件分页查询用户下所有的机构",notes = "高雄")
     public ResponseResult<PageResult<Organization>> getOrganizationList(OrganizationPageVo organizationPageVo){
-
-        return null;
+        PageResult<Organization> pageResult = organizationService.getOrganizationList(organizationPageVo);
+        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
     }
 
 
@@ -82,6 +91,13 @@ public class OrganizationController extends BaseController {
                                           @RequestParam("newOrgCode") String newOrgCode,
                                           @RequestParam("targetOrgCode") String targetOrgCode,
                                           @RequestParam("orgCodes") List<String> orgCodes){
+        return null;
+    }
+
+    @GetMapping("/getUserArchiveListByUserName")
+    @ApiOperation(value = "机构负责人查询")
+    public ResponseResult<UserArchive> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) String userName){
+
         return null;
     }
 
