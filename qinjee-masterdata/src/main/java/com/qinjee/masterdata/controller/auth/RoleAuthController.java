@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -43,7 +42,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
-    public ResponseResult<RoleGroupVO> searchRoleTree(HttpServletRequest request, String roleName) {
+    public ResponseResult<RoleGroupVO> searchRoleTree(String roleName) {
 
         return null;
     }
@@ -54,7 +53,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleGroupName", value = "角色组名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/addRoleGroup",method = RequestMethod.GET)
-    public ResponseResult addRoleGroup(HttpServletRequest request, Integer parentRoleGroupId, String roleGroupName) {
+    public ResponseResult addRoleGroup(Integer parentRoleGroupId, String roleGroupName) {
 
         return null;
     }
@@ -65,7 +64,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/addRole",method = RequestMethod.GET)
-    public ResponseResult addRole(HttpServletRequest request, Integer roleGroupId, String roleName) {
+    public ResponseResult addRole(Integer roleGroupId, String roleName) {
 
         return null;
     }
@@ -77,7 +76,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/updateRole",method = RequestMethod.GET)
-    public ResponseResult updateRole(HttpServletRequest request,Integer roleId, Integer roleGroupId, String roleName) {
+    public ResponseResult updateRole(Integer roleId, Integer roleGroupId, String roleName) {
 
         return null;
     }
@@ -89,7 +88,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleGroupName", value = "角色组名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/updateRoleGroup",method = RequestMethod.GET)
-    public ResponseResult updateRoleGroup(HttpServletRequest request, Integer roleGroupId, Integer parentRoleGroupId, String roleGroupName) {
+    public ResponseResult updateRoleGroup(Integer roleGroupId, Integer parentRoleGroupId, String roleGroupName) {
 
         return null;
     }
@@ -99,7 +98,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/delRole",method = RequestMethod.GET)
-    public ResponseResult delRole(HttpServletRequest request,Integer roleId) {
+    public ResponseResult delRole(Integer roleId) {
 
         return null;
     }
@@ -109,7 +108,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/delRoleGroup",method = RequestMethod.GET)
-    public ResponseResult delRoleGroup(HttpServletRequest request, Integer roleGroupId) {
+    public ResponseResult delRoleGroup(Integer roleGroupId) {
 
         return null;
     }
@@ -120,7 +119,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
-    public ResponseResult<MenuVO> searchRoleAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<MenuVO> searchRoleAuthTree(Integer roleId) {
 
         return null;
     }
@@ -132,7 +131,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "menuIdList", value = "功能ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleMenuAuth(HttpServletRequest request, Integer roleId, List<Integer> menuIdList) {
+    public ResponseResult updateRoleMenuAuth(Integer roleId, List<Integer> menuIdList) {
 
         return null;
     }
@@ -143,7 +142,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
-    public ResponseResult<OrganizationVO> searchOrgAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<OrganizationVO> searchOrgAuthTree(Integer roleId) {
 
         return null;
     }
@@ -156,7 +155,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleOrgAuth(HttpServletRequest request, Integer roleId, List<Integer> orgIdList) {
+    public ResponseResult updateRoleOrgAuth(Integer roleId, List<Integer> orgIdList) {
 
         return null;
     }
@@ -167,7 +166,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.GET)
-    public ResponseResult<CustomArchiveTable> searchCustomArchiveTableList(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<CustomArchiveTable> searchCustomArchiveTableList(Integer roleId) {
 
         return null;
     }
@@ -178,7 +177,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "tableId", value = "自定义表ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableFieldListByTableId",method = RequestMethod.GET)
-    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByTableId(HttpServletRequest request, Integer tableId) {
+    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByTableId(Integer tableId) {
 
         return null;
     }
@@ -189,7 +188,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableFieldListByRoleId",method = RequestMethod.GET)
-    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByRoleId(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByRoleId(Integer roleId) {
 
         return null;
     }
@@ -201,7 +200,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "fieldIdList", value = "字段ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleCustomArchiveTableFieldAuth(HttpServletRequest request, Integer roleId, List<Integer> fieldIdList) {
+    public ResponseResult updateRoleCustomArchiveTableFieldAuth(Integer roleId, List<Integer> fieldIdList) {
 
         return null;
     }
@@ -209,7 +208,7 @@ public class RoleAuthController extends BaseController{
 
     @ApiOperation(value="保存数据级权限定义", notes="保存数据级权限定义")
     @RequestMapping(value = "/saveRoleDataLevelAuth",method = RequestMethod.POST)
-    public ResponseResult saveRoleDataLevelAuth(HttpServletRequest request, RoleDataLevelAuthVO roleDataLevelAuthVO) {
+    public ResponseResult saveRoleDataLevelAuth(RoleDataLevelAuthVO roleDataLevelAuthVO) {
 
         return null;
     }

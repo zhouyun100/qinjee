@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
-    public ResponseResult<MenuVO> searchRoleAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<MenuVO> searchRoleAuthTree(Integer roleId) {
 
         return null;
     }
@@ -49,7 +48,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
-    public ResponseResult<OrganizationVO> searchOrgAuthTree(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<OrganizationVO> searchOrgAuthTree(Integer roleId) {
 
         return null;
     }
@@ -60,7 +59,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/roleRecoveryByArchiveId",method = RequestMethod.GET)
-    public ResponseResult roleRecoveryByArchiveId(HttpServletRequest request, Integer archiveId, List<Integer> roleIdList) {
+    public ResponseResult roleRecoveryByArchiveId(Integer archiveId, List<Integer> roleIdList) {
 
         return null;
     }
@@ -71,7 +70,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/orgRecoveryByArchiveId",method = RequestMethod.GET)
-    public ResponseResult orgRecoveryByArchiveId(HttpServletRequest request, Integer archiveId, List<Integer> orgIdList) {
+    public ResponseResult orgRecoveryByArchiveId(Integer archiveId, List<Integer> orgIdList) {
 
         return null;
     }
@@ -83,7 +82,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/roleHandoverByArchiveId",method = RequestMethod.GET)
-    public ResponseResult roleHandoverByArchiveId(HttpServletRequest request, Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> roleIdList) {
+    public ResponseResult roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> roleIdList) {
 
         return null;
     }
@@ -95,7 +94,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/orgHandoverByArchiveId",method = RequestMethod.GET)
-    public ResponseResult orgHandoverByArchiveId(HttpServletRequest request, Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> orgIdList) {
+    public ResponseResult orgHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> orgIdList) {
 
         return null;
     }
@@ -109,7 +108,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/roleTrusteeshipByArchiveId",method = RequestMethod.GET)
-    public ResponseResult roleTrusteeshipByArchiveId(HttpServletRequest request, Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, List<Integer> roleIdList) {
+    public ResponseResult roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, List<Integer> roleIdList) {
 
         return null;
     }
@@ -123,7 +122,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/orgTrusteeshipByArchiveId",method = RequestMethod.GET)
-    public ResponseResult orgTrusteeshipByArchiveId(HttpServletRequest request, Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, List<Integer> orgIdList) {
+    public ResponseResult orgTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, List<Integer> orgIdList) {
 
         return null;
     }

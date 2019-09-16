@@ -29,16 +29,18 @@ import javax.servlet.http.HttpServletRequest;
 public class BaseController {
 
     @Autowired
-    private RedisClusterService redisClusterService;
+    protected RedisClusterService redisClusterService;
 
-    public UserSession userSession;
+    @Autowired
+    protected HttpServletRequest request;
+
+    protected UserSession userSession;
 
     /**
      * 获取当前登录用户基本信息
-     * @param request
      * @return
      */
-    public UserSession getUserSession(HttpServletRequest request){
+    public UserSession getUserSession(){
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {

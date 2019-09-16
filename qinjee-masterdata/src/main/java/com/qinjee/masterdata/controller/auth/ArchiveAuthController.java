@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
-    public ResponseResult<RoleGroupVO> searchRoleTree(HttpServletRequest request, String roleName) {
+    public ResponseResult<RoleGroupVO> searchRoleTree(String roleName) {
 
         return null;
     }
@@ -49,7 +48,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.GET)
-    public ResponseResult<UserArchive> searchArchiveListByRoleId(HttpServletRequest request, Integer roleId) {
+    public ResponseResult<UserArchive> searchArchiveListByRoleId(Integer roleId) {
 
         return null;
     }
@@ -60,7 +59,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/addArchiveRole",method = RequestMethod.GET)
-    public ResponseResult addArchiveRole(HttpServletRequest request, Integer roleId, List<Integer> archiveIdList) {
+    public ResponseResult addArchiveRole(Integer roleId, List<Integer> archiveIdList) {
 
         return null;
     }
@@ -71,7 +70,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/delArchiveRole",method = RequestMethod.GET)
-    public ResponseResult delArchiveRole(HttpServletRequest request, Integer roleId, List<Integer> archiveIdList) {
+    public ResponseResult delArchiveRole(Integer roleId, List<Integer> archiveIdList) {
 
         return null;
     }

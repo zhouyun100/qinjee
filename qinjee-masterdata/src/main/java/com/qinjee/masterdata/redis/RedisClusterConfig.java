@@ -20,6 +20,15 @@ import redis.clients.jedis.JedisCluster;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * redis集群配置类
+ *
+ * @author 周赟
+ *
+ * @version
+ *
+ * @since 2019年5月15日
+ */
 @Configuration
 public class RedisClusterConfig {
 
@@ -40,7 +49,7 @@ public class RedisClusterConfig {
 
         //创建连接池配置对象
         GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-        //连接耗尽时是否阻塞, false报异常,ture阻塞直到超时, 默认true
+        //连接耗尽时是否阻塞, false报异常,true阻塞直到超时, 默认true
         poolConfig.setBlockWhenExhausted(false);
         //最大连接数
         poolConfig.setMaxTotal(1000);
