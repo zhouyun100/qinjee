@@ -1,7 +1,7 @@
-package com.qinjee.masterdata.controller.organation;
+package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.model.entity.UserInfo;
-import com.qinjee.masterdata.model.vo.organation.PageQueryVo;
+import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

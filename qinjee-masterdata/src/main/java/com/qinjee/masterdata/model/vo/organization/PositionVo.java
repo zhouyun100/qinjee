@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.organation;
+package com.qinjee.masterdata.model.vo.organization;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

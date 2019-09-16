@@ -1,9 +1,9 @@
-package com.qinjee.masterdata.controller.organation;
+package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Organation;
-import com.qinjee.masterdata.model.vo.organation.OrganationPageVo;
-import com.qinjee.masterdata.model.vo.organation.OrganationVo;
+import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -18,54 +18,53 @@ import java.util.List;
  * @Description 机构controller
  * @createTime 2019年09月10日 10:19:00
  */
-@RequestMapping("/organation")
+@RequestMapping("/organization")
 @RestController
 @Api(tags = "【机构管理】机构接口")
-public class OrganationController extends BaseController {
+public class OrganizationController extends BaseController {
 
-
-    @GetMapping("/getOrganationTree")
+    @GetMapping("/getOrganizationTree")
     @ApiOperation(value = "根据是否封存查询用户下所有的机构,树形结构展示",notes = "高雄")
-    public ResponseResult<PageResult<Organation>> getOrganationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+    public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
 
         return null;
     }
 
 
-    @GetMapping("/getOrganationList")
+    @GetMapping("/getOrganizationList")
     @ApiOperation(value = "根据条件分页查询用户下所有的机构",notes = "高雄")
-    public ResponseResult<PageResult<Organation>> getOrganationList(OrganationPageVo organationPageVo){
+    public ResponseResult<PageResult<Organization>> getOrganizationList(OrganizationPageVo organizationPageVo){
 
         return null;
     }
 
 
-    @PostMapping("/addOrganation")
+    @PostMapping("/addOrganization")
     @ApiOperation(value = "新增机构",notes = "高雄")
-    public ResponseResult addOrganation(@RequestBody OrganationVo organationVo){
+    public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
 
         return null;
     }
 
 
-    @PostMapping("/editOrganation")
+    @PostMapping("/editOrganization")
     @ApiOperation(value = "编辑机构",notes = "高雄")
-    public ResponseResult editOrganation(@RequestBody OrganationVo organationVo){
+    public ResponseResult editOrganization(@RequestBody OrganizationVo organizationVo){
         //编辑机构旧的信息存入机构历史表
         return null;
     }
 
-    @GetMapping("/deleteOrganationById")
+    @GetMapping("/deleteOrganizationById")
     @ApiOperation(value = "删除机构",notes = "高雄")
     @ApiImplicitParam(name="orgIds", value = "机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-    public ResponseResult deleteOrganationById(List<Integer> orgIds){
+    public ResponseResult deleteOrganizationById(List<Integer> orgIds){
 
         return null;
     }
 
-    @GetMapping("/sealOrganationByIds")
+    @GetMapping("/sealOrganizationByIds")
     @ApiOperation(value = "封存/封存机构", notes = "高雄")
-    public ResponseResult sealOrganationByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",allowMultiple = true, required = true) List<String> orgCodes,
+    public ResponseResult sealOrganizationByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",allowMultiple = true, required = true) List<String> orgCodes,
                                              @RequestParam("isEnable") @ApiParam(value = "0 封存、1 解封",example = "0") Short isEnable){
 
         return null;
@@ -77,9 +76,9 @@ public class OrganationController extends BaseController {
             @ApiImplicitParam(name = "targetOrgCode", value = "归属机构", paramType = "query", dataType = "String" , required = true, example = "0103"),
             @ApiImplicitParam(name = "orgCodes", value = "待合并机构", paramType = "query", dataType = "String", allowMultiple = true, required = true),
     })
-    @GetMapping("/mergeOrganation")
+    @GetMapping("/mergeOrganization")
     @ApiOperation(value = "合并机构", notes = "高雄")
-    public ResponseResult mergeOrganation(@RequestParam("newOrgName") String newOrgName,
+    public ResponseResult mergeOrganization(@RequestParam("newOrgName") String newOrgName,
                                           @RequestParam("newOrgCode") String newOrgCode,
                                           @RequestParam("targetOrgCode") String targetOrgCode,
                                           @RequestParam("orgCodes") List<String> orgCodes){
@@ -91,9 +90,9 @@ public class OrganationController extends BaseController {
             @ApiImplicitParam(name = "midOrgId", value = "需要排序机构的id", paramType = "query", dataType = "int", required = true, example = "0101"),
             @ApiImplicitParam(name = "nextOrgId", value = "下一个机构id", paramType = "query", dataType = "int", required = true, example = "0102"),
     })
-    @GetMapping("/sortOrganation")
+    @GetMapping("/sortOrganization")
     @ApiOperation(value = "机构排序", notes = "高雄")
-    public ResponseResult sortOrganation(@RequestParam("preOrgId")Integer preOrgId,
+    public ResponseResult sortOrganization(@RequestParam("preOrgId")Integer preOrgId,
                                          @RequestParam("midOrgId")Integer midOrgId,
                                          @RequestParam("nextOrgId")Integer nextOrgId){
 
@@ -104,9 +103,9 @@ public class OrganationController extends BaseController {
             @ApiImplicitParam(name = "orgCodes", value = "需要合并机构的编码", paramType = "query", dataType = "String", allowMultiple = true, required = true, example = "0102"),
             @ApiImplicitParam(name = "targetOrgCode", value = "目标机构", paramType = "query", dataType = "String", required = true, example = "0101"),
     })
-    @GetMapping("/transferOrganation")
+    @GetMapping("/transferOrganization")
     @ApiOperation(value = "划转机构", notes = "高雄")
-    public ResponseResult transferOrganation(@RequestParam("orgCodes") List<String> orgCodes,
+    public ResponseResult transferOrganization(@RequestParam("orgCodes") List<String> orgCodes,
                                              @RequestParam("targetOrgCode") String targetOrgCode){
 
         return null;
@@ -122,7 +121,7 @@ public class OrganationController extends BaseController {
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
     @PostMapping("/downloadExcelByCondition")
-    public ResponseResult downloadExcelByCondition(@RequestBody OrganationPageVo organationPageVo){
+    public ResponseResult downloadExcelByCondition(@RequestBody OrganizationPageVo organizationPageVo){
 
         return null;
     }
@@ -143,8 +142,8 @@ public class OrganationController extends BaseController {
 
 
     @ApiOperation(value = "根据机构id查询本级及以下的机构")
-    @GetMapping("/getOrganationListByOrgId")
-    public ResponseResult<List<Organation>> getOrganationListByOrgId(@RequestParam("orgId") @ApiParam(value = "选择的机构id", example = "0101", required = true) String orgId){
+    @GetMapping("/getOrganizationListByOrgId")
+    public ResponseResult<List<Organization>> getOrganizationListByOrgId(@RequestParam("orgId") @ApiParam(value = "选择的机构id", example = "0101", required = true) String orgId){
 
         return null;
     }

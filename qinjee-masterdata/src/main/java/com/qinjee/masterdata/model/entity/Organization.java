@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "机构实体类")
-public class Organation implements Serializable {
+public class Organization implements Serializable {
     /**
      * 机构ID
      */

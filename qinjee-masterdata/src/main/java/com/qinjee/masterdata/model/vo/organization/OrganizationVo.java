@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.organation;
+package com.qinjee.masterdata.model.vo.organization;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "机构实体Vo类")
-public class OrganationVo implements Serializable {
+public class OrganizationVo implements Serializable {
 
     /**
      * 机构编码
