@@ -38,4 +38,12 @@ public interface OrganizationDao {
                                            @Param("sortFieldStr") String sortFieldStr,
                                            @Param("archiveId") Integer archiveId);
 
+    /**
+     * 根据是否封存查询用户下所有的机构,图形化展示
+     * @param archiveId
+     * @param isEnable
+     * @param orgId
+     * @return
+     */
+    List<Organization> getOrganizationGraphics( @Param("archiveId") Integer archiveId, @Param("isEnable") Short isEnable, @Param("orgId") Integer orgId);
 }

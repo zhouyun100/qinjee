@@ -113,8 +113,12 @@ public class Organization implements Serializable {
     /**
      * 子机机构
      */
-    @ApiModelProperty("子机机构")
     private List<Organization> childList;
+
+    /**
+     * 图片url
+     */
+    private String attachmentUrl;
 
     private static final long serialVersionUID = 1L;
 

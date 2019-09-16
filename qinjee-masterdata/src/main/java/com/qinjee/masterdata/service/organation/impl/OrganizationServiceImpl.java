@@ -1,15 +1,16 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.qinjee.masterdata.dao.OrganizationDao;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
+import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,18 +55,32 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession) {
-//        Integer archiveId = userSession.getArchiveId();
-        Integer archiveId = 1;
+        Integer archiveId = userSession.getArchiveId();
         Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
         String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
         PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
         List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo,sortFieldStr,archiveId);
-        PageInfo<Organization> pageInfo = new PageInfo<>(organizationList);
-
         PageResult<Organization> pageResult = new PageResult<>(organizationList);
         return pageResult;
     }
 
+
+    @Override
+    public PageResult<Organization> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId) {
+        Integer archiveId = userSession.getArchiveId();
+
+        
+        //TODO  sql完善
+        List<Organization> organizationList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgId);
+        PageResult<Organization> pageResult = new PageResult<>(organizationList);
+        return pageResult;
+    }
+
+    @Override
+    public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
+
+        return null;
+    }
 
 
     /**
