@@ -166,4 +166,9 @@
       is_enable = #{isEnable,jdbcType=SMALLINT}
     where org_id = #{orgId,jdbcType=INTEGER}
   </update>
+  <select id="getOrganizatioList" resultMap="BaseResultMap">
+    select org.org_code, org.org_name, org.org_parent_id, org.company_id, org.company_id, org.sort_id from t_organization org, t_role_org_auth roa
+    where roa.org_id = org.org_id and org.is_enable = #{archiveId}
+    and roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id)
+  </select>
 </mapper>
