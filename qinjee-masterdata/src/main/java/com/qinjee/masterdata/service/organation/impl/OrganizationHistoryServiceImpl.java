@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.qinjee.masterdata.dao.OrganizationHistoryDao;
+import com.qinjee.masterdata.dao.organation.OrganizationHistoryDao;
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.model.response.CommonCode;

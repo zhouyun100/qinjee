@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.OrganizationDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
 import com.qinjee.masterdata.model.entity.UserArchive;
@@ -238,7 +238,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             //获取新的合并机构
             Organization newOrganization = getNewOrganization(newOrgName, targetOrgId, orgType, userSession);
-
             organizationDao.insertSelective(newOrganization);
 
             updateOrganizationFullName(organizationList, newOrganization);
@@ -317,8 +316,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             updateOrganizationFullName(organizationList, parentOrganization);
         }
 
-
-        return null;
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
     /**
