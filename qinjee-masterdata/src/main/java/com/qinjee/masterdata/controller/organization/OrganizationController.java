@@ -39,11 +39,20 @@ public class OrganizationController extends BaseController {
         return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
     }
 
+    @GetMapping("/getOrganizationGraphics")
+    @ApiOperation(value = "根据是否封存查询用户下所有的机构,图形化展示",notes = "高雄")
+    public ResponseResult<PageResult<Organization>> getOrganizationGraphics(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable,
+                                                                            @RequestParam("orgId") @ApiParam(value = "机构ID",example = "0") Integer orgId){
+        PageResult<Organization> pageResult = organizationService.getOrganizationGraphics(getUserSession(), isEnable, orgId);
+        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+    }
+
 
     @GetMapping("/getOrganizationList")
     @ApiOperation(value = "根据条件分页查询用户下所有的机构",notes = "高雄")
     public ResponseResult<PageResult<Organization>> getOrganizationList(OrganizationPageVo organizationPageVo){
-        PageResult<Organization> pageResult = organizationService.getOrganizationList(organizationPageVo);
+        UserSession userSession = getUserSession();
+        PageResult<Organization> pageResult = organizationService.getOrganizationList(organizationPageVo,userSession);
         return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
     }
 
@@ -51,8 +60,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/addOrganization")
     @ApiOperation(value = "新增机构",notes = "高雄")
     public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
-
-        return null;
+        return organizationService.addOrganization(getUserSession(),organizationVo);
     }
 
 

@@ -1,5 +1,6 @@
 package com.qinjee.model.response;
 
+import com.github.pagehelper.Page;
 import lombok.Data;
 import lombok.ToString;
 
@@ -25,6 +26,10 @@ public class PageResult<T> {
     private long total;
 
     public PageResult(List<T> list){
+        if (list instanceof Page) {
+            Page page = (Page)list;
+            this.total = page.getTotal();
+        }
         this.list = list;
     }
 

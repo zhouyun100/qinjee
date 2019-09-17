@@ -2,8 +2,10 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
+import com.qinjee.model.response.ResponseResult;
 
 /**
  * @author 高雄
@@ -26,5 +28,21 @@ public interface OrganizationService {
      * @param organizationPageVo
      * @return
      */
-    PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo);
+    PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession);
+
+    /**
+     * 根据是否封存查询用户下所有的机构,图形化展示
+     * @param userSession
+     * @param isEnable
+     * @return
+     */
+    PageResult<Organization> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId);
+
+    /**
+     * 新增机构
+     * @param userSession
+     * @param organizationVo
+     * @return
+     */
+    ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo);
 }
