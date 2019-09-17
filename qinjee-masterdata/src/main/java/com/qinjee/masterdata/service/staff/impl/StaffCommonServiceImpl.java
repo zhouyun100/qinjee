@@ -17,11 +17,19 @@ import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.ExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -308,6 +316,44 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         return new ResponseResult<>(list,CommonCode.SUCCESS);
     }
 
+    @Override
+    public ResponseResult importFile(String path) {
+        List<String[]> strings = null;
+        MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
+        try {
+            strings = ExcelUtil.readExcel(multipartFile);
+            return new ResponseResult(strings, CommonCode.SUCCESS);
+        } catch (IOException e) {
+            return new ResponseResult(strings, CommonCode.FAIL);
+        }
+
+    }
+
+    @Override
+    public ResponseResult exportFile(String path, String title, Integer customTableId) {
+//        download(String path, HttpServletResponse response,
+//                String title, String[] heads, List<Map<String, String>> dates, Map<String ,String> map)
+        //得到response对象
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        //获取heads，通过customTableId找到字段名存入heads
+        try {
+            List<Integer> integerList=customFieldDao.selectFeildId(customTableId);
+            String[] heads=null;
+            List<CustomField> list=new ArrayList<>();
+            for (int i = 0; i < integerList.size(); i++) {
+                CustomField customField = customFieldDao.selectByPrimaryKey(integerList.get(i));
+                list.add(customField);
+            }
+            for (int i = 0; i < list.size(); i++) {
+                heads[i]=list.get(i).getFieldName();
+            }
+        } catch (Exception e) {
+           logger.error("获取heads失败");
+        }
+        //todo通过数据表获得字段对应的值
+        //TODO通过字段表获取字段的类型
+        return null;
+    }
 
 }
 
