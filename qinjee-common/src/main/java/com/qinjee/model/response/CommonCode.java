@@ -17,7 +17,10 @@ public enum CommonCode implements ResultCode{
     INVALID_SESSION(false,10101,"无效会话！"),
     BUSINESS_EXCEPTION(false,10100,"业务异常！"),
     REQUEST_EXCEPTION(false,10200,"请求异常，请联系开发人员！"),
-    NET_EXCEPTION(false,10201,"网络异常，服务不可用，请稍后刷新重试！");
+    NET_EXCEPTION(false,10201,"网络异常，服务不可用，请稍后刷新重试！"),
+    LOGIN_MULTIPLE_COMPANY(false, 10301, "多租户验证，请选择需要登录的租户平台！");
+
+
 
     /**
      * 操作是否成功

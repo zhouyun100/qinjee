@@ -52,5 +52,8 @@ public class ResponseResult<T>{
     public static ResponseResult FAIL(){
         return new ResponseResult(CommonCode.FAIL);
     }
+    public static ResponseResult LOGIN_MULTIPLE_COMPANY(){
+        return new ResponseResult(CommonCode.LOGIN_MULTIPLE_COMPANY);
+    }
 
 }
