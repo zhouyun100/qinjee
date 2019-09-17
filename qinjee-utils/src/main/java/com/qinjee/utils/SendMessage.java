@@ -8,6 +8,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+/**
+ * @author Administrator
+ *
+ */
 public class SendMessage {
 
     public static class SmsThread extends Thread {
@@ -20,7 +24,8 @@ public class SendMessage {
         private int templateId;
         private String smsSign;
 
-        public SmsThread(SmsMultiSender msender, String nationCode,int appid,String appkey,int templateId, String smsSign,String[] phoneNumbers,String[] param) {
+        public SmsThread(SmsMultiSender msender, String nationCode,int appid,String appkey,
+                         int templateId, String smsSign,String[] phoneNumbers,String[] param) {
             this.msender = msender;
             this.nationCode = nationCode;
             this.phoneNumbers = phoneNumbers;
@@ -34,10 +39,9 @@ public class SendMessage {
         @Override
         public void run() {
             try {
-                String[] params = {"5678","3"};
                 SmsMultiSender msender = new SmsMultiSender(appid, appkey);
                 SmsMultiSenderResult result = msender.sendWithParam("86", phoneNumbers,
-                        templateId, params, smsSign, "", "");
+                        templateId, param, smsSign, "", "");
 
                 System.out.println(result);
             } catch (HTTPException e) {
@@ -83,12 +87,6 @@ public class SendMessage {
 
         // 关闭连接池 httpclient
         httpclient.close();
-    }
-
-    public static void main(String[] args) {
-        String[] phoneNumbers={"18612406236"};
-        String param[]={"5678","3"};
-//        sendMessageMany(phoneNumbers,1400249114,"91c94cbe664487bbfb072e717957e08f",param,409797,"勤杰软件");
     }
 
 }
