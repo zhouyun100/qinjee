@@ -1,5 +1,5 @@
 /**
- * 文件名：UserInfoVO
+ * 文件名：RequestUserLoginVO
  * 工程名称：eTalent
  * <p>
  * qinjee
@@ -9,20 +9,21 @@
  * 原始作者：周赟
  */
 package com.qinjee.masterdata.model.vo.auth;
+
 import lombok.Data;
 
 @Data
-public class UserInfoVO {
+public class RequestUserLoginVO {
 
     /**
      * 用户ID
      */
-    private int userId;
+    private Integer userId;
 
     /**
-     * 用户姓名
+     * 账号：用户名/手机号/邮箱
      */
-    private String userName;
+    private String account;
 
     /**
      * 手机号
@@ -30,22 +31,22 @@ public class UserInfoVO {
     private String phone;
 
     /**
-     * 电子邮件
+     * 验证码
      */
-    private String email;
+    private String code;
+
+    /**
+     * 密码
+     */
+    private String password;
+
+    /**
+     * 新密码
+     */
+    private String newPassword;
 
     /**
      * 企业ID
      */
     private Integer companyId;
-
-    /**
-     * 企业名称
-     */
-    private String companyName;
-
-    /**
-     * 档案ID
-     */
-    private Integer archiveId;
 }
