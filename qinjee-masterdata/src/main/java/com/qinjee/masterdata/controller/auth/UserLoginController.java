@@ -13,22 +13,30 @@ package com.qinjee.masterdata.controller.auth;
 import com.alibaba.fastjson.JSON;
 import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.SmsConfig;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.service.auth.UserLoginService;
+import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.KeyUtils;
+import com.qinjee.utils.RegexpUtils;
+import com.qinjee.utils.SendMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -41,7 +49,18 @@ public class UserLoginController extends BaseController{
 
     private static Logger logger = LogManager.getLogger(UserLoginController.class);
 
+    /**
+     * 短信验证码有效分钟数
+     */
+    private static final int SMS_CODE_VALID_MINUTE = 5;
+
     private ResponseResult responseResult;
+
+    @Autowired
+    private UserLoginService userLoginService;
+
+    @Autowired
+    private SmsConfigService smsConfigService;
 
     @ApiOperation(value="手机号验证码登录", notes="根据手机号、验证码来登录")
     @ApiImplicitParams({
@@ -51,19 +70,36 @@ public class UserLoginController extends BaseController{
     @RequestMapping(value = "/loginByPhoneAndCode",method = RequestMethod.GET)
     public ResponseResult<UserInfoVO> loginByMobileAndCode(HttpServletResponse response, String phone, String code) {
 
-        UserInfoVO userInfo = new UserInfoVO();
-        userInfo.setUserId(1);
-        userInfo.setUserName("zhouyun");
-        userInfo.setPhone("18612406236");
-        userInfo.setEmail("zhouyun@qinjee.cn");
-        userInfo.setCompanyId(1);
-        userInfo.setArchiveId(1);
-
         try {
 
-//            userInfo = userInfoService.selectByUsernameAndPassword(userInfo);
-            if (userInfo != null) {
-                String loginKey = ResponseConsts.SESSION_KEY + userInfo.getUserId();
+            if(phone.isEmpty() || code.isEmpty() || !RegexpUtils.checkPhone(phone)){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号或验证码错误，请重新输入!");
+                return responseResult;
+            }
+
+            String redisPhoneLoginCode = redisClusterService.get("LOGIN_" + phone);
+            if(redisPhoneLoginCode.isEmpty() || redisPhoneLoginCode.equals(code)){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号验证码无效!");
+                return responseResult;
+            }
+
+            List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByPhone(phone);
+
+            if (userInfoList.isEmpty() || userInfoList.size() < 1) {
+
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号用户信息为空!");
+                return responseResult;
+            }
+
+            if(userInfoList.size() == 1){
+                /**
+                 * 有且仅有一家有效租户信息
+                 */
+                UserInfoVO userInfo = userInfoList.get(0);
+                String loginKey = ResponseConsts.SESSION_KEY + "_" + userInfo.getUserId();
                 /**
                  * 设置redis登录缓存时间，30分钟过期，与前端保持一致
                  */
@@ -73,19 +109,23 @@ public class UserLoginController extends BaseController{
                 cookie.setPath("/");
                 response.addCookie(cookie);
 
-                logger.info("Login success！phone={};code={}", phone,code);
+                logger.info("Login success！phone={};companyId={}", phone, userInfo.getCompanyId());
                 responseResult = ResponseResult.SUCCESS();
                 responseResult.setResult(userInfo);
-            }else {
-                logger.info("Login faild,No this phone found! phone={};code={}", phone,code);
+            }else if(userInfoList.size() > 1){
+                /**
+                 * 当前登录用户如果有多家有效租户信息，则提示用户选择所需登录的租户
+                 */
+                responseResult = ResponseResult.LOGIN_MULTIPLE_COMPANY();
+                responseResult.setMessage("请选择需要登录的租户平台");
+                responseResult.setResult(userInfoList);
 
-                responseResult = ResponseResult.FAIL();
             }
 
         }catch(Exception e) {
-            logger.info("Login exception! phone={};code={}", phone,code);
-            e.printStackTrace();
+            logger.info("Login exception! phone={};code={};exception={}", phone,code,e.toString());
             responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据手机号、短信验证码登录异常！");
         }
         return responseResult;
     }
@@ -97,21 +137,25 @@ public class UserLoginController extends BaseController{
     })
     @RequestMapping(value = "/loginByAccountAndPassword",method = RequestMethod.GET)
     public ResponseResult<UserSession> loginByAccountAndPassword(HttpServletResponse response, String account, String password) {
-
-        UserInfoVO userInfo = new UserInfoVO();
-        userInfo.setUserId(1);
-        userInfo.setUserName("zhouyun");
-        userInfo.setPhone("18612406236");
-        userInfo.setEmail("zhouyun@qinjee.cn");
-        userInfo.setCompanyId(1);
-        userInfo.setArchiveId(1);
+        if(account.isEmpty() || password.isEmpty()){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("账号或密码为空，请重新输入!");
+            return responseResult;
+        }
 
         try {
-
-//            userInfo = userInfoService.selectByUsernameAndPassword(userInfo);
-
-            if (userInfo != null) {
-                String loginKey = ResponseConsts.SESSION_KEY + userInfo.getUserId();
+            List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByAccountAndPassword(account,password);
+            if (userInfoList.isEmpty() || userInfoList.size() < 1) {
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("账号用户信息为空!");
+                return responseResult;
+            }
+            if(userInfoList.size() == 1){
+                /**
+                 * 有且仅有一家有效租户信息
+                 */
+                UserInfoVO userInfo = userInfoList.get(0);
+                String loginKey = ResponseConsts.SESSION_KEY + "_" + userInfo.getUserId();
                 /**
                  * 设置redis登录缓存时间，30分钟过期，与前端保持一致
                  */
@@ -121,23 +165,70 @@ public class UserLoginController extends BaseController{
                 cookie.setPath("/");
                 response.addCookie(cookie);
 
-                logger.info("Login success！account={};password={}", account,password);
+                logger.info("Login success！phone={};companyId={}", account, userInfo.getCompanyId());
                 responseResult = ResponseResult.SUCCESS();
                 responseResult.setResult(userInfo);
-            }else {
-                logger.info("Login faild,No this phone found! account={};password={}", account,password);
+            }else if(userInfoList.size() > 1){
+                /**
+                 * 当前登录用户如果有多家有效租户信息，则提示用户选择所需登录的租户
+                 */
+                responseResult = ResponseResult.LOGIN_MULTIPLE_COMPANY();
+                responseResult.setMessage("请选择需要登录的租户平台");
+                responseResult.setResult(userInfoList);
 
-                responseResult = ResponseResult.FAIL();
             }
+        }catch(Exception e) {
+            logger.info("Login exception! account={};password={};exception={}", account, password, e.toString());
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据账号、密码登录异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="用户ID和企业ID登录", notes="用户ID和企业ID获取用户信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "companyId", value = "密码", required = true, dataType = "int")
+    })
+    @RequestMapping(value = "/searchUserInfoByUserIdAndCompanyId",method = RequestMethod.GET)
+    public ResponseResult<UserSession> searchUserInfoByUserIdAndCompanyId(HttpServletResponse response, Integer userId,Integer companyId) {
+
+        if(null == userId || null == companyId){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("用户信息或企业信息为空!");
+            return responseResult;
+        }
+
+        try {
+            UserInfoVO userInfo = userLoginService.searchUserInfoByUserIdAndCompanyId(userId,companyId);
+            if (null == userInfo || 0 == userInfo.getUserId()) {
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("企业用户信息为空!");
+                return responseResult;
+            }
+            String loginKey = ResponseConsts.SESSION_KEY + "_" + userInfo.getUserId();
+            /**
+             * 设置redis登录缓存时间，30分钟过期，与前端保持一致
+             */
+            redisClusterService.setex(loginKey, ResponseConsts.SESSION_INVALID_SECCOND, JSON.toJSONString(userInfo));
+            Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey);
+            cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECCOND);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            logger.info("Login success！userId={};companyId={}", userId, companyId);
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(userInfo);
 
         }catch(Exception e) {
-            logger.info("Login exception! account={};password={}", account,password);
-            e.printStackTrace();
+            logger.info("Login exception! userId={};companyId={};exception={}", userId, companyId, e.toString());
             responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据账号、密码登录异常！");
         }
         return responseResult;
 
     }
+
 
     @ApiOperation(value="发送短信验证码", notes="根据手机号发送短信验证码")
     @ApiImplicitParams({
@@ -146,19 +237,50 @@ public class UserLoginController extends BaseController{
     @RequestMapping(value = "/sendCodeByPhone",method = RequestMethod.GET)
     public ResponseResult sendCodeByMobile(String phone) {
 
-        return null;
+        if(phone.isEmpty() || !RegexpUtils.checkPhone(phone)){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号错误，请重新输入!");
+            return responseResult;
+        }
+
+        try{
+            /**
+             * 生成6位随机数字验证码
+             */
+            String smsCode = KeyUtils.getNonceCodeNumber(6);
+            String[] phoneNumbers = {phone};
+            String[] param = {smsCode,String.valueOf(SMS_CODE_VALID_MINUTE)};
+            redisClusterService.setex("LOGIN_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
+
+            SmsConfig smsConfig = smsConfigService.selectLoginCodeSmsConfig();
+            SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,param);
+
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setMessage("手机号短信验证码发送完毕，有效期5分钟!");
+        }catch (Exception e){
+            logger.info("sendCodeByMobile exception! phone={},exception={}", phone, e.toString());
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号短信验证码发送异常！");
+        }
+        return responseResult;
     }
 
     @ApiOperation(value="修改密码", notes="修改密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "account", value = "用户名/手机号/邮箱", required = true, dataType = "String"),
             @ApiImplicitParam(name = "oldPassword", value = "旧密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "newPassword", value = "新密码", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/updatePasswordByAccount",method = RequestMethod.GET)
-    public ResponseResult<UserSession> updatePasswordByAccount(String account, String oldPassword, String newPassword) {
-
-        return null;
+    @RequestMapping(value = "/updatePasswordByCurrentAccount",method = RequestMethod.GET)
+    public ResponseResult<UserSession> updatePasswordByCurrentAccount(String oldPassword, String newPassword) {
+        try{
+            userSession = getUserSession();
+            userLoginService.updateUserPasswordByUserIdAndPassword(userSession.getUserId(), oldPassword, newPassword);
+            responseResult = ResponseResult.SUCCESS();
+        }catch (Exception e){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("修改密码操作异常！");
+        }
+        return responseResult;
     }
 
 
@@ -172,10 +294,10 @@ public class UserLoginController extends BaseController{
         return responseResult;
     }
 
+
     @ApiOperation(value="退出", notes="退出")
     @RequestMapping(value = "/logout",method = RequestMethod.GET)
     public ResponseResult logout(HttpServletResponse response) {
-
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
@@ -194,7 +316,6 @@ public class UserLoginController extends BaseController{
                 }
             }
         }
-
         responseResult = ResponseResult.SUCCESS();
         return responseResult;
     }
