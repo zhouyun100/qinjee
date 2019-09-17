@@ -10,7 +10,7 @@
  */
 package com.qinjee.masterdata.service.sms.impl;
 
-import com.qinjee.masterdata.dao.sms.SmsConfigDao;
+import com.qinjee.masterdata.dao.SmsConfigDao;
 import com.qinjee.masterdata.model.entity.SmsConfig;
 import com.qinjee.masterdata.service.sms.SmsConfigService;
 import org.springframework.beans.factory.annotation.Autowired;

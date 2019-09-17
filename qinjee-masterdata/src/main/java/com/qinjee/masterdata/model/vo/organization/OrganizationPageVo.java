@@ -16,7 +16,7 @@ import java.io.Serializable;
 @ApiModel(description = "机构实体分页Vo类")
 public class OrganizationPageVo extends PageQueryVo implements Serializable {
 
-    @ApiModelProperty(value = "是否含有封存 0不含有、1含有", example = "0")
+    @ApiModelProperty(value = "是否含有封存(启用) 0 封存、1 未封存", example = "0")
     private Short isEnable;
 
     @ApiModelProperty(value = "机构父级ID", example = "1")

@@ -1,11 +1,14 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+
+import java.util.List;
 
 /**
  * @author 高雄
@@ -45,4 +48,59 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo);
+
+    /**
+     * 编辑机构
+     * @param organizationVo
+     * @return
+     */
+    ResponseResult editOrganization(OrganizationVo organizationVo);
+
+    /**
+     * 删除机构
+     * @param orgIds
+     * @return
+     */
+    ResponseResult deleteOrganizationById(List<Integer> orgIds);
+
+    /**
+     * 封存/封存机构
+     * @param orgIds
+     * @param isEnable
+     * @return
+     */
+    ResponseResult sealOrganizationByIds(List<Integer> orgIds, Short isEnable);
+
+    /**
+     * 合并机构
+     * @param newOrgName
+     * @param targetOrgId
+     * @param orgIds
+     * @return
+     */
+    ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId, String orgType, List<Integer> orgIds, UserSession userSession);
+
+    /**
+     * 机构负责人查询
+     * @param userName
+     * @return
+     */
+    ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(String userName);
+
+    /**
+     * 机构排序
+     * @param preOrgId
+     * @param midOrgId
+     * @param nextOrgId
+     * @return
+     */
+    ResponseResult sortOrganization(Integer preOrgId, Integer midOrgId, Integer nextOrgId);
+
+    /**
+     * 划转机构
+     * @param orgIds
+     * @param targetOrgId
+     * @return
+     */
+    ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId);
 }
