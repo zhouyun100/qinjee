@@ -1,11 +1,12 @@
-package com.qinjee.masterdata.controller.StaffController;
+package com.qinjee.masterdata.controller.staff;
 
 import com.alibaba.fastjson.JSONObject;
-import com.qinjee.masterdata.dao.CustomTableDao;
+import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.CustomGroup;
 import com.qinjee.masterdata.model.entity.CustomTable;
 import com.qinjee.masterdata.model.entity.CustomTableData;
+import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -29,7 +30,7 @@ import java.util.List;
 @Api(tags = "【人员管理】公用设计相关接口")
 public class CommonController {
     @Autowired
-    private CustomTableDao customTableDao;
+    private IStaffCommonService staffCommonService;
     /**
      * 新增自定义表
      */
@@ -37,40 +38,16 @@ public class CommonController {
     @ApiOperation(value = "新增自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTable", value = "自定义表", paramType = "form", required = true)
     public ResponseResult<Boolean> insertCustomTable(CustomTable customTable) {
-        if (customTable instanceof CustomTable) {
-            int insert = customTableDao.insert(customTable);
-            if (insert > 0) {
-                return new ResponseResult<>(true, CommonCode.SUCCESS);
-            } else {
-                return new ResponseResult<>(false, CommonCode.FAIL);
-            }
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
-        }
-
+        return staffCommonService.insert(customTable);
     }
-
     /**
      * 删除自定义表
      */
     @RequestMapping(value = "/deleteCustomTable", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义表", notes = "hkt")
-    @ApiImplicitParam(name = "customTableId", value = "自定义表id组成集合", paramType = "form", required = true, example = "{1,2}")
+    @ApiImplicitParam(name = "customTableId", value = "自定义表id组成集合", paramType = "query", required = true, example = "{1,2}")
     public ResponseResult<Boolean> deleteCustomTable(List list) {
-        int max = customTableDao.selectMaxPrimaryKey();
-        for (int i = 0; i < list.size(); i++) {
-           if(!(list.get(i) instanceof Integer) ){
-              return new ResponseResult<>(false,CommonCode.INVALID_PARAM);
-           }
-           if((Integer)list.get(i) > max){
-               return new ResponseResult<>(false,CommonCode.INVALID_PARAM);
-           }
-            int delete = customTableDao.PretenddeleteByPrimaryKey((Integer) list.get(i));
-           if(delete<0){
-               return  new ResponseResult<>(false,CommonCode.FAIL);
-           }
-        }
-        return   new ResponseResult<>(true, CommonCode.SUCCESS);
+      return staffCommonService.pretenddeleteByPrimaryKey(list);
     }
 
     /**
@@ -80,15 +57,7 @@ public class CommonController {
     @ApiOperation(value = "修改自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTable", value = "自定义字段表", paramType = "form", required = true)
     public ResponseResult<Boolean> updateCustomTable(CustomTable customTable) {
-        if (customTable instanceof CustomTable) {
-            int i = customTableDao.updateByPrimaryKey(customTable);
-            if (i > 0) {
-                return new ResponseResult<>(true, CommonCode.SUCCESS);
-            } else {
-                return new ResponseResult<>(false, CommonCode.FAIL);
-            }
-        }
-        return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+        return staffCommonService.updateByPrimaryKey(customTable);
     }
 
     /**
@@ -100,7 +69,8 @@ public class CommonController {
             @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
     })
-    public ResponseResult<PageResult<List<CustomTable>>> selectCustomTable(Integer number, Integer pageSize) {
+    public ResponseResult<PageResult<List<CustomTable>>> selectCustomTable(Integer currentPage, Integer pageSize) {
+        PageHelper.startPage(currentPage, pageSize);
         PageResult<List<CustomTable>> listPageResult = new PageResult<>();
         ResponseResult<PageResult<List<CustomTable>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
         return pageResultResponseResult;
@@ -110,7 +80,7 @@ public class CommonController {
      * 新增自定义组
      */
     @RequestMapping(value = "/insertCustomGroup", method = RequestMethod.POST)
-    @ApiOperation(value = "新增自定义租", notes = "hkt")
+    @ApiOperation(value = "新增自定义组", notes = "hkt")
     @ApiImplicitParam(name = "customGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult<Boolean> insertCustomGroup(CustomGroup customGroup) {
         ResponseResult<Boolean> insertResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);

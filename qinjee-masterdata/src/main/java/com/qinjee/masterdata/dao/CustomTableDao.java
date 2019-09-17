@@ -1,9 +1,13 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CustomTable;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+/**
+ * @author Administrator
+ */
+@Repository
 public interface CustomTableDao {
     int deleteByPrimaryKey(Integer tableId);
 

@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.controller.StaffController;
+package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.QueryScheme;

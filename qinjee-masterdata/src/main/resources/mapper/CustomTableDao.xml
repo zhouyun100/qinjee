@@ -24,6 +24,14 @@
     from t_custom_table
     where table_id = #{tableId,jdbcType=INTEGER}
   </select>
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+    select Max(table_id) from t_custom_table
+  </select>
+  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.CustomTable">
+    select
+    <include refid="Base_Column_List"/>
+    from t_custom_table
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_custom_table
     where table_id = #{tableId,jdbcType=INTEGER}
@@ -155,24 +163,6 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where table_id = #{tableId,jdbcType=INTEGER}
   </update>
-  <select id="selectMaxPrimaryKey" resultType="_int">
-    select max (table_id) from t_custom_archive_table
-  </select>
-  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.CustomTable">
-    select
-    <include refid="Base_Column_List" />
-    from t_custom_table
-    //TODO   分页插件的使用
-  </select>
+  <update id="PretenddeleteByPrimaryKey"></update>
 
-
-  <update id="PretenddeleteByPrimaryKey" parameterType="_int">
-    update t_custom_table
-    <set>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
-    </set>
-    where table_id = #{tableId,jdbcType=INTEGER}
-  </update>
 </mapper>

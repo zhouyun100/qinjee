@@ -115,3 +115,7 @@ logging:
 
 mybatis:
   mapperLocations: classpath:mapper/*.xml
+pagehelper:
+  offset-as-page-num: true
+  row-bounds-with-count: true
+  reasonable: true
