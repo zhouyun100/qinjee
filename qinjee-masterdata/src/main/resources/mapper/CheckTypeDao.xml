@@ -49,4 +49,9 @@
     set check_name = #{checkName,jdbcType=VARCHAR}
     where check_code = #{checkCode,jdbcType=VARCHAR}
   </update>
+  <select id="selectCheckName" resultType="java.lang.String">
+    select  check_name
+    from     t_check_type
+    where   check_code = #{checkCode,jdbcType=VARCHAR}
+  </select>
 </mapper>

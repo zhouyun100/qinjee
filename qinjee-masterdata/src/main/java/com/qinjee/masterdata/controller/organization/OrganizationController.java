@@ -68,45 +68,43 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "编辑机构",notes = "高雄")
     public ResponseResult editOrganization(@RequestBody OrganizationVo organizationVo){
         //编辑机构旧的信息存入机构历史表
-        return null;
+        return organizationService.editOrganization(organizationVo);
     }
 
     @GetMapping("/deleteOrganizationById")
     @ApiOperation(value = "删除机构",notes = "高雄")
     @ApiImplicitParam(name="orgIds", value = "机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
     public ResponseResult deleteOrganizationById(List<Integer> orgIds){
-
-        return null;
+        return organizationService.deleteOrganizationById(orgIds);
     }
 
     @GetMapping("/sealOrganizationByIds")
     @ApiOperation(value = "封存/封存机构", notes = "高雄")
-    public ResponseResult sealOrganizationByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",allowMultiple = true, required = true) List<String> orgCodes,
+    public ResponseResult sealOrganizationByIds(@RequestParam("orgIds") @ApiParam(value = "机构Id",example = "1",allowMultiple = true, required = true) List<Integer> orgIds,
                                              @RequestParam("isEnable") @ApiParam(value = "0 封存、1 解封",example = "0") Short isEnable){
-
-        return null;
+        return organizationService.sealOrganizationByIds(orgIds, isEnable);
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "newOrgName", value = "新机构名称", paramType = "query", dataType = "String", required = true, example = "新机构名称"),
-            @ApiImplicitParam(name = "newOrgCode", value = "新机构编码", paramType = "query", dataType = "String", required = true, example = "0101"),
-            @ApiImplicitParam(name = "targetOrgCode", value = "归属机构", paramType = "query", dataType = "String" , required = true, example = "0103"),
-            @ApiImplicitParam(name = "orgCodes", value = "待合并机构", paramType = "query", dataType = "String", allowMultiple = true, required = true),
+            @ApiImplicitParam(name = "targetOrgId", value = "归属机构Id", paramType = "query", dataType = "int" , required = true, example = "01"),
+            @ApiImplicitParam(name = "orgType", value = "新机构类型", paramType = "query", dataType = "String" , required = true, example = "UNIT"),
+            @ApiImplicitParam(name = "orgIds", value = "待合并机构Id", paramType = "query", dataType = "int", allowMultiple = true, required = true),
     })
     @GetMapping("/mergeOrganization")
     @ApiOperation(value = "合并机构", notes = "高雄")
     public ResponseResult mergeOrganization(@RequestParam("newOrgName") String newOrgName,
-                                          @RequestParam("newOrgCode") String newOrgCode,
-                                          @RequestParam("targetOrgCode") String targetOrgCode,
-                                          @RequestParam("orgCodes") List<String> orgCodes){
-        return null;
+                                            @RequestParam("targetOrgId") Integer targetOrgId,
+                                            @RequestParam("orgType") String orgType,
+                                            @RequestParam("orgIds") List<Integer> orgIds){
+        UserSession userSession = getUserSession();
+        return organizationService.mergeOrganization(newOrgName, targetOrgId, orgType, orgIds, userSession);
     }
 
     @GetMapping("/getUserArchiveListByUserName")
     @ApiOperation(value = "机构负责人查询")
-    public ResponseResult<UserArchive> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) String userName){
-
-        return null;
+    public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) String userName){
+        return organizationService.getUserArchiveListByUserName(userName);
     }
 
     @ApiImplicitParams({
@@ -119,20 +117,18 @@ public class OrganizationController extends BaseController {
     public ResponseResult sortOrganization(@RequestParam("preOrgId")Integer preOrgId,
                                          @RequestParam("midOrgId")Integer midOrgId,
                                          @RequestParam("nextOrgId")Integer nextOrgId){
-
-        return null;
+        return organizationService.sortOrganization(preOrgId, midOrgId, nextOrgId);
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "orgCodes", value = "需要合并机构的编码", paramType = "query", dataType = "String", allowMultiple = true, required = true, example = "0102"),
-            @ApiImplicitParam(name = "targetOrgCode", value = "目标机构", paramType = "query", dataType = "String", required = true, example = "0101"),
+            @ApiImplicitParam(name = "orgCodes", value = "需要合并机构的编码", paramType = "query", dataType = "int", allowMultiple = true, required = true),
+            @ApiImplicitParam(name = "targetOrgCode", value = "目标机构Id", paramType = "query", dataType = "int", required = true, example = "0101"),
     })
     @GetMapping("/transferOrganization")
     @ApiOperation(value = "划转机构", notes = "高雄")
-    public ResponseResult transferOrganization(@RequestParam("orgCodes") List<String> orgCodes,
-                                             @RequestParam("targetOrgCode") String targetOrgCode){
-
-        return null;
+    public ResponseResult transferOrganization(@RequestParam("orgIds") List<Integer> orgIds,
+                                             @RequestParam("targetOrgId") Integer targetOrgId){
+        return organizationService.transferOrganization(orgIds, targetOrgId);
     }
 
     @ApiOperation(value = "下载模板", notes = "高雄")

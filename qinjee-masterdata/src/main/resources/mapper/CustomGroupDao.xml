@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.CustomGroupDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.CustomGroupDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomGroup">
     <id column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
@@ -20,10 +20,12 @@
     from t_custom_group
     where group_id = #{groupId,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_custom_group
     where group_id = #{groupId,jdbcType=INTEGER}
   </delete>
+
   <insert id="insert" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomGroup" useGeneratedKeys="true">
     insert into t_custom_group (group_name, table_id, sort,
       creator_id, create_time, update_time,
@@ -119,4 +121,18 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where group_id = #{groupId,jdbcType=INTEGER}
   </update>
+  <update id="deleteCustomGroup" parameterType="int">
+    update t_custom_group
+    set  is_delete = 0
+     where group_id = #{groupId,jdbcType=INTEGER}
+  </update>
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+    select MAX (group_id) from t_custom_group
+  </select>
+  <select id="selectTableId" parameterType="integer" resultType="java.lang.Integer">
+    select table_id
+    from t_custom_group
+    where group_id=#{customGroupId,jdbcType=INTEGER}
+
+  </select>
 </mapper>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.CustomTableDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.CustomTableDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomTable">
     <id column="table_id" jdbcType="INTEGER" property="tableId" />
     <result column="table_name" jdbcType="VARCHAR" property="tableName" />
@@ -27,11 +27,7 @@
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
     select Max(table_id) from t_custom_table
   </select>
-  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.CustomTable">
-    select
-    <include refid="Base_Column_List"/>
-    from t_custom_table
-  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_custom_table
     where table_id = #{tableId,jdbcType=INTEGER}
@@ -163,6 +159,18 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where table_id = #{tableId,jdbcType=INTEGER}
   </update>
-  <update id="PretenddeleteByPrimaryKey"></update>
+  <update id="deleteCustomTable">
+    update t_custom_table
+    set
+    is_delete = 0
+    where
+    table_id = #{tableId,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.CustomTable">
+    select
+    <include refid="Base_Column_List"/>
+    from t_custom_table
+  </select>
 
 </mapper>

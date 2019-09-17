@@ -42,7 +42,7 @@ public class Organization implements Serializable {
     /**
      * 机构类型
      */
-    @ApiModelProperty("机构类型")
+    @ApiModelProperty("机构类型  GROUP 集团、UNIT 单位、DEPT 部门")
     @QueryColumn("org.org_type")
     private String orgType;
 
@@ -107,7 +107,7 @@ public class Organization implements Serializable {
     /**
      * 是否启用
      */
-    @ApiModelProperty("是否启用")
+    @ApiModelProperty("是否启用 0 封存、1 未封存")
     private Short isEnable;
 
     /**

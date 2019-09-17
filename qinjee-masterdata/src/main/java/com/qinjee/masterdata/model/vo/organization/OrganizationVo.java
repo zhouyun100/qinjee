@@ -17,6 +17,12 @@ import java.io.Serializable;
 public class OrganizationVo implements Serializable {
 
     /**
+     * 机构ID
+     */
+    @ApiModelProperty("机构ID")
+    private Integer orgId;
+
+    /**
      * 机构编码
      */
     @ApiModelProperty(value = "机构编码", example = "01")

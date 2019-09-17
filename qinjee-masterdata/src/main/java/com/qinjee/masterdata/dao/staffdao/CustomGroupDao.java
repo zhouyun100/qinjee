@@ -1,7 +1,11 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao;
 
 import com.qinjee.masterdata.model.entity.CustomGroup;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface CustomGroupDao {
     int deleteByPrimaryKey(Integer groupId);
 
@@ -14,4 +18,10 @@ public interface CustomGroupDao {
     int updateByPrimaryKeySelective(CustomGroup record);
 
     int updateByPrimaryKey(CustomGroup record);
+
+    Integer selectMaxPrimaryKey();
+
+    void deleteCustomGroup(Integer integer);
+
+    List<Integer> selectTableId(Integer customGroupId);
 }

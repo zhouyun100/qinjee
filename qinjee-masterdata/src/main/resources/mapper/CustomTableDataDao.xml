@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.CustomTableDataDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.CustomTableDataDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomTableData">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="table_id" jdbcType="INTEGER" property="tableId" />
@@ -19,11 +19,13 @@
     from t_custom_table_data
     where id = #{id,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_custom_table_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomTableData" useGeneratedKeys="true">
+
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomTableData" useGeneratedKeys="true">
     insert into t_custom_table_data (table_id, business_id, big_data,
       create_time, creator_id, operator_time
       )
@@ -108,4 +110,11 @@
       operator_time = #{operatorTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectCustomTableId" resultType="java.lang.Integer">
+ select
+   id
+    from t_custom_table_data
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </select>
+
 </mapper>

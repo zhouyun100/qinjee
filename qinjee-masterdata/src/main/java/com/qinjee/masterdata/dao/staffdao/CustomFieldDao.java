@@ -1,7 +1,11 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao;
 
 import com.qinjee.masterdata.model.entity.CustomField;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface CustomFieldDao {
     int deleteByPrimaryKey(Integer fieldId);
 
@@ -14,4 +18,10 @@ public interface CustomFieldDao {
     int updateByPrimaryKeySelective(CustomField record);
 
     int updateByPrimaryKey(CustomField record);
+
+    Integer selectMaxPrimaryKey();
+
+    void deleteCustomField(Integer integer);
+
+    List<Integer> selectFeildId(Integer customTableId);
 }

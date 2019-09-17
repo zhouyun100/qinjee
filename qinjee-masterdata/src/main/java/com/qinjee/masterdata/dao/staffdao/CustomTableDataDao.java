@@ -1,7 +1,11 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao;
 
 import com.qinjee.masterdata.model.entity.CustomTableData;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface CustomTableDataDao {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +18,6 @@ public interface CustomTableDataDao {
     int updateByPrimaryKeySelective(CustomTableData record);
 
     int updateByPrimaryKey(CustomTableData record);
+
+    List<Integer> selectCustomTableId(Integer customTableId);
 }

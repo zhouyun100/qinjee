@@ -16,7 +16,6 @@ import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.model.request.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -25,10 +24,10 @@ import javax.servlet.http.HttpServletRequest;
  * @author 周赟
  * @date 2019/9/10
  */
-@Component
+//@Component
 public class BaseController {
 
-    @Autowired
+//    @Autowired
     protected RedisClusterService redisClusterService;
 
     @Autowired
