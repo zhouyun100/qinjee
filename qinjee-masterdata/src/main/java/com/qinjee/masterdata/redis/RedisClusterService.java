@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.Set;
  *
  * @since 2019年5月15日
  */
-@Component
+//@Component
 public class RedisClusterService {
 
 	@Autowired

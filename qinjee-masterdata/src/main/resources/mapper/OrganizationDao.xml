@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.OrganizationDao">
+<mapper namespace="com.qinjee.masterdata.dao.organation.OrganizationDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Organization">
     <id column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
@@ -169,13 +169,28 @@
 
   <select id="getAllOrganization" resultMap="BaseResultMap">
     select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org, t_role_org_auth roa
-    where roa.org_id = org.org_id and org.is_enable = #{isEnable}
-    and roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
+    where
+    <if test="roleIds != null and roleIds.size > 0">
+        roa.role_id in
+        <foreach item="roleId" collection="roleIds"
+                 open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+        and
+    </if>
+      roa.org_id = org.org_id
+    <if test="isEnable != null and isEnable == 1">
+        and org.is_enable = #{isEnable}
+    </if>
+    ORDER BY org.org_id ASC
   </select>
 
   <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.entity.Organization">
     select org.org_code, org.org_name, org.org_type, org.org_fullname, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName, tua.user_name orgManagerName from t_organization org
-    left join t_role_org_auth roa on roa.org_id = org.org_id and org.is_enable = #{organizationPageVo.isEnable}
+    left join t_role_org_auth roa on roa.org_id = org.org_id
+    <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
+      and org.is_enable = #{organizationPageVo.isEnable}
+    </if>
     left join t_organization parent_org on org.org_parent_id = parent_org.org_id
     left join t_user_archive tua on tua.archive_id = org.org_manager_id
     where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
@@ -201,26 +216,43 @@
 
   <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.entity.Organization">
     select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl from t_organization org left join t_role_org_auth roa on roa.org_id = org.org_id
-    and org.is_enable = #{isEnable} left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
-    where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
-    <if test="orgId != null and orgId > 0">
-      and org.org_id = #{orgId}
+    <if test="isEnable != null and isEnable == 1">
+    and org.is_enable = #{isEnable}
     </if>
+    left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
+    where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
+    <if test="orgId != null and orgId != ''">
+      and org.org_code like #{orgCode}
+    </if>
+    ORDER BY org.org_id ASC
   </select>
 
+  <update id="UpdateIsEnableByOrgIds">
+    update t_organization
+    set is_enable = #{isEnable,jdbcType=SMALLINT}
+    where org_id in
+    <foreach item="orgId" collection="orgIds"
+             open="(" separator="," close=")">
+      #{orgId}
+    </foreach>
+  </update>
 
-
-
-
-
-
-
-
-
-
-
-
-
+  <select id="getOrganizationListByParentOrgId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_organization
+    where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY org_id DESC
+  </select>
+    <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_organization
+        where org_id in
+        <foreach item="orgId" collection="orgIds"
+                 open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </select>
 
 
 </mapper>

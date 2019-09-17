@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.OrganizationHistoryDao">
+<mapper namespace="com.qinjee.masterdata.dao.organation.OrganizationHistoryDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.OrganizationHistory">
     <id column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
