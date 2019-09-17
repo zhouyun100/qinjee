@@ -1,0 +1,22 @@
+/**
+ * 文件名：SmsConfigService
+ * 工程名称：eTalent
+ * <p>
+ * qinjee
+ * 创建日期：2019/9/16
+ * <p>
+ * Copyright(C) 2019, by zhouyun
+ * 原始作者：周赟
+ */
+package com.qinjee.masterdata.service.sms;
+
+import com.qinjee.masterdata.model.entity.SmsConfig;
+
+public interface SmsConfigService {
+
+    /**
+     * 根据业务类型查询短信配置信息
+     * @return
+     */
+    SmsConfig selectLoginCodeSmsConfig();
+}

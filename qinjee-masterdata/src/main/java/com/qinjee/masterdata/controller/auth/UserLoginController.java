@@ -23,6 +23,7 @@ import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendMessage;
+import com.qinjee.utils.VerifyCodeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,7 +36,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -286,6 +289,7 @@ public class UserLoginController extends BaseController{
 
     @ApiOperation(value="加载当前登录用户菜单树", notes="加载当前登录用户菜单树")
     @RequestMapping(value = "/loadMenuTreeByCurrentLoginUser",method = RequestMethod.GET)
+    //TODO
     public ResponseResult<MenuVO> loadMenuTreeByCurrentLoginUser() {
         userSession = getUserSession();
         logger.info("loadMenuTreeByCurrentLoginUser！archiveId={} ", userSession.getArchiveId());
@@ -317,6 +321,50 @@ public class UserLoginController extends BaseController{
             }
         }
         responseResult = ResponseResult.SUCCESS();
+        return responseResult;
+    }
+
+    @ApiOperation(value="生成图形验证码", notes="生成图形验证码")
+    @RequestMapping(value = "/createCode",method = RequestMethod.GET)
+    public void createCode(HttpServletRequest request, HttpServletResponse response) {
+        try{
+            response.setHeader("Pragma", "No-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expires", 0);
+            response.setContentType("image/jpeg");
+            //生成随机字串
+            String verifyCode = VerifyCodeUtils.generateVerifyCode(4);
+            //存入会话session
+            request.getSession().setAttribute("CODE", verifyCode.toLowerCase());
+            //宽
+            int width = 100;
+            //高
+            int height = 40;
+            //生成图片
+            VerifyCodeUtils.outputImage(width, height, response.getOutputStream(), verifyCode);
+        }catch (Exception e){
+            logger.info("createCode fail！exception={} ", e.toString());
+            e.printStackTrace();
+        }
+    }
+
+
+    @ApiOperation(value="验证图形验证码", notes="验证图形验证码")
+    @RequestMapping(value = "/verifyCode",method = RequestMethod.GET)
+    public ResponseResult verifyCode(HttpServletRequest request, HttpServletResponse response,String code) {
+        try{
+            String key = (String) request.getSession().getAttribute("CODE");
+            if(code != null && code.equalsIgnoreCase(key)){
+                request.getSession().removeAttribute("CODE");
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                responseResult = ResponseResult.FAIL();
+            }
+        }catch (Exception e){
+            logger.info("verifyCode fail！exception={} ", e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+        }
         return responseResult;
     }
 
