@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.FieldCheckType;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface FieldCheckTypeDao {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,6 @@ public interface FieldCheckTypeDao {
     int updateByPrimaryKeySelective(FieldCheckType record);
 
     int updateByPrimaryKey(FieldCheckType record);
+
+    String selectCheckCode(Integer fieldId);
 }

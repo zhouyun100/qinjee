@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao;
 
 import com.qinjee.masterdata.model.entity.CustomTable;
 import org.springframework.stereotype.Repository;
@@ -21,6 +21,6 @@ public interface CustomTableDao {
 
     int updateByPrimaryKey(CustomTable record);
     int selectMaxPrimaryKey();
-    int PretenddeleteByPrimaryKey(Integer tableId);
-    List<CustomTable> selectByPage(Integer currentPage,Integer pageSize);
+    int deleteCustomTable(Integer tableId);
+    List<CustomTable> selectByPage();
 }

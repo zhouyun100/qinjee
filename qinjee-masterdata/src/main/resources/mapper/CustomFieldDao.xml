@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.CustomFieldDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.CustomFieldDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomField">
     <id column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
@@ -31,11 +31,12 @@
     from t_custom_field
     where field_id = #{fieldId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_custom_field
     where field_id = #{fieldId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="field_id" keyProperty="fieldId" parameterType="com.qinjee.masterdata.model.entity.CustomField" useGeneratedKeys="true">
+
+    <insert id="insert" keyColumn="field_id" keyProperty="fieldId" parameterType="com.qinjee.masterdata.model.entity.CustomField" useGeneratedKeys="true">
     insert into t_custom_field (field_name, field_type, valid_type,
       code_id, code_name, default_value,
       val_length, val_precision, table_id,
@@ -226,4 +227,19 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where field_id = #{fieldId,jdbcType=INTEGER}
   </update>
+    <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+        select MAX (field_id)
+        from t_custom_field
+    </select>
+    <update id="deleteCustomField">
+       update t_custom_field
+       set
+        is_delete=0
+        where where field_id = #{fieldId,jdbcType=INTEGER}
+    </update>
+    <select id="selectFeildId" resultType="java.lang.Integer">
+        select field_id
+        from   t_custom_field
+        where   table_id = #{tableId,jdbcType=INTEGER}
+    </select>
 </mapper>

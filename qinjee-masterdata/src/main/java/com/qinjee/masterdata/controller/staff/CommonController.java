@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.CustomGroup;
 import com.qinjee.masterdata.model.entity.CustomTable;
@@ -37,7 +36,7 @@ public class CommonController {
     @RequestMapping(value = "/insertCustomTable", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTable", value = "自定义表", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertCustomTable(CustomTable customTable) {
+    public ResponseResult insertCustomTable(CustomTable customTable) {
         return staffCommonService.insert(customTable);
     }
     /**
@@ -47,7 +46,7 @@ public class CommonController {
     @ApiOperation(value = "删除自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTableId", value = "自定义表id组成集合", paramType = "query", required = true, example = "{1,2}")
     public ResponseResult<Boolean> deleteCustomTable(List list) {
-      return staffCommonService.pretenddeleteByPrimaryKey(list);
+      return staffCommonService.deleteCustomTable(list);
     }
 
     /**
@@ -56,8 +55,8 @@ public class CommonController {
     @RequestMapping(value = "/updateCustomTable", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTable", value = "自定义字段表", paramType = "form", required = true)
-    public ResponseResult<Boolean> updateCustomTable(CustomTable customTable) {
-        return staffCommonService.updateByPrimaryKey(customTable);
+    public ResponseResult updateCustomTable(CustomTable customTable) {
+        return staffCommonService.updateCustomTable(customTable);
     }
 
     /**
@@ -66,14 +65,11 @@ public class CommonController {
     @RequestMapping(value = "/selectCustomTable", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义表", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
     })
-    public ResponseResult<PageResult<List<CustomTable>>> selectCustomTable(Integer currentPage, Integer pageSize) {
-        PageHelper.startPage(currentPage, pageSize);
-        PageResult<List<CustomTable>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<CustomTable>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
+    public ResponseResult<PageResult<CustomTable>> selectCustomTable(Integer currentPage, Integer pageSize) {
+        return staffCommonService.selectCustomTable(currentPage,pageSize);
     }
 
     /**
@@ -82,9 +78,8 @@ public class CommonController {
     @RequestMapping(value = "/insertCustomGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义组", notes = "hkt")
     @ApiImplicitParam(name = "customGroup", value = "自定义组", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertCustomGroup(CustomGroup customGroup) {
-        ResponseResult<Boolean> insertResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return insertResponseResult;
+    public ResponseResult insertCustomGroup(CustomGroup customGroup) {
+        return staffCommonService.insertCustomGroup(customGroup);
     }
 
     /**
@@ -93,9 +88,8 @@ public class CommonController {
     @RequestMapping(value = "/deleteCustomGroup", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义组", notes = "hkt")
     @ApiImplicitParam(name = "customGroupId", value = "自定义组id组成的数组", paramType = "form", required = true, example = "{1,2}")
-    public ResponseResult<Boolean> deleteCustomGroup(List<Integer> id) {
-        ResponseResult<Boolean> deleteResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return deleteResponseResult;
+    public ResponseResult deleteCustomGroup(List<Integer> list) {
+        return staffCommonService.deleteCustomGroup(list);
     }
 
     /**
@@ -103,13 +97,9 @@ public class CommonController {
      */
     @RequestMapping(value = "/updateCustomGroup", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义组", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "customGroupId", value = "自定义组id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "customGroup", value = "自定义组", paramType = "form", required = true)
-    })
-    public ResponseResult<Boolean> updateCustomGroup(Integer id, CustomGroup customGroup) {
-        ResponseResult<Boolean> updateResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return updateResponseResult;
+    @ApiImplicitParam(name = "customGroup", value = "自定义组", paramType = "form", required = true)
+    public ResponseResult updateCustomGroup(CustomGroup customGroup) {
+        return staffCommonService.updateCustomGroup(customGroup);
     }
 
     /**
@@ -118,14 +108,12 @@ public class CommonController {
     @RequestMapping(value = "/selectTableFromGroup", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义组中的表", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
-            @ApiImplicitParam(name = "CustomGroupId", value = "当前自定义组的id", paramType = "form", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+            @ApiImplicitParam(name = "CustomGroupId", value = "当前自定义组的id", paramType = "query", required = true),
     })
-    public ResponseResult<PageResult<List<CustomTable>>> selectTableFromGroup(Integer number, Integer pageSize, Integer CustomGroupId) {
-        PageResult<List<CustomTable>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<CustomTable>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
+    public ResponseResult<PageResult<CustomTable>> selectTableFromGroup(Integer currentPage, Integer pageSize, Integer customGroupId) {
+        return staffCommonService.selectCustomTableFromGroup(currentPage,pageSize,customGroupId);
     }
 
     /**
@@ -135,9 +123,8 @@ public class CommonController {
     @RequestMapping(value = "/insertCustomField", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义字段", notes = "hkt")
     @ApiImplicitParam(name = "customField", value = "自定义字段对象", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertCustomField(CustomField customField) {
-        ResponseResult<Boolean> insertResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return insertResponseResult;
+    public ResponseResult insertCustomField(CustomField customField) {
+        return staffCommonService.insertCustomField(customField);
     }
 
     /**
@@ -146,10 +133,9 @@ public class CommonController {
 
     @RequestMapping(value = "/deleteCustomField", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义字段", notes = "hkt")
-    @ApiImplicitParam(name = "customFieldId", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
-    public ResponseResult<Boolean> deleteCustomField(Integer[] id) {
-        ResponseResult<Boolean> integerResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return integerResponseResult;
+    @ApiImplicitParam(name = "list", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
+    public ResponseResult deleteCustomField(List<Integer> list) {
+        return staffCommonService.deleteCustomField(list);
     }
 
     /**
@@ -158,13 +144,9 @@ public class CommonController {
 
     @RequestMapping(value = "/updateCustomField", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义字段", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "customFieldId", value = "自定义字段表id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "customField", value = "自定义字段表", paramType = "form", required = true)
-    })
-    public ResponseResult<Boolean> updateCustomField(Integer id, CustomField customField) {
-        ResponseResult<Boolean> insertResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return insertResponseResult;
+    @ApiImplicitParam(name = "customField", value = "自定义字段表", paramType = "form", required = true)
+    public ResponseResult updateCustomField(CustomField customField) {
+        return staffCommonService.updateCustomField(customField);
     }
 
     /**
@@ -174,40 +156,23 @@ public class CommonController {
     @RequestMapping(value = "/selectCustomField", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义字段", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
             @ApiImplicitParam(name = "customtableId", value = "自定义表id", paramType = "query", required = true)
     })
-
-    public ResponseResult<PageResult<List<CustomField>>> selectCustomField(Integer id) {
-        PageResult<List<CustomField>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<CustomField>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
+    public ResponseResult<PageResult<CustomField>> selectCustomField(Integer currentPage,Integer pageSize,Integer customTableId) {
+        return staffCommonService.selectCustomFieldFromTable(currentPage,pageSize,customTableId);
     }
 
     /**
      * 将自定义字段信息存储到自定义表中
+     * 这里还是需要参照数据库中自定义表数据里的字段内容
      */
-
-
     @RequestMapping(value = "/insertCustomTableData", method = RequestMethod.POST)
     @ApiOperation(value = "此接口需要将页面自定义表中用户填写的信息封装成一个jsonObject，然后传给后台拼接", notes = "hkt")
     @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertCustomTableData(JSONObject jsonObject) {
-        ResponseResult<Boolean> customTableDataResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return customTableDataResponseResult;
-    }
-
-    /**
-     * 删除自定义数据表中的记录
-     */
-
-    @RequestMapping(value = "/deleteCustomTableData", method = RequestMethod.GET)
-    @ApiOperation(value = "删除自定义数据表中的记录", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "自定义数据表的id", paramType = "form", required = true, example = "{1,2}")
-    public ResponseResult<Boolean> deleteCustomTableData(Integer[] id) {
-        ResponseResult<Boolean> customTableDataResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return customTableDataResponseResult;
+    public ResponseResult insertCustomTableData(CustomTableData customTableData) {
+        return staffCommonService.insertCustomTableData(customTableData);
     }
 
     /**
@@ -216,13 +181,9 @@ public class CommonController {
 
     @RequestMapping(value = "/updateCustomTableData", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "customTableDataId", value = "自定义数据表id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "jsonObject", value = "页面内容更改过后形成的jsonObject以及其它白哦是信息形成的jsonObject", paramType = "form", required = true)
-    })
-    public ResponseResult<Boolean> updateCustomTableData(Integer id, CustomTableData customTableData) {
-        ResponseResult<Boolean> updateResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return updateResponseResult;
+    @ApiImplicitParam(name = "customTableData", value = "自定义表数据信息", paramType = "form", required = true)
+    public ResponseResult updateCustomTableData(CustomTableData customTableData) {
+        return staffCommonService.updateCustomTableData(customTableData);
     }
 
     /**
@@ -232,27 +193,22 @@ public class CommonController {
     @RequestMapping(value = "/selectCustomTableData", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义表数据内容,返回需要展示的Json", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
             @ApiImplicitParam(name = "CustomTableDataId", value = "自定义数据表id", paramType = "query", required = true)
     })
-    public ResponseResult<PageResult<List<CustomTableData>>> selectCustomTableData(Integer id) {
-        PageResult<List<CustomTableData>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<CustomTableData>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
+    public ResponseResult<PageResult<CustomTableData>> selectCustomTableData(Integer currentPage,Integer pageSize,Integer customTableId) {
+        return staffCommonService.selectCustomTableData(currentPage,pageSize,customTableId);
     }
 
     /**
-     * 删除恢复
+     * 删除恢复,这个功能因为数据表中没有isdelete字段，所以删除就是真删除，更不用提删除恢复了
      */
-
-
     @RequestMapping(value = "/cancelDelete", method = RequestMethod.GET)
     @ApiOperation(value = "删除恢复,在删除预入职表，以及人员档案表时恢复", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "id", paramType = "query", required = true)
-    public ResponseResult<Boolean> cancelDelete(Integer id) {
-        ResponseResult<Boolean> cancelDeleteResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return cancelDeleteResponseResult;
+    public ResponseResult cancelDeleteCustom(Integer id) {
+       return new ResponseResult(true,CommonCode.SUCCESS);
     }
 
     /**
@@ -261,15 +217,9 @@ public class CommonController {
 
     @RequestMapping(value = "/checkField ", method = RequestMethod.GET)
     @ApiOperation(value = "集合存储字段所需要的检验类型，考虑是否直接放在字段表中", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "企业id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "ID", value = "表ID", paramType = "query", required = true),
-            @ApiImplicitParam(name = "fieldName", value = "字段名", paramType = "query", required = true),
-    })
-    public ResponseResult<List<String>> checkField(Integer id, Integer ID, String fieldName) {
-        List<String> list = new ArrayList<>();
-        ResponseResult<List<String>> listResponseResult = new ResponseResult<>(list, CommonCode.SUCCESS);
-        return listResponseResult;
+    @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
+    public ResponseResult<List<String>> checkField(Integer fieldId) {
+        return staffCommonService.checkField(fieldId);
     }
 
     /**
@@ -277,7 +227,7 @@ public class CommonController {
      */
 
 
-    @RequestMapping(value = "/importFile ", method = RequestMethod.GET)
+    @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
     @ApiOperation(value = "模板导入", notes = "hkt")
     @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
     public ResponseResult importFile(String path) {
@@ -310,7 +260,7 @@ public class CommonController {
     @ApiOperation(value = "文件上传", notes = "hkt")
     @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
-    public ResponseResult<Boolean> UploadFile(String path) {
+    public ResponseResult UploadFile(String path) {
         ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
         return responseResult;
     }

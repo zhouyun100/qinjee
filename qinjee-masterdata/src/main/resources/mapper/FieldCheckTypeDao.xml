@@ -60,4 +60,9 @@
       check_code = #{checkCode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectCheckCode" resultType="java.lang.String">
+    select check_code
+    from  t_field_check_type
+    where  field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
 </mapper>
