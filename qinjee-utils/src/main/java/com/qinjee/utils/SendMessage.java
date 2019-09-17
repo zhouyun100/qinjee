@@ -15,16 +15,20 @@ public class SendMessage {
         private final String nationCode;
         private  String[] phoneNumbers;
         private String[] param;
-        private final int appid = 1400249114;
-        private final String appkey = "91c94cbe664487bbfb072e717957e08f";
-        private final int templateId = 409797;
-        private final String smsSign = "勤杰软件";
+        private int appid;
+        private String appkey;
+        private int templateId;
+        private String smsSign;
 
-        public SmsThread(SmsMultiSender msender, String nationCode,String[] phoneNumbers,String[] param) {
+        public SmsThread(SmsMultiSender msender, String nationCode,int appid,String appkey,int templateId, String smsSign,String[] phoneNumbers,String[] param) {
             this.msender = msender;
             this.nationCode = nationCode;
-            this.phoneNumbers=phoneNumbers;
-            this.param=param;
+            this.phoneNumbers = phoneNumbers;
+            this.param = param;
+            this.appid = appid;
+            this.appkey = appkey;
+            this.templateId = templateId;
+            this.smsSign = smsSign;
         }
 
         @Override
@@ -48,7 +52,7 @@ public class SendMessage {
             }
         }
     }
-    public static void sendMessageMany(String[] phoneNumbers,int appid,String appkey,String[] param) {
+    public static void sendMessageMany(int appid,String appkey,int templateId, String smsSign,String[] phoneNumbers,String[] param) {
         // 创建一个连接池 httpclient, 并设置最大连接量为10
 
         PoolingHTTPClient httpclient = new PoolingHTTPClient(10);
@@ -60,7 +64,7 @@ public class SendMessage {
         // 创建线程
         SmsThread[] threads = new SmsThread[phoneNumbers.length];
         for (int i = 0; i < phoneNumbers.length; i++) {
-            threads[i] = new SmsThread(smsMultiSender, "86",phoneNumbers,param);
+            threads[i] = new SmsThread(smsMultiSender, "86", appid, appkey, templateId, smsSign, phoneNumbers, param);
         }
 
         // 运行线程
@@ -82,9 +86,9 @@ public class SendMessage {
     }
 
     public static void main(String[] args) {
-        String[] phoneNumbers={"17629926598","18612406236","13266754295"};
+        String[] phoneNumbers={"18612406236"};
         String param[]={"5678","3"};
-        sendMessageMany(phoneNumbers,1400249114,"91c94cbe664487bbfb072e717957e08f",param);
+//        sendMessageMany(phoneNumbers,1400249114,"91c94cbe664487bbfb072e717957e08f",param,409797,"勤杰软件");
     }
 
 }

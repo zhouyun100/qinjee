@@ -2,8 +2,18 @@ package com.qinjee.utils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.Session;
+import javax.mail.Multipart;
+import javax.mail.Message;
+import javax.mail.BodyPart;
+import javax.mail.Transport;
+import javax.mail.MessagingException;
+
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeUtility;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
