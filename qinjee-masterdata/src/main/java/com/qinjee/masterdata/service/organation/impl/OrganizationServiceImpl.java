@@ -150,7 +150,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         String preCode = orgCode.substring(0, orgCode.length() - 3);
         Integer new_OrgCode = Integer.parseInt(number) + 1;
         String code = new_OrgCode.toString();
-        int i = 2 - code.length();
+        int i = 3 - code.length();
         if(i < 0){
             ExceptionCast.cast(CommonCode.ORGANIZATION_OUT_OF_RANGE);
         }

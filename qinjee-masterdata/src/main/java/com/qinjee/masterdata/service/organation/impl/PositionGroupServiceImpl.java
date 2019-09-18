@@ -116,14 +116,13 @@ public class PositionGroupServiceImpl implements PositionGroupService {
 
     @Override
     public ResponseResult sortPositionGroup(Integer prePositionGroupId, Integer midPositionGroupId, Integer nextPositionGroupId) {
-        PositionGroup prePositionGroup = null;
-        PositionGroup nextPositionGroup = null;
+        PositionGroup prePositionGroup;
+        PositionGroup nextPositionGroup;
         Integer midSort = null;
         if(nextPositionGroupId != null){
             //移动
             nextPositionGroup = positionGroupDao.selectByPrimaryKey(nextPositionGroupId);
             midSort = nextPositionGroup.getSortId() - 1;
-
         }else if(prePositionGroupId == null){
             //移动到最后
             prePositionGroup = positionGroupDao.selectByPrimaryKey(prePositionGroupId);

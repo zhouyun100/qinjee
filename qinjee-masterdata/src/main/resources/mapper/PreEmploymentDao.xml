@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.PreEmploymentDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.PreEmploymentDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PreEmployment">
     <id column="employment_id" jdbcType="INTEGER" property="employmentId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
@@ -20,12 +20,12 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    employment_id, user_name, employee_number, company_id, position_name, org_id, post_id,
-    employment_date, employment_state, employment_register, phone, email, data_source,
+    employment_id, user_name, employee_number, company_id, position_name, org_id, post_id, 
+    employment_date, employment_state, employment_register, phone, email, data_source, 
     create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
+    select 
     <include refid="Base_Column_List" />
     from t_pre_employment
     where employment_id = #{employmentId,jdbcType=INTEGER}
@@ -35,16 +35,16 @@
     where employment_id = #{employmentId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
-    insert into t_pre_employment (user_name, employee_number, company_id,
-      position_name, org_id, post_id,
-      employment_date, employment_state, employment_register,
-      phone, email, data_source,
+    insert into t_pre_employment (user_name, employee_number, company_id, 
+      position_name, org_id, post_id, 
+      employment_date, employment_state, employment_register, 
+      phone, email, data_source, 
       create_time, update_time, is_delete
       )
-    values (#{userName,jdbcType=VARCHAR}, #{employeeNumber,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER},
-      #{positionName,jdbcType=VARCHAR}, #{orgId,jdbcType=INTEGER}, #{postId,jdbcType=INTEGER},
-      #{employmentDate,jdbcType=DATE}, #{employmentState,jdbcType=VARCHAR}, #{employmentRegister,jdbcType=VARCHAR},
-      #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dataSource,jdbcType=VARCHAR},
+    values (#{userName,jdbcType=VARCHAR}, #{employeeNumber,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, 
+      #{positionName,jdbcType=VARCHAR}, #{orgId,jdbcType=INTEGER}, #{postId,jdbcType=INTEGER}, 
+      #{employmentDate,jdbcType=DATE}, #{employmentState,jdbcType=VARCHAR}, #{employmentRegister,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dataSource,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>

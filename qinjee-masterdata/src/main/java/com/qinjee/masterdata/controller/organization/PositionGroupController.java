@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/positionGroup")
 @Api(tags = "【机构管理】职位族接口")
-public class PositionGroupController extends BaseController {
+public class  PositionGroupController extends BaseController {
 
     @Autowired
     private PositionGroupService positionGroupService;
@@ -80,12 +80,4 @@ public class PositionGroupController extends BaseController {
     public ResponseResult<List<PositionGroup>> getAllPosition(){
         return positionGroupService.getAllPosition(getUserSession());
     }
-
-
-
-
-
-
-
-
 }
