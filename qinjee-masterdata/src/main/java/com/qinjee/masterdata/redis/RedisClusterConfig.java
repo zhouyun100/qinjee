@@ -13,6 +13,7 @@ package com.qinjee.masterdata.redis;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
@@ -28,7 +29,7 @@ import java.util.Set;
  *
  * @since 2019年5月15日
  */
-//@Configuration
+@Configuration
 public class RedisClusterConfig {
 
     @Value("${spring.redis.cluster.nodes}")

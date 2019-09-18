@@ -117,7 +117,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization parentOrganization = organizationDao.selectByPrimaryKey(orgParentId);
         List<Organization> organizationList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
         String parentOrgCode = parentOrganization.getOrgCode();
-        String number;
         String newOrgCode;
         Integer sortId;
         if(CollectionUtils.isEmpty(organizationList)){
@@ -128,16 +127,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             //有子级
             Organization Lastorganization = organizationList.get(0);
             String orgCode = Lastorganization.getOrgCode();
-
-            number = orgCode.substring(orgCode.length() - 3);
-            String preCode = orgCode.substring(0, orgCode.length() - 3);
-            Integer new_OrgCode = Integer.parseInt(number) + 1;
-            String code = new_OrgCode.toString();
-            int i = code.length() - 3;
-            for (int k = 0; k < i; k ++){
-                code = "0" + code;
-            }
-            newOrgCode = preCode + code;
+            newOrgCode = getNewCode(orgCode);
             sortId = organizationList.size() * 1000;
         }
 
@@ -146,6 +136,24 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgCode(newOrgCode);
         organization.setOrgFullname(parentOrganization.getOrgFullname());
         return organization;
+    }
+
+    /**
+     * 获取新orgCode
+     * @param orgCode
+     * @return
+     */
+    private String getNewCode(String orgCode) {
+        String number = orgCode.substring(orgCode.length() - 3);
+        String preCode = orgCode.substring(0, orgCode.length() - 3);
+        Integer new_OrgCode = Integer.parseInt(number) + 1;
+        String code = new_OrgCode.toString();
+        int i = 3 - code.length();
+        for (int k = 0; k < i; k ++){
+            code = "0" + code;
+        }
+        String newOrgCode = preCode + code;
+        return newOrgCode;
     }
 
     @Transactional
@@ -177,7 +185,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                 BeanUtils.copyProperties(organizati, organizationHistory);
                 //新增机构历史信息
                 organizationHistoryService.addOrganizationHistory(organizationHistory);
-
                 organizati.setOrgFullname(organization.getOrgFullname() + "/" + organization.getOrgName());
                 organizationDao.updateByPrimaryKeySelective(organizati);
                 updateOrganizationFullName(organizati);
@@ -208,7 +215,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 organizationDao.deleteByPrimaryKey(orgId);
             }
         }
-        return new ResponseResult(CommonCode.SUCCESS);
+        return new ResponseResult();
     }
 
     @Transactional
@@ -217,7 +224,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if(!CollectionUtils.isEmpty(orgIds)){
             organizationDao.UpdateIsEnableByOrgIds(orgIds, isEnable);
         }
-        return new ResponseResult(CommonCode.SUCCESS);
+        return new ResponseResult();
     }
 
     @Transactional
@@ -240,9 +247,9 @@ public class OrganizationServiceImpl implements OrganizationService {
             Organization newOrganization = getNewOrganization(newOrgName, targetOrgId, orgType, userSession);
             organizationDao.insertSelective(newOrganization);
 
-            updateOrganizationFullName(organizationList, newOrganization);
+            updateOrganizationFullNameAndOrgCode(organizationList, newOrganization);
         }
-        return new ResponseResult(CommonCode.SUCCESS);
+        return new ResponseResult();
     }
 
     /**
@@ -293,7 +300,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgId(midOrgId);
         organization.setSortId(midSort);
         organizationDao.insertSelective(organization);
-        return new ResponseResult(CommonCode.SUCCESS);
+        return new ResponseResult();
     }
 
     @Override
@@ -313,10 +320,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             Organization parentOrganization = organizationDao.selectByPrimaryKey(targetOrgId);
 
-            updateOrganizationFullName(organizationList, parentOrganization);
+            updateOrganizationFullNameAndOrgCode(organizationList, parentOrganization);
         }
 
-        return new ResponseResult(CommonCode.SUCCESS);
+        return new ResponseResult();
     }
 
     /**
@@ -324,16 +331,24 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param organizationList
      * @param parentOrganization
      */
-    private void updateOrganizationFullName(List<Organization> organizationList, Organization parentOrganization) {
+    private void updateOrganizationFullNameAndOrgCode(List<Organization> organizationList, Organization parentOrganization) {
+        String newOrgCode = parentOrganization.getOrgCode() + "000";
         for (Organization organization : organizationList) {
             OrganizationHistory organizationHistory = new OrganizationHistory();
             BeanUtils.copyProperties(organization, organizationHistory);
             organizationHistoryService.addOrganizationHistory(organizationHistory);
             organization.setOrgParentId(parentOrganization.getOrgId());
             organization.setOrgFullname(parentOrganization.getOrgFullname() + "/" + organization.getOrgName());
+            newOrgCode = getNewCode(newOrgCode);
+            organization.setOrgCode(newOrgCode);
             organizationDao.updateByPrimaryKeySelective(organization);
-            //修改子级全名称
-            updateOrganizationFullName(organization);
+
+            List<Organization> organizations = organizationDao.getOrganizationListByParentOrgId(organization.getOrgId());
+            if(!CollectionUtils.isEmpty(organizations)){
+                //递归修改本级的父级id和全名称及子级的全名称
+                updateOrganizationFullNameAndOrgCode(organizations, organization);
+            }
+
         }
     }
 

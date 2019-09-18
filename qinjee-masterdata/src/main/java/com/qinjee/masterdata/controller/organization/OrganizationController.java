@@ -7,7 +7,6 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -36,7 +35,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         UserSession userSession = getUserSession();
         PageResult<Organization> pageResult = organizationService.getOrganizationTree(userSession,isEnable);
-        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+        return new ResponseResult<>(pageResult);
     }
 
     @GetMapping("/getOrganizationGraphics")
@@ -44,7 +43,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult<PageResult<Organization>> getOrganizationGraphics(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable,
                                                                             @RequestParam("orgId") @ApiParam(value = "机构ID",example = "0") Integer orgId){
         PageResult<Organization> pageResult = organizationService.getOrganizationGraphics(getUserSession(), isEnable, orgId);
-        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+        return new ResponseResult<>(pageResult);
     }
 
 
@@ -53,7 +52,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult<PageResult<Organization>> getOrganizationList(OrganizationPageVo organizationPageVo){
         UserSession userSession = getUserSession();
         PageResult<Organization> pageResult = organizationService.getOrganizationList(organizationPageVo,userSession);
-        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+        return new ResponseResult<>(pageResult);
     }
 
 

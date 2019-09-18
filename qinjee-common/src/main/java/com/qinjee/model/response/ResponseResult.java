@@ -46,6 +46,15 @@ public class ResponseResult<T>{
         setResuktCode(resultCode);
     }
 
+    public ResponseResult(T result){
+        this.result = result;
+        setResuktCode(CommonCode.SUCCESS);
+    }
+
+    public ResponseResult(){
+        setResuktCode(CommonCode.SUCCESS);
+    }
+
     public static ResponseResult SUCCESS(){
         return new ResponseResult(CommonCode.SUCCESS);
     }
