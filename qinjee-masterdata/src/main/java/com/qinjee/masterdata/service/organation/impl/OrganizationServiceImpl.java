@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
@@ -99,11 +100,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
-
         Organization organization = getNewOrgCode(organizationVo.getOrgParentId());
         String fullname = organization.getOrgFullname() + "/" + organizationVo.getOrgName();
         BeanUtils.copyProperties(organizationVo, organization);
         organization.setOrgFullname(fullname);
+        organization.setOperatorId(userSession.getArchiveId());
+        organization.setIsEnable((short) 1);
         int insert = organizationDao.insertSelective(organization);
         return insert == 1 ? new ResponseResult(CommonCode.SUCCESS) :  new ResponseResult(CommonCode.FAIL);
     }
@@ -128,7 +130,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             Organization Lastorganization = organizationList.get(0);
             String orgCode = Lastorganization.getOrgCode();
             newOrgCode = getNewCode(orgCode);
-            sortId = organizationList.size() * 1000;
+            sortId = Lastorganization.getSortId() + 1000;
         }
 
         Organization organization = new Organization();
@@ -148,7 +150,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         String preCode = orgCode.substring(0, orgCode.length() - 3);
         Integer new_OrgCode = Integer.parseInt(number) + 1;
         String code = new_OrgCode.toString();
-        int i = 3 - code.length();
+        int i = 2 - code.length();
+        if(i < 0){
+            ExceptionCast.cast(CommonCode.ORGANIZATION_OUT_OF_RANGE);
+        }
         for (int k = 0; k < i; k ++){
             code = "0" + code;
         }

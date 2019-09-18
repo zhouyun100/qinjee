@@ -3,8 +3,11 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
+import com.qinjee.masterdata.service.organation.PositionGroupService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,33 +23,35 @@ import java.util.List;
 @Api(tags = "【机构管理】职位族接口")
 public class PositionGroupController extends BaseController {
 
+    @Autowired
+    private PositionGroupService positionGroupService;
 
     @ApiOperation(value = "获取所有的职位族", notes = "高雄")
     @GetMapping("/getAllPositionGroup")
     public ResponseResult<List<PositionGroup>> getAllPositionGroup(){
-        return null;
+        UserSession userSession = getUserSession();
+        List<PositionGroup> positionGroups = positionGroupService.getAllPositionGroup(userSession);
+        return new ResponseResult<>(positionGroups);
     }
 
     @ApiOperation(value = "新增职位族", notes = "高雄")
     @PostMapping("/addPositionGroup")
     public ResponseResult addPositionGroup(@RequestBody @ApiParam(value = "职位族名称", example = "研发族", required = true) String positionGroupName){
-
-        return null;
+        return positionGroupService.addPositionGroup(getUserSession(), positionGroupName);
     }
 
     @ApiOperation(value = "编辑职位族", notes = "高雄")
     @PostMapping("/editPositionGroup")
     public ResponseResult editPositionGroup(@RequestBody PositionGroupVo positionGroupVo){
-
-        return null;
+        return positionGroupService.editPositionGroup(getUserSession(), positionGroupVo);
     }
 
     @ApiOperation(value = "删除职位族", notes = "高雄")
     @PostMapping("/deletePositionGroup")
     @ApiImplicitParam(name="positionGroupIds", value = "职位族id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
     public ResponseResult deletePositionGroup(@RequestParam("positionGroupId")  List<Integer> positionGroupIds){
-
-        return null;
+        positionGroupService.deletePositionGroup(positionGroupIds);
+        return new ResponseResult();
     }
 
     @ApiImplicitParams({
@@ -59,22 +64,21 @@ public class PositionGroupController extends BaseController {
     public ResponseResult  sortPositionGroup (Integer prePositionGroupId,
                                               Integer midPositionGroupId,
                                               Integer nextPositionGroupId){
-
-        return null;
+        return positionGroupService.sortPositionGroup(prePositionGroupId,midPositionGroupId,nextPositionGroupId);
     }
 
     @ApiImplicitParam(name = "positionGroupIds", value = "选择的职位族id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
     @ApiOperation(value = "导出excel", notes = "高雄")
     @GetMapping("/downloadExcel")
     public ResponseResult downloadExcel(@RequestParam("positionGroupIds") List<Integer> positionGroupIds){
+
         return null;
     }
 
     @ApiOperation(value = "职位族职位树形图展示", notes = "高雄")
     @GetMapping("/getAllPosition")
-    public ResponseResult<PositionGroup> getAllPosition(){
-
-        return null;
+    public ResponseResult<List<PositionGroup>> getAllPosition(){
+        return positionGroupService.getAllPosition(getUserSession());
     }
 
 

@@ -2,6 +2,9 @@ package com.qinjee.masterdata.dao;
 
 
 import com.qinjee.masterdata.model.entity.PositionGrade;
+import com.qinjee.masterdata.model.entity.PositionGroup;
+
+import java.util.List;
 
 public interface PositionGradeDao {
     int deleteByPrimaryKey(Integer positionGradeId);
@@ -15,4 +18,7 @@ public interface PositionGradeDao {
     int updateByPrimaryKeySelective(PositionGrade record);
 
     int updateByPrimaryKey(PositionGrade record);
+
+
+
 }

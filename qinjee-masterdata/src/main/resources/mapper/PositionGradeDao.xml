@@ -15,12 +15,10 @@
     create_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_position_grade
-    where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
+
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_position_grade
     where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
   </delete>
@@ -109,4 +107,11 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where position_grade_id = #{positionGradeId,jdbcType=INTEGER}
   </update>
+
+  <select id="getAllPositionGroup" resultType="com.qinjee.masterdata.model.entity.PositionGroup">
+    select
+    <include refid="Base_Column_List" />
+    from t_position_grade
+    where position_grade_id = #{companyId,jdbcType=INTEGER}
+  </select>
 </mapper>

@@ -18,7 +18,9 @@ public enum CommonCode implements ResultCode{
     BUSINESS_EXCEPTION(false,10100,"业务异常！"),
     REQUEST_EXCEPTION(false,10200,"请求异常，请联系开发人员！"),
     NET_EXCEPTION(false,10201,"网络异常，服务不可用，请稍后刷新重试！"),
-    LOGIN_MULTIPLE_COMPANY(false, 10301, "多租户验证，请选择需要登录的租户平台！");
+    LOGIN_MULTIPLE_COMPANY(false, 10301, "多租户验证，请选择需要登录的租户平台！"),
+    ORGANIZATION_OUT_OF_RANGE(false,10302,"本级机构长度超出范围,添加失败！"),
+    POSITION_GROUP_NAME_REPEAT(false,10303,"职位族名重复,添加失败！");
 
 
 
