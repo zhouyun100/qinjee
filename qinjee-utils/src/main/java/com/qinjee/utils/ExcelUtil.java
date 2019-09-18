@@ -32,7 +32,7 @@ public class ExcelUtil {
 
     /**
      * @param title 主题
-     * @param heads 这个参数是所有字段的内容，座为表头显示
+     * @param heads 这个参数是所有字段的内容，做为表头显示
      * @param dates 这个是存储信息的字段，
      * 示例：
      * Map<String, String> map = new LinkedHashMap<String,String>();
@@ -305,7 +305,16 @@ public class ExcelUtil {
             }
         }
 
-
+    public static  MultipartFile getMultipartFile(File file) {
+        MultipartFile multipartFile = null;
+        try {
+            FileInputStream fileInput = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return multipartFile;
+    }
 
     public static void main(String[] args) throws IOException {
         MultipartFile multipartFile = null;

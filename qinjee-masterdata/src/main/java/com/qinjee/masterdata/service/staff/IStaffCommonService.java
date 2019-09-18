@@ -26,10 +26,9 @@ public interface IStaffCommonService {
     ResponseResult updateCustomField(CustomField customField);
     ResponseResult<PageResult<CustomField>> selectCustomFieldFromTable(Integer currentPage, Integer pageSize, Integer customTableId);
     ResponseResult insertCustomTableData(CustomTableData customTableData);
-
     ResponseResult updateCustomTableData(CustomTableData customTableData);
-
     ResponseResult<PageResult<CustomTableData>> selectCustomTableData(Integer currentPage, Integer pageSize, Integer customTableId);
-
     ResponseResult<List<String>> checkField(Integer fieldId);
+    ResponseResult importFile(String path);
+    ResponseResult exportFile(String path, String title, Integer customTableId);
 }

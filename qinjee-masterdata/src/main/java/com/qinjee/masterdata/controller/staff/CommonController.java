@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.controller.staff;
 
-import com.alibaba.fastjson.JSONObject;
 import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.CustomGroup;
 import com.qinjee.masterdata.model.entity.CustomTable;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -223,20 +221,6 @@ public class CommonController {
     }
 
     /**
-     * 模板导入
-     */
-
-
-    @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入", notes = "hkt")
-    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
-    public ResponseResult importFile(String path) {
-        List<JSONObject> list = new ArrayList<>();
-        ResponseResult<List<JSONObject>> listResponseResult = new ResponseResult<>(list, CommonCode.SUCCESS);
-        return listResponseResult;
-    }
-
-    /**
      * 模板导出
      */
 
@@ -244,12 +228,23 @@ public class CommonController {
     @RequestMapping(value = "/exporttFile ", method = RequestMethod.GET)
     @ApiOperation(value = "导出模板", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "List<JsonObject>", value = "json对象集合", paramType = "query", required = true),
             @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+            @ApiImplicitParam(name = "customTableDataId", value = "自定义表数据id", paramType = "query", required = true),
     })
-    public ResponseResult<Boolean> importFile(List<JSONObject> list, String path) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+    public ResponseResult exportFile(String path,String title,Integer customTableId) {
+        return staffCommonService.exportFile(path,title,customTableId);
+    }
+
+    /**
+     * 模板导入
+     */
+    @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导入", notes = "hkt")
+    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+    public ResponseResult<List<String[]>> importFile(String path) {
+
+        return staffCommonService.importFile(path);
     }
 
     /**
