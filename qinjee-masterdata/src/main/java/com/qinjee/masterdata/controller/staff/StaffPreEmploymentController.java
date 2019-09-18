@@ -2,15 +2,19 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.PreEmploymentChange;
+import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author Administrator
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/staffpre")
 @Api(tags = "【人员管理】预入职相关接口")
 public class StaffPreEmploymentController extends BaseController {
+    @Autowired
+    private IStaffPreEmploymentService staffPreEmploymentService;
 
 
     /**
@@ -26,10 +32,14 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @RequestMapping(value = "/sendMessage ", method = RequestMethod.GET)
     @ApiOperation(value = "短信发送入职登记表", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "预入职登记表id", paramType = "query", required = true)
-    public ResponseResult sendMessage(Integer[] id) {
-        ResponseResult listResponseResult = new ResponseResult<>(CommonCode.SUCCESS);
-        return listResponseResult;
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "list", value = "预入职登记表id组成的集合", paramType = "query", required = true),
+            @ApiImplicitParam(name = "templateId", value = "短信模板", paramType = "query", required = true),
+            @ApiImplicitParam(name = "params[]", value = "所传参数", paramType = "query", required = true),
+
+    })
+    public ResponseResult sendMessage(List<Integer> list,Integer templateId,String[] params) {
+       return staffPreEmploymentService.sendMessage(list,templateId,params);
     }
 
     /**

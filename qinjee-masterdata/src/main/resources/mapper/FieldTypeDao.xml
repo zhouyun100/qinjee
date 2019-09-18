@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.FieldTypeDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.FieldTypeDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.FieldType">
     <id column="type_code" jdbcType="VARCHAR" property="typeCode" />
     <result column="type_name" jdbcType="VARCHAR" property="typeName" />
@@ -49,4 +49,9 @@
     set type_name = #{typeName,jdbcType=VARCHAR}
     where type_code = #{typeCode,jdbcType=VARCHAR}
   </update>
+    <select id="selectFieldCode" resultType="java.lang.String">
+        select type_code
+        from  t_field_type
+        where type_name = #{typeName,jdbcType=VARCHAR}
+    </select>
 </mapper>

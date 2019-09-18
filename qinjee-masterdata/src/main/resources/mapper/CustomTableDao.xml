@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.staffdao.CustomTableDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomTable">
     <id column="table_id" jdbcType="INTEGER" property="tableId" />
     <result column="table_name" jdbcType="VARCHAR" property="tableName" />

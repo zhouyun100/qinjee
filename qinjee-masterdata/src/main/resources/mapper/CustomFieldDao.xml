@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.staffdao.CustomFieldDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomField">
     <id column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
@@ -237,9 +237,14 @@
         is_delete=0
         where where field_id = #{fieldId,jdbcType=INTEGER}
     </update>
-    <select id="selectFeildId" resultType="java.lang.Integer">
+    <select id="selectFieldId" resultType="java.lang.Integer">
         select field_id
         from   t_custom_field
         where   table_id = #{tableId,jdbcType=INTEGER}
     </select>
+  <select id="selectFieldType" resultType="java.lang.String">
+    select field_type
+    from   t_custom_field
+    where   table_id = #{tableId,jdbcType=INTEGER}
+  </select>
 </mapper>

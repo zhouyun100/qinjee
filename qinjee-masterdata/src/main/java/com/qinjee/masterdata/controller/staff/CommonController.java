@@ -126,7 +126,7 @@ public class CommonController {
     }
 
     /**
-     * 删除自定义字段类型
+     * 删除自定义字段
      */
 
     @RequestMapping(value = "/deleteCustomField", method = RequestMethod.GET)
@@ -148,11 +148,11 @@ public class CommonController {
     }
 
     /**
-     * 展示自定义字段类型
+     * 分页展示指定自定义表下的自定义字段
      */
 
     @RequestMapping(value = "/selectCustomField", method = RequestMethod.GET)
-    @ApiOperation(value = "展示自定义字段", notes = "hkt")
+    @ApiOperation(value = "分页展示指定自定义表下的自定义字段", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
@@ -189,7 +189,7 @@ public class CommonController {
      */
 
     @RequestMapping(value = "/selectCustomTableData", method = RequestMethod.GET)
-    @ApiOperation(value = "展示自定义表数据内容,返回需要展示的Json", notes = "hkt")
+    @ApiOperation(value = "展示自定义表数据内容,返回自定义表数据", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
@@ -256,8 +256,8 @@ public class CommonController {
     @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
     public ResponseResult UploadFile(String path) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+
+        return staffCommonService.putFile(path);
     }
 
 

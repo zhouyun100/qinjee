@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao.staffdao;
+package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmploymentChange;
 

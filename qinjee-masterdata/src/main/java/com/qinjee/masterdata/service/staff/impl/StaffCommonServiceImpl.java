@@ -1,36 +1,33 @@
 package com.qinjee.masterdata.service.staff.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.CheckTypeDao;
-import com.qinjee.masterdata.dao.FieldCheckTypeDao;
-import com.qinjee.masterdata.dao.staffdao.CustomFieldDao;
-import com.qinjee.masterdata.dao.staffdao.CustomGroupDao;
-import com.qinjee.masterdata.dao.staffdao.CustomTableDao;
-import com.qinjee.masterdata.dao.staffdao.CustomTableDataDao;
-import com.qinjee.masterdata.model.entity.CustomField;
-import com.qinjee.masterdata.model.entity.CustomGroup;
-import com.qinjee.masterdata.model.entity.CustomTable;
-import com.qinjee.masterdata.model.entity.CustomTableData;
-import com.qinjee.masterdata.service.staff.IStaffCommonService;
-import com.qinjee.model.response.CommonCode;
-import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.ExcelUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.multipart.MultipartFile;
+        import com.alibaba.fastjson.JSONArray;
+        import com.alibaba.fastjson.JSONObject;
+        import com.github.pagehelper.PageHelper;
+        import com.qinjee.masterdata.dao.CheckTypeDao;
+        import com.qinjee.masterdata.dao.FieldCheckTypeDao;
+        import com.qinjee.masterdata.dao.staffdao.commondao.*;
+        import com.qinjee.masterdata.model.entity.CustomField;
+        import com.qinjee.masterdata.model.entity.CustomGroup;
+        import com.qinjee.masterdata.model.entity.CustomTable;
+        import com.qinjee.masterdata.model.entity.CustomTableData;
+        import com.qinjee.masterdata.service.staff.IStaffCommonService;
+        import com.qinjee.model.response.CommonCode;
+        import com.qinjee.model.response.PageResult;
+        import com.qinjee.model.response.ResponseResult;
+        import com.qinjee.utils.ExcelUtil;
+        import com.qinjee.utils.UpAndDownUtil;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.stereotype.Service;
+        import org.springframework.web.context.request.RequestContextHolder;
+        import org.springframework.web.context.request.ServletRequestAttributes;
+        import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+        import javax.servlet.http.HttpServletResponse;
+        import java.io.File;
+        import java.io.IOException;
+        import java.util.*;
 
 /**
  * @author Administrator
@@ -50,6 +47,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private FieldCheckTypeDao fieldCheckTypeDao;
     @Autowired
     private CheckTypeDao checkTypeDao;
+    @Autowired
+    private FieldTypeDao fieldTypeDao;
 
     @Override
     public ResponseResult insert(CustomTable customTable) {
@@ -77,8 +76,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             }
             return new ResponseResult(true, CommonCode.SUCCESS);
         } catch (Exception e) {
-           logger.error("删除自定义表失败");
-           return new ResponseResult(false,CommonCode.FAIL);
+            logger.error("删除自定义表失败");
+            return new ResponseResult(false, CommonCode.FAIL);
         }
 
     }
@@ -140,7 +139,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             return new ResponseResult(true, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("删除自定义组失败");
-            return new ResponseResult(false,CommonCode.FAIL);
+            return new ResponseResult(false, CommonCode.FAIL);
         }
     }
 
@@ -166,16 +165,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<CustomTable> list = null;
         PageResult<CustomTable> pageResult = new PageResult<>();
         try {
-            List<Integer> integerList=customGroupDao.selectTableId(customGroupId);
+            List<Integer> integerList = customGroupDao.selectTableId(customGroupId);
             for (int i = 0; i < integerList.size(); i++) {
                 CustomTable customTable = customTableDao.selectByPrimaryKey(integerList.get(i));
                 list.add(customTable);
             }
             pageResult.setList(list);
-            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("查询自定义表失败");
-            return new ResponseResult<>(pageResult,CommonCode.FAIL);
+            return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
     }
 
@@ -206,7 +205,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             return new ResponseResult(true, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("删除自定义字段失败");
-            return new ResponseResult(false,CommonCode.FAIL);
+            return new ResponseResult(false, CommonCode.FAIL);
         }
     }
 
@@ -232,16 +231,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<CustomField> list = null;
         PageResult<CustomField> pageResult = new PageResult<>();
         try {
-            List<Integer> integerList=customFieldDao.selectFeildId(customTableId);
+            List<Integer> integerList = customFieldDao.selectFieldId(customTableId);
             for (int i = 0; i < integerList.size(); i++) {
                 CustomField customField = customFieldDao.selectByPrimaryKey(integerList.get(i));
                 list.add(customField);
             }
             pageResult.setList(list);
-            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("查询自定义字段失败");
-            return new ResponseResult<>(pageResult,CommonCode.FAIL);
+            return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
     }
 
@@ -250,11 +249,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         if (customTableData instanceof CustomTableData) {
             try {
                 //将前端传过来的大字段进行解析
-                JSONArray json= JSONArray.parseArray(customTableData.getBigData());
-                for(int i=0;i<json.size();i++) {
+                JSONArray json = JSONArray.parseArray(customTableData.getBigData());
+                for (int i = 0; i < json.size(); i++) {
                     JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
                     for (String s : jsono.keySet()) {
-                        s.replace(s,s+"@qinjee@");
+                        s.replace(s, s + "@qinjee@");
                     }
                 }
                 customTableDataDao.insert(customTableData);
@@ -288,32 +287,32 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<CustomTableData> list = null;
         PageResult<CustomTableData> pageResult = new PageResult<>();
         try {
-            List<Integer> integerList=customTableDataDao.selectCustomTableId(customTableId);
+            List<Integer> integerList = customTableDataDao.selectCustomTableId(customTableId);
             for (int i = 0; i < integerList.size(); i++) {
                 CustomTableData customTableData = customTableDataDao.selectByPrimaryKey(integerList.get(i));
                 list.add(customTableData);
             }
             pageResult.setList(list);
-            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("根据tableId查询自定义数据失败");
-            return new ResponseResult<>(pageResult,CommonCode.FAIL);
+            return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
     }
 
     @Override
     public ResponseResult<List<String>> checkField(Integer fieldId) {
-        List<String> list= null;
+        List<String> list = null;
         try {
             //通过字段名找到验证code
-            String checkCode=fieldCheckTypeDao.selectCheckCode(fieldId);
+            String checkCode = fieldCheckTypeDao.selectCheckCode(fieldId);
             //通过验证code找到验证名称
             list = checkTypeDao.selectCheckName(checkCode);
         } catch (Exception e) {
             logger.error("获取验证名称失败");
-            return new ResponseResult<>(list,CommonCode.FAIL);
+            return new ResponseResult<>(list, CommonCode.FAIL);
         }
-        return new ResponseResult<>(list,CommonCode.SUCCESS);
+        return new ResponseResult<>(list, CommonCode.SUCCESS);
     }
 
     @Override
@@ -331,28 +330,76 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public ResponseResult exportFile(String path, String title, Integer customTableId) {
-//        download(String path, HttpServletResponse response,
-//                String title, String[] heads, List<Map<String, String>> dates, Map<String ,String> map)
         //得到response对象
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        String[] heads = null;
+        Map<String, String> fieldNameTypemap = new HashMap<>();
+        List<Map<String, String>> mapList = new ArrayList<>();
         //获取heads，通过customTableId找到字段名存入heads
         try {
-            List<Integer> integerList=customFieldDao.selectFeildId(customTableId);
-            String[] heads=null;
-            List<CustomField> list=new ArrayList<>();
+            List<Integer> integerList = customFieldDao.selectFieldId(customTableId);
+            List<CustomField> list = new ArrayList<>();
             for (int i = 0; i < integerList.size(); i++) {
                 CustomField customField = customFieldDao.selectByPrimaryKey(integerList.get(i));
                 list.add(customField);
             }
             for (int i = 0; i < list.size(); i++) {
-                heads[i]=list.get(i).getFieldName();
+                heads[i] = list.get(i).getFieldName();
             }
         } catch (Exception e) {
-           logger.error("获取heads失败");
+            logger.error("获取heads失败");
         }
-        //todo通过数据表获得字段对应的值
-        //TODO通过字段表获取字段的类型
-        return null;
+        //通过字段表获取字段类型
+        try {
+            List<String> fieldTypeList = customFieldDao.selectFieldType(customTableId);
+            //通过类型获取到code
+            for (int i = 0; i < fieldTypeList.size(); i++) {
+                fieldNameTypemap.put(heads[i], fieldTypeList.get(i));
+            }
+        } catch (Exception e) {
+            logger.error("获取字段类型失败");
+        }
+        //通过自定义表id获得数据表里的大字段，解析出来值存进dates
+        try {
+
+            List<Integer> integerList = customTableDataDao.selectCustomTableId(customTableId);
+            for (int i = 0; i < integerList.size(); i++) {
+                Map<String, String> map = new HashMap<>();
+                CustomTableData customTableData = customTableDataDao.selectByPrimaryKey(integerList.get(i));
+                JSONArray json = JSONArray.parseArray(customTableData.getBigData());
+                for (int j = 0; j < json.size(); j++) {
+                    JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
+                    for (String s : jsono.keySet()) {
+                        map.put(s.split("@qinjee@")[0], jsono.getString(s));
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            logger.error("获取字段值失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+        try {
+            ExcelUtil.download(path, response, title, heads, mapList, fieldNameTypemap);
+            return new ResponseResult(true, CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("导出文件失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+
+    }
+
+    @Override
+    public ResponseResult putFile(String path) {
+        //TODO 文件对象键的定义
+        String key = "";
+        try {
+            UpAndDownUtil.putFile(path, key);
+            return new ResponseResult(true, CommonCode.SUCCESS);
+        } catch (Exception e) {
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+
     }
 
 }
