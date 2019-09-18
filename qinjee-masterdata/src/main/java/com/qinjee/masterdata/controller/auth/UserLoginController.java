@@ -13,16 +13,13 @@ package com.qinjee.masterdata.controller.auth;
 import com.alibaba.fastjson.JSON;
 import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.SmsConfig;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.UserLoginService;
-import com.qinjee.masterdata.service.sms.SmsConfigService;
+import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.RegexpUtils;
-import com.qinjee.utils.SendMessage;
 import com.qinjee.utils.VerifyCodeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -38,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -52,18 +48,13 @@ public class UserLoginController extends BaseController{
 
     private static Logger logger = LogManager.getLogger(UserLoginController.class);
 
-    /**
-     * 短信验证码有效分钟数
-     */
-    private static final int SMS_CODE_VALID_MINUTE = 5;
-
     private ResponseResult responseResult;
 
     @Autowired
     private UserLoginService userLoginService;
 
     @Autowired
-    private SmsConfigService smsConfigService;
+    private SmsRecordService smsRecordService;
 
     @ApiOperation(value="手机号验证码登录", notes="根据手机号、验证码来登录")
     @ApiImplicitParams({
@@ -247,21 +238,13 @@ public class UserLoginController extends BaseController{
         }
 
         try{
-            /**
-             * 生成6位随机数字验证码
-             */
-            String smsCode = KeyUtils.getNonceCodeNumber(6);
-            String[] phoneNumbers = {phone};
-            String[] param = {smsCode,String.valueOf(SMS_CODE_VALID_MINUTE)};
-            redisClusterService.setex("LOGIN_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
+            smsRecordService.sendSmsLoginCode(phone);
 
-            SmsConfig smsConfig = smsConfigService.selectLoginCodeSmsConfig();
-            SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,param);
-
+            logger.info("sendCodeByPhone success！phone={}", phone);
             responseResult = ResponseResult.SUCCESS();
-            responseResult.setMessage("手机号短信验证码发送完毕，有效期5分钟!");
+            responseResult.setMessage("手机号短信验证码发送完毕!");
         }catch (Exception e){
-            logger.info("sendCodeByMobile exception! phone={},exception={}", phone, e.toString());
+            logger.info("sendCodeByPhone exception! phone={},exception={}", phone, e.toString());
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("手机号短信验证码发送异常！");
         }
@@ -278,8 +261,11 @@ public class UserLoginController extends BaseController{
         try{
             userSession = getUserSession();
             userLoginService.updateUserPasswordByUserIdAndPassword(userSession.getUserId(), oldPassword, newPassword);
+
+            logger.info("updatePasswordByCurrentAccount success！userId={},newPassword={}", userSession.getUserId(), newPassword);
             responseResult = ResponseResult.SUCCESS();
         }catch (Exception e){
+            logger.info("updatePasswordByCurrentAccount exception! userId={},oldPassword={},exception={}", userSession.getUserId(), oldPassword, e.toString());
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改密码操作异常！");
         }
@@ -289,12 +275,19 @@ public class UserLoginController extends BaseController{
 
     @ApiOperation(value="加载当前登录用户菜单树", notes="加载当前登录用户菜单树")
     @RequestMapping(value = "/loadMenuTreeByCurrentLoginUser",method = RequestMethod.GET)
-    //TODO
     public ResponseResult<MenuVO> loadMenuTreeByCurrentLoginUser() {
-        userSession = getUserSession();
-        logger.info("loadMenuTreeByCurrentLoginUser！archiveId={} ", userSession.getArchiveId());
+        try{
+            userSession = getUserSession();
+            List<MenuVO> menuVOList = userLoginService.searchUserMenuTreeByArchiveIdAndCompanyId(userSession.getArchiveId(),userSession.getCompanyId());
 
-        responseResult = ResponseResult.SUCCESS();
+            logger.info("loadMenuTreeByCurrentLoginUser！archiveId={},companyId={} ", userSession.getArchiveId(),userSession.getCompanyId());
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(menuVOList);
+        }catch (Exception e){
+            logger.info("loadMenuTreeByCurrentLoginUser exception! archiveId={},companyId={},exception={}", userSession.getArchiveId(),userSession.getCompanyId(), e.toString());
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("修改密码操作异常！");
+        }
         return responseResult;
     }
 
@@ -302,25 +295,33 @@ public class UserLoginController extends BaseController{
     @ApiOperation(value="退出", notes="退出")
     @RequestMapping(value = "/logout",method = RequestMethod.GET)
     public ResponseResult logout(HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                if (ResponseConsts.SESSION_KEY.equals(cookies[i].getName())) {
-                    String loginKey = cookies[i].getValue();
-                    if (loginKey != null) {
-                        if(redisClusterService.exists(loginKey)) {
-                            redisClusterService.del(loginKey);
+        try{
+            String loginKey = null;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (int i = 0; i < cookies.length; i++) {
+                    if (ResponseConsts.SESSION_KEY.equals(cookies[i].getName())) {
+                        loginKey = cookies[i].getValue();
+                        if (loginKey != null) {
+                            if(redisClusterService.exists(loginKey)) {
+                                redisClusterService.del(loginKey);
+                            }
+                            cookies[i].setValue(null);
+                            // 立即销毁cookie
+                            cookies[i].setMaxAge(0);
+                            cookies[i].setPath("/");
+                            response.addCookie(cookies[i]);
                         }
-                        cookies[i].setValue(null);
-                        // 立即销毁cookie
-                        cookies[i].setMaxAge(0);
-                        cookies[i].setPath("/");
-                        response.addCookie(cookies[i]);
                     }
                 }
             }
+            logger.info("logout success！loginKey={}", loginKey);
+            responseResult = ResponseResult.SUCCESS();
+        }catch (Exception e){
+            logger.info("logout fail！userId={}", userSession.getUserId());
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("退出操作异常！");
         }
-        responseResult = ResponseResult.SUCCESS();
         return responseResult;
     }
 

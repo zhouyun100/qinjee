@@ -1,5 +1,5 @@
 /**
- * 文件名：SmsConfigService
+ * 文件名：SmsRecordService
  * 工程名称：eTalent
  * <p>
  * qinjee
@@ -10,17 +10,15 @@
  */
 package com.qinjee.masterdata.service.sms;
 
-import com.qinjee.masterdata.model.entity.SmsConfig;
-
 /**
  * @author 周赟
  * @date 2019/9/18
  */
-public interface SmsConfigService {
+public interface SmsRecordService {
 
     /**
-     * 根据业务类型查询短信配置信息
-     * @return
+     * 批量发送登录短信验证码
+     * @param phone
      */
-    SmsConfig selectLoginCodeSmsConfig();
+    void sendSmsLoginCode(String phone);
 }

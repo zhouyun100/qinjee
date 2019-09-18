@@ -10,7 +10,7 @@
  */
 package com.qinjee.masterdata.dao.auth;
 
-import com.qinjee.masterdata.model.entity.UserInfo;
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import org.springframework.stereotype.Service;
@@ -47,5 +47,12 @@ public interface UserLoginDao {
      * @return
      */
     int updateUserPasswordByUserIdAndPassword(RequestUserLoginVO userLoginVO);
+
+    /**
+     * 根据档案ID和企业ID查询功能菜单列表
+     * @param userLoginVO
+     * @return
+     */
+    List<MenuVO> searchUserMenuListByArchiveIdAndCompanyId(RequestUserLoginVO userLoginVO);
 
 }

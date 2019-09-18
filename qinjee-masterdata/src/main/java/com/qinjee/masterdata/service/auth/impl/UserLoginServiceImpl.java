@@ -10,18 +10,26 @@
  */
 package com.qinjee.masterdata.service.auth.impl;
 
-import com.alibaba.druid.util.StringUtils;
 import com.qinjee.masterdata.dao.auth.UserLoginDao;
-import com.qinjee.masterdata.model.entity.UserInfo;
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.UserLoginService;
 import com.qinjee.utils.RegexpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ *
+ *
+ * @author 周赟
+ * @date 2019/9/18
+ */
 @Service
 public class UserLoginServiceImpl implements UserLoginService {
 
@@ -65,5 +73,75 @@ public class UserLoginServiceImpl implements UserLoginService {
         userLoginVO.setPassword(oldPassword);
         userLoginVO.setNewPassword(newPassword);
         return userLoginDao.updateUserPasswordByUserIdAndPassword(userLoginVO);
+    }
+
+    @Override
+    public List<MenuVO> searchUserMenuTreeByArchiveIdAndCompanyId(Integer archiveId, Integer companyId) {
+
+        RequestUserLoginVO userLoginVO = new RequestUserLoginVO();
+        userLoginVO.setArchiveId(archiveId);
+        userLoginVO.setCompanyId(companyId);
+        userLoginVO.setCurrentDateTime(new Date());
+        List<MenuVO> menuVOList = userLoginDao.searchUserMenuListByArchiveIdAndCompanyId(userLoginVO);
+
+        /**
+         * 如果菜单列表为空则直接返回null
+         */
+        if(CollectionUtils.isEmpty(menuVOList)){
+            return null;
+        }
+
+        /**
+         * 过滤菜单功能节点，只提取枝节点和叶节点
+         */
+        List<MenuVO> allMenuVOList = menuVOList.stream().filter(menu -> {
+            if(menu.getFuncType().equals("CATEGORY") || menu.getFuncType().equals("NODE")){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        /**
+         * 提取当前菜单树的一级节点
+         */
+        List<MenuVO> firstLevelMenuList = menuVOList.stream().filter(menu -> {
+            if(menu.getMenuId().equals(menu.getParentMenuId())){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        /**
+         * 处理所有菜单列表以树形结构展示
+         */
+        handlerMenuToTree(allMenuVOList,firstLevelMenuList);
+
+        return allMenuVOList;
+    }
+
+    /**
+     * 处理所有菜单列表以树形结构展示
+     * @param allMenuVOList
+     * @param firstLevelMenuList
+     */
+    private void handlerMenuToTree(List<MenuVO> allMenuVOList, List<MenuVO> firstLevelMenuList) {
+        for (MenuVO menuVO : firstLevelMenuList) {
+            List<MenuVO> childList = allMenuVOList.stream().filter(menu -> {
+                if (menuVO.getMenuId().equals(menu.getParentMenuId())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+            /**
+             * 判断是否还有子级，如果有则递归处理
+             */
+            if(!CollectionUtils.isEmpty(childList)){
+                menuVO.setChildMenuList(childList);
+                allMenuVOList.removeAll(childList);
+                handlerMenuToTree(allMenuVOList,childList);
+            }
+        }
     }
 }

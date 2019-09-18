@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.auth;
 
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 
 import java.util.List;
@@ -52,4 +53,12 @@ public interface UserLoginService {
      * @param newPassword 新密码
      */
     int updateUserPasswordByUserIdAndPassword(Integer userId, String oldPassword, String newPassword);
+
+    /**
+     * 根据档案ID和企业ID查询功能菜单树
+     * @param archiveId
+     * @param companyId
+     * @return
+     */
+    List<MenuVO> searchUserMenuTreeByArchiveIdAndCompanyId(Integer archiveId,Integer companyId);
 }
