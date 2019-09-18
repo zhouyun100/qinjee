@@ -10,7 +10,6 @@ import lombok.ToString;
 
 @Data
 @ToString
-@NoArgsConstructor
 public class ResponseResult<T>{
 
     /**
