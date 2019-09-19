@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.StandingBookDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.StandingBook">
     <id column="standing_book_id" jdbcType="INTEGER" property="standingBookId" />
     <result column="standing_book_name" jdbcType="VARCHAR" property="standingBookName" />
@@ -25,7 +25,7 @@
     select
     <include refid="Base_Column_List" />
     from t_standing_book
-    where standing_book_id = #{standingBookId,jdbcType=INTEGER}
+    where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_standing_book
@@ -179,5 +179,11 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where standing_book_id = #{standingBookId,jdbcType=INTEGER}
+  </update>
+  <update id="deleteStandingBook">
+    update t_standing_book
+    set
+    is_delete=0
+     where standing_book_id = #{standingBookId,jdbcType=INTEGER}
   </update>
 </mapper>

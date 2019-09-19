@@ -29,7 +29,7 @@
     select
     <include refid="Base_Column_List" />
     from t_custom_field
-    where field_id = #{fieldId,jdbcType=INTEGER}
+    where field_id = #{fieldId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_custom_field
@@ -230,6 +230,7 @@
     <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
         select MAX (field_id)
         from t_custom_field
+        where is_delete = 1
     </select>
     <update id="deleteCustomField">
        update t_custom_field
@@ -240,11 +241,11 @@
     <select id="selectFieldId" resultType="java.lang.Integer">
         select field_id
         from   t_custom_field
-        where   table_id = #{tableId,jdbcType=INTEGER}
+        where   table_id = #{tableId,jdbcType=INTEGER} AND  is_delete = 1
     </select>
   <select id="selectFieldType" resultType="java.lang.String">
     select field_type
     from   t_custom_field
-    where   table_id = #{tableId,jdbcType=INTEGER}
+    where   table_id = #{tableId,jdbcType=INTEGER}   AND  is_delete = 1
   </select>
 </mapper>

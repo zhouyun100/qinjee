@@ -2,7 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.PreEmploymentChange;
+import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
@@ -100,9 +100,9 @@ public class StaffPreEmploymentController extends BaseController {
 
     @RequestMapping(value = "/updatePreEmploymentChange", method = RequestMethod.POST)
     @ApiOperation(value = "延期入职以及放弃入职", notes = "hkt")
-    @ApiImplicitParam(name = "preEmploymentChange", value = "预入职变更表", paramType = "query", required = true)
-    public ResponseResult updatePreEmploymentChange(PreEmploymentChange preEmploymentChange) {
-       return staffPreEmploymentService.updatePreEmploymentChange(preEmploymentChange);
+    @ApiImplicitParam(name = "StatusChange", value = "预入职变更表vo类", paramType = "query", required = true)
+    public ResponseResult updatePreEmploymentChange(StatusChange statusChange) {
+       return staffPreEmploymentService.insertStatusChange(statusChange);
     }
 
     /**

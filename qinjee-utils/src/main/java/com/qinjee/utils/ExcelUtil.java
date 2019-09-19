@@ -1,5 +1,6 @@
 package com.qinjee.utils;
 
+import entity.ExcelEntity;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -10,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExcelUtil {
     /**
@@ -34,17 +32,17 @@ public class ExcelUtil {
      * @param title 主题
      * @param heads 这个参数是所有字段的内容，做为表头显示
      * @param dates 这个是存储信息的字段，
-     * 示例：
-     * Map<String, String> map = new LinkedHashMap<String,String>();
-     *             map.put("ID", String.valueOf(i+1));
-     *             map.put("Name", "name"+(i+1));
-     *             map.put("Pass", "pass"+(i+1));
-     *             dates.add(map);
-     * @param url 文件存储路径
-     * @param map 以表头信息为key，类型为value的Map集合
+     *              示例：
+     *              Map<String, String> map = new LinkedHashMap<String,String>();
+     *              map.put("ID", String.valueOf(i+1));
+     *              map.put("Name", "name"+(i+1));
+     *              map.put("Pass", "pass"+(i+1));
+     *              dates.add(map);
+     * @param url   文件存储路径
+     * @param map   以表头信息为key，类型为value的Map集合
      */
     private static void exportExcel(String title, String[] heads,
-                                    List<Map<String, String>> dates, String url, Map<String,String> map) {
+                                    List<Map<String, String>> dates, String url, Map<String, String> map) {
         // 新建excel报表
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
         // 添加一个sheet名称
@@ -73,7 +71,7 @@ public class ExcelUtil {
         for (int i = 0; i < heads.length; i++) {
             HSSFCell hssfCell = hssfRow.createCell(i);
             hssfCell.setCellValue(heads[i]);
-            hssfCell.setCellType(getCellType(map.get(heads[i]),cell_1));
+            hssfCell.setCellType(getCellType(map.get(heads[i]), cell_1));
         }
 
         // 循环将list里面的值取出来放进excel中
@@ -108,7 +106,7 @@ public class ExcelUtil {
      *              下载excel
      */
     public static void download(String path, HttpServletResponse response,
-                                String title, String[] heads, List<Map<String, String>> dates, Map<String ,String> map) {
+                                String title, String[] heads, List<Map<String, String>> dates, Map<String, String> map) {
         exportExcel(title, heads, dates, path, map);
         try {
             // path是指欲下载的文件的路径。
@@ -145,9 +143,10 @@ public class ExcelUtil {
      * @param file
      * @throws IOException
      */
-    public static List<String[]> readExcel(MultipartFile file)
+    public static ExcelEntity readExcel(MultipartFile file)
             throws IOException {
         // 检查文件
+        ExcelEntity excelEntity = new ExcelEntity();
         checkFile(file);
         // 获得Workbook工作薄对象
         Workbook workbook = getWorkBook(file);
@@ -180,12 +179,23 @@ public class ExcelUtil {
                     for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
                         Cell cell = row.getCell(cellNum);
                         cells[cellNum] = getCellValue(cell);
+
                     }
                     list.add(cells);
+                    //此时应该返回一个表属性的list集合，与一个以表头为key，value为数据的map
                 }
             }
         }
-        return list;
+        String[] heads = list.get(0);
+        Map<String, String> map = new HashMap<>();
+        for (int i = 1; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).length; j++) {
+                map.put(heads[j], list.get(i)[j]);
+            }
+        }
+        excelEntity.setHeads(heads);
+        excelEntity.setMap(map);
+        return excelEntity;
     }
 
     /**
@@ -288,24 +298,24 @@ public class ExcelUtil {
      * @param type
      * @return
      */
-    public static Integer getCellType(String type , HSSFCell cell) {
-            switch (type) {
-                case "Integer":
-                    return HSSFCell.CELL_TYPE_NUMERIC;
-                case "String":
-                    return HSSFCell.CELL_TYPE_STRING;
-                case "Boolean":
-                    return HSSFCell.CELL_TYPE_BOOLEAN;
-                case "":
-                    return HSSFCell.CELL_TYPE_BLANK;
-                case "Date":
-                    return HSSFCell.CELL_TYPE_NUMERIC;
-                default:
-                    return HSSFCell.CELL_TYPE_STRING;
-            }
+    public static Integer getCellType(String type, HSSFCell cell) {
+        switch (type) {
+            case "Integer":
+                return HSSFCell.CELL_TYPE_NUMERIC;
+            case "String":
+                return HSSFCell.CELL_TYPE_STRING;
+            case "Boolean":
+                return HSSFCell.CELL_TYPE_BOOLEAN;
+            case "":
+                return HSSFCell.CELL_TYPE_BLANK;
+            case "Date":
+                return HSSFCell.CELL_TYPE_NUMERIC;
+            default:
+                return HSSFCell.CELL_TYPE_STRING;
         }
+    }
 
-    public static  MultipartFile getMultipartFile(File file) {
+    public static MultipartFile getMultipartFile(File file) {
         MultipartFile multipartFile = null;
         try {
             FileInputStream fileInput = new FileInputStream(file);
@@ -316,23 +326,23 @@ public class ExcelUtil {
         return multipartFile;
     }
 
-    public static void main(String[] args) throws IOException {
-        MultipartFile multipartFile = null;
-        File file = new File("C:\\Users\\Administrator\\Desktop\\hello.xls");
-        FileInputStream fileInput = new FileInputStream(file);
-        multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
-        List<String[]> list = null;
-        try {
-            list = ExcelUtil.readExcel(multipartFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (String[] strings : list) {
-            for (int i = 0; i < strings.length; i++) {
-                //这里可以获取excel的数据，然后将数据添加进数据库里面
-                System.out.print(strings[i] + "\t");
-            }
-            System.out.println();
-        }
-    }
+//    public static void main(String[] args) throws IOException {
+//        MultipartFile multipartFile = null;
+//        File file = new File("C:\\Users\\Administrator\\Desktop\\hello.xls");
+//        FileInputStream fileInput = new FileInputStream(file);
+//        multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
+//        List<String[]> list = null;
+//        try {
+//            list = ExcelUtil.readExcel(multipartFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        for (String[] strings : list) {
+//            for (int i = 0; i < strings.length; i++) {
+//                //这里可以获取excel的数据，然后将数据添加进数据库里面
+//                System.out.print(strings[i] + "\t");
+//            }
+//            System.out.println();
+//        }
+//    }
 }

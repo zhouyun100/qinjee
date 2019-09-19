@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.QuerySchemeDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.QueryScheme">
     <id column="query_scheme_id" jdbcType="INTEGER" property="querySchemeId" />
     <result column="query_scheme_name" jdbcType="VARCHAR" property="querySchemeName" />
@@ -17,7 +17,7 @@
     select
     <include refid="Base_Column_List" />
     from t_query_scheme
-    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_query_scheme
@@ -108,4 +108,13 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
   </update>
+    <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+        select Max(query_scheme_id)
+        from t_query_scheme  AND  is_delete = 1
+    </select>
+    <update id="deleteQueryScheme">
+        update
+        set  is_delete =0
+        where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+    </update>
 </mapper>

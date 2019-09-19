@@ -17,6 +17,7 @@ package com.qinjee.masterdata.service.staff.impl;
         import com.qinjee.model.response.ResponseResult;
         import com.qinjee.utils.ExcelUtil;
         import com.qinjee.utils.UpAndDownUtil;
+        import entity.ExcelEntity;
         import org.slf4j.Logger;
         import org.slf4j.LoggerFactory;
         import org.springframework.beans.factory.annotation.Autowired;
@@ -106,11 +107,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         try {
             list = customTableDao.selectByPage();
             pageResult.setList(list);
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("查询数据库失败");
             return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
-        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
     }
 
     @Override
@@ -240,8 +241,19 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             pageResult.setList(list);
             return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
-            logger.error("查询自定义字段失败");
+            logger.error("根据表查询自定义字段失败");
             return new ResponseResult<>(pageResult, CommonCode.FAIL);
+        }
+    }
+    @Override
+    public ResponseResult<CustomField> selectCustomFieldById(Integer customFieldId) {
+        CustomField customField =null;
+        try {
+             customField = customFieldDao.selectByPrimaryKey(customFieldId);
+            return new ResponseResult<>(customField, CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("根据表查询自定义字段失败");
+            return new ResponseResult<>(customField, CommonCode.FAIL);
         }
     }
 
@@ -318,13 +330,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public ResponseResult importFile(String path) {
-        List<String[]> strings = null;
+        ExcelEntity excelEntity  = null;
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
         try {
-            strings = ExcelUtil.readExcel(multipartFile);
-            return new ResponseResult(strings, CommonCode.SUCCESS);
+             excelEntity = ExcelUtil.readExcel(multipartFile);
+            return new ResponseResult(excelEntity, CommonCode.SUCCESS);
         } catch (IOException e) {
-            return new ResponseResult(strings, CommonCode.FAIL);
+            return new ResponseResult(excelEntity, CommonCode.FAIL);
         }
 
     }
@@ -419,6 +431,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             return new ResponseResult(false, CommonCode.FAIL);
         }
     }
+
+
 
 }
 

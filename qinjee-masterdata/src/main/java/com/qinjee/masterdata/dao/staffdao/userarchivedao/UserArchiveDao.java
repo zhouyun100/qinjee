@@ -23,4 +23,5 @@ public interface UserArchiveDao {
     Integer selectMaxId();
 
     String selectMail(Integer integer);
+
 }

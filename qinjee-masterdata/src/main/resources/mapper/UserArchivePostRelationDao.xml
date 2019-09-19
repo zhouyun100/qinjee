@@ -191,4 +191,14 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+    select MAX (id)
+    from t_position_grade_relation
+  </select>
+  <update id="deleteUserArchivePostRelation">
+    update
+    set
+     is_delete = 0
+     where id = #{id,jdbcType=INTEGER}
+  </update>
 </mapper>

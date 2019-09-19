@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.BlacklistDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.BlacklistDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Blacklist">
     <id column="blacklist_id" jdbcType="INTEGER" property="blacklistId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
@@ -250,4 +250,14 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where blacklist_id = #{blacklistId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    select
+    MAX (blacklist_id)
+    from t_blacklist
+  </select>
+  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.Blacklist">
+    select
+    <include refid="Base_Column_List" />
+    from t_blacklist
+  </select>
 </mapper>

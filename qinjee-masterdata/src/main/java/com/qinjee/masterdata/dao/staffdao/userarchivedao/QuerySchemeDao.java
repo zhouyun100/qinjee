@@ -1,7 +1,12 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.QueryScheme;
+import org.springframework.stereotype.Repository;
 
+/**
+ * @author Administrator
+ */
+@Repository
 public interface QuerySchemeDao {
     int deleteByPrimaryKey(Integer querySchemeId);
 
@@ -14,4 +19,9 @@ public interface QuerySchemeDao {
     int updateByPrimaryKeySelective(QueryScheme record);
 
     int updateByPrimaryKey(QueryScheme record);
+
+    Integer selectMaxPrimaryKey();
+
+    void deleteQueryScheme(Integer integer);
+
 }

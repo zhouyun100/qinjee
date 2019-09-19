@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.PreEmploymentChange;
+import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
@@ -44,9 +44,10 @@ public interface IStaffPreEmploymentService {
     ResponseResult checkMail(String mail);
 
     /**
-     * 更新预入职变更表
-     * @param preEmploymentChange
+     * 新增预入职变更表
+     * @param statusChange
      * @return
      */
-    ResponseResult updatePreEmploymentChange(PreEmploymentChange preEmploymentChange);
+
+    ResponseResult insertStatusChange(StatusChange statusChange);
 }

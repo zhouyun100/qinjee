@@ -161,6 +161,19 @@ public class CommonController {
     public ResponseResult<PageResult<CustomField>> selectCustomField(Integer currentPage,Integer pageSize,Integer customTableId) {
         return staffCommonService.selectCustomFieldFromTable(currentPage,pageSize,customTableId);
     }
+    /**
+     * 通过自定义字段id找到对应的自定义字段信息
+     */
+    @RequestMapping(value = "/selectCustomFieldById", method = RequestMethod.GET)
+    @ApiOperation(value = "通过自定义字段id找到对应的自定义字段信息", notes = "hkt")
+    @ApiImplicitParam(name = "customFieldId", value = "自定义字段id", paramType = "query", required = true)
+    public ResponseResult<CustomField> selectCustomField(Integer customFieldId) {
+        return staffCommonService.selectCustomFieldById(customFieldId);
+    }
+    /**
+     * 通过自定义字段id找到对应的自定义字段信息
+     */
+
 
     /**
      * 将自定义字段信息存储到自定义表中
