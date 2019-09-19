@@ -1,7 +1,12 @@
 package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmploymentChange;
+import org.springframework.stereotype.Repository;
 
+/**
+ * @author Administrator
+ */
+@Repository
 public interface PreEmploymentChangeDao {
     int deleteByPrimaryKey(Integer changeId);
 

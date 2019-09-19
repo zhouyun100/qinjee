@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.UserArchiveDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.UserArchive">
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
@@ -452,4 +452,13 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    select MAX (archive_id)
+    from t_user_archive
+  </select>
+  <select id="selectMail" resultType="java.lang.String">
+    select  email
+    from t_user_archive
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+  </select>
 </mapper>

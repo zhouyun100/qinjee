@@ -215,4 +215,18 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where employment_id = #{employmentId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    select MAX (employment_id)
+    from t_pre_employment
+  </select>
+  <select id="getPhoneNumber" resultType="java.lang.String">
+    select phone
+    from t_pre_employment
+    where employment_id = #{employmentId,jdbcType=INTEGER}
+  </select>
+  <select id="getMail" resultType="java.lang.String">
+    select email
+    from t_pre_employment
+    where employment_id = #{employmentId,jdbcType=INTEGER}
+  </select>
 </mapper>

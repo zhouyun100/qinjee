@@ -10,6 +10,7 @@ package com.qinjee.masterdata.service.staff.impl;
         import com.qinjee.masterdata.model.entity.CustomGroup;
         import com.qinjee.masterdata.model.entity.CustomTable;
         import com.qinjee.masterdata.model.entity.CustomTableData;
+        import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
         import com.qinjee.masterdata.service.staff.IStaffCommonService;
         import com.qinjee.model.response.CommonCode;
         import com.qinjee.model.response.PageResult;
@@ -397,9 +398,26 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             UpAndDownUtil.putFile(path, key);
             return new ResponseResult(true, CommonCode.SUCCESS);
         } catch (Exception e) {
+            logger.error("文件上传错误");
             return new ResponseResult(false, CommonCode.FAIL);
         }
 
+    }
+
+    @Override
+    public ResponseResult UploadFileByForWard() {
+
+        try {
+            String s = UpAndDownUtil.TransToForward();
+            ForWardPutFile forWardPutFile=new ForWardPutFile();
+            forWardPutFile.setString(s);
+            //TODO 对象键的定义需要制定规则，利用规则生成
+            forWardPutFile.setKey("");
+            return new ResponseResult(forWardPutFile,CommonCode.SUCCESS);
+        } catch (Exception e) {
+           logger.error("文件上传获取对象错误");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
     }
 
 }
