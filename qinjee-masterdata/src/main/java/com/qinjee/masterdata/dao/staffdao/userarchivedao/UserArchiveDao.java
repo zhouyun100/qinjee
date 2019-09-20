@@ -1,7 +1,12 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
+import org.springframework.stereotype.Repository;
 
+/**
+ * @author Administrator
+ */
+@Repository
 public interface UserArchiveDao {
     int deleteByPrimaryKey(Integer archiveId);
 
@@ -14,4 +19,9 @@ public interface UserArchiveDao {
     int updateByPrimaryKeySelective(UserArchive record);
 
     int updateByPrimaryKey(UserArchive record);
+
+    Integer selectMaxId();
+
+    String selectMail(Integer integer);
+
 }

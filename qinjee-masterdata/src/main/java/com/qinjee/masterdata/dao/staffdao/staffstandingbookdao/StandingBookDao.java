@@ -1,7 +1,12 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.staffstandingbookdao;
 
 import com.qinjee.masterdata.model.entity.StandingBook;
+import org.springframework.stereotype.Repository;
 
+/**
+ * @author Administrator
+ */
+@Repository
 public interface StandingBookDao {
     int deleteByPrimaryKey(Integer standingBookId);
 
@@ -14,4 +19,6 @@ public interface StandingBookDao {
     int updateByPrimaryKeySelective(StandingBook record);
 
     int updateByPrimaryKey(StandingBook record);
+
+    void deleteStandingBook(Integer standingBookId);
 }

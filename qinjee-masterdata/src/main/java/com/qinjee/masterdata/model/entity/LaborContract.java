@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * t_labor_contract
- * @author
+ * @author 
  */
 public class LaborContract implements Serializable {
     /**
@@ -102,6 +102,16 @@ public class LaborContract implements Serializable {
      * 合同编号
      */
     private String contractNumber;
+
+    /**
+     * 合同状态
+     */
+    private String contractState;
+
+    /**
+     * 合同备注
+     */
+    private String contractRemark;
 
     /**
      * 签订次数
@@ -275,6 +285,22 @@ public class LaborContract implements Serializable {
 
     public void setContractNumber(String contractNumber) {
         this.contractNumber = contractNumber;
+    }
+
+    public String getContractState() {
+        return contractState;
+    }
+
+    public void setContractState(String contractState) {
+        this.contractState = contractState;
+    }
+
+    public String getContractRemark() {
+        return contractRemark;
+    }
+
+    public void setContractRemark(String contractRemark) {
+        this.contractRemark = contractRemark;
     }
 
     public Integer getSignNumber() {

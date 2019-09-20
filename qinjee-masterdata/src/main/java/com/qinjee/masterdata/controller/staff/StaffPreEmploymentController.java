@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
@@ -47,10 +48,15 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @RequestMapping(value = "/sendMail ", method = RequestMethod.GET)
     @ApiOperation(value = "邮箱发送入职登记表", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "预入职登记表id", paramType = "query", required = true)
-    public ResponseResult sendMail(Integer[] id) {
-        ResponseResult listResponseResult = new ResponseResult<>(CommonCode.SUCCESS);
-        return listResponseResult;
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "list", value = "预入职收信人id集合", paramType = "query", required = true),
+            @ApiImplicitParam(name = "list", value = "抄送人档案id集合", paramType = "query", required = true),
+            @ApiImplicitParam(name = "String", value = "发送邮件主题", paramType = "query", required = true),
+            @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
+            @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
+    })
+    public ResponseResult sendMail(List<Integer> prelist,List<Integer> conList,String content,String subject,String[] filepath) {
+        return staffPreEmploymentService.sendManyMail(prelist,conList,content,subject,filepath) ;
     }
 
     /**
@@ -58,24 +64,21 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @RequestMapping(value = "/checkPhone ", method = RequestMethod.GET)
     @ApiOperation(value = "校验手机号码", notes = "hkt")
-    @ApiImplicitParam(name = "phoneNumber", value = "手机号", paramType = "query", required = true)
+    @ApiImplicitParam(name = "String", value = "手机号", paramType = "query", required = true)
     public ResponseResult checkPhone(String phoneNumber) {
-        ResponseResult<Boolean> booleanResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return booleanResponseResult;
+        return  staffPreEmploymentService.checkPhone(phoneNumber);
     }
 
     /**
-     * 发送验证码
+     * 校验邮箱
      */
-
-    @RequestMapping(value = "/getPhoneCheckNumber ", method = RequestMethod.GET)
-    @ApiOperation(value = "手机验证码", notes = "hkt")
-    @ApiImplicitParam(name = "phoneNumber", value = "手机号", paramType = "query", required = true)
-    public ResponseResult getPhoneCheckNumber(String phoneNumber) {
-        String checknumber = "手机验证码";
-        ResponseResult<String> stringResponseResult = new ResponseResult<>(checknumber, CommonCode.SUCCESS);
-        return stringResponseResult;
+    @RequestMapping(value = "/checkMail ", method = RequestMethod.GET)
+    @ApiOperation(value = "校验邮箱", notes = "hkt")
+    @ApiImplicitParam(name = "String", value = "邮箱", paramType = "query", required = true)
+    public ResponseResult checkMail(String mail) {
+        return  staffPreEmploymentService.checkMail(mail);
     }
+
 
 
     /**
@@ -97,10 +100,9 @@ public class StaffPreEmploymentController extends BaseController {
 
     @RequestMapping(value = "/updatePreEmploymentChange", method = RequestMethod.POST)
     @ApiOperation(value = "延期入职以及放弃入职", notes = "hkt")
-    @ApiImplicitParam(name = "jsonObject", value = "预入职变更表", paramType = "query", required = true)
-    public ResponseResult update(PreEmploymentChange preEmploymentChange) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+    @ApiImplicitParam(name = "StatusChange", value = "预入职变更表vo类", paramType = "query", required = true)
+    public ResponseResult updatePreEmploymentChange(StatusChange statusChange) {
+       return staffPreEmploymentService.insertStatusChange(statusChange);
     }
 
     /**

@@ -109,4 +109,12 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where change_id = #{changeId,jdbcType=INTEGER}
   </update>
+  <insert id="insertStatusChange" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.vo.staff.StatusChange" useGeneratedKeys="true">
+    insert into t_pre_employment_change (employment_id, change_state, abandon_reason,
+      change_remark, operator_id
+      )
+    values (#{employmentId,jdbcType=INTEGER}, #{changeState,jdbcType=VARCHAR}, #{abandonReason,jdbcType=VARCHAR},
+      #{changeRemark,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}
+      )
+  </insert>
 </mapper>

@@ -10,12 +10,14 @@ package com.qinjee.masterdata.service.staff.impl;
         import com.qinjee.masterdata.model.entity.CustomGroup;
         import com.qinjee.masterdata.model.entity.CustomTable;
         import com.qinjee.masterdata.model.entity.CustomTableData;
+        import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
         import com.qinjee.masterdata.service.staff.IStaffCommonService;
         import com.qinjee.model.response.CommonCode;
         import com.qinjee.model.response.PageResult;
         import com.qinjee.model.response.ResponseResult;
         import com.qinjee.utils.ExcelUtil;
         import com.qinjee.utils.UpAndDownUtil;
+        import entity.ExcelEntity;
         import org.slf4j.Logger;
         import org.slf4j.LoggerFactory;
         import org.springframework.beans.factory.annotation.Autowired;
@@ -105,11 +107,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         try {
             list = customTableDao.selectByPage();
             pageResult.setList(list);
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("查询数据库失败");
             return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
-        return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
     }
 
     @Override
@@ -239,8 +241,19 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             pageResult.setList(list);
             return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
-            logger.error("查询自定义字段失败");
+            logger.error("根据表查询自定义字段失败");
             return new ResponseResult<>(pageResult, CommonCode.FAIL);
+        }
+    }
+    @Override
+    public ResponseResult<CustomField> selectCustomFieldById(Integer customFieldId) {
+        CustomField customField =null;
+        try {
+             customField = customFieldDao.selectByPrimaryKey(customFieldId);
+            return new ResponseResult<>(customField, CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("根据表查询自定义字段失败");
+            return new ResponseResult<>(customField, CommonCode.FAIL);
         }
     }
 
@@ -317,13 +330,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public ResponseResult importFile(String path) {
-        List<String[]> strings = null;
+        ExcelEntity excelEntity  = null;
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
         try {
-            strings = ExcelUtil.readExcel(multipartFile);
-            return new ResponseResult(strings, CommonCode.SUCCESS);
+             excelEntity = ExcelUtil.readExcel(multipartFile);
+            return new ResponseResult(excelEntity, CommonCode.SUCCESS);
         } catch (IOException e) {
-            return new ResponseResult(strings, CommonCode.FAIL);
+            return new ResponseResult(excelEntity, CommonCode.FAIL);
         }
 
     }
@@ -397,10 +410,29 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             UpAndDownUtil.putFile(path, key);
             return new ResponseResult(true, CommonCode.SUCCESS);
         } catch (Exception e) {
+            logger.error("文件上传错误");
             return new ResponseResult(false, CommonCode.FAIL);
         }
 
     }
+
+    @Override
+    public ResponseResult UploadFileByForWard() {
+
+        try {
+            String s = UpAndDownUtil.TransToForward();
+            ForWardPutFile forWardPutFile=new ForWardPutFile();
+            forWardPutFile.setString(s);
+            //TODO 对象键的定义需要制定规则，利用规则生成
+            forWardPutFile.setKey("");
+            return new ResponseResult(forWardPutFile,CommonCode.SUCCESS);
+        } catch (Exception e) {
+           logger.error("文件上传获取对象错误");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
+
 
 }
 

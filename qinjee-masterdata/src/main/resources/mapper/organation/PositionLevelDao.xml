@@ -20,7 +20,8 @@
     from t_position_level
     where position_level_id = #{positionLevelId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_position_level
     where position_level_id = #{positionLevelId,jdbcType=INTEGER}
   </delete>
@@ -109,4 +110,11 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where position_level_id = #{positionLevelId,jdbcType=INTEGER}
   </update>
+
+  <select id="getPositionLevelListByPositionId" resultType="com.qinjee.masterdata.model.entity.PositionLevel">
+    select tpl.position_level_id, tpl.position_level_name, tpl.position_level_remark, tpl.sort_id, tpl.operator_id, tpl.create_time, tpl.is_delete
+    from t_position_level tpl left join t_position_level_relation tplr on tplr.position_level_id = tpl.position_level_id
+    where tpl.is_delete = 0 and tplr.is_delete = 0 and tplr.position_id = #{positionId} ORDER BY tpl.sort_id ASC
+  </select>
+
 </mapper>

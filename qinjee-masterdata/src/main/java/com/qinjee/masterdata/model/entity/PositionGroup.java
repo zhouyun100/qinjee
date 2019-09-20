@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 职位族表
@@ -59,9 +58,31 @@ public class PositionGroup implements Serializable {
     @ApiModelProperty("是否删除")
     private Short isDelete;
 
+    /**
+     * 职位逗号拼接
+     */
+    @ApiModelProperty("职位逗号拼接")
+    private String positionNames;
 
-    @ApiModelProperty("职位族下的职位")
-    private List<Position> positionList;
+    /**
+     * 职位逗号拼接合并行
+     */
+    @ApiModelProperty("职位逗号拼接合并行")
+    private Integer positionNamesRowSpan;
+
+    /**
+     * 职等名称
+     */
+    @ApiModelProperty("职等名称")
+    private String positionGradeNames;
+
+    /**
+     * 职等名称合并行
+     */
+    @ApiModelProperty("职等名称合并行")
+    private Integer positionGradeNamesRowSpan;
+
+
 
     private static final long serialVersionUID = 1L;
 

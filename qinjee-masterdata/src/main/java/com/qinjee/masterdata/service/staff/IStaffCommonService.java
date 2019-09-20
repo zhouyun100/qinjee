@@ -155,4 +155,17 @@ public interface IStaffCommonService {
      * @return
      */
     ResponseResult putFile(String path);
+
+    /**
+     * 返回临时对象给前端
+     * @return
+     */
+    ResponseResult UploadFileByForWard();
+
+    /**
+     * 通过字段id找到自定义字段信息
+     * @param customFieldId
+     * @return
+     */
+    ResponseResult<CustomField> selectCustomFieldById(Integer customFieldId);
 }

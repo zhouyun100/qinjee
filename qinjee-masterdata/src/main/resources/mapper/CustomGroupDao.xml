@@ -18,7 +18,7 @@
     select
     <include refid="Base_Column_List" />
     from t_custom_group
-    where group_id = #{groupId,jdbcType=INTEGER}
+    where group_id = #{groupId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -127,12 +127,12 @@
      where group_id = #{groupId,jdbcType=INTEGER}
   </update>
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select MAX (group_id) from t_custom_group
+    select MAX (group_id) from t_custom_group WHERE    is_delete = 1
   </select>
   <select id="selectTableId" parameterType="integer" resultType="java.lang.Integer">
     select table_id
     from t_custom_group
-    where group_id=#{customGroupId,jdbcType=INTEGER}
+    where group_id=#{customGroupId,jdbcType=INTEGER}  AND  is_delete = 1
 
   </select>
 </mapper>

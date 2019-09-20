@@ -1,7 +1,14 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.QuerySchemeSort;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+/**
+ * @author Administrator
+ */
+@Repository
 public interface QuerySchemeSortDao {
     int deleteByPrimaryKey(Integer querySchemeSortId);
 
@@ -14,4 +21,8 @@ public interface QuerySchemeSortDao {
     int updateByPrimaryKeySelective(QuerySchemeSort record);
 
     int updateByPrimaryKey(QuerySchemeSort record);
+
+    List<QuerySchemeSort> selectByQuerySchemeId(Integer id);
+
+    void deleteBySchemeId(Integer querySchemeId);
 }

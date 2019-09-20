@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao;
 
 import com.qinjee.masterdata.model.entity.LaborContract;
 

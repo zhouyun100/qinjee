@@ -36,10 +36,10 @@ public class PositionVo implements Serializable {
 
 
     @ApiModelProperty("职位对应的职级")
-    List<Integer> positionLevels;
+    List<Integer> positionLevelIds;
 
     @ApiModelProperty("职位对应的职等")
-    List<Integer> positionGrades;
+    List<Integer> positionGradeIds;
 
     private static final long serialVersionUID = 1L;
 

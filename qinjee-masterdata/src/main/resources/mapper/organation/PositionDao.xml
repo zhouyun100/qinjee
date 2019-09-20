@@ -20,7 +20,8 @@
     from t_position
     where position_id = #{positionId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_position
     where position_id = #{positionId,jdbcType=INTEGER}
   </delete>
@@ -109,4 +110,16 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where position_id = #{positionId,jdbcType=INTEGER}
   </update>
+
+  <select id="getPositionListByGroupId" resultType="com.qinjee.masterdata.model.entity.Position">
+    select
+    <include refid="Base_Column_List" />
+    from t_position
+    where position_group_id = #{positionGroupId,jdbcType=INTEGER} and is_delete = 0 ORDER BY sort_id ASC
+  </select>
+    <select id="getPositionList" resultType="com.qinjee.masterdata.model.entity.Position">
+      select tp.position_id, tp.position_name, tp.position_group_id, tp.sort_id, tp.operator_id, tp.create_time, tp.is_delete, tpg.position_group_name positionGroupName
+      from t_position_group tpg left join t_position tp on tpg.position_group_id = tp.position_group_id
+      where tpg.company_id = #{companyId} and tpg.is_delete = 0 and tp.is_delete = 0 ORDER BY tpg.sort_id, tp.sort_id ASC
+    </select>
 </mapper>

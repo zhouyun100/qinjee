@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.QuerySchemeFieldDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.QuerySchemeField">
     <id column="query_scheme_field_id" jdbcType="INTEGER" property="querySchemeFieldId" />
     <result column="query_scheme_id" jdbcType="INTEGER" property="querySchemeId" />
@@ -84,4 +84,15 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where query_scheme_field_id = #{querySchemeFieldId,jdbcType=INTEGER}
   </update>
+  <select id="selectByQuerySchemeId" resultType="com.qinjee.masterdata.model.entity.QuerySchemeField">
+    select
+    <include refid="Base_Column_List" />
+    from t_query_scheme_field
+    where
+    query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteBySchemeId">
+    delete from t_query_scheme_field
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+  </delete>
 </mapper>

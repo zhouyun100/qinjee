@@ -4,7 +4,9 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
+import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,18 @@ public class  PositionGroupController extends BaseController {
     @Autowired
     private PositionGroupService positionGroupService;
 
+    @ApiOperation(value = "树形展示职位", notes = "高雄")
+    @GetMapping("/getAllPositionGroupTree")
+    public ResponseResult<List<PositionGroup>> getAllPositionGroupTree(){
+        //TODO
+        return null;
+    }
+
     @ApiOperation(value = "获取所有的职位族", notes = "高雄")
     @GetMapping("/getAllPositionGroup")
-    public ResponseResult<List<PositionGroup>> getAllPositionGroup(){
+    public ResponseResult<PageResult<PositionGroup>> getAllPositionGroup(PageVo pageVo){
         UserSession userSession = getUserSession();
-        List<PositionGroup> positionGroups = positionGroupService.getAllPositionGroup(userSession);
-        return new ResponseResult<>(positionGroups);
+        return positionGroupService.getAllPositionGroup(userSession, pageVo);
     }
 
     @ApiOperation(value = "新增职位族", notes = "高雄")
@@ -71,13 +79,13 @@ public class  PositionGroupController extends BaseController {
     @ApiOperation(value = "导出excel", notes = "高雄")
     @GetMapping("/downloadExcel")
     public ResponseResult downloadExcel(@RequestParam("positionGroupIds") List<Integer> positionGroupIds){
-
+        //TODO
         return null;
     }
 
-    @ApiOperation(value = "职位族职位树形图展示", notes = "高雄")
-    @GetMapping("/getAllPosition")
-    public ResponseResult<List<PositionGroup>> getAllPosition(){
-        return positionGroupService.getAllPosition(getUserSession());
-    }
+//    @ApiOperation(value = "职位族职位树形图展示", notes = "高雄")
+//    @GetMapping("/getAllPosition")
+//    public ResponseResult<List<PositionGroup>> getAllPosition(){
+//        return positionGroupService.getAllPosition(getUserSession());
+//    }
 }

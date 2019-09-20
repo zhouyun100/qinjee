@@ -28,7 +28,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}
+    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_pre_employment
@@ -215,4 +215,19 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where employment_id = #{employmentId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    select MAX (employment_id)
+    from t_pre_employment
+     WHERE  is_delete = 1
+  </select>
+  <select id="getPhoneNumber" resultType="java.lang.String">
+    select phone
+    from t_pre_employment
+    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
+  </select>
+  <select id="getMail" resultType="java.lang.String">
+    select email
+    from t_pre_employment
+    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
+  </select>
 </mapper>
