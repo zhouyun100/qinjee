@@ -44,4 +44,20 @@ public interface PositionService {
      * @return
      */
     ResponseResult editPosition(PositionVo positionVo, UserSession userSession);
+
+    /**
+     * 删除职位
+     * @param positionIds
+     * @return
+     */
+    ResponseResult deletePosition(List<Integer> positionIds, UserSession userSession);
+
+    /**
+     * 职位排序
+     * @param prePositionId
+     * @param midPositionId
+     * @param nextPositionId
+     * @return
+     */
+    ResponseResult sortPosition(Integer prePositionId, Integer midPositionId, Integer nextPositionId);
 }

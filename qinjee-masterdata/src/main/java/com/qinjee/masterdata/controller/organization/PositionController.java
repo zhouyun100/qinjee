@@ -51,9 +51,8 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "删除职位", notes = "高雄")
     @GetMapping("/deletePosition")
     @ApiImplicitParam(name="positionIds", value = "职位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-    public ResponseResult editPosition(List<Integer> positionIds){
-
-        return null;
+    public ResponseResult deletePosition(List<Integer> positionIds){
+        return positionService.deletePosition(positionIds, getUserSession());
     }
 
     @ApiImplicitParams({
@@ -66,8 +65,7 @@ public class PositionController extends BaseController {
     public ResponseResult  sortPosition (Integer prePositionId,
                                          Integer midPositionId,
                                          Integer nextPositionId){
-
-        return null;
+        return positionService.sortPosition(prePositionId, midPositionId, nextPositionId);
     }
 
     @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)

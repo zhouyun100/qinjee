@@ -25,4 +25,9 @@ public interface PositionLevelDao {
      */
     List<PositionLevel> getPositionLevelListByPositionId(Integer positionId);
 
+    /**
+     * 获取所以职级
+     * @return
+     */
+    List<PositionLevel> getPositionLevelList();
 }

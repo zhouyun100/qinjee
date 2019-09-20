@@ -31,8 +31,7 @@ public class  PositionGroupController extends BaseController {
     @ApiOperation(value = "树形展示职位", notes = "高雄")
     @GetMapping("/getAllPositionGroupTree")
     public ResponseResult<List<PositionGroup>> getAllPositionGroupTree(){
-        //TODO
-        return null;
+        return positionGroupService.getAllPositionGroupTree(getUserSession());
     }
 
     @ApiOperation(value = "获取所有的职位族", notes = "高雄")
@@ -82,10 +81,4 @@ public class  PositionGroupController extends BaseController {
         //TODO
         return null;
     }
-
-//    @ApiOperation(value = "职位族职位树形图展示", notes = "高雄")
-//    @GetMapping("/getAllPosition")
-//    public ResponseResult<List<PositionGroup>> getAllPosition(){
-//        return positionGroupService.getAllPosition(getUserSession());
-//    }
 }

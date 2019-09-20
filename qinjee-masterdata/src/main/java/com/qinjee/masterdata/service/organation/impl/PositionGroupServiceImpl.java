@@ -2,9 +2,11 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.PositionGroupDao;
+import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
+import com.qinjee.masterdata.service.organation.PositionService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -29,6 +31,8 @@ public class PositionGroupServiceImpl implements PositionGroupService {
 
     @Autowired
     private PositionGroupDao positionGroupDao;
+    @Autowired
+    private PositionService positionService;
 
     @Override
     public ResponseResult<PageResult<PositionGroup>> getAllPositionGroup(UserSession userSession, PageVo pageVo) {
@@ -143,16 +147,21 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         return new ResponseResult();
     }
 
-//    @Override
-//    public ResponseResult<List<PositionGroup>> getAllPosition(UserSession userSession) {
-//        Integer companyId = userSession.getCompanyId();
-//        PositionGroup positionGroup = new PositionGroup();
-//        positionGroup.setCompanyId(companyId);
-//        positionGroup.setIsDelete((short) 0);
-//        List<PositionGroup> positionGroups = positionGroupDao.getPositionGroupByPosG(positionGroup);
-//        for (PositionGroup group : positionGroups) {
-//
-//        }
-//        return null;
-//    }
+    @Override
+    public ResponseResult<List<PositionGroup>> getAllPositionGroupTree(UserSession userSession) {
+        PositionGroup positionGroup = new PositionGroup();
+        positionGroup.setCompanyId(userSession.getCompanyId());
+        positionGroup.setIsDelete((short) 0);
+        //获取职位族
+        List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
+        if(!CollectionUtils.isEmpty(positionGroupByPosG)){
+            for (PositionGroup group : positionGroupByPosG) {
+                //获取职族下的所有职位
+                List<Position> positionList = positionService.getPositionListByGroupId(group.getPositionGroupId());
+                group.setPositionList(positionList);
+            }
+        }
+        return new ResponseResult<>(positionGroupByPosG);
+    }
+
 }

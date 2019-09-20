@@ -27,6 +27,13 @@ public class PositionGradeVo implements Serializable {
     @ApiModelProperty(value = "职等名称", example = "专家", required = true)
     private String positionGradeName;
 
+
+    /**
+     * 职等描述
+     */
+    @ApiModelProperty("职等描述")
+    private String positionGradeRemark;
+
     private static final long serialVersionUID = 1L;
 
 }

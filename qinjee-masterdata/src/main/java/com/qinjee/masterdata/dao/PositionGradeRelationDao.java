@@ -14,4 +14,11 @@ public interface PositionGradeRelationDao {
     int updateByPrimaryKeySelective(PositionGradeRelation record);
 
     int updateByPrimaryKey(PositionGradeRelation record);
+
+    /**
+     * 修改是否删除
+     * @param positionGradeRelation
+     * @return
+     */
+    int updateIsDeleteByPositionGradeRelation(PositionGradeRelation positionGradeRelation);
 }

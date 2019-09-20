@@ -27,6 +27,12 @@ public class PositionLevelVo implements Serializable {
     @ApiModelProperty(value = "职级名称", example = "一级", required = true)
     private String positionLevelName;
 
+    /**
+     * 职级描述
+     */
+    @ApiModelProperty("职级描述")
+    private String positionLevelRemark;
+
     private static final long serialVersionUID = 1L;
 
 }

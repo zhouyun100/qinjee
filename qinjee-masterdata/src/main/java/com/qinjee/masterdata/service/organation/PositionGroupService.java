@@ -50,10 +50,10 @@ public interface PositionGroupService {
      */
     ResponseResult sortPositionGroup(Integer prePositionGroupId, Integer midPositionGroupId, Integer nextPositionGroupId);
 
-//    /**
-//     * 职位族职位树形图展示
-//     * @param userSession
-//     * @return
-//     */
-//    ResponseResult<List<PositionGroup>> getAllPosition(UserSession userSession);
+    /**
+     * 树形展示职位
+     * @return
+     */
+    ResponseResult<List<PositionGroup>> getAllPositionGroupTree(UserSession userSession);
+
 }
