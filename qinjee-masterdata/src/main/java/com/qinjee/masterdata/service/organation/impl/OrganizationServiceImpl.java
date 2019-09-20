@@ -288,8 +288,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public ResponseResult sortOrganization(Integer preOrgId, Integer midOrgId, Integer nextOrgId) {
-        Organization preOrganization = null;
-        Organization nextOrganization = null;
+        Organization preOrganization;
+        Organization nextOrganization;
         Integer midSort = null;
         if(nextOrgId != null){
             //移动

@@ -1,16 +1,21 @@
 package com.qinjee.masterdata.service.organation.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.PositionLevelDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGrade;
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.entity.PositionLevel;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.service.organation.PositionGradeService;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
 import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.masterdata.service.organation.PositionService;
+import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -224,6 +229,58 @@ public class PositionLevelServiceImpl implements PositionLevelService {
     @Override
     public List<PositionLevel> getPositionLevelByPositionId(Integer positionId) {
         return positionLevelDao.getPositionLevelListByPositionId(positionId);
+    }
+
+    @Override
+    public ResponseResult<PageResult<PositionLevel>> getPositionLevelList(PageVo pageVo) {
+        if (pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)){
+            PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
+        }
+        List<PositionLevel> positionLevelList = positionLevelDao.getPositionLevelList();
+        PageResult<PositionLevel> pageResult = new PageResult<>(positionLevelList);
+        return new ResponseResult<>(pageResult);
+    }
+
+    @Override
+    public ResponseResult addPositionLevel(PositionLevelVo positionLevelVo, UserSession userSession) {
+        PositionLevel positionLevel = new PositionLevel();
+        BeanUtils.copyProperties(positionLevelVo, positionLevel);
+        List<PositionLevel> positionLevelList = positionLevelDao.getPositionLevelList();
+        if(!CollectionUtils.isEmpty(positionLevelList)){
+            PositionLevel position_Level = positionLevelList.get(positionLevelList.size() - 1);
+            String positionLevelName = position_Level.getPositionLevelName();
+            int level = Integer.parseInt(positionLevelName);
+            positionLevel.setPositionLevelName(String.valueOf(level + 1));
+        }else {
+            positionLevel.setPositionLevelName("1");
+        }
+        positionLevel.setIsDelete((short) 0);
+        positionLevel.setOperatorId(userSession.getArchiveId());
+        positionLevelDao.insert(positionLevel);
+        return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult editPositionLevel(UserSession userSession, PositionLevelVo positionLevelVo) {
+        PositionLevel positionLevel = new PositionLevel();
+        BeanUtils.copyProperties(positionLevelVo, positionLevel);
+        positionLevel.setOperatorId(userSession.getArchiveId());
+        positionLevelDao.insertSelective(positionLevel);
+        return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult deletePositionLevel(List<Integer> positionLevelIds, UserSession userSession) {
+        if(!CollectionUtils.isEmpty(positionLevelIds)){
+            for (Integer positionLevelId : positionLevelIds) {
+                PositionLevel positionLevel = new PositionLevel();
+                positionLevel.setOperatorId(userSession.getArchiveId());
+                positionLevel.setIsDelete((short) 1);
+                positionLevel.setPositionLevelId(positionLevelId);
+                positionLevelDao.updateByPrimaryKeySelective(positionLevel);
+            }
+        }
+        return new ResponseResult();
     }
 
     /**

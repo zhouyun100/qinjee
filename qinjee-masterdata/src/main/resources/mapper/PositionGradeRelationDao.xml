@@ -86,7 +86,25 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-
+  <update id="updateIsDeleteByPositionGradeRelation" parameterType="com.qinjee.masterdata.model.entity.PositionGradeRelation">
+    update t_position_grade_relation
+    <set>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=SMALLINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <where>
+      <if test="positionId != null">
+        position_id = #{positionId,jdbcType=INTEGER}
+      </if>
+      <if test="positionGradeId != null">
+        AND position_grade_id = #{positionGradeId,jdbcType=INTEGER}
+      </if>
+    </where>
+  </update>
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PositionGradeRelation">
     update t_position_grade_relation
     set position_id = #{positionId,jdbcType=INTEGER},
@@ -96,4 +114,5 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
 </mapper>

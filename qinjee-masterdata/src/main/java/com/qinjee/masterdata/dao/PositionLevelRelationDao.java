@@ -14,4 +14,11 @@ public interface PositionLevelRelationDao {
     int updateByPrimaryKeySelective(PositionLevelRelation record);
 
     int updateByPrimaryKey(PositionLevelRelation record);
+
+    /**
+     * 修改是否删除
+     * @param positionLevelRelation
+     * @return
+     */
+    int updateIsDeleteByPositionLevelRelation(PositionLevelRelation positionLevelRelation);
 }

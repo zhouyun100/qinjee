@@ -46,45 +46,45 @@ public class PositionServiceImpl implements PositionService {
 
     @Override
     public List<Position> getPositionListByGroupId(Integer positionGroupId) {
-        return  positionDao.getPositionListByGroupId(positionGroupId);
+        return positionDao.getPositionListByGroupId(positionGroupId);
     }
 
     @Override
     public ResponseResult<PageResult<Position>> getPositionList(UserSession userSession, PageVo pageVo) {
 
         Integer companyId = userSession.getCompanyId();
-        if(pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)){
+        if (pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)) {
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
         }
 
         List<Position> positionList = positionDao.getPositionList(companyId);
         PageResult<Position> pageResult = new PageResult<>(positionList);
-        if(!CollectionUtils.isEmpty(positionList)){
+        if (!CollectionUtils.isEmpty(positionList)) {
             for (Position position : positionList) {
                 List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(position.getPositionId());
                 List<PositionLevel> positionLevelList = positionLevelService.getPositionLevelByPositionId(position.getPositionId());
                 StringBuilder positionGradeNames = new StringBuilder();
                 StringBuilder positionLevelNames = new StringBuilder();
 
-                if(!CollectionUtils.isEmpty(positionGradeList)){
+                if (!CollectionUtils.isEmpty(positionGradeList)) {
                     positionGradeList.stream().forEach(positionGrade -> {
                         String positionGradeName = positionGrade.getPositionGradeName();
-                        if(StringUtils.isNotBlank(positionGradeName)){
+                        if (StringUtils.isNotBlank(positionGradeName)) {
                             positionGradeNames.append(positionGradeName).append(",");
                         }
                     });
                 }
 
-                if(!CollectionUtils.isEmpty(positionLevelList)){
+                if (!CollectionUtils.isEmpty(positionLevelList)) {
                     positionLevelList.stream().forEach(positionLevel -> {
                         String positionLevelName = positionLevel.getPositionLevelName();
-                        if(StringUtils.isNotBlank(positionLevelName)){
+                        if (StringUtils.isNotBlank(positionLevelName)) {
                             positionLevelNames.append(positionLevelName).append(",");
                         }
                     });
                 }
                 position.setPositionGradeNames(positionGradeNames.delete(positionGradeNames.toString().length() - 2, positionGradeNames.toString().length()).toString());
-                position.setPositionLevelNames(positionLevelNames.delete(positionLevelNames.toString().length() - 2 , positionLevelNames.toString().length()).toString());
+                position.setPositionLevelNames(positionLevelNames.delete(positionLevelNames.toString().length() - 2, positionLevelNames.toString().length()).toString());
             }
         }
         return new ResponseResult<>(pageResult);
@@ -100,10 +100,10 @@ public class PositionServiceImpl implements PositionService {
         //设置排序id
         Integer sortId = 0;
         List<Position> positionList = positionDao.getPositionListByGroupId(positionVo.getPositionGroupId());
-        if(!CollectionUtils.isEmpty(positionList)){
+        if (!CollectionUtils.isEmpty(positionList)) {
             Position lastPosition = positionList.get(positionList.size() - 1);
             sortId = lastPosition.getSortId() + 1000;
-        }else {
+        } else {
             sortId = 1000;
         }
         position.setSortId(sortId);
@@ -111,16 +111,16 @@ public class PositionServiceImpl implements PositionService {
 
         List<Integer> positionLevelIds = positionVo.getPositionGradeIds();
         //职位职等关系表
-        if(!CollectionUtils.isEmpty(positionLevelIds)){
+        if (!CollectionUtils.isEmpty(positionLevelIds)) {
             for (Integer positionLevel : positionLevelIds) {
                 //新增职位职等关系表
                 addPositionGradeRelation(userSession, position, positionLevel);
             }
         }
 
-        List<Integer>  positionGradeIds = positionVo.getPositionLevelIds();
+        List<Integer> positionGradeIds = positionVo.getPositionLevelIds();
         //职位职级关系表
-        if(!CollectionUtils.isEmpty(positionGradeIds)){
+        if (!CollectionUtils.isEmpty(positionGradeIds)) {
             for (Integer positionLevelId : positionGradeIds) {
                 //新增职位职级关系表
                 addPositionLevelRelation(userSession, position, positionLevelId);
@@ -131,6 +131,7 @@ public class PositionServiceImpl implements PositionService {
 
     /**
      * 新增职位职等关系表
+     *
      * @param userSession
      * @param position
      * @param positionLevel
@@ -146,6 +147,7 @@ public class PositionServiceImpl implements PositionService {
 
     /**
      * 新增职位职级关系表
+     *
      * @param userSession
      * @param position
      * @param positionLevelId
@@ -161,46 +163,129 @@ public class PositionServiceImpl implements PositionService {
 
     @Transactional
     @Override
-    public ResponseResult editPosition(PositionVo positionVo,UserSession userSession) {
-
+    public ResponseResult editPosition(PositionVo positionVo, UserSession userSession) {
         Position position = new Position();
         BeanUtils.copyProperties(positionVo, position);
         position.setOperatorId(userSession.getArchiveId());
         positionDao.insertSelective(position);
 
         List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(positionVo.getPositionId());
-        if(!CollectionUtils.isEmpty(positionGradeList)){
+        List<Integer> position_GradeIds = positionVo.getPositionGradeIds();
+        //判断职位是否有职等
+        if (!CollectionUtils.isEmpty(positionGradeList)) {
             Set<Integer> positionGradeIds = positionGradeList.stream().map(positionGrade -> positionGrade.getPositionGradeId()).collect(Collectors.toSet());
-            List<Integer> position_GradeIds = positionVo.getPositionGradeIds();
-            if(!CollectionUtils.isEmpty(position_GradeIds)){
+            if (!CollectionUtils.isEmpty(position_GradeIds)) {
                 for (Integer position_gradeId : position_GradeIds) {
                     boolean contains = positionGradeIds.contains(position_gradeId);
-                    if(!contains){
+                    if (!contains) {
                         //不存在则新增职位职等关系
-                        addPositionGradeRelation(userSession,position,position_gradeId);
+                        addPositionGradeRelation(userSession, position, position_gradeId);
+                    } else {
+                        positionGradeIds.remove(position_gradeId);
                     }
-                    positionGradeIds.remove(position_gradeId);
                 }
-                if(!CollectionUtils.isEmpty(positionGradeIds)){
+
+                if (!CollectionUtils.isEmpty(positionGradeIds)) {
                     for (Integer positionGradeId : positionGradeIds) {
                         PositionGradeRelation positionGradeRelation = new PositionGradeRelation();
                         positionGradeRelation.setPositionId(position.getPositionId());
                         positionGradeRelation.setPositionGradeId(positionGradeId);
+                        positionGradeRelation.setOperatorId(userSession.getArchiveId());
                         positionGradeRelation.setIsDelete((short) 1);
-                        positionGradeRelationDao.updateByPrimaryKeySelective(positionGradeRelation);
+                        positionGradeRelationDao.updateIsDeleteByPositionGradeRelation(positionGradeRelation);
                     }
                 }
             }
-        }
-
-        List<PositionLevel> positionLevelList = positionLevelService.getPositionLevelByPositionId(positionVo.getPositionId());
-        if(!CollectionUtils.isEmpty(positionLevelList)){
-            for (PositionLevel positionLevel : positionLevelList) {
-
+        } else {
+            if (!CollectionUtils.isEmpty(position_GradeIds)) {
+                for (Integer position_gradeId : position_GradeIds) {
+                    //不存在则新增职位职等关系
+                    addPositionGradeRelation(userSession, position, position_gradeId);
+                }
             }
         }
+        List<PositionLevel> positionLevelList = positionLevelService.getPositionLevelByPositionId(positionVo.getPositionId());
+        List<Integer> position_LevelIds = positionVo.getPositionLevelIds();
+        //判断职位是否有职级
+        if (!CollectionUtils.isEmpty(positionLevelList)) {
+            Set<Integer> positionLevelIds = positionLevelList.stream().map(positionLevel -> positionLevel.getPositionLevelId()).collect(Collectors.toSet());
+            if (!CollectionUtils.isEmpty(positionLevelIds)) {
+                for (Integer positionLevelId : position_LevelIds) {
+                    boolean contains = positionLevelIds.contains(positionLevelId);
+                    if (contains) {
+                        //不存在则新增职位职级关系
+                        addPositionLevelRelation(userSession, position, positionLevelId);
+                    } else {
+                        positionLevelIds.remove(positionLevelId);
+                    }
+                }
+                if (!CollectionUtils.isEmpty(positionLevelIds)) {
+                    for (Integer positionLevelId : positionLevelIds) {
+                        PositionLevelRelation positionLevelRelation = new PositionLevelRelation();
+                        positionLevelRelation.setIsDelete((short) 1);
+                        positionLevelRelation.setOperatorId(userSession.getArchiveId());
+                        positionLevelRelation.setPositionLevelId(positionLevelId);
+                        positionLevelRelation.setPositionId(position.getPositionId());
+                        positionLevelRelationDao.updateIsDeleteByPositionLevelRelation(positionLevelRelation);
+                    }
+                }
+            }
+        }else {
+            if(!CollectionUtils.isEmpty(position_LevelIds)){
+                for (Integer position_levelId : position_LevelIds) {
+                    addPositionLevelRelation(userSession, position, position_levelId);
+                }
+            }
+        }
+        return new ResponseResult();
+    }
 
+    @Transactional
+    @Override
+    public ResponseResult deletePosition(List<Integer> positionIds, UserSession userSession) {
+        if(!CollectionUtils.isEmpty(positionIds)){
+            for (Integer positionId : positionIds) {
+                Position position = new Position();
+                position.setPositionId(positionId);
+                position.setIsDelete((short) 1);
+                position.setOperatorId(userSession.getArchiveId());
+                positionDao.updateByPrimaryKeySelective(position);
+                //删除对应的职等
+                PositionGradeRelation positionGradeRelation = new PositionGradeRelation();
+                positionGradeRelation.setOperatorId(userSession.getArchiveId());
+                positionGradeRelation.setIsDelete((short) 1);
+                positionGradeRelation.setPositionId(positionId);
+                positionGradeRelationDao.updateIsDeleteByPositionGradeRelation(positionGradeRelation);
+                //删除对应的职级
+                PositionLevelRelation positionLevelRelation = new PositionLevelRelation();
+                positionLevelRelation.setPositionId(positionId);
+                positionLevelRelation.setIsDelete((short) 1);
+                positionLevelRelation.setOperatorId(userSession.getArchiveId());
+                positionLevelRelationDao.updateIsDeleteByPositionLevelRelation(positionLevelRelation);
+            }
+        }
+        return new ResponseResult();
+    }
 
-        return null;
+    @Override
+    public ResponseResult sortPosition(Integer prePositionId, Integer midPositionId, Integer nextPositionId) {
+        Position prePosition;
+        Position nextPosition;
+        Integer midSort = null;
+        if(nextPositionId != null){
+            //移动
+            nextPosition = positionDao.selectByPrimaryKey(nextPositionId);
+            midSort = nextPosition.getSortId() - 1;
+        }else if(nextPositionId == null){
+            //移动到最后
+            prePosition = positionDao.selectByPrimaryKey(prePositionId);
+            midSort = prePosition.getSortId() + 1;
+        }
+        Position position = new Position();
+        position.setSortId(midSort);
+        position.setPositionId(midPositionId);
+        positionDao.insertSelective(position);
+
+        return new ResponseResult();
     }
 }

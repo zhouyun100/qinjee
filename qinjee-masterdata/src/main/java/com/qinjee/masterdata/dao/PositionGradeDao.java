@@ -24,4 +24,10 @@ public interface PositionGradeDao {
      * @return
      */
     List<PositionGrade> getPositionGradeListByPositionId(Integer positionId);
+
+    /**
+     * 查询所以职等
+     * @return
+     */
+    List<PositionGrade> getPositionLevelList();
 }

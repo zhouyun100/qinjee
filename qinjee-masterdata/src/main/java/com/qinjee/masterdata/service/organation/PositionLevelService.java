@@ -1,7 +1,10 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.PositionLevel;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
+import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
@@ -31,4 +34,35 @@ public interface PositionLevelService {
      * @return
      */
     List<PositionLevel> getPositionLevelByPositionId(Integer positionId);
+
+    /**
+     * 分页查询职级列表
+     * @param pageVo
+     * @return
+     */
+    ResponseResult<PageResult<PositionLevel>> getPositionLevelList(PageVo pageVo);
+
+    /**
+     * 新增职级
+     * @param positionLevelVo
+     * @param userSession
+     * @return
+     */
+    ResponseResult addPositionLevel(PositionLevelVo positionLevelVo, UserSession userSession);
+
+    /**
+     * 编辑职级
+     * @param userSession
+     * @param positionLevelVo
+     * @return
+     */
+    ResponseResult editPositionLevel(UserSession userSession, PositionLevelVo positionLevelVo);
+
+    /**
+     * 删除职级
+     * @param positionLevelIds
+     * @param userSession
+     * @return
+     */
+    ResponseResult deletePositionLevel(List<Integer> positionLevelIds, UserSession userSession);
 }

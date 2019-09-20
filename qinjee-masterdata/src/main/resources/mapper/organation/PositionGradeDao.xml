@@ -115,4 +115,10 @@
       from t_position_grade tpg left join t_position_grade_relation tpgr on tpgr.position_grade_id = tpg.position_grade_id
       where tpgr.position_id = #{positionId} and tpg.is_delete = 0 and tpgr.is_delete = 0 ORDER BY tpg.sort_id ASC
     </select>
+    <select id="getPositionLevelList" resultType="com.qinjee.masterdata.model.entity.PositionGrade">
+      select
+      <include refid="Base_Column_List" />
+      from t_position_grade
+      where is_delete = 0 ORDER BY sort_id ASC
+    </select>
 </mapper>

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 职位族表
@@ -81,6 +82,11 @@ public class PositionGroup implements Serializable {
      */
     @ApiModelProperty("职等名称合并行")
     private Integer positionGradeNamesRowSpan;
+
+    /**
+     * 职位集合
+     */
+    private List<Position> positionList;
 
 
 
