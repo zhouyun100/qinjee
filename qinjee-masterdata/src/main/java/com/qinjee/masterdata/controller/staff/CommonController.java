@@ -277,7 +277,7 @@ public class CommonController {
      * 文件上传
      * 这里需要传文件的路径，上传的地址由后端简历文件然后确定上传位置
      */
-    @RequestMapping(value = "/UploadFile ", method = RequestMethod.POST)
+    @RequestMapping(value = "/UploadFileByForWard ", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
     @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 

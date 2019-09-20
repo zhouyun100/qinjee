@@ -1,11 +1,14 @@
 package com.qinjee.masterdata.service.organation.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.PositionGroupDao;
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
+import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +31,17 @@ public class PositionGroupServiceImpl implements PositionGroupService {
     private PositionGroupDao positionGroupDao;
 
     @Override
-    public List<PositionGroup> getAllPositionGroup(UserSession userSession) {
+    public ResponseResult<PageResult<PositionGroup>> getAllPositionGroup(UserSession userSession, PageVo pageVo) {
         Integer companyId = userSession.getCompanyId();
         PositionGroup positionGroup = new PositionGroup();
         positionGroup.setCompanyId(companyId);
         positionGroup.setIsDelete((short) 0);
-        return positionGroupDao.getPositionGroupByPosG(positionGroup);
+        if(pageVo != null && (pageVo.getCurrentPage() != null && pageVo.getPageSize() != null)){
+            PageHelper.startPage(pageVo.getCurrentPage(),pageVo.getPageSize());
+        }
+        List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
+        PageResult<PositionGroup> pageResult = new PageResult<>(positionGroupByPosG);
+        return new ResponseResult<>(pageResult);
     }
 
     @Transactional
@@ -135,16 +143,16 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         return new ResponseResult();
     }
 
-    @Override
-    public ResponseResult<List<PositionGroup>> getAllPosition(UserSession userSession) {
-        Integer companyId = userSession.getCompanyId();
-        PositionGroup positionGroup = new PositionGroup();
-        positionGroup.setCompanyId(companyId);
-        positionGroup.setIsDelete((short) 0);
-        List<PositionGroup> positionGroups = positionGroupDao.getPositionGroupByPosG(positionGroup);
-        for (PositionGroup group : positionGroups) {
-
-        }
-        return null;
-    }
+//    @Override
+//    public ResponseResult<List<PositionGroup>> getAllPosition(UserSession userSession) {
+//        Integer companyId = userSession.getCompanyId();
+//        PositionGroup positionGroup = new PositionGroup();
+//        positionGroup.setCompanyId(companyId);
+//        positionGroup.setIsDelete((short) 0);
+//        List<PositionGroup> positionGroups = positionGroupDao.getPositionGroupByPosG(positionGroup);
+//        for (PositionGroup group : positionGroups) {
+//
+//        }
+//        return null;
+//    }
 }

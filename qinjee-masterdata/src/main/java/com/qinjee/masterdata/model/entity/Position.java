@@ -65,6 +65,21 @@ public class Position implements Serializable {
     @ApiModelProperty("职位对应的职等")
     List<PositionGrade> positionGrades;
 
+    /**
+     * 职位族名称
+     */
+    private String positionGroupName;
+
+    /**
+     * 职位下的所有职等名称
+     */
+    private String positionGradeNames;
+
+    /**
+     * 职位下的所有职级名称
+     */
+    private String positionLevelNames;
+
     private static final long serialVersionUID = 1L;
 
 }

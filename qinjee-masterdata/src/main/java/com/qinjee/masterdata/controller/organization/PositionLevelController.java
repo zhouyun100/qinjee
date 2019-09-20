@@ -3,12 +3,14 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PositionLevel;
 import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
+import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +29,21 @@ import java.util.List;
 @Api(tags = "【机构管理】职级接口")
 public class PositionLevelController extends BaseController {
 
-    @ApiOperation(value = "按职级展示职位体系", notes = "高雄")
+    @Autowired
+    private PositionLevelService positionLevelService;
+
+    @ApiOperation(value = "按职级 展示职位体系", notes = "高雄")
     @GetMapping("/showByPositionLevel")
     public ResponseResult<PositionLevel> showByPositionLevel(){
-
+        positionLevelService.showByPositionLevel(getUserSession());
+        //TODO
         return null;
+    }
+
+    @ApiOperation(value = "按职位 展示职位体系", notes = "高雄")
+    @GetMapping("/showByPosition")
+    public ResponseResult<List<PositionLevel>> showByPosition(){
+        return positionLevelService.showByPosition(getUserSession());
     }
 
     @GetMapping("/getPositionLevelList")

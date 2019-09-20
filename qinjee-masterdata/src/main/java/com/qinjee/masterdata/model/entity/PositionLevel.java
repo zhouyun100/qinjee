@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 职级表
@@ -55,6 +56,45 @@ public class PositionLevel implements Serializable {
      */
     @ApiModelProperty("是否删除")
     private Short isDelete;
+
+    /**
+     * 职位族名称
+     */
+    @ApiModelProperty("职位族名称")
+    private String positionGroupName;
+
+    /**
+     * 职位族名称合并行
+     */
+    @ApiModelProperty("职位族名称合并行")
+    private Integer positionGroupNameRowSpan;
+
+    /**
+     * 职位名称
+     */
+    @ApiModelProperty("职位名称")
+    private String positionName;
+
+    /**
+     * 职位名称合并行
+     */
+    @ApiModelProperty("职位名称合并行")
+    private Integer positionNameRowSpan;
+
+    /**
+     * 职等名称
+     */
+    @ApiModelProperty("职等名称")
+    private String positionGradeName;
+
+    /**
+     * 职等名称合并行
+     */
+    @ApiModelProperty("职等名称合并行")
+    private Integer positionGradeNameRowSpan;
+
+    private List<PositionGroup> positionGroups;
+
 
     private static final long serialVersionUID = 1L;
 

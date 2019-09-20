@@ -24,4 +24,5 @@ public interface PositionGroupDao {
      * @return
      */
     List<PositionGroup> getPositionGroupByPosG(PositionGroup positionGroup);
+
 }

@@ -86,6 +86,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PositionGradeRelation">
     update t_position_grade_relation
     set position_id = #{positionId,jdbcType=INTEGER},

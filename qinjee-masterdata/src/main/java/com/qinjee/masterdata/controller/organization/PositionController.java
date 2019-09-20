@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
+import com.qinjee.masterdata.service.organation.PositionService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -10,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,32 +27,25 @@ import java.util.List;
 @RequestMapping("/position")
 public class PositionController extends BaseController {
 
-    @ApiOperation(value = "按职位展示职位体系")
-    @GetMapping("/showByPosition")
-    public ResponseResult<Position> showByPosition(){
-        return null;
-    }
-
+    @Autowired
+    private PositionService positionService;
 
     @ApiOperation(value = "分页查询职位信息", notes = "高雄")
     @GetMapping("/getPositionList")
     public ResponseResult<PageResult<Position>> getPositionList(PageVo pageVo){
-        //返回值携带值等信息
-        return null;
+        return positionService.getPositionList(getUserSession(), pageVo);
     }
 
     @ApiOperation(value = "新增职位", notes = "高雄")
     @PostMapping("/addPosition")
-    public ResponseResult addPosition(){
-
-        return null;
+    public ResponseResult addPosition(PositionVo positionVo){
+        return positionService.addPosition(positionVo, getUserSession());
     }
 
     @ApiOperation(value = "编辑职位", notes = "高雄")
     @PostMapping("/editPosition")
     public ResponseResult editPosition(PositionVo positionVo){
-
-        return null;
+        return positionService.editPosition(positionVo, getUserSession());
     }
 
     @ApiOperation(value = "删除职位", notes = "高雄")

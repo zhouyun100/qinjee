@@ -2,7 +2,9 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
+import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public interface PositionGroupService {
      * 获取所有的职位族
      * @return
      */
-    List<PositionGroup> getAllPositionGroup(UserSession userSession);
+    ResponseResult<PageResult<PositionGroup>> getAllPositionGroup(UserSession userSession, PageVo pageVo);
 
     /**
      * 新增职位族
@@ -48,10 +50,10 @@ public interface PositionGroupService {
      */
     ResponseResult sortPositionGroup(Integer prePositionGroupId, Integer midPositionGroupId, Integer nextPositionGroupId);
 
-    /**
-     * 职位族职位树形图展示
-     * @param userSession
-     * @return
-     */
-    ResponseResult<List<PositionGroup>> getAllPosition(UserSession userSession);
+//    /**
+//     * 职位族职位树形图展示
+//     * @param userSession
+//     * @return
+//     */
+//    ResponseResult<List<PositionGroup>> getAllPosition(UserSession userSession);
 }
