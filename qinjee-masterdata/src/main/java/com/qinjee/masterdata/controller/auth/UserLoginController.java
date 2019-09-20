@@ -118,6 +118,7 @@ public class UserLoginController extends BaseController{
 
         }catch(Exception e) {
             logger.info("Login exception! phone={};code={};exception={}", phone,code,e.toString());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据手机号、短信验证码登录异常！");
         }
@@ -173,6 +174,7 @@ public class UserLoginController extends BaseController{
             }
         }catch(Exception e) {
             logger.info("Login exception! account={};password={};exception={}", account, password, e.toString());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据账号、密码登录异常！");
         }
@@ -216,6 +218,7 @@ public class UserLoginController extends BaseController{
 
         }catch(Exception e) {
             logger.info("Login exception! userId={};companyId={};exception={}", userId, companyId, e.toString());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据账号、密码登录异常！");
         }
@@ -245,6 +248,7 @@ public class UserLoginController extends BaseController{
             responseResult.setMessage("手机号短信验证码发送完毕!");
         }catch (Exception e){
             logger.info("sendCodeByPhone exception! phone={},exception={}", phone, e.toString());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("手机号短信验证码发送异常！");
         }
@@ -266,6 +270,7 @@ public class UserLoginController extends BaseController{
             responseResult = ResponseResult.SUCCESS();
         }catch (Exception e){
             logger.info("updatePasswordByCurrentAccount exception! userId={},oldPassword={},exception={}", userSession.getUserId(), oldPassword, e.toString());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改密码操作异常！");
         }
@@ -285,6 +290,7 @@ public class UserLoginController extends BaseController{
             responseResult.setResult(menuVOList);
         }catch (Exception e){
             logger.info("loadMenuTreeByCurrentLoginUser exception! archiveId={},companyId={},exception={}", userSession.getArchiveId(),userSession.getCompanyId(), e.toString());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改密码操作异常！");
         }
@@ -319,6 +325,7 @@ public class UserLoginController extends BaseController{
             responseResult = ResponseResult.SUCCESS();
         }catch (Exception e){
             logger.info("logout fail！userId={}", userSession.getUserId());
+            e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("退出操作异常！");
         }

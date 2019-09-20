@@ -106,7 +106,7 @@ public class UserLoginServiceImpl implements UserLoginService {
          * 提取当前菜单树的一级节点
          */
         List<MenuVO> firstLevelMenuList = menuVOList.stream().filter(menu -> {
-            if(menu.getMenuId().equals(menu.getParentMenuId())){
+            if(menu.getParentMenuId() == 0){
                 return true;
             }else{
                 return false;

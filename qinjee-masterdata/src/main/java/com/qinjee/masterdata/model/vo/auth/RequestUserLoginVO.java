@@ -12,6 +12,13 @@ package com.qinjee.masterdata.model.vo.auth;
 
 import lombok.Data;
 
+import java.util.Date;
+
+/**
+ * 登录请求参数封装类
+ * @author 周赟
+ * @date 2019/9/19
+ */
 @Data
 public class RequestUserLoginVO {
 
@@ -49,4 +56,14 @@ public class RequestUserLoginVO {
      * 企业ID
      */
     private Integer companyId;
+
+    /**
+     * 档案ID
+     */
+    private Integer archiveId;
+
+    /**
+     * 当前时间（各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入）
+     */
+    private Date currentDateTime;
 }

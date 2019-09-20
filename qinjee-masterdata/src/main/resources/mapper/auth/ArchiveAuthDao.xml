@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.auth.ArchiveAuthDao">
+
+  <resultMap id="ArchiveResultMap" type="com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO">
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+    <result column="post_name" jdbcType="VARCHAR" property="postName" />
+  </resultMap>
+
+  <!-- 根据角色ID查询档案列表 -->
+  <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
+    select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
+    CASE
+    WHEN t_user_archive.gender = 1 THEN '男'
+    WHEN t_user_archive.gender = 2 THEN '女'
+    ELSE '未知'
+    END AS gender,
+    a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
+    from t_user_role,t_user_archive
+    LEFT JOIN t_post on t_user_archive.post_id = t_post.post_id
+    LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
+    LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
+    where t_user_role.role_id = #{roleId,jdbcType=INTEGER}
+    and t_user_archive.archive_status = 'INCUMBENCY'
+    and t_user_role.archive_id = t_user_archive.archive_id
+    and t_user_role.is_delete = 0
+  </select>
+
+  <!-- 业务上根据档案ID和角色ID移除，库表修改删除标识，不进行物理删除 -->
+  <update id="delArchiveRole" parameterType="com.qinjee.masterdata.model.entity.UserRole">
+    update t_user_role
+    set is_delete = 1,
+      operator_id = #{operatorId,jdbcType=INTEGER}
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+    and role_id = #{roleId,jdbcType=INTEGER}
+    and is_delete = 0;
+  </update>
+
+  <!-- 添加用户角色关系 -->
+  <insert id="addArchiveRole" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.UserRole" useGeneratedKeys="true">
+    insert into t_user_role (role_id, archive_id,
+    <if test="isTrusteeship != null">
+        is_trusteeship,
+    </if>
+    <if test="trusteeshipBeginTime != null">
+        trusteeship_begin_time,
+    </if>
+    <if test="trusteeshipEndTime != null">
+        trusteeship_end_time,
+    </if>
+      operator_id)
+    values (#{roleId,jdbcType=INTEGER}, #{archiveId,jdbcType=INTEGER},
+    <if test="isTrusteeship != null">
+      #{isTrusteeship,jdbcType=TINYINT},
+    </if>
+    <if test="trusteeshipBeginTime != null">
+      #{trusteeshipBeginTime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="trusteeshipEndTime != null">
+      #{trusteeshipEndTime,jdbcType=TIMESTAMP},
+    </if>
+      #{operatorId,jdbcType=INTEGER})
+  </insert>
+
+
+  <!-- TODO 根据角色名称模糊查询角色列表 -->
+  <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
+    select t_role_group.role_group_id,t_role_group.role_group_name,
+    t_role_group.parent_role_group_id,'CATEGORE' as role_type
+    from t_role_group where t_role_group.company_id = 1
+    UNION ALL
+    select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'NODE' as role_type
+    from t_role,t_role_group
+    where t_role.role_group_id = t_role_group.role_group_id
+    and t_role_group.company_id = 1 and t_role.role_name like '%专员%'
+  </select>
+
+</mapper>

@@ -41,40 +41,16 @@ public class RoleGroupVO {
     private String roleGroupName;
 
     /**
+     * 角色类型
+     */
+    @ApiModelProperty("角色类型")
+    private String roleType;
+
+    /**
      * 父角色组ID
      */
     @ApiModelProperty("父角色组ID")
     private Integer parentRoleGroupId;
-
-    /**
-     * 企业ID
-     */
-    @ApiModelProperty("企业ID")
-    private Integer companyId;
-
-    /**
-     * 是否系统定义
-     */
-    @ApiModelProperty("是否系统定义")
-    private Short isSystemDefine;
-
-    /**
-     * 操作人ID
-     */
-    @ApiModelProperty("操作人ID")
-    private Integer operatorId;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @ApiModelProperty("更新时间")
-    private Date updateTime;
 
     /**
      * 子集角色组列表
@@ -82,9 +58,4 @@ public class RoleGroupVO {
     @ApiModelProperty("子集角色组列表")
     private List<RoleGroupVO> childRoleGroupList;
 
-    /**
-     * 角色列表
-     */
-    @ApiModelProperty("角色列表")
-    private List<Role> roleList;
 }
