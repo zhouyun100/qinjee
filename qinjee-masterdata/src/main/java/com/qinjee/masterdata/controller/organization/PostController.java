@@ -45,13 +45,15 @@ public class PostController extends BaseController {
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize,
                                                                                               Integer currentPage,
                                                                                               Integer postId){
-        return null;
+        return postService.getUserArchivePostRelationList(pageSize, currentPage, postId);
     }
 
 
     @ApiOperation(value = "新增岗位", notes = "高雄")
     @PostMapping("/addPost")
     public ResponseResult addPost(PostVo postVo){
+
+
 
         return null;
     }

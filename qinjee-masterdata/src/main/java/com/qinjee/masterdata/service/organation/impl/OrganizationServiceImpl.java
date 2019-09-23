@@ -2,7 +2,7 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.dao.PositionDao;
+import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
@@ -44,7 +44,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private UserRoleService userRoleService;
     @Autowired
-    private PositionDao positionDao;
+    private PostDao postDao;
 
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
@@ -335,11 +335,28 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<Organization> organizationTreeList = organizationTree.getList();
         if (!CollectionUtils.isEmpty(organizationTreeList)){
             for (Organization organization : organizationTreeList) {
-                List<Position> positionList = positionDao.getPositionListByOrgId(organization.getOrgId());
-                organization.setPositionList(positionList);
+                List<Post> postList = postDao.getPostListByOrgId(organization.getOrgId(), isEnable);
+                organization.setPostList(postList);
+                packOrganizationPosition(organization,isEnable);
             }
         }
         return new ResponseResult<>(organizationTreeList);
+    }
+
+    /**
+     * 递归给机构树的机构设置下面的岗位
+     * @param organization
+     * @param isEnable
+     */
+    private void packOrganizationPosition(Organization organization, Short isEnable){
+        List<Organization> childList = organization.getChildList();
+        if (!CollectionUtils.isEmpty(childList)){
+            for (Organization org : childList) {
+                List<Post> postList = postDao.getPostListByOrgId(org.getOrgId(),isEnable);
+                org.setPostList(postList);
+                packOrganizationPosition(organization, isEnable);
+            }
+        }
     }
 
     /**

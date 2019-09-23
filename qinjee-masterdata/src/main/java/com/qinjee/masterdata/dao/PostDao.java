@@ -28,4 +28,12 @@ public interface PostDao {
      * @return
      */
     List<Post> getPostList(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId);
+
+    /**
+     * 根据机构id查询机构下的岗位
+     *
+     * @param orgId
+     * @return
+     */
+    List<Post> getPostListByOrgId(@Param("orgId") Integer orgId, @Param("isEnable") Short isEnable);
 }

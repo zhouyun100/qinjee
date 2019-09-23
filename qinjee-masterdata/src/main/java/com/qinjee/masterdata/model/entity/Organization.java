@@ -125,6 +125,11 @@ public class Organization implements Serializable {
      */
     private List<Position> positionList;
 
+    /**
+     * 机构的下岗位
+     */
+    private List<Post> postList;
+
     private static final long serialVersionUID = 1L;
 
 }

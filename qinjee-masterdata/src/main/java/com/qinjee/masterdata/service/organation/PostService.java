@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -20,4 +21,13 @@ public interface PostService {
      * @return
      */
     ResponseResult<PageResult<Post>> getPostList(UserSession userSession, PostPageVo postPageVo);
+
+    /**
+     * 根据岗位id查询员工档案岗位关系表
+     * @param pageSize
+     * @param currentPage
+     * @param postId
+     * @return
+     */
+    ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId);
 }

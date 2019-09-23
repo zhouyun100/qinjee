@@ -22,6 +22,7 @@ public class Post implements Serializable {
      * 岗位ID
      */
     @ApiModelProperty("岗位ID")
+    @QueryColumn("tp.post_id")
     private Integer postId;
 
     /**

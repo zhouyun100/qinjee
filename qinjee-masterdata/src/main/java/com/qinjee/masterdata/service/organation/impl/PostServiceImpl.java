@@ -2,7 +2,9 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.PostService;
@@ -26,6 +28,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostDao postDao;
 
+    @Autowired
+    private UserArchivePostRelationDao userArchivePostRelationDao;
+
     @Override
     public ResponseResult<PageResult<Post>> getPostList(UserSession userSession, PostPageVo postPageVo) {
         Integer archiveId = userSession.getArchiveId();
@@ -34,6 +39,16 @@ public class PostServiceImpl implements PostService {
         PageHelper.startPage(postPageVo.getCurrentPage(),postPageVo.getPageSize());
         List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId);
         PageResult<Post> pageResult = new PageResult<>(postList);
+        return new ResponseResult<>(pageResult);
+    }
+
+    @Override
+    public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId) {
+        if(pageSize != null && currentPage != null){
+            PageHelper.startPage(currentPage, pageSize);
+        }
+        List<UserArchivePostRelation> userArchivePostRelationList = userArchivePostRelationDao.getUserArchivePostRelationList(postId);
+        PageResult<UserArchivePostRelation> pageResult = new PageResult<>(userArchivePostRelationList);
         return new ResponseResult<>(pageResult);
     }
 }
