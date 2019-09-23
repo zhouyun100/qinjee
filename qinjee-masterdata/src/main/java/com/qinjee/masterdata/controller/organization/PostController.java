@@ -5,9 +5,11 @@ import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,11 +26,13 @@ import java.util.List;
 @RequestMapping("/post")
 public class PostController extends BaseController {
 
+    @Autowired
+    private PostService postService;
+
     @GetMapping("/getPostList")
     @ApiOperation(value = "分页查询岗位列表", notes = "高雄")
     public ResponseResult<PageResult<Post>> getPostList(PostPageVo postPageVo){
-
-        return null;
+        return postService.getPostList(getUserSession(), postPageVo);
     }
 
     @ApiImplicitParams({
@@ -41,13 +45,15 @@ public class PostController extends BaseController {
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize,
                                                                                               Integer currentPage,
                                                                                               Integer postId){
-        return null;
+        return postService.getUserArchivePostRelationList(pageSize, currentPage, postId);
     }
 
 
     @ApiOperation(value = "新增岗位", notes = "高雄")
     @PostMapping("/addPost")
     public ResponseResult addPost(PostVo postVo){
+
+
 
         return null;
     }

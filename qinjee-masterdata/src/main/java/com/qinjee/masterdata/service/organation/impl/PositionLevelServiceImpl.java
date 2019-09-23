@@ -163,7 +163,7 @@ public class PositionLevelServiceImpl implements PositionLevelService {
     }
 
     @Override
-    public ResponseResult<Map<String, Object>> showByPositionLevel1(UserSession userSession) {
+    public ResponseResult<Map<String, Object>> showByPositionLevel(UserSession userSession) {
         Map<String, Object> map = new HashMap<>();
         //职级集合
         List<PositionLevel> positionLevelArrayList = new ArrayList<>();

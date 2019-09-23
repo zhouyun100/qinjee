@@ -36,7 +36,7 @@ public class PositionLevelController extends BaseController {
     @ApiOperation(value = "按职级 展示职位体系", notes = "高雄")
     @GetMapping("/showByPositionLevel")
     public ResponseResult<Map<String, Object>> showByPositionLevel(){
-        return positionLevelService.showByPositionLevel1(getUserSession());
+        return positionLevelService.showByPositionLevel(getUserSession());
     }
 
     @ApiOperation(value = "按职位 展示职位体系", notes = "高雄")

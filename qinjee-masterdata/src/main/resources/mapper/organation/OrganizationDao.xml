@@ -7,7 +7,7 @@
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
     <result column="org_type" jdbcType="VARCHAR" property="orgType" />
     <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
-    <result column="org_fullname" jdbcType="VARCHAR" property="orgFullname" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgfull_name" />
     <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
@@ -16,7 +16,7 @@
     <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
   </resultMap>
   <sql id="Base_Column_List">
-    org_id, org_code, org_name, org_type, org_parent_id, org_fullname, org_manager_id,
+    org_id, org_code, org_name, org_type, org_parent_id, org_full_name, org_manager_id,
     company_id, sort_id, operator_id, create_time, is_enable
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -31,11 +31,11 @@
   </delete>
   <insert id="insert" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.entity.Organization" useGeneratedKeys="true">
     insert into t_organization (org_code, org_name, org_type,
-      org_parent_id, org_fullname, org_manager_id,
+      org_parent_id, org_full_name, org_manager_id,
       company_id, sort_id, operator_id,
       create_time, is_enable)
     values (#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR},
-      #{orgParentId,jdbcType=INTEGER}, #{orgFullname,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER},
+      #{orgParentId,jdbcType=INTEGER}, #{orgFullName,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER},
       #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT})
   </insert>
@@ -54,8 +54,8 @@
       <if test="orgParentId != null">
         org_parent_id,
       </if>
-      <if test="orgFullname != null">
-        org_fullname,
+      <if test="orgfull_name != null">
+        org_full_name,
       </if>
       <if test="orgManagerId != null">
         org_manager_id,
@@ -89,8 +89,8 @@
       <if test="orgParentId != null">
         #{orgParentId,jdbcType=INTEGER},
       </if>
-      <if test="orgFullname != null">
-        #{orgFullname,jdbcType=VARCHAR},
+      <if test="orgfull_name != null">
+        #{orgFullName,jdbcType=VARCHAR},
       </if>
       <if test="orgManagerId != null">
         #{orgManagerId,jdbcType=INTEGER},
@@ -127,8 +127,8 @@
       <if test="orgParentId != null">
         org_parent_id = #{orgParentId,jdbcType=INTEGER},
       </if>
-      <if test="orgFullname != null">
-        org_fullname = #{orgFullname,jdbcType=VARCHAR},
+      <if test="orgfull_name != null">
+        org_full_name = #{orgFullName,jdbcType=VARCHAR},
       </if>
       <if test="orgManagerId != null">
         org_manager_id = #{orgManagerId,jdbcType=INTEGER},
@@ -157,7 +157,7 @@
       org_name = #{orgName,jdbcType=VARCHAR},
       org_type = #{orgType,jdbcType=VARCHAR},
       org_parent_id = #{orgParentId,jdbcType=INTEGER},
-      org_fullname = #{orgFullname,jdbcType=VARCHAR},
+      org_full_name = #{orgFullName,jdbcType=VARCHAR},
       org_manager_id = #{orgManagerId,jdbcType=INTEGER},
       company_id = #{companyId,jdbcType=INTEGER},
       sort_id = #{sortId,jdbcType=INTEGER},
@@ -186,7 +186,7 @@
   </select>
 
   <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.entity.Organization">
-    select org.org_code, org.org_name, org.org_type, org.org_fullname, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName, tua.user_name orgManagerName from t_organization org
+    select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName, tua.user_name orgManagerName from t_organization org
     left join t_role_org_auth roa on roa.org_id = org.org_id
     <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
       and org.is_enable = #{organizationPageVo.isEnable}
@@ -201,7 +201,7 @@
       <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
         <foreach collection="organizationPageVo.querFieldVos" item="querField">
           <if test="querField.fieldName != null and querField.fieldName != ''">
-            and ${querField.fieldName} like #{querField.fieldValue}
+            and ${querField.condition}
           </if>
           <if test="querField.isFilterNull">
             and ${querField.fieldName} IS NULL
@@ -253,6 +253,4 @@
             #{orgId}
         </foreach>
     </select>
-
-
 </mapper>

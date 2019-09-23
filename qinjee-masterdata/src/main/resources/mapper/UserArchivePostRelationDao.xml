@@ -195,10 +195,46 @@
     select MAX (id)
     from t_position_grade_relation
   </select>
-  <update id="deleteUserArchivePostRelation">
+    <update id="deleteUserArchivePostRelation">
     update
     set
      is_delete = 0
      where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="getUserArchivePostRelationList" resultType="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
+    select tua.user_name userName, tua.employee_number employeeNumber,tuapr.id, tuapr.archive_id, tuapr.post_id,
+    tuapr.employment_begin_date, tuapr.employment_end_date, tuapr.employment_type, tuapr.appoint_dismissal_reason, tp.post_name postName
+    left join t_user_archive tua on tuapr.archive_id = tuapr.archive_id
+    left join t_post tp on tp.post_id = tuapr.post_id
+    where tuapr.is_delete = 0
+    <if test="postId != null">
+      and post_id = #{postId}
+    </if>
+    and tua.is_delete = 0
+  </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </mapper>
