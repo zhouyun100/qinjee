@@ -11,6 +11,7 @@ import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.masterdata.service.organation.PositionService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.commons.lang3.StringUtils;
@@ -98,9 +99,19 @@ public class PositionServiceImpl implements PositionService {
         position.setOperatorId(userSession.getArchiveId());
         position.setIsDelete((short) 0);
         //设置排序id
-        Integer sortId = 0;
+        Integer sortId;
         List<Position> positionList = positionDao.getPositionListByGroupId(positionVo.getPositionGroupId());
         if (!CollectionUtils.isEmpty(positionList)) {
+            List<Position> positions = positionList.stream().filter(position1 -> {
+                if (positionVo.getPositionName().equals(position1.getPositionName())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(positions)){
+                return new ResponseResult(CommonCode.POSITION_NAME_REPEAT);
+            }
+
             Position lastPosition = positionList.get(positionList.size() - 1);
             sortId = lastPosition.getSortId() + 1000;
         } else {

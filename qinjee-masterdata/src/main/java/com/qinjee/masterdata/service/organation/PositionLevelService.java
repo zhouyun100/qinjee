@@ -8,6 +8,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -22,11 +23,6 @@ public interface PositionLevelService {
      * @return
      */
     ResponseResult<List<PositionLevel>> showByPosition(UserSession userSession);
-
-    /**
-     * 按职级 展示职位体系
-     */
-    void showByPositionLevel(UserSession userSession);
 
     /**
      * 根据职位id获取职级
@@ -65,4 +61,11 @@ public interface PositionLevelService {
      * @return
      */
     ResponseResult deletePositionLevel(List<Integer> positionLevelIds, UserSession userSession);
+
+    /**
+     * 按职级 展示职位体系
+     * @return
+     */
+    ResponseResult<Map<String, Object>> showByPositionLevel1(UserSession userSession);
+
 }

@@ -15,15 +15,13 @@ import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 高雄
@@ -106,127 +104,6 @@ public class PositionLevelServiceImpl implements PositionLevelService {
     }
 
     @Override
-    public void showByPositionLevel(UserSession userSession) {
-        Map<List<PositionGroup>,  List<PositionLevel>> map = new HashMap<>();
-        //职级集合
-        List<PositionLevel> positionLevelArrayList = new ArrayList<>();
-        //获取所有职位族
-        List<PositionGroup> allPositionGroup = positionGroupService.getAllPositionGroup(userSession, null).getResult().getList();
-        if(!CollectionUtils.isEmpty(allPositionGroup)){
-            for (int i = 0; i < allPositionGroup.size(); i++) {
-            PositionGroup positionGroup = allPositionGroup.get(i);
-                //获取职族下的所有职位
-                List<Position> positionList = positionService.getPositionListByGroupId(positionGroup.getPositionGroupId());
-                if(!CollectionUtils.isEmpty(positionList)) {
-                    for (Position position : positionList) {
-                        //获取职位对应的职等
-                        List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(position.getPositionId());
-                        //获取职位对应的职级
-                        List<PositionLevel> positionLevelList = positionLevelDao.getPositionLevelListByPositionId(position.getPositionId());
-                        if(!CollectionUtils.isEmpty(positionGradeList)){
-                            Boolean isNewPositionLevel = true;
-                            for (PositionGrade positionGrade : positionGradeList) {
-                                //遍历职等
-                                Boolean isNewPositionGrade = true;
-                                String currentPositionGradeName = positionGrade.getPositionGradeName();
-                                String currentPositionName = position.getPositionName();
-                                if(!CollectionUtils.isEmpty(positionLevelList)){
-                                    for (PositionLevel positionLevel : positionLevelList) {
-                                        //遍历职级
-                                        PositionLevel currentPositionLevel;
-
-                                        int count = 0;
-                                        int sum = 0;
-
-                                        int positionLevelindex = positionLevel.getSortId() / 1000;
-                                        if(positionLevelArrayList.size() >= (positionLevelindex + 1)){
-                                            int index = positionLevelindex - 1;
-                                            //根据等级排序获取第几级职级
-                                            currentPositionLevel = positionLevelArrayList.get(positionLevelindex - 1);
-                                            if(index > 0){
-                                                //获取往下级有几个职等名称相同职级数量
-                                                count = getPrePositionGradeNamePosiLevel(positionLevelArrayList, i, index,currentPositionGradeName,count);
-                                                //获取往下级有几个职位名称相同职级
-                                                sum = getPrePositionNamePosiLevel(positionLevelArrayList, i, index, currentPositionName, sum);
-                                            }
-                                        }else {
-                                            //没有则新增职级
-                                            currentPositionLevel = new PositionLevel();
-                                            currentPositionLevel.setPositionLevelName(positionLevel.getPositionLevelName());
-                                            positionLevelArrayList.add(currentPositionLevel);
-                                        }
-                                        //获取职级里的职位族集合
-                                        List<PositionGroup> positionGroups = currentPositionLevel.getPositionGroups();
-                                        PositionGroup position_Group;
-
-
-                                        //职级里的职位族集合 是否存在当前职位族
-                                        if(!CollectionUtils.isEmpty(positionGroups) && positionGroups.size() >= (i + 1)){
-                                            //存在当前职位族
-                                            //职级里的职位族集合
-                                            position_Group = positionGroups.get(i);
-                                            if(isNewPositionGrade){
-                                                //设置职等名
-                                                position_Group.setPositionGradeNames(position_Group.getPositionGradeNames() + "," + currentPositionGradeName);
-                                                isNewPositionGrade = false;
-                                            }
-
-                                            if(isNewPositionLevel){
-                                                //设置职位名
-                                                position_Group.setPositionNames(position_Group.getPositionNames() + "," + position.getPositionName());
-                                                //合并行
-                                                position_Group.setPositionNamesRowSpan(position_Group.getPositionNamesRowSpan() + 1);
-                                                position_Group.setPositionGradeNamesRowSpan(position_Group.getPositionGradeNamesRowSpan() + 1);
-
-                                            }
-                                        }else {
-                                            //不存在当前职位族
-                                            if(positionGroups == null){
-                                                //职级第一次的时候
-                                                positionGroups = new ArrayList<>();
-                                                currentPositionLevel.setPositionGroups(positionGroups);
-                                            }
-
-                                            position_Group = new PositionGroup();
-                                            //判断是否与之前一级职位名一样  一样就合并
-                                            position_Group.setPositionNames(currentPositionName);
-                                            position_Group.setPositionNamesRowSpan(1);
-                                            position_Group.setPositionGradeNames(currentPositionGradeName);
-                                            position_Group.setPositionGradeNamesRowSpan(1);
-
-                                            //往下级有职等名称相同职级
-                                            if(count > 0){
-                                                PositionGroup positionGroup1 = positionLevelArrayList.get(positionLevelindex - count).getPositionGroups().get(i);
-                                                String positionGradeNames = positionGroup1.getPositionGradeNames();
-                                                if(positionGradeNames.equals(currentPositionGradeName)){
-                                                    //职位合并一行
-                                                    positionGroup1.setPositionGradeNamesRowSpan(positionGroup1.getPositionGradeNamesRowSpan() + 1);
-                                                    position_Group.setPositionGradeNamesRowSpan(0);
-                                                }
-                                            }
-
-                                            //往下级有职位名称相同职级
-                                            if(sum > 0){
-                                                PositionGroup positionGroup1 = positionLevelArrayList.get(positionLevelindex - sum).getPositionGroups().get(i);
-                                                positionGroup1.setPositionNames(positionGroup1.getPositionNames() + "," + currentPositionName);
-
-
-
-                                            }
-                                            positionGroups.add(position_Group);
-                                        }
-                                    }
-                                }
-                                isNewPositionLevel = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     public List<PositionLevel> getPositionLevelByPositionId(Integer positionId) {
         return positionLevelDao.getPositionLevelListByPositionId(positionId);
     }
@@ -251,8 +128,10 @@ public class PositionLevelServiceImpl implements PositionLevelService {
             String positionLevelName = position_Level.getPositionLevelName();
             int level = Integer.parseInt(positionLevelName);
             positionLevel.setPositionLevelName(String.valueOf(level + 1));
+            positionLevel.setSortId(position_Level.getSortId() + 1000);
         }else {
             positionLevel.setPositionLevelName("1");
+            positionLevel.setSortId(1000);
         }
         positionLevel.setIsDelete((short) 0);
         positionLevel.setOperatorId(userSession.getArchiveId());
@@ -281,6 +160,135 @@ public class PositionLevelServiceImpl implements PositionLevelService {
             }
         }
         return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult<Map<String, Object>> showByPositionLevel1(UserSession userSession) {
+        Map<String, Object> map = new HashMap<>();
+        //职级集合
+        List<PositionLevel> positionLevelArrayList = new ArrayList<>();
+        //获取所有职位族
+        List<PositionGroup> allPositionGroup = positionGroupService.getAllPositionGroup(userSession, null).getResult().getList();
+        map.put("columns", allPositionGroup);
+        map.put("dataSource", positionLevelArrayList);
+        if(!CollectionUtils.isEmpty(allPositionGroup)){
+            for (int i = 0; i < allPositionGroup.size(); i++) {
+                PositionGroup positionGroup = allPositionGroup.get(i);
+                //获取职族下的所有职位
+                List<Position> positionList = positionService.getPositionListByGroupId(positionGroup.getPositionGroupId());
+                if(!CollectionUtils.isEmpty(positionList)){
+                    for (Position position : positionList) {
+                        //遍历职位
+
+                        //获取职位对应的职等
+                        List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(position.getPositionId());
+                        //获取职位对应的职级
+                        List<PositionLevel> positionLevelList = positionLevelDao.getPositionLevelListByPositionId(position.getPositionId());
+                        if(!CollectionUtils.isEmpty(positionLevelList)){
+                            for (PositionLevel positionLevel : positionLevelList) {
+                                int index = positionLevel.getSortId() / 1000;
+                                PositionLevel position_Level;
+                                //遍历职级
+                                if(positionLevelArrayList.size() >= (index + 1)){
+                                    position_Level = positionLevelArrayList.get(index);
+                                }else {
+                                    position_Level = new PositionLevel();
+                                    position_Level.setPositionLevelName(positionLevel.getPositionLevelName());
+                                    positionLevelArrayList.add(position_Level);
+                                }
+
+                                List<PositionGroup> positionGroups = position_Level.getPositionGroups();
+                                if(CollectionUtils.isEmpty(positionGroups)){
+                                    //判断职级里是否含有职位族集合
+                                    positionGroups = new ArrayList<>();
+                                    position_Level.setPositionGroups(positionGroups);
+                                }
+
+                                PositionGroup position_Group;
+                                if(positionGroups.size() >= (i + 1)){
+                                    //职位族集合中存在当前职位族
+                                    position_Group = positionGroups.get(i);
+                                }else {
+                                    //职位族集合中不存在当前职位族
+                                    position_Group = new PositionGroup();
+                                    positionGroups.add(position_Group);
+                                }
+                                String positionNames = position_Group.getPositionNames();
+                                if(StringUtils.isNotBlank(positionNames)){
+                                    if(positionNames.indexOf(position.getPositionName()) < 0){
+                                        position_Group.setPositionNames(positionNames + "," + position.getPositionName());
+                                    }
+                                }else {
+                                    position_Group.setPositionNames(position.getPositionName());
+                                }
+
+                                if(!CollectionUtils.isEmpty(positionGradeList)){
+                                    //遍历职等
+                                    for (PositionGrade positionGrade : positionGradeList) {
+                                        String positionGradeNames = position_Group.getPositionGradeNames();
+                                        if(StringUtils.isNotBlank(positionGradeNames)){
+                                            position_Group.setPositionNames(positionGradeNames + "," + positionGrade.getPositionGradeName());
+                                        }else {
+                                            position_Group.setPositionNames(positionGrade.getPositionGradeName());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        mergPositionLevel(positionLevelArrayList);
+
+        return new ResponseResult<>(map);
+    }
+
+    /**
+     * 合并相同的职等名称和职位名称
+     * @param positionLevelArrayList
+     */
+    private void mergPositionLevel(List<PositionLevel> positionLevelArrayList) {
+        if(CollectionUtils.isEmpty(positionLevelArrayList)){
+            PositionLevel prePositionName_Level = null;
+            PositionLevel prePositionGradeName_Level = null;
+
+            for (int i = 1; i < positionLevelArrayList.size(); i++) {
+                PositionLevel positionLevel = positionLevelArrayList.get(i);
+                if(prePositionName_Level == null){
+                    prePositionName_Level = positionLevelArrayList.get(i - 1);
+                }
+                if(prePositionGradeName_Level == null){
+                    prePositionGradeName_Level = positionLevelArrayList.get(i - 1);
+                }
+                List<PositionGroup> positionGroups = positionLevel.getPositionGroups();
+                for (int j = 0; j < positionGroups.size(); j++) {
+                    PositionGroup positionGroup = positionGroups.get(j);
+                    String positionNames = positionGroup.getPositionNames();
+
+                    PositionGroup prePositionNameGroup = prePositionName_Level.getPositionGroups().get(j);
+                    if(prePositionNameGroup.getPositionNames().equals(positionNames)){
+                        positionGroup.setPositionNamesRowSpan(0);
+                        prePositionNameGroup.setPositionNamesRowSpan(prePositionNameGroup.getPositionNamesRowSpan() + 1);
+                    }else {
+                        positionGroup.setPositionNamesRowSpan(1);
+                        prePositionName_Level = positionLevel;
+                    }
+
+                    PositionGroup prePositionGradeNameGroup = prePositionGradeName_Level.getPositionGroups().get(j);
+                    String positionGradeNames = positionGroup.getPositionGradeNames();
+
+                    if(prePositionGradeNameGroup.getPositionGradeNames().equals(positionGradeNames)){
+                        positionGroup.setPositionNamesRowSpan(0);
+                        prePositionGradeNameGroup.setPositionGradeNamesRowSpan(prePositionNameGroup.getPositionGradeNamesRowSpan() + 1);
+                    }else {
+                        positionGroup.setPositionGradeNamesRowSpan(1);
+                        prePositionGradeName_Level = positionLevel;
+                    }
+                }
+            }
+        }
     }
 
     /**
