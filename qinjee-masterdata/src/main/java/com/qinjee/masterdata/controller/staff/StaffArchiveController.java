@@ -7,6 +7,8 @@ import com.qinjee.masterdata.model.entity.QuerySchemeSort;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.model.response.PageResult;
+import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,6 +29,8 @@ import java.util.List;
 public class StaffArchiveController extends BaseController {
     @Autowired
     private IStaffArchiveService staffArchiveService;
+
+
     /**
      * 新增人员岗位关系，初期只涉及到是否兼职，兼职是人员岗位关系中任职类型的一种
      */
@@ -78,6 +82,22 @@ public class StaffArchiveController extends BaseController {
                                                                                              List<Integer> list) {
         return staffArchiveService.selectUserArchivePostRelation(currentPage,pageSize,list);
     }
+    /**
+     * 保存修改方案
+     * 包括新增与更新
+     */
+    @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.GET)
+    @ApiOperation(value = "baocun查询方案", notes = "hkt")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
+            @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
+            @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案", paramType = "form", required = true),
+
+    })
+    public ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
+                                          List<QuerySchemeSort> querySchemeSortlist) {
+        return staffArchiveService.saveQueryScheme(queryScheme,querySchemeFieldlist,querySchemeSortlist);
+    }
 
 
     /**
@@ -91,21 +111,6 @@ public class StaffArchiveController extends BaseController {
         return staffArchiveService.deleteQueryScheme(list);
     }
 
-    /**
-     * 保存修改方案
-     */
-    @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.GET)
-    @ApiOperation(value = "baocun查询方案", notes = "hkt")
-    @ApiImplicitParams({
-              @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
-              @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
-              @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案", paramType = "form", required = true),
-
-    })
-    public ResponseResult saveQueryScheme( QueryScheme queryScheme,List<QuerySchemeField> querySchemeFieldlist,
-                                             List<QuerySchemeSort> querySchemeSortlist) {
-        return staffArchiveService.saveQueryScheme(queryScheme,querySchemeFieldlist,querySchemeSortlist);
-    }
 
     /**
      * 展示查询方案
@@ -118,6 +123,7 @@ public class StaffArchiveController extends BaseController {
         return staffArchiveService.selectQueryScheme(id);
     }
 
+    //TODO 人员进行查询时，需在后面加上机构，组织或者岗位id
 
 
 }

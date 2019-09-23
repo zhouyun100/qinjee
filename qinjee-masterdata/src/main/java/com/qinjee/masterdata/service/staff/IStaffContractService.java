@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
+import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
@@ -54,11 +55,11 @@ public interface IStaffContractService {
     /**
      *查询一个合同的变更历史
      * @param id
-     * @param currentPage
-     * @param pageSize
+     * @param
+     * @param
      * @return
      */
-    ResponseResult<PageResult<LaborContractChange>> selectLaborContractchange(Integer id, Integer currentPage, Integer pageSize);
+    ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id);
 
     /**
      * 新增续签合同
@@ -66,4 +67,11 @@ public interface IStaffContractService {
      * @return
      */
     ResponseResult insertReNewLaborContract(LaborContract laborContract);
+
+    /**
+     * 新增续签意向表
+     * @param contractRenewalIntention
+     * @return
+     */
+    ResponseResult insertContractRenewalIntention(ContractRenewalIntention contractRenewalIntention);
 }

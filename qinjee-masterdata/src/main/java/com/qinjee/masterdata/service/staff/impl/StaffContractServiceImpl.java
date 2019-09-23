@@ -1,9 +1,11 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +33,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private LaborContractChangeDao laborContractChangeDao;
+    @Autowired
+    private ContractRenewalIntentionDao contractRenewalIntentionDao;
     @Override
     public ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer currentPage,
                                                                          Integer pageSize, Integer id) {
@@ -108,16 +113,14 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public ResponseResult<PageResult<LaborContractChange>> selectLaborContractchange(Integer id, Integer currentPage, Integer pageSize) {
-        PageResult<LaborContractChange> pageResult=new PageResult<>();
+    public ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id) {
+        List<LaborContractChange> list=new ArrayList<>();
         try {
-            PageHelper.startPage(currentPage,pageSize);
-            List<LaborContractChange> list=laborContractChangeDao.selectLaborContractchange(id);
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+          list=laborContractChangeDao.selectLaborContractchange(id);
+            return new ResponseResult<>(list,CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("展示合同更新失败");
-            return new ResponseResult<>(pageResult,CommonCode.FAIL);
+            return new ResponseResult<>(list,CommonCode.FAIL);
         }
     }
 
@@ -127,6 +130,18 @@ public class StaffContractServiceImpl implements IStaffContractService {
             laborContractDao.insertReNewLaborContract(laborContract);
             return new ResponseResult<>(true,CommonCode.SUCCESS);
         } catch (Exception e) {
+            logger.error("续签合同失败");
+            return new ResponseResult(false,CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult insertContractRenewalIntention(ContractRenewalIntention contractRenewalIntention) {
+        try {
+            contractRenewalIntentionDao.insert(contractRenewalIntention);
+            return new ResponseResult(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("新增合同续签反馈表失败");
             return new ResponseResult(false,CommonCode.FAIL);
         }
     }

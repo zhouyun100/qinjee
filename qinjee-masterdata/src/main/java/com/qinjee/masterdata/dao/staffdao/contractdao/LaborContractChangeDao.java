@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.LaborContractChange;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,5 +23,5 @@ public interface LaborContractChangeDao {
 
     int updateByPrimaryKey(LaborContractChange record);
 
-    List<LaborContractChange> selectLaborContractchange(Integer id);
+    List<LaborContractChange> selectLaborContractchange(@Param("id") Integer id);
 }

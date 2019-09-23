@@ -286,5 +286,4 @@ public class CommonController {
         return staffCommonService.UploadFileByForWard();
     }
 
-
 }

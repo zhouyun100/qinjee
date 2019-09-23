@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomTable;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,10 +18,10 @@ public interface CustomTableDao {
 
     CustomTable selectByPrimaryKey(Integer tableId);
 
-    int updateByPrimaryKeySelective(CustomTable record);
+    int updateByPrimaryKeySelective(@Param("record") CustomTable record);
 
-    int updateByPrimaryKey(CustomTable record);
+    int updateByPrimaryKey(@Param("record") CustomTable record);
     int selectMaxPrimaryKey();
-    int deleteCustomTable(Integer tableId);
+    int deleteCustomTable(@Param("tableId") Integer tableId);
     List<CustomTable> selectByPage();
 }

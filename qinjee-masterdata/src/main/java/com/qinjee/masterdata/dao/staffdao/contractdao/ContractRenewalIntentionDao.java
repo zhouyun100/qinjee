@@ -1,7 +1,12 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
+import org.springframework.stereotype.Repository;
 
+/**
+ * @author Administrator
+ */
+@Repository
 public interface ContractRenewalIntentionDao {
     int deleteByPrimaryKey(Integer renewalIntentionId);
 

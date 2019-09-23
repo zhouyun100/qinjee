@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.checkerframework.checker.nullness.compatqual.NonNullType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -299,7 +300,7 @@ public class ExcelUtil {
      * @param type
      * @return
      */
-    public static Integer getCellType(String type, HSSFCell cell) {
+    public static Integer getCellType(@NonNullType String type, HSSFCell cell) {
         switch (type) {
             case "Integer":
                 return HSSFCell.CELL_TYPE_NUMERIC;
