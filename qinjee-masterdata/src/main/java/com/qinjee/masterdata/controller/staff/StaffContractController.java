@@ -2,13 +2,13 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
-import com.qinjee.model.response.CommonCode;
-import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
+import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.service.staff.IStaffContractService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,19 +22,22 @@ import java.util.List;
 @RequestMapping("/staffcon")
 @Api(tags = "【人员管理】合同相关接口")
 public class StaffContractController {
+    @Autowired
+    private IStaffContractService staffContractService;
     /**
      * 展示未签合同
      */
     @RequestMapping(value = "/selectNoLaborContract", method = RequestMethod.GET)
     @ApiOperation(value = "展示未签合同", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+            @ApiImplicitParam(name = "id", value = "企业id", paramType = "query", required = true),
+
     })
-    public ResponseResult<PageResult<List<LaborContract>>> selectLaborContract(Integer number, Integer pageSize) {
-        PageResult<List<LaborContract>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<LaborContract>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
+    public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer currentPage, Integer pageSize
+                                                                                                        , Integer id) {
+    return staffContractService.selectNoLaborContract(currentPage,pageSize,id);
     }
 
     /**
@@ -44,25 +47,28 @@ public class StaffContractController {
     @RequestMapping(value = "/insertLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "新签合同", notes = "hkt")
     @ApiImplicitParam(name = "JsonObject", value = "合同表", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertLaborContract(LaborContract laborContract) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+    public ResponseResult insertLaborContract(LaborContract laborContract) {
+        return  staffContractService.insertLaborContract(laborContract);
     }
 
     /**
      * 批量新签合同（合同编号不支持输入，需系统自动生成，对应的是提交，就是合同已经生效，此时字段是否已签改为是否已签）
      */
-
+    /**
+     * 这里需要进行人员信息的查询，然后将属性取出来塞进合同集合中。
+     * @param list
+     * @return
+     */
     @RequestMapping(value = "/insertLaborContractBatch", method = RequestMethod.POST)
     @ApiOperation(value = "批量新签合同", notes = "hkt")
-    @ApiImplicitParam(name = "LaborContract", value = "合同表", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertLaborContractBatch(LaborContract laborContract) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+    @ApiImplicitParam(name = "LaborContractList", value = "合同集合", paramType = "form", required = true)
+    public ResponseResult insertLaborContractBatch(List<LaborContract> list) {
+        return staffContractService.insertLaborContractBatch(list);
     }
 
     /**
      * 保存合同（对应的是保存，就是合同已经编辑，此时字段是否已签为未签）
+     * 这个跟新增合同一样的，只是合同状态不同
      */
 
     @RequestMapping(value = "/saveLaborContract", method = RequestMethod.GET)
@@ -81,10 +87,8 @@ public class StaffContractController {
     @RequestMapping(value = "/deleteLaborContract", method = RequestMethod.GET)
     @ApiOperation(value = "删除合同", notes = "hkt")
     @ApiImplicitParam(name = "LaborContractid", value = "合同id", paramType = "query", required = true)
-    public ResponseResult<Boolean> deleteLaborContract(Integer id) {
-        //真删除
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+    public ResponseResult deleteLaborContract(Integer laborContractid) {
+        return staffContractService.deleteLaborContract(laborContractid);
     }
 
     /**
@@ -99,9 +103,9 @@ public class StaffContractController {
             @ApiImplicitParam(name = "laborContract", value = "页面信息组合成的合同对象", paramType = "form", required = true),
             @ApiImplicitParam(name = "laborContractChange", value = "页面信息组合成的合同变更对象", paramType = "query", required = true)
     })
-    public ResponseResult<Boolean> updateCustomTableData(Integer id, LaborContract laborContract, LaborContractChange laborContractChange) {
-        ResponseResult<Boolean> updateResponseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return updateResponseResult;
+    public ResponseResult updateCustomTableData(LaborContract laborContract, LaborContractChange laborContractChange) {
+        return staffContractService.updatelaborContract(laborContract,laborContractChange);
+
     }
 
     /**
@@ -112,13 +116,11 @@ public class StaffContractController {
     @ApiOperation(value = "展示合同的变更记录", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "合同id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
     })
-    public ResponseResult<PageResult<List<LaborContractChange>>> selectLaborContractchange(Integer number, Integer pageSize) {
-        PageResult<List<LaborContractChange>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<LaborContractChange>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
+    public ResponseResult<PageResult<LaborContractChange>> selectLaborContractchange(Integer id,Integer currentPage, Integer pageSize) {
+       return staffContractService.selectLaborContractchange(id,currentPage,pageSize);
     }
 
     /**
@@ -129,10 +131,9 @@ public class StaffContractController {
     @RequestMapping(value = "/insertReNewLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "续签签合同", notes = "hkt")
     @ApiImplicitParam(name = "JsonObject", value = "合同表", paramType = "form", required = true)
-    public ResponseResult<Boolean> insertReNewLaborContract(LaborContract laborContract) {
+    public ResponseResult insertReNewLaborContract(LaborContract laborContract) {
         //续签时候将续签次数在原有基础上加一
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+       return staffContractService.insertReNewLaborContract(laborContract);
     }
 
     /**
@@ -175,8 +176,8 @@ public class StaffContractController {
         return pageResultResponseResult;
     }
 
-/**合同状态  新签、续签、解除、终止
- *  合同标识  有效、无效
+/**合同状态  新签、变更   续签、解除、终止
+ *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
  *   审批状态  未提交、审批中、已审批
  *   导入导出接口可以复用导入导出模块
  *   导入校验，此时先把excel转成list，需要对list的各个属性进行一一校验，这个规则还需要产品确定，交给前端进行筛选校验

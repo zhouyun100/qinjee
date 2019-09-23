@@ -4,8 +4,6 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
-import com.qinjee.model.response.CommonCode;
-import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

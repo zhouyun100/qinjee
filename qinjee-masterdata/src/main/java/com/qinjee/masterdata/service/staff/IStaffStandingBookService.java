@@ -1,8 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
@@ -43,16 +42,23 @@ public interface IStaffStandingBookService {
     ResponseResult<PageResult<Blacklist>> selectBalckList(Integer currentPage, Integer pageSize);
 
     /**
-     * 新增台账
-     * @param standingBook
-     * @return
-     */
-    ResponseResult insertStandingBook(StandingBook standingBook, StandingBookFilter standingBookFilter);
-
-    /**
      * 删除台账
      * @param standingBookId
      * @return
      */
     ResponseResult deleteStandingBook(Integer standingBookId);
+
+    /**
+     * 新增与修改台账
+     * @param standingBookInfo
+     * @return
+     */
+    ResponseResult saveStandingBook(StandingBookInfo standingBookInfo);
+
+    /**
+     * 展示台账表
+     * @param id
+     * @return
+     */
+    ResponseResult selectStandingBook(Integer id);
 }

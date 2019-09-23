@@ -27,7 +27,7 @@ public interface IStaffPreEmploymentService {
      * @param filepath
      * @return
      */
-    ResponseResult sendManyMail(List<Integer> prelist, List<Integer> conList, String content,String subject, String[] filepath);
+    ResponseResult sendManyMail(List<Integer> prelist, List<Integer> conList, String content, String subject, String[] filepath);
 
     /**
      * 验证手机号

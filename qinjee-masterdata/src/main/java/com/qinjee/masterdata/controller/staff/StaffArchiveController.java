@@ -7,8 +7,6 @@ import com.qinjee.masterdata.model.entity.QuerySchemeSort;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
-import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
