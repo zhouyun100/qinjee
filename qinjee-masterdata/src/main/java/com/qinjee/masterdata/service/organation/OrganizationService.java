@@ -103,4 +103,11 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId);
+
+    /**
+     * 机构职位树状图展示
+     * @param userSession
+     * @return
+     */
+    ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable);
 }

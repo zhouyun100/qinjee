@@ -120,6 +120,11 @@ public class Organization implements Serializable {
      */
     private String attachmentUrl;
 
+    /**
+     * 机构下的职位
+     */
+    private List<Position> positionList;
+
     private static final long serialVersionUID = 1L;
 
 }

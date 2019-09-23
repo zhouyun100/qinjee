@@ -2,11 +2,9 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.PositionDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.model.entity.Organization;
-import com.qinjee.masterdata.model.entity.OrganizationHistory;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.entity.UserRole;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
@@ -41,12 +39,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     private OrganizationDao organizationDao;
-
     @Autowired
     private OrganizationHistoryService organizationHistoryService;
-
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private PositionDao positionDao;
 
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
@@ -329,6 +327,19 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
 
         return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable) {
+        PageResult<Organization> organizationTree = getOrganizationTree(userSession, isEnable);
+        List<Organization> organizationTreeList = organizationTree.getList();
+        if (!CollectionUtils.isEmpty(organizationTreeList)){
+            for (Organization organization : organizationTreeList) {
+                List<Position> positionList = positionDao.getPositionListByOrgId(organization.getOrgId());
+                organization.setPositionList(positionList);
+            }
+        }
+        return new ResponseResult<>(organizationTreeList);
     }
 
     /**

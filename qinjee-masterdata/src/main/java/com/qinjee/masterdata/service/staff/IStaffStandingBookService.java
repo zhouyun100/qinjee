@@ -5,14 +5,13 @@ import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * @author Administrator
  */
-@Service
+
 public interface IStaffStandingBookService {
     /**
      * 新增黑名单

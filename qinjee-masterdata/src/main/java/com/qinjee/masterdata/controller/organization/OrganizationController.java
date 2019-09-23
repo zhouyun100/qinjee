@@ -159,12 +159,9 @@ public class OrganizationController extends BaseController {
         return null;
     }
 
-
-    @ApiOperation(value = "根据机构id查询本级及以下的机构")
-    @GetMapping("/getOrganizationListByOrgId")
-    public ResponseResult<List<Organization>> getOrganizationListByOrgId(@RequestParam("orgId") @ApiParam(value = "选择的机构id", example = "0101", required = true) String orgId){
-
-        return null;
+    @ApiOperation(value = "机构职位树状图展示", notes = "高雄")
+    @GetMapping("/getOrganizationPositionTree")
+    public ResponseResult<List<Organization>> getOrganizationPositionTree(@ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+        return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
     }
-
 }
