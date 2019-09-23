@@ -40,7 +40,7 @@ public interface IStaffCommonService {
      * @param pagesize
      * @return
      */
-    ResponseResult<PageResult<CustomTable>> selectCustomTable(Integer currentPage,Integer pagesize);
+    ResponseResult<PageResult<CustomTable>> selectCustomTable(Integer currentPage, Integer pagesize);
 
     /**
      * 新增自定义组

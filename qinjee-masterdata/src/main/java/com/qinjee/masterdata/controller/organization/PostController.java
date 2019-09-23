@@ -1,12 +1,11 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.dao.PostDao;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -28,20 +27,12 @@ import java.util.List;
 public class PostController extends BaseController {
 
     @Autowired
-    private PostDao postDao;
-
-    @GetMapping("/getPostTree")
-    @ApiOperation(value = "根据是否封存查询用户下所有的机构岗位,树形结构展示",notes = "高雄")
-    public ResponseResult<PageResult<Organization>> getPostTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
-        //调用机构service查询组织机构树的方法 ,通过标识判断是否要查询岗位
-        return null;
-    }
+    private PostService postService;
 
     @GetMapping("/getPostList")
     @ApiOperation(value = "分页查询岗位列表", notes = "高雄")
     public ResponseResult<PageResult<Post>> getPostList(PostPageVo postPageVo){
-
-        return null;
+        return postService.getPostList(getUserSession(), postPageVo);
     }
 
     @ApiImplicitParams({
@@ -54,13 +45,15 @@ public class PostController extends BaseController {
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize,
                                                                                               Integer currentPage,
                                                                                               Integer postId){
-        return null;
+        return postService.getUserArchivePostRelationList(pageSize, currentPage, postId);
     }
 
 
     @ApiOperation(value = "新增岗位", notes = "高雄")
     @PostMapping("/addPost")
     public ResponseResult addPost(PostVo postVo){
+
+
 
         return null;
     }

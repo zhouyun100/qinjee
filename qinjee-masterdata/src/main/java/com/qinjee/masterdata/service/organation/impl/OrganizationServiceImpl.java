@@ -2,11 +2,9 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.model.entity.Organization;
-import com.qinjee.masterdata.model.entity.OrganizationHistory;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.entity.UserRole;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
@@ -41,12 +39,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     private OrganizationDao organizationDao;
-
     @Autowired
     private OrganizationHistoryService organizationHistoryService;
-
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private PostDao postDao;
 
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
@@ -101,9 +99,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
         Organization organization = getNewOrgCode(organizationVo.getOrgParentId());
-        String fullname = organization.getOrgFullname() + "/" + organizationVo.getOrgName();
+        String full_name = organization.getOrgFullName() + "/" + organizationVo.getOrgName();
         BeanUtils.copyProperties(organizationVo, organization);
-        organization.setOrgFullname(fullname);
+        organization.setOrgFullName(full_name);
         organization.setOperatorId(userSession.getArchiveId());
         organization.setIsEnable((short) 1);
         int insert = organizationDao.insertSelective(organization);
@@ -136,7 +134,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = new Organization();
         organization.setSortId(sortId);
         organization.setOrgCode(newOrgCode);
-        organization.setOrgFullname(parentOrganization.getOrgFullname());
+        organization.setOrgFullName(parentOrganization.getOrgFullName());
         return organization;
     }
 
@@ -168,12 +166,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = addOrganizationHistoryByOrgId(organizationVo.getOrgId());
         BeanUtils.copyProperties(organizationVo, organization);
         Organization parentOrganization = organizationDao.selectByPrimaryKey(organization.getOrgParentId());
-        String orgFullname = parentOrganization.getOrgFullname();
-        organization.setOrgFullname(orgFullname + "/" + organization.getOrgName());
+        String orgfull_name = parentOrganization.getOrgFullName();
+        organization.setOrgFullName(orgfull_name + "/" + organization.getOrgName());
         int i = organizationDao.updateByPrimaryKeySelective(organization);
 
         //修改子级的机构全名称
-        updateOrganizationFullName(organization);
+        updateOrganizationfull_name(organization);
 
         return i == 1 ? new ResponseResult(CommonCode.SUCCESS) :  new ResponseResult(CommonCode.FAIL);
     }
@@ -182,7 +180,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * 递归修改子级机构全名称
      * @param organization
      */
-    private void updateOrganizationFullName(Organization organization) {
+    private void updateOrganizationfull_name(Organization organization) {
         List<Organization> organizationList = organizationDao.getOrganizationListByParentOrgId(organization.getOrgId());
         if(!CollectionUtils.isEmpty(organizationList)){
             for (Organization organizati : organizationList) {
@@ -190,9 +188,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                 BeanUtils.copyProperties(organizati, organizationHistory);
                 //新增机构历史信息
                 organizationHistoryService.addOrganizationHistory(organizationHistory);
-                organizati.setOrgFullname(organization.getOrgFullname() + "/" + organization.getOrgName());
+                organizati.setOrgFullName(organization.getOrgFullName() + "/" + organization.getOrgName());
                 organizationDao.updateByPrimaryKeySelective(organizati);
-                updateOrganizationFullName(organizati);
+                updateOrganizationfull_name(organizati);
             }
         }
     }
@@ -252,7 +250,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             Organization newOrganization = getNewOrganization(newOrgName, targetOrgId, orgType, userSession);
             organizationDao.insertSelective(newOrganization);
 
-            updateOrganizationFullNameAndOrgCode(organizationList, newOrganization);
+            updateOrganizationfull_nameAndOrgCode(organizationList, newOrganization);
         }
         return new ResponseResult();
     }
@@ -271,12 +269,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         newOrganization.setOrgName(newOrgName);
         Organization newOrgCode = getNewOrgCode(targetOrgId);
 
-        String orgFullname = newOrgCode.getOrgFullname();
+        String orgfull_name = newOrgCode.getOrgFullName();
         BeanUtils.copyProperties(newOrgCode, newOrganization);
         newOrganization.setIsEnable((short) 1);
         newOrganization.setCompanyId(userSession.getCompanyId());
         newOrganization.setOrgType(orgType);
-        newOrganization.setOrgFullname(orgFullname + "/" + newOrganization.getOrgName());
+        newOrganization.setOrgFullName(orgfull_name + "/" + newOrganization.getOrgName());
         return newOrganization;
     }
 
@@ -325,10 +323,40 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             Organization parentOrganization = organizationDao.selectByPrimaryKey(targetOrgId);
 
-            updateOrganizationFullNameAndOrgCode(organizationList, parentOrganization);
+            updateOrganizationfull_nameAndOrgCode(organizationList, parentOrganization);
         }
 
         return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable) {
+        PageResult<Organization> organizationTree = getOrganizationTree(userSession, isEnable);
+        List<Organization> organizationTreeList = organizationTree.getList();
+        if (!CollectionUtils.isEmpty(organizationTreeList)){
+            for (Organization organization : organizationTreeList) {
+                List<Post> postList = postDao.getPostListByOrgId(organization.getOrgId(), isEnable);
+                organization.setPostList(postList);
+                packOrganizationPosition(organization,isEnable);
+            }
+        }
+        return new ResponseResult<>(organizationTreeList);
+    }
+
+    /**
+     * 递归给机构树的机构设置下面的岗位
+     * @param organization
+     * @param isEnable
+     */
+    private void packOrganizationPosition(Organization organization, Short isEnable){
+        List<Organization> childList = organization.getChildList();
+        if (!CollectionUtils.isEmpty(childList)){
+            for (Organization org : childList) {
+                List<Post> postList = postDao.getPostListByOrgId(org.getOrgId(),isEnable);
+                org.setPostList(postList);
+                packOrganizationPosition(organization, isEnable);
+            }
+        }
     }
 
     /**
@@ -336,14 +364,14 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param organizationList
      * @param parentOrganization
      */
-    private void updateOrganizationFullNameAndOrgCode(List<Organization> organizationList, Organization parentOrganization) {
+    private void updateOrganizationfull_nameAndOrgCode(List<Organization> organizationList, Organization parentOrganization) {
         String newOrgCode = parentOrganization.getOrgCode() + "000";
         for (Organization organization : organizationList) {
             OrganizationHistory organizationHistory = new OrganizationHistory();
             BeanUtils.copyProperties(organization, organizationHistory);
             organizationHistoryService.addOrganizationHistory(organizationHistory);
             organization.setOrgParentId(parentOrganization.getOrgId());
-            organization.setOrgFullname(parentOrganization.getOrgFullname() + "/" + organization.getOrgName());
+            organization.setOrgFullName(parentOrganization.getOrgFullName() + "/" + organization.getOrgName());
             newOrgCode = getNewCode(newOrgCode);
             organization.setOrgCode(newOrgCode);
             organizationDao.updateByPrimaryKeySelective(organization);
@@ -351,7 +379,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             List<Organization> organizations = organizationDao.getOrganizationListByParentOrgId(organization.getOrgId());
             if(!CollectionUtils.isEmpty(organizations)){
                 //递归修改本级的父级id和全名称及子级的全名称
-                updateOrganizationFullNameAndOrgCode(organizations, organization);
+                updateOrganizationfull_nameAndOrgCode(organizations, organization);
             }
 
         }

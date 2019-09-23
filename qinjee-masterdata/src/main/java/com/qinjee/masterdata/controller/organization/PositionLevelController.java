@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -34,10 +35,8 @@ public class PositionLevelController extends BaseController {
 
     @ApiOperation(value = "按职级 展示职位体系", notes = "高雄")
     @GetMapping("/showByPositionLevel")
-    public ResponseResult<PositionLevel> showByPositionLevel(){
-        positionLevelService.showByPositionLevel(getUserSession());
-        //TODO
-        return null;
+    public ResponseResult<Map<String, Object>> showByPositionLevel(){
+        return positionLevelService.showByPositionLevel(getUserSession());
     }
 
     @ApiOperation(value = "按职位 展示职位体系", notes = "高雄")

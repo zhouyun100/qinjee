@@ -3,6 +3,8 @@ package com.qinjee.masterdata.dao;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Administrator
  */
@@ -26,4 +28,10 @@ public interface UserArchivePostRelationDao {
 
     void deleteUserArchivePostRelation(Integer integer);
 
+    /**
+     * 通过岗位id查询员工档案岗位关系表
+     * @param postId
+     * @return
+     */
+    List<UserArchivePostRelation> getUserArchivePostRelationList(Integer postId);
 }

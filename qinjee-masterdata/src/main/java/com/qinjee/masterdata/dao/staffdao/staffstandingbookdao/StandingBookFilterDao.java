@@ -1,10 +1,14 @@
 package com.qinjee.masterdata.dao.staffdao.staffstandingbookdao;
 
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Administrator
  */
+@Repository
 public interface StandingBookFilterDao {
     int deleteByPrimaryKey(Integer filterId);
 
@@ -19,4 +23,6 @@ public interface StandingBookFilterDao {
     int updateByPrimaryKey(StandingBookFilter record);
 
     void deleteStandingBookFilter(Integer standingBookId);
+
+    List<StandingBookFilter> selectByStandingBookId(Integer id);
 }

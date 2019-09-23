@@ -30,4 +30,11 @@ public interface PositionDao {
      * @return
      */
     List<Position> getPositionList(Integer companyId);
+
+    /**
+     * 查询机构下的职位
+     * @param orgId
+     * @return
+     */
+    List<Position> getPositionListByOrgId(Integer orgId);
 }

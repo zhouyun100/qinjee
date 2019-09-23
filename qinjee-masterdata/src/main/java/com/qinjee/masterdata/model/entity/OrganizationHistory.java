@@ -36,7 +36,7 @@ public class OrganizationHistory implements Serializable {
     /**
      * 机构全称
      */
-    private String orgFullname;
+    private String orgfull_name;
 
     /**
      * 机构负责人
@@ -115,12 +115,12 @@ public class OrganizationHistory implements Serializable {
         this.orgParentId = orgParentId;
     }
 
-    public String getOrgFullname() {
-        return orgFullname;
+    public String getorgfull_name() {
+        return orgfull_name;
     }
 
-    public void setOrgFullname(String orgFullname) {
-        this.orgFullname = orgFullname;
+    public void setorgfull_name(String orgfull_name) {
+        this.orgfull_name = orgfull_name;
     }
 
     public Integer getOrgManagerId() {

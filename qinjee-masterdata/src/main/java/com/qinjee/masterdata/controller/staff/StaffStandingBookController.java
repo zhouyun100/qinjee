@@ -1,8 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -27,6 +26,7 @@ import java.util.List;
 public class StaffStandingBookController {
     @Autowired
     private IStaffStandingBookService staffStandingBookService;
+
     /**
      * 加入黑名单表
      */
@@ -54,8 +54,8 @@ public class StaffStandingBookController {
     @ApiOperation(value = "修改黑名单表", notes = "hkt")
     @ApiImplicitParam(name = "BlackLsit", value = "黑名单", paramType = "form", required = true)
 
-    public ResponseResult updateBalckList( Blacklist blacklist) {
-       return staffStandingBookService.updateBalckList(blacklist);
+    public ResponseResult updateBalckList(Blacklist blacklist) {
+        return staffStandingBookService.updateBalckList(blacklist);
     }
 
     /**
@@ -68,17 +68,7 @@ public class StaffStandingBookController {
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
     })
     public ResponseResult<PageResult<Blacklist>> selectBalckList(Integer currentPage, Integer pageSize) {
-        return staffStandingBookService.selectBalckList(currentPage,pageSize);
-    }
-    /**
-     * 新增台账
-     */
-
-    @RequestMapping(value = "/insertStandingBook", method = RequestMethod.POST)
-    @ApiOperation(value = "新增台账", notes = "hkt")
-    @ApiImplicitParam(name = "StandingBook", value = "台账表", paramType = "query", required = true)
-    public ResponseResult insertStandingBook(StandingBook standingBook,StandingBookFilter standingBookFilter) {
-        return staffStandingBookService.insertStandingBook(standingBook,standingBookFilter);
+        return staffStandingBookService.selectBalckList(currentPage, pageSize);
     }
 
     /**
@@ -98,16 +88,13 @@ public class StaffStandingBookController {
 
     @RequestMapping(value = "/updateStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "修改台账", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "StandingBook", value = "员工台账", paramType = "form", required = true),
-            @ApiImplicitParam(name = "StandingBookFliter", value = "员工台账筛选", paramType = "form", required = true),
-    })
-    public ResponseResult updateStandingBook(StandingBook standingBook,StandingBookFilter standingBookFilter) {
+    @ApiImplicitParam(name = "StandingBookInfo", value = "台账表信息", paramType = "form", required = true)
+
+    public ResponseResult updateStandingBook(StandingBookInfo standingBookInfo) {
         //因为页面只有一个保存按钮，所以点保存的时候，需要区分前端是否传过来id
         //如果有id，证明是更新，做两个更新操作
         //如果没有，证明是新增。做两个新增操作。
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+        return staffStandingBookService.saveStandingBook(standingBookInfo);
     }
 
     /**
@@ -118,33 +105,7 @@ public class StaffStandingBookController {
     @ApiOperation(value = "查询台账", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult selectStandingBook(Integer id) {
-        //通过台账id获取台账筛选表，然后根据列表展示
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
-    }
-
-    /**
-     * 新增台账筛选表
-     */
-
-    @RequestMapping(value = "/insertStandingBookFilter", method = RequestMethod.POST)
-    @ApiOperation(value = "新增台账筛选表", notes = "hkt")
-    @ApiImplicitParam(name = "StandingBookFliterList", value = "台账筛选表集合", paramType = "query", required = true)
-    public ResponseResult insertStandingBookFilter(List<StandingBookFilter> list) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
-    }
-
-    /**
-     * 删除台账筛选表
-     */
-
-    @RequestMapping(value = "/deleteStandingBookFilter", method = RequestMethod.GET)
-    @ApiOperation(value = "删除台账筛选表", notes = "hkt")
-    @ApiImplicitParam(name = "StandingBookFilterId", value = "台账筛选表id", paramType = "query", required = true)
-    public ResponseResult deleteStandingBookFilter(Integer id) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
+        return staffStandingBookService.selectStandingBook(id);
     }
 
     /**
@@ -160,9 +121,9 @@ public class StaffStandingBookController {
     })
     public ResponseResult updateBalckList(Boolean IsShare, Integer id, List<Integer> list, String code) {
         ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
+        //TODO 查询台账操作与档案展示方案
         return responseResult;
     }
-
 
 
 }

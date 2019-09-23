@@ -17,12 +17,15 @@ import com.qinjee.model.response.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * @author Administrator
+ *
  */
+@Service
 public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
     @Autowired
@@ -152,6 +155,17 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 //说明是新增操作
                 try {
                     querySchemeDao.insertSelective(queryScheme);
+                } catch (Exception e) {
+                    logger.error("新增查询方案表失败，字段表排序表无法进行新增");
+                    return new ResponseResult(false, CommonCode.FAIL);
+                }
+                try {
+                    for (QuerySchemeField querySchemeField : querySchemeFieldlist) {
+                        querySchemeField.setQuerySchemeId(queryScheme.getQuerySchemeId());
+                    }
+                    for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
+                        querySchemeSort.setQuerySchemeId(queryScheme.getQuerySchemeId());
+                    }
                     for (int i = 0; i < querySchemeFieldlist.size(); i++) {
                         querySchemeFieldDao.insert(querySchemeFieldlist.get(i));
                     }
@@ -174,7 +188,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
                     querySchemeSort.setQuerySchemeId(queryScheme.getQuerySchemeId());
                 }
-                querySchemeDao.insertSelective(queryScheme);
+                querySchemeDao.updateByPrimaryKeySelective(queryScheme);
                 for (int i = 0; i < querySchemeFieldlist.size(); i++) {
                     querySchemeFieldDao.updateByPrimaryKey(querySchemeFieldlist.get(i));
                 }

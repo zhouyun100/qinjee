@@ -43,7 +43,7 @@ public class CommonController {
     @RequestMapping(value = "/deleteCustomTable", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customTableId", value = "自定义表id组成集合", paramType = "query", required = true, example = "{1,2}")
-    public ResponseResult<Boolean> deleteCustomTable(List list) {
+    public ResponseResult deleteCustomTable(List list) {
       return staffCommonService.deleteCustomTable(list);
     }
 
@@ -219,7 +219,7 @@ public class CommonController {
     @ApiOperation(value = "删除恢复,在删除预入职表，以及人员档案表时恢复", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "id", paramType = "query", required = true)
     public ResponseResult cancelDeleteCustom(Integer id) {
-       return new ResponseResult(true,CommonCode.SUCCESS);
+       return new ResponseResult(true, CommonCode.SUCCESS);
     }
 
     /**
@@ -285,6 +285,5 @@ public class CommonController {
 
         return staffCommonService.UploadFileByForWard();
     }
-
 
 }

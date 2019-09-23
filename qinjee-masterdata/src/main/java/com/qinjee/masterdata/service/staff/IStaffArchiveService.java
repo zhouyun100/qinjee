@@ -7,14 +7,12 @@ import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * @author Administrator
  */
-@Service
 public interface IStaffArchiveService {
     /**
      * 新增人员岗位关系表

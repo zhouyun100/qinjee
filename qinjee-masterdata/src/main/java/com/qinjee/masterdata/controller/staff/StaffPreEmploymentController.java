@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
@@ -27,7 +28,6 @@ public class StaffPreEmploymentController extends BaseController {
     @Autowired
     private IStaffPreEmploymentService staffPreEmploymentService;
 
-
     /**
      * 发短信给预入职人员
      */
@@ -39,7 +39,7 @@ public class StaffPreEmploymentController extends BaseController {
             @ApiImplicitParam(name = "params[]", value = "所传参数", paramType = "query", required = true),
 
     })
-    public ResponseResult sendMessage(List<Integer> list,Integer templateId,String[] params) {
+    public ResponseResult sendMessage(List<Integer> list, Integer templateId, String[] params) {
        return staffPreEmploymentService.sendMessage(list,templateId,params);
     }
 
@@ -96,15 +96,20 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 延期入职以及放弃入职(延期入职时间还需要添加时间)
      * 延期入职需要更新预入职信息的入职时间，同时更新预入职更改表
+     * 确认入职需要更新预入职表中的入职状态，需要更新预入职更改表，需要将数据同步到档案表
+     * 鉴于更改表与预入职表中字段有出入，无法完全获取其中的字段值，故需要传更改表的数据过来
      */
 
     @RequestMapping(value = "/updatePreEmploymentChange", method = RequestMethod.POST)
     @ApiOperation(value = "延期入职以及放弃入职", notes = "hkt")
-    @ApiImplicitParam(name = "StatusChange", value = "预入职变更表vo类", paramType = "query", required = true)
-    public ResponseResult updatePreEmploymentChange(StatusChange statusChange) {
-       return staffPreEmploymentService.insertStatusChange(statusChange);
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "PreEmployment", value = "预入职表", paramType = "form", required = true),
+            @ApiImplicitParam(name = "StatusChange", value = "预入职变更表vo类", paramType = "form", required = true),
+            @ApiImplicitParam(name = "BlackList", value = "黑名单表", paramType = "form", required = true)
+    })
+    public ResponseResult updatePreEmploymentChange(PreEmployment preEmployment, StatusChange statusChange,Blacklist blacklist) {
+       return staffPreEmploymentService.insertStatusChange(preEmployment,statusChange,blacklist);
     }
-
     /**
      * 加入黑名单表
      */

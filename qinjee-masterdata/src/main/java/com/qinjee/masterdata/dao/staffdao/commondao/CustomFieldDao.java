@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomField;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public interface CustomFieldDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteCustomField(Integer integer);
+    void deleteCustomField(@Param("integer") Integer integer);
 
-    List<Integer> selectFieldId(Integer customTableId);
+    List<Integer> selectFieldId(@Param("customTableId") Integer customTableId);
 
-    List<String> selectFieldType(Integer customTableId);
+    List<String> selectFieldType(@Param("customTableId") Integer customTableId);
 }

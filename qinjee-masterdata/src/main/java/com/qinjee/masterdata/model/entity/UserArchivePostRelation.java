@@ -100,6 +100,24 @@ public class UserArchivePostRelation implements Serializable {
     @ApiModelProperty("是否删除")
     private Short isDelete;
 
+    /**
+     * 姓名
+     */
+    @ApiModelProperty("姓名")
+    private String userName;
+
+    /**
+     * 工号
+     */
+    @ApiModelProperty("工号")
+    private String employeeNumber;
+
+    /**
+     * 岗位名称
+     */
+    @ApiModelProperty("岗位名称")
+    private String postName;
+
     private static final long serialVersionUID = 1L;
 
 }

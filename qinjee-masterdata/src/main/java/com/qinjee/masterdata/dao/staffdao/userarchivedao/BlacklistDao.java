@@ -1,12 +1,14 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * @author Administrator
  */
+@Repository
 public interface BlacklistDao {
     int deleteByPrimaryKey(Integer blacklistId);
 

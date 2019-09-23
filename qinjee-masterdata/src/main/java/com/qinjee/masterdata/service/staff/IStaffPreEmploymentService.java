@@ -1,5 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
+import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.model.response.ResponseResult;
 
@@ -27,7 +29,7 @@ public interface IStaffPreEmploymentService {
      * @param filepath
      * @return
      */
-    ResponseResult sendManyMail(List<Integer> prelist, List<Integer> conList, String content,String subject, String[] filepath);
+    ResponseResult sendManyMail(List<Integer> prelist, List<Integer> conList, String content, String subject, String[] filepath);
 
     /**
      * 验证手机号
@@ -45,9 +47,10 @@ public interface IStaffPreEmploymentService {
 
     /**
      * 新增预入职变更表
-     * @param statusChange
+     * @param preEmployment,statusChange
      * @return
      */
 
-    ResponseResult insertStatusChange(StatusChange statusChange);
+    ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange, Blacklist blacklist);
+
 }

@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomGroup;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface CustomGroupDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteCustomGroup(Integer integer);
+    void deleteCustomGroup(@Param("integer") Integer integer);
 
-    List<Integer> selectTableId(Integer customGroupId);
+    List<Integer> selectTableId(@Param("customGroupId") Integer customGroupId);
 }

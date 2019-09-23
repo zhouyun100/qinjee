@@ -122,4 +122,9 @@
       from t_position_group tpg left join t_position tp on tpg.position_group_id = tp.position_group_id
       where tpg.company_id = #{companyId} and tpg.is_delete = 0 and tp.is_delete = 0 ORDER BY tpg.sort_id, tp.sort_id ASC
     </select>
+    <select id="getPositionListByOrgId" resultType="com.qinjee.masterdata.model.entity.Position">
+      select tps.position_id, tps.position_name, tps.position_group_id, tps.sort_id, tps.operator_id, tps.create_time, tps.is_delete
+      from t_organization torg left join t_post tp on tp.org_id = torg.org_id left join t_position tps on tps.position_id = tp.position_id
+      where tp.is_delete = 0 and tps.is_delete = 0 and tp.is_enable = 1
+    </select>
 </mapper>

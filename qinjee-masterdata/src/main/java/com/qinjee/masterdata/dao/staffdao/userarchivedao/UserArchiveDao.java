@@ -3,6 +3,8 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Administrator
  */
@@ -24,4 +26,5 @@ public interface UserArchiveDao {
 
     String selectMail(Integer integer);
 
+    List<UserArchive> selectNotInList(List<Integer> readyIdList);
 }
