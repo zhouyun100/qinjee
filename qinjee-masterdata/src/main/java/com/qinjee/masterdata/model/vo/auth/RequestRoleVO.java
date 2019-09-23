@@ -1,5 +1,5 @@
 /**
- * 文件名：RequestUserRoleVO
+ * 文件名：RequestRoleVO
  * 工程名称：eTalent
  * <p>
  * qinjee
@@ -21,9 +21,12 @@ import java.util.Date;
  * @date 2019/9/20
  */
 @Data
-public class RequestUserRoleVO {
+public class RequestRoleVO {
 
-
+    /**
+     * 主键ID
+     */
+    @ApiModelProperty("主键ID")
     private Integer id;
 
     /**
@@ -73,5 +76,11 @@ public class RequestUserRoleVO {
      */
     @ApiModelProperty("操作人")
     private Integer operatorId;
+
+    /**
+     * 企业ID
+     */
+    @ApiModelProperty("企业ID")
+    private Integer companyId;
 
 }

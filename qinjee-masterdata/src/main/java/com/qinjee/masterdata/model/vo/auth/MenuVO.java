@@ -87,4 +87,10 @@ public class MenuVO {
      */
     @ApiModelProperty("子级菜单列表")
     private List<MenuVO> childMenuList;
+
+    /**
+     * 是否拥有菜单权限(1：是，0：否)
+     */
+    @ApiModelProperty("是否拥有菜单权限")
+    private Integer hasMenu;
 }

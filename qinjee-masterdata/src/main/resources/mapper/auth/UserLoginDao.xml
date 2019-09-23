@@ -21,7 +21,7 @@
     <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
   </resultMap>
 
-  <select id="searchUserInfoByAccountAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO" resultMap="UserInfoResultMap">
+  <select id="searchUserInfoByAccountAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
     select
     t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
     from t_user_info,t_user_company,t_company_info,t_user_archive
@@ -48,7 +48,7 @@
     and t_company_info.is_enable = 1
   </select>
 
-  <select id="searchUserInfoByUserIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO" resultMap="UserInfoResultMap">
+  <select id="searchUserInfoByUserIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
     select
     t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
     from t_user_info,t_user_company,t_company_info,t_user_archive
@@ -62,13 +62,13 @@
     and t_company_info.is_enable = 1
   </select>
 
-  <update id="updateUserPasswordByUserIdAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO">
+  <update id="updateUserPasswordByUserIdAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO">
     update t_user_info set password = #{newPassword,jdbcType=VARCHAR}
     where user_id = #{userId,jdbcType=INTEGER} and password = #{password,jdbcType=VARCHAR}
   </update>
 
   <!-- 各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入 -->
-  <select id="searchUserAuthTreeByArchiveIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO" resultMap="MenuResultMap">
+  <select id="searchUserAuthTreeByArchiveIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="MenuResultMap">
     select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
     from t_menu,t_company_menu,t_role_menu_auth,t_role,t_user_role
     where t_user_role.archive_id = 1

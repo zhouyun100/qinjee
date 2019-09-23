@@ -67,17 +67,4 @@
       #{operatorId,jdbcType=INTEGER})
   </insert>
 
-
-  <!-- TODO 根据角色名称模糊查询角色列表 -->
-  <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
-    select t_role_group.role_group_id,t_role_group.role_group_name,
-    t_role_group.parent_role_group_id,'CATEGORE' as role_type
-    from t_role_group where t_role_group.company_id = 1
-    UNION ALL
-    select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'NODE' as role_type
-    from t_role,t_role_group
-    where t_role.role_group_id = t_role_group.role_group_id
-    and t_role_group.company_id = 1 and t_role.role_name like '%专员%'
-  </select>
-
 </mapper>

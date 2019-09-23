@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
+import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -31,11 +32,14 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     @Autowired
     private ArchiveAuthDao archiveAuthDao;
 
+    @Autowired
+    private RoleAuthService roleAuthService;
+
+
     @Override
-    // TODO 根据企业ID查询角色树
     public List<RoleGroupVO> searchRoleTree(Integer companyId) {
-        archiveAuthDao.searchRoleTree(companyId);
-        return null;
+        List<RoleGroupVO> roleGroupList = roleAuthService.searchRoleTree(companyId);
+        return roleGroupList;
     }
 
     @Override

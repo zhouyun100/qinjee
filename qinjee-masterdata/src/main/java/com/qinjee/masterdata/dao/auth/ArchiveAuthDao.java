@@ -45,11 +45,4 @@ public interface ArchiveAuthDao {
      * @return
      */
     int delArchiveRole(UserRole userRole);
-
-    /**
-     * 根据企业ID查询角色树
-     * @param companyId
-     * @return
-     */
-    List<RoleGroupVO> searchRoleTree(Integer companyId);
 }

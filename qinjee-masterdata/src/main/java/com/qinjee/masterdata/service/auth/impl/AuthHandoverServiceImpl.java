@@ -11,10 +11,12 @@
 package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.AuthHandoverDao;
+import com.qinjee.masterdata.dao.auth.RoleAuthDao;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
-import com.qinjee.masterdata.model.vo.auth.RequestUserRoleVO;
+import com.qinjee.masterdata.model.vo.auth.RequestRoleVO;
 import com.qinjee.masterdata.service.auth.AuthHandoverService;
+import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -33,17 +35,18 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
     @Autowired
     private AuthHandoverDao authHandoverDao;
 
+    @Autowired
+    private RoleAuthService roleAuthService;
+
     @Override
-    // TODO 查询角色功能树
     public List<MenuVO> searchRoleAuthTree(Integer roleId, Integer companyId) {
-        List<MenuVO> menuList= authHandoverDao.searchRoleAuthTree(roleId,companyId);
+        List<MenuVO> menuList= roleAuthService.searchRoleAuthTree(roleId,companyId);
         return menuList;
     }
 
     @Override
-    // TODO 查询角色机构树
     public List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer companyId) {
-        List<OrganizationVO> organizationList = authHandoverDao.searchOrgAuthTree(roleId, companyId);
+        List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(roleId, companyId);
         return organizationList;
     }
 
@@ -56,7 +59,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
         int resultNumber = 0;
         int rowNumber;
-        RequestUserRoleVO userRole = null;
+        RequestRoleVO userRole = null;
         userRole.setArchiveId(archiveId);
         userRole.setOperatorId(operatorId);
         for(Integer roleId : roleIdList){
@@ -75,7 +78,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
         int resultNumber = 0;
         int rowNumber;
-        RequestUserRoleVO userRole = null;
+        RequestRoleVO userRole = null;
         userRole.setArchiveId(archiveId);
         userRole.setOperatorId(operatorId);
         for(Integer orgId : orgIdList){
@@ -94,7 +97,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
         int resultNumber = 0;
         int rowNumber;
-        RequestUserRoleVO userRole = null;
+        RequestRoleVO userRole = null;
         userRole.setHandoverArchiveId(handoverArchiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setOperatorId(operatorId);
@@ -114,7 +117,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
         int resultNumber = 0;
         int rowNumber;
-        RequestUserRoleVO userRole = null;
+        RequestRoleVO userRole = null;
         userRole.setHandoverArchiveId(handoverArchiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setOperatorId(operatorId);
@@ -134,7 +137,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
         int resultNumber = 0;
         int rowNumber;
-        RequestUserRoleVO userRole = null;
+        RequestRoleVO userRole = null;
         userRole.setHandoverArchiveId(trusteeshipArchiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setTrusteeshipBeginTime(trusteeshipBeginTime);
@@ -156,7 +159,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
         int resultNumber = 0;
         int rowNumber;
-        RequestUserRoleVO userRole = null;
+        RequestRoleVO userRole = null;
         userRole.setHandoverArchiveId(trusteeshipArchiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setTrusteeshipBeginTime(trusteeshipBeginTime);

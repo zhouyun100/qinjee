@@ -12,7 +12,7 @@ package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.UserLoginDao;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
-import com.qinjee.masterdata.model.vo.auth.RequestUserLoginVO;
+import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.UserLoginService;
 import com.qinjee.utils.RegexpUtils;
@@ -41,7 +41,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         if(account.isEmpty() || password.isEmpty()){
             return null;
         }
-        RequestUserLoginVO userLoginVO = new RequestUserLoginVO();
+        RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setAccount(account);
         userLoginVO.setPassword(password);
         return userLoginDao.searchUserInfoByAccountAndPassword(userLoginVO);
@@ -60,7 +60,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         if(null == userId || null == companyId){
             return null;
         }
-        RequestUserLoginVO userLoginVO = new RequestUserLoginVO();
+        RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setUserId(userId);
         userLoginVO.setCompanyId(companyId);
         return userLoginDao.searchUserInfoByUserIdAndCompanyId(userLoginVO);
@@ -68,7 +68,7 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Override
     public int updateUserPasswordByUserIdAndPassword(Integer userId, String oldPassword, String newPassword) {
-        RequestUserLoginVO userLoginVO = new RequestUserLoginVO();
+        RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setUserId(userId);
         userLoginVO.setPassword(oldPassword);
         userLoginVO.setNewPassword(newPassword);
@@ -78,7 +78,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Override
     public List<MenuVO> searchUserMenuTreeByArchiveIdAndCompanyId(Integer archiveId, Integer companyId) {
 
-        RequestUserLoginVO userLoginVO = new RequestUserLoginVO();
+        RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setArchiveId(archiveId);
         userLoginVO.setCompanyId(companyId);
         userLoginVO.setCurrentDateTime(new Date());

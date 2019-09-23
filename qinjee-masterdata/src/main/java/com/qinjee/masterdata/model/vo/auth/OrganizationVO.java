@@ -62,7 +62,7 @@ public class OrganizationVO {
      * 机构全称
      */
     @ApiModelProperty("机构全称")
-    private String orgFullname;
+    private String orgFullName;
 
     /**
      * 机构负责人
@@ -105,4 +105,10 @@ public class OrganizationVO {
      */
     @ApiModelProperty("子级机构列表")
     private List<OrganizationVO> childOrganizationList;
+
+    /**
+     * 是否拥有机构权限(1：是，0：否)
+     */
+    @ApiModelProperty("是否拥有机构权限")
+    private Integer hasOrg;
 }

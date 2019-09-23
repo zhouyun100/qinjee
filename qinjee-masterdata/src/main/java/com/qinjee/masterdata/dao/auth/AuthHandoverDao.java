@@ -12,7 +12,7 @@ package com.qinjee.masterdata.dao.auth;
 
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
-import com.qinjee.masterdata.model.vo.auth.RequestUserRoleVO;
+import com.qinjee.masterdata.model.vo.auth.RequestRoleVO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,40 +45,40 @@ public interface AuthHandoverDao {
      * @param userRole
      * @return
      */
-    int roleRecoveryByArchiveId(RequestUserRoleVO userRole);
+    int roleRecoveryByArchiveId(RequestRoleVO userRole);
 
     /**
      * 机构回收
      * @param userRole
      * @return
      */
-    int orgRecoveryByArchiveId(RequestUserRoleVO userRole);
+    int orgRecoveryByArchiveId(RequestRoleVO userRole);
 
     /**
      * 角色移交
      * @param userRole
      * @return
      */
-    int roleHandoverByArchiveId(RequestUserRoleVO userRole);
+    int roleHandoverByArchiveId(RequestRoleVO userRole);
 
     /**
      * 机构移交
      * @param userRole
      * @return
      */
-    int orgHandoverByArchiveId(RequestUserRoleVO userRole);
+    int orgHandoverByArchiveId(RequestRoleVO userRole);
 
     /**
      * 角色托管
      * @param userRole
      * @return
      */
-    int roleTrusteeshipByArchiveId(RequestUserRoleVO userRole);
+    int roleTrusteeshipByArchiveId(RequestRoleVO userRole);
 
     /**
      * 机构托管
      * @param userRole
      * @return
      */
-    int orgTrusteeshipByArchiveId(RequestUserRoleVO userRole);
+    int orgTrusteeshipByArchiveId(RequestRoleVO userRole);
 }

@@ -1,5 +1,5 @@
 /**
- * 文件名：RequestUserLoginVO
+ * 文件名：RequestLoginVO
  * 工程名称：eTalent
  * <p>
  * qinjee
@@ -20,7 +20,7 @@ import java.util.Date;
  * @date 2019/9/19
  */
 @Data
-public class RequestUserLoginVO {
+public class RequestLoginVO {
 
     /**
      * 用户ID

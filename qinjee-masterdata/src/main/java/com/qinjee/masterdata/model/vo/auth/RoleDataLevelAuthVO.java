@@ -39,4 +39,10 @@ public class RoleDataLevelAuthVO {
     @ApiModelProperty("数据级权限")
     private List<DataLevelAuthVO> childDataLevelAuthList;
 
+    /**
+     * 操作人ID
+     */
+    @ApiModelProperty("操作人ID")
+    private Integer operatorId;
+
 }

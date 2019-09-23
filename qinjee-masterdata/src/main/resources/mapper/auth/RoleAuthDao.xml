@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.auth.RoleAuthDao">
+
+    <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
+        <id column="menu_id" jdbcType="INTEGER" property="menuId" />
+        <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+        <result column="func_type" jdbcType="VARCHAR" property="funcType" />
+        <result column="func_url" jdbcType="VARCHAR" property="funcUrl" />
+        <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
+        <result column="has_menu" jdbcType="INTEGER" property="hasMenu" />
+    </resultMap>
+
+    <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationVO">
+        <id column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+        <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+        <result column="org_type" jdbcType="VARCHAR" property="orgType" />
+        <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
+        <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
+        <result column="has_menu" jdbcType="INTEGER" property="orgManagerId" />
+        <result column="has_menu" jdbcType="INTEGER" property="companyId" />
+        <result column="has_menu" jdbcType="INTEGER" property="sortId" />
+        <result column="has_menu" jdbcType="INTEGER" property="operatorId" />
+    </resultMap>
+
+    <!-- 新增角色组 -->
+    <insert id="addRoleGroup" keyColumn="role_group_id" keyProperty="roleGroupId" parameterType="com.qinjee.masterdata.model.entity.RoleGroup" useGeneratedKeys="true">
+    insert into t_role_group (role_group_name, parent_role_group_id, company_id, operator_id)
+    values (#{parentRoleGroupId,jdbcType=INTEGER}, #{roleGroupName,jdbcType=VARCHAR},#{companyId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 新增角色 -->
+    <insert id="addRole" keyColumn="role_id" keyProperty="roleId" parameterType="com.qinjee.masterdata.model.entity.Role" useGeneratedKeys="true">
+    insert into t_role (role_name, role_group_id, operator_id)
+    values (#{roleName,jdbcType=VARCHAR}, #{roleGroupId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 修改角色 -->
+    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.Role">
+        update t_role set role_name = #{roleName,jdbcType=VARCHAR},role_group_id = #{roleGroupId,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
+        where role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+    </update>
+
+    <!-- 修改角色组 -->
+    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
+        update t_role_group set role_group_name = #{roleGroupName,jdbcType=VARCHAR},parent_role_group_id = #{parentRoleGroupId,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
+        where role_group_id = #{roleGroupId,jdbcType=INTEGER} and is_delete = 0
+    </update>
+
+  <!-- 删除角色 -->
+    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.Role">
+        update t_role set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+    </update>
+
+    <!-- 删除角色组 -->
+    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
+        update t_role_group set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where role_group_id = #{roleGroupId,jdbcType=INTEGER} and is_delete = 0
+    </update>
+
+    <!--根据角色ID和企业ID查询角色菜单树 -->
+    <select id="searchRoleAuthTree" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" resultMap="MenuResultMap">
+        select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id,
+        CASE WHEN t.menu_id is not NULL THEN 1 ELSE 0 END has_menu
+        from t_menu,t_company_menu LEFT JOIN (select t_role_menu_auth.menu_id from t_role,t_role_menu_auth
+        where t_role.role_id = #{roleId,jdbcType=INTEGER} and t_role_menu_auth.role_id = t_role.role_id and t_role.is_delete = 0 and t_role_menu_auth.is_delete = 0) t
+        ON t_company_menu.menu_id = t.menu_id
+        where t_company_menu.company_id = #{companyId,jdbcType=INTEGER}
+        and t_company_menu.menu_id = t_menu.menu_id
+        and t_menu.is_delete = 0
+        and t_company_menu.is_delete = 0
+      </select>
+
+    <!--根据角色ID和企业ID查询角色机构树 -->
+    <select id="searchOrgAuthTree" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" resultMap="OrgResultMap">
+        select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_parent_id,t_organization.org_fullname,
+        CASE WHEN t.org_id is not NULL THEN 1 ELSE 0 END has_org
+        from t_organization LEFT JOIN (
+        select t_role_org_auth.org_id from t_role_org_auth,t_role
+        where t_role.role_id = #{roleId,jdbcType=INTEGER}
+        and t_role_org_auth.role_id = t_role.role_id
+        and t_role.is_delete = 0
+        and t_role_org_auth.is_delete = 0
+        ) t ON t_organization.org_id = t.org_id
+        where t_organization.company_id = #{companyId,jdbcType=INTEGER}
+        and t_organization.is_enable = 1
+      </select>
+
+    <!--根据角色ID查询菜单列表 -->
+    <select id="searchRoleMenuListByRoleId" parameterType="java.lang.Integer" resultMap="MenuResultMap">
+        select t_role_menu_auth.menu_id from t_role,t_role_menu_auth
+        where t_role.role_id = #{roleId,jdbcType=INTEGER} and t_role_menu_auth.role_id = t_role.role_id and t_role.is_delete = 0 and t_role_menu_auth.is_delete = 0
+    </select>
+
+    <!-- 新增角色功能权限 -->
+    <insert id="addRoleMenuAuth" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.RoleMenuAuth" useGeneratedKeys="true">
+        insert into t_role_menu_auth (role_id, menu_id, operator_id)
+        values (#{roleId,jdbcType=INTEGER}, #{menuId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 删除角色功能权限 -->
+    <update id="delRoleMenuAuth" parameterType="com.qinjee.masterdata.model.entity.RoleMenuAuth">
+        update t_role_menu_auth set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where role_id = #{roleId,jdbcType=INTEGER} and menu_id = #{menuId,jdbcType=INTEGER} and is_delete = 0
+    </update>
+
+    <!--根据角色ID查询机构列表 -->
+    <select id="searchRoleOrgListByRoleId" parameterType="java.lang.Integer" resultMap="OrgResultMap">
+        select t_role_org_auth.org_id from t_role_org_auth,t_role
+        where t_role.role_id = #{roleId,jdbcType=INTEGER}
+        and t_role_org_auth.role_id = t_role.role_id
+        and t_role.is_delete = 0
+        and t_role_org_auth.is_delete = 0
+    </select>
+
+    <!-- 新增角色机构权限 -->
+    <insert id="addRoleOrgAuth" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth" useGeneratedKeys="true">
+        insert into t_role_org_auth (role_id, org_id, operator_id)
+        values (#{roleId,jdbcType=INTEGER}, #{orgId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 删除角色机构权限 -->
+    <update id="delRoleOrgAuth" parameterType="com.qinjee.masterdata.model.entity.RoleMenuAuth">
+        update t_role_org_auth set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where role_id = #{roleId,jdbcType=INTEGER} and org_id = #{orgId,jdbcType=INTEGER} and is_delete = 0
+    </update>
+</mapper>
