@@ -66,6 +66,6 @@ public interface PositionLevelService {
      * 按职级 展示职位体系
      * @return
      */
-    ResponseResult<Map<String, Object>> showByPositionLevel1(UserSession userSession);
+    ResponseResult<Map<String, Object>> showByPositionLevel(UserSession userSession);
 
 }

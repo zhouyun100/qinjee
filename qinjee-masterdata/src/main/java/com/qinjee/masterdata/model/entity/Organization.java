@@ -64,8 +64,8 @@ public class Organization implements Serializable {
      * 机构全称
      */
     @ApiModelProperty("机构全称")
-    @QueryColumn("org.org_fullname")
-    private String orgFullname;
+    @QueryColumn("org.org_full_name")
+    private String orgFullName;
 
     /**
      * 机构负责人

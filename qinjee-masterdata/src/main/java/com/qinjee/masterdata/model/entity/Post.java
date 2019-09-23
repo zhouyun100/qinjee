@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 岗位表
@@ -25,12 +27,14 @@ public class Post implements Serializable {
     /**
      * 岗位名称
      */
+    @QueryColumn("tp.post_name")
     @ApiModelProperty("岗位名称")
     private String postName;
 
     /**
      * 岗位编码
      */
+    @QueryColumn("tp.post_code")
     @ApiModelProperty("岗位编码")
     private String postCode;
 
@@ -38,6 +42,7 @@ public class Post implements Serializable {
      * 父级岗位
      */
     @ApiModelProperty("父级岗位")
+    @QueryColumn("tparentorg.org_id")
     private Integer parentPostId;
 
     /**
@@ -49,6 +54,7 @@ public class Post implements Serializable {
     /**
      * 机构ID
      */
+    @QueryColumn("torg.org_id")
     @ApiModelProperty("机构ID")
     private Integer orgId;
 
@@ -100,6 +106,51 @@ public class Post implements Serializable {
     @ApiModelProperty("是否删除")
     private Short isDelete;
 
-    private static final long serialVersionUID = 1L;
+    /**
+     * 职位名称
+     */
+    @QueryColumn("tps.position_name")
+    @ApiModelProperty("职位名称")
+    private String positionName;
 
+    /**
+     * 机构名称
+     */
+    @ApiModelProperty("机构名称")
+    private String orgName;
+
+    /**
+     * 父级机构名称
+     */
+    @ApiModelProperty("父级机构名称")
+    private String parentOrgName;
+
+
+    /**
+     * 职级id集合
+     */
+    @ApiModelProperty("职级id集合")
+    @QueryColumn("tpl.position_level_id")
+    private List<Integer> positionLevelId;
+
+    /**
+     * 职级名称 逗号拼接
+     */
+    @ApiModelProperty("职级名称 逗号拼接")
+    private String positionLevelNames;
+
+    /**
+     * 职等id集合
+     */
+    @ApiModelProperty("职等id集合")
+    @QueryColumn("tpg.position_grade_id")
+    private List<Integer> positionGradeId;
+
+    /**
+     * 职等名称 逗号拼接
+     */
+    @ApiModelProperty("职等名称 逗号拼接")
+    private String positionGradeNames;
+
+    private static final long serialVersionUID = 1L;
 }

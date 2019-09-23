@@ -7,7 +7,7 @@
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
     <result column="org_type" jdbcType="VARCHAR" property="orgType" />
     <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
-    <result column="org_fullname" jdbcType="VARCHAR" property="orgFullname" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgfull_name" />
     <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
@@ -17,7 +17,7 @@
     <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
   </resultMap>
   <sql id="Base_Column_List">
-    org_id, org_code, org_name, org_type, org_parent_id, org_fullname, org_manager_id,
+    org_id, org_code, org_name, org_type, org_parent_id, org_full_name, org_manager_id,
     company_id, sort_id, operator_id, create_time, update_time, is_enable
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -32,12 +32,12 @@
   </delete>
   <insert id="insert" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.entity.OrganizationHistory" useGeneratedKeys="true">
     insert into t_organization_history (org_code, org_name, org_type,
-      org_parent_id, org_fullname, org_manager_id,
+      org_parent_id, org_full_name, org_manager_id,
       company_id, sort_id, operator_id,
       create_time, update_time, is_enable
       )
     values (#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR},
-      #{orgParentId,jdbcType=INTEGER}, #{orgFullname,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER},
+      #{orgParentId,jdbcType=INTEGER}, #{orgFullName,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER},
       #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT}
       )
@@ -57,8 +57,8 @@
       <if test="orgParentId != null">
         org_parent_id,
       </if>
-      <if test="orgFullname != null">
-        org_fullname,
+      <if test="orgfull_name != null">
+        org_full_name,
       </if>
       <if test="orgManagerId != null">
         org_manager_id,
@@ -95,8 +95,8 @@
       <if test="orgParentId != null">
         #{orgParentId,jdbcType=INTEGER},
       </if>
-      <if test="orgFullname != null">
-        #{orgFullname,jdbcType=VARCHAR},
+      <if test="orgfull_name != null">
+        #{orgFullName,jdbcType=VARCHAR},
       </if>
       <if test="orgManagerId != null">
         #{orgManagerId,jdbcType=INTEGER},
@@ -136,8 +136,8 @@
       <if test="orgParentId != null">
         org_parent_id = #{orgParentId,jdbcType=INTEGER},
       </if>
-      <if test="orgFullname != null">
-        org_fullname = #{orgFullname,jdbcType=VARCHAR},
+      <if test="orgfull_name != null">
+        org_full_name = #{orgFullName,jdbcType=VARCHAR},
       </if>
       <if test="orgManagerId != null">
         org_manager_id = #{orgManagerId,jdbcType=INTEGER},
@@ -169,7 +169,7 @@
       org_name = #{orgName,jdbcType=VARCHAR},
       org_type = #{orgType,jdbcType=VARCHAR},
       org_parent_id = #{orgParentId,jdbcType=INTEGER},
-      org_fullname = #{orgFullname,jdbcType=VARCHAR},
+      org_full_name = #{orgFullName,jdbcType=VARCHAR},
       org_manager_id = #{orgManagerId,jdbcType=INTEGER},
       company_id = #{companyId,jdbcType=INTEGER},
       sort_id = #{sortId,jdbcType=INTEGER},

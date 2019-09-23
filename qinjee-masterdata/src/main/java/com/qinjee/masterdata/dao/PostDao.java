@@ -1,6 +1,10 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.vo.organization.PostPageVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface PostDao {
     int deleteByPrimaryKey(Integer postId);
@@ -14,4 +18,14 @@ public interface PostDao {
     int updateByPrimaryKeySelective(Post record);
 
     int updateByPrimaryKey(Post record);
+
+    /**
+     * 分页查询岗位列表
+     *
+     * @param postPageVo
+     * @param sortFieldStr
+     * @param archiveId
+     * @return
+     */
+    List<Post> getPostList(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId);
 }

@@ -62,7 +62,7 @@ public class OrganizationVO {
      * 机构全称
      */
     @ApiModelProperty("机构全称")
-    private String orgFullname;
+    private String orgfull_name;
 
     /**
      * 机构负责人

@@ -4,6 +4,8 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
+import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -37,7 +39,7 @@ public class StaffPreEmploymentController extends BaseController {
             @ApiImplicitParam(name = "params[]", value = "所传参数", paramType = "query", required = true),
 
     })
-    public ResponseResult sendMessage(List<Integer> list,Integer templateId,String[] params) {
+    public ResponseResult sendMessage(List<Integer> list, Integer templateId, String[] params) {
        return staffPreEmploymentService.sendMessage(list,templateId,params);
     }
 

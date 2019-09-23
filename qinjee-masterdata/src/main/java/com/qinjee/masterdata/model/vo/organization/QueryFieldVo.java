@@ -4,6 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @author 高雄
@@ -25,9 +28,27 @@ public class QueryFieldVo {
     /**
      * 字段值
      */
-    @ApiModelProperty(value = "字段值", example = "张三")
+    @ApiModelProperty(value = "字段值 ", example = "张三")
     private String fieldValue;
 
+    /**
+     * 开始时间
+     */
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "开始时间")
+    private Date startTime;
+
+    /**
+     * 结束时间
+     */
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "结束时间")
+    private Date endTime;
+
+    /**
+     * 查询条件
+     */
+    private String condition;
 
     @ApiModelProperty(value = "是否筛选空值", example = "true")
     private Boolean isFilterNull;
