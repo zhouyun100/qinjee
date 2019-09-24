@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,5 +27,9 @@ public interface UserArchiveDao {
 
     String selectMail(Integer integer);
 
-    List<UserArchive> selectNotInList(List<Integer> readyIdList);
+    List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
+
+    void deleteArchiveById(@Param("archiveid") Integer archiveid);
+
+    void resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
 }

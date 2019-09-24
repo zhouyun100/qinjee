@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.BlacklistDao;
@@ -10,6 +11,7 @@ import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendManyMailsUtil;
@@ -156,5 +158,19 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         return new ResponseResult(true, CommonCode.SUCCESS);
     }
 
+    @Override
+    public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize) {
+        try {
+            PageHelper.startPage(currentPage,pageSize);
+            PageResult<PreEmployment> pageResult=new PageResult<>();
+            //数据库中没有机构id
+            List<PreEmployment> list=preEmploymentDao.selectPreEmployment(companyId);
+            pageResult.setList(list);
+            return  new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("查找预入职失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
 
 }

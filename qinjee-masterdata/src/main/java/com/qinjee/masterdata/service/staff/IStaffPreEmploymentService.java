@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.staff;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
@@ -53,4 +54,5 @@ public interface IStaffPreEmploymentService {
 
     ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange, Blacklist blacklist);
 
+    ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,Integer currentPage,Integer pageSize);
 }

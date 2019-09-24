@@ -42,6 +42,8 @@ public class CustomField implements Serializable {
 
     private Short isDelete;
 
+    private String fieldCode;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getFieldId() {
@@ -179,4 +181,17 @@ public class CustomField implements Serializable {
     public void setIsDelete(Short isDelete) {
         this.isDelete = isDelete;
     }
+
+    public String getFieldCode() {
+        return fieldCode;
+    }
+
+    public void setFieldCode(String fieldCode) {
+        this.fieldCode = fieldCode;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 }
+

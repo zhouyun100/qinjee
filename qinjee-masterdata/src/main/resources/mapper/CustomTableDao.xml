@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomTable">
     <id column="table_id" jdbcType="INTEGER" property="tableId" />
     <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
     <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
@@ -37,17 +38,20 @@
     insert into t_custom_table (`table_name`, func_code, company_id,
       is_system_define, is_enable, sort,
       creator_id, create_time, update_time,
-      is_delete)
+      is_delete,`table_code`)
     values (#{tableName,jdbcType=VARCHAR}, #{funcCode,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER},
       #{isSystemDefine,jdbcType=SMALLINT}, #{isEnable,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER},
       #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-      #{isDelete,jdbcType=SMALLINT})
+      #{isDelete,jdbcType=SMALLINT},#{tableCode,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.model.entity.CustomTable" useGeneratedKeys="true">
     insert into t_custom_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="tableName != null">
         `table_name`,
+      </if>
+      <if test="tableCode != null">
+        `tableCode`,
       </if>
       <if test="funcCode != null">
         func_code,
@@ -80,6 +84,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="tableName != null">
         #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null">
+        #{tableCode,jdbcType=VARCHAR},
       </if>
       <if test="funcCode != null">
         #{funcCode,jdbcType=VARCHAR},
@@ -116,6 +123,9 @@
       <if test="tableName != null">
         `table_name` = #{tableName,jdbcType=VARCHAR},
       </if>
+      <if test="tableCode != null">
+        `table_code` = #{tableCode,jdbcType=VARCHAR},
+      </if>
       <if test="funcCode != null">
         func_code = #{funcCode,jdbcType=VARCHAR},
       </if>
@@ -149,6 +159,7 @@
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomTable">
     update t_custom_table
     set `table_name` = #{tableName,jdbcType=VARCHAR},
+      `table_code`=#{tableCode,jdbcType=VARCHAR},
       func_code = #{funcCode,jdbcType=VARCHAR},
       company_id = #{companyId,jdbcType=INTEGER},
       is_system_define = #{isSystemDefine,jdbcType=SMALLINT},

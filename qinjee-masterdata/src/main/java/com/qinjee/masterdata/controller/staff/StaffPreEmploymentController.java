@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,6 +28,21 @@ import java.util.List;
 public class StaffPreEmploymentController extends BaseController {
     @Autowired
     private IStaffPreEmploymentService staffPreEmploymentService;
+
+    /**
+     * 根据机构查看预入职
+     */
+    @RequestMapping(value = "/selectPreEmployment ", method = RequestMethod.GET)
+    @ApiOperation(value = "根据机构查看预入职", notes = "hkt")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
+
+    })
+    public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,Integer currentPage,Integer pageSize){
+       return staffPreEmploymentService.selectPreEmployment(companyId,currentPage,pageSize);
+    }
 
     /**
      * 发短信给预入职人员

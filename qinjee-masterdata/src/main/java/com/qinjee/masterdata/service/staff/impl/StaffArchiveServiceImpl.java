@@ -5,10 +5,8 @@ import com.qinjee.masterdata.dao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeSortDao;
-import com.qinjee.masterdata.model.entity.QueryScheme;
-import com.qinjee.masterdata.model.entity.QuerySchemeField;
-import com.qinjee.masterdata.model.entity.QuerySchemeSort;
-import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.response.CommonCode;
@@ -36,6 +34,64 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private QuerySchemeFieldDao querySchemeFieldDao;
     @Autowired
     private QuerySchemeSortDao querySchemeSortDao;
+    @Autowired
+    private UserArchiveDao userArchiveDao;
+
+    @Override
+    public ResponseResult deleteArchiveById(Integer archiveid) {
+        try {
+            userArchiveDao.deleteArchiveById(archiveid);
+            return new ResponseResult(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("逻辑删除失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
+        try {
+            userArchiveDao.resumeDeleteArchiveById(archiveid);
+            return new ResponseResult(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("删除恢复失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult updateArchive(UserArchive userArchive) {
+        try {
+            userArchiveDao.updateByPrimaryKeySelective(userArchive);
+            return new ResponseResult(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("档案更新失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult selectArchive(Integer archiveid) {
+        try {
+            userArchiveDao.selectByPrimaryKey(archiveid);
+            return new ResponseResult(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("查看档案失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult insertArchive(UserArchive userArchive) {
+        try {
+            userArchiveDao.insertSelective(userArchive);
+            return new ResponseResult(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("新增档案失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
 
     @Override
     public ResponseResult insertUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
@@ -204,6 +260,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         return new ResponseResult(false, CommonCode.INVALID_PARAM);
     }
+
 
 
 }

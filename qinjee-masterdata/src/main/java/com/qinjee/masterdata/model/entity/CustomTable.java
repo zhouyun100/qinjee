@@ -12,6 +12,8 @@ public class CustomTable implements Serializable {
 
     private String tableName;
 
+    private String tableCode;
+
     private String funcCode;
 
     private Integer companyId;
@@ -29,7 +31,6 @@ public class CustomTable implements Serializable {
     private Date updateTime;
 
     private Short isDelete;
-
     private static final long serialVersionUID = 1L;
 
     public Integer getTableId() {
@@ -46,6 +47,14 @@ public class CustomTable implements Serializable {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getTableCode() {
+        return tableCode;
+    }
+
+    public void setTableCode(String tableCode) {
+        this.tableCode = tableCode;
     }
 
     public String getFuncCode() {
@@ -119,4 +128,11 @@ public class CustomTable implements Serializable {
     public void setIsDelete(Short isDelete) {
         this.isDelete = isDelete;
     }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+
+
 }

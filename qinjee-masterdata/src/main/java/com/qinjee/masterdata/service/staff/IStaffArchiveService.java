@@ -1,9 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.QueryScheme;
-import com.qinjee.masterdata.model.entity.QuerySchemeField;
-import com.qinjee.masterdata.model.entity.QuerySchemeSort;
-import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -68,4 +65,38 @@ public interface IStaffArchiveService {
      * @return
      */
     ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist, List<QuerySchemeSort> querySchemeSortlist);
+
+    /**
+     * 逻辑删除档案
+     * @param archiveid
+     * @return
+     */
+    ResponseResult deleteArchiveById(Integer archiveid);
+    /**
+     * 恢复删除档案
+     * @param archiveid
+     * @return
+     */
+    ResponseResult resumeDeleteArchiveById(Integer archiveid);
+
+    /**
+     * 更新档案
+     * @param userArchive
+     * @return
+     */
+    ResponseResult updateArchive(UserArchive userArchive);
+
+    /**
+     * 查看档案
+     * @param archiveid
+     * @return
+     */
+    ResponseResult selectArchive(Integer archiveid);
+
+    /**
+     * 新增档案
+     * @param userArchive
+     * @return
+     */
+    ResponseResult insertArchive(UserArchive userArchive);
 }

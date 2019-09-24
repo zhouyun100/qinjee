@@ -233,6 +233,12 @@ public class UserArchive implements Serializable {
     @ApiModelProperty("更新时间")
     private Date updateTime;
 
+    /**
+     * 是否删除
+     */
+    @ApiModelProperty("是否删除")
+    private Short isDelete;
+
     private static final long serialVersionUID = 1L;
 
 }
