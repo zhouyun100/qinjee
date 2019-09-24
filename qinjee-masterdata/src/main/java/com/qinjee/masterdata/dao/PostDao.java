@@ -43,4 +43,11 @@ public interface PostDao {
      * @return
      */
     String getLastPostByOrgId(Integer orgId);
+
+    /**
+     * 通过机构id获取岗位列表含有职位名称
+     * @param orgId
+     * @return
+     */
+    List<Post> getPostPositionListByOrgId(Integer orgId);
 }

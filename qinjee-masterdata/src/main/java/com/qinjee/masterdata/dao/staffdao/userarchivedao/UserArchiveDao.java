@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -35,8 +36,18 @@ public interface UserArchiveDao {
 
     /**
      * 根据机构id查询人员档案
+     *
      * @param orgId
      * @return
      */
     List<UserArchive> getUserArchiveListByOrgId(Integer orgId);
+
+    /**
+     * 查询机构id下员工信息列表
+     *
+     * @param pageQueryVo
+     * @param sortFieldStr
+     * @return
+     */
+    List<UserArchive> getUserArchiveList(@Param("pageQueryVo") PageQueryVo pageQueryVo, @Param("sortFieldStr") String sortFieldStr);
 }

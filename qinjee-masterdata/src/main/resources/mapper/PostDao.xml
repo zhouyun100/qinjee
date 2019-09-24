@@ -231,4 +231,9 @@
   <select id="getLastPostByOrgId" resultType="java.lang.String">
     SELECT post_code from t_post where post_id = (select max(post_id) from t_post where is_delete = 0)
   </select>
+  <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
+    select tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position tps on tps.position_id = tp.position_id
+    where tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
+
+  </select>
 </mapper>

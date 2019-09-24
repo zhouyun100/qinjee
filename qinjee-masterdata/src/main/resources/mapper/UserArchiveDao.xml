@@ -8,6 +8,8 @@
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="user_category" jdbcType="VARCHAR" property="userCategory" />
     <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
+    <result column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
@@ -41,7 +43,7 @@
     <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    archive_id, user_id, employee_number, company_id, user_category, business_unit_id,
+    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
     user_name, id_type, id_number, gender, birthdate, age, nationality, birthplace, political_status,
     marital_status, first_work_date, hiredate, serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, tel, email, address,
@@ -500,4 +502,48 @@
     from t_user_archive tua left join t_organization torg on torg.org_id = tua.org_id
     where tua.is_delete = 0
   </select>
+  <select id="getUserArchiveList" resultMap="BaseResultMap">
+    select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id,
+    tua.post_id, tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birthdate, tua.age, tua.nationality, tua.birthplace,
+    tua.political_status, tua.marital_status, tua.first_work_date, tua.hiredate, tua.serving_age, tua.working_period,
+    tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.tel, tua.email,
+    tua.address, tua.professional_certification, tua.professional_title, tua.professional_level, tua.attrition_date, tua.attrition_type,
+    tua.increase_type, tua.archive_status, tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name businessUnitName,
+    dept.org_name orgName, tp.post_name postName
+    from t_user_archive tua
+    left join t_post tp on tua.post_id = tp.post_id
+<!-- 直接上级  left join t_user_archive tua2 on tua-->
+    left join t_organization torg on torg.org_id = tua.business_unit_id
+    left join t_organization dept on dept.org_id = tua.org_id
+    where tua.is_delete = 0
+    <if test="pageQueryVo != null">
+      <if test="pageQueryVo.querFieldVos != null and  pageQueryVo.querFieldVos.szie > 0">
+        <foreach collection="pageQueryVo.querFieldVos" item="querField">
+            ${querField.condition}
+        </foreach>
+      </if>
+    </if>
+    <if test="sortFieldStr != null and sortFieldStr != ''">
+      ORDER BY ${sortFieldStr}
+    </if>
+  </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </mapper>

@@ -82,4 +82,12 @@ public interface PostService {
      * @return
      */
     ResponseResult copyPost(List<Integer> postIds, UserSession userSession, Integer orgId);
+
+    /**
+     * 获取公司所有的岗位
+     * @param userSession
+     * @param orgId
+     * @return
+     */
+    ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId);
 }

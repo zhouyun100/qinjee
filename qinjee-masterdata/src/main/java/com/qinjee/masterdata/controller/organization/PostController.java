@@ -35,6 +35,12 @@ public class PostController extends BaseController {
         return postService.getPostList(getUserSession(), postPageVo);
     }
 
+    @GetMapping("/getAllPost")
+    @ApiOperation(value = "获取公司所有的岗位", notes = "高雄 新增用户信息岗位下拉框的生成")
+    public ResponseResult<List<Post>> getAllPost(@ApiParam(value = "机构id", example = "1", required = true) Integer orgId){
+        return postService.getAllPost(getUserSession(), orgId);
+    }
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = "pageSize", value = "每页大小", paramType = "query", dataType = "int", required = true, example = "10"),
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", dataType = "int", required = true, example = "1"),

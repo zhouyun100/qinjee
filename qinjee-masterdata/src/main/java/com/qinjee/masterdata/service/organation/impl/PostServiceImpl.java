@@ -109,6 +109,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public ResponseResult deletePost(UserSession userSession, List<Integer> postIds) {
+        //TODO 被删除的岗位下不允许有人员档案
         if(!CollectionUtils.isEmpty(postIds)){
             for (Integer postId : postIds) {
                 Post post = new Post();
@@ -206,6 +207,12 @@ public class PostServiceImpl implements PostService {
             }
         }
         return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId) {
+        List<Post> postList = postDao.getPostPositionListByOrgId(orgId);
+        return new ResponseResult<>(postList);
     }
 
     /**

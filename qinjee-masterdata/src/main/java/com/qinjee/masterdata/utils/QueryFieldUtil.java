@@ -40,7 +40,7 @@ public class QueryFieldUtil {
                     Boolean isAscSort = queryField.getIsAscSort();
                     Boolean isFilterNull = queryField.getIsFilterNull();
                     //把查询用的别名赋值给fieldName
-                    if(StringUtils.isNoneEmpty(queryColumn)){
+                    if(StringUtils.isNotBlank(queryColumn)){
                         if (field.getGenericType().toString().equals("class java.util.Date")) {
                             //判断是否是时间范围查询
                             String condition = queryColumn;

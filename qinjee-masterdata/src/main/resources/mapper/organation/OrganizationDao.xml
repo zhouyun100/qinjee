@@ -253,4 +253,10 @@
             #{orgId}
         </foreach>
     </select>
+  <select id="getOrganizationByOrgCodeAndCompanyId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_organization
+    where company_id = #{companyId} and org_code = #{orgCode}
+  </select>
 </mapper>

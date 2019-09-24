@@ -1,12 +1,17 @@
 package com.qinjee.masterdata.controller.organization;
 
-import com.qinjee.masterdata.model.entity.UserInfo;
+import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
+import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
+import com.qinjee.masterdata.service.organation.UserArchiveService;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,24 +24,22 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "【机构管理】岗位用户信息接口")
 @RequestMapping("/userArchive")
 @RestController
-public class UserArchiveController {
+public class UserArchiveController extends BaseController {
 
+    @Autowired
+    private UserArchiveService userArchiveService;
 
     @GetMapping("/getUserArchiveList")
-    @ApiOperation(value = "根据条件分页查询注册用户信息", notes = "高雄")
-    public ResponseResult<UserInfo> getUserArchiveList(PageQueryVo pageQueryVo){
-
-        return null;
+    @ApiOperation(value = "根据条件分页查询用户信息", notes = "高雄")
+    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQueryVo pageQueryVo){
+        return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
     }
 
-    @GetMapping("/resetPassword")
-    @ApiOperation(value = "根据条件分页查询注册用户信息", notes = "高雄")
-    public ResponseResult resetPassword(@ApiParam(value = "档案ID", example = "1", required = true) Integer archiveId,
-                                        @ApiParam(value = "新密码", example = "123456") String password){
-
-        return null;
+    @PostMapping("/addUserArchive")
+    @ApiOperation(value = "新增用户档案信息", notes = "高雄")
+    public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo){
+        return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
     }
-
 
 
 
