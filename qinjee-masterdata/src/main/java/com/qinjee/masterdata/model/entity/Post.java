@@ -40,9 +40,9 @@ public class Post implements Serializable {
     private String postCode;
 
     /**
-     * 父级岗位
+     * 父级岗位Id
      */
-    @ApiModelProperty("父级岗位")
+    @ApiModelProperty("父级岗位Id")
     @QueryColumn("tparentorg.org_id")
     private Integer parentPostId;
 
@@ -51,6 +51,7 @@ public class Post implements Serializable {
      */
     @ApiModelProperty("父级岗位名称")
     private String parentPostName;
+
 
     /**
      * 机构ID
@@ -125,6 +126,12 @@ public class Post implements Serializable {
      */
     @ApiModelProperty("父级机构名称")
     private String parentOrgName;
+
+    /**
+     * 父级机构Id
+     */
+    @ApiModelProperty("父级机构Id")
+    private String parentOrgId;
 
 
     /**

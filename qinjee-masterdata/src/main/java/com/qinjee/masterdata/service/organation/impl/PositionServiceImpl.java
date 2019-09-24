@@ -299,4 +299,16 @@ public class PositionServiceImpl implements PositionService {
 
         return new ResponseResult();
     }
+
+    @Override
+    public ResponseResult<Position> getPositionLevelAndGrade(Integer positionId) {
+        //根据职职位id查询对应的职级
+        List<PositionLevel> positionLevels = positionLevelService.getPositionLevelByPositionId(positionId);
+        //根据职职位id查询对应的职等
+        List<PositionGrade> positionGrades = positionGradeService.getPositionGradeListByPositionId(positionId);
+        Position position = new Position();
+        position.setPositionLevels(positionLevels);
+        position.setPositionGrades(positionGrades);
+        return new ResponseResult<>(position);
+    }
 }

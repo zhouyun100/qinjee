@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
@@ -45,9 +46,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     private UserRoleService userRoleService;
     @Autowired
     private PostDao postDao;
+    @Autowired
+    private UserArchiveDao userArchiveDao;
 
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
+        //TODO 查托管的权限 员工机构权限表
         Integer archiveId = userSession.getArchiveId();
         List<UserRole> userRoleList =  userRoleService.getUserRoleList(userSession.getArchiveId());
         Set<Integer> roleIds = userRoleList.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toSet());
@@ -79,7 +83,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         Integer archiveId = userSession.getArchiveId();
         Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
         String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
-        PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
+        if(organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null){
+            PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
+        }
         List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo,sortFieldStr,archiveId);
         PageResult<Organization> pageResult = new PageResult<>(organizationList);
         return pageResult;
@@ -90,6 +96,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Integer archiveId = userSession.getArchiveId();
         Organization organization = organizationDao.selectByPrimaryKey(orgId);
         String orgCode = organization.getOrgCode() + "%";
+        //TODO 查托管的权限 员工机构权限表
         List<Organization> organizationList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode);
         PageResult<Organization> pageResult = new PageResult<>(organizationList);
         return pageResult;
@@ -173,7 +180,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         //修改子级的机构全名称
         updateOrganizationfull_name(organization);
 
-        return i == 1 ? new ResponseResult(CommonCode.SUCCESS) :  new ResponseResult(CommonCode.FAIL);
+        return i == 1 ? new ResponseResult() :  new ResponseResult(CommonCode.FAIL);
     }
 
     /**
@@ -214,6 +221,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     public ResponseResult deleteOrganizationById(List<Integer> orgIds) {
         if(!CollectionUtils.isEmpty(orgIds)){
             for (Integer orgId : orgIds) {
+                //若被删除的机构在人事异动表、工资、考勤等相关数据表存在记录，也不允许删除
+
+                //被删除的机构下若存在人员档案，提示“该机构下存在人员信息，不允许删除
+                List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveListByOrgId(orgId);
+                if(!CollectionUtils.isEmpty(userArchiveList)){
+                    return new ResponseResult(CommonCode.ORG_EXIST_USER);
+                }
                 addOrganizationHistoryByOrgId(orgId);
                 organizationDao.deleteByPrimaryKey(orgId);
             }

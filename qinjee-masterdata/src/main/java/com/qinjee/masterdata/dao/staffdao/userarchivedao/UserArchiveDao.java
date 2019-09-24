@@ -32,4 +32,11 @@ public interface UserArchiveDao {
     void deleteArchiveById(@Param("archiveid") Integer archiveid);
 
     void resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
+
+    /**
+     * 根据机构id查询人员档案
+     * @param orgId
+     * @return
+     */
+    List<UserArchive> getUserArchiveListByOrgId(Integer orgId);
 }

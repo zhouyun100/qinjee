@@ -30,12 +30,17 @@ public class PostVo extends PageVo implements Serializable {
     @ApiModelProperty("岗位名称")
     private String postName;
 
-    /**
-     * 岗位编码
-     */
-    @ApiModelProperty("岗位编码")
-    private String postCode;
+//    /**
+//     * 岗位编码
+//     */
+//    @ApiModelProperty("岗位编码")
+//    private String postCode;
 
+    /**
+     * 职位ID
+     */
+    @ApiModelProperty("职位ID")
+    private Integer positionId;
 
     /**
      * 父级岗位
@@ -61,11 +66,11 @@ public class PostVo extends PageVo implements Serializable {
     @ApiModelProperty("职等")
     private List<Integer> positionGrades;
 
-    /**
-     * 是否删除
-     */
-    @ApiModelProperty("是否删除")
-    private Integer isDelete;
+//    /**
+//     * 是否删除
+//     */
+//    @ApiModelProperty("是否删除")
+//    private Integer isDelete;
 
     private static final long serialVersionUID = 1L;
 

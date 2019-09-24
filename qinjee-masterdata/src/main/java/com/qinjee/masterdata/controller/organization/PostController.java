@@ -48,37 +48,30 @@ public class PostController extends BaseController {
         return postService.getUserArchivePostRelationList(pageSize, currentPage, postId);
     }
 
-
     @ApiOperation(value = "新增岗位", notes = "高雄")
     @PostMapping("/addPost")
     public ResponseResult addPost(PostVo postVo){
-
-
-
-        return null;
+        return postService.addPost(postVo, getUserSession());
     }
 
     @ApiOperation(value = "编辑岗位", notes = "高雄")
     @PostMapping("/editPost")
     public ResponseResult editPost(PostVo postVo){
-
-        return null;
+        return postService.editPost(postVo, getUserSession());
     }
 
     @ApiOperation(value = "删除岗位", notes = "高雄")
     @GetMapping("/deletePost")
     @ApiImplicitParam(name="postIds", value = "选择的岗位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
     public ResponseResult deletePost(List<Integer> postIds){
-
-        return null;
+        return postService.deletePost(getUserSession(), postIds);
     }
 
     @GetMapping("/sealPostByIds")
-    @ApiOperation(value = "封存/封存机构", notes = "高雄")
-    public ResponseResult sealPostByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",required = true) List<String> postIds,
+    @ApiOperation(value = "解封/封存机构", notes = "高雄")
+    public ResponseResult sealPostByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",required = true) List<Integer> postIds,
                                              @RequestParam("isEnable") @ApiParam(value = "0 封存、1 解封",example = "0") Short isEnable){
-
-        return null;
+        return postService.sealPostByIds(postIds, isEnable, getUserSession());
     }
 
     @ApiImplicitParams({
@@ -91,8 +84,7 @@ public class PostController extends BaseController {
     public ResponseResult sortOrganization(@RequestParam("prePostId")Integer prePostId,
                                          @RequestParam("midPostId")Integer midPostId,
                                          @RequestParam("nextPostId")Integer nextPostId){
-
-        return null;
+        return postService.sortOrganization(prePostId, midPostId, nextPostId, getUserSession());
     }
 
 
@@ -105,9 +97,9 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "复制岗位", notes = "高雄")
     @GetMapping("/copyPost")
-    public ResponseResult copyPost(@RequestParam("postIds") @ApiParam(value = "岗位id",required = true) List<Integer> postIds){
-
-        return null;
+    public ResponseResult copyPost(@ApiParam(value = "岗位id",required = true, allowMultiple = true) List<Integer> postIds,
+                                   @ApiParam(value = "机构id", required = true, example = "1") Integer orgId){
+        return postService.copyPost(postIds, getUserSession(), orgId);
     }
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")

@@ -36,4 +36,11 @@ public interface PostDao {
      * @return
      */
     List<Post> getPostListByOrgId(@Param("orgId") Integer orgId, @Param("isEnable") Short isEnable);
+
+    /**
+     * 查询机构的岗位编码
+     * @param orgId
+     * @return
+     */
+    String getLastPostByOrgId(Integer orgId);
 }

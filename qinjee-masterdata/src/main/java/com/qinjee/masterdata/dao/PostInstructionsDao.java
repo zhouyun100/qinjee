@@ -16,4 +16,11 @@ public interface PostInstructionsDao {
     int updateByPrimaryKeyWithBLOBs(PostInstructions record);
 
     int updateByPrimaryKey(PostInstructions record);
+
+    /**
+     * 根据岗位id查询岗位说明书
+     * @param postId
+     * @return
+     */
+    PostInstructions getPostInstructionsByPostId(Integer postId);
 }

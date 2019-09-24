@@ -475,7 +475,7 @@
     select
     <include refid="Base_Column_List" />
     from t_user_archive
-    where archive_id in 
+    where archive_id in
     <foreach collection="list" item="item" index="index" separator=",">
     (#{item,jdbcType=INTEGER})
     </foreach>
@@ -493,4 +493,11 @@
     is_delete=1
     where  archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
+  <select id="getUserArchiveListByOrgId" resultMap="BaseResultMap">
+    select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id, tua.post_id,
+    tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birthdate, tua.age, tua.nationality, tua.birthplace, tua.political_status, tua.marital_status,
+    tua.first_work_date, tua.hiredate, tua.serving_age, tua.working_period,tua.probation_due_date
+    from t_user_archive tua left join t_organization torg on torg.org_id = tua.org_id
+    where tua.is_delete = 0
+  </select>
 </mapper>
