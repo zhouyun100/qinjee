@@ -1,12 +1,11 @@
 package com.qinjee.masterdata.utils;
 
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
-import com.qinjee.utils.DateFormatUtil;
 import com.qinjee.utils.QueryColumn;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,54 +33,57 @@ public class QueryFieldUtil {
                     Field field = _class.getDeclaredField(fieldName);
                     field.setAccessible(true);
                     QueryColumn annotation = field.getAnnotation(QueryColumn.class);
+                    if(annotation == null){
+                        continue;
+                    }
                     String queryColumn = annotation.value();
-                    String fieldValue = queryField.getFieldValue();
-
+                    List<String> fieldValues = queryField.getFieldValues();
                     Boolean isAscSort = queryField.getIsAscSort();
                     Boolean isFilterNull = queryField.getIsFilterNull();
-                    //把查询用的别名赋值给fieldName
-                    if(StringUtils.isNotBlank(queryColumn)){
+
+                    if(StringUtils.isNotBlank(queryColumn) && !CollectionUtils.isEmpty(fieldValues)){
                         if (field.getGenericType().toString().equals("class java.util.Date")) {
                             //判断是否是时间范围查询
                             String condition = queryColumn;
-                            Date startTime = queryField.getStartTime();
-                            Date endTime = queryField.getEndTime();
+                            String startTime = fieldValues.get(0);
+                            String endTime = fieldValues.get(1);
                             String joinStr = " ";
+
                             if(startTime != null){
-                               String strat = DateFormatUtil.formatDateToStr(startTime, DateFormatUtil.DATE_TIME_FORMAT);
-                                condition += " >= " + strat;
+                                condition += " >= " + startTime;
                                 joinStr = " and ";
                             }
+
                             if(endTime != null){
-                                String end = DateFormatUtil.formatDateToStr(endTime, DateFormatUtil.DATE_TIME_FORMAT);
-                                condition += joinStr + queryColumn + " <= " + end;
+                                condition += joinStr + queryColumn + " <= " + endTime;
                             }
-                            queryField.setCondition(condition);
+                            queryField.setCondition(" and " + condition);
                         }else if(field.getGenericType().toString().equals("class java.util.String")){
-                            //模糊查询
-                            if(StringUtils.isNotBlank(fieldValue)){
-                                queryField.setCondition(queryColumn + " like '%" + fieldValue + "%'");
+                            //判断是否是字符串类型
+                            if(fieldValues.size() == 1){
+                                String fieldValue = fieldValues.get(0);
+                                //模糊查询
+                                if(StringUtils.isNotBlank(fieldValue)){
+                                    queryField.setCondition(" and " + queryColumn + " like '%" + fieldValue + "%'");
+                                }
+                            }else {
+                                String conditions = getConditionsString(fieldValues);
+                                queryField.setCondition(" and " + queryColumn + " in (" + conditions + ")");
                             }
                         }else if(field.getGenericType().toString().equals("class java.util.Integer")){
-                            queryField.setCondition(queryColumn + " = " + fieldValue);
+                            //判断是否是Integer类型
+                            if(fieldValues.size() == 1){
+                                String fieldValue = fieldValues.get(0);
+                                queryField.setCondition(" and " + queryColumn + " = " + fieldValue);
+                            }else {
+                                String conditions = getConditionsString(fieldValues);
+                                queryField.setCondition(" and " + queryColumn + " in (" + conditions + ")");
+                            }
                         }else if(field.getGenericType().toString().startsWith("java.util.List<java.lang.")){
-                            if (field.getGenericType().toString().endsWith("Integer>")) {
-                                //如果是一个Integer集合
-                                queryField.setCondition(queryColumn + " in (" + fieldValue + ")");
-                            }
-                            if(field.getGenericType().toString().endsWith("String>")){
-                                //如果是一个String集合
-                                String[] split = fieldValue.split(",");
-                                StringBuilder conditions = new StringBuilder();
-                                for (String str : split) {
-                                    if(conditions.length() <= 0){
-                                        conditions.append("'").append(str).append("'");
-                                    }else {
-                                        conditions.append(",'").append(str).append("'");
-                                    }
-                                }
-                                queryField.setCondition(queryColumn + " in (" + conditions.toString() + ")");
-                            }
+                            //判断是否是一个集合
+                            String conditionsString = getConditionsString(fieldValues);
+                            //如果是一个Integer或者String集合
+                            queryField.setCondition(" and " + queryColumn + " in (" + conditionsString + ")");
                         }
                     }
 
@@ -106,5 +108,22 @@ public class QueryFieldUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * 遍历查询字段集合获取查询条件
+     * @param fieldValues
+     * @return
+     */
+    private static String getConditionsString(List<String> fieldValues) {
+        StringBuilder conditions = new StringBuilder();
+        for (String fieldValue : fieldValues) {
+            if(conditions.length() <= 0){
+                conditions.append("'").append(fieldValue).append("'");
+            }else {
+                conditions.append(",'").append(fieldValue).append("'");
+            }
+        }
+        return conditions.toString();
     }
 }
