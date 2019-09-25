@@ -13,6 +13,8 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import java.util.Optional;
  * @Description TODO
  * @createTime 2019年09月24日 15:25:00
  */
+@Service
 public class UserArchiveServiceImpl implements UserArchiveService {
     @Autowired
     private UserArchiveDao userArchiveDao;
@@ -45,8 +48,21 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
         userArchive.setOperatorId(userSession.getArchiveId());
+        userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
         return new ResponseResult(userArchive.getArchiveId());
     }
 
+    @Override
+    public ResponseResult deleteUserArchive(List<Integer> archiveIds) {
+        if(!CollectionUtils.isEmpty(archiveIds)){
+            for (Integer archiveId : archiveIds) {
+                UserArchive userArchive = new UserArchive();
+                userArchive.setIsDelete((short) 1);
+                userArchive.setArchiveId(archiveId);
+                userArchiveDao.updateByPrimaryKeySelective(userArchive);
+            }
+        }
+        return new ResponseResult();
+    }
 }

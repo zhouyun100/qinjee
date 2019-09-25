@@ -14,6 +14,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -26,6 +27,7 @@ import java.util.Optional;
  * @Description TODO
  * @createTime 2019年09月23日 11:07:00
  */
+@Service
 public class PostServiceImpl implements PostService {
 
     @Autowired

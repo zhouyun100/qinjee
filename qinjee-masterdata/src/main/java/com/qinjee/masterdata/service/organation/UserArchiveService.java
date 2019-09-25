@@ -7,6 +7,8 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
+import java.util.List;
+
 /**
  * @author 高雄
  * @version 1.0.0
@@ -28,4 +30,12 @@ public interface UserArchiveService {
      * @return
      */
     ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo, UserSession userSession);
+
+    /**
+     * 删除员工档案信息
+     * @param archiveIds
+     * @return
+     */
+    ResponseResult deleteUserArchive(List<Integer> archiveIds);
+
 }

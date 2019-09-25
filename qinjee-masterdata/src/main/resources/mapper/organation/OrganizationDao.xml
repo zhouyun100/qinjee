@@ -201,7 +201,7 @@
       <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
         <foreach collection="organizationPageVo.querFieldVos" item="querField">
           <if test="querField.fieldName != null and querField.fieldName != ''">
-            and ${querField.condition}
+                ${querField.condition}
           </if>
           <if test="querField.isFilterNull">
             and ${querField.fieldName} IS NULL
