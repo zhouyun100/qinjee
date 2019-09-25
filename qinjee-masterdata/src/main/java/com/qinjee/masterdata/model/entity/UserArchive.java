@@ -255,6 +255,19 @@ public class UserArchive implements Serializable {
     private String attritionType;
 
     /**
+     * 上级领导Id
+     */
+    @ApiModelProperty("上级领导Id")
+    @QueryColumn("tua.supervisor_id")
+    private Integer supervisorId;
+
+    /**
+     * 上级领导姓名
+     */
+    @ApiModelProperty("上级领导姓名")
+    private Integer supervisorUserName;
+
+    /**
      * 操作人ID
      */
     @ApiModelProperty("操作人ID")

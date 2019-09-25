@@ -37,6 +37,7 @@
     <result column="professional_level" jdbcType="VARCHAR" property="professionalLevel" />
     <result column="attrition_date" jdbcType="DATE" property="attritionDate" />
     <result column="attrition_type" jdbcType="VARCHAR" property="attritionType" />
+    <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -48,7 +49,7 @@
     marital_status, first_work_date, hiredate, serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, tel, email, address,
     professional_certification, professional_title, professional_level, attrition_date,
-    attrition_type, operator_id, create_time, update_time,is_delete
+    attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
@@ -508,14 +509,14 @@
     tua.political_status, tua.marital_status, tua.first_work_date, tua.hiredate, tua.serving_age, tua.working_period,
     tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.tel, tua.email,
     tua.address, tua.professional_certification, tua.professional_title, tua.professional_level, tua.attrition_date, tua.attrition_type,
-    tua.increase_type, tua.archive_status, tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name businessUnitName,
-    dept.org_name orgName, tp.post_name postName
+    tua.increase_type, tua.archive_status, tua.supervisor_id,tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name businessUnitName,
+    dept.org_name orgName, tp.post_name postName, tua2.user_name supervisorUserName
     from t_user_archive tua
     left join t_post tp on tua.post_id = tp.post_id
-<!-- 直接上级  left join t_user_archive tua2 on tua-->
+    left join t_user_archive tua2 on tua.supervisor_id = tua2.archive_id
     left join t_organization torg on torg.org_id = tua.business_unit_id
     left join t_organization dept on dept.org_id = tua.org_id
-    where tua.is_delete = 0
+    where tua.is_delete = 0 and tua2.is_delete = 0
     <if test="pageQueryVo != null">
       <if test="pageQueryVo.querFieldVos != null and  pageQueryVo.querFieldVos.szie > 0">
         <foreach collection="pageQueryVo.querFieldVos" item="querField">
