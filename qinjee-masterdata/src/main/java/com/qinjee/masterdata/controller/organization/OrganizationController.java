@@ -164,4 +164,6 @@ public class OrganizationController extends BaseController {
     public ResponseResult<List<Organization>> getOrganizationPositionTree(@ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
     }
+
+
 }

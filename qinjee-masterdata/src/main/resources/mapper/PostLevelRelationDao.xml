@@ -95,4 +95,10 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="getPostLevelRelationByPostId" resultType="com.qinjee.masterdata.model.entity.PostLevelRelation">
+    select
+    <include refid="Base_Column_List" />
+    from t_post_level_relation
+    where post_id = #{postId} and is_delete = 0
+  </select>
 </mapper>

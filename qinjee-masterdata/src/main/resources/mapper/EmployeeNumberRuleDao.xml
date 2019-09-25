@@ -5,7 +5,9 @@
     <id column="en_rule_id" jdbcType="INTEGER" property="enRuleId" />
     <result column="employee_number_prefix" jdbcType="VARCHAR" property="employeeNumberPrefix" />
     <result column="date_rule" jdbcType="VARCHAR" property="dateRule" />
+    <result column="employee_number_infix" jdbcType="VARCHAR" property="employeeNumberInfix" />
     <result column="digit_capacity" jdbcType="SMALLINT" property="digitCapacity" />
+    <result column="employee_number_suffix" jdbcType="VARCHAR" property="employeeNumberSuffix" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -13,7 +15,7 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    en_rule_id, employee_number_prefix, date_rule, digit_capacity, company_id, operator_id,
+    en_rule_id, employee_number_prefix, date_rule, employee_number_infix, digit_capacity, employee_number_suffix, company_id, operator_id,
     create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -27,11 +29,11 @@
     where en_rule_id = #{enRuleId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="en_rule_id" keyProperty="enRuleId" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule" useGeneratedKeys="true">
-    insert into t_employee_number_rule (employee_number_prefix, date_rule, digit_capacity,
+    insert into t_employee_number_rule (employee_number_prefix, date_rule, employee_number_infix, digit_capacity, employee_number_suffix,
       company_id, operator_id, create_time,
       update_time, is_delete)
-    values (#{employeeNumberPrefix,jdbcType=VARCHAR}, #{dateRule,jdbcType=VARCHAR}, #{digitCapacity,jdbcType=SMALLINT},
-      #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+    values (#{employeeNumberPrefix,jdbcType=VARCHAR}, #{dateRule,jdbcType=VARCHAR},#{employeeNumberInfix,jdbcType=VARCHAR}, #{digitCapacity,jdbcType=SMALLINT},
+     #{employeeNumberSuffix,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
       #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT})
   </insert>
   <insert id="insertSelective" keyColumn="en_rule_id" keyProperty="enRuleId" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule" useGeneratedKeys="true">
@@ -39,6 +41,12 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="employeeNumberPrefix != null">
         employee_number_prefix,
+      </if>
+      <if test="employeeNumberInfix != null">
+        employee_number_infix,
+      </if>
+      <if test="employeeNumberSuffix != null">
+        employee_number_suffix,
       </if>
       <if test="dateRule != null">
         date_rule,
@@ -65,6 +73,12 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="employeeNumberPrefix != null">
         #{employeeNumberPrefix,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeNumberInfix != null">
+        #{employeeNumberInfix,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeNumberSuffix != null">
+        #{employeeNumberSuffix,jdbcType=VARCHAR},
       </if>
       <if test="dateRule != null">
         #{dateRule,jdbcType=VARCHAR},
@@ -95,6 +109,12 @@
       <if test="employeeNumberPrefix != null">
         employee_number_prefix = #{employeeNumberPrefix,jdbcType=VARCHAR},
       </if>
+      <if test="employeeNumberInfix != null">
+        employee_number_infix = #{employeeNumberInfix,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeNumberSuffix != null">
+        employee_number_suffix = #{employeeNumberSuffix,jdbcType=VARCHAR},
+      </if>
       <if test="dateRule != null">
         date_rule = #{dateRule,jdbcType=VARCHAR},
       </if>
@@ -122,6 +142,8 @@
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule">
     update t_employee_number_rule
     set employee_number_prefix = #{employeeNumberPrefix,jdbcType=VARCHAR},
+      employee_number_infix = #{employeeNumberInfix,jdbcType=VARCHAR},
+      employee_number_suffix = #{employeeNumberSuffix,jdbcType=VARCHAR},
       date_rule = #{dateRule,jdbcType=VARCHAR},
       digit_capacity = #{digitCapacity,jdbcType=SMALLINT},
       company_id = #{companyId,jdbcType=INTEGER},

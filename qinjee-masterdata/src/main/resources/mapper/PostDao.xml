@@ -181,7 +181,7 @@
   </update>
   <select id="getPostList" resultType="com.qinjee.masterdata.model.entity.Post">
     select tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, torg.org_name orgName, tps.position_name positionName
-    , tparentorg.org_name parentOrgName, group_concat(tpl.position_level_name) positionLevelNames, group_concat(tpg.position_grade_name) positionGradeNames from t_user_role tur
+    , tparentorg.org_name parentOrgName, tparentorg.org_id parentOrgId,parenttp.post_id parentPostId ,parenttp.post_name parentPostName, group_concat(tpl.position_level_name) positionLevelNames, group_concat(tpg.position_grade_name) positionGradeNames from t_user_role tur
     left join t_role tr on tur.role_id = tr.role_id
     left join t_role_org_auth trra on trra.role_id = tr.role_id
     left join t_organization torg on torg.org_id = trra.org_id
@@ -189,6 +189,7 @@
       and torg.is_enable = #{postPageVo.isEnable}
     </if>
     left join t_post tp on tp.org_id = torg.org_id
+    left join t_post parenttp on parenttp.post_id = tp.parent_post_id
     left join t_position tps on tps.position_id = tp.position_id and tps.is_delete = 0
     left join t_organization tparentorg on torg.org_parent_id = tparentorg.org_id
     left join t_position_level_relation tplr on tplr.position_id = tps.position_id and tplr.is_delete = 0
@@ -196,6 +197,7 @@
     left join t_position_grade_relation tpgr on tpgr.position_id = tps.position_id and tpgr.is_delete = 0
     left join t_position_grade tpg on tpg.position_grade_id = tpgr.position_grade_id and tpg.is_delete = 0
     where tur.is_delete = 0 and tr.is_delete = 0 and trra.is_delete = 0 and tp.is_delete = 0 and tur.archive_id = #{archiveId}
+    and parenttp.is_delete = 0
     <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
       and tp.is_enable = #{postPageVo.isEnable}
     </if>
@@ -203,7 +205,7 @@
       <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
         <foreach collection="postPageVo.querFieldVos" item="querField">
           <if test="querField.fieldName != null and querField.fieldName != ''">
-            and ${querField.condition}
+              ${querField.condition}
           </if>
           <if test="querField.isFilterNull">
             and ${querField.fieldName} IS NULL
@@ -225,5 +227,13 @@
       and is_enable = #{isEnable}
     </if>
     and is_delete = 0 ORDER BY sort_id ASC
+  </select>
+  <select id="getLastPostByOrgId" resultType="java.lang.String">
+    SELECT post_code from t_post where post_id = (select max(post_id) from t_post where is_delete = 0)
+  </select>
+  <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
+    select tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position tps on tps.position_id = tp.position_id
+    where tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
+
   </select>
 </mapper>

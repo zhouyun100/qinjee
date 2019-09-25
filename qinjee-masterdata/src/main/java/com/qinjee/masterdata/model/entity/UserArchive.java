@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -51,11 +52,45 @@ public class UserArchive implements Serializable {
      * 单位ID
      */
     @ApiModelProperty("单位ID")
+    @QueryColumn("tua.business_unit_id")
     private Integer businessUnitId;
+
+    /**
+     * 单位名称
+     */
+    @ApiModelProperty("单位名称")
+    private Integer businessUnitName;
+
+    /**
+     * 部门ID
+     */
+    @QueryColumn("tua.org_id")
+    @ApiModelProperty("部门ID")
+    private Integer orgId;
+
+    /**
+     * 部门名称
+     */
+    @ApiModelProperty("部门名称")
+    private Integer orgName;
+
+    /**
+     * 岗位ID
+     */
+    @QueryColumn("tua.post_id")
+    @ApiModelProperty("岗位ID")
+    private Integer postId;
+
+    /**
+     * 岗位名称
+     */
+    @ApiModelProperty("岗位名称")
+    private Integer postName;
 
     /**
      * 姓名
      */
+    @QueryColumn("tua.user_name")
     @ApiModelProperty("姓名")
     private String userName;
 
@@ -74,6 +109,7 @@ public class UserArchive implements Serializable {
     /**
      * 性别
      */
+    @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
     private String gender;
 
@@ -122,6 +158,7 @@ public class UserArchive implements Serializable {
     /**
      * 入职时间
      */
+    @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
     private Date hiredate;
 
@@ -170,12 +207,14 @@ public class UserArchive implements Serializable {
     /**
      * 联系电话
      */
+    @QueryColumn("tua.tel")
     @ApiModelProperty("联系电话")
     private String tel;
 
     /**
      * 电子邮箱
      */
+    @QueryColumn("tua.email")
     @ApiModelProperty("电子邮箱")
     private String email;
 
@@ -216,6 +255,19 @@ public class UserArchive implements Serializable {
     private String attritionType;
 
     /**
+     * 上级领导Id
+     */
+    @ApiModelProperty("上级领导Id")
+    @QueryColumn("tua.supervisor_id")
+    private Integer supervisorId;
+
+    /**
+     * 上级领导姓名
+     */
+    @ApiModelProperty("上级领导姓名")
+    private Integer supervisorUserName;
+
+    /**
      * 操作人ID
      */
     @ApiModelProperty("操作人ID")
@@ -232,6 +284,12 @@ public class UserArchive implements Serializable {
      */
     @ApiModelProperty("更新时间")
     private Date updateTime;
+
+    /**
+     * 是否删除
+     */
+    @ApiModelProperty("是否删除")
+    private Short isDelete;
 
     private static final long serialVersionUID = 1L;
 

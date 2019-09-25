@@ -7,7 +7,7 @@
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
     <result column="org_type" jdbcType="VARCHAR" property="orgType" />
     <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
-    <result column="org_full_name" jdbcType="VARCHAR" property="orgfull_name" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
     <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
@@ -201,7 +201,7 @@
       <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
         <foreach collection="organizationPageVo.querFieldVos" item="querField">
           <if test="querField.fieldName != null and querField.fieldName != ''">
-            and ${querField.condition}
+                ${querField.condition}
           </if>
           <if test="querField.isFilterNull">
             and ${querField.fieldName} IS NULL
@@ -253,4 +253,10 @@
             #{orgId}
         </foreach>
     </select>
+  <select id="getOrganizationByOrgCodeAndCompanyId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_organization
+    where company_id = #{companyId} and org_code = #{orgCode}
+  </select>
 </mapper>

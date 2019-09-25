@@ -1,10 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.QueryScheme;
-import com.qinjee.masterdata.model.entity.QuerySchemeField;
-import com.qinjee.masterdata.model.entity.QuerySchemeSort;
-import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.response.PageResult;
@@ -30,6 +27,57 @@ public class StaffArchiveController extends BaseController {
     @Autowired
     private IStaffArchiveService staffArchiveService;
 
+    /**
+     * 新增档案表
+     */
+    @RequestMapping(value = "/insertArchive", method = RequestMethod.POST)
+    @ApiOperation(value = "新增档案表", notes = "hkt")
+    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
+    public ResponseResult insertArchive(UserArchive userArchive) {
+
+        return staffArchiveService.insertArchive(userArchive);
+    }
+
+    /**
+     * 删除档案
+     */
+    @RequestMapping(value = "/deleteArchiveById", method = RequestMethod.POST)
+    @ApiOperation(value = "删除档案", notes = "hkt")
+    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
+    public ResponseResult deleteArchiveById(Integer archiveid) {
+
+        return staffArchiveService.deleteArchiveById(archiveid);
+    }
+    /**
+     * 删除恢复
+     */
+    @RequestMapping(value = "/resumeDeleteArchiveById", method = RequestMethod.POST)
+    @ApiOperation(value = "恢复删除档案", notes = "hkt")
+    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
+    public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
+
+        return staffArchiveService.resumeDeleteArchiveById(archiveid);
+    }
+    /**
+     * 更新档案表
+     */
+    @RequestMapping(value = "/updateArchive", method = RequestMethod.POST)
+    @ApiOperation(value = "更新档案表", notes = "hkt")
+    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
+    public ResponseResult updateArchive(UserArchive userArchive) {
+
+        return staffArchiveService.updateArchive(userArchive);
+    }
+    /**
+     * 查看档案(这里涉及到权限的查看范围，弄清楚再做)
+     */
+    @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
+    @ApiOperation(value = "查看档案", notes = "hkt")
+    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
+    public ResponseResult selectArchive(Integer archiveid) {
+
+        return staffArchiveService.selectArchive(archiveid);
+    }
 
     /**
      * 新增人员岗位关系，初期只涉及到是否兼职，兼职是人员岗位关系中任职类型的一种

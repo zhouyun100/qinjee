@@ -230,4 +230,7 @@
     from t_pre_employment
     where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
+  <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
+    //TODO 需要机构id
+  </select>
 </mapper>

@@ -7,10 +7,7 @@ import com.qinjee.masterdata.service.organation.PositionService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,6 +65,7 @@ public class PositionController extends BaseController {
         return positionService.sortPosition(prePositionId, midPositionId, nextPositionId);
     }
 
+
     @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
     @ApiOperation(value = "导出职位excel", notes = "高雄")
     @GetMapping("/downloadExcel")
@@ -76,6 +74,11 @@ public class PositionController extends BaseController {
         return null;
     }
 
+    @ApiOperation(value = "新增岗位选择职位时带出职级职等", notes = "高雄")
+    @GetMapping("/getPositionLevelAndGrade")
+    public ResponseResult<Position> getPositionLevelAndGrade(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
+        return positionService.getPositionLevelAndGrade(positionId);
+    }
 
 
 

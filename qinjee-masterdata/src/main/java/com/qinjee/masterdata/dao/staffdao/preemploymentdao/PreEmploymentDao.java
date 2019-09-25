@@ -3,6 +3,8 @@ package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Administrator
  */
@@ -39,4 +41,6 @@ public interface PreEmploymentDao {
      * @return
      */
     String getMail(Integer integer);
+
+    List<PreEmployment> selectPreEmployment(Integer companyId);
 }

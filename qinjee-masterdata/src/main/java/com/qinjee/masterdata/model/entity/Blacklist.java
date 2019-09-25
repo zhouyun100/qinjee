@@ -102,6 +102,18 @@ public class Blacklist implements Serializable {
      * 创建时间
      */
     private Date createTime;
+    /**
+     * 是否删除
+     */
+    private Short isDelete;
+
+    public Short getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Short isDelete) {
+        this.isDelete = isDelete;
+    }
 
     private static final long serialVersionUID = 1L;
 

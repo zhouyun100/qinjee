@@ -60,4 +60,11 @@ public interface PositionService {
      * @return
      */
     ResponseResult sortPosition(Integer prePositionId, Integer midPositionId, Integer nextPositionId);
+
+    /**
+     * 新增岗位选择职位时带出职级职等
+     * @param positionId
+     * @return
+     */
+    ResponseResult<Position> getPositionLevelAndGrade(Integer positionId);
 }
