@@ -231,6 +231,16 @@
     where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
   </select>
   <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
-    //TODO 需要机构id
+    SELECT
+     a.*
+     from   t_pre_employment  a  left join t_organization b
+     on a.company_id=b.company_id
+     where a.is_delete=1
   </select>
+  <update id="deletePreEmployment">
+    update  t_pre_employment
+    set
+    is_delete=0
+    where employment_id = #{employmentId,jdbcType=INTEGER}
+  </update>
 </mapper>

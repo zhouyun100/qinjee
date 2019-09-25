@@ -186,4 +186,11 @@
     WHERE  is_delete = 1
   </select>
 
+  <select id="selectPreEmploymentTable" resultType="java.lang.Integer">
+    select table_id
+    from t_custom_table
+    where  company_id = #{companyId,jdbcType=INTEGER}
+    AND  table_name = #{tableName,jdbcType=VARCHAR}
+  </select>
+
 </mapper>

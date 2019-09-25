@@ -24,4 +24,6 @@ public interface CustomTableDao {
     int selectMaxPrimaryKey();
     int deleteCustomTable(@Param("tableId") Integer tableId);
     List<CustomTable> selectByPage();
+
+    Integer selectPreEmploymentTable(Integer companyId, String preEmployment);
 }

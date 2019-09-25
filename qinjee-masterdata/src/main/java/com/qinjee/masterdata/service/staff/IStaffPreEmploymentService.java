@@ -1,12 +1,12 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -52,7 +52,43 @@ public interface IStaffPreEmploymentService {
      * @return
      */
 
-    ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange, Blacklist blacklist);
+    ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange,String reason);
 
+    /**
+     * 根据机构展示预入职表
+     * @param companyId
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
     ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,Integer currentPage,Integer pageSize);
+
+    /**
+     * 逻辑删除预入职表
+     * @param list
+     * @return
+     */
+    ResponseResult deletePreEmployment(List<Integer> list);
+
+    /**
+     * 更新预入职表（物理表信息）
+     * @param preEmployment
+     * @return
+     */
+    ResponseResult updatePreEmployment(PreEmployment preEmployment);
+
+    /**
+     * 新增预入职表
+     * @param preEmployment
+     * @return
+     */
+    ResponseResult insertPreEmployment(PreEmployment preEmployment);
+    /**
+     * 修改预入职信息(显示字段的信息)
+     */
+    ResponseResult updatePreEmploymentField(Map<Integer, String> map);
+    /**
+     * 查看预入职信息(显示字段的信息)
+     */
+    ResponseResult<Map<String,String>> selectPreEmploymentField(Integer companyId);
 }

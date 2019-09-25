@@ -260,4 +260,17 @@
     from   t_custom_field
     where   table_id = #{tableId,jdbcType=INTEGER}   AND  is_delete = 1
   </select>
+  <update id="updatePreEmploymentField">
+    update t_custom_field
+    set  field_code = #{fieldCode,jdbcType=VARCHAR}
+    WHERE  field_id = #{fieldId,jdbcType=INTEGER}
+
+
+  </update>
+  <select id="selectPreEmploymentField" resultType="com.qinjee.masterdata.model.entity.CustomField">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_field
+    where   table_id = #{tableId,jdbcType=INTEGER}   AND  is_delete = 1
+  </select>
 </mapper>

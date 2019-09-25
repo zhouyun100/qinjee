@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -28,12 +28,61 @@ import java.util.List;
 public class StaffPreEmploymentController extends BaseController {
     @Autowired
     private IStaffPreEmploymentService staffPreEmploymentService;
+    /**
+     * 新增预入职
+     * 预入职表与档案表用物理表进行对应，此时需要物理表的存在，新增两个自定义表，新增n个自定义字段，物理字段名与物理属性名分别是物理表与属性的对应
+     * 在项目初始化应该建好此表
+     */
+    @RequestMapping(value = "/insertPreEmployment ", method = RequestMethod.GET)
+    @ApiOperation(value = "新增预入职", notes = "hkt")
+    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form", required = true)
+    public ResponseResult insertPreEmployment(PreEmployment preEmployment ){
+        return staffPreEmploymentService.insertPreEmployment(preEmployment);
+    }
+
+    /**
+     * 删除预入职
+     */
+    @RequestMapping(value = "/deletePreEmployment ", method = RequestMethod.GET)
+    @ApiOperation(value = "根据机构查看预入职", notes = "hkt")
+    @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true)
+    public ResponseResult deletePreEmployment(List<Integer> list ){
+        return staffPreEmploymentService.deletePreEmployment(list);
+    }
+    /**
+     * 修改预入职信息(值的信息)
+     */
+    @RequestMapping(value = "/updatePreEmployment ", method = RequestMethod.GET)
+    @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
+    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
+    public ResponseResult updatePreEmployment(PreEmployment preEmployment ){
+        return staffPreEmploymentService.updatePreEmployment(preEmployment);
+    }
+    /**
+     * 修改预入职信息(显示字段的信息)
+     */
+    @RequestMapping(value = "/updatePreEmploymentField ", method = RequestMethod.GET)
+    @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
+    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
+    public ResponseResult updatePreEmploymentField(Map<Integer,String> map){
+        return staffPreEmploymentService.updatePreEmploymentField(map);
+    }
+
+    /**
+     * 查看预入职信息(显示字段的信息)
+     */
+    @RequestMapping(value = "/selectPreEmploymentField ", method = RequestMethod.GET)
+    @ApiOperation(value = "查看预入职信息(显示字段的信息)，返回值中map是物理表属性，value是字段名", notes = "hkt")
+    public ResponseResult<Map<String,String>> selectPreEmploymentField(){
+        Integer companyId = userSession.getCompanyId();
+        return staffPreEmploymentService.selectPreEmploymentField(companyId);
+    }
 
     /**
      * 根据机构查看预入职
      */
     @RequestMapping(value = "/selectPreEmployment ", method = RequestMethod.GET)
-    @ApiOperation(value = "根据机构查看预入职", notes = "hkt")
+    @ApiOperation(value = "根据机构查看预入职(物理表)", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -41,7 +90,7 @@ public class StaffPreEmploymentController extends BaseController {
 
     })
     public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,Integer currentPage,Integer pageSize){
-       return staffPreEmploymentService.selectPreEmployment(companyId,currentPage,pageSize);
+        return staffPreEmploymentService.selectPreEmployment(companyId,currentPage,pageSize);
     }
 
     /**
@@ -121,19 +170,9 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "PreEmployment", value = "预入职表", paramType = "form", required = true),
             @ApiImplicitParam(name = "StatusChange", value = "预入职变更表vo类", paramType = "form", required = true),
-            @ApiImplicitParam(name = "BlackList", value = "黑名单表", paramType = "form", required = true)
     })
-    public ResponseResult updatePreEmploymentChange(PreEmployment preEmployment, StatusChange statusChange,Blacklist blacklist) {
-       return staffPreEmploymentService.insertStatusChange(preEmployment,statusChange,blacklist);
+    public ResponseResult updatePreEmploymentChange(PreEmployment preEmployment, StatusChange statusChange,String reason) {
+       return staffPreEmploymentService.insertStatusChange(preEmployment,statusChange,reason);
     }
-    /**
-     * 加入黑名单表
-     */
-    @RequestMapping(value = "/insertBalckList", method = RequestMethod.POST)
-    @ApiOperation(value = "加入黑名单表", notes = "hkt")
-    @ApiImplicitParam(name = "blackList", value = "黑名单表", paramType = "query", required = true)
-    public ResponseResult update(Blacklist blacklist) {
-        ResponseResult<Boolean> responseResult = new ResponseResult<>(true, CommonCode.SUCCESS);
-        return responseResult;
-    }
+
 }

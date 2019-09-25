@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.UserOrgAuthDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.UserOrgAuthDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.UserOrgAuth">
     <id column="auth_id" jdbcType="INTEGER" property="authId" />
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
@@ -95,4 +95,15 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where auth_id = #{authId,jdbcType=INTEGER}
   </update>
+  <select id="selectCompanyIdByArchive" resultType="java.lang.Integer">
+    select  org_id
+    from t_user_org_auth
+    where  archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=1
+  </select>
+
+  <select id="selectArchiveIdByOrg" resultType="java.lang.Integer">
+    select archive_id
+    from t_user_org_auth
+    where  org_id= #{org_id,jdbcType=INTEGER} AND is_delete=1
+  </select>
 </mapper>

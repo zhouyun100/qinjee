@@ -43,7 +43,7 @@ public class UserArchive implements Serializable {
     private Integer companyId;
 
     /**
-     * 人员分类
+     * 人员分类   多级代码：在职（正式、试用、实习）、不在职（离职、退休）
      */
     @ApiModelProperty("人员分类")
     private String userCategory;

@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.RoleDataLevelAuth;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface RoleDataLevelAuthDao {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,6 @@ public interface RoleDataLevelAuthDao {
     int updateByPrimaryKeySelective(RoleDataLevelAuth record);
 
     int updateByPrimaryKey(RoleDataLevelAuth record);
+
+    RoleDataLevelAuth selectArchive(Integer archiveid);
 }

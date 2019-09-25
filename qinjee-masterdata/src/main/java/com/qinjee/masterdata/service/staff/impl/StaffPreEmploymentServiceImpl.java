@@ -1,12 +1,16 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.StatusChange;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -18,10 +22,14 @@ import com.qinjee.utils.SendManyMailsUtil;
 import com.qinjee.utils.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -33,6 +41,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private static final String CHANGSTATUS_READY="已入职";
     private static final String CHANGSTATUS_BLACKLIST="黑名单";
     private static final String CHANGSTATUS_GIVEUP="放弃入职";
+    private static final String PRE_EMPLOYMENT="预入职表";
     @Autowired
     private PreEmploymentDao preEmploymentDao;
     @Autowired
@@ -43,6 +52,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private IStaffArchiveService staffArchiveService;
     @Autowired
     private BlacklistDao blacklistDao;
+    @Autowired
+    private CustomFieldDao customFieldDao;
+    @Autowired
+    private CustomTableDao customTableDao;
 
     @Override
     public ResponseResult sendMessage(List<Integer> list, Integer templateId, String[] params) {
@@ -122,13 +135,13 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    public ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange, Blacklist blacklist) {
+    @Transactional
+    public ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange,String reason) {
         /**
          * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
          * 梳理：预入职状态分为未入职，已入职，延期入职，放弃入职，黑名单。
          * 当变更表的状态为放弃入职时，将放弃入职原因入库，描述为变更描述
          * 为延期入职时，需要将页面的延期入职时间传过来，存到预入职表中
-         * 为已入职时，需要将预入职的信息存到档案中（现如今表都是自定义表，如何保证两个表的高度契合）
          * 黑名单时需要将黑名单同步到黑名单表
          */
         String employmentState = preEmployment.getEmploymentState();
@@ -138,7 +151,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 preEmploymentChangeDao.insertStatusChange(statusChange);
                 //预入职信息转化为档案信息
                 //新增档案表
-                //TODO 预入职信息转化为档案信息 新增档案表
+                UserArchive userArchive=new UserArchive();
+                BeanUtils.copyProperties(userArchive,preEmployment);
             }
             if(CHANGSTATUS_DELAY.equals(employmentState) || CHANGSTATUS_GIVEUP.equals(employmentState)){
                 //新增变更表
@@ -148,6 +162,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 //新增变更表
                 preEmploymentChangeDao.insertStatusChange(statusChange);
                 //加入黑名单
+                Blacklist blacklist=new Blacklist();
+                blacklist.setDataSource("预入职");
+                blacklist.setBlockReason(reason);
+                BeanUtils.copyProperties(blacklist,preEmployment);
                 blacklistDao.insert(blacklist);
             }
         } catch (Exception e) {
@@ -158,12 +176,71 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         return new ResponseResult(true, CommonCode.SUCCESS);
     }
 
+
+    @Override
+    public ResponseResult insertPreEmployment(PreEmployment preEmployment) {
+        try {
+            if(preEmployment instanceof  PreEmployment){
+                preEmploymentDao.insertSelective(preEmployment);
+            }
+        } catch (Exception e) {
+            logger.error("新增预入职失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+        return  new ResponseResult(false,CommonCode.INVALID_PARAM);
+    }
+
+    @Override
+    public ResponseResult deletePreEmployment(List<Integer> list) {
+        Integer integer =null;
+        try {
+            integer=preEmploymentDao.selectMaxId();
+            for (Integer integer1 : list) {
+                if(integer1>integer){
+                    return new ResponseResult(false,CommonCode.INVALID_PARAM);
+                }
+                preEmploymentDao.deletePreEmployment(integer1);
+            }
+            return  new ResponseResult<>(true,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("删除预入职失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult updatePreEmployment(PreEmployment preEmployment) {
+        try {
+            if(preEmployment instanceof PreEmployment) {
+                preEmploymentDao.updateByPrimaryKey(preEmployment);
+                return new ResponseResult<>(true, CommonCode.SUCCESS);
+            }
+        } catch (Exception e) {
+            logger.error("更新预入职物理表失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    }
+    @Override
+    public ResponseResult updatePreEmploymentField(Map<Integer, String> map) {
+        if(map!=null){
+            try {
+                for (Map.Entry<Integer, String> entry : map.entrySet()) {
+                    customFieldDao.updatePreEmploymentField(entry.getKey(),entry.getValue());
+                    return new ResponseResult<>(true, CommonCode.SUCCESS);
+                }
+            } catch (Exception e) {
+                logger.error("更新预入职字段表失败");
+                return new ResponseResult(false, CommonCode.FAIL);
+            }
+        }
+        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    }
     @Override
     public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize) {
         try {
             PageHelper.startPage(currentPage,pageSize);
             PageResult<PreEmployment> pageResult=new PageResult<>();
-            //数据库中没有机构id
             List<PreEmployment> list=preEmploymentDao.selectPreEmployment(companyId);
             pageResult.setList(list);
             return  new ResponseResult<>(pageResult,CommonCode.SUCCESS);
@@ -172,5 +249,23 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             return new ResponseResult(false, CommonCode.FAIL);
         }
     }
+    @Override
+    public ResponseResult<Map<String,String>>selectPreEmploymentField(Integer companyId) {
+        Map<String,String> map=new HashMap<>();
+        //先找到对应的表id
+        try {
+            Integer id=customTableDao.selectPreEmploymentTable(companyId,PRE_EMPLOYMENT);
+            //找到table的字段对象
+            List<CustomField> list=customFieldDao.selectPreEmploymentField(id);
+            for (CustomField customField : list) {
+                map.put(customField.getFieldCode(),customField.getFieldName());
+            }
+            return new ResponseResult<>(map,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("查找预入职字段失败");
+            return new ResponseResult(false, CommonCode.FAIL);
+        }
+    }
+
 
 }
