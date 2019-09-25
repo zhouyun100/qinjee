@@ -25,19 +25,20 @@ public interface AuthHandoverService {
 
     /**
      * 查询角色功能权限树
+     * @param operatorId
      * @param roleId
      * @param companyId
      * @return
      */
-    List<MenuVO> searchRoleAuthTree(Integer roleId,Integer companyId);
+    List<MenuVO> searchRoleAuthTree(Integer operatorId, Integer roleId, Integer companyId);
 
     /**
      * 查询角色机构权限树
+     * @param operatorId
      * @param roleId
-     * @param companyId
      * @return
      */
-    List<OrganizationVO> searchOrgAuthTree(Integer roleId,Integer companyId);
+    List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId);
 
     /**
      * 角色回收

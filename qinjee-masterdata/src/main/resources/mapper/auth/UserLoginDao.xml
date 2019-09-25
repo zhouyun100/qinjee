@@ -68,16 +68,16 @@
   </update>
 
   <!-- 各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入 -->
-  <select id="searchUserAuthTreeByArchiveIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="MenuResultMap">
+  <select id="searchUserMenuListByArchiveIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="MenuResultMap">
     select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
     from t_menu,t_company_menu,t_role_menu_auth,t_role,t_user_role
-    where t_user_role.archive_id = 1
+    where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
     and (t_user_role.is_trusteeship = 0
     or (t_user_role.is_trusteeship = 1
     and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
     and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
     ))
-    and t_company_menu.company_id = 1
+    and t_company_menu.company_id = #{companyId,jdbcType=INTEGER}
     and t_user_role.role_id = t_role.role_id
     and t_role.role_id = t_role_menu_auth.role_id
     and t_role_menu_auth.menu_id = t_menu.menu_id

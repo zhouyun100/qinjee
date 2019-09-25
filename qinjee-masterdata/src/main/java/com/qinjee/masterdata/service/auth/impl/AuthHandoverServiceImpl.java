@@ -39,14 +39,14 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
     private RoleAuthService roleAuthService;
 
     @Override
-    public List<MenuVO> searchRoleAuthTree(Integer roleId, Integer companyId) {
-        List<MenuVO> menuList= roleAuthService.searchRoleAuthTree(roleId,companyId);
+    public List<MenuVO> searchRoleAuthTree(Integer operatorId, Integer roleId, Integer companyId) {
+        List<MenuVO> menuList= roleAuthService.searchRoleAuthTree(operatorId,roleId,companyId);
         return menuList;
     }
 
     @Override
-    public List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer companyId) {
-        List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(roleId, companyId);
+    public List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId) {
+        List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(operatorId, roleId);
         return organizationList;
     }
 

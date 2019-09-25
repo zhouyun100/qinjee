@@ -11,10 +11,7 @@
 package com.qinjee.masterdata.dao.auth;
 
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.auth.MenuVO;
-import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
-import com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO;
-import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,19 +33,17 @@ public interface RoleAuthDao {
 
     /**
      * 根据角色ID查询角色功能权限树
-     * @param roleId
-     * @param companyId
+     * @param requestRole
      * @return
      */
-    List<MenuVO> searchRoleAuthTree(Integer roleId, Integer companyId);
+    List<MenuVO> searchRoleAuthTree(RequestRoleVO requestRole);
 
     /**
      * 查询角色机构权限树
-     * @param roleId
-     * @param companyId
+     * @param requestRole
      * @return
      */
-    List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer companyId);
+    List<OrganizationVO> searchOrgAuthTree(RequestRoleVO requestRole);
 
     /**
      * 新增角色组
@@ -137,36 +132,46 @@ public interface RoleAuthDao {
     int delRoleOrgAuth(RoleOrgAuth roleOrgAuth);
 
     /**
-     * 根据角色ID查询角色自定义表列表
-     * @param roleId
+     * 根据企业ID查询企业自定义表列表
      * @param companyId
      * @return
      */
-    List<CustomArchiveTable> searchCustomArchiveTableList(Integer roleId, Integer companyId);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableListByCompanyId(Integer companyId);
 
     /**
      * 根据自定义表ID查询自定义字段列表
-     * @param tableId
+     * @param requestCustomTableField
      * @return
      */
-    List<CustomArchiveField> searchCustomArchiveTableFieldListByTableId(Integer tableId);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(RequestCustomTableFieldVO requestCustomTableField);
 
     /**
      * 根据角色ID查询角色自定义表字段列表
      * @param roleId
-     * @param companyId
      * @return
      */
-    List<CustomArchiveField> searchCustomArchiveTableFieldListByRoleId(Integer roleId, Integer companyId);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleId(Integer roleId);
+
+    /**
+     * 查询角色自定义人员表字段
+     * @param requestCustomTableField
+     * @return
+     */
+    RequestCustomTableFieldVO searchRoleCustomArchiveTableFieldAuth(RequestCustomTableFieldVO requestCustomTableField);
+
+    /**
+     * 新增角色自定义人员表字段权限
+     * @param requestCustomTableField
+     * @return
+     */
+    int addRoleCustomArchiveTableFieldAuth(RequestCustomTableFieldVO requestCustomTableField);
 
     /**
      * 修改角色自定义人员表字段权限
-     * @param roleId
-     * @param fieldId
-     * @param operatorId
+     * @param requestCustomTableField
      * @return
      */
-    int updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, Integer operatorId);
+    int updateRoleCustomArchiveTableFieldAuth(RequestCustomTableFieldVO requestCustomTableField);
 
     /**
      * 保存数据级权限定义

@@ -14,6 +14,7 @@ import com.qinjee.masterdata.dao.auth.UserLoginDao;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.auth.UserLoginService;
 import com.qinjee.utils.RegexpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Autowired
     private UserLoginDao userLoginDao;
+
+    @Autowired
+    private RoleAuthService roleAuthService;
 
     @Override
     public List<UserInfoVO> searchUserInfoByAccountAndPassword(String account, String password) {
@@ -116,32 +120,9 @@ public class UserLoginServiceImpl implements UserLoginService {
         /**
          * 处理所有菜单列表以树形结构展示
          */
-        handlerMenuToTree(allMenuVOList,firstLevelMenuList);
+        roleAuthService.handlerMenuToTree(allMenuVOList,firstLevelMenuList);
 
         return allMenuVOList;
     }
 
-    /**
-     * 处理所有菜单列表以树形结构展示
-     * @param allMenuVOList
-     * @param firstLevelMenuList
-     */
-    private void handlerMenuToTree(List<MenuVO> allMenuVOList, List<MenuVO> firstLevelMenuList) {
-        for (MenuVO menuVO : firstLevelMenuList) {
-            List<MenuVO> childList = allMenuVOList.stream().filter(menu -> {
-                if (menuVO.getMenuId().equals(menu.getParentMenuId())) {
-                    return true;
-                }
-                return false;
-            }).collect(Collectors.toList());
-            /**
-             * 判断是否还有子级，如果有则递归处理
-             */
-            if(!CollectionUtils.isEmpty(childList)){
-                menuVO.setChildMenuList(childList);
-                allMenuVOList.removeAll(childList);
-                handlerMenuToTree(allMenuVOList,childList);
-            }
-        }
-    }
 }

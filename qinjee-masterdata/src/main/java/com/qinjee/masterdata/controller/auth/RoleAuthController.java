@@ -11,11 +11,10 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
-import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO;
+import com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO;
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
@@ -60,8 +59,15 @@ public class RoleAuthController extends BaseController{
         userSession = getUserSession();
         try{
             List<RoleGroupVO> roleGroupList = archiveAuthService.searchRoleTree(userSession.getCompanyId());
-            responseResult = ResponseResult.SUCCESS();
-            responseResult.setResult(roleGroupList);
+            if(CollectionUtils.isEmpty(roleGroupList)){
+                logger.info("searchRoleTree fail！companyId={},roleGroupList={}", userSession.getCompanyId(), roleGroupList);
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("当前登录用户角色树查询结果为空！");
+            }else{
+                logger.info("searchRoleTree success！companyId={},roleGroupList={}", userSession.getCompanyId(), roleGroupList);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(roleGroupList);
+            }
         }catch (Exception e){
             logger.info("searchRoleTree exception! companyId={};exception={}", userSession.getCompanyId(), e.toString());
             e.printStackTrace();
@@ -207,8 +213,29 @@ public class RoleAuthController extends BaseController{
     })
     @RequestMapping(value = "/delRole",method = RequestMethod.GET)
     public ResponseResult delRole(Integer roleId) {
+        if(null == roleId){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色ID不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            int resultNumber = roleAuthService.delRole(roleId, userSession.getArchiveId());
+            if(resultNumber > 0){
+                logger.info("delRole success！roleId={},operatorId={}", roleId,userSession.getArchiveId());
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                logger.info("delRole fail！roleId={},operatorId={}", roleId, userSession.getArchiveId());
+                responseResult = ResponseResult.FAIL();
+            }
 
-        return null;
+        }catch (Exception e){
+            logger.info("delRole exception！roleId={},exception={}", roleId, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据角色ID删除角色异常！");
+        }
+        return responseResult;
     }
 
     @ApiOperation(value="根据角色组ID删除角色组", notes="根据角色组ID删除角色组")
@@ -256,10 +283,16 @@ public class RoleAuthController extends BaseController{
         }
         try{
             userSession = getUserSession();
-            List<MenuVO> menuList = roleAuthService.searchRoleAuthTree(roleId,userSession.getCompanyId());
-            logger.info("searchRoleAuthTree success！roleId={}", roleId);
-            responseResult = ResponseResult.SUCCESS();
-            responseResult.setResult(menuList);
+            List<MenuVO> menuList = roleAuthService.searchRoleAuthTree(userSession.getArchiveId(), roleId, userSession.getCompanyId());
+            if(CollectionUtils.isEmpty(menuList)){
+                logger.info("searchRoleAuthTree fail！roleId={},menuList={}", roleId,menuList);
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("查询角色功能权限树结果为空！");
+            }else {
+                logger.info("searchRoleAuthTree success！roleId={},menuList={}", roleId,menuList);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(menuList);
+            }
         }catch (Exception e){
             logger.info("searchRoleAuthTree exception！roleId={},exception={}", roleId, e.toString());
             e.printStackTrace();
@@ -303,7 +336,7 @@ public class RoleAuthController extends BaseController{
     }
 
 
-    @ApiOperation(value="查询角色机构权限树", notes="根据角色ID查询机构权限树")
+    @ApiOperation(value="查询角色机限树", notes="根据角色ID查询机构树")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
@@ -316,15 +349,21 @@ public class RoleAuthController extends BaseController{
         }
         try{
             userSession = getUserSession();
-            List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(roleId,userSession.getCompanyId());
-            logger.info("searchOrgAuthTree success！roleId={}", roleId);
-            responseResult = ResponseResult.SUCCESS();
-            responseResult.setResult(organizationList);
+            List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(userSession.getArchiveId(), roleId);
+            if(CollectionUtils.isEmpty(organizationList)){
+                logger.info("searchOrgAuthTree fail！operatorId={},roleId={},organizationList={}", userSession.getArchiveId(), roleId, organizationList);
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("查询角色机构树结果为空！");
+            }else {
+                logger.info("searchOrgAuthTree success！operatorId={},roleId={},organizationList={}", userSession.getArchiveId(), roleId, organizationList);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(organizationList);
+            }
         }catch (Exception e){
             logger.info("searchOrgAuthTree exception！roleId={},exception={}", roleId, e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("根据角色ID查询机构权限树异常！");
+            responseResult.setMessage("根据角色ID查询机构树异常！");
         }
         return responseResult;
     }
@@ -369,7 +408,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.GET)
-    public ResponseResult<CustomArchiveTable> searchCustomArchiveTableList(Integer roleId) {
+    public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableList(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID不能为空!");
@@ -377,7 +416,7 @@ public class RoleAuthController extends BaseController{
         }
         try{
             userSession = getUserSession();
-            List<CustomArchiveTable> customArchiveTableList = roleAuthService.searchCustomArchiveTableList(roleId, userSession.getCompanyId());
+            List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableList(userSession.getCompanyId());
             logger.info("searchCustomArchiveTableList success！roleId={},operatorId={}", roleId, userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(customArchiveTableList);
@@ -393,17 +432,19 @@ public class RoleAuthController extends BaseController{
 
     @ApiOperation(value="根据自定义表ID查询自定义字段列表", notes="根据字段义表ID查询自定义字段列表")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "tableId", value = "自定义表ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableFieldListByTableId",method = RequestMethod.GET)
-    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByTableId(Integer tableId) {
+    public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer roleId,Integer tableId) {
         if(null == tableId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("表ID不能为空!");
             return responseResult;
         }
         try{
-            List<CustomArchiveField> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByTableId(tableId);
+            userSession = getUserSession();
+            List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByTableId(userSession.getArchiveId(),roleId,tableId);
             logger.info("searchCustomArchiveTableFieldListByTableId success！tableId={}", tableId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(customArchiveTableList);
@@ -422,7 +463,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchCustomArchiveTableFieldListByRoleId",method = RequestMethod.GET)
-    public ResponseResult<CustomArchiveField> searchCustomArchiveTableFieldListByRoleId(Integer roleId) {
+    public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleId(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID不能为空!");
@@ -430,7 +471,7 @@ public class RoleAuthController extends BaseController{
         }
         try{
             userSession = getUserSession();
-            List<CustomArchiveField> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByRoleId(roleId,userSession.getCompanyId());
+            List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByRoleId(roleId);
             logger.info("searchCustomArchiveTableFieldListByRoleId success！roleId={}", roleId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(customArchiveTableList);
@@ -447,27 +488,28 @@ public class RoleAuthController extends BaseController{
     @ApiOperation(value="修改角色自定义人员表字段权限", notes="修改角色自定义人员表字段权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "fieldIdList", value = "字段ID集合", required = true, dataType = "int", allowMultiple = true)
+            @ApiImplicitParam(name = "fieldId", value = "字段ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "readWriteCode", value = "读写CODE(READ<ADDWRITE<WRITE)", required = true, dataType = "String")
     })
     @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleCustomArchiveTableFieldAuth(Integer roleId, List<Integer> fieldIdList) {
-        if(null == roleId || CollectionUtils.isEmpty(fieldIdList)){
+    public ResponseResult updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode) {
+        if(null == roleId || null == fieldId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID或自定义字段ID不能为空!");
             return responseResult;
         }
         try{
             userSession = getUserSession();
-            int resultNumber = roleAuthService.updateRoleCustomArchiveTableFieldAuth(roleId, fieldIdList, userSession.getArchiveId());
+            int resultNumber = roleAuthService.updateRoleCustomArchiveTableFieldAuth(roleId, fieldId, readWriteCode, userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("updateRoleCustomArchiveTableFieldAuth success！roleId={},fieldIdList={},operatorId={}", roleId, fieldIdList, userSession.getArchiveId());
+                logger.info("updateRoleCustomArchiveTableFieldAuth success！roleId={},fieldId={},readWriteCode={},operatorId={}", roleId, fieldId, readWriteCode, userSession.getArchiveId());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("updateRoleCustomArchiveTableFieldAuth fail！roleId={},fieldIdList={},operatorId={}", roleId, fieldIdList, userSession.getArchiveId());
+                logger.info("updateRoleCustomArchiveTableFieldAuth fail！roleId={},fieldId={},readWriteCode={},operatorId={}", roleId, fieldId, readWriteCode, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
             }
         }catch (Exception e){
-            logger.info("updateRoleCustomArchiveTableFieldAuth exception！roleId={},fieldIdList={},exception={}", roleId, fieldIdList, e.toString());
+            logger.info("updateRoleCustomArchiveTableFieldAuth exception！roleId={},fieldId={},readWriteCode={},exception={}", roleId, fieldId, readWriteCode, e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色自定义人员表字段权限异常！");

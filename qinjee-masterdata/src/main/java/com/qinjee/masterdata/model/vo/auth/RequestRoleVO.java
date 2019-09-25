@@ -83,4 +83,9 @@ public class RequestRoleVO {
     @ApiModelProperty("企业ID")
     private Integer companyId;
 
+    /**
+     * 当前时间（各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入）
+     */
+    private Date currentDateTime;
+
 }

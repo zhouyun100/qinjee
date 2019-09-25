@@ -12,18 +12,18 @@ package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.RoleAuthDao;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.auth.MenuVO;
-import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
-import com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO;
-import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 角色授权实现类
@@ -37,24 +37,110 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     private RoleAuthDao roleAuthDao;
 
     @Override
-    // TODO 角色树
     public List<RoleGroupVO> searchRoleTree(Integer companyId) {
+        if(companyId == null){
+            return null;
+        }
+
         List<RoleGroupVO> roleGroupList = roleAuthDao.searchRoleTree(companyId);
-        return roleGroupList;
+
+        /**
+         * 如果角色列表为空则直接返回null
+         */
+        if(CollectionUtils.isEmpty(roleGroupList)){
+            return null;
+        }
+
+        /**
+         * 提取当前角色树的一级节点
+         */
+        List<RoleGroupVO> firstRoleList = roleGroupList.stream().filter(roleGroupVO -> {
+            if(roleGroupVO.getParentRoleGroupId() == null || roleGroupVO.getParentRoleGroupId() == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        handlerRoleToTree(roleGroupList,firstRoleList);
+
+        return firstRoleList;
     }
 
     @Override
-    // TODO 菜单树
-    public List<MenuVO> searchRoleAuthTree(Integer roleId, Integer companyId) {
-        List<MenuVO> menuList= roleAuthDao.searchRoleAuthTree(roleId,companyId);
-        return menuList;
+    public List<MenuVO> searchRoleAuthTree(Integer operatorId, Integer roleId, Integer companyId) {
+        if(roleId == null || companyId == null){
+            return null;
+        }
+
+        RequestRoleVO requestRole = new RequestRoleVO();
+        requestRole.setRoleId(roleId);
+        requestRole.setCompanyId(companyId);
+        requestRole.setOperatorId(operatorId);
+        requestRole.setCurrentDateTime(new Date());
+        List<MenuVO> menuList= roleAuthDao.searchRoleAuthTree(requestRole);
+
+        /**
+         * 如果菜单列表为空则直接返回null
+         */
+        if(CollectionUtils.isEmpty(menuList)){
+            return null;
+        }
+
+        /**
+         * 提取当前菜单树的一级节点
+         */
+        List<MenuVO> firstLevelMenuList = menuList.stream().filter(menu -> {
+            if(menu.getParentMenuId() == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        /**
+         * 处理所有菜单列表以树形结构展示
+         */
+        handlerMenuToTree(menuList,firstLevelMenuList);
+
+        return firstLevelMenuList;
     }
 
     @Override
-    // TODO 机构树
-    public List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer companyId) {
-        List<OrganizationVO> organizationList = roleAuthDao.searchOrgAuthTree(roleId, companyId);
-        return organizationList;
+    public List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId) {
+        if(roleId == null || operatorId == null){
+            return null;
+        }
+
+        RequestRoleVO requestRole = new RequestRoleVO();
+        requestRole.setOperatorId(operatorId);
+        requestRole.setRoleId(roleId);
+        requestRole.setCurrentDateTime(new Date());
+        List<OrganizationVO> organizationList = roleAuthDao.searchOrgAuthTree(requestRole);
+        /**
+         * 如果机构列表为空则直接返回null
+         */
+        if(CollectionUtils.isEmpty(organizationList)){
+            return null;
+        }
+
+        /**
+         * 提取当前机构树的一级节点
+         */
+        List<OrganizationVO> firstLevelMenuList = organizationList.stream().filter(organization -> {
+            if(organization.getOrgParentId() == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        /**
+         * 处理所有机构列表以树形结构展示
+         */
+        handlerOrgToTree(organizationList, firstLevelMenuList);
+
+        return firstLevelMenuList;
     }
 
     @Override
@@ -143,6 +229,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         return resultNumber;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateRoleMenuAuth(Integer roleId, List<Integer> menuIdList, Integer operatorId) {
         if(null == roleId){
@@ -190,6 +277,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         return resultNumber;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateRoleOrgAuth(Integer roleId, List<Integer> orgIdList, Integer operatorId) {
 
@@ -235,23 +323,110 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public List<CustomArchiveTable> searchCustomArchiveTableList(Integer roleId, Integer companyId) {
-        return null;
+    public List<CustomArchiveTableFieldVO> searchCustomArchiveTableList(Integer companyId) {
+        List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthDao.searchCustomArchiveTableListByCompanyId(companyId);
+        return customArchiveTableList;
     }
 
     @Override
-    public List<CustomArchiveField> searchCustomArchiveTableFieldListByTableId(Integer tableId) {
-        return null;
+    public List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer archiveId, Integer roleId, Integer tableId) {
+        RequestCustomTableFieldVO requestCustomTableField = new RequestCustomTableFieldVO();
+        requestCustomTableField.setArchiveId(archiveId);
+        requestCustomTableField.setRoleId(roleId);
+        requestCustomTableField.setTableId(tableId);
+        List<CustomArchiveTableFieldVO> customArchiveFieldList = roleAuthDao.searchCustomArchiveTableFieldListByTableId(requestCustomTableField);
+        return customArchiveFieldList;
     }
 
     @Override
-    public List<CustomArchiveField> searchCustomArchiveTableFieldListByRoleId(Integer roleId, Integer companyId) {
-        return null;
+    public List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleId(Integer roleId) {
+        List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthDao.searchCustomArchiveTableFieldListByRoleId(roleId);
+        return customArchiveTableList;
     }
 
     @Override
-    public int updateRoleCustomArchiveTableFieldAuth(Integer roleId, List<Integer> fieldIdList, Integer operatorId) {
-        return 0;
+    public int updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode, Integer operatorId) {
+        if(null == roleId || null == fieldId){
+            return 0;
+        }
+
+        RequestCustomTableFieldVO requestCustomTableField = new RequestCustomTableFieldVO();
+        requestCustomTableField.setRoleId(roleId);
+        requestCustomTableField.setFieldId(fieldId);
+        requestCustomTableField.setReadWriteCode(readWriteCode);
+        requestCustomTableField.setOperatorId(operatorId);
+
+        RequestCustomTableFieldVO customTableField = roleAuthDao.searchRoleCustomArchiveTableFieldAuth(requestCustomTableField);
+        int resultNumber;
+        if(customTableField == null){
+            resultNumber = roleAuthDao.addRoleCustomArchiveTableFieldAuth(requestCustomTableField);
+        }else{
+            if(StringUtils.isEmpty(readWriteCode)){
+                requestCustomTableField.setIsDelete(1);
+            }else{
+                requestCustomTableField.setIsDelete(0);
+            }
+            resultNumber = roleAuthDao.updateRoleCustomArchiveTableFieldAuth(requestCustomTableField);
+        }
+
+        return resultNumber;
+    }
+
+    @Override
+    public void handlerRoleToTree(List<RoleGroupVO> allRoleGroupList, List<RoleGroupVO> firstLevelRoleList) {
+        for (RoleGroupVO roleGroupVO : firstLevelRoleList) {
+            if(roleGroupVO.getRoleType().equals("ROLE_GROUP")){
+                List<RoleGroupVO> childList = allRoleGroupList.stream().filter(role -> {
+                    if (role.getRoleType().equals("ROLE") && role.getParentRoleGroupId().equals(roleGroupVO.getRoleGroupId())) {
+                        return true;
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+                if(!CollectionUtils.isEmpty(childList)){
+                    allRoleGroupList.remove(childList);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handlerMenuToTree(List<MenuVO> allMenuVOList, List<MenuVO> firstLevelMenuList) {
+        for (MenuVO menuVO : firstLevelMenuList) {
+            List<MenuVO> childList = allMenuVOList.stream().filter(menu -> {
+                if (menuVO.getMenuId().equals(menu.getParentMenuId())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+            /**
+             * 判断是否还有子级，如果有则递归处理
+             */
+            if(!CollectionUtils.isEmpty(childList)){
+                menuVO.setChildMenuList(childList);
+                allMenuVOList.removeAll(childList);
+                handlerMenuToTree(allMenuVOList,childList);
+            }
+        }
+    }
+
+    @Override
+    public void handlerOrgToTree(List<OrganizationVO> allOrgList, List<OrganizationVO> firstLevelOrgList) {
+        for (OrganizationVO organizationVO : firstLevelOrgList) {
+            List<OrganizationVO> childList = allOrgList.stream().filter(organization -> {
+                if (organizationVO.getOrgId().equals(organization.getOrgParentId())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+            /**
+             * 判断是否还有子级，如果有则递归处理
+             */
+            if(!CollectionUtils.isEmpty(childList)){
+                organizationVO.setChildOrganizationList(childList);
+                allOrgList.removeAll(childList);
+                handlerOrgToTree(allOrgList,childList);
+            }
+        }
     }
 
     @Override
