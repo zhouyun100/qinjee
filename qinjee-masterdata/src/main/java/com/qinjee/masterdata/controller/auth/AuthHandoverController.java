@@ -60,7 +60,7 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
-            List<MenuVO> menuList = authHandoverService.searchRoleAuthTree(roleId,userSession.getCompanyId());
+            List<MenuVO> menuList = authHandoverService.searchRoleAuthTree(userSession.getArchiveId(), roleId, userSession.getCompanyId());
             logger.info("searchRoleAuthTree success！roleId={}", roleId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(menuList);
@@ -86,7 +86,7 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
-            List<OrganizationVO> organizationList = authHandoverService.searchOrgAuthTree(roleId,userSession.getCompanyId());
+            List<OrganizationVO> organizationList = authHandoverService.searchOrgAuthTree(userSession.getArchiveId(), roleId);
             logger.info("searchOrgAuthTree success！roleId={}", roleId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(organizationList);
