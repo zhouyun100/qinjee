@@ -212,7 +212,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deletePreEmployment(List<Integer> list) {
         Integer integer =null;
         try {

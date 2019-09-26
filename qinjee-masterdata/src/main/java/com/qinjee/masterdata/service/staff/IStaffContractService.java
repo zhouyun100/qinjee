@@ -14,15 +14,15 @@ import java.util.List;
  */
 
 public interface IStaffContractService {
-    /**
-     * 展示未签合同的人员
+
+    /**展示未签合同的人员
+     * @param archiveId
      * @param currentPage
      * @param pageSize
-     * @param id
+     * @param
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer currentPage, Integer pageSize, Integer id);
-
+    ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer  archiveId, Integer currentPage, Integer pageSize);
     /**
      * 删除合同
      * @param laborContractid

@@ -545,23 +545,33 @@
       ORDER BY ${sortFieldStr}
     </if>
   </select>
+  <select id="selectOrgIdByArchiveId" resultType="java.lang.Integer">
+        select
+  a.org_id
+  from t_organization a
+  left join t_role_org_auth b on a.org_id=b.org_id
+  left join t_user_role c on b.role_id=c.role_id
+  left join t_user_archive d on c.archive_id=d.archive_id
+  where archive_id = #{archiveId,jdbcType=INTEGER}
+  AND a.is_enanle=1 AND b.is_delete=0 AND c.is_delete=0 AND d.is_delete=0
+  </select>
 
+  <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
+    select  archive_id
+    from t_user_archive
+    where
+    org_id = #{orgId,jdbcType=INTEGER}
+  </select>
 
+  <select id="selectNoLaborContract" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+    select
+    <include refid="Base_Column_List"/>
+    from  t_user_archive
+    where
+    archive_id not in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{arichiveIds}
+    </foreach>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  </select>
 </mapper>

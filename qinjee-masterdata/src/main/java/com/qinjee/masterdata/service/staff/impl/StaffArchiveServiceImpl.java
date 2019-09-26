@@ -48,7 +48,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Autowired
     private OrganizationDao organizationDao;
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteArchiveById(List<Integer> archiveid) {
         Integer integer = null;
         try {
@@ -232,7 +232,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteUserArchivePostRelation(List<Integer> list) {
         Integer max = 0;
         try {
@@ -294,7 +294,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteQueryScheme(List<Integer> list) {
         Integer max = 0;
         try {
@@ -338,7 +338,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
                                           List<QuerySchemeSort> querySchemeSortlist) {
         if (queryScheme instanceof QueryScheme && querySchemeFieldlist != null && querySchemeSortlist != null) {

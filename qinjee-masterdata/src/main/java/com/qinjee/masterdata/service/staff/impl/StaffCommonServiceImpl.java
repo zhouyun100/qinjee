@@ -67,7 +67,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteCustomTable(List<Integer> list) {
         Integer max = 0;
         try {
@@ -130,7 +130,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteCustomGroup(List<Integer> list) {
         try {
             Integer max = 0;
@@ -197,7 +197,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteCustomField(List<Integer> list) {
         Integer max = 0;
         try {

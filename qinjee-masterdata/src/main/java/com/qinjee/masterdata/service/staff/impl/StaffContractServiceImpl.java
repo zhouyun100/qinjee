@@ -36,21 +36,24 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private LaborContractChangeDao laborContractChangeDao;
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
+
     @Override
-    public ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer currentPage,
-                                                                         Integer pageSize, Integer id) {
-        PageResult<UserArchive> pageResult = new PageResult<>();
+    public ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer archiveId, Integer currentPage, Integer pageSize) {
+        PageResult<UserArchive> pageResult=new PageResult<>();
         try {
-            //先找到已签合同的人员id集合
-            List<Integer> readyIdList=laborContractDao.selectArchiveId(id);
-            //找到未签合同的人员id
             PageHelper.startPage(currentPage,pageSize);
-             pageResult = new PageResult<>();
-            List<UserArchive> list=userArchiveDao.selectNotInList(readyIdList);
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+            //找到权限下的机构id
+            List<Integer> list=userArchiveDao.selectOrgIdByArchiveId(archiveId);
+            //找到这些机构下所有的档案id
+            List<Integer> arichiveIds=new ArrayList<>();
+            for (Integer integer : list) {
+               arichiveIds.add(userArchiveDao.selectArchiveIdByOrgId(integer));
+            }
+            List<UserArchive> userArchiveList=userArchiveDao.selectNoLaborContract(arichiveIds);
+            pageResult.setList(userArchiveList);
+            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
         } catch (Exception e) {
-            logger.error("展示未签合同人员失败");
+            logger.error("查看合同失败");
             return new ResponseResult<>(pageResult,CommonCode.FAIL);
         }
     }
@@ -61,7 +64,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteLaborContract(Integer laborContractid) {
         try {
             laborContractDao.deleteByPrimaryKey(laborContractid);

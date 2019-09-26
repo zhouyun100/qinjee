@@ -41,8 +41,9 @@ public class StaffContractController extends BaseController {
 
     })
     public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer currentPage, Integer pageSize
-                                                                                                        , Integer id) {
-    return staffContractService.selectNoLaborContract(currentPage,pageSize,id);
+                                                                                                        ) {
+        Integer archiveId = userSession.getArchiveId();
+        return staffContractService.selectNoLaborContract(archiveId,currentPage,pageSize);
     }
 
     /**

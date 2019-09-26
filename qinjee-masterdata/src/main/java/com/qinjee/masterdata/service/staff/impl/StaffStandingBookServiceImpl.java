@@ -108,7 +108,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteStandingBook(Integer standingBookId) {
         try {
             //删除台账属性
