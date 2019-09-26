@@ -6,6 +6,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -71,7 +72,7 @@ public interface IStaffArchiveService {
      * @param archiveid
      * @return
      */
-    ResponseResult deleteArchiveById(Integer archiveid);
+    ResponseResult deleteArchiveById(List<Integer> archiveid);
     /**
      * 恢复删除档案
      * @param archiveid
@@ -87,11 +88,11 @@ public interface IStaffArchiveService {
     ResponseResult updateArchive(UserArchive userArchive);
 
     /**
-     * 查看档案
-     * @param archiveid
+     * 查看人员档案
+     * @param archiveId
      * @return
      */
-    ResponseResult selectArchive(Integer archiveid);
+    ResponseResult selectArchive(Integer archiveId);
 
     /**
      * 新增档案
@@ -99,4 +100,12 @@ public interface IStaffArchiveService {
      * @return
      */
     ResponseResult insertArchive(UserArchive userArchive);
+    /**
+     * 修改预入职信息(显示字段的信息)
+     */
+    ResponseResult updateArchiveField(Map<Integer, String> map);
+    /**
+     * 查看档案（查询某个组织部门下的档案）
+     */
+    ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer archiveId,Integer companyId);
 }

@@ -30,4 +30,9 @@ public interface CustomFieldDao {
     List<Integer> selectFieldId(@Param("customTableId") Integer customTableId);
 
     List<String> selectFieldType(@Param("customTableId") Integer customTableId);
+
+    void updatePreEmploymentField(@Param("key") Integer key, @Param("value") String value);
+
+
+    List<CustomField> selectPreEmploymentField(Integer id);
 }

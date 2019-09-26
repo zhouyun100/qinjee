@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -39,12 +40,12 @@ public class StaffArchiveController extends BaseController {
     }
 
     /**
-     * 删除档案
+     * 批量删除档案
      */
     @RequestMapping(value = "/deleteArchiveById", method = RequestMethod.POST)
     @ApiOperation(value = "删除档案", notes = "hkt")
-    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
-    public ResponseResult deleteArchiveById(Integer archiveid) {
+    @ApiImplicitParam(name = "list", value = "人员档案id集合", paramType = "query", required = true)
+    public ResponseResult deleteArchiveById(List<Integer> archiveid) {
 
         return staffArchiveService.deleteArchiveById(archiveid);
     }
@@ -59,7 +60,7 @@ public class StaffArchiveController extends BaseController {
         return staffArchiveService.resumeDeleteArchiveById(archiveid);
     }
     /**
-     * 更新档案表
+     * 更新档案表(物理数据)
      */
     @RequestMapping(value = "/updateArchive", method = RequestMethod.POST)
     @ApiOperation(value = "更新档案表", notes = "hkt")
@@ -69,14 +70,34 @@ public class StaffArchiveController extends BaseController {
         return staffArchiveService.updateArchive(userArchive);
     }
     /**
-     * 查看档案(这里涉及到权限的查看范围，弄清楚再做)
+     * 更新档案表(自定义表数据)
+     */
+    @RequestMapping(value = "/updateArchiveField ", method = RequestMethod.GET)
+    @ApiOperation(value = "更新档案表(自定义表数据)", notes = "hkt")
+    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
+    public ResponseResult updateArchiveField(Map<Integer,String> map){
+        return staffArchiveService.updateArchiveField(map);
+    }
+
+    /**
+     * 查看档案(查询单个)
      */
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案", notes = "hkt")
-    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
-    public ResponseResult selectArchive(Integer archiveid) {
+    public ResponseResult selectArchive() {
+        Integer archiveId = getUserSession().getArchiveId();
+        return staffArchiveService.selectArchive(archiveId);
+    }
 
-        return staffArchiveService.selectArchive(archiveid);
+    /**
+     * 查看档案（查询某个组织部门下的档案）
+     */
+    @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
+    @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
+    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
+    public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer comanyId) {
+        Integer archiveId = getUserSession().getArchiveId();
+        return staffArchiveService.selectArchivebatch(comanyId,archiveId);
     }
 
     /**

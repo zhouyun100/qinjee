@@ -179,4 +179,11 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectArchive" resultType="com.qinjee.masterdata.model.entity.RoleDataLevelAuth">
+    select a.* from t_role_data_level_auth a left join t_user_role b on a.role_id=b.role_id
+    left join t_user_archive c on c.org_id=b.org_id
+    left join t_user_archive d on c.archive_id=d.archive_id
+    where archive_id=#{archiveid,jdbcType=INTEGER}
+    AND d.is_delete=1
+  </select>
 </mapper>

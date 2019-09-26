@@ -43,4 +43,6 @@ public interface PreEmploymentDao {
     String getMail(Integer integer);
 
     List<PreEmployment> selectPreEmployment(Integer companyId);
+
+    void deletePreEmployment(Integer id);
 }

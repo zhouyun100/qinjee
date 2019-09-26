@@ -5,7 +5,6 @@ import com.qinjee.masterdata.model.entity.CustomGroup;
 import com.qinjee.masterdata.model.entity.CustomTable;
 import com.qinjee.masterdata.model.entity.CustomTableData;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -170,10 +169,6 @@ public class CommonController {
     public ResponseResult<CustomField> selectCustomField(Integer customFieldId) {
         return staffCommonService.selectCustomFieldById(customFieldId);
     }
-    /**
-     * 通过自定义字段id找到对应的自定义字段信息
-     */
-
 
     /**
      * 将自定义字段信息存储到自定义表中
@@ -196,7 +191,9 @@ public class CommonController {
     public ResponseResult updateCustomTableData(CustomTableData customTableData) {
         return staffCommonService.updateCustomTableData(customTableData);
     }
-
+    /**
+     * 修改预入职表，档案表的属性名
+     */
     /**
      * 展示自定义表内容
      */
@@ -212,15 +209,6 @@ public class CommonController {
         return staffCommonService.selectCustomTableData(currentPage,pageSize,customTableId);
     }
 
-    /**
-     * 删除恢复,这个功能因为数据表中没有isdelete字段，所以删除就是真删除，更不用提删除恢复了
-     */
-    @RequestMapping(value = "/cancelDelete", method = RequestMethod.GET)
-    @ApiOperation(value = "删除恢复,在删除预入职表，以及人员档案表时恢复", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "id", paramType = "query", required = true)
-    public ResponseResult cancelDeleteCustom(Integer id) {
-       return new ResponseResult(true, CommonCode.SUCCESS);
-    }
 
     /**
      * 获取字段校验类型

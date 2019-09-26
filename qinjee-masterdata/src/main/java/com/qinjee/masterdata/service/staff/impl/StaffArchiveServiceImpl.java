@@ -2,10 +2,8 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.UserArchivePostRelationDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeSortDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
@@ -17,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -36,11 +36,21 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private QuerySchemeSortDao querySchemeSortDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
-
+    @Autowired
+    private CustomFieldDao customFieldDao;
+    @Autowired
+    private UserOrgAuthDao userOrgAuthDao;
     @Override
-    public ResponseResult deleteArchiveById(Integer archiveid) {
+    public ResponseResult deleteArchiveById(List<Integer> archiveid) {
+        Integer integer = null;
         try {
-            userArchiveDao.deleteArchiveById(archiveid);
+            integer=userArchiveDao.selectMaxId();
+            for (Integer integer1 : archiveid) {
+                if(integer1>integer){
+                    return new ResponseResult(false,CommonCode.INVALID_PARAM);
+                }
+                userArchiveDao.deleteArchiveById(integer1);
+            }
             return new ResponseResult(true,CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("逻辑删除失败");
@@ -61,20 +71,23 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public ResponseResult updateArchive(UserArchive userArchive) {
-        try {
-            userArchiveDao.updateByPrimaryKeySelective(userArchive);
-            return new ResponseResult(true,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("档案更新失败");
-            return new ResponseResult(false, CommonCode.FAIL);
+        if(userArchive instanceof UserArchive){
+            try {
+                userArchiveDao.updateByPrimaryKeySelective(userArchive);
+                return new ResponseResult(true,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                logger.error("档案更新失败");
+                return new ResponseResult(false, CommonCode.FAIL);
+            }
         }
+        return new ResponseResult(false,CommonCode.INVALID_PARAM);
     }
 
     @Override
     public ResponseResult selectArchive(Integer archiveid) {
         try {
-            userArchiveDao.selectByPrimaryKey(archiveid);
-            return new ResponseResult(true,CommonCode.SUCCESS);
+            UserArchive userArchive = userArchiveDao.selectByPrimaryKey(archiveid);
+            return new ResponseResult(userArchive,CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("查看档案失败");
             return new ResponseResult(false, CommonCode.FAIL);
@@ -84,11 +97,79 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public ResponseResult insertArchive(UserArchive userArchive) {
         try {
-            userArchiveDao.insertSelective(userArchive);
-            return new ResponseResult(true,CommonCode.SUCCESS);
+            if (userArchive instanceof  UserArchive) {
+                userArchiveDao.insertSelective(userArchive);
+                return new ResponseResult(true, CommonCode.SUCCESS);
+            }
         } catch (Exception e) {
             logger.error("新增档案失败");
             return new ResponseResult(false, CommonCode.FAIL);
+        }
+        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    }
+
+    @Override
+    public ResponseResult updateArchiveField(Map<Integer, String> map) {
+        if(map!=null){
+            try {
+                for (Map.Entry<Integer, String> entry : map.entrySet()) {
+                    customFieldDao.updatePreEmploymentField(entry.getKey(),entry.getValue());
+                    return new ResponseResult<>(true, CommonCode.SUCCESS);
+                }
+            } catch (Exception e) {
+                logger.error("更新档案字段表失败");
+                return new ResponseResult(false, CommonCode.FAIL);
+            }
+        }
+        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    }
+
+    @Override
+    public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer archiveId, Integer companyId) {
+        List<UserArchive> list = new ArrayList<>();
+        PageResult<UserArchive> pageResult = new PageResult<>();
+        try {
+            //本用户的权限下有哪些机构
+            List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(archiveId);
+            if (companyId == null) {
+                if (orgList != null) {
+                    for (Integer integer : orgList) {
+                        //展示所有权限机构下的人员
+                        List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
+                        for (Integer userAchive : achiveList) {
+                            list.add(userArchiveDao.selectByPrimaryKey(userAchive));
+                        }
+                    }
+                    pageResult.setList(list);
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                } else {
+                    //展示自己的档案
+                    list.add(userArchiveDao.selectByPrimaryKey(archiveId));
+                    pageResult.setList(list);
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+
+                }
+            } else {
+                if (orgList != null) {
+                    for (Integer integer : orgList) {
+                        //如果查看的在权限之内
+                        if (companyId.equals(integer)) {
+                            //展示机构下的人员信息
+                            List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
+                            for (Integer userAchive : achiveList) {
+                                list.add(userArchiveDao.selectByPrimaryKey(userAchive));
+                            }
+                        }
+                    }
+                    pageResult.setList(list);
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                } else {
+                    return new ResponseResult<>(pageResult, CommonCode.FAIL);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("查询档案失败");
+            return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
     }
 

@@ -266,7 +266,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 for (int i = 0; i < json.size(); i++) {
                     JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
                     for (String s : jsono.keySet()) {
-                        s.replace(s, s + "@qinjee@");
+                        s.replace(s, "@"+s+"@");
                     }
                 }
                 customTableDataDao.insert(customTableData);
