@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import org.springframework.stereotype.Repository;

@@ -3,15 +3,12 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.CustomField;
-import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.StatusChange;
+import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
@@ -136,7 +133,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional
-    public ResponseResult insertStatusChange(PreEmployment preEmployment, StatusChange statusChange,String reason) {
+    public ResponseResult insertStatusChange(Integer companyId, Integer archiveId,Integer preEmploymentId,
+                                             StatusChangeVo statusChangeVo,String reason) {
         /**
          * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
          * 梳理：预入职状态分为未入职，已入职，延期入职，放弃入职，黑名单。
@@ -144,29 +142,44 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
          * 为延期入职时，需要将页面的延期入职时间传过来，存到预入职表中
          * 黑名单时需要将黑名单同步到黑名单表
          */
-        String employmentState = preEmployment.getEmploymentState();
+        String changeState = statusChangeVo.getChangeState();
+        PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey(preEmploymentId);
         try {
-            if(CHANGSTATUS_READY.equals(employmentState)){
+            if(CHANGSTATUS_READY.equals(changeState)){
                 //新增变更表
-                preEmploymentChangeDao.insertStatusChange(statusChange);
+                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                //根据预入职id查找预入职对象
                 //预入职信息转化为档案信息
                 //新增档案表
                 UserArchive userArchive=new UserArchive();
+                preEmployment.setEmploymentState(CHANGSTATUS_READY);
                 BeanUtils.copyProperties(userArchive,preEmployment);
+
+                //删除预入职表
+                preEmploymentDao.deletePreEmployment(preEmploymentId);
             }
-            if(CHANGSTATUS_DELAY.equals(employmentState) || CHANGSTATUS_GIVEUP.equals(employmentState)){
+            if(CHANGSTATUS_DELAY.equals(changeState)){
                 //新增变更表
-                preEmploymentChangeDao.insertStatusChange(statusChange);
+                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                preEmployment.setEmploymentState(CHANGSTATUS_DELAY);
             }
-            if(CHANGSTATUS_BLACKLIST.equals(employmentState)){
+            if(CHANGSTATUS_GIVEUP.equals(changeState)){
                 //新增变更表
-                preEmploymentChangeDao.insertStatusChange(statusChange);
+                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                preEmployment.setEmploymentState(CHANGSTATUS_GIVEUP);
+            }
+
+            if(CHANGSTATUS_BLACKLIST.equals(changeState)){
+                //新增变更表
+                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                preEmployment.setEmploymentState(CHANGSTATUS_BLACKLIST);
                 //加入黑名单
-                Blacklist blacklist=new Blacklist();
-                blacklist.setDataSource("预入职");
+                Blacklist blacklist = new Blacklist();
                 blacklist.setBlockReason(reason);
-                BeanUtils.copyProperties(blacklist,preEmployment);
-                blacklistDao.insert(blacklist);
+                blacklist.setDataSource("预入职");
+                blacklist.setCompanyId(companyId);
+                blacklist.setOperatorId(archiveId);
+                blacklistDao.insertSelective(blacklist);
             }
         } catch (Exception e) {
             logger.error("更改状态失败");
@@ -174,6 +187,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         }
 
         return new ResponseResult(true, CommonCode.SUCCESS);
+    }
+
+    private void getPreEmploymentChange(Integer archiveId, Integer preEmploymentId, StatusChangeVo statusChangeVo) {
+        PreEmploymentChange preEmploymentChange = new PreEmploymentChange();
+        BeanUtils.copyProperties(statusChangeVo, preEmploymentChange);
+        preEmploymentChange.setEmploymentId(preEmploymentId);
+        preEmploymentChange.setOperatorId(archiveId);
+        preEmploymentChangeDao.insertSelective(preEmploymentChange);
     }
 
 
@@ -191,6 +212,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
+    @Transactional
     public ResponseResult deletePreEmployment(List<Integer> list) {
         Integer integer =null;
         try {

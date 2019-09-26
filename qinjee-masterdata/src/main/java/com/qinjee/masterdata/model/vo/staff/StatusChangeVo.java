@@ -11,15 +11,10 @@ import java.util.Date;
  * @author Administrator
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
-public class StatusChange {
-
-    /**
-     * 预入职ID
-     */
-    private Integer employmentId;
+@NoArgsConstructor
+@AllArgsConstructor
+public class StatusChangeVo {
 
     /**
      * 变更状态
@@ -40,8 +35,4 @@ public class StatusChange {
      */
     private String changeRemark;
 
-    /**
-     * 操作人ID
-     */
-    private Integer operatorId;
 }

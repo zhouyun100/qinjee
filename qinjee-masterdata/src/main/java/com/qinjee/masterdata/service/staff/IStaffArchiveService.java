@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
+import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
@@ -14,11 +15,11 @@ import java.util.Map;
 public interface IStaffArchiveService {
     /**
      * 新增人员岗位关系表
-     * @param userArchivePostRelation
+     * @param userArchivePostRelationVo
      * @return
      */
 
-    ResponseResult insertUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation);
+    ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,Integer arichveId);
 
     /**
      * 逻辑删除人员岗位关系表
@@ -108,4 +109,12 @@ public interface IStaffArchiveService {
      * 查看档案（查询某个组织部门下的档案）
      */
     ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer archiveId,Integer companyId);
+    /**
+     * 通过id找到人员姓名与工号
+     */
+    ResponseResult<Map<String, String>> selectNameAndNumber(Integer id);
+    /**
+     * 通过id查询到对应机构名称
+     */
+    ResponseResult selectOrgName(Integer id);
 }

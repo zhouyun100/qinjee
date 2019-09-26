@@ -2,7 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.vo.staff.StatusChange;
+import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -168,11 +168,15 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmploymentChange", method = RequestMethod.POST)
     @ApiOperation(value = "延期入职以及放弃入职", notes = "hkt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "PreEmployment", value = "预入职表", paramType = "form", required = true),
-            @ApiImplicitParam(name = "StatusChange", value = "预入职变更表vo类", paramType = "form", required = true),
+            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
     })
-    public ResponseResult updatePreEmploymentChange(PreEmployment preEmployment, StatusChange statusChange,String reason) {
-       return staffPreEmploymentService.insertStatusChange(preEmployment,statusChange,reason);
+    public ResponseResult updatePreEmploymentChange(Integer preEmploymentId,
+                                                    StatusChangeVo statusChangeVo,
+                                                    String reason) {
+        Integer companyId = userSession.getCompanyId();
+        Integer archiveId = userSession.getArchiveId();
+        return staffPreEmploymentService.insertStatusChange(companyId,archiveId,preEmploymentId, statusChangeVo,reason);
     }
 
 }

@@ -1,13 +1,10 @@
-package com.qinjee.masterdata.dao.staffdao.userarchivedao;
+package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * @author Administrator
- */
 @Repository
 public interface BlacklistDao {
     int deleteByPrimaryKey(Integer blacklistId);
@@ -23,6 +20,8 @@ public interface BlacklistDao {
     int updateByPrimaryKey(Blacklist record);
 
     Integer selectMaxId();
+
+    void deleteBlackList(Integer integer);
 
     List<Blacklist> selectByPage();
 }

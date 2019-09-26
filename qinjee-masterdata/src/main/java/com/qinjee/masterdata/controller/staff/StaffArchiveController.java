@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
+import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -107,9 +108,9 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/insertUserArchivePostRelation", method = RequestMethod.POST)
     @ApiOperation(value = "新增人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
-    public ResponseResult insertUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
-
-        return staffArchiveService.insertUserArchivePostRelation(userArchivePostRelation);
+    public ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo) {
+        Integer archiveId = userSession.getArchiveId();
+        return staffArchiveService.insertUserArchivePostRelation(userArchivePostRelationVo,archiveId);
     }
 
     /**
@@ -152,6 +153,16 @@ public class StaffArchiveController extends BaseController {
         return staffArchiveService.selectUserArchivePostRelation(currentPage,pageSize,list);
     }
     /**
+     * 通过id查询到对应机构名称
+     */
+    @RequestMapping(value = "/selectOrgName", method = RequestMethod.GET)
+    @ApiOperation(value = "通过id查询到对应机构名称", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
+
+    public ResponseResult selectOrgName(Integer id) {
+        return staffArchiveService.selectOrgName(id);
+    }
+    /**
      * 保存修改方案
      * 包括新增与更新
      */
@@ -191,6 +202,16 @@ public class StaffArchiveController extends BaseController {
     public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
         return staffArchiveService.selectQueryScheme(id);
     }
+    /**
+     * 通过id找到人员姓名与工号
+     */
+    @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.GET)
+    @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
+        return staffArchiveService.selectNameAndNumber(id);
+    }
+
 
     //TODO 人员进行查询时，需在后面加上机构，组织或者岗位id
 

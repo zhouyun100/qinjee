@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.organation.impl;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.*;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;

@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmploymentChange;
-import com.qinjee.masterdata.model.vo.staff.StatusChange;
+import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,5 +21,6 @@ public interface PreEmploymentChangeDao {
 
     int updateByPrimaryKey(PreEmploymentChange record);
 
-    int insertStatusChange(StatusChange statusChange);
+    int insertStatusChange(StatusChangeVo statusChangeVo);
+
 }

@@ -218,29 +218,29 @@
   <select id="selectMaxId" resultType="java.lang.Integer">
     select MAX (employment_id)
     from t_pre_employment
-     WHERE  is_delete = 1
+     WHERE  is_delete = 0
   </select>
   <select id="getPhoneNumber" resultType="java.lang.String">
     select phone
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
+    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <select id="getMail" resultType="java.lang.String">
     select email
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
+    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
     SELECT
      a.*
      from   t_pre_employment  a  left join t_organization b
      on a.company_id=b.company_id
-     where a.is_delete=1
+     where a.is_delete=0
   </select>
   <update id="deletePreEmployment">
     update  t_pre_employment
     set
-    is_delete=0
+    is_delete=1
     where employment_id = #{employmentId,jdbcType=INTEGER}
   </update>
 </mapper>

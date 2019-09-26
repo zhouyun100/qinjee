@@ -22,6 +22,7 @@ package com.qinjee.masterdata.service.staff.impl;
         import org.slf4j.LoggerFactory;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.stereotype.Service;
+        import org.springframework.transaction.annotation.Transactional;
         import org.springframework.web.context.request.RequestContextHolder;
         import org.springframework.web.context.request.ServletRequestAttributes;
         import org.springframework.web.multipart.MultipartFile;
@@ -66,6 +67,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
+    @Transactional
     public ResponseResult deleteCustomTable(List<Integer> list) {
         Integer max = 0;
         try {
@@ -128,6 +130,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
+    @Transactional
     public ResponseResult deleteCustomGroup(List<Integer> list) {
         try {
             Integer max = 0;
@@ -194,6 +197,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
+    @Transactional
     public ResponseResult deleteCustomField(List<Integer> list) {
         Integer max = 0;
         try {

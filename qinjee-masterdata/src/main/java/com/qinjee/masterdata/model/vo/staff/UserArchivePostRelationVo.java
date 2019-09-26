@@ -1,32 +1,40 @@
-package com.qinjee.masterdata.model.entity;
+package com.qinjee.masterdata.model.vo.staff;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
 
+
 /**
- * 员工档案岗位关系表
- * @author
+ * @author Administrator
  */
-@ApiModel(description = "员工档案岗位关系表")
 @Data
 @NoArgsConstructor
-public class UserArchivePostRelation implements Serializable {
+@AllArgsConstructor
+@ToString
+public class UserArchivePostRelationVo implements Serializable {
     /**
-     * 主键ID
+     * 姓名
      */
-    @ApiModelProperty("主键ID")
-    private Integer id;
+    @ApiModelProperty("姓名")
+    private String userName;
+    /**
+     * 工号
+     */
+    @ApiModelProperty("工号")
+    private String employeeNumber;
 
     /**
      * 员工档案ID
      */
     @ApiModelProperty("员工档案ID")
     private Integer archiveId;
+
     /**
      * 单位ID
      */
@@ -35,9 +43,7 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 部门ID
      */
-    @ApiModelProperty("部门ID")
     private Integer orgId;
-
     /**
      * 岗位ID
      */
@@ -86,48 +92,8 @@ public class UserArchivePostRelation implements Serializable {
     @ApiModelProperty("上级领导ID")
     private Integer supervisorId;
 
-    /**
-     * 操作人ID
-     */
-    @ApiModelProperty("操作人ID")
-    private Integer operatorId;
 
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
 
-    /**
-     * 更新时间
-     */
-    @ApiModelProperty("更新时间")
-    private Date updateTime;
-
-    /**
-     * 是否删除
-     */
-    @ApiModelProperty("是否删除")
-    private Short isDelete;
-
-    /**
-     * 姓名
-     */
-    @ApiModelProperty("姓名")
-    private String userName;
-
-    /**
-     * 工号
-     */
-    @ApiModelProperty("工号")
-    private String employeeNumber;
-
-    /**
-     * 岗位名称
-     */
-    @ApiModelProperty("岗位名称")
-    private String postName;
 
     private static final long serialVersionUID = 1L;
-
 }

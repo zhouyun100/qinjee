@@ -1,21 +1,26 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.UserArchivePostRelationDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
+import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +45,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private CustomFieldDao customFieldDao;
     @Autowired
     private UserOrgAuthDao userOrgAuthDao;
+    @Autowired
+    private OrganizationDao organizationDao;
     @Override
+    @Transactional
     public ResponseResult deleteArchiveById(List<Integer> archiveid) {
         Integer integer = null;
         try {
@@ -174,9 +182,18 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
 
+
+
     @Override
-    public ResponseResult insertUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
-        if (userArchivePostRelation instanceof UserArchivePostRelation) {
+    public ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo  userArchivePostRelationVo,Integer archiveId) {
+        UserArchivePostRelation userArchivePostRelation=new UserArchivePostRelation();
+        if (userArchivePostRelationVo instanceof UserArchivePostRelationVo) {
+            BeanUtils.copyProperties(userArchivePostRelationVo,userArchivePostRelation);
+            //通过工号查询档案id
+            Integer id=userArchiveDao.selectArchiveIdByNumber(userArchivePostRelationVo.getEmployeeNumber());
+            userArchivePostRelation.setArchiveId(id);
+            userArchivePostRelation.setOperatorId(archiveId);
+            userArchivePostRelation.setIsDelete((short) 1);
             try {
                 userArchivePostRelationDao.insertSelective(userArchivePostRelation);
             } catch (Exception e) {
@@ -186,8 +203,36 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         return new ResponseResult(true, CommonCode.SUCCESS);
     }
+    @Override
+    public ResponseResult<Map<String, String>> selectNameAndNumber(Integer id) {
+        Map<String,String> map=new HashMap<>();
+        try {
+            String name=userArchiveDao.selectName(id);
+            String number=userArchiveDao.selectNumber(id);
+            map.put("name",name);
+            map.put("number",number);
+            return  new ResponseResult<>(map,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("获取姓名工号失败");
+            return new ResponseResult<>(map, CommonCode.FAIL);
+        }
+
+    }
 
     @Override
+    public ResponseResult selectOrgName(Integer id) {
+        String orgName=null;
+        try {
+            orgName=organizationDao.selectOrgName(id);
+            return new ResponseResult(orgName,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("查询机构名称失败");
+            return new ResponseResult(orgName, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    @Transactional
     public ResponseResult deleteUserArchivePostRelation(List<Integer> list) {
         Integer max = 0;
         try {
@@ -240,8 +285,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
     }
 
+    /**
+     *
+     * 兼职表维护，展示全部单位，选择单位，返回给后端单位id
+     * 后端根据单位id查询部门，选择部门id，传给后端
+     * 后端通过部门id展示所有的岗位，返回岗位id，传给前端岗位名称（交互实在是太麻烦，考虑是否有优化方案）
+     */
+
 
     @Override
+    @Transactional
     public ResponseResult deleteQueryScheme(List<Integer> list) {
         Integer max = 0;
         try {
@@ -285,6 +338,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
+    @Transactional
     public ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
                                           List<QuerySchemeSort> querySchemeSortlist) {
         if (queryScheme instanceof QueryScheme && querySchemeFieldlist != null && querySchemeSortlist != null) {

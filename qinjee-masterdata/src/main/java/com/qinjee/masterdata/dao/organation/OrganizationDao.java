@@ -4,10 +4,11 @@ package com.qinjee.masterdata.dao.organation;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
-
+@Repository
 public interface OrganizationDao {
     int deleteByPrimaryKey(Integer orgId);
 
@@ -87,4 +88,11 @@ public interface OrganizationDao {
      * @return
      */
     Organization getOrganizationByOrgCodeAndCompanyId(@Param("orgCode") String orgCode, @Param("companyId") Integer companyId);
+
+    /**
+     * 根据id查询机构名
+     * @param id
+     * @return
+     */
+    String selectOrgName(Integer id);
 }

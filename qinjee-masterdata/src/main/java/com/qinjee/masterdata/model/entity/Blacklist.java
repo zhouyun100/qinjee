@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * t_blacklist
- * @author
+ * @author 
  */
 public class Blacklist implements Serializable {
     /**
@@ -19,19 +19,9 @@ public class Blacklist implements Serializable {
     private String userName;
 
     /**
-     * 性别
+     * 手机号
      */
-    private String gender;
-
-    /**
-     * 出生日期
-     */
-    private Date birthDate;
-
-    /**
-     * 民族
-     */
-    private String nationality;
+    private String phone;
 
     /**
      * 证件类型
@@ -42,11 +32,6 @@ public class Blacklist implements Serializable {
      * 证件号码
      */
     private String idNumber;
-
-    /**
-     * 手机号
-     */
-    private String phone;
 
     /**
      * 所属单位ID
@@ -62,16 +47,6 @@ public class Blacklist implements Serializable {
      * 岗位ID
      */
     private Integer postId;
-
-    /**
-     * 毕业学校
-     */
-    private String graduateUniversity;
-
-    /**
-     * 学历
-     */
-    private String degree;
 
     /**
      * 拉黑原因
@@ -99,21 +74,14 @@ public class Blacklist implements Serializable {
     private Integer operatorId;
 
     /**
-     * 创建时间
+     * 修改时间
      */
-    private Date createTime;
+    private Date updateTime;
+
     /**
      * 是否删除
      */
     private Short isDelete;
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 
     private static final long serialVersionUID = 1L;
 
@@ -133,28 +101,12 @@ public class Blacklist implements Serializable {
         this.userName = userName;
     }
 
-    public String getGender() {
-        return gender;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getNationality() {
-        return nationality;
-    }
-
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getIdType() {
@@ -171,14 +123,6 @@ public class Blacklist implements Serializable {
 
     public void setIdNumber(String idNumber) {
         this.idNumber = idNumber;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public Integer getBusinessUnitId() {
@@ -203,22 +147,6 @@ public class Blacklist implements Serializable {
 
     public void setPostId(Integer postId) {
         this.postId = postId;
-    }
-
-    public String getGraduateUniversity() {
-        return graduateUniversity;
-    }
-
-    public void setGraduateUniversity(String graduateUniversity) {
-        this.graduateUniversity = graduateUniversity;
-    }
-
-    public String getDegree() {
-        return degree;
-    }
-
-    public void setDegree(String degree) {
-        this.degree = degree;
     }
 
     public String getBlockReason() {
@@ -261,11 +189,19 @@ public class Blacklist implements Serializable {
         this.operatorId = operatorId;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Short getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Short isDelete) {
+        this.isDelete = isDelete;
     }
 }

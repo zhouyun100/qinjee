@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.CustomGroup;
 import com.qinjee.masterdata.model.entity.CustomTable;
@@ -24,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/staffarc")
 @Api(tags = "【人员管理】公用设计相关接口")
-public class CommonController {
+public class CommonController extends BaseController {
     @Autowired
     private IStaffCommonService staffCommonService;
     /**

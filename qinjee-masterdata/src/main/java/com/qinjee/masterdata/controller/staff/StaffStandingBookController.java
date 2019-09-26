@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
@@ -23,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/staffsta")
 @Api(tags = "【人员管理】员工台账相关接口")
-public class StaffStandingBookController {
+public class StaffStandingBookController extends BaseController {
     @Autowired
     private IStaffStandingBookService staffStandingBookService;
 
@@ -33,8 +35,10 @@ public class StaffStandingBookController {
     @RequestMapping(value = "/insertBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "加入黑名单表", notes = "hkt")
     @ApiImplicitParam(name = "blackListGroup", value = "黑名单表集合", paramType = "query", required = true)
-    public ResponseResult insertBlackList(List<Blacklist> blacklists) {
-        return staffStandingBookService.insertBlackList(blacklists);
+    public ResponseResult insertBlackList(List<BlackListVo> blacklists,String dataSource) {
+        Integer archiveId = userSession.getArchiveId();
+        Integer companyId = userSession.getCompanyId();
+        return staffStandingBookService.insertBlackList(blacklists,dataSource,archiveId,companyId);
     }
 
     /**

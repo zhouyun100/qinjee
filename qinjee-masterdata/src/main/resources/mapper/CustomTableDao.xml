@@ -24,10 +24,10 @@
     <include refid="Base_Column_List" />
     from t_custom_table
     where table_id = #{tableId,jdbcType=INTEGER}
-    AND  is_delete = 1
+    AND  is_delete = 0
   </select>
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select Max(table_id) from t_custom_table  WHERE  is_delete = 1
+    select Max(table_id) from t_custom_table  WHERE  is_delete = 0
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -174,7 +174,7 @@
   <update id="deleteCustomTable">
     update t_custom_table
     set
-    is_delete = 0
+    is_delete = 1
     where
     table_id = #{tableId,jdbcType=INTEGER}
   </update>
@@ -183,7 +183,7 @@
     select
     <include refid="Base_Column_List"/>
     from t_custom_table
-    WHERE  is_delete = 1
+    WHERE  is_delete = 0
   </select>
 
   <select id="selectPreEmploymentTable" resultType="java.lang.Integer">

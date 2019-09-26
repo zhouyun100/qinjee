@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.BlacklistDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.entity.Blacklist">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Blacklist">
     <id column="blacklist_id" jdbcType="INTEGER" property="blacklistId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
@@ -32,7 +32,7 @@
     delete from t_blacklist
     where blacklist_id = #{blacklistId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.entity.Blacklist" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.model.entity.Blacklist" useGeneratedKeys="true">
     insert into t_blacklist (user_name, phone, id_type, 
       id_number, business_unit_id, org_id, 
       post_id, block_reason, block_time, 
@@ -44,7 +44,7 @@
       #{dataSource,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, 
       #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.entity.Blacklist" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.model.entity.Blacklist" useGeneratedKeys="true">
     insert into t_blacklist
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userName != null">
@@ -135,7 +135,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.entity.Blacklist">
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Blacklist">
     update t_blacklist
     <set>
       <if test="userName != null">
@@ -183,7 +183,7 @@
     </set>
     where blacklist_id = #{blacklistId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.entity.Blacklist">
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.Blacklist">
     update t_blacklist
     set user_name = #{userName,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
@@ -201,4 +201,20 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where blacklist_id = #{blacklistId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    select MAX (blacklist_id)
+    from  t_blacklist
+    where is_delete=0
+  </select>
+  <update id="deleteBlackList">
+    update t_blacklist
+    set is_delete=1
+    where blacklist_id = #{blacklistId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.Blacklist">
+    select
+    <include refid="Base_Column_List" />
+    from t_blacklist
+   where is_delete=0
+  </select>
 </mapper>

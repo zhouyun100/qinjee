@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.UserArchivePostRelationDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="business_unit__id" jdbcType="INTEGER" property="postId" />
+    <result column="org_id" jdbcType="INTEGER" property="postId" />
     <result column="position_level_id" jdbcType="INTEGER" property="positionLevelId" />
     <result column="position_grade_id" jdbcType="INTEGER" property="positionGradeId" />
     <result column="employment_begin_date" jdbcType="DATE" property="employmentBeginDate" />
@@ -18,7 +20,7 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, archive_id, post_id, position_level_id, position_grade_id, employment_begin_date,
+    id, archive_id, post_id,business_unit_id,org_id, position_level_id, position_grade_id, employment_begin_date,
     employment_end_date, employment_type, appoint_dismissal_reason, supervisor_id, operator_id,
     create_time, update_time, is_delete
   </sql>
@@ -33,12 +35,13 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.UserArchivePostRelation" useGeneratedKeys="true">
-    insert into t_user_archive_post_relation (archive_id, post_id, position_level_id,
+    insert into t_user_archive_post_relation (archive_id, post_id,business_unit_id,org_id, position_level_id,
       position_grade_id, employment_begin_date, employment_end_date,
       employment_type, appoint_dismissal_reason,
       supervisor_id, operator_id, create_time,
       update_time, is_delete)
-    values (#{archiveId,jdbcType=INTEGER}, #{postId,jdbcType=INTEGER}, #{positionLevelId,jdbcType=INTEGER},
+    values (#{archiveId,jdbcType=INTEGER}, #{postId,jdbcType=INTEGER}, #{business_unit_id,jdbcType=INTEGER},
+    #{org_id,jdbcType=INTEGER},#{positionLevelId,jdbcType=INTEGER},
       #{positionGradeId,jdbcType=INTEGER}, #{employmentBeginDate,jdbcType=DATE}, #{employmentEndDate,jdbcType=DATE},
       #{employmentType,jdbcType=VARCHAR}, #{appointDismissalReason,jdbcType=VARCHAR},
       #{supervisorId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
@@ -52,6 +55,12 @@
       </if>
       <if test="postId != null">
         post_id,
+      </if>
+      <if test="businessUnitId!= null">
+        business_unit_id,
+      </if>
+      <if test="orgId!= null">
+        org_id,
       </if>
       <if test="positionLevelId != null">
         position_level_id,
@@ -93,6 +102,12 @@
       </if>
       <if test="postId != null">
         #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="businessUnitId != null">
+        #{businessUnitId,jdbcType=INTEGER},
+      </if>
+      <if test="orgId != null">
+        #{orgId,jdbcType=INTEGER},
       </if>
       <if test="positionLevelId != null">
         #{positionLevelId,jdbcType=INTEGER},
@@ -138,6 +153,12 @@
       <if test="postId != null">
         post_id = #{postId,jdbcType=INTEGER},
       </if>
+      <if test="businessUnitId != null">
+         = #{business_unit_id,jdbcType=INTEGER},
+      </if>
+      <if test="orgId != null">
+        org_id = #{orgId,jdbcType=INTEGER},
+      </if>
       <if test="positionLevelId != null">
         position_level_id = #{positionLevelId,jdbcType=INTEGER},
       </if>
@@ -178,6 +199,8 @@
     update t_user_archive_post_relation
     set archive_id = #{archiveId,jdbcType=INTEGER},
       post_id = #{postId,jdbcType=INTEGER},
+       business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+        org_id = #{orgId,jdbcType=INTEGER},
       position_level_id = #{positionLevelId,jdbcType=INTEGER},
       position_grade_id = #{positionGradeId,jdbcType=INTEGER},
       employment_begin_date = #{employmentBeginDate,jdbcType=DATE},

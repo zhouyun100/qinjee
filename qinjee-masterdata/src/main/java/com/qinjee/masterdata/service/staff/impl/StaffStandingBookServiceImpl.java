@@ -1,12 +1,13 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.BlacklistDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
@@ -14,8 +15,10 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,22 +28,26 @@ import java.util.List;
 @Service
 public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookServiceImpl.class);
-    @Autowired
-    private BlacklistDao blacklistDao;
+
     @Autowired
     private StandingBookDao standingBookDao;
     @Autowired
     private StandingBookFilterDao standingBookFilterDao;
+    @Autowired
+    private BlacklistDao blacklistDao;
 
     @Override
-    /**
-     * 有个数据来源，来自预入职表要有手机号，档案表要有职位。需要前端传
-     */
-    public ResponseResult insertBlackList(List<Blacklist> blacklists) {
-        if(blacklists!=null){
+    public ResponseResult insertBlackList(List<BlackListVo> blackListVos, String dataSource, Integer archiveId, Integer companyId) {
+
+        if(blackListVos!=null){
             try {
-                for (Blacklist blacklist : blacklists) {
-                    blacklistDao.insert(blacklist);
+                for (BlackListVo blacklistVo : blackListVos) {
+                    Blacklist blacklist = new Blacklist();
+                    BeanUtils.copyProperties(blacklistVo,blacklist);
+                    blacklist.setOperatorId(archiveId);
+                    blacklist.setCompanyId(companyId);
+                    blacklist.setDataSource(dataSource);
+                    blacklistDao.insertSelective(blacklist);
                 }
                 return new ResponseResult(true,CommonCode.SUCCESS);
             } catch (Exception e) {
@@ -50,7 +57,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         }
         return new ResponseResult(false, CommonCode.INVALID_PARAM);
     }
-
+    @Transactional
     @Override
     public ResponseResult deleteBlackList(List<Integer> list) {
         try {
@@ -59,7 +66,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 if(max<integer){
                     return new ResponseResult(false, CommonCode.INVALID_PARAM);
                 }
-                //TODO 逻辑删除黑名单表
+                blacklistDao.deleteBlackList(integer);
             }
             return new ResponseResult(true,CommonCode.SUCCESS);
         } catch (Exception e) {
@@ -101,6 +108,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     @Override
+    @Transactional
     public ResponseResult deleteStandingBook(Integer standingBookId) {
         try {
             //删除台账属性

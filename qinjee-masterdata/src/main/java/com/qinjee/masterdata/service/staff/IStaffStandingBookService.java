@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -12,12 +13,16 @@ import java.util.List;
  */
 
 public interface IStaffStandingBookService {
-    /**
-     * 新增黑名单
+
+
+    /**新增黑名单
      * @param blacklists
+     * @param dataSource
+     * @param archiveId
+     * @param companyId
      * @return
      */
-    ResponseResult insertBlackList(List<Blacklist> blacklists);
+    ResponseResult insertBlackList(List<BlackListVo> blacklists, String dataSource, Integer archiveId, Integer companyId);
 
     /**
      * 批量删除黑名单

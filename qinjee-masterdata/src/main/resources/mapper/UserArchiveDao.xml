@@ -55,7 +55,7 @@
     select
     <include refid="Base_Column_List" />
     from t_user_archive
-    where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=1
+    where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_user_archive
@@ -467,12 +467,12 @@
   <select id="selectMaxId" resultType="java.lang.Integer">
     select MAX (archive_id)
     from t_user_archive
-    where is_delete = 1
+    where is_delete = 0
   </select>
   <select id="selectMail" resultType="java.lang.String">
     select  email
     from t_user_archive
-    where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=1
+    where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
   </select>
   <select id="selectNotInList" resultType="com.qinjee.masterdata.model.entity.UserArchive">
     select
@@ -482,12 +482,12 @@
     <foreach collection="list" item="item" index="index" separator=",">
     (#{item,jdbcType=INTEGER})
     </foreach>
-    AND is_delete=1
+    AND is_delete=0
   </select>
   <update id="deleteArchiveById">
     update t_user_archive
     set
-    is_delete=0
+    is_delete=1
     where  archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
   <update id="resumeDeleteArchiveById">
@@ -496,6 +496,23 @@
     is_delete=1
     where  archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
+  <select id="selectName" resultType="java.lang.String">
+    select user_name
+    from   t_user_archive
+    where is_delete=0
+  </select>
+  <select id="selectNumber" resultType="java.lang.String">
+    select employee_number
+    from   t_user_archive
+    where is_delete=0
+  </select>
+  <select id="selectArchiveIdByNumber" resultType="java.lang.Integer">
+    select archive_id
+    from   t_user_archive
+    where is_delete=0
+    AND  employee_number = #{employeeNumber,jdbcType=VARCHAR}
+
+  </select>
   <select id="getUserArchiveListByOrgId" resultMap="BaseResultMap">
     select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id, tua.post_id,
     tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birthdate, tua.age, tua.nationality, tua.birthplace, tua.political_status, tua.marital_status,

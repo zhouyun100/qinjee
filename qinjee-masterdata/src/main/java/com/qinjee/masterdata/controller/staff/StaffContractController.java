@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
@@ -25,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/staffcon")
 @Api(tags = "【人员管理】合同相关接口")
-public class StaffContractController {
+public class StaffContractController extends BaseController {
     @Autowired
     private IStaffContractService staffContractService;
     /**

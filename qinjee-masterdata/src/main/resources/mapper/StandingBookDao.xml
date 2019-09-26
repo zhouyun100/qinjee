@@ -25,7 +25,7 @@
     select
     <include refid="Base_Column_List" />
     from t_standing_book
-    where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 1
+    where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_standing_book
@@ -183,7 +183,7 @@
   <update id="deleteStandingBook">
     update t_standing_book
     set
-    is_delete=0
+    is_delete=1
      where standing_book_id = #{standingBookId,jdbcType=INTEGER}
   </update>
 </mapper>

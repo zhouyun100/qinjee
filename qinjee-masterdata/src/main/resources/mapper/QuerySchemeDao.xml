@@ -110,11 +110,11 @@
   </update>
     <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
         select Max(query_scheme_id)
-        from t_query_scheme  AND  is_delete = 1
+        from t_query_scheme  AND  is_delete = 0
     </select>
     <update id="deleteQueryScheme">
         update
-        set  is_delete =0
+        set  is_delete =1
         where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
     </update>
 </mapper>

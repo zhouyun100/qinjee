@@ -50,4 +50,10 @@ public interface UserArchiveDao {
      * @return
      */
     List<UserArchive> getUserArchiveList(@Param("pageQueryVo") PageQueryVo pageQueryVo, @Param("sortFieldStr") String sortFieldStr);
+
+    String selectName(Integer id);
+
+    String selectNumber(Integer id);
+
+    Integer selectArchiveIdByNumber(String employeeNumber);
 }

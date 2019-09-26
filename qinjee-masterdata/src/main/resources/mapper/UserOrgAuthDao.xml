@@ -98,12 +98,12 @@
   <select id="selectCompanyIdByArchive" resultType="java.lang.Integer">
     select  org_id
     from t_user_org_auth
-    where  archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=1
+    where  archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
   </select>
 
   <select id="selectArchiveIdByOrg" resultType="java.lang.Integer">
     select archive_id
     from t_user_org_auth
-    where  org_id= #{org_id,jdbcType=INTEGER} AND is_delete=1
+    where  org_id= #{org_id,jdbcType=INTEGER} AND is_delete=0
   </select>
 </mapper>

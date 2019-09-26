@@ -259,4 +259,9 @@
     from t_organization
     where company_id = #{companyId} and org_code = #{orgCode}
   </select>
+  <select id="selectOrgName" resultType="java.lang.String">
+    select  org_name
+    from  t_organization
+    where org_id = #{orgId,jdbcType=INTEGER}
+  </select>
 </mapper>
