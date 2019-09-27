@@ -37,7 +37,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     @Autowired
     private SmsRecordDao smsRecordDao;
 
-    @Autowired
+//    @Autowired
     private RedisClusterService redisClusterService;
 
     @Autowired

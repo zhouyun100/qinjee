@@ -34,6 +34,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "根据是否封存查询用户下所有的机构,树形结构展示",notes = "高雄")
     public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         UserSession userSession = getUserSession();
+        //TODO 还需要查托管的机构
         PageResult<Organization> pageResult = organizationService.getOrganizationTree(userSession,isEnable);
         return new ResponseResult<>(pageResult);
     }

@@ -49,12 +49,11 @@ public class QueryFieldUtil {
                             String endTime = fieldValues.get(1);
                             String joinStr = " ";
 
-                            if(startTime != null){
+                            if(StringUtils.isNotBlank(startTime)){
                                 condition += " >= " + startTime;
                                 joinStr = " and ";
                             }
-
-                            if(endTime != null){
+                            if(StringUtils.isNotBlank(endTime)){
                                 condition += joinStr + queryColumn + " <= " + endTime;
                             }
                             queryField.setCondition(" and " + condition);

@@ -39,6 +39,7 @@ public interface PostDao {
 
     /**
      * 查询机构的岗位编码
+     *
      * @param orgId
      * @return
      */
@@ -46,8 +47,18 @@ public interface PostDao {
 
     /**
      * 通过机构id获取岗位列表含有职位名称
+     *
      * @param orgId
      * @return
      */
     List<Post> getPostPositionListByOrgId(Integer orgId);
+
+    /**
+     * 查找对应的岗位
+     *
+     * @param postCode
+     * @param postName
+     * @return
+     */
+    Post getPost(@Param("postCode") String postCode, @Param("postName") String postName);
 }
