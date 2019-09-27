@@ -8,10 +8,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author 高雄
@@ -33,17 +33,18 @@ public class PostInstructionsController extends BaseController {
         return postInstructionsService.showPostInstructions(postId);
     }
 
-    @GetMapping("uploadInstructions")
+    @PostMapping("uploadInstructions")
     @ApiOperation(value = "导入岗位说明书", notes = "高雄")
-    public ResponseResult uploadInstructions(@ApiParam(value = "导入的excel", required = true) MultipartFile file){
-        return null;
+    public ResponseResult uploadInstructions(@ApiParam(value = "导入的文件", required = true, allowMultiple = true) MultipartFile file){
+        return postInstructionsService.uploadInstructions(getUserSession(), file);
     }
 
 
     @GetMapping("downloadInstructions")
     @ApiOperation(value = "下载岗位说明书", notes = "高雄")
-    public ResponseResult downloadInstructions(@ApiParam(value = "岗位说明书id", required = true) Integer instructionId){
-        return null;
+    public ResponseResult downloadInstructions(@RequestParam("instructionId") @ApiParam(value = "岗位说明书id", required = true, example = "1") Integer instructionId,
+                                               HttpServletResponse response){
+        return postInstructionsService.downloadInstructions(instructionId, response);
     }
 
 

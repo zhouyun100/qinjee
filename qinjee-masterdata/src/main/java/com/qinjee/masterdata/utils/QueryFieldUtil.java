@@ -46,15 +46,17 @@ public class QueryFieldUtil {
                             //判断是否是时间范围查询
                             String condition = queryColumn;
                             String startTime = fieldValues.get(0);
-                            String endTime = fieldValues.get(1);
-                            String joinStr = " ";
+                            String endTime = null;
+                            if(fieldValues.size() == 2){
+                                endTime = fieldValues.get(1);
+                            }
 
-                            if(startTime != null){
+                            String joinStr = " ";
+                            if(StringUtils.isNotBlank(startTime)){
                                 condition += " >= " + startTime;
                                 joinStr = " and ";
                             }
-
-                            if(endTime != null){
+                            if(StringUtils.isNotBlank(endTime)){
                                 condition += joinStr + queryColumn + " <= " + endTime;
                             }
                             queryField.setCondition(" and " + condition);

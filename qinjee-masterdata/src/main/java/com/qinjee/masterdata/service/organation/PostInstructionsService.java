@@ -1,7 +1,11 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.PostInstructions;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author 高雄
@@ -16,4 +20,20 @@ public interface PostInstructionsService {
      * @return
      */
     ResponseResult<PostInstructions> showPostInstructions(Integer postId);
+
+    /**
+     * 导入岗位说明书
+     * @param userSession
+     * @param file
+     * @return
+     */
+    ResponseResult uploadInstructions(UserSession userSession, MultipartFile file);
+
+    /**
+     * 下载岗位说明书
+     * @param instructionId
+     * @param response
+     * @return
+     */
+    ResponseResult downloadInstructions(Integer instructionId, HttpServletResponse response);
 }
