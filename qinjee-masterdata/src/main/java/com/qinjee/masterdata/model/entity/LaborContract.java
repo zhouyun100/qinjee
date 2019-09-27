@@ -18,20 +18,6 @@ public class LaborContract implements Serializable {
      */
     private Integer archiveId;
 
-    /**
-     * 试用开始日期
-     */
-    private Date probationBeginDate;
-
-    /**
-     * 试用结束日期
-     */
-    private Date probationEndDate;
-
-    /**
-     * 试用期限(月)
-     */
-    private Integer probationPeriod;
 
     /**
      * 合同签订日期
@@ -114,30 +100,6 @@ public class LaborContract implements Serializable {
 
     public void setArchiveId(Integer archiveId) {
         this.archiveId = archiveId;
-    }
-
-    public Date getProbationBeginDate() {
-        return probationBeginDate;
-    }
-
-    public void setProbationBeginDate(Date probationBeginDate) {
-        this.probationBeginDate = probationBeginDate;
-    }
-
-    public Date getProbationEndDate() {
-        return probationEndDate;
-    }
-
-    public void setProbationEndDate(Date probationEndDate) {
-        this.probationEndDate = probationEndDate;
-    }
-
-    public Integer getProbationPeriod() {
-        return probationPeriod;
-    }
-
-    public void setProbationPeriod(Integer probationPeriod) {
-        this.probationPeriod = probationPeriod;
     }
 
     public Date getContractSignDate() {
@@ -243,4 +205,5 @@ public class LaborContract implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
 }
