@@ -101,26 +101,11 @@ public class PostInstructionsImpl implements PostInstructionsService {
             String htmlContent = new String(instructionContent, "utf-8");
             Integer postId = postInstructions.getPostId();
             Post post = postDao.selectByPrimaryKey(postId);
-            post.setPostCode("10101");
-            post.setPostName("岗位说明书");
-            String htmlPrefix = "<!DOCTYPE html>\n" +
-                    "<html lang=\"en\">\n" +
-                    "<head>\n" +
-                    "    <meta charset=\"UTF-8\">\n" +
-                    "    <title>Title</title>\n" +
-                    "</head>\n" +
-                    "<body>";
-
-            String htmlSuffix = "</body>\n" +
-                    "</html>";
-
-            String html = htmlPrefix + htmlContent + htmlSuffix;
-
-
+            //HTML内容必须被<html><body></body></html>包装
+            String html = getHtmlText(htmlContent);
             String name = URLEncoder.encode(post.getPostCode() + "#" + post.getPostName(), "UTF-8") + ".doc";
             response.setHeader("Content-Disposition", "attachment;filename=" + name);
 
-            //HTML内容必须被<html><body></body></html>包装
             byte[] b = html.getBytes();
             bais = new ByteArrayInputStream(b);
             poifs = new POIFSFileSystem();
@@ -137,6 +122,26 @@ public class PostInstructionsImpl implements PostInstructionsService {
         }
 
         return new ResponseResult();
+    }
+
+    /**
+     * 拼接成一个完整的Html
+     * @param htmlContent
+     * @return
+     */
+    private String getHtmlText(String htmlContent) {
+        String htmlPrefix = "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Title</title>\n" +
+                "</head>\n" +
+                "<body>";
+
+        String htmlSuffix = "</body>\n" +
+                "</html>";
+
+        return htmlPrefix + htmlContent + htmlSuffix;
     }
 
     /**
