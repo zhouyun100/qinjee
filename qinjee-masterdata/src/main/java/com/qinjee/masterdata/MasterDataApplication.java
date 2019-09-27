@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableTransactionManagement
-@MapperScan("com.qinjee.masterdata.dao")
+@MapperScan(basePackages = {"com.qinjee.masterdata.dao"})
 @ComponentScan(basePackages = {"com.qinjee.config", "com.qinjee.exception","com.qinjee.masterdata"})
 public class MasterDataApplication {
 

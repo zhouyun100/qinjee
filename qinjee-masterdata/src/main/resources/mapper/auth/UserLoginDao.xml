@@ -3,7 +3,7 @@
 <mapper namespace="com.qinjee.masterdata.dao.auth.UserLoginDao">
 
   <resultMap id="UserInfoResultMap" type="com.qinjee.masterdata.model.vo.auth.UserInfoVO">
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="email" jdbcType="VARCHAR" property="email" />
@@ -26,7 +26,7 @@
     t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
     from t_user_info,t_user_company,t_company_info,t_user_archive
     where (t_user_info.user_name = #{account,jdbcType=VARCHAR} or t_user_info.phone = #{account,jdbcType=VARCHAR} or t_user_info.email = #{account,jdbcType=VARCHAR})
-    and t_user_info.`password` = #{password,jdbcType=VARCHAR}
+    and t_user_info.password = #{password,jdbcType=VARCHAR}
     and t_user_info.user_id = t_user_company.user_id
     and t_user_company.company_id = t_company_info.company_id
     and t_user_info.user_id = t_user_archive.user_id
