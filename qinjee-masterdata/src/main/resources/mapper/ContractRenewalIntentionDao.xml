@@ -155,4 +155,10 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
   </update>
+  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention">
+    select
+    <include refid="Base_Column_List" />
+    from t_contract_renewal_intention
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+  </select>
 </mapper>
