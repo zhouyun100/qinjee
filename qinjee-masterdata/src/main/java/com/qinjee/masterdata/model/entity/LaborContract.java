@@ -19,46 +19,6 @@ public class LaborContract implements Serializable {
     private Integer archiveId;
 
     /**
-     * 证件类型
-     */
-    private String idType;
-
-    /**
-     * 证件号码
-     */
-    private String idNumber;
-
-    /**
-     * 姓名
-     */
-    private String userName;
-
-    /**
-     * 工号
-     */
-    private String employeeNumber;
-
-    /**
-     * 性别
-     */
-    private String gender;
-
-    /**
-     * 单位ID
-     */
-    private Integer businessUnitId;
-
-    /**
-     * 机构ID
-     */
-    private Integer orgId;
-
-    /**
-     * 岗位ID
-     */
-    private Integer postId;
-
-    /**
      * 试用开始日期
      */
     private Date probationBeginDate;
@@ -67,6 +27,11 @@ public class LaborContract implements Serializable {
      * 试用结束日期
      */
     private Date probationEndDate;
+
+    /**
+     * 试用期限(月)
+     */
+    private Integer probationPeriod;
 
     /**
      * 合同签订日期
@@ -151,70 +116,6 @@ public class LaborContract implements Serializable {
         this.archiveId = archiveId;
     }
 
-    public String getIdType() {
-        return idType;
-    }
-
-    public void setIdType(String idType) {
-        this.idType = idType;
-    }
-
-    public String getIdNumber() {
-        return idNumber;
-    }
-
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getEmployeeNumber() {
-        return employeeNumber;
-    }
-
-    public void setEmployeeNumber(String employeeNumber) {
-        this.employeeNumber = employeeNumber;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public Integer getBusinessUnitId() {
-        return businessUnitId;
-    }
-
-    public void setBusinessUnitId(Integer businessUnitId) {
-        this.businessUnitId = businessUnitId;
-    }
-
-    public Integer getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Integer orgId) {
-        this.orgId = orgId;
-    }
-
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
     public Date getProbationBeginDate() {
         return probationBeginDate;
     }
@@ -229,6 +130,14 @@ public class LaborContract implements Serializable {
 
     public void setProbationEndDate(Date probationEndDate) {
         this.probationEndDate = probationEndDate;
+    }
+
+    public Integer getProbationPeriod() {
+        return probationPeriod;
+    }
+
+    public void setProbationPeriod(Integer probationPeriod) {
+        this.probationPeriod = probationPeriod;
     }
 
     public Date getContractSignDate() {
