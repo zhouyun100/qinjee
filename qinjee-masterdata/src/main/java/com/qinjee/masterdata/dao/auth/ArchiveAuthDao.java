@@ -13,6 +13,7 @@ package com.qinjee.masterdata.dao.auth;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
  * @author 周赟
  * @date 2019/9/18
  */
-@Service
+@Repository
 public interface ArchiveAuthDao {
 
     /**

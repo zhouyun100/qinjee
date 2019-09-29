@@ -13,8 +13,10 @@ package com.qinjee.masterdata.controller.auth;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
+import com.qinjee.masterdata.model.vo.auth.RequestRoleArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -50,6 +52,11 @@ public class ArchiveAuthController extends BaseController {
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
     public ResponseResult<RoleGroupVO> searchRoleTree() {
         userSession = getUserSession();
+        if(userSession == null){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("Session失效！");
+            return responseResult;
+        }
         try{
             List<RoleGroupVO> roleGroupList = archiveAuthService.searchRoleTree(userSession.getCompanyId());
             responseResult = ResponseResult.SUCCESS();
@@ -64,18 +71,15 @@ public class ArchiveAuthController extends BaseController {
     }
 
     @ApiOperation(value="根据角色ID查询员工列表", notes="根据角色ID查询员工")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
-    })
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.GET)
-    public ResponseResult<UserArchive> searchArchiveListByRoleId(Integer roleId) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(RequestRoleArchivePageVO roleArchivePageVO) {
 
         try{
-            List<ArchiveInfoVO> archiveInfoVOList = archiveAuthService.searchArchiveListByRoleId(roleId);
+            PageResult<ArchiveInfoVO> archiveInfoVOList = archiveAuthService.searchArchiveListByRoleId(roleArchivePageVO);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(archiveInfoVOList);
         }catch (Exception e){
-            logger.info("searchArchiveListByRoleId exception! roleId={};exception={}", roleId,e.toString());
+            logger.info("searchArchiveListByRoleId exception! roleArchivePageVO={};exception={}", roleArchivePageVO,e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据角色ID查询员工列表异常！");
@@ -98,6 +102,11 @@ public class ArchiveAuthController extends BaseController {
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             archiveAuthService.addArchiveRole(roleId,archiveIdList,userSession.getArchiveId());
 
             logger.info("addArchiveRole success! roleId={};archiveIdList={};", roleId, archiveIdList);
@@ -125,6 +134,11 @@ public class ArchiveAuthController extends BaseController {
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             archiveAuthService.delArchiveRole(roleId,archiveIdList,userSession.getArchiveId());
 
             logger.info("delArchiveRole success! roleId={};archiveIdList={};", roleId, archiveIdList);

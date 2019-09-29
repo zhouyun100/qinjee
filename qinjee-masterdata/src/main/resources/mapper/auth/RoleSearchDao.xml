@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.auth.ArchiveAuthDao">
+<mapper namespace="com.qinjee.masterdata.dao.auth.RoleSearchDao">
 
-    <resultMap id="ArchiveResultMap" type="com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO">
+    <resultMap id="ArchiveInfoMap" type="com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO">
         <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
         <result column="user_name" jdbcType="VARCHAR" property="userName" />
         <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
@@ -24,7 +24,7 @@
     </resultMap>
 
     <!-- 根据工号或姓名模糊查询员工列表 -->
-    <select id="searchArchiveListByUserName" resultMap="ArchiveResultMap">
+    <select id="searchArchiveListByUserName" parameterType="com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO" resultMap="ArchiveInfoMap">
         select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
         CASE
         WHEN t_user_archive.gender = 1 THEN '男'
@@ -36,9 +36,12 @@
         LEFT JOIN t_post on t_user_archive.post_id = t_post.post_id
         LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
         LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
-        where (t_user_archive.employee_number LIKE '%${userName}%' or t_user_archive.user_name LIKE '%${userName}%')
+        where t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
+        <if test="userName != null and userName != ''">
+            <bind name="pattern" value="'%' + userName + '%'" />
+            and (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
+        </if>
         and t_user_archive.archive_status = 'INCUMBENCY'
-        and t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
     </select>
 
     <!-- 根据档案ID查询角色列表 -->

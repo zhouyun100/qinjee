@@ -13,6 +13,7 @@ package com.qinjee.masterdata.dao.auth;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
  * @author
  * @date 2019/9/18
  */
-@Service
+@Repository
 public interface UserLoginDao {
 
     /**

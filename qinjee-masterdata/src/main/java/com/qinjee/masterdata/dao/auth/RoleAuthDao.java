@@ -12,6 +12,7 @@ package com.qinjee.masterdata.dao.auth;
 
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.auth.*;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
  * @author 周赟
  * @date 2019/9/23
  */
-@Service
+@Repository
 public interface RoleAuthDao {
 
     /**

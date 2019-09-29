@@ -2,6 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.auth.RoleAuthDao">
 
+    <resultMap id="RoleGroupResultMap" type="com.qinjee.masterdata.model.vo.auth.RoleGroupVO">
+        <id column="role_group_id" jdbcType="INTEGER" property="roleGroupId" />
+        <result column="role_group_name" jdbcType="VARCHAR" property="roleGroupName" />
+        <result column="parent_role_group_id" jdbcType="INTEGER" property="parentRoleGroupId" />
+        <result column="role_type" jdbcType="VARCHAR" property="roleType" />
+    </resultMap>
+
     <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
         <id column="menu_id" jdbcType="INTEGER" property="menuId" />
         <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
@@ -19,10 +26,7 @@
         <result column="org_type" jdbcType="VARCHAR" property="orgType" />
         <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
-        <result column="has_menu" jdbcType="INTEGER" property="orgManagerId" />
-        <result column="has_menu" jdbcType="INTEGER" property="companyId" />
-        <result column="has_menu" jdbcType="INTEGER" property="sortId" />
-        <result column="has_menu" jdbcType="INTEGER" property="operatorId" />
+        <result column="has_menu" jdbcType="INTEGER" property="hasOrg" />
     </resultMap>
 
     <resultMap id="CustomArchiveTableFieldResultMap" type="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
@@ -33,12 +37,11 @@
     </resultMap>
 
     <!--根据企业ID查询角色列表 -->
-    <select id="searchRoleTree" parameterType="java.lang.Integer" resultMap="CustomArchiveTableFieldResultMap">
-        select t_role_group.role_group_id role_id,t_role_group.role_group_name role_name,
-        t_role_group.parent_role_group_id parent_role_id,'ROLE_GROUP' as role_type
+    <select id="searchRoleTree" parameterType="java.lang.Integer" resultMap="RoleGroupResultMap">
+        select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type
         from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER}
         UNION ALL
-        select t_role.role_id,t_role.role_name,t_role.role_group_id parent_role_id,'ROLE' as role_type
+        select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'ROLE' as role_type
         from t_role where t_role.company_id = #{companyId,jdbcType=INTEGER}
     </select>
 
@@ -125,19 +128,19 @@
     </update>
 
     <!-- 修改角色组 -->
-    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
+    <update id="updateRoleGroup" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
         update t_role_group set role_group_name = #{roleGroupName,jdbcType=VARCHAR},parent_role_group_id = #{parentRoleGroupId,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
         where role_group_id = #{roleGroupId,jdbcType=INTEGER} and is_delete = 0
     </update>
 
   <!-- 删除角色 -->
-    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.Role">
+    <update id="delRole" parameterType="com.qinjee.masterdata.model.entity.Role">
         update t_role set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
         where role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
     </update>
 
     <!-- 删除角色组 -->
-    <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
+    <update id="delRoleGroup" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
         update t_role_group set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
         where role_group_id = #{roleGroupId,jdbcType=INTEGER} and is_delete = 0
     </update>

@@ -11,9 +11,9 @@ spring:
 
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql:///qinjee?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    url: jdbc:mysql://192.168.252.129:3306/qinjee?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
     username: root
-    password: 123456
+    password: qinjee2019
     driver-class-name: com.mysql.jdbc.Driver
 
     # oracle 12c 数据库配置
@@ -111,7 +111,7 @@ server:
       enabled: false
 
 logging:
-#   config: classpath:log4j/log4j2_dev.xml
+   config: classpath:log4j/log4j2_dev.xml
    level:
      com:
        qinjee:
@@ -119,7 +119,7 @@ logging:
            dao: DEBUG
 
 mybatis:
-  mapperLocations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml,classpath:mapper/**/*.xml
 
 pagehelper:
   helperDialect: mysql  #数据库
@@ -127,3 +127,4 @@ pagehelper:
   supportMethodsArguments: true
   pageSizeZero: true
   params: count=countSql
+

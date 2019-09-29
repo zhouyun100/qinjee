@@ -384,6 +384,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 }).collect(Collectors.toList());
                 if(!CollectionUtils.isEmpty(childList)){
                     allRoleGroupList.remove(childList);
+                    roleGroupVO.setChildRoleGroupList(childList);
                 }
             }
         }
@@ -431,6 +432,6 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Override
     public int saveRoleDataLevelAuth(RoleDataLevelAuthVO roleDataLevelAuthVO) {
-        return 0;
+        return roleAuthDao.saveRoleDataLevelAuth(roleDataLevelAuthVO);
     }
 }
