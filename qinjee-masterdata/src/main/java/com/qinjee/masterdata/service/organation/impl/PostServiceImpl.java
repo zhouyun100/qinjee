@@ -241,7 +241,7 @@ public class PostServiceImpl implements PostService {
         }catch (Exception e){
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
         }
-        return null;
+        return new ResponseResult();
     }
 
     /**

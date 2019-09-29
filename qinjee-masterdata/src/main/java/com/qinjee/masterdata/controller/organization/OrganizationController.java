@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -133,9 +134,9 @@ public class OrganizationController extends BaseController {
 
     @ApiOperation(value = "下载模板", notes = "高雄")
     @GetMapping("/downloadTemplate")
-    public ResponseResult downloadTemplate(){
+    public ResponseResult downloadTemplate(HttpServletResponse response){
          //TODO
-        return null;
+        return organizationService.downloadTemplate(response);
     }
 
 

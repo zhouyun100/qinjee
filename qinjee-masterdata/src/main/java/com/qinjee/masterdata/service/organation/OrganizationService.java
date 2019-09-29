@@ -8,6 +8,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -110,4 +111,11 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable);
+
+    /**
+     * 下载模板
+     * @param response
+     * @return
+     */
+    ResponseResult downloadTemplate(HttpServletResponse response);
 }

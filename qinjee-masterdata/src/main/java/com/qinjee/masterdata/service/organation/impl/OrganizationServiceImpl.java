@@ -17,12 +17,18 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -355,6 +361,25 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
         }
         return new ResponseResult<>(organizationTreeList);
+    }
+
+    @Override
+    public ResponseResult downloadTemplate(HttpServletResponse response) {
+        ClassPathResource cpr = new ClassPathResource("/templates/"+"机构导入模板.xls");
+        try {
+            File file = cpr.getFile();
+            String filename = cpr.getFilename();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            FileUtils.copyFile(file,outputStream);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("Content-Disposition",
+                    "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
+            response.getOutputStream().write(outputStream.toByteArray());
+        }catch (Exception e){
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
+        return new ResponseResult();
     }
 
     /**
