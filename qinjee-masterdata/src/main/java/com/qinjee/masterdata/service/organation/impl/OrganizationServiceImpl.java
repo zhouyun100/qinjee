@@ -57,7 +57,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
-        //TODO 查托管的权限 员工机构权限表
         Integer archiveId = userSession.getArchiveId();
         List<UserRole> userRoleList =  userRoleService.getUserRoleList(userSession.getArchiveId());
         Set<Integer> roleIds = userRoleList.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toSet());
@@ -102,7 +101,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         Integer archiveId = userSession.getArchiveId();
         Organization organization = organizationDao.selectByPrimaryKey(orgId);
         String orgCode = organization.getOrgCode() + "%";
-        //TODO 查托管的权限 员工机构权限表
         List<Organization> organizationList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode);
         PageResult<Organization> pageResult = new PageResult<>(organizationList);
         return pageResult;
