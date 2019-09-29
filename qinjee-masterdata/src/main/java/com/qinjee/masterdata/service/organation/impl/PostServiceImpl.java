@@ -1,7 +1,11 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.*;
+import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.PostGradeRelationDao;
+import com.qinjee.masterdata.dao.PostInstructionsDao;
+import com.qinjee.masterdata.dao.PostLevelRelationDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -11,14 +15,21 @@ import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -203,10 +214,6 @@ public class PostServiceImpl implements PostService {
                 postInstructions.setOperatorId(userSession.getArchiveId());
                 postInstructions.setPostId(post.getPostId());
                 postInstructionsDao.insertSelective(postInstructions);
-//                //岗位职等关系表
-//                List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
-//                //岗位职级关系表
-//                List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
             }
         }
         return new ResponseResult();
@@ -216,6 +223,25 @@ public class PostServiceImpl implements PostService {
     public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId) {
         List<Post> postList = postDao.getPostPositionListByOrgId(orgId);
         return new ResponseResult<>(postList);
+    }
+
+    @Override
+    public ResponseResult downloadTemplate(HttpServletResponse response) {
+        ClassPathResource cpr = new ClassPathResource("/templates/"+"岗位导入模板.xls");
+        try {
+            File file = cpr.getFile();
+            String filename = cpr.getFilename();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            FileUtils.copyFile(file,outputStream);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("Content-Disposition",
+                    "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
+            response.getOutputStream().write(outputStream.toByteArray());
+        }catch (Exception e){
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
+        return null;
     }
 
     /**

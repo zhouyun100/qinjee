@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -96,9 +97,8 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "下载模板", notes = "高雄")
     @GetMapping("/downloadTemplate")
-    public ResponseResult downloadTemplate(){
-
-        return null;
+    public ResponseResult downloadTemplate(HttpServletResponse response){
+        return postService.downloadTemplate(response);
     }
 
     @ApiOperation(value = "复制岗位", notes = "高雄")

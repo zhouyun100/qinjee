@@ -8,6 +8,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -90,4 +91,11 @@ public interface PostService {
      * @return
      */
     ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId);
+
+    /**
+     * 下载模板
+     * @return
+     */
+    ResponseResult downloadTemplate(HttpServletResponse response);
+
 }
