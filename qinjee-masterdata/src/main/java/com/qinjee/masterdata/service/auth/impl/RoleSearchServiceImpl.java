@@ -10,11 +10,14 @@
  */
 package com.qinjee.masterdata.service.auth.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.auth.RoleSearchDao;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
+import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
+import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +36,16 @@ public class RoleSearchServiceImpl implements RoleSearchService {
     private RoleSearchDao roleSearchDao;
 
     @Override
-    public List<ArchiveInfoVO> searchArchiveListByUserName(String userName,Integer companyId) {
-        if(null == companyId){
+    public PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO) {
+        if(null == archivePageVO || null == archivePageVO.getCompanyId()){
             return null;
         }
-        List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(userName,companyId);
-        return archiveInfoList;
+        if(archivePageVO.getCurrentPage() != null && archivePageVO.getPageSize() != null){
+            PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
+        }
+        List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO);
+        PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoList);
+        return pageResult;
     }
 
     @Override

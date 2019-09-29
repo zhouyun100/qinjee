@@ -59,7 +59,9 @@ public interface UserArchiveDao {
 
     List<Integer> selectOrgIdByArchiveId(Integer archiveId);
 
-    Integer selectArchiveIdByOrgId(Integer integer);
+    List<Integer> selectByOrgId(Integer orgId);
 
-    List<UserArchive> selectNoLaborContract(List<Integer> arichiveIds);
+    Integer selectArcNumberIn(Integer id);
+
+    UserArchive selectByConId(Integer integer);
 }

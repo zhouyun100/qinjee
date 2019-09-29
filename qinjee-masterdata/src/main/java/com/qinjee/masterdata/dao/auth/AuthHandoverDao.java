@@ -10,35 +10,17 @@
  */
 package com.qinjee.masterdata.dao.auth;
 
-import com.qinjee.masterdata.model.vo.auth.MenuVO;
-import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.auth.RequestRoleVO;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 权限移交
  * @author 周赟
  * @date 2019/9/20
  */
-@Service
+@Repository
 public interface AuthHandoverDao {
-    /**
-     * 查询角色功能权限列表
-     * @param roleId
-     * @param companyId
-     * @return
-     */
-    List<MenuVO> searchRoleAuthTree(Integer roleId, Integer companyId);
-
-    /**
-     * 查询角色机构权限列表
-     * @param roleId
-     * @param companyId
-     * @return
-     */
-    List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer companyId);
 
     /**
      * 角色回收

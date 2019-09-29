@@ -5,11 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * @author Administrator
- */
 @Repository
 public interface LaborContractDao {
+
+
     int deleteByPrimaryKey(Integer contractId);
 
     int insert(LaborContract record);
@@ -22,7 +21,9 @@ public interface LaborContractDao {
 
     int updateByPrimaryKey(LaborContract record);
 
-    List<Integer> selectArchiveId(Integer id);
+    List<Integer> seleltByArcId(List<Integer> arcList);
 
-    void insertReNewLaborContract(LaborContract laborContract);
+    List<Integer> seleltByArcIdIn(List<Integer> arcList);
+
+    Integer seleltByArcIdSingle(Integer integer);
 }

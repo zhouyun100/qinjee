@@ -10,12 +10,15 @@
  */
 package com.qinjee.masterdata.service.auth.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.auth.ArchiveAuthDao;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
+import com.qinjee.masterdata.model.vo.auth.RequestRoleArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
+import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -43,12 +46,16 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     }
 
     @Override
-    public List<ArchiveInfoVO> searchArchiveListByRoleId(Integer roleID) {
+    public PageResult<ArchiveInfoVO> searchArchiveListByRoleId(RequestRoleArchivePageVO roleArchivePageVO) {
         List<ArchiveInfoVO> archiveInfoVOList = null;
-        if(null != roleID){
-            archiveInfoVOList = archiveAuthDao.searchArchiveListByRoleId(roleID);
+        if(null != roleArchivePageVO && roleArchivePageVO.getRoleId() != null){
+            if(roleArchivePageVO.getCurrentPage() != null && roleArchivePageVO.getPageSize() != null){
+                PageHelper.startPage(roleArchivePageVO.getCurrentPage(),roleArchivePageVO.getPageSize());
+            }
+            archiveInfoVOList = archiveAuthDao.searchArchiveListByRoleId(roleArchivePageVO.getRoleId());
         }
-        return archiveInfoVOList;
+        PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoVOList);
+        return pageResult;
     }
 
     @Override

@@ -10,13 +10,11 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
-import com.qinjee.masterdata.model.entity.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 /**

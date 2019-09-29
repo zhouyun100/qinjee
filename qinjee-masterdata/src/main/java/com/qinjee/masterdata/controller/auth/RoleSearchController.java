@@ -14,8 +14,10 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
+import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,27 +50,32 @@ public class RoleSearchController extends BaseController{
     private RoleSearchService roleSearchService;
 
     @ApiOperation(value="根据工号或姓名模糊查询员工列表", notes="根据工号或姓名模糊查询员工列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName", value = "工号/姓名", required = true, dataType = "String")
-    })
-    @RequestMapping(value = "/searchArchiveListByUserName",method = RequestMethod.GET)
-    public ResponseResult<UserArchive> searchArchiveListByUserName(String userName) {
-        if(!userName.isEmpty() && userName.length() > 1){
-            try{
-                userSession = getUserSession();
-                List<ArchiveInfoVO> archiveInfoList = roleSearchService.searchArchiveListByUserName(userName, userSession.getCompanyId());
-                logger.info("searchArchiveListByUserName success！userName={},archiveId={},companyId={}", userName,userSession.getArchiveId(),userSession.getCompanyId());
-                responseResult = ResponseResult.SUCCESS();
-                responseResult.setResult(archiveInfoList);
-            }catch (Exception e){
-                logger.info("searchArchiveListByUserName exception!userName={},archiveId={},companyId={},exception={}", userName,e.toString());
-                e.printStackTrace();
-                responseResult = ResponseResult.FAIL();
-                responseResult.setMessage("根据工号或姓名模糊查询员工列表异常！");
-            }
-        }else{
+    @RequestMapping(value = "/searchArchiveListByUserName",method = RequestMethod.POST)
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(RequestArchivePageVO archivePageVO) {
+        if(archivePageVO == null || archivePageVO.getUserName() == null || archivePageVO.getUserName().length() < 2){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("工号或姓名至少2位字符!");
+            return responseResult;
+        }
+
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            archivePageVO.setCompanyId(userSession.getCompanyId());
+            PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+
+            logger.info("searchArchiveListByUserName success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(pageResult);
+        }catch (Exception e){
+            logger.info("searchArchiveListByUserName exception!userName={},exception={}", archivePageVO.getUserName(),e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据工号或姓名模糊查询员工列表异常！");
         }
         return responseResult;
     }
@@ -85,6 +92,11 @@ public class RoleSearchController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             List<UserRoleVO> userRoleList = roleSearchService.searchRoleListByArchiveId(archiveId,userSession.getCompanyId());
             logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);
             responseResult = ResponseResult.SUCCESS();
@@ -113,6 +125,11 @@ public class RoleSearchController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             roleSearchService.updateArchiveRole(archiveId, roleIdList, userSession.getArchiveId());
 
             logger.info("updateArchiveRole success! archiveId={};roleIdList={};", archiveId, roleIdList);

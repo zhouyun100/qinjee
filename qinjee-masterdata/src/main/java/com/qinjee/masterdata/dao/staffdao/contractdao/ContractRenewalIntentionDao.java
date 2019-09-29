@@ -19,4 +19,6 @@ public interface ContractRenewalIntentionDao {
     int updateByPrimaryKeySelective(ContractRenewalIntention record);
 
     int updateByPrimaryKey(ContractRenewalIntention record);
+
+    ContractRenewalIntention selectByArchiveId(Integer id);
 }

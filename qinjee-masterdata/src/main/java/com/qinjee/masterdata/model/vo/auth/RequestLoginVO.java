@@ -12,6 +12,7 @@ package com.qinjee.masterdata.model.vo.auth;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -20,7 +21,9 @@ import java.util.Date;
  * @date 2019/9/19
  */
 @Data
-public class RequestLoginVO {
+public class RequestLoginVO  implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * 用户ID

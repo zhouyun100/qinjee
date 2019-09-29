@@ -60,6 +60,11 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             List<MenuVO> menuList = authHandoverService.searchRoleAuthTree(userSession.getArchiveId(), roleId, userSession.getCompanyId());
             logger.info("searchRoleAuthTree success！roleId={}", roleId);
             responseResult = ResponseResult.SUCCESS();
@@ -86,6 +91,11 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             List<OrganizationVO> organizationList = authHandoverService.searchOrgAuthTree(userSession.getArchiveId(), roleId);
             logger.info("searchOrgAuthTree success！roleId={}", roleId);
             responseResult = ResponseResult.SUCCESS();
@@ -113,6 +123,11 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             int resultNumber = authHandoverService.roleRecoveryByArchiveId(archiveId,roleIdList,userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("roleRecoveryByArchiveId success！archiveId={},roleIdList={}", archiveId, roleIdList);
@@ -145,6 +160,11 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             int resultNumber = authHandoverService.orgRecoveryByArchiveId(archiveId,orgIdList,userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("orgRecoveryByArchiveId success！archiveId={},orgIdList={}", archiveId, orgIdList);
@@ -177,6 +197,11 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             int resultNumber = authHandoverService.roleHandoverByArchiveId(handoverArchiveId,acceptArchiveId,roleIdList,userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("roleHandoverByArchiveId success！handoverArchiveId={},acceptArchiveId={},roleIdList={}", handoverArchiveId, acceptArchiveId, roleIdList);
@@ -209,6 +234,11 @@ public class AuthHandoverController extends BaseController{
         }
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             int resultNumber = authHandoverService.orgHandoverByArchiveId(handoverArchiveId,acceptArchiveId,orgIdList,userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("orgHandoverByArchiveId success！handoverArchiveId={},acceptArchiveId={},orgIdList={}", handoverArchiveId, acceptArchiveId, orgIdList);
@@ -253,6 +283,11 @@ public class AuthHandoverController extends BaseController{
 
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             int resultNumber = authHandoverService.roleTrusteeshipByArchiveId(trusteeshipArchiveId,acceptArchiveId,beginTime,endTime,roleIdList,userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("roleTrusteeshipByArchiveId success！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,roleIdList);
@@ -297,6 +332,11 @@ public class AuthHandoverController extends BaseController{
 
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             int resultNumber = authHandoverService.orgTrusteeshipByArchiveId(trusteeshipArchiveId,acceptArchiveId,beginTime,endTime,orgIdList,userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("orgTrusteeshipByArchiveId success！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,orgIdList);
