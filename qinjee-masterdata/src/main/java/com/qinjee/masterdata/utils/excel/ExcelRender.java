@@ -1,5 +1,7 @@
 package com.qinjee.masterdata.utils.excel;
 
+import com.qinjee.exception.ExceptionCast;
+import com.qinjee.model.response.CommonCode;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -155,9 +157,13 @@ public class ExcelRender {
             case NUMERIC: // 数字
                 //short s = cell.getCellStyle().getDataFormat();
                 if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    Date date = cell.getDateCellValue();
-                    cellValue = sdf.format(date);
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date date = cell.getDateCellValue();
+                        cellValue = sdf.format(date);
+                    } catch (Exception e) {
+                        ExceptionCast.cast(CommonCode.TIME_FORMAT_ERROR);
+                    }
                 } else if (cell.getCellStyle().getDataFormat() == 0) {//处理数值格式
                     cell.setCellType(Cell.CELL_TYPE_STRING);
                     cellValue = String.valueOf(cell.getRichStringCellValue().getString());
