@@ -95,4 +95,11 @@ public interface OrganizationDao {
      * @return
      */
     String selectOrgName(Integer id);
+
+    /**
+     * 根据档案id查询权限下的机构id
+     * @param archiveId
+     * @return
+     */
+    List<Integer> selectByAchiveId(Integer archiveId);
 }

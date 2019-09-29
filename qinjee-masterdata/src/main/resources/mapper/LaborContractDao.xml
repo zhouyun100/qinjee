@@ -205,16 +205,28 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where contract_id = #{contractId,jdbcType=INTEGER}
   </update>
-  <select id="selectNoLaborContract">
-      select
-      archive_id
-      from  t_labor_contract
-      where
-      archive_id not in
-      <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-        #{arichiveIds}
-      </foreach>
+  <select id="seleltByArcId" resultType="java.lang.Integer">
+    select archive_id
+    from  t_labor_contract
+    where
+    archive_id not in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{arichiveIds}
+    </foreach>
+  </select>
 
-
+  <select id="seleltByArcIdSingle" resultType="java.lang.Integer">
+    select archive_id
+    from  t_labor_contract
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </select>
+  <select id="seleltByArcIdIn" resultType="java.lang.Integer">
+    select archive_id
+    from  t_labor_contract
+    where
+    archive_id  in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{arichiveIds}
+    </foreach>
   </select>
 </mapper>

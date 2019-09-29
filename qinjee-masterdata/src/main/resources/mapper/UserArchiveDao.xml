@@ -555,16 +555,22 @@
   where archive_id = #{archiveId,jdbcType=INTEGER}
   AND a.is_enanle=1 AND b.is_delete=0 AND c.is_delete=0 AND d.is_delete=0
   </select>
+<select id="selectByOrgId" resultType="java.lang.Integer">
+  select archive_id
+  from t_user_archive
+  where org_id = #{orgId,jdbcType=INTEGER}
 
-  <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
-    select  archive_id
-    from t_user_archive
-    where
-    org_id = #{orgId,jdbcType=INTEGER}
-
-  </select>
-
-<select id="selectLaborContractId">
-  
 </select>
+  <select id="selectArcNumberIn" resultType="java.lang.Integer">
+    select count (1)
+    from t_user_archive
+    where user_category != "在职"
+  </select>
+  <select id="selectByConId">
+    select
+    <include refid="Base_Column_List" />
+    from  t_user_archive
+    where
+  </select>
 </mapper>
+

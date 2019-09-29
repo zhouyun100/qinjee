@@ -264,4 +264,12 @@
     from  t_organization
     where org_id = #{orgId,jdbcType=INTEGER}
   </select>
+
+  <select id="selectByAchiveId" resultType="java.lang.Integer">
+    select  org_id
+    from t_organization a
+    left join t_user_org_auth b on a.org_id=b.org_id
+    left join t_user_archive c on b.archive_id=c.archive_id
+    where a.is_enable=1 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
+  </select>
 </mapper>

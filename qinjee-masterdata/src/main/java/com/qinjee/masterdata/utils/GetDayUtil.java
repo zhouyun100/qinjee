@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * @author Administrator
  */
-public class GetMonthUtil {
+public class GetDayUtil {
     public static int getMonth(Date early, Date late) {
         java.util.Calendar calst = java.util.Calendar.getInstance();
         java.util.Calendar caled = java.util.Calendar.getInstance();
@@ -21,9 +21,9 @@ public class GetMonthUtil {
         caled.set(java.util.Calendar.MINUTE, 0);
         caled.set(java.util.Calendar.SECOND, 0);
         //得到两个日期相差的月数
-        int month = Math.round((int) (caled.getTime().getTime() / 1000) - (int) (calst
-                .getTime().getTime() / 1000) / 3600 / 24 / 30);
+        int days = Math.round((int) (caled.getTime().getTime() / 1000) - (int) (calst
+                .getTime().getTime() / 1000) / 3600 / 24 );
 
-        return month;
+        return days;
     }
 }

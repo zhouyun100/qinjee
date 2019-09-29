@@ -21,5 +21,9 @@ public interface LaborContractDao {
 
     int updateByPrimaryKey(LaborContract record);
 
-    List<Integer> selectNoLaborContract(List<Integer> arichiveIds);
+    List<Integer> seleltByArcId(List<Integer> arcList);
+
+    List<Integer> seleltByArcIdIn(List<Integer> arcList);
+
+    Integer seleltByArcIdSingle(Integer integer);
 }

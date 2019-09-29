@@ -18,13 +18,13 @@ import java.util.List;
 public interface IStaffContractService {
 
     /**展示未签合同的人员
-     * @param archiveId
+     * @param orgId
      * @param currentPage
      * @param pageSize
      * @param
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer  archiveId, Integer currentPage, Integer pageSize);
+    ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer  orgId, Integer currentPage, Integer pageSize);
     /**
      * 删除合同
      * @param laborContractid
@@ -83,11 +83,6 @@ public interface IStaffContractService {
     ResponseResult insertContractRenewalIntention(ContractRenewalIntention contractRenewalIntention);
 
     /**
-     * 获得所有未签合同的id
-     */
-    ResponseResult selectLaborContractId(Integer archiveId);
-
-    /**
      * 保存合同
      * @param laborContractVo
      * @param id
@@ -113,7 +108,7 @@ public interface IStaffContractService {
      * @param pageSize
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer archiveId, Integer currentPage, Integer pageSize);
+    ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage, Integer pageSize);
 
     /**
      * 终止合同
@@ -178,4 +173,15 @@ public interface IStaffContractService {
      * @return
      */
     ResponseResult rejectRenew(ContractRenewalIntention contractRenewalIntention);
+    /**
+     * 查询在职员工的人数
+     */
+    ResponseResult selectArcNumberIn(Integer id);
+
+    /**
+     * 查询机构下合同即将到期的员工
+     * @param id
+     * @return
+     */
+    ResponseResult selectArcDeadLine(Integer id);
 }

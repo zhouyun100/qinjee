@@ -39,21 +39,12 @@ public class StaffContractController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 
     })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer currentPage, Integer pageSize
+    public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer orgId,Integer currentPage, Integer pageSize
                                                                                                         ) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.selectNoLaborContract(archiveId,currentPage,pageSize);
-    }
-    /**
-     * 获得所有未签合同的id
-     */
-    @RequestMapping(value = "/selectNoLaborContract", method = RequestMethod.GET)
-    @ApiOperation(value = "展示未签合同id", notes = "hkt")
-    public ResponseResult selectLaborContractId() {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.selectLaborContractId(archiveId);
+        return staffContractService.selectNoLaborContract(orgId,currentPage,pageSize);
     }
 
     /**
@@ -170,12 +161,12 @@ public class StaffContractController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 
     })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer currentPage, Integer pageSize
+    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId,Integer currentPage, Integer pageSize
     ) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.selectLaborContractserUser(archiveId,currentPage,pageSize);
+        return staffContractService.selectLaborContractserUser(orgId,currentPage,pageSize);
     }
 
     /**
@@ -312,7 +303,26 @@ public class StaffContractController extends BaseController {
         ResponseResult<PageResult<List<LaborContract>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
         return pageResultResponseResult;
     }
+    /**
+     * 查询在职员工的人数
+     */
+    @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.POST)
+    @ApiOperation(value = "查询在职员工的人数", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
+    public ResponseResult selectArcNumberIn(Integer id){
 
+        return staffContractService.selectArcNumberIn(id);
+    }
+    /**
+     * 查询机构下合同即将到期的员工
+     */
+    @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.POST)
+    @ApiOperation(value = "查询机构下合同即将到期的员工", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
+    public ResponseResult selectArcDeadLine(Integer id){
+
+        return staffContractService.selectArcDeadLine(id);
+    }
 /**合同状态  新签、变更   续签、解除、终止
  *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
  *   审批状态  未提交、审批中、已审批
