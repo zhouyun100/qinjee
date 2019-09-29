@@ -167,6 +167,9 @@ public class PositionLevelServiceImpl implements PositionLevelService {
         Map<String, Object> map = new HashMap<>();
         //职级集合
         List<PositionLevel> positionLevelArrayList = new ArrayList<>();
+        for (int i = 0; i < 20 ; i++){
+            positionLevelArrayList.add(null);
+        }
         //获取所有职位族
         List<PositionGroup> allPositionGroup = positionGroupService.getAllPositionGroup(userSession, null).getResult().getList();
         map.put("columns", allPositionGroup);
@@ -189,12 +192,11 @@ public class PositionLevelServiceImpl implements PositionLevelService {
                                 int index = positionLevel.getSortId() / 1000;
                                 PositionLevel position_Level;
                                 //遍历职级
-                                if(positionLevelArrayList.size() >= (index + 1)){
-                                    position_Level = positionLevelArrayList.get(index);
-                                }else {
+                                position_Level = positionLevelArrayList.get(index - 1);
+                                if(position_Level == null){
                                     position_Level = new PositionLevel();
                                     position_Level.setPositionLevelName(positionLevel.getPositionLevelName());
-                                    positionLevelArrayList.add(position_Level);
+                                    positionLevelArrayList.add(index - 1,position_Level);
                                 }
 
                                 List<PositionGroup> positionGroups = position_Level.getPositionGroups();
