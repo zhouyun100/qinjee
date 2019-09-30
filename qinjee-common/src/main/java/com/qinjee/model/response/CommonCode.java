@@ -26,7 +26,8 @@ public enum CommonCode implements ResultCode{
     FILE_PARSING_EXCEPTION(false,10306, "导入文件解析异常,导入失败!"),
     FILE_FORMAT_ERROR(false,10307, "导入文件格式错误,导入失败!"),
     POST_DOES_NOT_EXIST(false,10308, "此岗位不存在,导入失败!"),
-    FILE_EXPORT_FAILED(false,10309, "岗位说明书导出失败!");
+    TIME_FORMAT_ERROR(false,10310, "时间格式错误!"),
+    FILE_EXPORT_FAILED(false,10311, "文件导出失败!");
 
     /**
      * 操作是否成功

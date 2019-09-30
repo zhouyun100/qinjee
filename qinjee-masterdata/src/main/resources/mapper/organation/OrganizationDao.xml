@@ -168,32 +168,43 @@
   </update>
 
   <select id="getAllOrganization" resultMap="BaseResultMap">
-    select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org, t_role_org_auth roa
+    select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org
+    left join t_role_org_auth roa on  roa.org_id = org.org_id
+    left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
     where
     <if test="roleIds != null and roleIds.size > 0">
-        roa.role_id in
-        <foreach item="roleId" collection="roleIds"
-                 open="(" separator="," close=")">
-            #{roleId}
-        </foreach>
-        and
+      roa.role_id in
+      <foreach item="roleId" collection="roleIds"
+               open="(" separator="," close=")">
+        #{roleId}
+      </foreach>
     </if>
-      roa.org_id = org.org_id
+    and roa.is_delete = 0
+    and tuoa.archive_id = #{archiveId}
+    and tuoa.is_delete = 0
+    and tuoa.trusteeship_end_time > #{now}
+    and tuoa.is_trusteeship = 1
     <if test="isEnable != null and isEnable == 1">
-        and org.is_enable = #{isEnable}
+      and org.is_enable = #{isEnable}
     </if>
     ORDER BY org.org_id ASC
   </select>
 
   <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.entity.Organization">
-    select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName, tua.user_name orgManagerName from t_organization org
+    select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName,
+    parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from t_organization org
     left join t_role_org_auth roa on roa.org_id = org.org_id
+    left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
     <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
       and org.is_enable = #{organizationPageVo.isEnable}
     </if>
     left join t_organization parent_org on org.org_parent_id = parent_org.org_id
     left join t_user_archive tua on tua.archive_id = org.org_manager_id
     where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
+    and tuoa.is_delete = 0
+    and tuoa.archive_id = #{archiveId}
+    and tuoa.trusteeship_end_time > #{now}
+    and tuoa.is_trusteeship = 1
     <if test="organizationPageVo != null">
       <if test="organizationPageVo.orgParentId != null">
         and org.org_parent_id = #{orgParentId}
@@ -215,12 +226,19 @@
   </select>
 
   <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.entity.Organization">
-    select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl from t_organization org left join t_role_org_auth roa on roa.org_id = org.org_id
+    select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl
+    from t_organization org
+    left join t_role_org_auth roa on roa.org_id = org.org_id
+    left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
     <if test="isEnable != null and isEnable == 1">
     and org.is_enable = #{isEnable}
     </if>
     left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
     where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
+    and tuoa.is_delete = 0
+    and tuoa.archive_id = #{archiveId}
+    and tuoa.trusteeship_end_time > #{now}
+    and tuoa.is_trusteeship = 1
     <if test="orgId != null and orgId != ''">
       and org.org_code like #{orgCode}
     </if>
@@ -243,16 +261,16 @@
     from t_organization
     where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY org_id DESC
   </select>
-    <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from t_organization
-        where org_id in
-        <foreach item="orgId" collection="orgIds"
-                 open="(" separator="," close=")">
-            #{orgId}
-        </foreach>
-    </select>
+  <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from t_organization
+      where org_id in
+      <foreach item="orgId" collection="orgIds"
+               open="(" separator="," close=")">
+          #{orgId}
+      </foreach>
+  </select>
   <select id="getOrganizationByOrgCodeAndCompanyId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -264,19 +282,12 @@
     from  t_organization
     where org_id = #{orgId,jdbcType=INTEGER}
   </select>
-  <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
-    select org_id
+
+  <select id="selectByAchiveId" resultType="java.lang.Integer">
+    select  org_id
     from t_organization a
     left join t_user_org_auth b on a.org_id=b.org_id
-    left join t_user_archive c on b.archive_id =c. archive_id
-    where a.is_enable=1 AND b.is_delete=0 AND c.is_delete=0 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
+    left join t_user_archive c on b.archive_id=c.archive_id
+    where a.is_enable=1 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
   </select>
-
-  <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
-   select org_id
-    from t_organization a
-    left join t_user_org_auth b on a.org_id=b.org_id
-   WHERE  a.is_enable=1 AND b.is_delete=0 AND a.org_parent_id=#{orgId,jdbcType=INTEGER}
-  </select>
-
 </mapper>

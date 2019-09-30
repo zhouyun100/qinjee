@@ -30,7 +30,8 @@ public interface OrganizationDao {
      */
     List<Organization> getAllOrganization(@Param("archiveId") Integer archiveId,
                                           @Param("isEnable") Short isEnable,
-                                          @Param("roleIds") Set<Integer> roleIds);
+                                          @Param("roleIds") Set<Integer> roleIds,
+                                          @Param("now") Date now);
 
     /**
      * 根据查询条件查询机构
@@ -42,7 +43,8 @@ public interface OrganizationDao {
      */
     List<Organization> getOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
                                            @Param("sortFieldStr") String sortFieldStr,
-                                           @Param("archiveId") Integer archiveId);
+                                           @Param("archiveId") Integer archiveId,
+                                           @Param("now") Date now);
 
     /**
      * 根据是否封存查询用户下所有的机构,图形化展示
@@ -54,7 +56,8 @@ public interface OrganizationDao {
      */
     List<Organization> getOrganizationGraphics(@Param("archiveId") Integer archiveId,
                                                @Param("isEnable") Short isEnable,
-                                               @Param("orgCode") String orgCode);
+                                               @Param("orgCode") String orgCode,
+                                               @Param("now") Date now);
 
     /**
      * 根据code码封存或解封机构
@@ -101,8 +104,12 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<Integer> getCompanyIdByArchiveId(Integer archiveId);
+    List<Integer> selectByAchiveId(Integer archiveId);
 
-    List<Integer> getOrgIdByCompanyId(Integer orgId);
-
+    /**
+     * 根据选择的机构id导出Excel
+     * @param orgIds
+     * @return
+     */
+    List<Organization> getOrganizationsByOrgIds(List<Integer> orgIds);
 }

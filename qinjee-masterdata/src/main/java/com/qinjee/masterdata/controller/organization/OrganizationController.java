@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -133,24 +134,21 @@ public class OrganizationController extends BaseController {
 
     @ApiOperation(value = "下载模板", notes = "高雄")
     @GetMapping("/downloadTemplate")
-    public ResponseResult downloadTemplate(){
-         //TODO
-        return null;
+    public ResponseResult downloadTemplate(HttpServletResponse response){
+        return organizationService.downloadTemplate(response);
     }
 
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
     @PostMapping("/downloadExcelByCondition")
-    public ResponseResult downloadExcelByCondition(@RequestBody OrganizationPageVo organizationPageVo){
-
-        return null;
+    public ResponseResult downloadExcelByCondition(@RequestBody OrganizationPageVo organizationPageVo, HttpServletResponse response){
+        return organizationService.downloadExcelByCondition(organizationPageVo, response, getUserSession());
     }
 
     @ApiOperation(value = "根据选择的机构id导出Excel", notes = "高雄")
     @GetMapping("/downloadExcelByOrgId")
-    public ResponseResult downloadExcelByOrgCode(@RequestParam("orgIds") @ApiParam(value = "所选机构的id",required = true) List<Integer> orgIds){
-
-        return null;
+    public ResponseResult downloadExcelByOrgCodeId(@RequestParam("orgIds") @ApiParam(value = "所选机构的id",required = true) List<Integer> orgIds, HttpServletResponse response){
+        return organizationService.downloadExcelByOrgCodeId(orgIds, response, getUserSession());
     }
 
     @ApiOperation(value = "导入Excel", notes = "高雄")

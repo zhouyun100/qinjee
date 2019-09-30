@@ -12,14 +12,10 @@ import com.qinjee.masterdata.utils.excel.ExcelSheet;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -153,8 +149,7 @@ public class PostInstructionsImpl implements PostInstructionsService {
      */
     private List<PostInstructions> getPostInstructionsExcel2Html(UserSession userSession, MultipartFile file) throws Exception {
         List<PostInstructions> postInstructionsList = new ArrayList<>();
-        Workbook workbook = initWorkBook(file);
-        if (workbook != null) {
+        if (file != null) {
                 //判断excel的sheet页的命名是否符合规则
                 ExcelRender render = new ExcelRender(file.getInputStream());
                 List<ExcelSheet> excelSheets = render.render();
@@ -267,39 +262,4 @@ public class PostInstructionsImpl implements PostInstructionsService {
         }
         return post;
     }
-
-
-    Workbook initWorkBook(MultipartFile file) throws IOException {
-        String postfix = getPostfix(file.getOriginalFilename());
-        if (!"".equals(postfix)) {
-            InputStream input = file.getInputStream();
-            Workbook workbook = null;
-            if ("xls".equals(postfix)) {
-                workbook = new HSSFWorkbook(input);
-            } else if ("xlsx".equals(postfix)) {
-                workbook = new XSSFWorkbook(input);
-            }
-            return workbook;
-        } else {
-            return null;
-        }
-    }
-
-
-    /**
-     * 获得path的后缀名
-     *
-     * @param path
-     * @return
-     */
-    private String getPostfix(String path) {
-        if (StringUtils.isEmpty(path)) {
-            return "";
-        }
-        if (path.contains(".")) {
-            return path.substring(path.lastIndexOf(".") + 1);
-        }
-        return "";
-    }
-
 }

@@ -17,16 +17,23 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,12 +58,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
-        //TODO 查托管的权限 员工机构权限表
         Integer archiveId = userSession.getArchiveId();
         List<UserRole> userRoleList =  userRoleService.getUserRoleList(userSession.getArchiveId());
         Set<Integer> roleIds = userRoleList.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toSet());
 
-        List<Organization> organizationList = organizationDao.getAllOrganization(archiveId, isEnable, roleIds);
+        List<Organization> organizationList = organizationDao.getAllOrganization(archiveId, isEnable, roleIds, new Date());
 
         //获取第一级机构
         List<Organization> organizations = getFirstOrganizationList(organizationList);
@@ -86,7 +92,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if(organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null){
             PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
         }
-        List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo,sortFieldStr,archiveId);
+        List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo,sortFieldStr,archiveId, new Date());
         PageResult<Organization> pageResult = new PageResult<>(organizationList);
         return pageResult;
     }
@@ -96,8 +102,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Integer archiveId = userSession.getArchiveId();
         Organization organization = organizationDao.selectByPrimaryKey(orgId);
         String orgCode = organization.getOrgCode() + "%";
-        //TODO 查托管的权限 员工机构权限表
-        List<Organization> organizationList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode);
+        List<Organization> organizationList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode, new Date());
         PageResult<Organization> pageResult = new PageResult<>(organizationList);
         return pageResult;
     }
@@ -357,6 +362,44 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new ResponseResult<>(organizationTreeList);
     }
 
+    @Override
+    public ResponseResult downloadTemplate(HttpServletResponse response) {
+        ClassPathResource cpr = new ClassPathResource("/templates/"+"机构导入模板.xls");
+        try {
+            File file = cpr.getFile();
+            String filename = cpr.getFilename();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            FileUtils.copyFile(file,outputStream);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("Content-Disposition",
+                    "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
+            response.getOutputStream().write(outputStream.toByteArray());
+        }catch (Exception e){
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
+        return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession) {
+        Integer archiveId = userSession.getArchiveId();
+        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
+        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo,sortFieldStr,archiveId, new Date());
+        //导出Excel
+        exportExcel(response, organizationList);
+        return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession) {
+        List<Organization> organizationList = organizationDao.getOrganizationsByOrgIds(orgIds);
+        //导出Excel
+        exportExcel(response, organizationList);
+        return new ResponseResult();
+    }
+
     /**
      * 递归给机构树的机构设置下面的岗位
      * @param organization
@@ -422,4 +465,116 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
         }
     }
+
+
+    private static void exportExcel(HttpServletResponse response, List<Organization> organizationList) {
+        try {
+            //实例化HSSFWorkbook
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            //创建一个Excel表单，参数为sheet的名字
+            HSSFSheet sheet = workbook.createSheet("sheet");
+            //设置表头
+            setTitle(workbook, sheet);
+            //设置单元格并赋值
+            setData(sheet, organizationList);
+            //设置浏览器下载
+            setBrowser(response, workbook, "机构信息.xls");
+        } catch (Exception e) {
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
+    }
+
+    private static void setTitle(HSSFWorkbook workbook, HSSFSheet sheet) {
+        HSSFRow row = sheet.createRow(0);
+        //设置列宽，setColumnWidth的第二个参数要乘以256，这个参数的单位set是1/256个字符宽度
+        for(int i = 0; i < 7; i++){
+            sheet.setColumnWidth(i, 30 * 250);
+        }
+        //设置为居中加粗,格式化时间格式
+        HSSFCellStyle style = workbook.createCellStyle();
+        HSSFFont font = workbook.createFont();
+        font.setFontHeightInPoints((short) 11);//字号
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);//加粗
+        style.setFont(font);
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//左右居中
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+        style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy-MM-dd HH:mm:ss"));
+        List<String> strList = new ArrayList<>();
+        strList.add("机构编码");
+        strList.add("机构名称");
+        strList.add("机构类型");
+        strList.add("上级机构编码");
+        strList.add("上级机构");
+        strList.add("部门负责人工号");
+        strList.add("部门负责人");
+        //创建表头名称
+            HSSFCell cell;
+            for (int j = 0; j < strList.size(); j++) {
+                cell = row.createCell(j);
+                cell.setCellValue(strList.get(j));
+                cell.setCellStyle(style);
+            }
+    }
+
+    /**
+     * 方法名：setData
+     * 功能：表格赋值
+     * 描述：
+     * 创建人：typ
+     * 创建时间：2018/10/19 16:11
+     * 修改人：
+     * 修改描述：
+     * 修改时间：
+     */
+    private static void setData(HSSFSheet sheet, List<Organization> organizationList) {
+            for (int i = 0; i < organizationList.size(); i++) {
+                Organization organization = organizationList.get(i);
+                HSSFRow row = sheet.createRow(i + 1);
+                row.createCell(0).setCellValue(organization.getOrgCode());
+                row.createCell(1).setCellValue(organization.getOrgName());
+                String orgType = organization.getOrgType();
+                String typeValue = null;
+                if(StringUtils.isEmpty(orgType)){
+                    typeValue = "";
+                }else if("GROUP".equals(orgType.trim())){
+                    typeValue = "集团";
+                }else if("UNIT".equals(orgType.trim())){
+                    typeValue = "单位";
+                }else if("DEPT".equals(orgType.trim())){
+                    typeValue = "部门";
+                }
+                row.createCell(2).setCellValue(typeValue);
+                row.createCell(3).setCellValue(organization.getOrgParentCode());
+                row.createCell(4).setCellValue(organization.getOrgParentName());
+                row.createCell(5).setCellValue(organization.getOrgManagerName());
+                row.createCell(6).setCellValue(organization.getManagerEmployeeNumber());
+            }
+    }
+
+    /**
+     * 使用浏览器下载
+     * @param response
+     * @param workbook
+     * @param fileName
+     */
+    private static void setBrowser(HttpServletResponse response, HSSFWorkbook workbook, String fileName) throws Exception {
+        try {
+            OutputStream os = new BufferedOutputStream(response.getOutputStream());
+            //清空response
+            response.reset();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename="+URLEncoder.encode(fileName, "utf-8"));
+            //将excel写入到输出流中
+            workbook.write(os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            throw new Exception("文件导出失败!");
+        }
+    }
+
+
+
+
+
 }
