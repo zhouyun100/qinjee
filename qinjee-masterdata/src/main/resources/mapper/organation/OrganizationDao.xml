@@ -182,6 +182,8 @@
     and roa.is_delete = 0
     and tuoa.archive_id = #{archiveId}
     and tuoa.is_delete = 0
+    and tuoa.trusteeship_end_time > #{now}
+    and tuoa.is_trusteeship = 1
     <if test="isEnable != null and isEnable == 1">
       and org.is_enable = #{isEnable}
     </if>
@@ -189,7 +191,8 @@
   </select>
 
   <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.entity.Organization">
-    select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName, tua.user_name orgManagerName from t_organization org
+    select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName,
+    parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from t_organization org
     left join t_role_org_auth roa on roa.org_id = org.org_id
     left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
     <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
@@ -200,6 +203,8 @@
     where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
     and tuoa.is_delete = 0
     and tuoa.archive_id = #{archiveId}
+    and tuoa.trusteeship_end_time > #{now}
+    and tuoa.is_trusteeship = 1
     <if test="organizationPageVo != null">
       <if test="organizationPageVo.orgParentId != null">
         and org.org_parent_id = #{orgParentId}
@@ -232,6 +237,8 @@
     where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
     and tuoa.is_delete = 0
     and tuoa.archive_id = #{archiveId}
+    and tuoa.trusteeship_end_time > #{now}
+    and tuoa.is_trusteeship = 1
     <if test="orgId != null and orgId != ''">
       and org.org_code like #{orgCode}
     </if>
@@ -282,5 +289,17 @@
     left join t_user_org_auth b on a.org_id=b.org_id
     left join t_user_archive c on b.archive_id=c.archive_id
     where a.is_enable=1 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
+  </select>
+  <select id="getOrganizationsByOrgIds" resultType="com.qinjee.masterdata.model.entity.Organization">
+      select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName,
+      parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from t_organization org
+      left join t_organization parent_org on org.org_parent_id = parent_org.org_id
+      left join t_user_archive tua on tua.archive_id = org.org_manager_id
+      where org.org_id in
+        <foreach item="orgId" collection="orgIds"
+                 open="(" separator="," close=")">
+          #{orgId}
+        </foreach>
+        and tua.is_delete = 0
   </select>
 </mapper>

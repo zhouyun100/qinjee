@@ -74,7 +74,7 @@ public class ExcelHandler<T> {
             if(StringUtils.isNotBlank(message)){
                 throw new Exception(message);
             }else {
-                e.printStackTrace();
+                throw new Exception("导入文件解析异常!");
             }
         }
         return null;

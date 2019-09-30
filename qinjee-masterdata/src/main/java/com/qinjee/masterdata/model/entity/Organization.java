@@ -58,7 +58,13 @@ public class Organization implements Serializable {
      */
     @ApiModelProperty("机构父级名称")
     @QueryColumn("parent_org.org_name")
-    private Integer orgParentName;
+    private String orgParentName;
+
+    /**
+     * 机构父级编码
+     */
+    @ApiModelProperty("机构父级编码")
+    private String orgParentCode;
 
     /**
      * 机构全称
@@ -68,17 +74,23 @@ public class Organization implements Serializable {
     private String orgFullName;
 
     /**
-     * 机构负责人
+     * 机构负责人Id
      */
-    @ApiModelProperty("机构负责人")
+    @ApiModelProperty("机构负责人Id")
     private Integer orgManagerId;
 
     /**
-     * 机构负责姓名
+     * 机构负责人姓名
      */
-    @ApiModelProperty("机构负责姓名")
+    @ApiModelProperty("机构负责人姓名")
     @QueryColumn("tua.user_name")
-    private Integer orgManagerName;
+    private String orgManagerName;
+
+    /**
+     * 机构负责人工号
+     */
+    @ApiModelProperty("机构负责人工号")
+    private String managerEmployeeNumber;
 
     /**
      * 企业ID

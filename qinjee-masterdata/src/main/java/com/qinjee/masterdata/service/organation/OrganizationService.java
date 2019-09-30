@@ -118,4 +118,21 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult downloadTemplate(HttpServletResponse response);
+
+    /**
+     * 根据查询条件导出Excel
+     * @param organizationPageVo
+     * @param response
+     * @return
+     */
+    ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession);
+
+    /**
+     * 根据选择的机构id导出Excel
+     * @param orgIds
+     * @param response
+     * @param userSession
+     * @return
+     */
+    ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession);
 }
