@@ -95,4 +95,14 @@
     delete from t_query_scheme_field
     where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
   </delete>
+  <select id="selectFieldId" resultType="java.lang.Integer">
+    select field_id
+    from  t_query_scheme_field
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+  </select>
+  <select id="selectFieldSort" resultType="java.lang.Integer">
+     select sort
+    from  t_query_scheme_field
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+  </select>
 </mapper>

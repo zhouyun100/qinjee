@@ -290,16 +290,4 @@
     left join t_user_archive c on b.archive_id=c.archive_id
     where a.is_enable=1 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
   </select>
-  <select id="getOrganizationsByOrgIds" resultType="com.qinjee.masterdata.model.entity.Organization">
-      select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName,
-      parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from t_organization org
-      left join t_organization parent_org on org.org_parent_id = parent_org.org_id
-      left join t_user_archive tua on tua.archive_id = org.org_manager_id
-      where org.org_id in
-        <foreach item="orgId" collection="orgIds"
-                 open="(" separator="," close=")">
-          #{orgId}
-        </foreach>
-        and tua.is_delete = 0
-  </select>
 </mapper>

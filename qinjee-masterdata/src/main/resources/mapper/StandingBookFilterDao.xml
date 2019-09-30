@@ -24,7 +24,7 @@
     select
     <include refid="Base_Column_List" />
     from t_standing_book_filter
-    where filter_id = #{filterId,jdbcType=INTEGER}  AND  is_delete = 1
+    where filter_id = #{filterId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_standing_book_filter
@@ -185,4 +185,16 @@
     is_delete =0
     where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 1
   </update>
+  <select id="selectByStandingBookId" resultType="com.qinjee.masterdata.model.entity.StandingBookFilter">
+    select
+    <include refid="Base_Column_List" />
+    from t_standing_book_filter
+    where filter_id =standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
+  </select>
+  <select id="selectSqlById" resultType="java.lang.String">
+    select
+     sql_str
+    from t_standing_book_filter
+    where filter_id =standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
+  </select>
 </mapper>

@@ -89,6 +89,15 @@ public class StaffArchiveController extends BaseController {
         Integer archiveId = getUserSession().getArchiveId();
         return staffArchiveService.selectArchive(archiveId);
     }
+    /**
+     * 通过id找到人员姓名与工号
+     */
+    @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.GET)
+    @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
+        return staffArchiveService.selectNameAndNumber(id);
+    }
 
     /**
      * 查看档案（查询某个组织部门下的档案）
@@ -167,7 +176,7 @@ public class StaffArchiveController extends BaseController {
      * 包括新增与更新
      */
     @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.GET)
-    @ApiOperation(value = "baocun查询方案", notes = "hkt")
+    @ApiOperation(value = "保存查询方案", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
             @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
@@ -203,17 +212,16 @@ public class StaffArchiveController extends BaseController {
         return staffArchiveService.selectQueryScheme(id);
     }
     /**
-     * 通过id找到人员姓名与工号
+     * 根据显示方案展示人员信息
      */
-    @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.GET)
-    @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
-        return staffArchiveService.selectNameAndNumber(id);
+    @RequestMapping(value = "/selectArchiveByQueryScheme", method = RequestMethod.GET)
+    @ApiOperation(value = "根据显示方案展示人员信息", notes = "hkt")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "schemeId", value = "查询方案id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true)
+    })
+    public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,Integer orgId) {
+        return staffArchiveService.selectArchiveByQueryScheme(schemeId,orgId);
     }
-
-
-    //TODO 人员进行查询时，需在后面加上机构，组织或者岗位id
-
 
 }

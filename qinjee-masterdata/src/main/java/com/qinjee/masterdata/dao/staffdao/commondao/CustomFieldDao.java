@@ -35,4 +35,6 @@ public interface CustomFieldDao {
 
 
     List<CustomField> selectPreEmploymentField(Integer id);
+
+    String selectFieldName(@Param("integer") Integer integer);
 }

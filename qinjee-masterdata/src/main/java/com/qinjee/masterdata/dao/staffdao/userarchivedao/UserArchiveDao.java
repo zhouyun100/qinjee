@@ -63,5 +63,9 @@ public interface UserArchiveDao {
 
     Integer selectArcNumberIn(Integer id);
 
-    UserArchive selectByConId(Integer integer);
+    List<UserArchive> getUserArchiveListCustom(String select, String order, Integer orgId);
+
+    List<Integer> selectStaffNoType(String sql, String archiveType, Integer id );
+
+    List<UserArchive> selectStaff(List<Integer> integerList);
 }

@@ -55,10 +55,12 @@ public interface IStaffStandingBookService {
 
     /**
      * 新增与修改台账
+     * @param archiveId
+     * @param companyId
      * @param standingBookInfo
      * @return
      */
-    ResponseResult saveStandingBook(StandingBookInfo standingBookInfo);
+    ResponseResult saveStandingBook(Integer archiveId,Integer companyId,StandingBookInfo standingBookInfo);
 
     /**
      * 展示台账表
@@ -66,4 +68,29 @@ public interface IStaffStandingBookService {
      * @return
      */
     ResponseResult selectStandingBook(Integer id);
+
+    /**
+     * 查看我的台账，不含是否共享
+     * @param archiveId
+     * @return
+     */
+    ResponseResult selectMyStandingBook(Integer archiveId);
+
+    /**
+     * 查看我的台账,含是否共享
+     * @param archiveId
+     * @param companyId
+     * @return
+     */
+    ResponseResult selectMyStandingBookShare(Integer archiveId, Integer companyId);
+
+    /**
+     * 人员查询操作
+     * @param stangdingBookId
+     * @param archiveType
+     * @param id
+     * @param type
+     * @return
+     */
+    ResponseResult selectStaff(Integer stangdingBookId, String archiveType, Integer id, String type);
 }

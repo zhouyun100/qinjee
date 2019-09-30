@@ -117,4 +117,12 @@ public interface IStaffArchiveService {
      * 通过id查询到对应机构名称
      */
     ResponseResult selectOrgName(Integer id);
+
+    /**
+     * 根据显示方案展示人员信息
+     * @param schemeId
+     * @param orgId
+     * @return
+     */
+    ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId, Integer orgId);
 }

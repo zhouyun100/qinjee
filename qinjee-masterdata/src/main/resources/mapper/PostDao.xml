@@ -263,4 +263,10 @@
             </foreach>
         GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , torg.org_name , tps.position_name
     </select>
+    <select id="getPostByOrgId" resultType="java.lang.Integer">
+      select
+      <include refid="Base_Column_List" />
+      from t_post
+      where  org_id = #{orgId}  and is_delete = 0 ORDER BY sort_id ASC
+    </select>
 </mapper>

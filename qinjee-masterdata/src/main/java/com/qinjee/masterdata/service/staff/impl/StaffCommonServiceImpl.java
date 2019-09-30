@@ -1,36 +1,44 @@
 package com.qinjee.masterdata.service.staff.impl;
 
-        import com.alibaba.fastjson.JSONArray;
-        import com.alibaba.fastjson.JSONObject;
-        import com.github.pagehelper.PageHelper;
-        import com.qinjee.masterdata.dao.CheckTypeDao;
-        import com.qinjee.masterdata.dao.FieldCheckTypeDao;
-        import com.qinjee.masterdata.dao.staffdao.commondao.*;
-        import com.qinjee.masterdata.model.entity.CustomField;
-        import com.qinjee.masterdata.model.entity.CustomGroup;
-        import com.qinjee.masterdata.model.entity.CustomTable;
-        import com.qinjee.masterdata.model.entity.CustomTableData;
-        import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
-        import com.qinjee.masterdata.service.staff.IStaffCommonService;
-        import com.qinjee.model.response.CommonCode;
-        import com.qinjee.model.response.PageResult;
-        import com.qinjee.model.response.ResponseResult;
-        import com.qinjee.utils.ExcelUtil;
-        import com.qinjee.utils.UpAndDownUtil;
-        import entity.ExcelEntity;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.stereotype.Service;
-        import org.springframework.transaction.annotation.Transactional;
-        import org.springframework.web.context.request.RequestContextHolder;
-        import org.springframework.web.context.request.ServletRequestAttributes;
-        import org.springframework.web.multipart.MultipartFile;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.CheckTypeDao;
+import com.qinjee.masterdata.dao.FieldCheckTypeDao;
+import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomGroupDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDataDao;
+import com.qinjee.masterdata.model.entity.CustomField;
+import com.qinjee.masterdata.model.entity.CustomGroup;
+import com.qinjee.masterdata.model.entity.CustomTable;
+import com.qinjee.masterdata.model.entity.CustomTableData;
+import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
+import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
+import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.ExcelUtil;
+import com.qinjee.utils.UpAndDownUtil;
+import entity.ExcelEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
-        import javax.servlet.http.HttpServletResponse;
-        import java.io.File;
-        import java.io.IOException;
-        import java.util.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -51,7 +59,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private CheckTypeDao checkTypeDao;
     @Autowired
-    private FieldTypeDao fieldTypeDao;
+    private OrganizationDao organizationDao;
+    @Autowired
+    private PostDao postDao;
 
     @Override
     public ResponseResult insert(CustomTable customTable) {
@@ -258,6 +268,39 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         } catch (Exception e) {
             logger.error("根据表查询自定义字段失败");
             return new ResponseResult<>(customField, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult getCompany(Integer archiveId) {
+        try {
+            List<Integer> list= organizationDao.getCompanyIdByArchiveId(archiveId);
+            return new ResponseResult(list,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("获取单位id失败");
+            return new ResponseResult(false,CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult getOrgIdByCompanyId(Integer orgId) {
+        try {
+            List<Integer> list=organizationDao.getOrgIdByCompanyId(orgId);
+            return new ResponseResult(list,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("获取单位id失败");
+            return new ResponseResult(false,CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult getPostByOrgId(Integer orgId) {
+        try {
+            List<Integer> list=postDao.getPostByOrgId(orgId);
+            return new ResponseResult(list,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("获取单位id失败");
+            return new ResponseResult(false,CommonCode.FAIL);
         }
     }
 

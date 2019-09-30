@@ -15,6 +15,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatusChangeVo {
+    /**
+     * id
+     */
+    private Integer id;
 
     /**
      * 变更状态

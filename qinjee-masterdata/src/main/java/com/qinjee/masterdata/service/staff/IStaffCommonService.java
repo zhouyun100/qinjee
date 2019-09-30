@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.CustomTable;
 import com.qinjee.masterdata.model.entity.CustomTableData;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -168,4 +169,25 @@ public interface IStaffCommonService {
      * @return
      */
     ResponseResult<CustomField> selectCustomFieldById(Integer customFieldId);
+
+    /**
+     * 据档案显示对应权限下的单位
+     * @param archiveId
+     * @return
+     */
+    ResponseResult getCompany(Integer archiveId);
+
+    /**
+     * 根据档案id显示对应权限下的子集部门
+     * @param orgId
+     * @return
+     */
+    ResponseResult getOrgIdByCompanyId(Integer orgId);
+
+    /**
+     * 显示部门下的岗位
+     * @param orgId
+     * @return
+     */
+    ResponseResult getPostByOrgId(@Param("orgId") Integer orgId);
 }

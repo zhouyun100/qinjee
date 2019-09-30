@@ -18,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class StandingBookInfo implements Serializable {
+    private StandingBookVo standingBookVo;
+    private List<StandingBookFilterVo> listVo;
     private StandingBook standingBook;
     private List<StandingBookFilter> list;
 
