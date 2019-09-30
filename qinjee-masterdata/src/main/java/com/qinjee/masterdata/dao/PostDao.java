@@ -61,4 +61,11 @@ public interface PostDao {
      * @return
      */
     Post getPost(@Param("postCode") String postCode, @Param("postName") String postName);
+
+    /**
+     * 根据岗位id查询岗位
+     * @param postIds
+     * @return
+     */
+    List<Post> getPostListByPostId(List<Integer> postIds);
 }

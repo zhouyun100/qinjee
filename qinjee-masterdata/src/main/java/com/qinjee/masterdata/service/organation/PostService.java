@@ -98,4 +98,20 @@ public interface PostService {
      */
     ResponseResult downloadTemplate(HttpServletResponse response);
 
+    /**
+     * 根据查询条件导出Excel
+     * @param postPageVo
+     * @param userSession
+     * @return
+     */
+    ResponseResult downloadExcelByCondition(PostPageVo postPageVo, UserSession userSession, HttpServletResponse response);
+
+    /**
+     * 根据选择的岗位id导出Excel
+     * @param postIds
+     * @param userSession
+     * @param response
+     * @return
+     */
+    ResponseResult downloadExcelByPostId(List<Integer> postIds, UserSession userSession, HttpServletResponse response);
 }

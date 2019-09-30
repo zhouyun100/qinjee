@@ -394,17 +394,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession) {
-//        List<Organization> organizationList = organizationDao.getOrganizationsByOrgIds(orgIds);
-        List<Organization> organizationList = new ArrayList<>();
-        Organization organization = new Organization();
-        organization.setOrgCode("10101");
-        organization.setOrgName("深圳勤杰软件有限公司");
-        organization.setOrgType("GROUP");
-        organization.setOrgParentCode("101");
-        organization.setOrgParentName("深圳勤杰软件有限公司");
-        organization.setManagerEmployeeNumber("123456");
-        organization.setOrgManagerName("张三");
-        organizationList.add(organization);
+        List<Organization> organizationList = organizationDao.getOrganizationsByOrgIds(orgIds);
         //导出Excel
         exportExcel(response, organizationList);
         return new ResponseResult();

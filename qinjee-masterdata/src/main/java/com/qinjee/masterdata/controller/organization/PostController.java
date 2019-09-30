@@ -110,16 +110,14 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
     @PostMapping("/downloadExcelByCondition")
-    public ResponseResult downloadExcelByCondition(@RequestBody PostPageVo postPageVo){
-
-        return null;
+    public ResponseResult downloadExcelByCondition(@RequestBody PostPageVo postPageVo, HttpServletResponse response){
+        return postService.downloadExcelByCondition(postPageVo, getUserSession(), response);
     }
 
     @ApiOperation(value = "根据选择的岗位id导出Excel", notes = "高雄")
     @GetMapping("/downloadExcelByPostId")
-    public ResponseResult downloadExcelByPostId(@RequestParam("postIds") @ApiParam(value = "所选机构的编码",required = true) List<Integer> postIds){
-
-        return null;
+    public ResponseResult downloadExcelByPostId(@RequestParam("postIds") @ApiParam(value = "所选机构的编码",required = true) List<Integer> postIds, HttpServletResponse response){
+        return postService.downloadExcelByPostId(postIds,getUserSession(), response);
     }
 
 
