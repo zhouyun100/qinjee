@@ -14,6 +14,10 @@ import java.util.Date;
 @AllArgsConstructor
 public class LaborContractChangeVo implements Serializable {
     /**
+     * id
+     */
+    private Integer id;
+    /**
      * 合同ID
      */
     private Integer contractId;

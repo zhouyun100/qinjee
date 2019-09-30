@@ -273,4 +273,9 @@
     from t_custom_field
     where   table_id = #{tableId,jdbcType=INTEGER}   AND  is_delete = 0
   </select>
+  <select id="selectFieldName" resultType="java.lang.String">
+    select  field_name
+    from t_custom_field
+    where  field_id = #{fieldId,jdbcType=INTEGER} AND  is_delete=0
+  </select>
 </mapper>

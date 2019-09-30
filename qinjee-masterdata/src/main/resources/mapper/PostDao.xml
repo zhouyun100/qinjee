@@ -241,4 +241,10 @@
     from t_post
     where post_code = #{postCode} and post_name = #{postName}
   </select>
+    <select id="getPostByOrgId" resultType="java.lang.Integer">
+      select
+      <include refid="Base_Column_List" />
+      from t_post
+      where  org_id = #{orgId}  and is_delete = 0 ORDER BY sort_id ASC
+    </select>
 </mapper>

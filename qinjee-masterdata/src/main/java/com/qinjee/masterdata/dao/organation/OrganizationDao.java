@@ -101,5 +101,8 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<Integer> selectByAchiveId(Integer archiveId);
+    List<Integer> getCompanyIdByArchiveId(Integer archiveId);
+
+    List<Integer> getOrgIdByCompanyId(Integer orgId);
+
 }

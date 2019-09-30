@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
@@ -55,9 +54,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private LaborContractChangeDao laborContractChangeDao;
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
-    @Autowired
-    private OrganizationDao organizationDao;
-
     /**
      * 展示未签合同的人员信息
      *
@@ -97,7 +93,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
             getArcByConId(currentPage, pageSize, pageResult, list, newArcList);
             return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         } catch (Exception e) {
-            logger.error("查找已签合同人员失败失败");
+            logger.error("查找已签合同人员失败");
             return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
     }

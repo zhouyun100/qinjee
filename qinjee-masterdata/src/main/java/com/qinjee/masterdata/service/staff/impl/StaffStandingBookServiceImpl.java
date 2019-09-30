@@ -4,10 +4,13 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +39,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private StandingBookFilterDao standingBookFilterDao;
     @Autowired
     private BlacklistDao blacklistDao;
+    @Autowired
+    private UserArchiveDao userArchiveDao;
 
     @Override
     public ResponseResult insertBlackList(List<BlackListVo> blackListVos, String dataSource, Integer archiveId, Integer companyId) {
@@ -123,21 +129,31 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     @Override
-    public ResponseResult saveStandingBook(StandingBookInfo standingBookInfo) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult saveStandingBook(Integer archiveId,Integer companyId,StandingBookInfo standingBookInfo) {
         if(standingBookInfo instanceof StandingBookInfo ){
-            if(standingBookInfo.getStandingBook().getStandingBookId()==null){
+            StandingBook standingBook=new StandingBook();
+            if(standingBookInfo.getStandingBookVo().getStandingBookId()==null){
                 //说明是新增操作
                 //新增台账属性
                 try {
-                    standingBookDao.insert(standingBookInfo.getStandingBook());
+                    BeanUtils.copyProperties(standingBookInfo.getStandingBookVo(),standingBook);
+                    standingBook.setArchiveId(archiveId);
+                    standingBook.setCompanyId(companyId);
+                    standingBook.setCreatorId(archiveId);
+                    standingBookDao.insert(standingBook);
                 } catch (Exception e) {
                     logger.error("新增台账属性失败，台账筛选表无法设置");
                     return new ResponseResult<>(false, CommonCode.FAIL);
                 }
                 //设置台账属性表的id给筛选表
                 try {
-                    for (StandingBookFilter standingBookFilter : standingBookInfo.getList()) {
-                        standingBookFilter.setStandingBookId(standingBookInfo.getStandingBook().getStandingBookId());
+                    for (StandingBookFilterVo standingBookFilterVo : standingBookInfo.getListVo()) {
+                        StandingBookFilter standingBookFilter=new StandingBookFilter();
+                        BeanUtils.copyProperties(standingBookFilterVo,standingBookFilter);
+                        standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
+                        standingBookFilter.setOperatorId(archiveId);
+                        standingBookFilter.setSqlStr(getSql(standingBookFilterVo));
                         standingBookFilterDao.insert(standingBookFilter);
                     }
                     return new ResponseResult(true,CommonCode.SUCCESS);
@@ -148,9 +164,18 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
             //说明是更新操作
             try {
-                standingBookDao.updateByPrimaryKeySelective(standingBookInfo.getStandingBook());
-                for (StandingBookFilter standingBookFilter : standingBookInfo.getList()) {
-                    standingBookFilter.setStandingBookId(standingBookInfo.getStandingBook().getStandingBookId());
+                BeanUtils.copyProperties(standingBookInfo.getStandingBookVo(),standingBook);
+                standingBook.setArchiveId(archiveId);
+                standingBook.setCompanyId(companyId);
+                standingBook.setCreatorId(archiveId);
+                standingBookDao.insert(standingBook);
+                standingBookDao.updateByPrimaryKeySelective(standingBook);
+                for (StandingBookFilterVo standingBookFilterVo : standingBookInfo.getListVo()) {
+                    StandingBookFilter standingBookFilter=new StandingBookFilter();
+                    BeanUtils.copyProperties(standingBookFilterVo,standingBookFilter);
+                    standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
+                    standingBookFilter.setOperatorId(archiveId);
+                    standingBookFilter.setSqlStr(getSql(standingBookFilterVo));
                     standingBookFilterDao.updateByPrimaryKey(standingBookFilter);
                 }
                 return new ResponseResult(true,CommonCode.SUCCESS);
@@ -160,6 +185,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
         }
         return new ResponseResult(false, CommonCode.INVALID_PARAM);
+    }
+    private String getSql(StandingBookFilterVo standingBookFilterVo) {
+
+        return null;
     }
 
     @Override
@@ -173,6 +202,46 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             return  new ResponseResult(standingBookInfo,CommonCode.SUCCESS);
         } catch (Exception e) {
            logger.error("台账查询失败");
+            return new ResponseResult<>(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult selectMyStandingBook(Integer archiveId) {
+        try {
+            List<StandingBook> list=standingBookDao.selectByAchiveId(archiveId);
+            return  new ResponseResult(list,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("查询我的台账失败");
+            return new ResponseResult<>(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult selectMyStandingBookShare(Integer archiveId, Integer companyId) {
+        try {
+            List<StandingBook> list=new ArrayList<>();
+            List<StandingBook> shareList=standingBookDao.selectShare(companyId);
+            list.addAll(standingBookDao.selectByAchiveId(archiveId));
+            list.addAll(shareList);
+            return  new ResponseResult(list,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("查询我的台账失败,含共享");
+            return new ResponseResult<>(false, CommonCode.FAIL);
+        }
+    }
+
+    @Override
+    public ResponseResult selectStaff(Integer stangdingBookId, String archiveType, Integer id, String type) {
+        try {
+            //根据台账id查询sql拼接串
+            String sql=standingBookFilterDao.selectSqlById(stangdingBookId);
+            //根据条件查询人员信息
+            List<Integer> integerList=userArchiveDao.selectStaffNoType(sql,archiveType,id);
+            List<UserArchive> list=userArchiveDao.selectStaff(integerList);
+            return  new ResponseResult(list,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("台账查询失败");
             return new ResponseResult<>(false, CommonCode.FAIL);
         }
     }

@@ -19,6 +19,10 @@ import java.util.Date;
 @ToString
 public class UserArchivePostRelationVo implements Serializable {
     /**
+     * id
+     */
+    private Integer id;
+    /**
      * 姓名
      */
     @ApiModelProperty("姓名")

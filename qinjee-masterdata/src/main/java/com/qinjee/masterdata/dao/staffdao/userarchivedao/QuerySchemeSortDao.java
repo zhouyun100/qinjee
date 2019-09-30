@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.QuerySchemeSort;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface QuerySchemeSortDao {
     List<QuerySchemeSort> selectByQuerySchemeId(Integer id);
 
     void deleteBySchemeId(Integer querySchemeId);
+
+    List<Integer> selectSortId(@Param("schemeId") Integer schemeId);
+
+    List<String> selectSortSort(@Param("schemeId") Integer schemeId);
 }

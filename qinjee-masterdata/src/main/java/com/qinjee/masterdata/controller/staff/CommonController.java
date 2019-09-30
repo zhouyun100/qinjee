@@ -113,7 +113,6 @@ public class CommonController extends BaseController {
     public ResponseResult<PageResult<CustomTable>> selectTableFromGroup(Integer currentPage, Integer pageSize, Integer customGroupId) {
         return staffCommonService.selectCustomTableFromGroup(currentPage,pageSize,customGroupId);
     }
-
     /**
      * 新增自定义字段类型
      */
@@ -248,7 +247,33 @@ public class CommonController extends BaseController {
 
         return staffCommonService.importFile(path);
     }
-
+    /**
+     * 根据档案显示对应权限下的单位
+     */
+    @RequestMapping(value = "/getCompany ", method = RequestMethod.GET)
+    @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
+    public ResponseResult getCompany() {
+        Integer archiveId = userSession.getArchiveId();
+        return staffCommonService.getCompany(archiveId);
+    }
+    /**
+     * 根据档案id显示对应权限下的子集部门
+     */
+    @RequestMapping(value = "/getOrgIdByCompanyId ", method = RequestMethod.GET)
+    @ApiOperation(value = "根据档案id显示对应权限下的子集部门", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
+    public ResponseResult getOrgIdByCompanyId(Integer orgId) {
+        return staffCommonService.getOrgIdByCompanyId(orgId);
+    }
+    /**
+     * 显示部门下的岗位
+     */
+    @RequestMapping(value = "/getPostByOrgId ", method = RequestMethod.GET)
+    @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
+    public ResponseResult getPostByOrgId(Integer orgId) {
+        return staffCommonService.getPostByOrgId(orgId);
+    }
     /**
      * 文件上传
      * 这里需要传文件的路径，上传的地址由后端简历文件然后确定上传位置

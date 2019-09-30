@@ -14,6 +14,11 @@ public class BlackListVo implements Serializable {
 
 
     /**
+     * id
+     */
+    private Integer id;
+
+    /**
      * 姓名
      */
     private String userName;

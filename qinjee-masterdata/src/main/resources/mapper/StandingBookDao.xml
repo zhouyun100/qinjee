@@ -186,4 +186,16 @@
     is_delete=1
      where standing_book_id = #{standingBookId,jdbcType=INTEGER}
   </update>
+  <select id="selectByAchiveId" resultType="com.qinjee.masterdata.model.entity.StandingBook">
+    select
+    <include refid="Base_Column_List" />
+    from t_standing_book
+    where   archive_id = #{archiveId,jdbcType=INTEGER} AND  is_delete = 0
+  </select>
+  <select id="selectShare" resultType="com.qinjee.masterdata.model.entity.StandingBook">
+    select
+    <include refid="Base_Column_List" />
+    from t_standing_book
+    where   company_id = #{companyId,jdbcType=INTEGER} AND  is_delete = 0 AND is_share=1
+  </select>
 </mapper>

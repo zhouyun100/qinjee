@@ -566,11 +566,32 @@
     from t_user_archive
     where user_category != "在职"
   </select>
-  <select id="selectByConId">
+    <select id="getUserArchiveListCustom" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+        select #{select,jdbcType=VARCHAR}
+        from t_user_archive a
+        left join t_user_org_auth b on a.archive_id =b.archive_id
+        left join t_organization c on b.org_id=c.org_id AND c.org_id= #{orgId,jdbcType=INTEGER}
+        where a.is_delete=0 AND b.is_delete=0 AND c.is_enable=1
+        orderby #{order,jdbcType=VARCHAR}
+    </select>
+  <select id="selectStaffNoType" resultType="java.lang.Integer">
+    select
+    archive_id
+    from t_user_archive a
+    left join t_user_org_auth b on a.archive_id=b.archive_id
+    left join t_organization c on b.org_id=c.org_id AND c.org_id=#{id,jdbcType=INTEGER}
+    where a.user_category =#{archiveType,jdbcType=VARCHAR} AND  #{sql,jdbcType=VARCHAR}
+  </select>
+  <select id="selectStaff" resultType="com.qinjee.masterdata.model.entity.UserArchive">
     select
     <include refid="Base_Column_List" />
-    from  t_user_archive
-    where
+    from t_user_archive a
+    left join t_user_archive_post_relation b on a.archive_id=b.archive_id
+    AND b.archive_id not in
+    <foreach collection="list" item="item">
+      #{integerList,jdbcType=INTEGER}
+    </foreach>
+
   </select>
 </mapper>
 

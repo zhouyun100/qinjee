@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -232,6 +229,84 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
+    public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId, Integer orgId) {
+        Integer temp=null;
+        String select=null;
+        String order=null;
+        PageResult pageResult=new PageResult();
+        List<UserArchive> list=new ArrayList<>();
+        /*
+        根据查询方案id，找到对应的字段id与顺序和排序id与升降序
+         */
+        try {
+            Map<Integer,Integer> fieldMap=new HashMap<>();
+            List<Integer> fieldIdList=querySchemeFieldDao.selectFieldId(schemeId);
+            List<Integer> fieldSortList=querySchemeFieldDao.selectFieldSort(schemeId);
+            for (int i = 0; i < fieldIdList.size(); i++) {
+                fieldMap.put(fieldSortList.get(i),fieldIdList.get(i));
+            }
+            Set<Integer> sorts = fieldMap.keySet();
+            //set转化为数组
+            Integer[] array =(Integer[]) sorts.toArray();
+            //排序id与升降序进行排列组合
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array.length-1-i; j++) {
+                    if(array[i]>array[j]){
+                        temp=array[i];
+                        array[i]=array[j];
+                        array[j]=temp;
+                    }
+                }
+            }
+            //将字段排序按照顺序拼接成查询项
+            for (Integer integer : array) {
+               //根据id查询字段名
+                String s = customFieldDao.selectFieldName(integer);
+                select=select+s+",";
+            }
+
+
+
+
+        /*
+        根据查询方案id，找到排序id与升降序
+         */
+            Map<Integer,String> sortMap=new HashMap<>();
+            List<Integer> sortIdList=querySchemeSortDao.selectSortId(schemeId);
+            List<String> sortSortList=querySchemeSortDao.selectSortSort(schemeId);
+            for (int i = 0; i < sortIdList.size(); i++) {
+                sortMap.put(sortIdList.get(i),sortSortList.get(i));
+            }
+            Set<Integer> integers = sortMap.keySet();
+            for (Integer integer : integers) {
+                String s = customFieldDao.selectFieldName(integer);
+                order=order+s+getSort(sortMap.get(integer))+",";
+            }
+        /*
+        进行sql查询，返回数据，档案在机构范围内
+         */
+            List<UserArchive> userArchiveList=userArchiveDao.getUserArchiveListCustom(select,order,orgId);
+            pageResult.setList(userArchiveList);
+            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+        } catch (Exception e) {
+            logger.error("展示自定义人员失败");
+            return new ResponseResult<>(pageResult, CommonCode.FAIL);
+        }
+
+
+    }
+    public  String getSort(String sort){
+        if(sort!=null) {
+            if (sort.equals("升序")) {
+                return "ASC";
+            }
+            if (sort.equals("降序")) {
+                return "DESC";
+            }
+        }
+            return null;
+    }
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteUserArchivePostRelation(List<Integer> list) {
         Integer max = 0;
@@ -284,14 +359,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
     }
-
-    /**
-     *
-     * 兼职表维护，展示全部单位，选择单位，返回给后端单位id
-     * 后端根据单位id查询部门，选择部门id，传给后端
-     * 后端通过部门id展示所有的岗位，返回岗位id，传给前端岗位名称（交互实在是太麻烦，考虑是否有优化方案）
-     */
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)

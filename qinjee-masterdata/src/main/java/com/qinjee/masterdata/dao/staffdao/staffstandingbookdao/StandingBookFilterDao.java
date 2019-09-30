@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.staffstandingbookdao;
 
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,5 +25,7 @@ public interface StandingBookFilterDao {
 
     void deleteStandingBookFilter(Integer standingBookId);
 
-    List<StandingBookFilter> selectByStandingBookId(Integer id);
+    List<StandingBookFilter> selectByStandingBookId(@Param("id") Integer id);
+
+    String selectSqlById(@Param("stangdingBookId") Integer stangdingBookId);
 }
