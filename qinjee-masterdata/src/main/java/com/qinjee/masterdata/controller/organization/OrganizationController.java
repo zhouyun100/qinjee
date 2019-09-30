@@ -35,7 +35,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "根据是否封存查询用户下所有的机构,树形结构展示",notes = "高雄")
     public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         UserSession userSession = getUserSession();
-        //TODO 还需要查托管的机构
+        //还需要查托管的机构
         PageResult<Organization> pageResult = organizationService.getOrganizationTree(userSession,isEnable);
         return new ResponseResult<>(pageResult);
     }
@@ -151,11 +151,10 @@ public class OrganizationController extends BaseController {
         return organizationService.downloadExcelByOrgCodeId(orgIds, response, getUserSession());
     }
 
-    @ApiOperation(value = "导入Excel", notes = "高雄")
+    @ApiOperation(value = "导入机构Excel", notes = "高雄")
     @PostMapping("/uploadExcel")
     public ResponseResult uploadExcel(@ApiParam(value = "需要导入的Excel文件", required = true) MultipartFile file){
-
-        return null;
+        return organizationService.uploadExcel(file, getUserSession());
     }
 
     @ApiOperation(value = "岗位维护机构岗位树状图展示", notes = "高雄")

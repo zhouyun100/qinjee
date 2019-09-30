@@ -170,7 +170,7 @@
   <select id="getAllOrganization" resultMap="BaseResultMap">
     select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org
     left join t_role_org_auth roa on  roa.org_id = org.org_id
-    left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
+    left join t_user_org_auth tuoa on org.org_id = tuoa.org_id
     where
     <if test="roleIds != null and roleIds.size > 0">
       roa.role_id in

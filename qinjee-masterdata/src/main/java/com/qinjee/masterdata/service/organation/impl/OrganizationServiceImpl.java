@@ -20,19 +20,20 @@ import com.qinjee.model.response.ResponseResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -398,6 +399,195 @@ public class OrganizationServiceImpl implements OrganizationService {
         //导出Excel
         exportExcel(response, organizationList);
         return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult uploadExcel(MultipartFile file, UserSession userSession) {
+        //解析文件
+        try {
+            parseFile(file);
+
+
+
+        } catch (Exception e) {
+            String message = e.getMessage();
+            ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+            responseResult.setMessage(message);
+            return responseResult;
+        }
+        return new ResponseResult();
+    }
+
+    private List<Organization> parseFile(MultipartFile file) throws Exception {
+        List<Organization> organizationList = new ArrayList<>();
+            // 检查文件类型
+            String fileName = checkFile(file);
+            if("1".equals(fileName) || "2".equals(fileName)) {
+                ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
+            }
+            Workbook workbook = null;
+            InputStream inputStream = file.getInputStream();
+            workbook = WorkbookFactory.create(inputStream);
+            int numberOfSheets = workbook.getNumberOfSheets();
+            int orgNum = 0;
+            if (numberOfSheets > 0) {
+                Sheet sheet = workbook.getSheetAt(0);
+                if (null != sheet) {
+                    // 获得当前sheet的开始行
+                    int firstRowNum = sheet.getFirstRowNum();
+                    // 获得当前sheet的结束行
+                    int lastRowNum = sheet.getLastRowNum();
+                    for (int rowNum = firstRowNum; rowNum <= lastRowNum; rowNum++) {
+                        Boolean parentIsMust = true;
+                        // 获得当前行
+                        Row row = sheet.getRow(rowNum);
+                        if (row == null) {
+                            continue;
+                        }
+//                        // 获得当前行的开始列
+//                        int firstCellNum = row.getFirstCellNum();
+//                        // 获得当前行的列数
+//                        int lastCellNum = row.getLastCellNum();
+                        Organization organization = new Organization();
+                        String orgCode = getCellValue(row.getCell(0));
+                        if(StringUtils.isEmpty(orgCode)){
+                            throw new Exception((firstRowNum + 1) + "行,第"+ 1 +"列机构编码不能为空!");
+                        }
+                        organization.setOrgCode(orgCode);
+                        String orgName = getCellValue(row.getCell(1));
+                        if(StringUtils.isEmpty(orgName)){
+                            throw new Exception((firstRowNum + 1) + "行,第"+ 2 +"列机构名称不能为空!");
+                        }
+                        organization.setOrgName(orgName);
+
+                        String orgType = getCellValue(row.getCell(2));
+                        if(StringUtils.isEmpty(orgType)){
+                            throw new Exception((firstRowNum + 1) + "行,第"+ 3 +"列机构类型不能为空!");
+                        }
+                        if("集团".equals(orgType)){
+                            orgNum ++;
+                            parentIsMust = false;
+                        }
+                        organization.setOrgType(orgType);
+                        String parentPostCode = getCellValue(row.getCell(3));
+                        if(StringUtils.isEmpty(parentPostCode) && !parentIsMust){
+                            throw new Exception((firstRowNum + 1) + "行,第"+ 4 +"列上级机构编码不能为空!");
+                        }
+                        organization.setOrgParentCode(parentPostCode);
+                        String parentOrgName = getCellValue(row.getCell(4));
+                        if(StringUtils.isEmpty(parentOrgName) && !parentIsMust){
+                            throw new Exception((firstRowNum + 1) + "行,第"+ 5 +"列上级机构不能为空!");
+                        }
+                        organization.setOrgParentName(parentOrgName);
+                        String managerEmployeeNumber = getCellValue(row.getCell(5));
+                        organization.setManagerEmployeeNumber(managerEmployeeNumber);
+                        String orgManagerName = getCellValue(row.getCell(6));
+                        organization.setOrgManagerName(orgManagerName);
+
+
+                        //TODO 插入数据库并判断是更新还是新增,数据库是否存在
+
+
+                        organizationList.add(organization);
+                    }
+                }
+            }
+            if(orgNum != 1){
+                throw new Exception("有且只能有一个'集团'类型的机构!");
+            }
+        return organizationList;
+    }
+
+    /**
+     * 根据不同类型获取值
+     *
+     * @param cell
+     * @return
+     */
+    public static String getCellValue(Cell cell) {
+        String cellValue = null;
+        if (cell == null) {
+            return cellValue;
+        }
+        // 判断数据的类型
+        switch (cell.getCellTypeEnum()) {
+            case NUMERIC: // 数字
+                cellValue = stringDateProcess(cell);
+                break;
+            case STRING: // 字符串
+                cellValue = String.valueOf(cell.getStringCellValue());
+                break;
+            case BOOLEAN: // Boolean
+                cellValue = String.valueOf(cell.getBooleanCellValue());
+                break;
+            case FORMULA: // 公式
+                cellValue = String.valueOf(cell.getCellFormula());
+                break;
+            case BLANK: // 空值
+                cellValue = "";
+                break;
+            case ERROR: // 故障
+                cellValue = "非法字符";
+                break;
+            default:
+                cellValue = "未知类型";
+                break;
+        }
+        return cellValue;
+    }
+
+    /**
+     * 时间格式转换
+     *
+     * @param cell
+     * @return
+     */
+    public static String stringDateProcess(Cell cell) {
+        String result = "";
+        if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
+            SimpleDateFormat sdf = null;
+            if (cell.getCellStyle().getDataFormat() == HSSFDataFormat.getBuiltinFormat("h:mm")) {
+                sdf = new SimpleDateFormat("HH:mm ");
+            } else {// 日期
+                sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            }
+            Date date = cell.getDateCellValue();
+            result = sdf.format(date);
+        } else if (cell.getCellStyle().getDataFormat() == 58) {
+            // 处理自定义日期格式：m月d日(通过判断单元格的格式id解决，id的值是58)
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            double value = cell.getNumericCellValue();
+            Date date = org.apache.poi.ss.usermodel.DateUtil.getJavaDate(value);
+            result = sdf.format(date);
+        } else {
+            double value = cell.getNumericCellValue();
+            CellStyle style = cell.getCellStyle();
+            DecimalFormat format = new DecimalFormat();
+            String temp = style.getDataFormatString();
+            // 单元格设置成常规
+            if (temp.equals("General")) {
+                format.applyPattern("#");
+            }
+            result = format.format(value);
+        }
+
+        return result;
+    }
+
+    public static String checkFile(MultipartFile file) throws IOException {
+        // 判断文件是否存在
+        if (null == file) {
+            //throw new GunsException(BizExceptionEnum.FILE_NOT_FOUND);
+            return "1";//文件不存在
+        }
+        // 获得文件名
+        String fileName = file.getOriginalFilename();
+        // 判断文件是否是excel文件
+        if (!fileName.endsWith("xls") && !fileName.endsWith("xlsx")) {
+            //throw new GunsException(BizExceptionEnum.UPLOAD_NOT_EXCEL_ERROR);
+            return "2";//上传的不是excel文件
+        }
+        return fileName;
     }
 
     /**

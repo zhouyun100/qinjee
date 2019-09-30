@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -135,4 +136,11 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession);
+
+    /**
+     * 导入机构Excel
+     * @param file
+     * @return
+     */
+    ResponseResult uploadExcel(MultipartFile file, UserSession userSession);
 }
