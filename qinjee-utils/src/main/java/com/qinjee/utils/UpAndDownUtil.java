@@ -86,7 +86,7 @@ public class UpAndDownUtil {
     public static String TransToForward() {
         //获取临时连接所需要的接送对象
         JSONObject credential = UpAndDownUtil.getCredential();
-        Map<String,String> map=new HashMap<>();
+        Map<String,String> map=new HashMap();
         //解析获取临时参数
         String s = credential.getString("credentials");
         JSONObject jsonObject = JSON.parseObject(s);

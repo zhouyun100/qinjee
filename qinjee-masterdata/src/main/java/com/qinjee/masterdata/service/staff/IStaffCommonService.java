@@ -1,9 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.CustomField;
-import com.qinjee.masterdata.model.entity.CustomGroup;
-import com.qinjee.masterdata.model.entity.CustomTable;
-import com.qinjee.masterdata.model.entity.CustomTableData;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.ibatis.annotations.Param;
@@ -14,34 +11,36 @@ import java.util.List;
  * @author Administrator
  */
 public interface IStaffCommonService {
-    /**
-     * 自定义表修改
-     * @param customTable
-     * @return
-     */
-    ResponseResult updateCustomTable(CustomTable customTable) ;
 
     /**
      * 新增自定义表
-     * @param customTable
+     * @param customArchiveTable
      * @return
      */
-    ResponseResult insert(CustomTable customTable);
+    ResponseResult insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
 
     /**
      * 逻辑删除自定义表
      * @param list
      * @return
      */
-    ResponseResult deleteCustomTable(List<Integer> list);
+    ResponseResult deleteCustomArchiveTable(List<Integer> list);
+
+    /**
+     * 自定义表修改
+     * @param customArchiveTable
+     * @return
+     */
+    ResponseResult updateCustomArchiveTable(CustomArchiveTable customArchiveTable);
+
 
     /**
      * 分页展示自定义表
      * @param currentPage
-     * @param pagesize
+     * @param pageSize
      * @return
      */
-    ResponseResult<PageResult<CustomTable>> selectCustomTable(Integer currentPage, Integer pagesize);
+    ResponseResult<PageResult<CustomArchiveTable>> selectCustomArchiveTable(Integer currentPage, Integer pageSize);
 
     /**
      * 新增自定义组
@@ -49,83 +48,88 @@ public interface IStaffCommonService {
      * @return
      */
 
-    ResponseResult insertCustomGroup(CustomGroup customGroup);
+    ResponseResult insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
 
     /**
      * 删除自定义组
      * @param list
      * @return
      */
-    ResponseResult deleteCustomGroup(List<Integer> list);
+    ResponseResult deleteCustomArchiveGroup(List<Integer> list);
 
     /**
      * 自定义组修改
-     * @param customGroup
+     * @param customArchiveGroup
      * @return
      */
-    ResponseResult updateCustomGroup(CustomGroup customGroup);
+    ResponseResult updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
 
     /**
      *分页展示自定义组中的表
      * @param currentPage
      * @param pageSize
-     * @param customGroupId
+     * @param CustomArchiveGroupId
      * @return
      */
-    ResponseResult<PageResult<CustomTable>> selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer customGroupId);
+    ResponseResult<PageResult<CustomArchiveTable>> selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer CustomArchiveGroupId);
 
     /**
      * 新增自定义字段
-     * @param customField
+     * @param customArchiveField
      * @return
      */
-    ResponseResult insertCustomField(CustomField customField);
+    ResponseResult insertCustomArchiveField(CustomArchiveField customArchiveField);
 
     /**
      * 逻辑删除自定义字段
      * @param list
      * @return
      */
-    ResponseResult deleteCustomField(List<Integer> list);
+    ResponseResult deleteCustomArchiveField(List<Integer> list);
 
     /**
      * 修改自定义字段类型
-     * @param customField
+     * @param customArchiveField
      * @return
      */
-    ResponseResult updateCustomField(CustomField customField);
+    ResponseResult updateCustomArchiveField(CustomArchiveField customArchiveField);
 
     /**
      *分页展示指定自定义表下的自定义字段
      * @param currentPage
      * @param pageSize
-     * @param customTableId
+     * @param customArchiveTableId
      * @return
      */
-    ResponseResult<PageResult<CustomField>> selectCustomFieldFromTable(Integer currentPage, Integer pageSize, Integer customTableId);
-
+    ResponseResult<PageResult<CustomArchiveField>> selectCustomArchiveField(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
+    /**
+     * 通过字段id找到自定义字段信息
+     * @param customArchiveFieldId
+     * @return
+     */
+    ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId);
     /**
      * 将数据插入自定义数据表
-     * @param customTableData
+     * @param customArchiveTableData
      * @return
      */
-    ResponseResult insertCustomTableData(CustomTableData customTableData);
+    ResponseResult insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
 
     /**
      * 修改自定义字段表中的数据
-     * @param customTableData
+     * @param  customArchiveTableData
      * @return
      */
-    ResponseResult updateCustomTableData(CustomTableData customTableData);
+    ResponseResult updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
 
     /**
      * 展示自定义表数据内容,返回自定义表数据
      * @param currentPage
      * @param pageSize
-     * @param customTableId
+     * @param customArchiveTableId
      * @return
      */
-    ResponseResult<PageResult<CustomTableData>> selectCustomTableData(Integer currentPage, Integer pageSize, Integer customTableId);
+    ResponseResult<PageResult<CustomArchiveTableData>> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
 
     /**
      * 获取字段校验类型
@@ -145,10 +149,10 @@ public interface IStaffCommonService {
      * 模板导出
      * @param path
      * @param title
-     * @param customTableId
+     * @param customArchiveTableDataId
      * @return
      */
-    ResponseResult exportFile(String path, String title, Integer customTableId);
+    ResponseResult exportFile(String path, String title, Integer customArchiveTableDataId);
 
     /**
      * 文件上传
@@ -163,12 +167,7 @@ public interface IStaffCommonService {
      */
     ResponseResult UploadFileByForWard();
 
-    /**
-     * 通过字段id找到自定义字段信息
-     * @param customFieldId
-     * @return
-     */
-    ResponseResult<CustomField> selectCustomFieldById(Integer customFieldId);
+
 
     /**
      * 据档案显示对应权限下的单位
@@ -190,4 +189,7 @@ public interface IStaffCommonService {
      * @return
      */
     ResponseResult getPostByOrgId(@Param("orgId") Integer orgId);
+
+
+
 }

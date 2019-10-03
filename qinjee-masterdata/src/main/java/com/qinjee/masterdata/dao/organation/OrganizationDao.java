@@ -113,4 +113,8 @@ public interface OrganizationDao {
      * @return
      */
     List<Organization> getOrganizationsByOrgIds(List<Integer> orgIds);
+
+    List<Integer> getOrgIdByCompanyId(Integer orgId);
+
+    List<Integer> getCompanyIdByArchiveId(Integer archiveId);
 }

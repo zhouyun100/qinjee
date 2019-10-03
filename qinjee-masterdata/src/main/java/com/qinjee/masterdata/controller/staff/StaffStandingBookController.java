@@ -156,6 +156,4 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult selectStaff(Integer stangdingBookId,String archiveType,Integer id,String type){
         return staffStandingBookService.selectStaff(stangdingBookId,archiveType,id,type);
     }
-
-
 }

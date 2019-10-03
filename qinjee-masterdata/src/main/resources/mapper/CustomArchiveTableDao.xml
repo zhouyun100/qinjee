@@ -144,4 +144,21 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where table_id = #{tableId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxPrimaryKey">
+    select MAX (table_id)
+    from  t_custom_archive_table
+    where is_delete=0
+  </select>
+  <update id="deleteCustomTable">
+    update t_custom_archive_table
+    set
+      is_delete = 1
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPage" >
+    select
+    <include refid="Base_Column_List"/>
+    from t_custom_archive_table
+    where is_delete=0
+  </select>
 </mapper>

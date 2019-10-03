@@ -11,8 +11,8 @@ spring:
 
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql://192.168.252.129:3306/qinjee?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
-    username: root
+    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    username: qinjee
     password: qinjee2019
     driver-class-name: com.mysql.jdbc.Driver
 
@@ -102,7 +102,7 @@ eureka:
     lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://qinjee:qinjee2019@192.168.1.178:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@192.168.1.102:8888/eureka/
 
 server:
   port: 8080

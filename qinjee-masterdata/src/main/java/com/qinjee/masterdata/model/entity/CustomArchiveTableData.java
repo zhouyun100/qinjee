@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +10,8 @@ import java.util.Date;
  * t_custom_archive_table_data
  * @author
  */
+@Data
+@ToString
 public class CustomArchiveTableData implements Serializable {
     /**
      * 主键ID
@@ -45,59 +50,4 @@ public class CustomArchiveTableData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Integer tableId) {
-        this.tableId = tableId;
-    }
-
-    public Integer getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Integer businessId) {
-        this.businessId = businessId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public byte[] getBigData() {
-        return bigData;
-    }
-
-    public void setBigData(byte[] bigData) {
-        this.bigData = bigData;
-    }
 }

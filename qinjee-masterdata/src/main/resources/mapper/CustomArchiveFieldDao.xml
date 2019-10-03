@@ -226,4 +226,27 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where field_id = #{fieldId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxPrimaryKey">
+    select MAX (field_id)
+    from t_custom_archive_field
+    WHERE is_delete=0
+  </select>
+  <update id="deleteCustomField">
+    update  t_custom_archive_field
+    set
+    is_delete=1
+    where field_id = #{fieldId,jdbcType=INTEGER}
+  </update>
+  <select id="selectFieldId">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_field
+    where  table_id = #{tableId,jdbcType=INTEGER}
+    AND  is_delete=0
+  </select>
+  <select id="selectFieldType">
+    select  field_type
+    from  t_custom_archive_field
+    where is_delete=0
+  </select>
 </mapper>

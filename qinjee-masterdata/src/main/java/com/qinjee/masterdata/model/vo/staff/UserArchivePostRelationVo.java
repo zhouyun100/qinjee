@@ -95,9 +95,5 @@ public class UserArchivePostRelationVo implements Serializable {
      */
     @ApiModelProperty("上级领导ID")
     private Integer supervisorId;
-
-
-
-
     private static final long serialVersionUID = 1L;
 }
