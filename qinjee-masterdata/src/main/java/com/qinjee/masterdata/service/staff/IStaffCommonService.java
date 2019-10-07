@@ -17,21 +17,21 @@ public interface IStaffCommonService {
      * @param customArchiveTable
      * @return
      */
-    ResponseResult insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
+    Integer  insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
 
     /**
      * 逻辑删除自定义表
      * @param list
      * @return
      */
-    ResponseResult deleteCustomArchiveTable(List<Integer> list);
+    Integer deleteCustomArchiveTable(List<Integer> list);
 
     /**
      * 自定义表修改
      * @param customArchiveTable
      * @return
      */
-    ResponseResult updateCustomArchiveTable(CustomArchiveTable customArchiveTable);
+    Integer updateCustomArchiveTable(CustomArchiveTable customArchiveTable);
 
 
     /**
@@ -44,25 +44,25 @@ public interface IStaffCommonService {
 
     /**
      * 新增自定义组
-     * @param customGroup
+     * @param customArchiveGroup
      * @return
      */
 
-    ResponseResult insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
+    Integer insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
 
     /**
      * 删除自定义组
      * @param list
      * @return
      */
-    ResponseResult deleteCustomArchiveGroup(List<Integer> list);
+    Integer deleteCustomArchiveGroup(List<Integer> list);
 
     /**
      * 自定义组修改
      * @param customArchiveGroup
      * @return
      */
-    ResponseResult updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
+    Integer updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
 
     /**
      *分页展示自定义组中的表
@@ -78,21 +78,21 @@ public interface IStaffCommonService {
      * @param customArchiveField
      * @return
      */
-    ResponseResult insertCustomArchiveField(CustomArchiveField customArchiveField);
+    Integer insertCustomArchiveField(CustomArchiveField customArchiveField);
 
     /**
      * 逻辑删除自定义字段
      * @param list
      * @return
      */
-    ResponseResult deleteCustomArchiveField(List<Integer> list);
+    Integer deleteCustomArchiveField(List<Integer> list);
 
     /**
      * 修改自定义字段类型
      * @param customArchiveField
      * @return
      */
-    ResponseResult updateCustomArchiveField(CustomArchiveField customArchiveField);
+    Integer updateCustomArchiveField(CustomArchiveField customArchiveField);
 
     /**
      *分页展示指定自定义表下的自定义字段
@@ -107,7 +107,7 @@ public interface IStaffCommonService {
      * @param customArchiveFieldId
      * @return
      */
-    ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId);
+    CustomArchiveField selectCustomArchiveFieldById(Integer customArchiveFieldId);
     /**
      * 将数据插入自定义数据表
      * @param customArchiveTableData
@@ -120,7 +120,7 @@ public interface IStaffCommonService {
      * @param  customArchiveTableData
      * @return
      */
-    ResponseResult updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
+    Integer updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
 
     /**
      * 展示自定义表数据内容,返回自定义表数据
@@ -136,7 +136,7 @@ public interface IStaffCommonService {
      * @param fieldId
      * @return
      */
-    ResponseResult<List<String>> checkField(Integer fieldId);
+    List<String> checkField(Integer fieldId);
 
     /**
      * 模板导入

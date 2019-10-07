@@ -488,9 +488,13 @@
     update t_user_archive
     set
     is_delete=1
-    where  archive_id = #{archiveId,jdbcType=INTEGER}
+    where  archive_id
+    in
+    <foreach collection="archiveid" item="item" open="(" separator="," close=")">
+    #{item}
+   </foreach>
   </update>
-  <update id="resumeDeleteArchiveById">
+  <update id="resumeDeleteArchiveById" >
     update t_user_archive
     set
     is_delete=1

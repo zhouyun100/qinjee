@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,9 +22,11 @@ public interface CustomArchiveFieldDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteCustomField(Integer integer);
-
     List<Integer> selectFieldId(Integer customArchiveTableId);
 
     List<String> selectFieldType(Integer customArchiveTableId);
+
+    Integer deleteCustomField(List<Integer> list);
+
+    List<CustomArchiveField> selectByList(@Param("integerList") List<Integer> integerList);
 }

@@ -26,7 +26,7 @@ public interface UserArchivePostRelationDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteUserArchivePostRelation(Integer integer);
+    void deleteUserArchivePostRelation(List<Integer> list);
 
     /**
      * 通过岗位id查询员工档案岗位关系表

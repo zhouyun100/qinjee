@@ -22,7 +22,7 @@ public interface CustomArchiveGroupDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteCustomGroup(@Param("integer") Integer integer);
-
     List<Integer> selectTableId(@Param("customArchiveGroupId") Integer customArchiveGroupId);
+
+    Integer deleteCustomGroup(List<Integer> list);
 }

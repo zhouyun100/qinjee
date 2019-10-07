@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.staff;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
@@ -19,7 +20,7 @@ public interface IStaffArchiveService {
      * @return
      */
 
-    ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,Integer arichveId);
+    Integer insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,UserSession userSession);
 
     /**
      * 逻辑删除人员岗位关系表
@@ -33,7 +34,7 @@ public interface IStaffArchiveService {
      * @param userArchivePostRelation
      * @return
      */
-    ResponseResult updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation);
+    Integer updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation);
 
     /**
      * 分页查询人员岗位关系表
@@ -57,7 +58,7 @@ public interface IStaffArchiveService {
      * @param id
      * @return
      */
-    ResponseResult<QuerySchemeList> selectQueryScheme(Integer id);
+    QuerySchemeList selectQueryScheme(Integer id);
 
     /**
      * 保存查询方案
@@ -73,34 +74,34 @@ public interface IStaffArchiveService {
      * @param archiveid
      * @return
      */
-    ResponseResult deleteArchiveById(List<Integer> archiveid);
+    Integer deleteArchiveById(List<Integer> archiveid);
     /**
      * 恢复删除档案
      * @param archiveid
      * @return
      */
-    ResponseResult resumeDeleteArchiveById(Integer archiveid);
+    Integer resumeDeleteArchiveById(Integer archiveid);
 
     /**
      * 更新档案
      * @param userArchive
      * @return
      */
-    ResponseResult updateArchive(UserArchive userArchive);
+    Integer updateArchive(UserArchive userArchive);
 
     /**
      * 查看人员档案
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult selectArchive(Integer archiveId);
+    UserArchive selectArchive(UserSession userSession);
 
     /**
      * 新增档案
      * @param userArchive
      * @return
      */
-    ResponseResult insertArchive(UserArchive userArchive);
+    Integer insertArchive(UserArchive userArchive);
     /**
      * 修改预入职信息(显示字段的信息)
      */
@@ -112,11 +113,11 @@ public interface IStaffArchiveService {
     /**
      * 通过id找到人员姓名与工号
      */
-    ResponseResult<Map<String, String>> selectNameAndNumber(Integer id);
+    Map<String, String> selectNameAndNumber(Integer id);
     /**
      * 通过id查询到对应机构名称
      */
-    ResponseResult selectOrgName(Integer id);
+    String selectOrgName(Integer id);
 
     /**
      * 根据显示方案展示人员信息

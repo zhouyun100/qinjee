@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequestMapping("/staffarc")
 @Api(tags = "【人员管理】公用设计相关接口")
 public class CommonController extends BaseController {
+
     @Autowired
     private IStaffCommonService staffCommonService;
     /**
@@ -32,8 +34,10 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "新增自定义表", notes = "hkt")
     @ApiImplicitParam(name = "CustomTable", value = "自定义表", paramType = "form", required = true)
     public ResponseResult insertCustomTable(CustomArchiveTable customArchiveTable) {
-        return staffCommonService.insertCustomArichiveTable(customArchiveTable);
+        Integer integer = staffCommonService.insertCustomArichiveTable(customArchiveTable);
+       return  getResponseResult(integer,"新增自定义表失败");
     }
+
     /**
      * 删除自定义表
      */
@@ -41,7 +45,13 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "删除自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customArchiveTableId", value = "自定义表id组成集合", paramType = "query", required = true, example = "{1,2}")
     public ResponseResult deleteCustomArchiveTable(List<Integer> list) {
-      return staffCommonService.deleteCustomArchiveTable(list);
+        Integer integer = staffCommonService.deleteCustomArchiveTable(list);
+        if(list.size()==integer){
+            return ResponseResult.SUCCESS();
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("逻辑删除自定义表失败");
+        return fail;
     }
 
     /**
@@ -51,7 +61,8 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "修改自定义表", notes = "hkt")
     @ApiImplicitParam(name = "customArchiveTable", value = "自定义字段表", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
-        return staffCommonService.updateCustomArchiveTable(customArchiveTable);
+        Integer integer = staffCommonService.updateCustomArchiveTable(customArchiveTable);
+       return getResponseResult(integer,"修改自定义表失败");
     }
 
     /**
@@ -74,7 +85,9 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "新增自定义组", notes = "hkt")
     @ApiImplicitParam(name = "customArchiveGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult insertCustomGroup(CustomArchiveGroup customArchiveGroup) {
-        return staffCommonService.insertCustomArchiveGroup(customArchiveGroup);
+        Integer integer = staffCommonService.insertCustomArchiveGroup(customArchiveGroup);
+        return  getResponseResult(integer,"新增自定义组失败");
+
     }
 
     /**
@@ -84,7 +97,13 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "删除自定义组", notes = "hkt")
     @ApiImplicitParam(name = "deleteCustomArchiveGroup", value = "自定义组id组成的集合", paramType = "form", required = true, example = "{1,2}")
     public ResponseResult deleteCustomArchiveGroup(List<Integer> list) {
-        return staffCommonService.deleteCustomArchiveGroup(list);
+        Integer integer = staffCommonService.deleteCustomArchiveGroup(list);
+        if(list.size()==integer){
+            return ResponseResult.SUCCESS();
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("逻辑删除自定义组失败");
+        return fail;
     }
 
     /**
@@ -94,7 +113,8 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "修改自定义组", notes = "hkt")
     @ApiImplicitParam(name = "CustomArchiveGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult updateCustomGroup(CustomArchiveGroup customArchiveGroup) {
-        return staffCommonService.updateCustomArchiveGroup(customArchiveGroup);
+        Integer integer = staffCommonService.updateCustomArchiveGroup(customArchiveGroup);
+        return getResponseResult(integer,"修改自定义组失败");
     }
 
     /**
@@ -118,7 +138,8 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "新增自定义字段", notes = "hkt")
     @ApiImplicitParam(name = "CustomArchiveField", value = "自定义字段对象", paramType = "form", required = true)
     public ResponseResult insertCustomField(CustomArchiveField customArchiveField) {
-        return staffCommonService.insertCustomArchiveField(customArchiveField);
+        Integer integer = staffCommonService.insertCustomArchiveField(customArchiveField);
+        return getResponseResult(integer,"新增自定义字段失败");
     }
 
     /**
@@ -129,7 +150,13 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "删除自定义字段", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
     public ResponseResult deleteCustomArchiveField(List<Integer> list) {
-        return staffCommonService.deleteCustomArchiveField(list);
+        Integer integer = staffCommonService.deleteCustomArchiveField(list);
+        if(list.size()==integer){
+            return ResponseResult.SUCCESS();
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("逻辑删除自定义字段失败");
+        return fail;
     }
 
     /**
@@ -140,7 +167,8 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "修改自定义字段", notes = "hkt")
     @ApiImplicitParam(name = "customArchiveField", value = "自定义字段表", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveField(CustomArchiveField customArchiveField) {
-        return staffCommonService.updateCustomArchiveField(customArchiveField);
+        Integer integer = staffCommonService.updateCustomArchiveField(customArchiveField);
+        return  getResponseResult(integer,"修改自定义字段失败");
     }
 
     /**
@@ -164,7 +192,13 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "通过自定义字段id找到对应的自定义字段信息", notes = "hkt")
     @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId) {
-        return staffCommonService.selectCustomArchiveFieldById(customArchiveFieldId);
+        CustomArchiveField customArchiveField = staffCommonService.selectCustomArchiveFieldById(customArchiveFieldId);
+        if(null==customArchiveField&& "".equals(customArchiveField)){
+            ResponseResult fail = ResponseResult.FAIL();
+            fail.setMessage("查找自定义字段信息失败");
+            return  fail;
+        }
+        return new ResponseResult<>(customArchiveField,CommonCode.SUCCESS);
     }
 
     /**
@@ -186,7 +220,8 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
     @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
-        return staffCommonService.updateCustomArchiveTableData(customArchiveTableData);
+        Integer integer = staffCommonService.updateCustomArchiveTableData(customArchiveTableData);
+        return getResponseResult(integer,"修改自定义数据表中的记录失败");
     }
     /**
      * 展示自定义表内容
@@ -212,7 +247,13 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "集合存储字段所需要的检验类型，考虑是否直接放在字段表中", notes = "hkt")
     @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
     public ResponseResult<List<String>> checkField(Integer fieldId) {
-        return staffCommonService.checkField(fieldId);
+        List<String> strings = staffCommonService.checkField(fieldId);
+        if(strings.size()>0){
+            return new ResponseResult<>(strings,CommonCode.SUCCESS);
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("获取字段校验类型失败");
+        return  fail;
     }
 
     /**
@@ -293,5 +334,7 @@ public class CommonController extends BaseController {
 
         return staffCommonService.UploadFileByForWard();
     }
+
+
 
 }

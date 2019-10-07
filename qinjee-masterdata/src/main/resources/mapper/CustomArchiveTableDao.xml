@@ -153,7 +153,10 @@
     update t_custom_archive_table
     set
       is_delete = 1
-    where table_id = #{tableId,jdbcType=INTEGER}
+    where table_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+     </foreach>
   </update>
   <select id="selectByPage" >
     select

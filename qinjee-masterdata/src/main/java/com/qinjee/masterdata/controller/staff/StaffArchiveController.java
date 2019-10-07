@@ -5,6 +5,8 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -37,7 +39,8 @@ public class StaffArchiveController extends BaseController {
     @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
     public ResponseResult insertArchive(UserArchive userArchive) {
 
-        return staffArchiveService.insertArchive(userArchive);
+        Integer integer = staffArchiveService.insertArchive(userArchive);
+        return getResponseResult(integer,"新增档案表失败");
     }
 
     /**
@@ -47,8 +50,13 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "删除档案", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "人员档案id集合", paramType = "query", required = true)
     public ResponseResult deleteArchiveById(List<Integer> archiveid) {
-
-        return staffArchiveService.deleteArchiveById(archiveid);
+        Integer integer = staffArchiveService.deleteArchiveById(archiveid);
+        if(archiveid.size()==integer){
+            return  ResponseResult.SUCCESS();
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("逻辑删除档案失败");
+        return fail;
     }
     /**
      * 删除恢复
@@ -58,7 +66,8 @@ public class StaffArchiveController extends BaseController {
     @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
     public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
 
-        return staffArchiveService.resumeDeleteArchiveById(archiveid);
+        Integer integer = staffArchiveService.resumeDeleteArchiveById(archiveid);
+        return getResponseResult(integer,"恢复删除档案失败");
     }
     /**
      * 更新档案表(物理数据)
@@ -67,8 +76,8 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "更新档案表", notes = "hkt")
     @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
     public ResponseResult updateArchive(UserArchive userArchive) {
-
-        return staffArchiveService.updateArchive(userArchive);
+        Integer integer = staffArchiveService.updateArchive(userArchive);
+        return getResponseResult(integer,"更新档案表失败");
     }
     /**
      * 更新档案表(自定义表数据)
@@ -86,8 +95,13 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案", notes = "hkt")
     public ResponseResult selectArchive() {
-        Integer archiveId = getUserSession().getArchiveId();
-        return staffArchiveService.selectArchive(archiveId);
+        UserArchive userArchive = staffArchiveService.selectArchive(getUserSession());
+        if(null!=userArchive){
+            return new ResponseResult(userArchive, CommonCode.SUCCESS);
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("查看档案失败");
+        return fail;
     }
     /**
      * 通过id找到人员姓名与工号
@@ -96,7 +110,13 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
-        return staffArchiveService.selectNameAndNumber(id);
+        Map<String, String> stringStringMap = staffArchiveService.selectNameAndNumber(id);
+        if(null!=stringStringMap){
+            return new ResponseResult<>(stringStringMap,CommonCode.SUCCESS);
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("通过id找到人员姓名与工号失败");
+        return fail;
     }
 
     /**
@@ -118,8 +138,8 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "新增人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
     public ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffArchiveService.insertUserArchivePostRelation(userArchivePostRelationVo,archiveId);
+        Integer integer = staffArchiveService.insertUserArchivePostRelation(userArchivePostRelationVo, getUserSession());
+        return getResponseResult(integer,"新增人员岗位关系,初期只涉及任职状态是否兼职失败");
     }
 
     /**
@@ -141,8 +161,8 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "修改人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
     public ResponseResult updateUserArchivePostRelation( UserArchivePostRelation userArchivePostRelation) {
-
-        return staffArchiveService.updateUserArchivePostRelation(userArchivePostRelation);
+        Integer integer = staffArchiveService.updateUserArchivePostRelation(userArchivePostRelation);
+       return getResponseResult(integer,"修改人员岗位关系，初期只涉及任职状态是否兼职失败");
     }
 
     /**
@@ -169,7 +189,14 @@ public class StaffArchiveController extends BaseController {
     @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
 
     public ResponseResult selectOrgName(Integer id) {
-        return staffArchiveService.selectOrgName(id);
+        String s = staffArchiveService.selectOrgName(id);
+        if(null!=s){
+            return new ResponseResult<>(s,CommonCode.SUCCESS);
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("通过id查询到对应机构名称失败");
+        return fail;
+
     }
     /**
      * 保存修改方案
@@ -209,7 +236,13 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "展示查询方案", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
     public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
-        return staffArchiveService.selectQueryScheme(id);
+        QuerySchemeList querySchemeList = staffArchiveService.selectQueryScheme(id);
+        if(null!=querySchemeList){
+            return new ResponseResult<>(querySchemeList,CommonCode.SUCCESS);
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage("通过id查询到对应机构名称失败");
+        return fail;
     }
     /**
      * 根据显示方案展示人员信息

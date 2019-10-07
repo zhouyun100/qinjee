@@ -260,7 +260,7 @@
     from   t_custom_field
     where   table_id = #{tableId,jdbcType=INTEGER}   AND  is_delete = 0
   </select>
-  <update id="updatePreEmploymentField">
+  <update id="updatePreEmploymentField" >
     update t_custom_field
     set  field_code = #{fieldCode,jdbcType=VARCHAR}
     WHERE  field_id = #{fieldId,jdbcType=INTEGER}

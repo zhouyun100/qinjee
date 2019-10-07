@@ -9,6 +9,7 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -46,71 +47,43 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private OrganizationDao organizationDao;
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteArchiveById(List<Integer> archiveid) {
-        Integer integer = null;
-        try {
-            integer=userArchiveDao.selectMaxId();
-            for (Integer integer1 : archiveid) {
-                if(integer1>integer){
-                    return new ResponseResult(false,CommonCode.INVALID_PARAM);
-                }
-                userArchiveDao.deleteArchiveById(integer1);
+    public Integer deleteArchiveById(List<Integer> archiveid) {
+        Integer integer = userArchiveDao.selectMaxId();
+        for (Integer integer1 : archiveid) {
+            if(integer1>integer){
+                return 0;
             }
-            return new ResponseResult(true,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("逻辑删除失败");
-            return new ResponseResult(false, CommonCode.FAIL);
         }
+       return    userArchiveDao.deleteArchiveById(archiveid);
+
     }
 
     @Override
-    public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
-        try {
-            userArchiveDao.resumeDeleteArchiveById(archiveid);
-            return new ResponseResult(true,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除恢复失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+    public Integer resumeDeleteArchiveById(Integer archiveid) {
+           return userArchiveDao.resumeDeleteArchiveById(archiveid);
     }
 
     @Override
-    public ResponseResult updateArchive(UserArchive userArchive) {
+    public Integer updateArchive(UserArchive userArchive) {
         if(userArchive instanceof UserArchive){
-            try {
-                userArchiveDao.updateByPrimaryKeySelective(userArchive);
-                return new ResponseResult(true,CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("档案更新失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+            int i = userArchiveDao.updateByPrimaryKeySelective(userArchive);
+            return i;
         }
-        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+            return 0;
     }
 
     @Override
-    public ResponseResult selectArchive(Integer archiveid) {
-        try {
-            UserArchive userArchive = userArchiveDao.selectByPrimaryKey(archiveid);
-            return new ResponseResult(userArchive,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查看档案失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+    public UserArchive selectArchive(UserSession userSession) {
+        return userArchiveDao.selectByPrimaryKey(userSession.getArchiveId());
+
     }
 
     @Override
-    public ResponseResult insertArchive(UserArchive userArchive) {
-        try {
+    public Integer insertArchive(UserArchive userArchive) {
             if (userArchive instanceof  UserArchive) {
-                userArchiveDao.insertSelective(userArchive);
-                return new ResponseResult(true, CommonCode.SUCCESS);
+                return userArchiveDao.insertSelective(userArchive);
             }
-        } catch (Exception e) {
-            logger.error("新增档案失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+            return 0;
     }
 
     @Override
@@ -119,6 +92,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             try {
                 for (Map.Entry<Integer, String> entry : map.entrySet()) {
                     customFieldDao.updatePreEmploymentField(entry.getKey(),entry.getValue());
+
                     return new ResponseResult<>(true, CommonCode.SUCCESS);
                 }
             } catch (Exception e) {
@@ -182,50 +156,35 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
 
     @Override
-    public ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo  userArchivePostRelationVo,Integer archiveId) {
-        UserArchivePostRelation userArchivePostRelation=new UserArchivePostRelation();
+    public Integer insertUserArchivePostRelation(UserArchivePostRelationVo  userArchivePostRelationVo,UserSession userSession) {
+        UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation();
         if (userArchivePostRelationVo instanceof UserArchivePostRelationVo) {
-            BeanUtils.copyProperties(userArchivePostRelationVo,userArchivePostRelation);
+            BeanUtils.copyProperties(userArchivePostRelationVo, userArchivePostRelation);
             //通过工号查询档案id
-            Integer id=userArchiveDao.selectArchiveIdByNumber(userArchivePostRelationVo.getEmployeeNumber());
+            Integer id = userArchiveDao.selectArchiveIdByNumber(userArchivePostRelationVo.getEmployeeNumber());
             userArchivePostRelation.setArchiveId(id);
-            userArchivePostRelation.setOperatorId(archiveId);
+            userArchivePostRelation.setOperatorId(userSession.getArchiveId());
             userArchivePostRelation.setIsDelete((short) 1);
-            try {
-                userArchivePostRelationDao.insertSelective(userArchivePostRelation);
-            } catch (Exception e) {
-                logger.error("插入人员岗位关系表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+            int i = userArchivePostRelationDao.insertSelective(userArchivePostRelation);
+            return i;
         }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+        return  0;
     }
     @Override
-    public ResponseResult<Map<String, String>> selectNameAndNumber(Integer id) {
+    public Map<String, String> selectNameAndNumber(Integer id) {
         Map<String,String> map=new HashMap<>();
-        try {
+
             String name=userArchiveDao.selectName(id);
             String number=userArchiveDao.selectNumber(id);
             map.put("name",name);
             map.put("number",number);
-            return  new ResponseResult<>(map,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("获取姓名工号失败");
-            return new ResponseResult<>(map, CommonCode.FAIL);
-        }
-
+            return  map;
     }
 
     @Override
-    public ResponseResult selectOrgName(Integer id) {
-        String orgName=null;
-        try {
-            orgName=organizationDao.selectOrgName(id);
-            return new ResponseResult(orgName,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查询机构名称失败");
-            return new ResponseResult(orgName, CommonCode.FAIL);
-        }
+    public String selectOrgName(Integer id) {
+            String orgName=organizationDao.selectOrgName(id);
+          return orgName;
     }
 
     @Override
@@ -316,8 +275,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 if (max < list.get(i)) {
                     return new ResponseResult(false, CommonCode.INVALID_PARAM);
                 }
-                userArchivePostRelationDao.deleteUserArchivePostRelation(list.get(i));
             }
+            userArchivePostRelationDao.deleteUserArchivePostRelation(list);
             return new ResponseResult(true, CommonCode.SUCCESS);
         } catch (Exception e) {
             logger.error("删除人员岗位关系表失败");
@@ -326,19 +285,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public ResponseResult updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
+    public Integer updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
         if (userArchivePostRelation instanceof UserArchivePostRelation) {
-            try {
-                userArchivePostRelationDao.updateByPrimaryKeySelective(userArchivePostRelation);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新人员岗位关系表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+            int i = userArchivePostRelationDao.updateByPrimaryKeySelective(userArchivePostRelation);
+            return i;
         }
+        return 0;
     }
 
     @Override
@@ -386,22 +338,17 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
 
     @Override
-    public ResponseResult<QuerySchemeList> selectQueryScheme(Integer id) {
-        List<QuerySchemeField> querySchemeFieldList;
-        List<QuerySchemeSort> querySchemeSortList;
-        try {
+    public QuerySchemeList selectQueryScheme(Integer id) {
             QuerySchemeList querySchemeList = new QuerySchemeList();
             //通过查询方案id找到显示字段
-            querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId(id);
+            List<QuerySchemeField> querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId(id);
             //通过查询方案id找到排序字段
-            querySchemeSortList = querySchemeSortDao.selectByQuerySchemeId(id);
-            querySchemeList.setQuerySchemeFieldList(querySchemeFieldList);
-            querySchemeList.setQuerySchemeSortList(querySchemeSortList);
-            return new ResponseResult<>(querySchemeList, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查询查询方案表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+            List<QuerySchemeSort> querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId(id);
+            querySchemeList.setQuerySchemeFieldList(querySchemeFields);
+            querySchemeList.setQuerySchemeSortList(querySchemeSorts);
+            return querySchemeList;
+
+
     }
 
     @Override

@@ -23,7 +23,9 @@ public interface CustomArchiveTableDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteCustomTable(@Param("integer") Integer integer);
+
 
     List<CustomArchiveTable> selectByPage();
+
+    Integer deleteCustomTable(List<Integer> list);
 }

@@ -222,7 +222,11 @@
     update
     set
      is_delete = 0
-     where id = #{id,jdbcType=INTEGER}
+     where id
+     in
+     <foreach collection="list" item="item" open="(" separator="," close=")">
+       #{item}
+     </foreach>
   </update>
   <select id="getUserArchivePostRelationList" resultType="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
     select tua.user_name userName, tua.employee_number employeeNumber,tuapr.id, tuapr.archive_id, tuapr.post_id,

@@ -45,59 +45,37 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private CustomArchiveFieldCheckDao customArchiveFieldCheckDao;
     @Autowired
-    private CheckTypeDao checkTypeDao;
-    @Autowired
     private OrganizationDao organizationDao;
     @Autowired
     private PostDao postDao;
 
     @Override
-    public ResponseResult insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
+    public Integer insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
         if (customArchiveTable instanceof CustomArchiveTable) {
-            try {
-                customArchiveTableDao.insert(customArchiveTable);
-            } catch (Exception e) {
-                logger.error("插入自定义表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+            int insert = customArchiveTableDao.insertSelective(customArchiveTable);
+            return insert;
         }
-        return new ResponseResult(true, CommonCode.SUCCESS);
-
+        return 0;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     @Override
-    public ResponseResult deleteCustomArchiveTable(List<Integer> list) {
-        Integer max = 0;
-        try {
-            max = customArchiveTableDao.selectMaxPrimaryKey();
-            for (int i = 0; i < list.size(); i++) {
-                if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
-                }
-                customArchiveTableDao.deleteCustomTable(list.get(i));
+    public Integer deleteCustomArchiveTable(List<Integer> list) {
+        Integer max = customArchiveTableDao.selectMaxPrimaryKey();
+        for (int i = 0; i < list.size(); i++) {
+            if (max < list.get(i)) {
+                return 0;
             }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除自定义表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
         }
+        return customArchiveTableDao.deleteCustomTable(list);
     }
         @Override
-        public ResponseResult updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
+        public Integer updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
             if (customArchiveTable instanceof CustomArchiveTable) {
-                try {
-                    customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
-                    return new ResponseResult(true, CommonCode.SUCCESS);
-                } catch (Exception e) {
-                    logger.error("更新自定义表失败");
-                    return new ResponseResult(false, CommonCode.FAIL);
-                }
-            } else {
-                return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+                return customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
             }
+            return 0;
         }
-
     @Override
     public ResponseResult<PageResult<CustomArchiveTable>> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage, pageSize);
@@ -114,51 +92,33 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public ResponseResult insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+    public Integer insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
         if (customArchiveGroup instanceof CustomArchiveGroup) {
-            try {
-                customArchiveGroupDao.insert(customArchiveGroup);
-            } catch (Exception e) {
-                logger.error("插入自定义组失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+            int insert = customArchiveGroupDao.insertSelective(customArchiveGroup);
+            return insert;
         }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+        return 0;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteCustomArchiveGroup(List<Integer> list) {
-        try {
-            Integer max = 0;
-            max = customArchiveGroupDao.selectMaxPrimaryKey();
+    @Transactional
+    public Integer deleteCustomArchiveGroup(List<Integer> list) {
+            Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
             for (int i = 0; i < list.size(); i++) {
                 if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
+                    return  0;
                 }
-                customArchiveGroupDao.deleteCustomGroup(list.get(i));
             }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除自定义组失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+            return  customArchiveGroupDao.deleteCustomGroup(list);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+    @Transactional
+    public Integer updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
         if (customArchiveGroup instanceof CustomArchiveGroup) {
-            try {
-                customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新自定义组失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+            return  customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
         }
+        return 0;
     }
 
 
@@ -183,53 +143,34 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
 
     @Override
-    public ResponseResult insertCustomArchiveField(CustomArchiveField customArchiveField) {
+    public Integer insertCustomArchiveField(CustomArchiveField customArchiveField) {
         if (customArchiveField instanceof CustomArchiveField) {
-            try {
-                customArchiveFieldDao.insert(customArchiveField);
-            } catch (Exception e) {
-                logger.error("插入自定义字段失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+            int insert = customArchiveFieldDao.insertSelective(customArchiveField);
+            return insert;
         }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+        return 0;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteCustomArchiveField(List<Integer> list) {
-        Integer max = 0;
-        try {
-            max = customArchiveFieldDao.selectMaxPrimaryKey();
-            for (int i = 0; i < list.size(); i++) {
-                if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
-                }
-                customArchiveFieldDao.deleteCustomField(list.get(i));
+    @Transactional
+    public Integer deleteCustomArchiveField(List<Integer> list) {
+        Integer max = customArchiveFieldDao.selectMaxPrimaryKey();
+        for (int i = 0; i < list.size(); i++) {
+            if (max < list.get(i)) {
+                return  0;
             }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除自定义字段失败");
-            return new ResponseResult(false, CommonCode.FAIL);
         }
+        return customArchiveFieldDao.deleteCustomField(list);
+
     }
 
     @Override
-    public ResponseResult updateCustomArchiveField(CustomArchiveField customArchiveField) {
+    public Integer updateCustomArchiveField(CustomArchiveField customArchiveField) {
         if (customArchiveField instanceof CustomArchiveField) {
-            try {
-                customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新自定义字段失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+            return customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
         }
+        return 0;
     }
-
     @Override
     public ResponseResult<PageResult<CustomArchiveField>> selectCustomArchiveField(Integer currentPage, Integer pageSize,
                                                                             Integer customArchiveTableId) {
@@ -251,15 +192,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId) {
-        CustomArchiveField customArchiveField = null;
-        try {
-            customArchiveField = customArchiveFieldDao.selectByPrimaryKey(customArchiveFieldId);
-            return new ResponseResult(customArchiveField, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("根据id查询自定义字段失败");
-            return new ResponseResult(customArchiveField, CommonCode.FAIL);
-        }
+    public CustomArchiveField selectCustomArchiveFieldById(Integer customArchiveFieldId) {
+          return customArchiveFieldDao.selectByPrimaryKey(customArchiveFieldId);
     }
 
 
@@ -321,18 +255,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public ResponseResult updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
+    public Integer updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
         if (customArchiveTableData instanceof CustomArchiveTableData) {
-            try {
-                customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新自定义数据表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+            return  customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
         }
+        return 0;
     }
 
     @Override
@@ -356,16 +283,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
 
         @Override
-        public ResponseResult<List<String>> checkField (Integer fieldId){
-            List<String> list = null;
-            try {
+        public List<String> checkField (Integer fieldId){
+
                 //通过字段名找到验证code
-                list = customArchiveFieldCheckDao.selectCheckName(fieldId);
-            } catch (Exception e) {
-                logger.error("获取验证名称失败");
-                return new ResponseResult<>(list, CommonCode.FAIL);
-            }
-            return new ResponseResult<>(list, CommonCode.SUCCESS);
+               return customArchiveFieldCheckDao.selectCheckName(fieldId);
         }
 
         @Override
@@ -391,11 +312,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             //获取heads，通过customTableId找到字段名存入heads
             try {
                 List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
-                List<CustomArchiveField> list = new ArrayList<>();
-                for (int i = 0; i < integerList.size(); i++) {
-                    CustomArchiveField customArchiveField = customArchiveFieldDao.selectByPrimaryKey(integerList.get(i));
-                    list.add(customArchiveField);
-                }
+                List<CustomArchiveField> list=customArchiveFieldDao.selectByList(integerList);
+
                 for (int i = 0; i < list.size(); i++) {
                     heads[i] = list.get(i).getFieldName();
                 }

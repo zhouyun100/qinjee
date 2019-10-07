@@ -30,9 +30,11 @@ public interface UserArchiveDao {
 
     List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
 
-    void deleteArchiveById(@Param("archiveid") Integer archiveid);
+   Integer deleteArchiveById(@Param("archiveid") List<Integer> archiveid);
 
-    void resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
+
+
+    Integer resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
 
     /**
      * 根据机构id查询人员档案

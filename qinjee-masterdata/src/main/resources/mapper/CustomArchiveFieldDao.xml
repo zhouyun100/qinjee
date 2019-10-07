@@ -235,7 +235,10 @@
     update  t_custom_archive_field
     set
     is_delete=1
-    where field_id = #{fieldId,jdbcType=INTEGER}
+    where field_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
   </update>
   <select id="selectFieldId">
     select
@@ -248,5 +251,14 @@
     select  field_type
     from  t_custom_archive_field
     where is_delete=0
+  </select>
+  <select id="selectByList">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_field
+    where  field_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
   </select>
 </mapper>
