@@ -116,4 +116,11 @@
     from t_query_scheme_sort
     where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
   </select>
+  <delete id="deleteBySchemeIdList">
+     delete from t_query_scheme_sort
+    where query_scheme_id
+    in <foreach collection="list" item="item" separator="," close=")">
+    #{item}
+  </foreach>
+  </delete>
 </mapper>

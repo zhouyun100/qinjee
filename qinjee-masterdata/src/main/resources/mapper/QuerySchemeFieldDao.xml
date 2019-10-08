@@ -105,4 +105,12 @@
     from  t_query_scheme_field
     where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
   </select>
+  <delete id="deleteBySchemeIdList">
+    delete from t_query_scheme_field
+    where query_scheme_id
+    in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
 </mapper>

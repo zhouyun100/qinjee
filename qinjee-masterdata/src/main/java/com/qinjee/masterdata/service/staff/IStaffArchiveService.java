@@ -51,7 +51,7 @@ public interface IStaffArchiveService {
      * @param list
      * @return
      */
-    ResponseResult deleteQueryScheme(List<Integer> list);
+    void deleteQueryScheme(List<Integer> list) throws Exception;
 
     /**
      * 展示排序方案的显示字段与排序字段
@@ -67,7 +67,7 @@ public interface IStaffArchiveService {
      * @param querySchemeSortlist
      * @return
      */
-    ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist, List<QuerySchemeSort> querySchemeSortlist);
+    void saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist, List<QuerySchemeSort> querySchemeSortlist);
 
     /**
      * 逻辑删除档案
@@ -125,5 +125,5 @@ public interface IStaffArchiveService {
      * @param orgId
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId, Integer orgId);
+   PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId, Integer orgId);
 }

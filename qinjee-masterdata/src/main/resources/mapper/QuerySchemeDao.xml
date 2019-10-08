@@ -112,9 +112,13 @@
         select Max(query_scheme_id)
         from t_query_scheme  AND  is_delete = 0
     </select>
-    <update id="deleteQueryScheme">
+    <update id="deleteQuerySchemeList">
         update
         set  is_delete =1
-        where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+        where query_scheme_id
+        in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
     </update>
 </mapper>

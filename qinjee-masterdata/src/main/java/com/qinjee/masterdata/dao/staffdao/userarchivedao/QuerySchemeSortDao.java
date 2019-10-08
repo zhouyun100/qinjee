@@ -30,4 +30,6 @@ public interface QuerySchemeSortDao {
     List<Integer> selectSortId(@Param("schemeId") Integer schemeId);
 
     List<String> selectSortSort(@Param("schemeId") Integer schemeId);
+
+    void deleteBySchemeIdList(List<Integer> list);
 }

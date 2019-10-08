@@ -306,12 +306,22 @@ public class StaffArchiveController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
             @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
-            @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案", paramType = "form", required = true),
+            @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案顺序", paramType = "form", required = true),
 
     })
     public ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
                                           List<QuerySchemeSort> querySchemeSortlist) {
-        return staffArchiveService.saveQueryScheme(queryScheme,querySchemeFieldlist,querySchemeSortlist);
+        Boolean b = checkParam(queryScheme,querySchemeFieldlist,querySchemeSortlist);
+        if(b){
+            try {
+                staffArchiveService.saveQueryScheme(queryScheme,querySchemeFieldlist,querySchemeSortlist);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("通过id查询到对应机构名称失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+
     }
 
 
@@ -323,7 +333,17 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "删除查询方案", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "查询方案id的集合", paramType = "query", required = true)
     public ResponseResult deleteQueryScheme(List<Integer> list) {
-        return staffArchiveService.deleteQueryScheme(list);
+        Boolean b = checkParam(list);
+        if(b){
+            try {
+                staffArchiveService.deleteQueryScheme(list);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("删除查询方案失败");
+            }
+        }
+        return  failResponseResult("list错误");
+
     }
 
 
@@ -335,13 +355,20 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "展示查询方案", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
     public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
-        QuerySchemeList querySchemeList = staffArchiveService.selectQueryScheme(id);
-        if(null!=querySchemeList){
-            return new ResponseResult<>(querySchemeList,CommonCode.SUCCESS);
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                QuerySchemeList querySchemeList = staffArchiveService.selectQueryScheme(id);
+                if(null!=querySchemeList){
+                    return new ResponseResult<>(querySchemeList,CommonCode.SUCCESS);
+                }
+                return failResponseResult("您还没有查询方案");
+            } catch (Exception e) {
+                return failResponseResult("删除查询方案失败");
+            }
         }
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage("通过id查询到对应机构名称失败");
-        return fail;
+        return  failResponseResult("id错误");
+
     }
     /**
      * 根据显示方案展示人员信息
@@ -353,7 +380,20 @@ public class StaffArchiveController extends BaseController {
             @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true)
     })
     public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,Integer orgId) {
-        return staffArchiveService.selectArchiveByQueryScheme(schemeId,orgId);
+        Boolean b = checkParam(schemeId,orgId);
+        if(b){
+            try {
+                PageResult<UserArchive> userArchivePageResult =
+                        staffArchiveService.selectArchiveByQueryScheme(schemeId, orgId);
+                if(null!=userArchivePageResult){
+                    return new ResponseResult<>(userArchivePageResult,CommonCode.SUCCESS);
+                }
+                return failResponseResult("没有符合要求的人员");
+            } catch (Exception e) {
+                return failResponseResult("根据查询方案查找失败失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
