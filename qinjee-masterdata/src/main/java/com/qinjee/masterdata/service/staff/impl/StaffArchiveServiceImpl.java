@@ -92,28 +92,22 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     }
     @Override
-    public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer archiveId, Integer companyId) {
-        List<UserArchive> list = new ArrayList<>();
-        PageResult<UserArchive> pageResult = new PageResult<>();
-        try {
+    public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer companyId) {
+            List<UserArchive> list=new ArrayList<>();
             //本用户的权限下有哪些机构
-            List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(archiveId);
+            List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
             if (companyId == null) {
                 if (orgList != null) {
                     for (Integer integer : orgList) {
                         //展示所有权限机构下的人员
                         List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                        for (Integer userAchive : achiveList) {
-                            list.add(userArchiveDao.selectByPrimaryKey(userAchive));
-                        }
+                         list=userArchiveDao.selectByPrimaryKeyList(achiveList);
                     }
-                    pageResult.setList(list);
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                   return new PageResult<>(list);
                 } else {
                     //展示自己的档案
-                    list.add(userArchiveDao.selectByPrimaryKey(archiveId));
-                    pageResult.setList(list);
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                    list.add(userArchiveDao.selectByPrimaryKey(userSession.getArchiveId()));
+                    return new PageResult<>(list);
 
                 }
             } else {
@@ -123,40 +117,31 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                         if (companyId.equals(integer)) {
                             //展示机构下的人员信息
                             List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                            for (Integer userAchive : achiveList) {
-                                list.add(userArchiveDao.selectByPrimaryKey(userAchive));
-                            }
+                            list = userArchiveDao.selectByPrimaryKeyList(achiveList);
                         }
                     }
-                    pageResult.setList(list);
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+
+                    return new PageResult<>(list);
                 } else {
-                    return new ResponseResult<>(pageResult, CommonCode.FAIL);
+                   return null;
                 }
             }
-        } catch (Exception e) {
-            logger.error("查询档案失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
         }
-    }
+
 
 
 
 
     @Override
-    public Integer insertUserArchivePostRelation(UserArchivePostRelationVo  userArchivePostRelationVo,UserSession userSession) {
+    public void insertUserArchivePostRelation(UserArchivePostRelationVo  userArchivePostRelationVo,UserSession userSession) {
         UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation();
-        if (userArchivePostRelationVo instanceof UserArchivePostRelationVo) {
             BeanUtils.copyProperties(userArchivePostRelationVo, userArchivePostRelation);
             //通过工号查询档案id
             Integer id = userArchiveDao.selectArchiveIdByNumber(userArchivePostRelationVo.getEmployeeNumber());
             userArchivePostRelation.setArchiveId(id);
             userArchivePostRelation.setOperatorId(userSession.getArchiveId());
             userArchivePostRelation.setIsDelete((short) 1);
-            int i = userArchivePostRelationDao.insertSelective(userArchivePostRelation);
-            return i;
-        }
-        return  0;
+            userArchivePostRelationDao.insertSelective(userArchivePostRelation);
     }
     @Override
     public Map<String, String> selectNameAndNumber(Integer id) {
@@ -249,49 +234,28 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteUserArchivePostRelation(List<Integer> list) {
-        Integer max = 0;
-        try {
-            max = userArchivePostRelationDao.selectMaxPrimaryKey();
+    public void deleteUserArchivePostRelation(List<Integer> list) throws Exception {
+
+            Integer max = userArchivePostRelationDao.selectMaxPrimaryKey();
             for (int i = 0; i < list.size(); i++) {
                 if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
+                   throw new Exception("id不合法");
                 }
             }
             userArchivePostRelationDao.deleteUserArchivePostRelation(list);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除人员岗位关系表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
     }
 
     @Override
-    public Integer updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
-        if (userArchivePostRelation instanceof UserArchivePostRelation) {
-            int i = userArchivePostRelationDao.updateByPrimaryKeySelective(userArchivePostRelation);
-            return i;
-        }
-        return 0;
+    public void updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
+        userArchivePostRelationDao.updateByPrimaryKeySelective(userArchivePostRelation);
     }
 
     @Override
-    public ResponseResult<PageResult<UserArchivePostRelation>> selectUserArchivePostRelation(Integer currentPage, Integer pageSize,
-                                                                                             List<Integer> list) {
+    public PageResult<UserArchivePostRelation> selectUserArchivePostRelation(Integer currentPage, Integer pageSize,
+                                                                             List<Integer> list) {
         PageHelper.startPage(currentPage, pageSize);
-        List<UserArchivePostRelation> userArchivePostRelationlist = null;
-        PageResult<UserArchivePostRelation> pageResult = new PageResult<>();
-        try {
-            for (int i = 0; i < list.size(); i++) {
-                UserArchivePostRelation userArchivePostRelation = userArchivePostRelationDao.selectByPrimaryKey(list.get(i));
-                userArchivePostRelationlist.add(userArchivePostRelation);
-            }
-            pageResult.setList(userArchivePostRelationlist);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查询人员岗位关系表失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
+        List<UserArchivePostRelation> relationList= userArchivePostRelationDao.selectByPrimaryKeyList(list);
+        return new PageResult(relationList);
     }
 
     @Override

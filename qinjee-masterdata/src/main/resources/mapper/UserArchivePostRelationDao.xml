@@ -239,29 +239,15 @@
     </if>
     and tua.is_delete = 0
   </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <select id="selectByPrimaryKeyList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user_archive_post_relation
+    where
+    archive_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 
 </mapper>

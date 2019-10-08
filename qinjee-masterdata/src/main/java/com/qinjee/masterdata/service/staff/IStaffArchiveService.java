@@ -20,21 +20,21 @@ public interface IStaffArchiveService {
      * @return
      */
 
-    Integer insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,UserSession userSession);
+    void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,UserSession userSession);
 
     /**
      * 逻辑删除人员岗位关系表
      * @param list
      * @return
      */
-    ResponseResult deleteUserArchivePostRelation(List<Integer> list);
+    void deleteUserArchivePostRelation(List<Integer> list) throws Exception;
 
     /**
      * 更新人员岗位关系表
      * @param userArchivePostRelation
      * @return
      */
-    Integer updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation);
+    void updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation);
 
     /**
      * 分页查询人员岗位关系表
@@ -43,7 +43,7 @@ public interface IStaffArchiveService {
      * @param list
      * @return
      */
-    ResponseResult<PageResult<UserArchivePostRelation>> selectUserArchivePostRelation(Integer currentPage,Integer pageSize,
+   PageResult<UserArchivePostRelation> selectUserArchivePostRelation(Integer currentPage,Integer pageSize,
                                                                                       List<Integer> list);
 
     /**
@@ -109,7 +109,7 @@ public interface IStaffArchiveService {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer archiveId,Integer companyId);
+    PageResult<UserArchive> selectArchivebatch(UserSession userSession,Integer companyId);
     /**
      * 通过id找到人员姓名与工号
      */

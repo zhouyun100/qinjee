@@ -70,4 +70,6 @@ public interface UserArchiveDao {
     List<Integer> selectStaffNoType(String sql, String archiveType, Integer id );
 
     List<UserArchive> selectStaff(List<Integer> integerList);
+
+    List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 }

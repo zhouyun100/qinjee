@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -134,14 +135,17 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案", notes = "hkt")
-    public ResponseResult selectArchive() {
-        UserArchive userArchive = staffArchiveService.selectArchive(getUserSession());
-        if(null!=userArchive){
-            return new ResponseResult(userArchive, CommonCode.SUCCESS);
+    public ResponseResult<UserArchive> selectArchive() {
+        Boolean b = checkParam(getUserSession());
+        if(b){
+            try {
+                UserArchive userArchive = staffArchiveService.selectArchive(getUserSession());
+                return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return failResponseResult("查看档案失败");
+            }
         }
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage("查看档案失败");
-        return fail;
+        return  failResponseResult("session错误");
     }
     /**
      * 通过id找到人员姓名与工号
@@ -150,13 +154,16 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
-        Map<String, String> stringStringMap = staffArchiveService.selectNameAndNumber(id);
-        if(null!=stringStringMap){
-            return new ResponseResult<>(stringStringMap,CommonCode.SUCCESS);
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                Map<String, String> stringStringMap = staffArchiveService.selectNameAndNumber(id);
+                return new ResponseResult<>(stringStringMap,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return failResponseResult("通过id找到人员姓名与工号失败");
+            }
         }
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage("通过id找到人员姓名与工号失败");
-        return fail;
+        return  failResponseResult("id错误");
     }
 
     /**
@@ -166,8 +173,19 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
     @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
     public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer comanyId) {
-        Integer archiveId = getUserSession().getArchiveId();
-        return staffArchiveService.selectArchivebatch(comanyId,archiveId);
+        Boolean b = checkParam(getUserSession());
+        if(b){
+            try {
+                PageResult<UserArchive> pageResult = staffArchiveService.selectArchivebatch(getUserSession(), comanyId);
+                if(pageResult!=null) {
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                }
+                return failResponseResult("对不起，你没有这个组织的权限");
+            } catch (Exception e) {
+                return failResponseResult("查看档案失败");
+            }
+        }
+        return failResponseResult("session错误");
     }
 
     /**
@@ -178,8 +196,16 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "新增人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
     public ResponseResult insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo) {
-        Integer integer = staffArchiveService.insertUserArchivePostRelation(userArchivePostRelationVo, getUserSession());
-        return getResponseResult(integer,"新增人员岗位关系,初期只涉及任职状态是否兼职失败");
+        Boolean b = checkParam(getUserSession());
+        if(b){
+            try {
+                staffArchiveService.insertUserArchivePostRelation(userArchivePostRelationVo, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("新增人员岗位关系失败");
+            }
+        }
+        return  failResponseResult("session错误");
     }
 
     /**
@@ -190,7 +216,16 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "删除人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "人员档案关系表id集合", paramType = "query", required = true)
     public ResponseResult deleteUserArchivePostRelation(List<Integer> list) {
-        return staffArchiveService.deleteUserArchivePostRelation(list);
+        Boolean b = checkParam(list);
+        if(b){
+            try {
+                staffArchiveService.deleteUserArchivePostRelation(list);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("逻辑删除人员岗位关系失败");
+            }
+        }
+        return  failResponseResult("list参数错误");
     }
 
     /**
@@ -200,9 +235,17 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/updateUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "修改人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
-    public ResponseResult updateUserArchivePostRelation( UserArchivePostRelation userArchivePostRelation) {
-        Integer integer = staffArchiveService.updateUserArchivePostRelation(userArchivePostRelation);
-       return getResponseResult(integer,"修改人员岗位关系，初期只涉及任职状态是否兼职失败");
+    public ResponseResult updateUserArchivePostRelation( @Valid UserArchivePostRelation userArchivePostRelation) {
+        Boolean b = checkParam(userArchivePostRelation);
+        if(b){
+            try {
+                staffArchiveService.updateUserArchivePostRelation(userArchivePostRelation);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("修改人员岗位关系，初期只涉及任职状态是否兼职失败");
+            }
+        }
+        return  failResponseResult("userArchivePostRelation参数不合法");
     }
 
     /**
@@ -219,7 +262,21 @@ public class StaffArchiveController extends BaseController {
     public ResponseResult<PageResult<UserArchivePostRelation>> selectUserArchivePostRelation(Integer currentPage,
                                                                                              Integer pageSize,
                                                                                              List<Integer> list) {
-        return staffArchiveService.selectUserArchivePostRelation(currentPage,pageSize,list);
+        Boolean b = checkParam(currentPage,pageSize,list);
+        if(b){
+            try {
+                PageResult<UserArchivePostRelation> pageResult =
+                        staffArchiveService.selectUserArchivePostRelation(currentPage, pageSize, list);
+                if(pageResult!=null) {
+                    return ResponseResult.SUCCESS();
+                }
+                return failResponseResult("没有兼职的人员信息");
+            } catch (Exception e) {
+                return failResponseResult("修改人员岗位关系，初期只涉及任职状态是否兼职失败");
+            }
+        }
+        return  failResponseResult("参数不合法");
+
     }
     /**
      * 通过id查询到对应机构名称
@@ -229,14 +286,16 @@ public class StaffArchiveController extends BaseController {
     @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
 
     public ResponseResult selectOrgName(Integer id) {
-        String s = staffArchiveService.selectOrgName(id);
-        if(null!=s){
-            return new ResponseResult<>(s,CommonCode.SUCCESS);
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                String s = staffArchiveService.selectOrgName(id);
+                return new ResponseResult(s,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return failResponseResult("通过id查询到对应机构名称失败");
+            }
         }
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage("通过id查询到对应机构名称失败");
-        return fail;
-
+        return  failResponseResult("id错误");
     }
     /**
      * 保存修改方案

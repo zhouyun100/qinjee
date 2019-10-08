@@ -34,4 +34,6 @@ public interface UserArchivePostRelationDao {
      * @return
      */
     List<UserArchivePostRelation> getUserArchivePostRelationList(Integer postId);
+
+    List<UserArchivePostRelation> selectByPrimaryKeyList(List<Integer> list);
 }

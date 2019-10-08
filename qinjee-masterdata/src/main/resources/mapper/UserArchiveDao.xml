@@ -599,7 +599,16 @@
     <foreach collection="list" item="item">
       #{integerList,jdbcType=INTEGER}
     </foreach>
-
+  </select>
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+    select
+    <include refid="Base_Column_List"  />
+    from t_user_archive
+    where
+    archive_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
 </mapper>
 

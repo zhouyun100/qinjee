@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -427,12 +428,16 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getCompany ", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
     public ResponseResult getCompanyId() {
-        try {
-            List<Integer> companyId = staffCommonService.getCompanyId(getUserSession());
-            return new ResponseResult(companyId,CommonCode.SUCCESS);
-        } catch (Exception e) {
-           return failResponseResult("显示单位id失败");
+        Boolean b = checkParam(getUserSession());
+        if(b) {
+            try {
+                List<Integer> companyId = staffCommonService.getCompanyId(getUserSession());
+                return new ResponseResult(companyId, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return failResponseResult("显示单位id失败");
+            }
         }
+        return failResponseResult("session错误");
     }
     /**
      * 根据档案id显示对应权限下的子集部门
