@@ -74,20 +74,20 @@ public interface IStaffArchiveService {
      * @param archiveid
      * @return
      */
-    Integer deleteArchiveById(List<Integer> archiveid);
+    void deleteArchiveById(List<Integer> archiveid) throws Exception;
     /**
      * 恢复删除档案
      * @param archiveid
      * @return
      */
-    Integer resumeDeleteArchiveById(Integer archiveid);
+   void resumeDeleteArchiveById(Integer archiveid) throws Exception;
 
     /**
      * 更新档案
      * @param userArchive
      * @return
      */
-    Integer updateArchive(UserArchive userArchive);
+    void updateArchive(UserArchive userArchive);
 
     /**
      * 查看人员档案
@@ -101,11 +101,11 @@ public interface IStaffArchiveService {
      * @param userArchive
      * @return
      */
-    Integer insertArchive(UserArchive userArchive);
+   void insertArchive(UserArchive userArchive);
     /**
      * 修改预入职信息(显示字段的信息)
      */
-    ResponseResult updateArchiveField(Map<Integer, String> map);
+    void updateArchiveField(Map<Integer, String> map);
     /**
      * 查看档案（查询某个组织部门下的档案）
      */

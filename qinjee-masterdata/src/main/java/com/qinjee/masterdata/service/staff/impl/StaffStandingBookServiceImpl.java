@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
@@ -187,7 +186,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         }
         return new ResponseResult(false, CommonCode.INVALID_PARAM);
     }
+    //根据台账筛选表得到sql
     private String getSql(StandingBookFilterVo standingBookFilterVo) {
+
+
         return null;
     }
 

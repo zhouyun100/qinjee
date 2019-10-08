@@ -1,8 +1,6 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.entity.CustomTable;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,8 +22,9 @@ public interface CustomArchiveTableDao {
     Integer selectMaxPrimaryKey();
 
 
-
     List<CustomArchiveTable> selectByPage();
 
     Integer deleteCustomTable(List<Integer> list);
+
+    List<CustomArchiveTable> selectByPrimaryKeyList(List<Integer> list);
 }

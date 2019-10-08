@@ -47,29 +47,29 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private OrganizationDao organizationDao;
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer deleteArchiveById(List<Integer> archiveid) {
-        Integer integer = userArchiveDao.selectMaxId();
-        for (Integer integer1 : archiveid) {
-            if(integer1>integer){
-                return 0;
+    public void deleteArchiveById(List<Integer> archiveid) throws Exception {
+        Integer max = userArchiveDao.selectMaxId();
+        for (Integer integer : archiveid) {
+            if(integer>max){
+               throw new Exception("id不合理");
             }
         }
-       return    userArchiveDao.deleteArchiveById(archiveid);
+        userArchiveDao.deleteArchiveById(archiveid);
 
     }
 
     @Override
-    public Integer resumeDeleteArchiveById(Integer archiveid) {
-           return userArchiveDao.resumeDeleteArchiveById(archiveid);
+    public void resumeDeleteArchiveById(Integer archiveid) throws Exception {
+        Integer max = userArchiveDao.selectMaxId();
+            if(archiveid>max){
+                throw new Exception("id不合理");
+            }
+        userArchiveDao.resumeDeleteArchiveById(archiveid);
     }
 
     @Override
-    public Integer updateArchive(UserArchive userArchive) {
-        if(userArchive instanceof UserArchive){
-            int i = userArchiveDao.updateByPrimaryKeySelective(userArchive);
-            return i;
-        }
-            return 0;
+    public void updateArchive(UserArchive userArchive) {
+         userArchiveDao.updateByPrimaryKeySelective(userArchive);
     }
 
     @Override
@@ -79,30 +79,18 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public Integer insertArchive(UserArchive userArchive) {
-            if (userArchive instanceof  UserArchive) {
-                return userArchiveDao.insertSelective(userArchive);
-            }
-            return 0;
+    public void insertArchive(UserArchive userArchive) {
+        userArchiveDao.insertSelective(userArchive);
     }
+
 
     @Override
-    public ResponseResult updateArchiveField(Map<Integer, String> map) {
-        if(map!=null){
-            try {
-                for (Map.Entry<Integer, String> entry : map.entrySet()) {
-                    customFieldDao.updatePreEmploymentField(entry.getKey(),entry.getValue());
+    public void updateArchiveField(Map<Integer, String> map) {
 
-                    return new ResponseResult<>(true, CommonCode.SUCCESS);
-                }
-            } catch (Exception e) {
-                logger.error("更新档案字段表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        }
-        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+        customFieldDao.updatePreEmploymentField(map);
+
+
     }
-
     @Override
     public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer archiveId, Integer companyId) {
         List<UserArchive> list = new ArrayList<>();
@@ -189,7 +177,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId, Integer orgId) {
-        Integer temp=null;
         String select=null;
         String order=null;
         PageResult pageResult=new PageResult();
@@ -205,20 +192,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 fieldMap.put(fieldSortList.get(i),fieldIdList.get(i));
             }
             Set<Integer> sorts = fieldMap.keySet();
-            //set转化为数组
-            Integer[] array =(Integer[]) sorts.toArray();
-            //排序id与升降序进行排列组合
-            for (int i = 0; i < array.length; i++) {
-                for (int j = 0; j < array.length-1-i; j++) {
-                    if(array[i]>array[j]){
-                        temp=array[i];
-                        array[i]=array[j];
-                        array[j]=temp;
-                    }
-                }
+            List<Integer> sortlist = new ArrayList();
+            //先for each 遍历到list中（还能够通过迭代来放到list中，还能够通过for循环放到list中）
+            for (Integer value : sorts) {
+                sortlist.add(value);
             }
+            //再排序
+            Collections.sort(sortlist);
             //将字段排序按照顺序拼接成查询项
-            for (Integer integer : array) {
+            for (Integer integer : sortlist) {
                //根据id查询字段名
                 String s = customFieldDao.selectFieldName(integer);
                 select=select+s+",";

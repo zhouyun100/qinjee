@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -31,10 +32,9 @@ public interface CustomFieldDao {
 
     List<String> selectFieldType(@Param("customTableId") Integer customTableId);
 
-    Integer updatePreEmploymentField(@Param("key") Integer key, @Param("value") String value);
-
-
     List<CustomField> selectPreEmploymentField(Integer id);
 
     String selectFieldName(@Param("integer") Integer integer);
+
+    void updatePreEmploymentField(@Param("map") Map<Integer, String> map);
 }

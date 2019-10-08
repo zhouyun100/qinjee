@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface CustomArchiveTableDataDao {
     int updateByPrimaryKey(CustomArchiveTableData record);
 
     List<Integer> selectCustomArchiveTableId(Integer customArchiveTableId);
+
+    List<CustomArchiveTableData> selectByPrimaryKeyList(@Param("integerList") List<Integer> integerList);
 }

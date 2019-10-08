@@ -8,6 +8,7 @@ import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -50,145 +51,100 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private PostDao postDao;
 
     @Override
-    public Integer insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
-        if (customArchiveTable instanceof CustomArchiveTable) {
-            int insert = customArchiveTableDao.insertSelective(customArchiveTable);
-            return insert;
-        }
-        return 0;
+    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
+         customArchiveTableDao.insertSelective(customArchiveTable);
     }
 
-    @Transactional
+    @Transactional(rollbackFor =Exception.class)
     @Override
-    public Integer deleteCustomArchiveTable(List<Integer> list) {
+    public void deleteCustomArchiveTable(List<Integer> list) throws Exception {
         Integer max = customArchiveTableDao.selectMaxPrimaryKey();
         for (int i = 0; i < list.size(); i++) {
             if (max < list.get(i)) {
-                return 0;
+               throw new Exception("自定义表参数过大");
             }
         }
-        return customArchiveTableDao.deleteCustomTable(list);
+         customArchiveTableDao.deleteCustomTable(list);
     }
         @Override
-        public Integer updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
-            if (customArchiveTable instanceof CustomArchiveTable) {
-                return customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
-            }
-            return 0;
+        public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
+
+        customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
+
         }
     @Override
-    public ResponseResult<PageResult<CustomArchiveTable>> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<CustomArchiveTable> list = null;
-        PageResult<CustomArchiveTable> pageResult = new PageResult<>();
-        try {
-            list = customArchiveTableDao.selectByPage();
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("展示自定义表失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
+    public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
+        PageHelper.startPage(currentPage,pageSize);
+        List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage();
+        PageResult pageResult=new PageResult(customArchiveTables);
+        return pageResult;
     }
 
     @Override
-    public Integer insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
-        if (customArchiveGroup instanceof CustomArchiveGroup) {
-            int insert = customArchiveGroupDao.insertSelective(customArchiveGroup);
-            return insert;
-        }
-        return 0;
+    public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+            customArchiveGroupDao.insertSelective(customArchiveGroup);
     }
 
     @Override
-    @Transactional
-    public Integer deleteCustomArchiveGroup(List<Integer> list) {
+    @Transactional(rollbackFor =Exception.class)
+    public void deleteCustomArchiveGroup(List<Integer> list) throws Exception {
             Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
             for (int i = 0; i < list.size(); i++) {
                 if (max < list.get(i)) {
-                    return  0;
+                    throw new Exception("自定义组参数过大");
                 }
             }
-            return  customArchiveGroupDao.deleteCustomGroup(list);
+            customArchiveGroupDao.deleteCustomGroup(list);
     }
 
     @Override
-    @Transactional
-    public Integer updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
-        if (customArchiveGroup instanceof CustomArchiveGroup) {
-            return  customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
-        }
-        return 0;
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+            customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
     }
-
 
         @Override
-        public ResponseResult<PageResult<CustomArchiveTable>> selectCustomTableFromGroup (Integer currentPage, Integer
+        public PageResult<CustomArchiveTable> selectCustomTableFromGroup (Integer currentPage, Integer
         pageSize, Integer customArchiveGroupId){
             PageHelper.startPage(currentPage, pageSize);
-            List<CustomArchiveTable> list = null;
-            PageResult<CustomArchiveTable> pageResult = new PageResult<>();
-            try {
-                List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
-                for (int i = 0; i < integerList.size(); i++) {
-                    CustomArchiveTable customArchiveTable = customArchiveTableDao.selectByPrimaryKey(integerList.get(i));
-                    list.add(customArchiveTable);
-                }
-                pageResult.setList(list);
-                return new ResponseResult(pageResult, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("查询自定义表失败");
-                return new ResponseResult(pageResult, CommonCode.FAIL);
-            }
+            //获得自定义组中自定义表id的集合
+            List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
+
+            List<CustomArchiveTable> list= customArchiveTableDao.selectByPrimaryKeyList(integerList);
+            PageResult pageResult=new PageResult(list);
+            return pageResult;
         }
 
     @Override
-    public Integer insertCustomArchiveField(CustomArchiveField customArchiveField) {
-        if (customArchiveField instanceof CustomArchiveField) {
-            int insert = customArchiveFieldDao.insertSelective(customArchiveField);
-            return insert;
-        }
-        return 0;
+    public void insertCustomArchiveField(CustomArchiveField customArchiveField) {
+             customArchiveFieldDao.insertSelective(customArchiveField);
     }
 
     @Override
-    @Transactional
-    public Integer deleteCustomArchiveField(List<Integer> list) {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCustomArchiveField(List<Integer> list) throws Exception {
         Integer max = customArchiveFieldDao.selectMaxPrimaryKey();
         for (int i = 0; i < list.size(); i++) {
             if (max < list.get(i)) {
-                return  0;
+              throw new Exception("参数不合理！");
             }
         }
-        return customArchiveFieldDao.deleteCustomField(list);
-
+        customArchiveFieldDao.deleteCustomField(list);
     }
 
     @Override
-    public Integer updateCustomArchiveField(CustomArchiveField customArchiveField) {
-        if (customArchiveField instanceof CustomArchiveField) {
-            return customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
-        }
-        return 0;
+    public void updateCustomArchiveField(CustomArchiveField customArchiveField) {
+             customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
     }
     @Override
-    public ResponseResult<PageResult<CustomArchiveField>> selectCustomArchiveField(Integer currentPage, Integer pageSize,
-                                                                            Integer customArchiveTableId) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<CustomArchiveField> list = null;
-        PageResult<CustomArchiveField> pageResult = new PageResult<>();
-        try {
+    public PageResult<CustomArchiveField> selectCustomArchiveField(Integer currentPage, Integer pageSize,
+                                                                   Integer customArchiveTableId) {
+
+             PageHelper.startPage(currentPage, pageSize);
+             //根据自定义表找自定义字段id
             List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
-            for (int i = 0; i < integerList.size(); i++) {
-                CustomArchiveField customArchiveField = customArchiveFieldDao.selectByPrimaryKey(integerList.get(i));
-                list.add(customArchiveField);
-            }
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("根据表查询自定义字段失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
+            List<CustomArchiveField> list= customArchiveFieldDao.selectByPrimaryKeyList(integerList);
+            return new PageResult<>(list);
     }
 
     @Override
@@ -200,44 +156,32 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
 
     @Override
-        public ResponseResult getCompany (Integer archiveId){
-            try {
-                List<Integer> list = organizationDao.getCompanyIdByArchiveId(archiveId);
-                return new ResponseResult(list, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("根据档案id获取单位id失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+        public List<Integer> getCompanyId (UserSession userSession){
+        Integer archiveId = userSession.getArchiveId();
+        List<Integer> list = organizationDao.getCompanyIdByArchiveId(archiveId);
+        return list;
+
         }
 
         @Override
-        public ResponseResult getOrgIdByCompanyId (Integer orgId){
-            try {
+        public List<Integer> getOrgIdByCompanyId (Integer orgId){
+
                 List<Integer> list = organizationDao.getOrgIdByCompanyId(orgId);
-                return new ResponseResult(list, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("获取单位下的部门id失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+                return list;
         }
 
         @Override
-        public ResponseResult getPostByOrgId (Integer orgId){
-            try {
+        public List<Integer> getPostByOrgId (Integer orgId){
+
                 List<Integer> list = postDao.getPostByOrgId(orgId);
-                return new ResponseResult(list, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("获取单位id失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+                return list;
         }
 
     @Override
-    public ResponseResult insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
+    public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
         //TODO 需要弄清楚数组的形式
-        if (customArchiveTableData instanceof CustomArchiveTableData) {
-            try {
-                //将前端传过来的大字段进行解析
+        Integer archiveId = userSession.getArchiveId();
+        //将前端传过来的大字段进行解析
                  JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
                 for (int i = 0; i < json.size(); i++) {
                     JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
@@ -245,40 +189,24 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         s.replace(s, "@" + s + "@");
                     }
                 }
+                customArchiveTableData.setOperatorId(archiveId);
                customArchiveTableDataDao.insert(customArchiveTableData);
-            } catch (Exception e) {
-                logger.error("插入自定义表数据失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        }
-        return new ResponseResult(true, CommonCode.SUCCESS);
     }
 
     @Override
-    public Integer updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
-        if (customArchiveTableData instanceof CustomArchiveTableData) {
-            return  customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
-        }
-        return 0;
+    public void updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
+             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
     }
 
     @Override
-    public ResponseResult<PageResult<CustomArchiveTableData>> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId) {
+    public PageResult<CustomArchiveTableData> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId) {
         PageHelper.startPage(currentPage, pageSize);
-        List<CustomArchiveTableData> list = null;
-        PageResult<CustomArchiveTableData> pageResult = new PageResult<>();
-        try {
-            List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
-            for (int i = 0; i < integerList.size(); i++) {
-                CustomArchiveTableData customArchiveTableData = customArchiveTableDataDao.selectByPrimaryKey(integerList.get(i));
-                list.add(customArchiveTableData);
-            }
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("根据tableId查询自定义数据失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
+        //通过自定义表id找到数据id集合
+        List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
+
+         List<CustomArchiveTableData> list=customArchiveTableDataDao.selectByPrimaryKeyList(integerList);
+
+         return new PageResult<>(list);
     }
 
 

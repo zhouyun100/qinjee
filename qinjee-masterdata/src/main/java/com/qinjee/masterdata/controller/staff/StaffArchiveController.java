@@ -5,7 +5,6 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -13,6 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,6 +29,7 @@ import java.util.Map;
 @RequestMapping("/staffarc")
 @Api(tags = "【人员管理】档案相关接口")
 public class StaffArchiveController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveController.class);
     @Autowired
     private IStaffArchiveService staffArchiveService;
 
@@ -38,9 +40,18 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "新增档案表", notes = "hkt")
     @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
     public ResponseResult insertArchive(UserArchive userArchive) {
+        Boolean b = checkParam(userArchive);
+        if(b){
+            try {
+                staffArchiveService.insertArchive(userArchive);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("新增档案表失败");
+            }
 
-        Integer integer = staffArchiveService.insertArchive(userArchive);
-        return getResponseResult(integer,"新增档案表失败");
+        }
+        return  failResponseResult("档案表参数错误");
+
     }
 
     /**
@@ -50,13 +61,17 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "删除档案", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "人员档案id集合", paramType = "query", required = true)
     public ResponseResult deleteArchiveById(List<Integer> archiveid) {
-        Integer integer = staffArchiveService.deleteArchiveById(archiveid);
-        if(archiveid.size()==integer){
-            return  ResponseResult.SUCCESS();
+        Boolean b = checkParam(archiveid);
+        if(b){
+            try {
+                staffArchiveService.deleteArchiveById(archiveid);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("逻辑删除档案失败");
+            }
+
         }
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage("逻辑删除档案失败");
-        return fail;
+        return  failResponseResult("档案表id错误");
     }
     /**
      * 删除恢复
@@ -65,9 +80,16 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "恢复删除档案", notes = "hkt")
     @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
     public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
-
-        Integer integer = staffArchiveService.resumeDeleteArchiveById(archiveid);
-        return getResponseResult(integer,"恢复删除档案失败");
+        Boolean b = checkParam(archiveid);
+        if(b){
+            try {
+                staffArchiveService.resumeDeleteArchiveById(archiveid);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("恢复删除档案失败");
+            }
+        }
+        return  failResponseResult("档案表id错误");
     }
     /**
      * 更新档案表(物理数据)
@@ -76,8 +98,16 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "更新档案表", notes = "hkt")
     @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
     public ResponseResult updateArchive(UserArchive userArchive) {
-        Integer integer = staffArchiveService.updateArchive(userArchive);
-        return getResponseResult(integer,"更新档案表失败");
+        Boolean b = checkParam(userArchive);
+        if(b){
+            try {
+                staffArchiveService.updateArchive(userArchive);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("更新档案表失败");
+            }
+        }
+        return  failResponseResult("档案表id错误");
     }
     /**
      * 更新档案表(自定义表数据)
@@ -86,7 +116,17 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "更新档案表(自定义表数据)", notes = "hkt")
     @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
     public ResponseResult updateArchiveField(Map<Integer,String> map){
-        return staffArchiveService.updateArchiveField(map);
+        Boolean b = checkParam(map);
+        if(b){
+            try {
+                staffArchiveService.updateArchiveField(map);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("更新档案表（自定义字段表）失败");
+            }
+        }
+        return  failResponseResult("字段id与对应的字段名错误");
+
     }
 
     /**
@@ -255,6 +295,32 @@ public class StaffArchiveController extends BaseController {
     })
     public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,Integer orgId) {
         return staffArchiveService.selectArchiveByQueryScheme(schemeId,orgId);
+    }
+
+    /**
+     * 检验参数
+     * @param params
+     * @return
+     */
+    public Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (null == param) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 错误返回值
+     * @param message
+     * @return
+     */
+    public ResponseResult failResponseResult(String message){
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage(message);
+        logger.error(message);
+        return fail;
     }
 
 }

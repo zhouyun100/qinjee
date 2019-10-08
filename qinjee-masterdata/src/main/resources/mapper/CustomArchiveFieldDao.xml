@@ -226,7 +226,7 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where field_id = #{fieldId,jdbcType=INTEGER}
   </update>
-  <select id="selectMaxPrimaryKey">
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
     select MAX (field_id)
     from t_custom_archive_field
     WHERE is_delete=0
@@ -240,23 +240,32 @@
     #{item}
   </foreach>
   </update>
-  <select id="selectFieldId">
+  <select id="selectFieldId" resultType="java.lang.Integer">
     select
     <include refid="Base_Column_List" />
     from t_custom_archive_field
     where  table_id = #{tableId,jdbcType=INTEGER}
     AND  is_delete=0
   </select>
-  <select id="selectFieldType">
+  <select id="selectFieldType" resultType="java.lang.String">
     select  field_type
     from  t_custom_archive_field
     where is_delete=0
   </select>
-  <select id="selectByList">
+  <select id="selectByList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
     select
     <include refid="Base_Column_List" />
     from t_custom_archive_field
     where  field_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
+  </select>
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_field
+    where is_delete=0 AND field_id
     in <foreach collection="list" item="item" open="(" separator="," close=")">
     #{item}
   </foreach>

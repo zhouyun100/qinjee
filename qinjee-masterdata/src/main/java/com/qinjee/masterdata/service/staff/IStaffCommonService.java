@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.ibatis.annotations.Param;
@@ -17,21 +18,21 @@ public interface IStaffCommonService {
      * @param customArchiveTable
      * @return
      */
-    Integer  insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
+    void  insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
 
     /**
      * 逻辑删除自定义表
      * @param list
      * @return
      */
-    Integer deleteCustomArchiveTable(List<Integer> list);
+     void deleteCustomArchiveTable(List<Integer> list) throws Exception;
 
     /**
      * 自定义表修改
      * @param customArchiveTable
      * @return
      */
-    Integer updateCustomArchiveTable(CustomArchiveTable customArchiveTable);
+   void updateCustomArchiveTable(CustomArchiveTable customArchiveTable);
 
 
     /**
@@ -40,7 +41,7 @@ public interface IStaffCommonService {
      * @param pageSize
      * @return
      */
-    ResponseResult<PageResult<CustomArchiveTable>> selectCustomArchiveTable(Integer currentPage, Integer pageSize);
+    PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize);
 
     /**
      * 新增自定义组
@@ -48,21 +49,21 @@ public interface IStaffCommonService {
      * @return
      */
 
-    Integer insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
+    void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
 
     /**
      * 删除自定义组
      * @param list
      * @return
      */
-    Integer deleteCustomArchiveGroup(List<Integer> list);
+    void deleteCustomArchiveGroup(List<Integer> list) throws Exception;
 
     /**
      * 自定义组修改
      * @param customArchiveGroup
      * @return
      */
-    Integer updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
+    void updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
 
     /**
      *分页展示自定义组中的表
@@ -71,28 +72,28 @@ public interface IStaffCommonService {
      * @param CustomArchiveGroupId
      * @return
      */
-    ResponseResult<PageResult<CustomArchiveTable>> selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer CustomArchiveGroupId);
+  PageResult<CustomArchiveTable>selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer CustomArchiveGroupId);
 
     /**
      * 新增自定义字段
      * @param customArchiveField
      * @return
      */
-    Integer insertCustomArchiveField(CustomArchiveField customArchiveField);
+  void insertCustomArchiveField(CustomArchiveField customArchiveField);
 
     /**
      * 逻辑删除自定义字段
      * @param list
      * @return
      */
-    Integer deleteCustomArchiveField(List<Integer> list);
+     void deleteCustomArchiveField(List<Integer> list) throws Exception;
 
     /**
      * 修改自定义字段类型
      * @param customArchiveField
-     * @return
+     * @returnvoid
      */
-    Integer updateCustomArchiveField(CustomArchiveField customArchiveField);
+    void updateCustomArchiveField(CustomArchiveField customArchiveField);
 
     /**
      *分页展示指定自定义表下的自定义字段
@@ -101,7 +102,7 @@ public interface IStaffCommonService {
      * @param customArchiveTableId
      * @return
      */
-    ResponseResult<PageResult<CustomArchiveField>> selectCustomArchiveField(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
+    PageResult<CustomArchiveField> selectCustomArchiveField(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
     /**
      * 通过字段id找到自定义字段信息
      * @param customArchiveFieldId
@@ -113,14 +114,14 @@ public interface IStaffCommonService {
      * @param customArchiveTableData
      * @return
      */
-    ResponseResult insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
+    void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession);
 
     /**
      * 修改自定义字段表中的数据
      * @param  customArchiveTableData
      * @return
      */
-    Integer updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
+    void updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
 
     /**
      * 展示自定义表数据内容,返回自定义表数据
@@ -129,7 +130,7 @@ public interface IStaffCommonService {
      * @param customArchiveTableId
      * @return
      */
-    ResponseResult<PageResult<CustomArchiveTableData>> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
+   PageResult<CustomArchiveTableData> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
 
     /**
      * 获取字段校验类型
@@ -171,24 +172,24 @@ public interface IStaffCommonService {
 
     /**
      * 据档案显示对应权限下的单位
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult getCompany(Integer archiveId);
+    List<Integer> getCompanyId(UserSession userSession);
 
     /**
      * 根据档案id显示对应权限下的子集部门
      * @param orgId
      * @return
      */
-    ResponseResult getOrgIdByCompanyId(Integer orgId);
+    List<Integer> getOrgIdByCompanyId(Integer orgId);
 
     /**
      * 显示部门下的岗位
      * @param orgId
      * @return
      */
-    ResponseResult getPostByOrgId(@Param("orgId") Integer orgId);
+    List<Integer> getPostByOrgId(@Param("orgId") Integer orgId);
 
 
 

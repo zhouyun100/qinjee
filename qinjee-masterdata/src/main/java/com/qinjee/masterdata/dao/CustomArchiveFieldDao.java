@@ -22,11 +22,13 @@ public interface CustomArchiveFieldDao {
 
     Integer selectMaxPrimaryKey();
 
-    List<Integer> selectFieldId(Integer customArchiveTableId);
+    List<Integer> selectFieldId(@Param("customArchiveTableId") Integer customArchiveTableId);
 
-    List<String> selectFieldType(Integer customArchiveTableId);
+    List<String> selectFieldType(@Param("customArchiveTableId") Integer customArchiveTableId);
 
-    Integer deleteCustomField(List<Integer> list);
+    Integer deleteCustomField(@Param("list") List<Integer> list);
 
     List<CustomArchiveField> selectByList(@Param("integerList") List<Integer> integerList);
+
+    List<CustomArchiveField> selectByPrimaryKeyList(@Param("integerList") List<Integer> list);
 }
