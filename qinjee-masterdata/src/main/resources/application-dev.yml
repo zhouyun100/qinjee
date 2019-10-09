@@ -11,8 +11,8 @@ spring:
 
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql://192.168.252.129:3306/qinjee?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
-    username: root
+    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    username: qinjee
     password: qinjee2019
     driver-class-name: com.mysql.jdbc.Driver
 
@@ -50,7 +50,7 @@ spring:
 
   #RabbitMQ
   rabbitmq:
-    addresses: 192.168.252.129:5672,192.168.252.128:5672,192.168.252.130:5672
+    addresses: 193.112.188.180:5672
     username: guest
     password: guest
     virtual-host: /
@@ -71,14 +71,16 @@ spring:
     elasticsearch:
       repositories:
         enabled: true
-      cluster-nodes: 192.168.252.130:9200
+      cluster-nodes: 193.112.188.180:9200
 
   #  redis集群
   redis:
     cluster:
-      nodes: 192.168.252.129:8001,192.168.252.129:8002,192.168.252.129:8003,192.168.252.129:8004,192.168.252.129:8005,192.168.252.129:8006
+      nodes: 193.112.188.180:7001,193.112.188.180:7002,193.112.188.180:7003,193.112.188.180:7004,193.112.188.180:7005,193.112.188.180:7006
       max-redirects: 6
     timeout: 2000
+    password: qinjee2019
+
 
 
 #security:
@@ -102,7 +104,7 @@ eureka:
     lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://qinjee:qinjee2019@192.168.1.178:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
 
 server:
   port: 8080

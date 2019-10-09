@@ -35,6 +35,14 @@ public class RedisClusterConfig {
     @Value("${spring.redis.cluster.nodes}")
     private String clusterNodes;
 
+    @Value("${spring.redis.timeout}")
+    private int timeout;
+
+    @Value("${spring.redis.password}")
+    private String password;
+
+    private int maxAttempts = 5;
+
     @Bean
     public JedisCluster jedisCluster() {
         //分割集群节点
@@ -63,7 +71,7 @@ public class RedisClusterConfig {
         poolConfig.setTestOnBorrow(false);
 
         //创建Redis集群对象，timeout默认2000
-        JedisCluster jedisCluster = new JedisCluster(nodes, poolConfig);
+        JedisCluster jedisCluster = new JedisCluster(nodes,timeout, timeout, maxAttempts, password, poolConfig);
 
         return jedisCluster;
     }
