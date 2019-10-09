@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
@@ -10,11 +9,7 @@ import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +23,7 @@ import java.util.*;
  */
 @Service
 public class StaffArchiveServiceImpl implements IStaffArchiveService {
-    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
+//    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
     @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
@@ -89,13 +84,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public void updateArchiveField(Map<Integer, String> map) {
 
         customFieldDao.updatePreEmploymentField(map);
-
-
     }
 
     @Override
     public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer companyId) {
         List<UserArchive> list = new ArrayList<>();
+        List<UserArchive> list1 = new ArrayList<>();
         //本用户的权限下有哪些机构
         List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
         if (companyId == null) {
@@ -103,7 +97,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 for (Integer integer : orgList) {
                     //展示所有权限机构下的人员
                     List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                    list = userArchiveDao.selectByPrimaryKeyList(achiveList);
+                    list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
+                    list.addAll(list1);
                 }
                 return new PageResult<>(list);
             } else {
@@ -119,7 +114,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                     if (companyId.equals(integer)) {
                         //展示机构下的人员信息
                         List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                        list = userArchiveDao.selectByPrimaryKeyList(achiveList);
+                        list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
+                        list.addAll(list1);
                     }
                 }
 
@@ -146,7 +142,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public Map<String, String> selectNameAndNumber(Integer id) {
         Map<String, String> map = new HashMap<>();
-
         String name = userArchiveDao.selectName(id);
         String number = userArchiveDao.selectNumber(id);
         map.put("name", name);
@@ -295,12 +290,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
                 querySchemeSort.setQuerySchemeId(queryScheme.getQuerySchemeId());
             }
-            for (int i = 0; i < querySchemeFieldlist.size(); i++) {
-                querySchemeFieldDao.insert(querySchemeFieldlist.get(i));
-            }
-            for (int i = 0; i < querySchemeSortlist.size(); i++) {
-                querySchemeSortDao.insert(querySchemeSortlist.get(i));
-            }
+
+            querySchemeFieldDao.insertBatch(querySchemeFieldlist);
+
+
+            querySchemeSortDao.insertBatch(querySchemeSortlist);
+
         }
         //说明是更新操作
         //将list里面的queryschemeId设置为传过来的id

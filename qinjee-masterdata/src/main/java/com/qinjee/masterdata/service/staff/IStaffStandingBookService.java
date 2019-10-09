@@ -1,8 +1,10 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
@@ -18,25 +20,24 @@ public interface IStaffStandingBookService {
     /**新增黑名单
      * @param blacklists
      * @param dataSource
-     * @param archiveId
-     * @param companyId
+     * @param userSession
      * @return
      */
-    ResponseResult insertBlackList(List<BlackListVo> blacklists, String dataSource, Integer archiveId, Integer companyId);
+    void insertBlackList(List<BlackListVo> blacklists, String dataSource, UserSession userSession);
 
     /**
      * 批量删除黑名单
      * @param list
      * @return
      */
-    ResponseResult deleteBlackList(List<Integer> list);
+    void deleteBlackList(List<Integer> list) throws Exception;
 
     /**
      * 更新黑名单表
      * @param blacklist
      * @return
      */
-    ResponseResult updateBalckList(Blacklist blacklist);
+    void updateBalckList(Blacklist blacklist);
 
     /**
      * 分页展示黑名单
@@ -44,45 +45,43 @@ public interface IStaffStandingBookService {
      * @param pageSize
      * @return
      */
-    ResponseResult<PageResult<Blacklist>> selectBalckList(Integer currentPage, Integer pageSize);
+    PageResult<Blacklist> selectBalckList(Integer currentPage, Integer pageSize);
 
     /**
      * 删除台账
      * @param standingBookId
      * @return
      */
-    ResponseResult deleteStandingBook(Integer standingBookId);
+    void deleteStandingBook(Integer standingBookId);
 
     /**
      * 新增与修改台账
-     * @param archiveId
-     * @param companyId
+     * @param userSession
      * @param standingBookInfo
      * @return
      */
-    ResponseResult saveStandingBook(Integer archiveId,Integer companyId,StandingBookInfo standingBookInfo);
+    void saveStandingBook(UserSession userSession,StandingBookInfo standingBookInfo);
 
     /**
      * 展示台账表
      * @param id
      * @return
      */
-    ResponseResult selectStandingBook(Integer id);
+   StandingBookInfo selectStandingBook(Integer id);
 
     /**
      * 查看我的台账，不含是否共享
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult selectMyStandingBook(Integer archiveId);
+    List<StandingBook> selectMyStandingBook(UserSession userSession);
 
     /**
      * 查看我的台账,含是否共享
-     * @param archiveId
-     * @param companyId
+     * @param userSession
      * @return
      */
-    ResponseResult selectMyStandingBookShare(Integer archiveId, Integer companyId);
+    List<StandingBook> selectMyStandingBookShare(UserSession userSession);
 
     /**
      * 人员查询操作

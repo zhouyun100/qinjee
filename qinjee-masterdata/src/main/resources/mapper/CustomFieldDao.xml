@@ -250,7 +250,8 @@
         is_delete=1
         where where field_id = #{fieldId,jdbcType=INTEGER}
     </update>
-    <select id="selectFieldId" resultType="java.lang.Integer">
+
+  <select id="selectFieldId" resultType="java.lang.Integer">
         select field_id
         from   t_custom_field
         where   table_id = #{tableId,jdbcType=INTEGER} AND  is_delete = 0
@@ -272,17 +273,12 @@
     from t_custom_field
     where  field_id = #{fieldId,jdbcType=INTEGER} AND  is_delete=0
   </select>
-  <update id="updatePreEmploymentField">
-    update t_custom_field
-    set
-    field_name =
-      <foreach collection="params.values" item="v" close=")"  separator=",">
-        #{v}
-      </foreach>
-      where
-    field_id=
-    <foreach collection="params.keys" item="key" open="("  separator=",">
-      ${key}
+  <update id="updatePreEmploymentField" parameterType="hashmap">
+    <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
+      UPDATE t_custom_field SET
+      <if test="value!=null">,field_name= ${value}  </if>
+      WHERE  field_id= #{key}
     </foreach>
+
   </update>
 </mapper>

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
@@ -12,11 +13,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -26,6 +30,7 @@ import java.util.List;
 @RequestMapping("/staffsta")
 @Api(tags = "【人员管理】员工台账相关接口")
 public class StaffStandingBookController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookController.class);
     @Autowired
     private IStaffStandingBookService staffStandingBookService;
 
@@ -36,11 +41,18 @@ public class StaffStandingBookController extends BaseController {
     @ApiOperation(value = "加入黑名单表", notes = "hkt")
     @ApiImplicitParam(name = "blackListGroup", value = "黑名单表集合", paramType = "query", required = true)
     public ResponseResult insertBlackList(List<BlackListVo> blacklists,String dataSource) {
-        Integer archiveId = userSession.getArchiveId();
-        Integer companyId = userSession.getCompanyId();
-        return staffStandingBookService.insertBlackList(blacklists,dataSource,archiveId,companyId);
-    }
+        Boolean b = checkParam(blacklists, dataSource, getUserSession());
+        if (b) {
+            try {
+                staffStandingBookService.insertBlackList(blacklists, dataSource, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("加入黑名单表失败");
+            }
 
+        }
+        return failResponseResult("参数错误");
+    }
     /**
      * 删除黑名单表
      */
@@ -48,7 +60,16 @@ public class StaffStandingBookController extends BaseController {
     @ApiOperation(value = "删除黑名单表", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "黑名单表id集合", paramType = "query", required = true, example = "{1，2}")
     public ResponseResult deleteBalckList(List<Integer> list) {
-        return staffStandingBookService.deleteBlackList(list);
+        Boolean b = checkParam(list);
+        if (b) {
+            try {
+                staffStandingBookService.deleteBlackList(list);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("删除黑名单表失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -59,7 +80,16 @@ public class StaffStandingBookController extends BaseController {
     @ApiImplicitParam(name = "BlackLsit", value = "黑名单", paramType = "form", required = true)
 
     public ResponseResult updateBalckList(Blacklist blacklist) {
-        return staffStandingBookService.updateBalckList(blacklist);
+        Boolean b = checkParam(blacklist);
+        if (b) {
+            try {
+                staffStandingBookService.updateBalckList(blacklist);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("修改黑名单表失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -72,7 +102,20 @@ public class StaffStandingBookController extends BaseController {
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
     })
     public ResponseResult<PageResult<Blacklist>> selectBalckList(Integer currentPage, Integer pageSize) {
-        return staffStandingBookService.selectBalckList(currentPage, pageSize);
+        Boolean b = checkParam(currentPage,pageSize);
+        if (b) {
+            try {
+                PageResult<Blacklist> pageResult =
+                        staffStandingBookService.selectBalckList(currentPage, pageSize);
+                if(pageResult!=null){
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                }
+                    return failResponseResult("不存在黑名单或者此页没有黑名单");
+            } catch (Exception e) {
+                return failResponseResult("展示黑名单表失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -83,7 +126,16 @@ public class StaffStandingBookController extends BaseController {
     @ApiOperation(value = "删除台账", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult deleteStandingBook(Integer standingBookId) {
-        return staffStandingBookService.deleteStandingBook(standingBookId);
+        Boolean b = checkParam(standingBookId);
+        if (b) {
+            try {
+                staffStandingBookService.deleteStandingBook(standingBookId);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("删除台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -94,13 +146,20 @@ public class StaffStandingBookController extends BaseController {
     @ApiOperation(value = "修改台账", notes = "hkt")
     @ApiImplicitParam(name = "StandingBookInfo", value = "台账表信息", paramType = "form", required = true)
 
-    public ResponseResult updateStandingBook(StandingBookInfo standingBookInfo) {
+    public ResponseResult updateStandingBook(@Valid StandingBookInfo standingBookInfo) {
         //因为页面只有一个保存按钮，所以点保存的时候，需要区分前端是否传过来id
         //如果有id，证明是更新，做两个更新操作
         //如果没有，证明是新增。做两个新增操作。
-        Integer archiveId = userSession.getArchiveId();
-        Integer companyId = userSession.getCompanyId();
-        return staffStandingBookService.saveStandingBook(archiveId,companyId,standingBookInfo);
+        Boolean b = checkParam(standingBookInfo,getUserSession());
+        if (b) {
+            try {
+                staffStandingBookService.saveStandingBook(getUserSession(),standingBookInfo);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("删除台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -110,17 +169,40 @@ public class StaffStandingBookController extends BaseController {
     @RequestMapping(value = "/selectStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "查询台账", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
-    public ResponseResult selectStandingBook(Integer id) {
-        return staffStandingBookService.selectStandingBook(id);
+    public ResponseResult<StandingBookInfo> selectStandingBook(Integer id) {
+        Boolean b = checkParam(id);
+        if (b) {
+            try {
+                StandingBookInfo standingBookInfo = staffStandingBookService.selectStandingBook(id);
+                if(standingBookInfo!=null){
+                    return new ResponseResult<>(standingBookInfo,CommonCode.SUCCESS);
+                }
+                return failResponseResult("台账为空");
+            } catch (Exception e) {
+                return failResponseResult("查询台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
     /**
      * 查看我的台账，不含共享
      */
     @RequestMapping(value = "/selectMyStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "查看我的台账，不含共享", notes = "hkt")
-    public ResponseResult selectMyStandingBook() {
-        Integer archiveId = userSession.getArchiveId();
-        return staffStandingBookService.selectMyStandingBook(archiveId);
+    public ResponseResult<List<StandingBook>> selectMyStandingBook() {
+        Boolean b = checkParam(getUserSession());
+        if (b) {
+            try {
+                List<StandingBook> list = staffStandingBookService.selectMyStandingBook(userSession);
+                if(list!=null){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }
+                return failResponseResult("台账为空");
+            } catch (Exception e) {
+                return failResponseResult("查询台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -129,9 +211,19 @@ public class StaffStandingBookController extends BaseController {
     @RequestMapping(value = "/selectMyStandingBookShare", method = RequestMethod.GET)
     @ApiOperation(value = "查看我的台账，含是否共享", notes = "hkt")
     public ResponseResult selectMyStandingBookShare() {
-        Integer archiveId = userSession.getArchiveId();
-        Integer companyId = userSession.getCompanyId();
-        return staffStandingBookService.selectMyStandingBookShare(archiveId,companyId);
+        Boolean b = checkParam(getUserSession());
+        if (b) {
+            try {
+                List<StandingBook> list = staffStandingBookService.selectMyStandingBookShare(getUserSession());
+                if(list!=null){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }
+                return failResponseResult("台账为空");
+            } catch (Exception e) {
+                return failResponseResult("查询台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -155,5 +247,30 @@ public class StaffStandingBookController extends BaseController {
     })
     public ResponseResult selectStaff(Integer stangdingBookId,String archiveType,Integer id,String type){
         return staffStandingBookService.selectStaff(stangdingBookId,archiveType,id,type);
+    }
+    /**
+     * 检验参数
+     * @param params
+     * @return
+     */
+    public Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (null == param || "".equals(param)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 错误返回值
+     * @param message
+     * @return
+     */
+    public ResponseResult failResponseResult(String message){
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage(message);
+        logger.error(message);
+        return fail;
     }
 }

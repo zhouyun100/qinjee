@@ -31,5 +31,7 @@ public interface QuerySchemeSortDao {
 
     List<String> selectSortSort(@Param("schemeId") Integer schemeId);
 
-    void deleteBySchemeIdList(List<Integer> list);
+    void deleteBySchemeIdList(@Param("list") List<Integer> list);
+
+    void insertBatch(@Param("querySchemeSortlist") List<QuerySchemeSort> querySchemeSortlist);
 }

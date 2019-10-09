@@ -51,9 +51,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private PostDao postDao;
 
     @Override
-    public Integer insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
-        int i = customArchiveTableDao.insertSelective(customArchiveTable);
-        return i;
+    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
+         customArchiveTableDao.insertSelective(customArchiveTable);
+
     }
 
     @Transactional(rollbackFor =Exception.class)

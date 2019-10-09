@@ -18,7 +18,7 @@ public interface IStaffCommonService {
      * @param customArchiveTable
      * @return
      */
-   Integer  insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
+   void  insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
 
     /**
      * 逻辑删除自定义表

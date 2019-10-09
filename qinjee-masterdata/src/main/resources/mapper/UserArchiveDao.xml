@@ -615,11 +615,6 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectByPrimaryKeyalist">
-    select
-    <include refid="Base_Column_List" />
-    from t_user_archive
-    where
-  </select>
+
 </mapper>
 
