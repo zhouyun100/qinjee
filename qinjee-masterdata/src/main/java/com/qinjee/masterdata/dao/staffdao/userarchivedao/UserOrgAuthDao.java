@@ -23,4 +23,6 @@ public interface UserOrgAuthDao {
     List<Integer> selectCompanyIdByArchive(@Param("archiveId") Integer archiveId);
 
     List<Integer> selectArchiveIdByOrg(Integer integer);
+
+    List<Integer> selectOrgByArc(@Param("archiveId") Integer archiveId);
 }

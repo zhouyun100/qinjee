@@ -51,8 +51,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private PostDao postDao;
 
     @Override
-    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
-         customArchiveTableDao.insertSelective(customArchiveTable);
+    public Integer insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
+        int i = customArchiveTableDao.insertSelective(customArchiveTable);
+        return i;
     }
 
     @Transactional(rollbackFor =Exception.class)
@@ -64,7 +65,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                throw new Exception("自定义表参数过大");
             }
         }
-         customArchiveTableDao.deleteCustomTable(list);
+        customArchiveTableDao.deleteCustomTable(list);
     }
         @Override
         public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {

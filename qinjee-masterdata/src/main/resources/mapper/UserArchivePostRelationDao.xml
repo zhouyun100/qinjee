@@ -249,5 +249,13 @@
       #{item}
     </foreach>
   </select>
+  <select id="selectByArcId" resultType="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user_archive_post_relation
+    where
+    archive_id = #{archiveId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
 
 </mapper>

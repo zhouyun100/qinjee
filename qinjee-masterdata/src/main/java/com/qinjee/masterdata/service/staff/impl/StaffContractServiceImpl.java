@@ -5,21 +5,17 @@ import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDa
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
-import com.qinjee.masterdata.model.entity.LaborContract;
-import com.qinjee.masterdata.model.entity.LaborContractChange;
-import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.GetDayUtil;
-import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +50,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private LaborContractChangeDao laborContractChangeDao;
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
+    @Autowired
+    private UserArchivePostRelationDao userArchivePostRelationDao;
     /**
      * 展示未签合同的人员信息
      *
@@ -62,40 +60,28 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     @Override
-    public ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer orgId, Integer currentPage, Integer pageSize) {
-        PageResult pageResult = new PageResult();
-        List list = new ArrayList();
-        //根据档案id找到对应权限下的机构
-        try {
-            //找到机构下的所有档案id
-            List<Integer> arcList = userArchiveDao.selectByOrgId(orgId);
-            //合同表里面筛选id不在机构档案的合同id
-            List<Integer> newArcList = laborContractDao.seleltByArcId(arcList);
-            //根据合同id找到对应的档案
-            getArcByConId(currentPage, pageSize, pageResult, list, newArcList);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查找未签合同人员失败失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
-
+    public PageResult<UserArchive> selectNoLaborContract(Integer orgId,
+                                                         Integer currentPage, Integer pageSize) {
+        PageHelper.startPage(currentPage,pageSize);
+        //查看机构下的合同id
+        List<Integer> conList=laborContractDao.selectByorgId(orgId);
+        //根据合同id找到没有合同的档案id
+        List<Integer> arcList=laborContractDao.selectArcByCon(conList);
+        //根据档案id查询档案
+        List<UserArchive> list=userArchiveDao.selectNotInList(arcList);
+        return new PageResult<>(list);
     }
 
     @Override
-    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage, Integer pageSize) {
-        PageResult pageResult = new PageResult();
-        List list = new ArrayList();
-        try {
-            List<Integer> arcList = userArchiveDao.selectByOrgId(orgId);
-            //合同表里面筛选id在机构档案的合同id
-            List<Integer> newArcList = laborContractDao.seleltByArcIdIn(arcList);
-            //根据合同id找到对应的档案
-            getArcByConId(currentPage, pageSize, pageResult, list, newArcList);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查找已签合同人员失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
+    public PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage, Integer pageSize) {
+        PageHelper.startPage(currentPage,pageSize);
+        //查看机构下的合同id
+        List<Integer> conList=laborContractDao.selectByorgId(orgId);
+        //根据合同id找到有合同的档案id
+        List<Integer> arcList=laborContractDao.seleltByArcIdIn(conList);
+        //根据档案id查询档案
+        List<UserArchive> list=userArchiveDao.selectNotInList(arcList);
+        return new PageResult<>(list);
     }
 
     private void getArcByConId(Integer currentPage, Integer pageSize, PageResult pageResult, List list, List<Integer> newArcList) {
@@ -115,289 +101,207 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteLaborContract(Integer laborContractid) {
-        try {
+    public void deleteLaborContract(Integer laborContractid) {
             laborContractDao.deleteByPrimaryKey(laborContractid);
-            return new ResponseResult<>(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
-
     }
 
     @Override
-    public ResponseResult insertLaborContract(LaborContractVo laborContractVo, Integer id, Integer archiveId) {
-        try {
+    public void insertLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
+
             //将合同vo设置进去
-            Mark(laborContractVo, id, archiveId, NEWMARK);
-            return new ResponseResult<>(true, CommonCode.SUCCESS);
-        } catch (BeansException e) {
-            logger.error("新签合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
+            Mark(laborContractVo, id, userSession.getArchiveId(), NEWMARK);
+
     }
 
     @Override
-    public ResponseResult insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list, Integer archiveId) {
-        try {
+    public void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list,
+                                                   UserSession userSession) {
             //将合同vo设置进去
             LaborContract laborContract = new LaborContract();
             //批量新签合同
             for (Integer integer : list) {
                 BeanUtils.copyProperties(laborContractVo, laborContract);
                 laborContract.setArchiveId(integer);
-                laborContract.setOperatorId(archiveId);
+                laborContract.setOperatorId(userSession.getArchiveId());
                 laborContract.setContractState(NEWMARK);
                 laborContractDao.insertSelective(laborContract);
             }
-            return new ResponseResult<>(true, CommonCode.SUCCESS);
-        } catch (BeansException e) {
-            logger.error("批量新签合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
     }
 
     @Override
-    public ResponseResult SaveLaborContract(LaborContractVo laborContractVo, Integer id, Integer archiveId) {
-        try {
-            Mark(laborContractVo, id, archiveId, NOTMARK);
-            return new ResponseResult<>(true, CommonCode.SUCCESS);
-        } catch (BeansException e) {
-            logger.error("保存合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
+    public void SaveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
+            Mark(laborContractVo, id, userSession.getArchiveId(), NOTMARK);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updatelaborContract(LaborContract laborContract, LaborContractChangeVo laborContractChangeVo,
-                                              Integer id, Integer archiveId) {
-
-        try {
-            //更新合同表
-            laborContract.setContractState(CHANGEMARK);
-            laborContractDao.updateByPrimaryKey(laborContract);
-            //新增变更记录
-            change(laborContractChangeVo, COMMONCHANGE, id, archiveId);
-            return new ResponseResult<>(true, CommonCode.SUCCESS);
-        } catch (BeansException e) {
-            logger.error("更新合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
+    public void updatelaborContract(LaborContract laborContract, LaborContractChangeVo laborContractChangeVo,
+                                              Integer id, UserSession userSession) {
+        //更新合同表
+        laborContract.setContractState(CHANGEMARK);
+        laborContractDao.updateByPrimaryKey(laborContract);
+        //新增变更记录
+        change(laborContractChangeVo, COMMONCHANGE, id, userSession.getArchiveId());
     }
 
 
     @Override
-    public ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id) {
-        List<LaborContractChange> list = new ArrayList<>();
-        try {
-            list = laborContractChangeDao.selectLaborContractchange(id);
-            return new ResponseResult<>(list, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("展示合同更新失败");
-            return new ResponseResult<>(list, CommonCode.FAIL);
-        }
+    public List<LaborContractChange> selectLaborContractchange(Integer id) {
+        return laborContractChangeDao.selectLaborContractchange(id);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertReNewLaborContract(LaborContractVo laborContractVo, Integer id,
+    public void insertReNewLaborContract(LaborContractVo laborContractVo, Integer id,
+                                                   LaborContractChangeVo laborContractChangeVo, UserSession userSession) {
 
-                                                   LaborContractChangeVo laborContractChangeVo, Integer archiveId) {
-        try {
+        //新增续签
+        LaborContract laborContract = new LaborContract();
+        //设置其余字段
+        BeanUtils.copyProperties(laborContractVo, laborContract);
+        laborContract.setArchiveId(id);
+        laborContract.setOperatorId(userSession.getArchiveId());
+        laborContract.setContractState(RENEWMARK);
+        //新增续签次数
+        laborContract.setSignNumber(laborContractVo.getSignNumber()+1);
+        laborContractDao.updateByPrimaryKeySelective(laborContract);
+        //增加更改记录
+        change(laborContractChangeVo, RENEWCHANGE, id, userSession.getArchiveId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertReNewLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list,
+                                                        LaborContractChangeVo laborContractChangeVo,
+                                                        UserSession userSession) {
+        for (Integer integer : list) {
             //新增续签
-            Mark(laborContractVo, id, archiveId, RENEWMARK);
+            LaborContract laborContract = new LaborContract();
+            //设置其余字段
+            laborContract.setArchiveId(integer);
+            BeanUtils.copyProperties(laborContractVo, laborContract);
+            laborContract.setOperatorId(userSession.getArchiveId());
+            laborContract.setContractState(RENEWMARK);
+            //新增续签次数
+            laborContract.setSignNumber(laborContractVo.getSignNumber()+1);
+            laborContractDao.updateByPrimaryKeySelective(laborContract);
             //增加更改记录
-            change(laborContractChangeVo, RENEWCHANGE, id, archiveId);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("续签合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
+            change(laborContractChangeVo, RENEWCHANGE, integer, userSession.getArchiveId());
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertReNewLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list,
-                                                        LaborContractChangeVo laborContractChangeVo, Integer archiveId) {
-        try {
-            for (Integer integer : list) {
-                Mark(laborContractVo, integer, archiveId, RENEWMARK);
-                change(laborContractChangeVo, RENEWCHANGE, integer, archiveId);
-            }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("续签合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
-
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseResult endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, Integer archiveId) {
+    public void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession) {
         //将合同状态设置为终止
-        try {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey(id);
             laborContract.setContractState(ENDEMARK);
+            laborContractDao.updateByPrimaryKeySelective(laborContract);
             //新增变更表
-            change(laborContractChangeVo, ENDCHANGE, id, archiveId);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("终止合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
+            change(laborContractChangeVo, ENDCHANGE, id, userSession.getArchiveId());
     }
 
     @Override
-    public ResponseResult endlaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list, Integer archiveId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void endlaborContractBatch(LaborContractChangeVo laborContractChangeVo,
+                                                List<Integer> list,UserSession userSession) {
         //将合同状态设置为终止
-        try {
+
             for (Integer integer : list) {
                 LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
                 laborContract.setContractState(ENDEMARK);
+                laborContractDao.updateByPrimaryKeySelective(laborContract);
                 //新增变更表
-                change(laborContractChangeVo, ENDCHANGE, integer, archiveId);
+                change(laborContractChangeVo, ENDCHANGE, integer, userSession.getArchiveId());
             }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("批量终止合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
+
     }
 
     @Override
-    public ResponseResult looselaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, Integer archiveId) {
-        try {
+    public void looselaborContract(LaborContractChangeVo laborContractChangeVo,
+                                             Integer id, UserSession userSession) {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey(id);
             //将合同状态设置为解除
             laborContract.setContractState(LOOSEMARK);
+            laborContractDao.updateByPrimaryKeySelective(laborContract);
             //新增变更表
-            change(laborContractChangeVo, LOOSECHANGE, id, archiveId);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("解除合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
+            change(laborContractChangeVo, LOOSECHANGE, id, userSession.getArchiveId());
+    }
+
+    @Override
+    public void looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list,
+                                        UserSession userSession) {
+
+        for (Integer integer : list) {
+            LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
+            laborContract.setContractState(LOOSEMARK);
+            laborContractDao.updateByPrimaryKeySelective(laborContract);
+            //新增变更表
+            change(laborContractChangeVo, COMMONCHANGE, integer, userSession.getArchiveId());
         }
     }
 
     @Override
-    public ResponseResult looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list, Integer archiveId) {
-        //将合同状态设置为解除
-        try {
-            for (Integer integer : list) {
-                LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
-                laborContract.setContractState(LOOSEMARK);
-                //新增变更表
-                change(laborContractChangeVo, COMMONCHANGE, integer, archiveId);
-            }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("批量解除合同失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
-    }
-
-    @Override
-    public ResponseResult insertLaborContractIntention(Integer id) {
-        try {
-            UserArchive userArchive = userArchiveDao.selectByPrimaryKey(id);
+    public void insertLaborContractIntention(Integer id,UserSession userSession) {
+          //根据档案id找到员工档案关系表中的合同开始时间，结束时间以及类型
+            UserArchivePostRelation relation=userArchivePostRelationDao.selectByArcId(id);
             ContractRenewalIntention contractRenewalIntention = new ContractRenewalIntention();
             contractRenewalIntention.setArchiveId(id);
+            contractRenewalIntention.setContractBeginDate(relation.getEmploymentBeginDate());
+            contractRenewalIntention.setContractEndDate(relation.getEmploymentEndDate());
+            contractRenewalIntention.setContractPeriodType(relation.getEmploymentType());
+            contractRenewalIntention.setOperatorId(userSession.getArchiveId());
             contractRenewalIntentionDao.insertSelective(contractRenewalIntention);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("发送续签意向表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
     }
 
     @Override
-    public ResponseResult selectContractRenewalIntention(Integer id) {
-        try {
-            ContractRenewalIntention contractRenewalIntention = contractRenewalIntentionDao.selectByArchiveId(id);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("展示续签意向表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+    public ContractRenewalIntention selectContractRenewalIntention(Integer id) {
+      return contractRenewalIntentionDao.selectByArchiveId(id);
 
     }
 
     @Override
-    public ResponseResult agreeRenew(ContractRenewalIntention contractRenewalIntention) {
-        try {
+    public void agreeRenew(ContractRenewalIntention contractRenewalIntention) {
             //更改续签意向表
             contractRenewalIntention.setRenewalOpinion(RENEWAGREE);
             contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-            //前端跳转至续签页面
-        } catch (Exception e) {
-            logger.error("新增续签意向同意状态失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
     }
 
     @Override
-    public ResponseResult rejectRenew(ContractRenewalIntention contractRenewalIntention) {
-        try {
+    public void rejectRenew(ContractRenewalIntention contractRenewalIntention) {
             //更改续签意向表
             contractRenewalIntention.setRenewalOpinion(RENEWREJECT);
             contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
-            return new ResponseResult(true, CommonCode.SUCCESS);
             //前端跳转至解除页面
-        } catch (Exception e) {
-            logger.error("新增续签意向不同意状态失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
     }
-
-
     @Override
-    public ResponseResult insertContractRenewalIntention(ContractRenewalIntention contractRenewalIntention) {
-        try {
-            contractRenewalIntentionDao.insert(contractRenewalIntention);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("新增合同续签反馈表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+    public void updateContractRenewalIntention(ContractRenewalIntention contractRenewalIntention) {
+        contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
     }
 
     @Override
-    public ResponseResult selectArcNumberIn(Integer id) {
-        try {
-            Integer number = userArchiveDao.selectArcNumberIn(id);
-            return new ResponseResult(number, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("获取在职人数失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+    public Integer selectArcNumberIn(Integer id) {
+        return userArchiveDao.selectArcNumberIn(id);
     }
 
     @Override
-    public ResponseResult selectArcDeadLine(Integer id) {
+    public List<UserArchive> selectArcDeadLine(Integer id) {
         List<UserArchive> list = new ArrayList<>();
-        try {
-            //根据机构id找到合同
-            List<Integer> arcList = userArchiveDao.selectByOrgId(id);
-            //合同表里面筛选在机构档案的合同id
-            List<Integer> newArcList = laborContractDao.seleltByArcIdIn(arcList);
-            for (Integer integer : newArcList) {
-                LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
-                if (GetDayUtil.getMonth(laborContract.getContractEndDate(), new Date()) < 3) {
-                    //根据合同id找到档案id
-                    Integer achiveId = laborContractDao.seleltByArcIdSingle(integer);
-                    list.add(userArchiveDao.selectByPrimaryKey(achiveId));
-                }
+
+        //根据机构id找到合同
+        List<Integer> arcList = userArchiveDao.selectByOrgId(id);
+        //合同表里面筛选在机构档案的合同id
+        List<Integer> newArcList = laborContractDao.seleltByArcIdIn(arcList);
+        for (Integer integer : newArcList) {
+            LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
+            if (GetDayUtil.getMonth(laborContract.getContractEndDate(), new Date()) < 3) {
+                //根据合同id找到档案id
+                Integer achiveId = laborContractDao.seleltByArcIdSingle(integer);
+                list.add(userArchiveDao.selectByPrimaryKey(achiveId));
             }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("获取合同即将到期人员信息失败");
-            return new ResponseResult(false, CommonCode.FAIL);
         }
+        return list;
     }
 
     private void Mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) {

@@ -403,7 +403,7 @@ public class StaffArchiveController extends BaseController {
      */
     public Boolean checkParam(Object... params) {
         for (Object param : params) {
-            if (null == param) {
+            if (null == param || "".equals(param)) {
                 return false;
             }
         }

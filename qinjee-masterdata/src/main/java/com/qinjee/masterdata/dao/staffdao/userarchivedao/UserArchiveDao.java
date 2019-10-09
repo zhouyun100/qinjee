@@ -26,7 +26,7 @@ public interface UserArchiveDao {
 
     Integer selectMaxId();
 
-    String selectMail(Integer integer);
+    List<String> selectMail(List<Integer> list);
 
     List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
 

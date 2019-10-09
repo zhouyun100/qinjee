@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -36,4 +37,6 @@ public interface UserArchivePostRelationDao {
     List<UserArchivePostRelation> getUserArchivePostRelationList(Integer postId);
 
     List<UserArchivePostRelation> selectByPrimaryKeyList(List<Integer> list);
+
+    UserArchivePostRelation selectByArcId(@Param("id") Integer id);
 }

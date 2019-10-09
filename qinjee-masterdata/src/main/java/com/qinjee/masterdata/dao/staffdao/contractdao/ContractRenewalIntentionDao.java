@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,5 +21,5 @@ public interface ContractRenewalIntentionDao {
 
     int updateByPrimaryKey(ContractRenewalIntention record);
 
-    ContractRenewalIntention selectByArchiveId(Integer id);
+    ContractRenewalIntention selectByArchiveId(@Param("id") Integer id);
 }

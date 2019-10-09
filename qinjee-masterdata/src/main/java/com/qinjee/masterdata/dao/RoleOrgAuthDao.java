@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.RoleOrgAuth;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface RoleOrgAuthDao {
     int deleteByPrimaryKey(Integer authId);
 
@@ -14,4 +16,5 @@ public interface RoleOrgAuthDao {
     int updateByPrimaryKeySelective(RoleOrgAuth record);
 
     int updateByPrimaryKey(RoleOrgAuth record);
+
 }

@@ -6,7 +6,6 @@ import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -45,8 +44,8 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(customArchiveTable);
         if(b){
             try {
-                staffCommonService.insertCustomArichiveTable(customArchiveTable);
-                return ResponseResult.SUCCESS();
+                 staffCommonService.insertCustomArichiveTable(customArchiveTable);
+                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("新增自定义表失败");
             }
@@ -65,7 +64,7 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(list);
         if(b){
             try {
-                staffCommonService.deleteCustomArchiveTable(list);
+                 staffCommonService.deleteCustomArchiveTable(list);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("逻辑删除自定义表失败");
@@ -363,7 +362,6 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(currentPage,pageSize,customArchiveTableId);
         if(b){
             try {
-
                 PageResult<CustomArchiveTableData> pageResult =
                         staffCommonService.selectCustomArchiveTableData(currentPage, pageSize, customArchiveTableId);
                 return new ResponseResult(pageResult,CommonCode.SUCCESS);
@@ -510,7 +508,7 @@ public class CommonController extends BaseController {
      */
     public Boolean checkParam(Object... params) {
         for (Object param : params) {
-            if (null == param) {
+            if (null == param || "".equals(param)) {
                 return false;
             }
         }

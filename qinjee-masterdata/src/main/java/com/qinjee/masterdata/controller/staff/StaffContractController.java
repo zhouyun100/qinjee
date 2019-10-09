@@ -15,11 +15,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -31,6 +35,8 @@ import java.util.List;
 public class StaffContractController extends BaseController {
     @Autowired
     private IStaffContractService staffContractService;
+    private static final Logger logger = LoggerFactory.getLogger(StaffContractController.class);
+
     /**
      * 展示未签合同
      */
@@ -40,11 +46,56 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
             @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
+    })
+    public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
+    ) {
+        Boolean b = checkParam(orgId, currentPage, pageSize);
+        if (b) {
+            try {
+                PageResult<UserArchive> pageResult =
+                        staffContractService.selectNoLaborContract(orgId, currentPage, pageSize);
+                if (pageResult != null) {
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                }
+                return failResponseResult("没有未签合同");
+            } catch (Exception e) {
+                return failResponseResult("显示部门下的未签合同失败");
+            }
+        }
+        return failResponseResult("部门id错误");
+
+    }
+
+    /**
+     * 展示已签合同的人员信息
+     */
+    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.GET)
+    @ApiOperation(value = "展示已签合同的人员信息", notes = "hkt")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 
     })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer orgId,Integer currentPage, Integer pageSize
-                                                                                                        ) {
-        return staffContractService.selectNoLaborContract(orgId,currentPage,pageSize);
+    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage,
+                                                                              Integer pageSize
+    ) {
+        Boolean b = checkParam(orgId, currentPage, pageSize);
+        if (b) {
+            try {
+                PageResult<UserArchive> pageResult =
+                        staffContractService.selectLaborContractserUser(orgId, currentPage, pageSize);
+                if (pageResult != null) {
+                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                }
+                return failResponseResult("没有已签合同");
+            } catch (Exception e) {
+                return failResponseResult("显示部门下的" +
+                        "合同失败");
+            }
+        }
+        return failResponseResult("部门id错误");
+
     }
 
     /**
@@ -57,16 +108,25 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "laborContractVo", value = "合同VO表", paramType = "form", required = true),
             @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     })
-    public ResponseResult insertLaborContract(LaborContractVo laborContractVo,Integer id ) {
-        Integer archiveId = userSession.getArchiveId();
-        return  staffContractService.insertLaborContract(laborContractVo,id,archiveId);
+    public ResponseResult insertLaborContract(@Valid LaborContractVo laborContractVo, Integer id) {
+        Boolean b = checkParam(laborContractVo,id,getUserSession());
+        if(b){
+            try {
+                staffContractService.insertLaborContract(laborContractVo, id, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("新签合同失败");
+            }
+
+        }
+        return  failResponseResult("参数错误");
+
     }
 
     /**id
      * 批量新签合同（合同编号不支持输入，需系统自动生成，对应的是提交，就是合同已经生效，此时字段是否已签改为是否已签）
-     */
-    /**
      * 这里需要进行人员信息的查询，然后将属性取出来塞进合同集合中。
+     *
      * @param list
      * @return
      */
@@ -76,9 +136,18 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "laborContractVo", value = "合同vo表", paramType = "form", required = true),
             @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true)
     })
-    public ResponseResult insertLaborContractBatch(LaborContractVo laborContractVo,List<Integer> list) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.insertLaborContractBatch(laborContractVo,list,archiveId);
+    public ResponseResult insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list) {
+        Boolean b = checkParam(laborContractVo, list, getUserSession());
+        if (b) {
+            try {
+                staffContractService.insertLaborContractBatch(laborContractVo, list, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("批量新签合同失败");
+            }
+
+        }
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -86,9 +155,19 @@ public class StaffContractController extends BaseController {
      * 这个跟新增合同一样的，只是合同状态不同
      */
 
-    public ResponseResult SaveLaborContract(LaborContractVo laborContractVo,Integer id ) {
-        Integer archiveId = userSession.getArchiveId();
-        return  staffContractService.SaveLaborContract(laborContractVo,id,archiveId);
+    public ResponseResult SaveLaborContract(LaborContractVo laborContractVo, Integer id) {
+        Boolean b = checkParam(laborContractVo,id,getUserSession());
+        if(b){
+            try {
+                staffContractService.SaveLaborContract(laborContractVo, id, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("保存合同失败");
+            }
+
+        }
+        return  failResponseResult("参数错误");
+
     }
 
     /**
@@ -98,7 +177,17 @@ public class StaffContractController extends BaseController {
     @ApiOperation(value = "删除合同", notes = "hkt")
     @ApiImplicitParam(name = "LaborContractid", value = "合同id", paramType = "query", required = true)
     public ResponseResult deleteLaborContract(Integer laborContractid) {
-        return staffContractService.deleteLaborContract(laborContractid);
+        Boolean b = checkParam(laborContractid);
+        if(b){
+            try {
+                staffContractService.deleteLaborContract(laborContractid);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("删除合同失败");
+            }
+
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -113,10 +202,20 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "laborContract", value = "合同信息", paramType = "form", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult updatelaborContract(LaborContract laborContract, LaborContractChangeVo laborContractChangeVo, Integer id) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.updatelaborContract(laborContract,laborContractChangeVo,id,archiveId);
+    public ResponseResult updatelaborContract(@Valid LaborContract laborContract,
+                                              @Valid LaborContractChangeVo laborContractChangeVo,
+                                              Integer id) {
+        Boolean b = checkParam(laborContract,laborContractChangeVo,id,getUserSession());
+        if(b){
+            try {
+                staffContractService.updatelaborContract(laborContract, laborContractChangeVo, id, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("更新合同失败");
+            }
 
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -131,11 +230,20 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult insertReNewLaborContract(LaborContractVo laborContractVo,Integer id,
-                                                   LaborContractChangeVo laborContractChangeVo) {
-        //续签时候将续签次数在原有基础上加一
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.insertReNewLaborContract(laborContractVo,id,laborContractChangeVo,archiveId);
+    public ResponseResult insertReNewLaborContract(@Valid LaborContractVo laborContractVo, Integer id,
+                                                   @Valid LaborContractChangeVo laborContractChangeVo) {
+
+        Boolean b = checkParam(laborContractVo,laborContractChangeVo,id,getUserSession());
+        if(b){
+            try {
+                staffContractService.insertReNewLaborContract(laborContractVo, id, laborContractChangeVo, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("续签合同失败");
+            }
+
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -148,26 +256,21 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult insertReNewLaborContractBatch(LaborContractVo laborContractVo,List<Integer> list,
-                                                   LaborContractChangeVo laborContractChangeVo) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.insertReNewLaborContractBatch(laborContractVo,list,laborContractChangeVo,archiveId);
-    }
-    /**
-     * 展示已签合同的人员信息
-     */
-    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.GET)
-    @ApiOperation(value = "展示已签合同的人员信息", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
+    public ResponseResult insertReNewLaborContractBatch(@Valid LaborContractVo laborContractVo, List<Integer> list,
+                                                        @Valid LaborContractChangeVo laborContractChangeVo) {
+        Boolean b = checkParam(laborContractVo,laborContractChangeVo,list,getUserSession());
+        if(b){
+            try {
+                staffContractService.insertReNewLaborContractBatch(laborContractVo, list, laborContractChangeVo, getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("批量续签合同失败");
+            }
 
-    })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId,Integer currentPage, Integer pageSize
-    ) {
-        return staffContractService.selectLaborContractserUser(orgId,currentPage,pageSize);
+        }
+        return  failResponseResult("参数错误");
     }
+
 
     /**
      * 终止合同信息
@@ -178,11 +281,19 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "laborContractId", value = "合同id", paramType = "query", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult EndlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.endlaborContract(laborContractChangeVo,id,archiveId);
+    public ResponseResult EndlaborContract(@Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
+        Boolean b = checkParam(laborContractChangeVo,id,getUserSession());
+        if(b){
+            try {
+                staffContractService.endlaborContract(laborContractChangeVo, id,getUserSession());
+            } catch (Exception e) {
+                return failResponseResult("终止合同失败");
+            }
 
+        }
+        return  failResponseResult("参数错误");
     }
+
     /**
      * 批量终止合同
      */
@@ -192,11 +303,18 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "list", value = "合同id集合", paramType = "query", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult EndlaborContract(LaborContractChangeVo laborContractChangeVo, List<Integer> list) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.endlaborContractBatch(laborContractChangeVo,list,archiveId);
-
+    public ResponseResult EndlaborContract(@Valid LaborContractChangeVo laborContractChangeVo, List<Integer> list) {
+        Boolean b = checkParam(laborContractChangeVo,list,getUserSession());
+        if(b){
+            try {
+                staffContractService.endlaborContractBatch(laborContractChangeVo, list, getUserSession());
+            } catch (Exception e) {
+                return failResponseResult("批量终止合同失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
+
     /**
      * 解除合同信息
      */
@@ -206,11 +324,18 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "laborContractId", value = "合同id", paramType = "query", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult looselaborContract(LaborContractChangeVo laborContractChangeVo, Integer id) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.looselaborContract(laborContractChangeVo,id,archiveId);
-
+    public ResponseResult looselaborContract(@Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
+        Boolean b = checkParam(laborContractChangeVo,id,getUserSession());
+        if(b){
+            try {
+                staffContractService.looselaborContract(laborContractChangeVo, id, getUserSession());
+            } catch (Exception e) {
+                return failResponseResult("解除合同失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
+
     /**
      * 批量解除合同信息
      */
@@ -220,11 +345,18 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "list", value = "合同id集合", paramType = "query", required = true),
             @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
     })
-    public ResponseResult looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list) {
-        Integer archiveId = userSession.getArchiveId();
-        return staffContractService.looselaborContractBatch(laborContractChangeVo,list,archiveId);
-
+    public ResponseResult looselaborContractBatch(@Valid LaborContractChangeVo laborContractChangeVo, List<Integer> list) {
+        Boolean b = checkParam(laborContractChangeVo,list,getUserSession());
+        if(b){
+            try {
+                staffContractService.looselaborContractBatch(laborContractChangeVo, list, getUserSession());
+            } catch (Exception e) {
+                return failResponseResult("批量解除合同失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
+
     /**
      * 展示合同的变更记录，对合同的状态进行变更的，都应该有变更记录
      */
@@ -233,60 +365,116 @@ public class StaffContractController extends BaseController {
     @ApiOperation(value = "展示合同的变更记录", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "合同id", paramType = "query", required = true)
     public ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id) {
-       return staffContractService.selectLaborContractchange(id);
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                List<LaborContractChange> list = staffContractService.selectLaborContractchange(id);
+                if(!CollectionUtils.isEmpty(list)){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }
+                return failResponseResult("此合同没有变更记录");
+            } catch (Exception e) {
+                return failResponseResult("查看合同变更失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
      * 发送续签意向表
-     * 实现思路：在数据库为主一张意向书表，设置好表里面需要展示的信息。将id放进消息队列中，前端通过队列去取信息。然后展示。
+     * 实现思路：拿到续签人员的档案id，根据档案中信息设置续签意向表。
      */
     @RequestMapping(value = "/insertLaborContractIntention", method = RequestMethod.GET)
     @ApiOperation(value = "发送续签意向表", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult insertLaborContractIntention(Integer id) {
-        return staffContractService.insertLaborContractIntention(id);
+        Boolean b = checkParam(id,getUserSession());
+        if(b){
+            try {
+                staffContractService.insertLaborContractIntention(id,getUserSession());
+
+            } catch (Exception e) {
+                return failResponseResult("发送续签意向表失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
      * 续签反馈
      */
-    @RequestMapping(value = "/insertContractRenewalIntention", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateContractRenewalIntention", method = RequestMethod.POST)
     @ApiOperation(value = "续签反馈", notes = "hkt")
     @ApiImplicitParam(name = "ContractRenewalIntention", value = "续签反馈表", paramType = "form", required = true)
-    public ResponseResult insertResponseLaborContract(ContractRenewalIntention contractRenewalIntention){
+    public ResponseResult insertResponseLaborContract(@Valid ContractRenewalIntention contractRenewalIntention) {
+        Boolean b = checkParam(contractRenewalIntention);
+        if(b){
+            try {
+                staffContractService.updateContractRenewalIntention(contractRenewalIntention);
 
-        return staffContractService.insertContractRenewalIntention(contractRenewalIntention);
+            } catch (Exception e) {
+                return failResponseResult("获取续签反馈失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+
     }
+
     /**
      * 展示我的续签意向
      */
     @RequestMapping(value = "/selectContractRenewalIntention", method = RequestMethod.POST)
     @ApiOperation(value = "展示我的续签意向", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
-    public ResponseResult selectContractRenewalIntention( Integer id){
-
-        return staffContractService.selectContractRenewalIntention(id);
+    public ResponseResult<ContractRenewalIntention> selectContractRenewalIntention(Integer id) {
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                staffContractService.selectContractRenewalIntention(id);
+            } catch (Exception e) {
+                return failResponseResult("展示我的续签意向失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
+
     /**
      * 同意续签
      */
     @RequestMapping(value = "/agreeRenew", method = RequestMethod.POST)
     @ApiOperation(value = "同意续签", notes = "hkt")
     @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
-    public ResponseResult agreeRenew(ContractRenewalIntention contractRenewalIntention){
+    public ResponseResult agreeRenew(@Valid ContractRenewalIntention contractRenewalIntention) {
+        Boolean b = checkParam(contractRenewalIntention);
+        if(b){
+            try {
+                staffContractService.agreeRenew(contractRenewalIntention);
+            } catch (Exception e) {
+                return failResponseResult("同意续签失败");
+            }
+        }
+        return  failResponseResult("参数错误");
 
-        return staffContractService.agreeRenew(contractRenewalIntention);
     }
+
     /**
      * 拒绝续签
      */
     @RequestMapping(value = "/rejectRenew", method = RequestMethod.POST)
     @ApiOperation(value = "不同意续签", notes = "hkt")
     @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
-    public ResponseResult rejectRenew(ContractRenewalIntention contractRenewalIntention){
-
-        return staffContractService.rejectRenew(contractRenewalIntention);
+    public ResponseResult rejectRenew(ContractRenewalIntention contractRenewalIntention) {
+        Boolean b = checkParam(contractRenewalIntention);
+        if(b){
+            try {
+                staffContractService.rejectRenew(contractRenewalIntention);
+            } catch (Exception e) {
+                return failResponseResult("拒绝续签失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
+
     /**
      * 机构对应合同信息
      */
@@ -303,25 +491,42 @@ public class StaffContractController extends BaseController {
         ResponseResult<PageResult<List<LaborContract>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
         return pageResultResponseResult;
     }
+
     /**
      * 查询在职员工的人数
      */
     @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.POST)
     @ApiOperation(value = "查询在职员工的人数", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult selectArcNumberIn(Integer id){
+    public ResponseResult selectArcNumberIn(Integer id) {
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                staffContractService.selectArcNumberIn(id);
+            } catch (Exception e) {
+                return failResponseResult("查询在职员工人数失败");
+            }
+        }
+        return  failResponseResult("参数错误");
 
-        return staffContractService.selectArcNumberIn(id);
     }
+
     /**
      * 查询机构下合同即将到期的员工
      */
     @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.POST)
     @ApiOperation(value = "查询机构下合同即将到期的员工", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult selectArcDeadLine(Integer id){
-
-        return staffContractService.selectArcDeadLine(id);
+    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id) {
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                staffContractService.selectArcDeadLine(id);
+            } catch (Exception e) {
+                return failResponseResult("查询合同即将到期人数失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 /**合同状态  新签、变更   续签、解除、终止
  *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
@@ -329,4 +534,32 @@ public class StaffContractController extends BaseController {
  *   导入导出接口可以复用导入导出模块
  *   导入校验，此时先把excel转成list，需要对list的各个属性进行一一校验，这个规则还需要产品确定，交给前端进行筛选校验
  */
+
+    /**
+     * 检验参数
+     *
+     * @param params
+     * @return
+     */
+    public Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (null == param || "".equals(param)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 错误返回值
+     *
+     * @param message
+     * @return
+     */
+    public ResponseResult failResponseResult(String message) {
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage(message);
+        logger.error(message);
+        return fail;
+    }
 }

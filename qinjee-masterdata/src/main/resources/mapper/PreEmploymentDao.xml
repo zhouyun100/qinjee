@@ -225,10 +225,15 @@
     from t_pre_employment
     where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
-  <select id="getMail" resultType="java.lang.String">
+  <select id="getMail" resultType="java.lang.String" >
     select email
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
+    where  is_delete = 0
+    AND
+    employment_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
   <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
     SELECT
@@ -242,5 +247,15 @@
     set
     is_delete=1
     where employment_id = #{employmentId,jdbcType=INTEGER}
+  </update>
+
+  <update id="deletePreEmploymentList">
+    update  t_pre_employment
+    set
+    is_delete=1
+    where employment_id in
+    <foreach collection="list" item="item" open="(" separator="," close="">
+      #{item}
+    </foreach>
   </update>
 </mapper>

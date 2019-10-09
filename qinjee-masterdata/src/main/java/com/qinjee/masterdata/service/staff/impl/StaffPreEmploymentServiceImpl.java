@@ -11,9 +11,8 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
-import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendManyMailsUtil;
 import com.qinjee.utils.SendMessage;
@@ -39,6 +38,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private static final String CHANGSTATUS_BLACKLIST="黑名单";
     private static final String CHANGSTATUS_GIVEUP="放弃入职";
     private static final String PRE_EMPLOYMENT="预入职表";
+    private static final String APPKEY="91c94cbe664487bbfb072e717957e08f";
+    private static final Integer APPID=1400249114;
+    private static final String SENDER="huangkt@qinjee.cn";
     @Autowired
     private PreEmploymentDao preEmploymentDao;
     @Autowired
@@ -54,86 +56,65 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private CustomTableDao customTableDao;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseResult sendMessage(List<Integer> list, Integer templateId, String[] params) {
-        try {
+    public void sendMessage(List<Integer> list, Integer templateId, String[] params) throws Exception {
             String[] phonenumbers = null;
             Integer max = preEmploymentDao.selectMaxId();
             for (int i = 0; i < list.size(); i++) {
                 if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.FAIL);
+                   throw new Exception("id出错");
                 }
                 String phoneNumber = preEmploymentDao.getPhoneNumber(list.get(i));
                 phonenumbers[i] = phoneNumber;
             }
             //TODO 固定字段需要配置，现已写死
-            SendMessage.sendMessageMany(1, "1", templateId, "勤杰软件", phonenumbers, params);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("发送短信失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+            SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phonenumbers, params);
+
     }
 
     @Override
-    public ResponseResult sendManyMail(List<Integer> prelist, List<Integer> conList, String content, String subject, String[] filepath) {
+    @Transactional(rollbackFor = Exception.class)
+    public void sendManyMail(List<Integer> prelist, List<Integer> conList, String content,
+                             String subject, String[] filepath) throws Exception {
         String[] tomails = null;
         String[] mails = null;
         //根据预入职id查找邮箱
-        try {
             for (int i = 0; i < prelist.size(); i++) {
                 if (preEmploymentDao.selectMaxId() < prelist.get(i)) {
-                    return new ResponseResult(false, CommonCode.FAIL);
+                    throw new Exception("id出错");
                 }
-                String tomail = preEmploymentDao.getMail(prelist.get(i));
-                tomails[i] = tomail;
             }
-        } catch (Exception e) {
-            logger.error("查询发送人邮箱失败");
-        }
+        List<String> tomail = preEmploymentDao.getMail(prelist);
+         tomails = (String[])tomail.toArray();
+
         //根据档案id查询邮箱
-        try {
             Integer max = userArchiveDao.selectMaxId();
             for (int i = 0; i < conList.size(); i++) {
                 if (max < conList.get(i)) {
-                    return new ResponseResult(false, CommonCode.FAIL);
+                    throw new Exception("id出错");
                 }
-                String mail = userArchiveDao.selectMail(conList.get(i));
-                mails[i] = mail;
             }
+                List<String> mail=userArchiveDao.selectMail(conList);
+            mails=(String[]) mail.toArray();
+
             //TODO 邮箱工具类中还需要确定模板，这里的发件人也需要再配置，现已写死
-            SendManyMailsUtil.getInstance().sendMail("123", tomails, mails, subject, content, filepath);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查询抄送人失败");
-            return new ResponseResult(false, CommonCode.FAIL);
+            SendManyMailsUtil.getInstance().sendMail(SENDER, tomails, mails, subject, content, filepath);
         }
 
+    @Override
+    public boolean checkPhone(String phoneNumber)  {
+       return RegexpUtils.checkPhone(phoneNumber);
     }
 
     @Override
-    public ResponseResult checkPhone(String phoneNumber) {
-        boolean b = RegexpUtils.checkPhone(phoneNumber);
-        if (b) {
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        }
-        logger.error("号码验证失败");
-        return new ResponseResult(false, CommonCode.FAIL);
+    public boolean checkMail(String mail) {
+       return RegexpUtils.checkEmail(mail);
     }
 
     @Override
-    public ResponseResult checkMail(String mail) {
-        boolean b = RegexpUtils.checkEmail(mail);
-        if (b) {
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        }
-        logger.error("邮箱验证失败");
-        return new ResponseResult(false, CommonCode.FAIL);
-    }
-
-    @Override
-    @Transactional
-    public ResponseResult insertStatusChange(Integer companyId, Integer archiveId,Integer preEmploymentId,
+    @Transactional(rollbackFor = Exception.class)
+    public void insertStatusChange(UserSession userSession,Integer preEmploymentId,
                                              StatusChangeVo statusChangeVo,String reason) {
         /**
          * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
@@ -144,10 +125,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
          */
         String changeState = statusChangeVo.getChangeState();
         PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey(preEmploymentId);
-        try {
+
             if(CHANGSTATUS_READY.equals(changeState)){
                 //新增变更表
-                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 //根据预入职id查找预入职对象
                 //预入职信息转化为档案信息
                 //新增档案表
@@ -160,34 +141,31 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             }
             if(CHANGSTATUS_DELAY.equals(changeState)){
                 //新增变更表
-                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 preEmployment.setEmploymentState(CHANGSTATUS_DELAY);
             }
             if(CHANGSTATUS_GIVEUP.equals(changeState)){
                 //新增变更表
-                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 preEmployment.setEmploymentState(CHANGSTATUS_GIVEUP);
             }
 
             if(CHANGSTATUS_BLACKLIST.equals(changeState)){
                 //新增变更表
-                getPreEmploymentChange(archiveId, preEmploymentId, statusChangeVo);
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 preEmployment.setEmploymentState(CHANGSTATUS_BLACKLIST);
                 //加入黑名单
                 Blacklist blacklist = new Blacklist();
                 blacklist.setBlockReason(reason);
                 blacklist.setDataSource("预入职");
-                blacklist.setCompanyId(companyId);
-                blacklist.setOperatorId(archiveId);
+                blacklist.setCompanyId(userSession.getCompanyId());
+                blacklist.setOperatorId(userSession.getArchiveId());
                 blacklistDao.insertSelective(blacklist);
             }
-        } catch (Exception e) {
-            logger.error("更改状态失败");
-            return new ResponseResult(false, CommonCode.FAIL);
         }
 
-        return new ResponseResult(true, CommonCode.SUCCESS);
-    }
+
+
 
     private void getPreEmploymentChange(Integer archiveId, Integer preEmploymentId, StatusChangeVo statusChangeVo) {
         PreEmploymentChange preEmploymentChange = new PreEmploymentChange();
@@ -199,94 +177,50 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
 
     @Override
-    public ResponseResult insertPreEmployment(PreEmployment preEmployment) {
-        try {
-            if(preEmployment instanceof  PreEmployment){
-                preEmploymentDao.insertSelective(preEmployment);
-            }
-        } catch (Exception e) {
-            logger.error("新增预入职失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-        return  new ResponseResult(false,CommonCode.INVALID_PARAM);
+    public void insertPreEmployment(PreEmployment preEmployment) {
+        preEmploymentDao.insertSelective(preEmployment);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deletePreEmployment(List<Integer> list) {
-        Integer integer =null;
-        try {
-            integer=preEmploymentDao.selectMaxId();
-            for (Integer integer1 : list) {
-                if(integer1>integer){
-                    return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    public void deletePreEmployment(List<Integer> list) throws Exception {
+
+            Integer max=preEmploymentDao.selectMaxId();
+            for (Integer integer : list) {
+                if(integer>max){
+                    throw new Exception("id不合法");
                 }
-                preEmploymentDao.deletePreEmployment(integer1);
             }
-            return  new ResponseResult<>(true,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除预入职失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+            preEmploymentDao.deletePreEmploymentList(list);
     }
 
     @Override
-    public ResponseResult updatePreEmployment(PreEmployment preEmployment) {
-        try {
-            if(preEmployment instanceof PreEmployment) {
-                preEmploymentDao.updateByPrimaryKey(preEmployment);
-                return new ResponseResult<>(true, CommonCode.SUCCESS);
-            }
-        } catch (Exception e) {
-            logger.error("更新预入职物理表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    public void updatePreEmployment(PreEmployment preEmployment) {
+        preEmploymentDao.updateByPrimaryKey(preEmployment);
     }
     @Override
-    public ResponseResult updatePreEmploymentField(Map<Integer, String> map) {
-        if(map!=null){
-            try {
-                for (Map.Entry<Integer, String> entry : map.entrySet()) {
-                    customFieldDao.updatePreEmploymentField(entry.getKey(),entry.getValue());
-                    return new ResponseResult<>(true, CommonCode.SUCCESS);
-                }
-            } catch (Exception e) {
-                logger.error("更新预入职字段表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        }
-        return new ResponseResult(false,CommonCode.INVALID_PARAM);
+    public void updatePreEmploymentField(Map<Integer, String> map) {
+        customFieldDao.updatePreEmploymentField(map);
     }
     @Override
-    public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize) {
-        try {
+    public PageResult<PreEmployment> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize) {
             PageHelper.startPage(currentPage,pageSize);
             PageResult<PreEmployment> pageResult=new PageResult<>();
             List<PreEmployment> list=preEmploymentDao.selectPreEmployment(companyId);
-            pageResult.setList(list);
-            return  new ResponseResult<>(pageResult,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查找预入职失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
+            return new PageResult<>(list);
+
     }
     @Override
-    public ResponseResult<Map<String,String>>selectPreEmploymentField(Integer companyId) {
+    public Map<String,String>selectPreEmploymentField(UserSession userSession) {
         Map<String,String> map=new HashMap<>();
         //先找到对应的表id
-        try {
-            Integer id=customTableDao.selectPreEmploymentTable(companyId,PRE_EMPLOYMENT);
-            //找到table的字段对象
-            List<CustomField> list=customFieldDao.selectPreEmploymentField(id);
-            for (CustomField customField : list) {
-                map.put(customField.getFieldCode(),customField.getFieldName());
-            }
-            return new ResponseResult<>(map,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查找预入职字段失败");
-            return new ResponseResult(false, CommonCode.FAIL);
+        Integer id=customTableDao.selectPreEmploymentTable(userSession.getCompanyId(),PRE_EMPLOYMENT);
+        //找到table的字段对象
+        List<CustomField> list=customFieldDao.selectPreEmploymentField(id);
+        for (CustomField customField : list) {
+            map.put(customField.getFieldCode(),customField.getFieldName());
         }
+        return map;
     }
 
 
