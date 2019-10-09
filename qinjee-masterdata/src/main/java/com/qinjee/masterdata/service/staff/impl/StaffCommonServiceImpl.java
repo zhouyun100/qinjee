@@ -1,36 +1,33 @@
 package com.qinjee.masterdata.service.staff.impl;
 
-        import com.alibaba.fastjson.JSONArray;
-        import com.alibaba.fastjson.JSONObject;
-        import com.github.pagehelper.PageHelper;
-        import com.qinjee.masterdata.dao.CheckTypeDao;
-        import com.qinjee.masterdata.dao.FieldCheckTypeDao;
-        import com.qinjee.masterdata.dao.staffdao.commondao.*;
-        import com.qinjee.masterdata.model.entity.CustomField;
-        import com.qinjee.masterdata.model.entity.CustomGroup;
-        import com.qinjee.masterdata.model.entity.CustomTable;
-        import com.qinjee.masterdata.model.entity.CustomTableData;
-        import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
-        import com.qinjee.masterdata.service.staff.IStaffCommonService;
-        import com.qinjee.model.response.CommonCode;
-        import com.qinjee.model.response.PageResult;
-        import com.qinjee.model.response.ResponseResult;
-        import com.qinjee.utils.ExcelUtil;
-        import com.qinjee.utils.UpAndDownUtil;
-        import entity.ExcelEntity;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.stereotype.Service;
-        import org.springframework.transaction.annotation.Transactional;
-        import org.springframework.web.context.request.RequestContextHolder;
-        import org.springframework.web.context.request.ServletRequestAttributes;
-        import org.springframework.web.multipart.MultipartFile;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.*;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
+import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
+import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.ExcelUtil;
+import com.qinjee.utils.UpAndDownUtil;
+import entity.ExcelEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
-        import javax.servlet.http.HttpServletResponse;
-        import java.io.File;
-        import java.io.IOException;
-        import java.util.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -39,403 +36,294 @@ package com.qinjee.masterdata.service.staff.impl;
 public class StaffCommonServiceImpl implements IStaffCommonService {
     private static final Logger logger = LoggerFactory.getLogger(StaffCommonServiceImpl.class);
     @Autowired
-    private CustomTableDao customTableDao;
+    private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
-    private CustomGroupDao customGroupDao;
+    private CustomArchiveGroupDao customArchiveGroupDao;
     @Autowired
-    private CustomFieldDao customFieldDao;
+    private CustomArchiveFieldDao customArchiveFieldDao;
     @Autowired
-    private CustomTableDataDao customTableDataDao;
+    private CustomArchiveTableDataDao customArchiveTableDataDao;
     @Autowired
-    private FieldCheckTypeDao fieldCheckTypeDao;
+    private CustomArchiveFieldCheckDao customArchiveFieldCheckDao;
     @Autowired
-    private CheckTypeDao checkTypeDao;
+    private OrganizationDao organizationDao;
     @Autowired
-    private FieldTypeDao fieldTypeDao;
+    private PostDao postDao;
 
     @Override
-    public ResponseResult insert(CustomTable customTable) {
-        if (customTable instanceof CustomTable) {
-            try {
-                customTableDao.insert(customTable);
-            } catch (Exception e) {
-                logger.error("插入自定义表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
+    public Integer insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
+        int i = customArchiveTableDao.insertSelective(customArchiveTable);
+        return i;
+    }
+
+    @Transactional(rollbackFor =Exception.class)
+    @Override
+    public void deleteCustomArchiveTable(List<Integer> list) throws Exception {
+        Integer max = customArchiveTableDao.selectMaxPrimaryKey();
+        for (int i = 0; i < list.size(); i++) {
+            if (max < list.get(i)) {
+               throw new Exception("自定义表参数过大");
             }
         }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+        customArchiveTableDao.deleteCustomTable(list);
+    }
+        @Override
+        public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
+
+        customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
+
+        }
+    @Override
+    public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
+        PageHelper.startPage(currentPage,pageSize);
+        List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage();
+        PageResult pageResult=new PageResult(customArchiveTables);
+        return pageResult;
+    }
+
+    @Override
+    public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+            customArchiveGroupDao.insertSelective(customArchiveGroup);
+    }
+
+    @Override
+    @Transactional(rollbackFor =Exception.class)
+    public void deleteCustomArchiveGroup(List<Integer> list) throws Exception {
+            Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
+            for (int i = 0; i < list.size(); i++) {
+                if (max < list.get(i)) {
+                    throw new Exception("自定义组参数过大");
+                }
+            }
+            customArchiveGroupDao.deleteCustomGroup(list);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteCustomTable(List<Integer> list) {
-        Integer max = 0;
-        try {
-            max = customTableDao.selectMaxPrimaryKey();
-            for (int i = 0; i < list.size(); i++) {
-                if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
-                }
-                customTableDao.deleteCustomTable(list.get(i));
-            }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除自定义表失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-
+    public void updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+            customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
     }
 
-    @Override
-    public ResponseResult updateCustomTable(CustomTable customTable) {
-        if (customTable instanceof CustomTable) {
-            try {
-                customTableDao.updateByPrimaryKey(customTable);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新自定义表失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+        @Override
+        public PageResult<CustomArchiveTable> selectCustomTableFromGroup (Integer currentPage, Integer
+        pageSize, Integer customArchiveGroupId){
+            PageHelper.startPage(currentPage, pageSize);
+            //获得自定义组中自定义表id的集合
+            List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
+
+            List<CustomArchiveTable> list= customArchiveTableDao.selectByPrimaryKeyList(integerList);
+            PageResult pageResult=new PageResult(list);
+            return pageResult;
         }
-    }
 
     @Override
-    public ResponseResult<PageResult<CustomTable>> selectCustomTable(Integer currentPage, Integer pageSize) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<CustomTable> list = null;
-        PageResult<CustomTable> pageResult = new PageResult<>();
-        try {
-            list = customTableDao.selectByPage();
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查询数据库失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
-    }
-
-    @Override
-    public ResponseResult insertCustomGroup(CustomGroup customGroup) {
-        if (customGroup instanceof CustomGroup) {
-            try {
-                customGroupDao.insert(customGroup);
-            } catch (Exception e) {
-                logger.error("插入自定义组失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+    public void insertCustomArchiveField(CustomArchiveField customArchiveField) {
+             customArchiveFieldDao.insertSelective(customArchiveField);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteCustomGroup(List<Integer> list) {
-        try {
-            Integer max = 0;
-            max = customGroupDao.selectMaxPrimaryKey();
-            for (int i = 0; i < list.size(); i++) {
-                if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
-                }
-                customGroupDao.deleteCustomGroup(list.get(i));
-            }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除自定义组失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-    }
-
-    @Override
-    public ResponseResult updateCustomGroup(CustomGroup customGroup) {
-        if (customGroup instanceof CustomGroup) {
-            try {
-                customGroupDao.updateByPrimaryKey(customGroup);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新自定义组失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
-        }
-    }
-
-    @Override
-    public ResponseResult<PageResult<CustomTable>> selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer customGroupId) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<CustomTable> list = null;
-        PageResult<CustomTable> pageResult = new PageResult<>();
-        try {
-            List<Integer> integerList = customGroupDao.selectTableId(customGroupId);
-            for (int i = 0; i < integerList.size(); i++) {
-                CustomTable customTable = customTableDao.selectByPrimaryKey(integerList.get(i));
-                list.add(customTable);
-            }
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("查询自定义表失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
-    }
-
-    @Override
-    public ResponseResult insertCustomField(CustomField customField) {
-        if (customField instanceof CustomField) {
-            try {
-                customFieldDao.insert(customField);
-            } catch (Exception e) {
-                logger.error("插入自定义字段失败");
-                return new ResponseResult(false, CommonCode.FAIL);
+    public void deleteCustomArchiveField(List<Integer> list) throws Exception {
+        Integer max = customArchiveFieldDao.selectMaxPrimaryKey();
+        for (int i = 0; i < list.size(); i++) {
+            if (max < list.get(i)) {
+              throw new Exception("参数不合理！");
             }
         }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+        customArchiveFieldDao.deleteCustomField(list);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteCustomField(List<Integer> list) {
-        Integer max = 0;
-        try {
-            max = customFieldDao.selectMaxPrimaryKey();
-            for (int i = 0; i < list.size(); i++) {
-                if (max < list.get(i)) {
-                    return new ResponseResult(false, CommonCode.INVALID_PARAM);
-                }
-                customFieldDao.deleteCustomField(list.get(i));
-            }
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("删除自定义字段失败");
-            return new ResponseResult(false, CommonCode.FAIL);
+    public void updateCustomArchiveField(CustomArchiveField customArchiveField) {
+             customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
+    }
+    @Override
+    public PageResult<CustomArchiveField> selectCustomArchiveField(Integer currentPage, Integer pageSize,
+                                                                   Integer customArchiveTableId) {
+
+             PageHelper.startPage(currentPage, pageSize);
+             //根据自定义表找自定义字段id
+            List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
+            List<CustomArchiveField> list= customArchiveFieldDao.selectByPrimaryKeyList(integerList);
+            return new PageResult<>(list);
+    }
+
+    @Override
+    public CustomArchiveField selectCustomArchiveFieldById(Integer customArchiveFieldId) {
+          return customArchiveFieldDao.selectByPrimaryKey(customArchiveFieldId);
+    }
+
+
+
+
+    @Override
+        public List<Integer> getCompanyId (UserSession userSession){
+        Integer archiveId = userSession.getArchiveId();
+        List<Integer> list = organizationDao.getCompanyIdByArchiveId(archiveId);
+        return list;
+
         }
-    }
 
-    @Override
-    public ResponseResult updateCustomField(CustomField customField) {
-        if (customField instanceof CustomField) {
-            try {
-                customFieldDao.updateByPrimaryKey(customField);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("更新自定义字段失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
+        @Override
+        public List<Integer> getOrgIdByCompanyId (Integer orgId){
 
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+                List<Integer> list = organizationDao.getOrgIdByCompanyId(orgId);
+                return list;
         }
-    }
+
+        @Override
+        public List<Integer> getPostByOrgId (Integer orgId){
+
+                List<Integer> list = postDao.getPostByOrgId(orgId);
+                return list;
+        }
 
     @Override
-    public ResponseResult<PageResult<CustomField>> selectCustomFieldFromTable(Integer currentPage, Integer pageSize, Integer customTableId) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<CustomField> list = null;
-        PageResult<CustomField> pageResult = new PageResult<>();
-        try {
-            List<Integer> integerList = customFieldDao.selectFieldId(customTableId);
-            for (int i = 0; i < integerList.size(); i++) {
-                CustomField customField = customFieldDao.selectByPrimaryKey(integerList.get(i));
-                list.add(customField);
-            }
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("根据表查询自定义字段失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
-    }
-    @Override
-    public ResponseResult<CustomField> selectCustomFieldById(Integer customFieldId) {
-        CustomField customField =null;
-        try {
-             customField = customFieldDao.selectByPrimaryKey(customFieldId);
-            return new ResponseResult<>(customField, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("根据表查询自定义字段失败");
-            return new ResponseResult<>(customField, CommonCode.FAIL);
-        }
-    }
-
-    @Override
-    public ResponseResult insertCustomTableData(CustomTableData customTableData) {
-        if (customTableData instanceof CustomTableData) {
-            try {
-                //将前端传过来的大字段进行解析
-                JSONArray json = JSONArray.parseArray(customTableData.getBigData());
+    public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
+        //TODO 需要弄清楚数组的形式
+        Integer archiveId = userSession.getArchiveId();
+        //将前端传过来的大字段进行解析
+                 JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
                 for (int i = 0; i < json.size(); i++) {
                     JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
                     for (String s : jsono.keySet()) {
-                        s.replace(s, "@"+s+"@");
+                        s.replace(s, "@" + s + "@");
                     }
                 }
-                customTableDataDao.insert(customTableData);
-            } catch (Exception e) {
-                logger.error("插入自定义表数据失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-        }
-        return new ResponseResult(true, CommonCode.SUCCESS);
+                customArchiveTableData.setOperatorId(archiveId);
+               customArchiveTableDataDao.insert(customArchiveTableData);
     }
 
     @Override
-    public ResponseResult updateCustomTableData(CustomTableData customTableData) {
-        if (customTableData instanceof CustomTableData) {
+    public void updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
+             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
+    }
+
+    @Override
+    public PageResult<CustomArchiveTableData> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId) {
+        PageHelper.startPage(currentPage, pageSize);
+        //通过自定义表id找到数据id集合
+        List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
+
+         List<CustomArchiveTableData> list=customArchiveTableDataDao.selectByPrimaryKeyList(integerList);
+
+         return new PageResult<>(list);
+    }
+
+
+        @Override
+        public List<String> checkField (Integer fieldId){
+
+                //通过字段名找到验证code
+               return customArchiveFieldCheckDao.selectCheckName(fieldId);
+        }
+
+        @Override
+        public ResponseResult importFile (String path){
+            ExcelEntity excelEntity = null;
+            MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
             try {
-                customTableDataDao.updateByPrimaryKey(customTableData);
+                excelEntity = ExcelUtil.readExcel(multipartFile);
+                return new ResponseResult(excelEntity, CommonCode.SUCCESS);
+            } catch (IOException e) {
+                return new ResponseResult(excelEntity, CommonCode.FAIL);
+            }
+
+        }
+
+        @Override
+        public ResponseResult exportFile (String path, String title, Integer customArchiveTableId){
+            //得到response对象
+            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+            String[] heads = null;
+            Map<String, String> fieldNameTypemap = new HashMap<>();
+            List<Map<String, String>> mapList = new ArrayList<>();
+            //获取heads，通过customTableId找到字段名存入heads
+            try {
+                List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
+                List<CustomArchiveField> list=customArchiveFieldDao.selectByList(integerList);
+
+                for (int i = 0; i < list.size(); i++) {
+                    heads[i] = list.get(i).getFieldName();
+                }
+            } catch (Exception e) {
+                logger.error("获取heads失败");
+            }
+            //通过字段表获取字段类型
+            try {
+                List<String> fieldTypeList = customArchiveFieldDao.selectFieldType(customArchiveTableId);
+                //通过类型获取到code
+                for (int i = 0; i < fieldTypeList.size(); i++) {
+                    fieldNameTypemap.put(heads[i], fieldTypeList.get(i));
+                }
+            } catch (Exception e) {
+                logger.error("获取字段类型失败");
+            }
+            //通过自定义表id获得数据表里的大字段，解析出来值存进dates
+            try {
+
+                List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
+                for (int i = 0; i < integerList.size(); i++) {
+                    Map<String, String> map = new HashMap<>();
+                    CustomArchiveTableData customArchiveTableData = customArchiveTableDataDao.selectByPrimaryKey(integerList.get(i));
+                    JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
+                    for (int j = 0; j < json.size(); j++) {
+                        JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
+                        for (String s : jsono.keySet()) {
+                            map.put(s.split("@qinjee@")[0], jsono.getString(s));
+                        }
+                    }
+
+                }
+            } catch (Exception e) {
+                logger.error("获取字段值失败");
+                return new ResponseResult(false, CommonCode.FAIL);
+            }
+            try {
+                ExcelUtil.download(path, response, title, heads, mapList, fieldNameTypemap);
                 return new ResponseResult(true, CommonCode.SUCCESS);
             } catch (Exception e) {
-                logger.error("更新自定义数据表失败");
+                logger.error("导出文件失败");
                 return new ResponseResult(false, CommonCode.FAIL);
             }
-        } else {
-            return new ResponseResult<>(false, CommonCode.INVALID_PARAM);
+
         }
 
-    }
-
-    @Override
-    public ResponseResult<PageResult<CustomTableData>> selectCustomTableData(Integer currentPage, Integer pageSize, Integer customTableId) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<CustomTableData> list = null;
-        PageResult<CustomTableData> pageResult = new PageResult<>();
-        try {
-            List<Integer> integerList = customTableDataDao.selectCustomTableId(customTableId);
-            for (int i = 0; i < integerList.size(); i++) {
-                CustomTableData customTableData = customTableDataDao.selectByPrimaryKey(integerList.get(i));
-                list.add(customTableData);
+        @Override
+        public ResponseResult putFile (String path){
+            //TODO 文件对象键的定义
+            String key = "";
+            try {
+                UpAndDownUtil.putFile(path, key);
+                return new ResponseResult(true, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                logger.error("文件上传错误");
+                return new ResponseResult(false, CommonCode.FAIL);
             }
-            pageResult.setList(list);
-            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("根据tableId查询自定义数据失败");
-            return new ResponseResult<>(pageResult, CommonCode.FAIL);
-        }
-    }
 
-    @Override
-    public ResponseResult<List<String>> checkField(Integer fieldId) {
-        List<String> list = null;
-        try {
-            //通过字段名找到验证code
-            String checkCode = fieldCheckTypeDao.selectCheckCode(fieldId);
-            //通过验证code找到验证名称
-            list = checkTypeDao.selectCheckName(checkCode);
-        } catch (Exception e) {
-            logger.error("获取验证名称失败");
-            return new ResponseResult<>(list, CommonCode.FAIL);
-        }
-        return new ResponseResult<>(list, CommonCode.SUCCESS);
-    }
-
-    @Override
-    public ResponseResult importFile(String path) {
-        ExcelEntity excelEntity  = null;
-        MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
-        try {
-             excelEntity = ExcelUtil.readExcel(multipartFile);
-            return new ResponseResult(excelEntity, CommonCode.SUCCESS);
-        } catch (IOException e) {
-            return new ResponseResult(excelEntity, CommonCode.FAIL);
         }
 
-    }
+        @Override
+        public ResponseResult UploadFileByForWard () {
 
-    @Override
-    public ResponseResult exportFile(String path, String title, Integer customTableId) {
-        //得到response对象
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        String[] heads = null;
-        Map<String, String> fieldNameTypemap = new HashMap<>();
-        List<Map<String, String>> mapList = new ArrayList<>();
-        //获取heads，通过customTableId找到字段名存入heads
-        try {
-            List<Integer> integerList = customFieldDao.selectFieldId(customTableId);
-            List<CustomField> list = new ArrayList<>();
-            for (int i = 0; i < integerList.size(); i++) {
-                CustomField customField = customFieldDao.selectByPrimaryKey(integerList.get(i));
-                list.add(customField);
+            try {
+                String s = UpAndDownUtil.TransToForward();
+                ForWardPutFile forWardPutFile = new ForWardPutFile();
+                forWardPutFile.setString(s);
+                //TODO 对象键的定义需要制定规则，利用规则生成
+                forWardPutFile.setKey("");
+                return new ResponseResult(forWardPutFile, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                logger.error("文件上传获取对象错误");
+                return new ResponseResult(false, CommonCode.FAIL);
             }
-            for (int i = 0; i < list.size(); i++) {
-                heads[i] = list.get(i).getFieldName();
-            }
-        } catch (Exception e) {
-            logger.error("获取heads失败");
-        }
-        //通过字段表获取字段类型
-        try {
-            List<String> fieldTypeList = customFieldDao.selectFieldType(customTableId);
-            //通过类型获取到code
-            for (int i = 0; i < fieldTypeList.size(); i++) {
-                fieldNameTypemap.put(heads[i], fieldTypeList.get(i));
-            }
-        } catch (Exception e) {
-            logger.error("获取字段类型失败");
-        }
-        //通过自定义表id获得数据表里的大字段，解析出来值存进dates
-        try {
-
-            List<Integer> integerList = customTableDataDao.selectCustomTableId(customTableId);
-            for (int i = 0; i < integerList.size(); i++) {
-                Map<String, String> map = new HashMap<>();
-                CustomTableData customTableData = customTableDataDao.selectByPrimaryKey(integerList.get(i));
-                JSONArray json = JSONArray.parseArray(customTableData.getBigData());
-                for (int j = 0; j < json.size(); j++) {
-                    JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
-                    for (String s : jsono.keySet()) {
-                        map.put(s.split("@qinjee@")[0], jsono.getString(s));
-                    }
-                }
-
-            }
-        } catch (Exception e) {
-            logger.error("获取字段值失败");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-        try {
-            ExcelUtil.download(path, response, title, heads, mapList, fieldNameTypemap);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("导出文件失败");
-            return new ResponseResult(false, CommonCode.FAIL);
         }
 
     }
 
-    @Override
-    public ResponseResult putFile(String path) {
-        //TODO 文件对象键的定义
-        String key = "";
-        try {
-            UpAndDownUtil.putFile(path, key);
-            return new ResponseResult(true, CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("文件上传错误");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
 
-    }
 
-    @Override
-    public ResponseResult UploadFileByForWard() {
 
-        try {
-            String s = UpAndDownUtil.TransToForward();
-            ForWardPutFile forWardPutFile=new ForWardPutFile();
-            forWardPutFile.setString(s);
-            //TODO 对象键的定义需要制定规则，利用规则生成
-            forWardPutFile.setKey("");
-            return new ResponseResult(forWardPutFile,CommonCode.SUCCESS);
-        } catch (Exception e) {
-           logger.error("文件上传获取对象错误");
-            return new ResponseResult(false, CommonCode.FAIL);
-        }
-    }
 
-}
 
 

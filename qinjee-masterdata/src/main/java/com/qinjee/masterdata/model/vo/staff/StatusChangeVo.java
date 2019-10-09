@@ -1,9 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
@@ -14,8 +11,13 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 public class StatusChangeVo {
-
+    /**
+     * id
+     */
+    private Integer id;
     /**
      * 变更状态
      */

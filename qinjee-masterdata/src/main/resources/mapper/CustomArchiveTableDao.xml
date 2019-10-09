@@ -144,4 +144,35 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where table_id = #{tableId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+    select MAX (table_id)
+    from  t_custom_archive_table
+    where is_delete=0
+  </select>
+
+  <update id="deleteCustomTable">
+    update t_custom_archive_table
+    set
+      is_delete = 1
+    where table_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+     </foreach>
+  </update>
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_table
+    where is_delete=0 AND table_id
+    in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+    select
+    <include refid="Base_Column_List"/>
+    from t_custom_archive_table
+    where is_delete=0
+  </select>
 </mapper>

@@ -52,6 +52,13 @@ public class Post implements Serializable {
     @ApiModelProperty("父级岗位名称")
     private String parentPostName;
 
+    /**
+     * 父级岗位编码
+     */
+    @ApiModelProperty("父级岗位编码")
+    private String parentPostCode;
+
+
 
     /**
      * 机构ID
@@ -132,6 +139,12 @@ public class Post implements Serializable {
      */
     @ApiModelProperty("父级机构Id")
     private String parentOrgId;
+
+    /**
+     * 父级机构编码
+     */
+    @ApiModelProperty("父级机构编码")
+    private String parentOrgCode;
 
 
     /**

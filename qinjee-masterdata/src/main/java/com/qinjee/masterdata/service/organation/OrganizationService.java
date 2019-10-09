@@ -7,7 +7,9 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -110,4 +112,35 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable);
+
+    /**
+     * 下载模板
+     * @param response
+     * @return
+     */
+    ResponseResult downloadTemplate(HttpServletResponse response);
+
+    /**
+     * 根据查询条件导出Excel
+     * @param organizationPageVo
+     * @param response
+     * @return
+     */
+    ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession);
+
+    /**
+     * 根据选择的机构id导出Excel
+     * @param orgIds
+     * @param response
+     * @param userSession
+     * @return
+     */
+    ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession);
+
+    /**
+     * 导入机构Excel
+     * @param file
+     * @return
+     */
+    ResponseResult uploadExcel(MultipartFile file, UserSession userSession);
 }

@@ -26,13 +26,15 @@ public interface UserArchiveDao {
 
     Integer selectMaxId();
 
-    String selectMail(Integer integer);
+    List<String> selectMail(List<Integer> list);
 
     List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
 
-    void deleteArchiveById(@Param("archiveid") Integer archiveid);
+   Integer deleteArchiveById(@Param("archiveid") List<Integer> archiveid);
 
-    void resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
+
+
+    Integer resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
 
     /**
      * 根据机构id查询人员档案
@@ -63,5 +65,11 @@ public interface UserArchiveDao {
 
     Integer selectArcNumberIn(Integer id);
 
-    UserArchive selectByConId(Integer integer);
+    List<UserArchive> getUserArchiveListCustom(String select, String order, Integer orgId);
+
+    List<Integer> selectStaffNoType(String sql, String archiveType, Integer id );
+
+    List<UserArchive> selectStaff(List<Integer> integerList);
+
+    List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 }

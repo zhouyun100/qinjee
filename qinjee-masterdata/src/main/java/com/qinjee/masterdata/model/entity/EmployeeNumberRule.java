@@ -82,6 +82,98 @@ public class EmployeeNumberRule implements Serializable {
     @ApiModelProperty("是否删除")
     private Short isDelete;
 
+    public Integer getEnRuleId() {
+        return enRuleId;
+    }
+
+    public void setEnRuleId(Integer enRuleId) {
+        this.enRuleId = enRuleId;
+    }
+
+    public String getEmployeeNumberPrefix() {
+        return employeeNumberPrefix;
+    }
+
+    public void setEmployeeNumberPrefix(String employeeNumberPrefix) {
+        this.employeeNumberPrefix = employeeNumberPrefix;
+    }
+
+    public String getDateRule() {
+        return dateRule;
+    }
+
+    public void setDateRule(String dateRule) {
+        this.dateRule = dateRule;
+    }
+
+    public String getEmployeeNumberInfix() {
+        return employeeNumberInfix;
+    }
+
+    public void setEmployeeNumberInfix(String employeeNumberInfix) {
+        this.employeeNumberInfix = employeeNumberInfix;
+    }
+
+    public Short getDigitCapacity() {
+        return digitCapacity;
+    }
+
+    public void setDigitCapacity(Short digitCapacity) {
+        this.digitCapacity = digitCapacity;
+    }
+
+    public String getEmployeeNumberSuffix() {
+        return employeeNumberSuffix;
+    }
+
+    public void setEmployeeNumberSuffix(String employeeNumberSuffix) {
+        this.employeeNumberSuffix = employeeNumberSuffix;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+    }
+
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Short getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Short isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
     private static final long serialVersionUID = 1L;
 
 }

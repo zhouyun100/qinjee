@@ -222,7 +222,11 @@
     update
     set
      is_delete = 0
-     where id = #{id,jdbcType=INTEGER}
+     where id
+     in
+     <foreach collection="list" item="item" open="(" separator="," close=")">
+       #{item}
+     </foreach>
   </update>
   <select id="getUserArchivePostRelationList" resultType="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
     select tua.user_name userName, tua.employee_number employeeNumber,tuapr.id, tuapr.archive_id, tuapr.post_id,
@@ -235,29 +239,23 @@
     </if>
     and tua.is_delete = 0
   </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <select id="selectByPrimaryKeyList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user_archive_post_relation
+    where
+    archive_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectByArcId" resultType="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user_archive_post_relation
+    where
+    archive_id = #{archiveId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
 
 </mapper>

@@ -1,7 +1,11 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveFieldCheck;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface CustomArchiveFieldCheckDao {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +18,7 @@ public interface CustomArchiveFieldCheckDao {
     int updateByPrimaryKeySelective(CustomArchiveFieldCheck record);
 
     int updateByPrimaryKey(CustomArchiveFieldCheck record);
+
+
+    List<String> selectCheckName(Integer fieldId);
 }

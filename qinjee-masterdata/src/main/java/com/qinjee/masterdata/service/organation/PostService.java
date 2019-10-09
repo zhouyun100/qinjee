@@ -8,6 +8,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -90,4 +91,27 @@ public interface PostService {
      * @return
      */
     ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId);
+
+    /**
+     * 下载模板
+     * @return
+     */
+    ResponseResult downloadTemplate(HttpServletResponse response);
+
+    /**
+     * 根据查询条件导出Excel
+     * @param postPageVo
+     * @param userSession
+     * @return
+     */
+    ResponseResult downloadExcelByCondition(PostPageVo postPageVo, UserSession userSession, HttpServletResponse response);
+
+    /**
+     * 根据选择的岗位id导出Excel
+     * @param postIds
+     * @param userSession
+     * @param response
+     * @return
+     */
+    ResponseResult downloadExcelByPostId(List<Integer> postIds, UserSession userSession, HttpServletResponse response);
 }

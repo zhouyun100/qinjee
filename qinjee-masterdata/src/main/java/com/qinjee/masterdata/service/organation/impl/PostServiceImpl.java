@@ -1,7 +1,11 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.*;
+import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.PostGradeRelationDao;
+import com.qinjee.masterdata.dao.PostInstructionsDao;
+import com.qinjee.masterdata.dao.PostLevelRelationDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -11,14 +15,25 @@ import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -203,10 +218,6 @@ public class PostServiceImpl implements PostService {
                 postInstructions.setOperatorId(userSession.getArchiveId());
                 postInstructions.setPostId(post.getPostId());
                 postInstructionsDao.insertSelective(postInstructions);
-//                //岗位职等关系表
-//                List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
-//                //岗位职级关系表
-//                List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
             }
         }
         return new ResponseResult();
@@ -216,6 +227,42 @@ public class PostServiceImpl implements PostService {
     public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId) {
         List<Post> postList = postDao.getPostPositionListByOrgId(orgId);
         return new ResponseResult<>(postList);
+    }
+
+    @Override
+    public ResponseResult downloadTemplate(HttpServletResponse response) {
+        ClassPathResource cpr = new ClassPathResource("/templates/"+"岗位导入模板.xls");
+        try {
+            File file = cpr.getFile();
+            String filename = cpr.getFilename();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            FileUtils.copyFile(file,outputStream);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("Content-Disposition",
+                    "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
+            response.getOutputStream().write(outputStream.toByteArray());
+        }catch (Exception e){
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
+        return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult downloadExcelByCondition(PostPageVo postPageVo, UserSession userSession,HttpServletResponse response) {
+        Integer archiveId = userSession.getArchiveId();
+        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
+        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
+        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId);
+        exportExcel(response,postList);
+        return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult downloadExcelByPostId(List<Integer> postIds, UserSession userSession, HttpServletResponse response) {
+        List<Post> postList = postDao.getPostListByPostId(postIds);
+        exportExcel(response,postList);
+        return new ResponseResult();
     }
 
     /**
@@ -363,6 +410,106 @@ public class PostServiceImpl implements PostService {
         }
         return postCode;
     }
+
+    private static void exportExcel(HttpServletResponse response, List<Post> postList) {
+        try {
+            //实例化HSSFWorkbook
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            //创建一个Excel表单，参数为sheet的名字
+            HSSFSheet sheet = workbook.createSheet("sheet");
+            List<String> strList = new ArrayList<>();
+            strList.add("岗位编码");
+            strList.add("岗位名称");
+            strList.add("所属部门编码");
+            strList.add("所属部门");
+            strList.add("上级岗位编码");
+            strList.add("上级岗位");
+            strList.add("职位");
+            strList.add("职级");
+            strList.add("职等");
+            //设置表头
+            setTitle(workbook, sheet, strList);
+            //设置单元格并赋值
+            setData(sheet, postList);
+            //设置浏览器下载
+            setBrowser(response, workbook, "岗位信息.xls");
+        } catch (Exception e) {
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
+    }
+
+    private static void setTitle(HSSFWorkbook workbook, HSSFSheet sheet, List<String> strList) {
+        HSSFRow row = sheet.createRow(0);
+        //设置列宽，setColumnWidth的第二个参数要乘以256，这个参数的单位set是1/256个字符宽度
+        for(int i = 0; i < strList.size(); i++){
+            sheet.setColumnWidth(i, 30 * 256);
+        }
+        //设置为居中加粗,格式化时间格式
+        HSSFCellStyle style = workbook.createCellStyle();
+        HSSFFont font = workbook.createFont();
+        font.setFontHeightInPoints((short) 11);//字号
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);//加粗
+        style.setFont(font);
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//左右居中
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+        style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy-MM-dd HH:mm:ss"));
+        //创建表头名称
+        HSSFCell cell;
+        for (int j = 0; j < strList.size(); j++) {
+            cell = row.createCell(j);
+            cell.setCellValue(strList.get(j));
+            cell.setCellStyle(style);
+        }
+    }
+
+    /**
+     * 方法名：setData
+     * 功能：表格赋值
+     * 描述：
+     * 创建人：typ
+     * 创建时间：2018/10/19 16:11
+     * 修改人：
+     * 修改描述：
+     * 修改时间：
+     */
+    private static void setData(HSSFSheet sheet, List<Post> postList) {
+        for (int i = 0; i < postList.size(); i++) {
+            Post post = postList.get(i);
+            HSSFRow row = sheet.createRow(i + 1);
+            row.createCell(0).setCellValue(post.getPostCode());
+            row.createCell(1).setCellValue(post.getPostName());
+            row.createCell(2).setCellValue(post.getParentOrgCode());
+            row.createCell(3).setCellValue(post.getParentOrgName());
+            row.createCell(4).setCellValue(post.getParentPostCode());
+            row.createCell(5).setCellValue(post.getParentPostName());
+            row.createCell(6).setCellValue(post.getPositionName());
+            row.createCell(6).setCellValue(post.getPositionLevelNames());
+            row.createCell(6).setCellValue(post.getPositionGradeNames());
+        }
+    }
+
+    /**
+     * 使用浏览器下载
+     * @param response
+     * @param workbook
+     * @param fileName
+     */
+    private static void setBrowser(HttpServletResponse response, HSSFWorkbook workbook, String fileName) throws Exception {
+        try {
+            OutputStream os = new BufferedOutputStream(response.getOutputStream());
+            //清空response
+            response.reset();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename="+URLEncoder.encode(fileName, "utf-8"));
+            //将excel写入到输出流中
+            workbook.write(os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            throw new Exception("文件导出失败!");
+        }
+    }
+
 
 
 }

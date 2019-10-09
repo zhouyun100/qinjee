@@ -2,6 +2,8 @@ package com.qinjee.model.response;
 
 import com.github.pagehelper.Page;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Data
 @ToString
+@Setter
+@Getter
 public class PageResult<T> {
 
     /**
@@ -34,5 +38,9 @@ public class PageResult<T> {
     }
 
     public PageResult(){
+    }
+
+    public void setList(List<T> list) {
+
     }
 }

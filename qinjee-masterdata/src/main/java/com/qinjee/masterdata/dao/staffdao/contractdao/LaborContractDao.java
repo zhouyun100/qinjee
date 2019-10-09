@@ -26,4 +26,8 @@ public interface LaborContractDao {
     List<Integer> seleltByArcIdIn(List<Integer> arcList);
 
     Integer seleltByArcIdSingle(Integer integer);
+
+    List<Integer> selectByorgId(Integer orgId);
+
+    List<Integer> selectArcByCon(List<Integer> conList);
 }

@@ -20,4 +20,5 @@ import java.util.List;
 public class QuerySchemeList implements Serializable {
     private List<QuerySchemeField> querySchemeFieldList;
     private List<QuerySchemeSort>  querySchemeSortList;
+
 }

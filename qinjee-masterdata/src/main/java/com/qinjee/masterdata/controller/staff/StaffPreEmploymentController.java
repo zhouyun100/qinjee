@@ -11,11 +11,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ import java.util.Map;
 @RequestMapping("/staffpre")
 @Api(tags = "【人员管理】预入职相关接口")
 public class StaffPreEmploymentController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(StaffPreEmploymentController.class);
     @Autowired
     private IStaffPreEmploymentService staffPreEmploymentService;
     /**
@@ -36,8 +40,17 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/insertPreEmployment ", method = RequestMethod.GET)
     @ApiOperation(value = "新增预入职", notes = "hkt")
     @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form", required = true)
-    public ResponseResult insertPreEmployment(PreEmployment preEmployment ){
-        return staffPreEmploymentService.insertPreEmployment(preEmployment);
+    public ResponseResult insertPreEmployment(@Valid PreEmployment preEmployment ){
+        Boolean b = checkParam(preEmployment);
+        if(b){
+            try {
+                staffPreEmploymentService.insertPreEmployment(preEmployment);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("新增预入职失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -47,7 +60,16 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiOperation(value = "根据机构查看预入职", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true)
     public ResponseResult deletePreEmployment(List<Integer> list ){
-        return staffPreEmploymentService.deletePreEmployment(list);
+        Boolean b = checkParam(list);
+        if(b){
+            try {
+                staffPreEmploymentService.deletePreEmployment(list);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("删除预入职失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
     /**
      * 修改预入职信息(值的信息)
@@ -55,8 +77,17 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmployment ", method = RequestMethod.GET)
     @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
     @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
-    public ResponseResult updatePreEmployment(PreEmployment preEmployment ){
-        return staffPreEmploymentService.updatePreEmployment(preEmployment);
+    public ResponseResult updatePreEmployment(@Valid PreEmployment preEmployment){
+        Boolean b = checkParam(preEmployment);
+        if(b){
+            try {
+                staffPreEmploymentService.updatePreEmployment(preEmployment);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("修改预入职信息失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
     /**
      * 修改预入职信息(显示字段的信息)
@@ -65,7 +96,16 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
     @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
     public ResponseResult updatePreEmploymentField(Map<Integer,String> map){
-        return staffPreEmploymentService.updatePreEmploymentField(map);
+        Boolean b = checkParam(map);
+        if(b){
+            try {
+                staffPreEmploymentService.updatePreEmploymentField(map);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("修改预入职信息失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -74,8 +114,16 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/selectPreEmploymentField ", method = RequestMethod.GET)
     @ApiOperation(value = "查看预入职信息(显示字段的信息)，返回值中map是物理表属性，value是字段名", notes = "hkt")
     public ResponseResult<Map<String,String>> selectPreEmploymentField(){
-        Integer companyId = userSession.getCompanyId();
-        return staffPreEmploymentService.selectPreEmploymentField(companyId);
+        Boolean b = checkParam(getUserSession());
+        if(b){
+            try {
+                staffPreEmploymentService.selectPreEmploymentField(getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("查看预入职信息失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -89,8 +137,23 @@ public class StaffPreEmploymentController extends BaseController {
             @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
 
     })
-    public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,Integer currentPage,Integer pageSize){
-        return staffPreEmploymentService.selectPreEmployment(companyId,currentPage,pageSize);
+    public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,
+                                                                         Integer currentPage,
+                                                                         Integer pageSize){
+        Boolean b = checkParam(companyId,currentPage,pageSize);
+        if(b){
+            try {
+                PageResult<PreEmployment> pageResult =
+                        staffPreEmploymentService.selectPreEmployment(companyId, currentPage, pageSize);
+                if(pageResult!=null){
+                    return ResponseResult.SUCCESS();
+                }
+                return failResponseResult("无入职人员或者此页无信息");
+            } catch (Exception e) {
+                return failResponseResult("根据机构查看预入职失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -105,7 +168,16 @@ public class StaffPreEmploymentController extends BaseController {
 
     })
     public ResponseResult sendMessage(List<Integer> list, Integer templateId, String[] params) {
-       return staffPreEmploymentService.sendMessage(list,templateId,params);
+        Boolean b = checkParam(list,templateId,params);
+        if(b){
+            try {
+                staffPreEmploymentService.sendMessage(list,templateId,params);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("发短信给预入职人员失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -120,8 +192,19 @@ public class StaffPreEmploymentController extends BaseController {
             @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
             @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
     })
-    public ResponseResult sendMail(List<Integer> prelist,List<Integer> conList,String content,String subject,String[] filepath) {
-        return staffPreEmploymentService.sendManyMail(prelist,conList,content,subject,filepath) ;
+    public ResponseResult sendMail(List<Integer> prelist,List<Integer> conList,
+                                   String content,String subject,
+                                   String[] filepath) {
+        Boolean b = checkParam(prelist,conList,content,subject,filepath);
+        if(b){
+            try {
+                staffPreEmploymentService.sendManyMail(prelist,conList,content,subject,filepath) ;
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("发邮件给预入职人员失败");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -131,7 +214,18 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiOperation(value = "校验手机号码", notes = "hkt")
     @ApiImplicitParam(name = "String", value = "手机号", paramType = "query", required = true)
     public ResponseResult checkPhone(String phoneNumber) {
-        return  staffPreEmploymentService.checkPhone(phoneNumber);
+        Boolean b = checkParam(phoneNumber);
+        if(b){
+            try {
+                if(staffPreEmploymentService.checkPhone(phoneNumber)){
+                    return new ResponseResult("手机号验证通过");
+                }
+                return failResponseResult("手机号验证不通过");
+            } catch (Exception e) {
+                return failResponseResult("手机号验证出现问题");
+            }
+        }
+        return  failResponseResult("参数错误");
     }
 
     /**
@@ -141,7 +235,19 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiOperation(value = "校验邮箱", notes = "hkt")
     @ApiImplicitParam(name = "String", value = "邮箱", paramType = "query", required = true)
     public ResponseResult checkMail(String mail) {
-        return  staffPreEmploymentService.checkMail(mail);
+        Boolean b = checkParam(mail);
+        if(b){
+            try {
+                if(staffPreEmploymentService.checkMail(mail)){
+                    return new ResponseResult("邮箱验证通过");
+                }
+                return failResponseResult("邮箱验证不通过");
+            } catch (Exception e) {
+                return failResponseResult("邮箱验证出现问题");
+            }
+        }
+        return  failResponseResult("参数错误");
+
     }
 
 
@@ -174,9 +280,42 @@ public class StaffPreEmploymentController extends BaseController {
     public ResponseResult updatePreEmploymentChange(Integer preEmploymentId,
                                                     StatusChangeVo statusChangeVo,
                                                     String reason) {
-        Integer companyId = userSession.getCompanyId();
-        Integer archiveId = userSession.getArchiveId();
-        return staffPreEmploymentService.insertStatusChange(companyId,archiveId,preEmploymentId, statusChangeVo,reason);
+        Boolean b = checkParam(preEmploymentId,statusChangeVo,reason,getUserSession());
+        if(b){
+            try {
+                staffPreEmploymentService.insertStatusChange(getUserSession(),preEmploymentId, statusChangeVo,reason);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("延期入职以及放弃入职失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+
+    /**
+     * 检验参数
+     * @param params
+     * @return
+     */
+    public Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (null == param || "".equals(param)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 错误返回值
+     * @param message
+     * @return
+     */
+    public ResponseResult failResponseResult(String message){
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage(message);
+        logger.error(message);
+        return fail;
     }
 
 }

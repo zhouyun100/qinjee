@@ -472,14 +472,19 @@
   <select id="selectMail" resultType="java.lang.String">
     select  email
     from t_user_archive
-    where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
+    where  is_delete=0
+    AND
+     archive_id in
+     <foreach collection="list" item="item" open="(" separator="," close=")">
+       #{item}
+     </foreach>
   </select>
   <select id="selectNotInList" resultType="com.qinjee.masterdata.model.entity.UserArchive">
     select
     <include refid="Base_Column_List" />
     from t_user_archive
     where archive_id in
-    <foreach collection="list" item="item" index="index" separator=",">
+    <foreach collection="list" item="item" open="(" separator="," index=")">
     (#{item,jdbcType=INTEGER})
     </foreach>
     AND is_delete=0
@@ -488,9 +493,13 @@
     update t_user_archive
     set
     is_delete=1
-    where  archive_id = #{archiveId,jdbcType=INTEGER}
+    where  archive_id
+    in
+    <foreach collection="archiveid" item="item" open="(" separator="," close=")">
+    #{item}
+   </foreach>
   </update>
-  <update id="resumeDeleteArchiveById">
+  <update id="resumeDeleteArchiveById" >
     update t_user_archive
     set
     is_delete=1
@@ -566,10 +575,50 @@
     from t_user_archive
     where user_category != "在职"
   </select>
-  <select id="selectByConId">
+    <select id="getUserArchiveListCustom" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+        select #{select,jdbcType=VARCHAR}
+        from t_user_archive a
+        left join t_user_org_auth b on a.archive_id =b.archive_id
+        left join t_organization c on b.org_id=c.org_id
+        where a.is_delete=0 AND b.is_delete=0 AND c.is_enable=1
+        AND c.org_id= #{orgId,jdbcType=INTEGER}
+        orderby #{order,jdbcType=VARCHAR}
+    </select>
+  <select id="selectStaffNoType" resultType="java.lang.Integer">
+    select
+    archive_id
+    from t_user_archive a
+    left join t_user_org_auth b on a.archive_id=b.archive_id
+    left join t_organization c on b.org_id=c.org_id
+    where
+     c.org_id=#{id,jdbcType=INTEGER}
+     AND a.user_category =#{archiveType,jdbcType=VARCHAR}
+     AND  #{sql,jdbcType=VARCHAR}
+  </select>
+  <select id="selectStaff" resultType="com.qinjee.masterdata.model.entity.UserArchive">
     select
     <include refid="Base_Column_List" />
-    from  t_user_archive
+    from t_user_archive a
+    left join t_user_archive_post_relation b on a.archive_id=b.archive_id
+    where b.archive_id not in
+    <foreach collection="list" item="item">
+      #{integerList,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+    select
+    <include refid="Base_Column_List"  />
+    from t_user_archive
+    where
+    archive_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectByPrimaryKeyalist">
+    select
+    <include refid="Base_Column_List" />
+    from t_user_archive
     where
   </select>
 </mapper>

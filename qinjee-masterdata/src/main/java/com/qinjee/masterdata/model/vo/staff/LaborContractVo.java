@@ -12,7 +12,10 @@ import java.util.Date;
 @NoArgsConstructor
 @ToString
 public class LaborContractVo implements Serializable {
-    private Integer probationPeriod;
+    /**
+     * id
+     */
+    private Integer id;
 
     /**
      * 合同签订日期

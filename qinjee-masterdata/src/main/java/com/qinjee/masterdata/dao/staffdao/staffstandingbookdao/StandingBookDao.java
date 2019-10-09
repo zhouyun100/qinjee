@@ -1,7 +1,10 @@
 package com.qinjee.masterdata.dao.staffdao.staffstandingbookdao;
 
 import com.qinjee.masterdata.model.entity.StandingBook;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Administrator
@@ -21,4 +24,9 @@ public interface StandingBookDao {
     int updateByPrimaryKey(StandingBook record);
 
     void deleteStandingBook(Integer standingBookId);
+
+    List<StandingBook> selectByAchiveId(@Param("archiveId") Integer archiveId);
+
+    List<StandingBook> selectShare(@Param("companyId") Integer companyId);
+
 }

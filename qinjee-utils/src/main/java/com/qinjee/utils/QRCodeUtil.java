@@ -33,7 +33,7 @@ public class QRCodeUtil {
         response.setDateHeader("Expires", 0);
         response.setContentType("image/png");
         //设置图片的文字编码以及内边框
-        Map<EncodeHintType, Object> hints = new HashMap<>();
+        Map<EncodeHintType, Object> hints = new HashMap();
         //编码
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
         //边框距

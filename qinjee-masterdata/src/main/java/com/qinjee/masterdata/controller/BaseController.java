@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,4 +62,13 @@ public class BaseController {
         }
         return null;
     }
+    public static ResponseResult getResponseResult(Integer integer, String message){
+        if(integer>1){
+            return ResponseResult.SUCCESS();
+        }
+        ResponseResult fail = ResponseResult.FAIL();
+        fail.setMessage(message);
+        return fail;
+    }
+
 }

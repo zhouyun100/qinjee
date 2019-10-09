@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,12 +38,13 @@ public interface PreEmploymentDao {
 
     /**
      * 根据id得到邮箱
-     * @param integer
+     * @param list
      * @return
      */
-    String getMail(Integer integer);
+    List<String> getMail(@Param("list") List<Integer> list);
 
     List<PreEmployment> selectPreEmployment(Integer companyId);
 
-    void deletePreEmployment(Integer id);
+    void deletePreEmploymentList(@Param("list") List<Integer> list);
+    void deletePreEmployment(@Param("integer") Integer integer);
 }

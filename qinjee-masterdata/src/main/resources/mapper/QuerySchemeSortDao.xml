@@ -104,4 +104,23 @@
      delete from t_query_scheme_sort
     where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
   </delete>
+
+  <select id="selectSortId" resultType="java.lang.Integer">
+    select field_id
+    from t_query_scheme_sort
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+
+  </select>
+  <select id="selectSortSort" resultType="java.lang.String">
+    select order_by_rule
+    from t_query_scheme_sort
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteBySchemeIdList">
+     delete from t_query_scheme_sort
+    where query_scheme_id
+    in <foreach collection="list" item="item" separator="," close=")">
+    #{item}
+  </foreach>
+  </delete>
 </mapper>

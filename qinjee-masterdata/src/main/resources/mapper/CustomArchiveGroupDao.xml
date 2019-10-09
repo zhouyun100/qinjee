@@ -119,4 +119,23 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where group_id = #{groupId,jdbcType=INTEGER}
   </update>
+  <select id="selectMaxPrimaryKey">
+    select MAX (group_id)
+    from  t_custom_archive_group
+    where  is_delete =0
+  </select>
+  <update id="deleteCustomGroup">
+    update  t_custom_archive_group
+    set is_delete = 1
+     where group_id
+     in <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+   </foreach>
+  </update>
+  <select id="selectTableId">
+    select table_id
+    from t_custom_archive_group
+    where group_id = #{groupId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
 </mapper>

@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.EmployeeNumberRule;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface EmployeeNumberRuleDao {
     int deleteByPrimaryKey(Integer enRuleId);
 

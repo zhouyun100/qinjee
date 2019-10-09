@@ -6,8 +6,8 @@ import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
 
@@ -18,44 +18,47 @@ import java.util.List;
 public interface IStaffContractService {
 
     /**展示未签合同的人员
+
      * @param orgId
      * @param currentPage
      * @param pageSize
      * @param
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> selectNoLaborContract(Integer  orgId, Integer currentPage, Integer pageSize);
+    PageResult<UserArchive> selectNoLaborContract(Integer  orgId, Integer currentPage, Integer pageSize);
     /**
      * 删除合同
      * @param laborContractid
      * @return
      */
-    ResponseResult deleteLaborContract(Integer laborContractid);
+    void deleteLaborContract(Integer laborContractid);
 
     /**
      * 新增单签合同
      * @param laborContractVo
+     * @param id
+     * @param userSession
      * @return
      */
-    ResponseResult insertLaborContract(LaborContractVo laborContractVo, Integer id,Integer archiveId);
+    void insertLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession);
 
     /**批量新签合同
      * @param laborContractVo
      * @param list
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult insertLaborContractBatch(LaborContractVo laborContractVo,List<Integer> list,Integer archiveId);
+   void insertLaborContractBatch(LaborContractVo laborContractVo,List<Integer> list,UserSession userSession);
 
     /**更新合同，同时新增更新记录
      * @param laborContract
      * @param laborContractChangeVo
      * @param id
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult updatelaborContract(LaborContract laborContract, LaborContractChangeVo laborContractChangeVo,
-                                       Integer id, Integer archiveId);
+    void updatelaborContract(LaborContract laborContract, LaborContractChangeVo laborContractChangeVo,
+                                       Integer id, UserSession userSession);
 
     /**
      *查询一个合同的变更历史
@@ -64,124 +67,129 @@ public interface IStaffContractService {
      * @param
      * @return
      */
-    ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id);
+    List<LaborContractChange> selectLaborContractchange(Integer id);
 
 
     /**新增续签合同
      * @param laborContractVo
      * @param id
      * @param laborContractChangeVo
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult insertReNewLaborContract(LaborContractVo laborContractVo, Integer id, LaborContractChangeVo laborContractChangeVo, Integer archiveId);
+    void insertReNewLaborContract(LaborContractVo laborContractVo, Integer id,
+                                            LaborContractChangeVo laborContractChangeVo, UserSession userSession);
     /**
      * 新增续签意向表
      * @param contractRenewalIntention
      * @return
      */
-    ResponseResult insertContractRenewalIntention(ContractRenewalIntention contractRenewalIntention);
+    void updateContractRenewalIntention(ContractRenewalIntention contractRenewalIntention);
 
     /**
      * 保存合同
      * @param laborContractVo
      * @param id
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult SaveLaborContract(LaborContractVo laborContractVo, Integer id, Integer archiveId);
+    void SaveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession);
 
     /**
      * 批量续签合同
      * @param laborContractVo
      * @param list
      * @param laborContractChangeVo
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult insertReNewLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list, LaborContractChangeVo laborContractChangeVo, Integer archiveId);
+    void insertReNewLaborContractBatch(LaborContractVo laborContractVo,
+                                       List<Integer> list,
+                                       LaborContractChangeVo laborContractChangeVo,
+                                       UserSession userSession);
 
     /**
      * 展示已签合同人员
-     * @param archiveId
+     * @param orgId
      * @param currentPage
      * @param pageSize
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage, Integer pageSize);
+    PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage, Integer pageSize);
 
     /**
      * 终止合同
      * @param laborContractChangeVo
      * @param id
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, Integer archiveId);
+    void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession);
 
     /**
      * 批量终止合同
      * @param laborContractChangeVo
      * @param list
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult endlaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list, Integer archiveId);
+    void endlaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list, UserSession userSession);
 
     /**
      * 解除合同
      * @param laborContractChangeVo
      * @param id
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult looselaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, Integer archiveId);
+    void looselaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession);
 
     /**
      * 批量解除合同
      * @param laborContractChangeVo
      * @param list
-     * @param archiveId
+     * @param userSession
      * @return
      */
-    ResponseResult looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list, Integer archiveId);
+    void looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list,
+                                           UserSession userSession);
 
     /**
      * 发送续签意向
      * @param id
      * @return
      */
-    ResponseResult insertLaborContractIntention(Integer id);
+    void insertLaborContractIntention(Integer id,UserSession userSession);
 
     /**
      * 展示我的续签意向表
      * @param id
      * @return
      */
-    ResponseResult selectContractRenewalIntention(Integer id);
+    ContractRenewalIntention selectContractRenewalIntention(Integer id);
 
     /**
      * 同意续签
      * @param contractRenewalIntention
      * @return
      */
-    ResponseResult agreeRenew(ContractRenewalIntention contractRenewalIntention);
+    void agreeRenew(ContractRenewalIntention contractRenewalIntention);
 
     /**
      * 不同意续签
      * @param contractRenewalIntention
      * @return
      */
-    ResponseResult rejectRenew(ContractRenewalIntention contractRenewalIntention);
+    void rejectRenew(ContractRenewalIntention contractRenewalIntention);
     /**
      * 查询在职员工的人数
      */
-    ResponseResult selectArcNumberIn(Integer id);
+    Integer selectArcNumberIn(Integer id);
 
     /**
      * 查询机构下合同即将到期的员工
      * @param id
      * @return
      */
-    ResponseResult selectArcDeadLine(Integer id);
+    List<UserArchive> selectArcDeadLine(Integer id);
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public class PostController extends BaseController {
     }
 
     @GetMapping("/getAllPost")
-    @ApiOperation(value = "获取公司所有的岗位", notes = "高雄 新增用户信息岗位下拉框的生成")
+    @ApiOperation(value = "获取机构下所有的岗位", notes = "高雄 新增用户信息岗位下拉框的生成")
     public ResponseResult<List<Post>> getAllPost(@ApiParam(value = "机构id", example = "1", required = true) Integer orgId){
         return postService.getAllPost(getUserSession(), orgId);
     }
@@ -96,9 +97,8 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "下载模板", notes = "高雄")
     @GetMapping("/downloadTemplate")
-    public ResponseResult downloadTemplate(){
-
-        return null;
+    public ResponseResult downloadTemplate(HttpServletResponse response){
+        return postService.downloadTemplate(response);
     }
 
     @ApiOperation(value = "复制岗位", notes = "高雄")
@@ -110,16 +110,14 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
     @PostMapping("/downloadExcelByCondition")
-    public ResponseResult downloadExcelByCondition(@RequestBody PostPageVo postPageVo){
-
-        return null;
+    public ResponseResult downloadExcelByCondition(@RequestBody PostPageVo postPageVo, HttpServletResponse response){
+        return postService.downloadExcelByCondition(postPageVo, getUserSession(), response);
     }
 
     @ApiOperation(value = "根据选择的岗位id导出Excel", notes = "高雄")
     @GetMapping("/downloadExcelByPostId")
-    public ResponseResult downloadExcelByPostId(@RequestParam("postIds") @ApiParam(value = "所选机构的编码",required = true) List<Integer> postIds){
-
-        return null;
+    public ResponseResult downloadExcelByPostId(@RequestParam("postIds") @ApiParam(value = "所选机构的编码",required = true) List<Integer> postIds, HttpServletResponse response){
+        return postService.downloadExcelByPostId(postIds,getUserSession(), response);
     }
 
 

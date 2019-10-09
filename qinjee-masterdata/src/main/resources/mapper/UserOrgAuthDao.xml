@@ -106,4 +106,10 @@
     from t_user_org_auth
     where  org_id= #{org_id,jdbcType=INTEGER} AND is_delete=0
   </select>
+  <select id="selectOrgByArc" resultType="java.lang.Integer">
+    select org_id
+    from t_user_org_auth
+    where is_delete=0
+    AND archive_id = #{archiveId,jdbcType=INTEGER}
+  </select>
 </mapper>

@@ -3,7 +3,9 @@ package com.qinjee.masterdata.model.entity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +17,8 @@ import java.util.Date;
 @ApiModel(description = "员工档案岗位关系表")
 @Data
 @NoArgsConstructor
+@Setter
+@Getter
 public class UserArchivePostRelation implements Serializable {
     /**
      * 主键ID
@@ -127,6 +131,162 @@ public class UserArchivePostRelation implements Serializable {
      */
     @ApiModelProperty("岗位名称")
     private String postName;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getArchiveId() {
+        return archiveId;
+    }
+
+    public void setArchiveId(Integer archiveId) {
+        this.archiveId = archiveId;
+    }
+
+    public Integer getBusinessUnitId() {
+        return businessUnitId;
+    }
+
+    public void setBusinessUnitId(Integer businessUnitId) {
+        this.businessUnitId = businessUnitId;
+    }
+
+    public Integer getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
+
+    public Integer getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Integer postId) {
+        this.postId = postId;
+    }
+
+    public Integer getPositionLevelId() {
+        return positionLevelId;
+    }
+
+    public void setPositionLevelId(Integer positionLevelId) {
+        this.positionLevelId = positionLevelId;
+    }
+
+    public Integer getPositionGradeId() {
+        return positionGradeId;
+    }
+
+    public void setPositionGradeId(Integer positionGradeId) {
+        this.positionGradeId = positionGradeId;
+    }
+
+    public Date getEmploymentBeginDate() {
+        return employmentBeginDate;
+    }
+
+    public void setEmploymentBeginDate(Date employmentBeginDate) {
+        this.employmentBeginDate = employmentBeginDate;
+    }
+
+    public Date getEmploymentEndDate() {
+        return employmentEndDate;
+    }
+
+    public void setEmploymentEndDate(Date employmentEndDate) {
+        this.employmentEndDate = employmentEndDate;
+    }
+
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
+    }
+
+    public String getAppointDismissalReason() {
+        return appointDismissalReason;
+    }
+
+    public void setAppointDismissalReason(String appointDismissalReason) {
+        this.appointDismissalReason = appointDismissalReason;
+    }
+
+    public Integer getSupervisorId() {
+        return supervisorId;
+    }
+
+    public void setSupervisorId(Integer supervisorId) {
+        this.supervisorId = supervisorId;
+    }
+
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Short getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Short isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmployeeNumber() {
+        return employeeNumber;
+    }
+
+    public void setEmployeeNumber(String employeeNumber) {
+        this.employeeNumber = employeeNumber;
+    }
+
+    public String getPostName() {
+        return postName;
+    }
+
+    public void setPostName(String postName) {
+        this.postName = postName;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
     private static final long serialVersionUID = 1L;
 

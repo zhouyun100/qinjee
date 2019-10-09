@@ -189,7 +189,7 @@ public class ExcelUtil {
             }
         }
         String[] heads = list.get(0);
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap();
         for (int i = 1; i < list.size(); i++) {
             for (int j = 0; j < list.get(i).length; j++) {
                 map.put(heads[j], list.get(i)[j]);
@@ -300,21 +300,19 @@ public class ExcelUtil {
      * @param type
      * @return
      */
-    public static Integer getCellType(@NonNullType String type, HSSFCell cell) {
-        switch (type) {
-            case "Integer":
-                return HSSFCell.CELL_TYPE_NUMERIC;
-            case "String":
-                return HSSFCell.CELL_TYPE_STRING;
-            case "Boolean":
-                return HSSFCell.CELL_TYPE_BOOLEAN;
-            case "":
-                return HSSFCell.CELL_TYPE_BLANK;
-            case "Date":
-                return HSSFCell.CELL_TYPE_NUMERIC;
-            default:
-                return HSSFCell.CELL_TYPE_STRING;
+    public static Integer getCellType( String type, HSSFCell cell) {
+        if ("Integer".equals(type)) {
+            return 0;
+        } else if ("String".equals(type)) {
+            return 1;
+        } else if ("Boolean".equals(type)) {
+            return 4;
+        } else if ("".equals(type)) {
+            return 3;
+        } else if ("Date".equals(type)) {
+            return 0;
         }
+        return 1;
     }
 
     public static MultipartFile getMultipartFile(File file) {
