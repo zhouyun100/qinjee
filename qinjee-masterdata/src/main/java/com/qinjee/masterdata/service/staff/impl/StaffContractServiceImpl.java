@@ -84,14 +84,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return new PageResult<>(list);
     }
 
-    private void getArcByConId(Integer currentPage, Integer pageSize, PageResult pageResult, List list, List<Integer> newArcList) {
-        for (Integer integer : newArcList) {
-            UserArchive userArchive = userArchiveDao.selectByPrimaryKey(integer);
-            list.add(userArchive);
-        }
-        PageHelper.startPage(currentPage, pageSize);
-        pageResult.setList(list);
-    }
 
     /**
      * 此处不是逻辑删除，是真删除

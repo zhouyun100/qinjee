@@ -21,7 +21,7 @@ public interface BlacklistDao {
 
     Integer selectMaxId();
 
-    void deleteBlackList(Integer integer);
+    void deleteBlackList(List<Integer> list);
 
     List<Blacklist> selectByPage();
 }

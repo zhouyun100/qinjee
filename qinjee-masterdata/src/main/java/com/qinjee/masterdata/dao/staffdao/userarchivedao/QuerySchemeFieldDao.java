@@ -32,4 +32,6 @@ public interface QuerySchemeFieldDao {
     List<Integer> selectFieldSort(@Param("schemeId") Integer schemeId);
 
     void deleteBySchemeIdList(List<Integer> list);
+
+    void insertBatch(List<QuerySchemeField> querySchemeFieldlist);
 }

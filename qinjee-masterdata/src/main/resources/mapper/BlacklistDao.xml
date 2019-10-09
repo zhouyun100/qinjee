@@ -209,7 +209,11 @@
   <update id="deleteBlackList">
     update t_blacklist
     set is_delete=1
-    where blacklist_id = #{blacklistId,jdbcType=INTEGER}
+    where blacklist_id
+    in
+    <foreach collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </update>
   <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.Blacklist">
     select
