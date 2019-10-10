@@ -5,6 +5,7 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
@@ -14,9 +15,7 @@ import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +44,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private BlacklistDao blacklistDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private UserArchivePostRelationDao userArchivePostRelationDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -166,18 +170,42 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     @Override
-    public ResponseResult selectStaff(Integer stangdingBookId, String archiveType, Integer id, String type) {
-        try {
-            //根据台账id查询sql拼接串
-            String sql=standingBookFilterDao.selectSqlById(stangdingBookId);
-            //根据条件查询人员信息
-            List<Integer> integerList=userArchiveDao.selectStaffNoType(sql,archiveType,id);
-            List<UserArchive> list=userArchiveDao.selectStaff(integerList);
-            return  new ResponseResult(list,CommonCode.SUCCESS);
-        } catch (Exception e) {
-            logger.error("台账查询失败");
-            return new ResponseResult<>(false, CommonCode.FAIL);
-        }
-    }
+    public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) {
+        /**
+         * 关于运算符的思路：
+         */
+        List<Integer> oneList=userArchiveDao.selectStaffNoStandingBook(archiveType,orgId);
+        List<Integer> twoList=userArchivePostRelationDao.selectByType(type,oneList);
+        //通过台账id找到台账筛选表，直接返回台账筛选表对象
+        List<StandingBookFilter> filters=standingBookFilterDao.selectByStandingBookId(stangdingBookId);
 
+        //通过字段id找到表id
+        //判断是否为内置，内置的话直接返回档案id。
+        //若不是内置，根据表id找到数据大字段,进行JSON解析。@+字段名+@为key，返回业务id
+        //根据每条返回的链接福确定是去交集还是并集
+        //查询没有经过台账筛选出来的id，取交集
+        //将此id查询出集合返回
+        return null;
+    }
+    public boolean getCondition(String Symbol,Object o1,Object o2){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(o1 instanceof Integer && o2 instanceof Integer){
+            if(Symbol.equals(">")){
+                return (Integer)o1 > (Integer) o2;
+            }
+        }
+        if(o1 instanceof String && o2 instanceof String){
+            try {
+                //没有报错说明是时间类型
+                Date parse = sdf.parse((String) o1);
+                Date parse1 = sdf.parse((String) o2);
+            } catch (ParseException e) {
+                //作为字符串处理
+                if(Symbol.equals("包含")){
+                    return ((String) o1).contains((CharSequence) o2);
+                }
+            }
+        }
+        return false;
+    }
 }

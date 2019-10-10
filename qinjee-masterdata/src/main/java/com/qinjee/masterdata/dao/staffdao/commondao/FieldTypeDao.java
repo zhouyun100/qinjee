@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.FieldType;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,5 +18,5 @@ public interface FieldTypeDao {
 
     int updateByPrimaryKey(FieldType record);
 
-    String selectFieldCode(String s);
+    String selectFieldCode(@Param("s") String s);
 }

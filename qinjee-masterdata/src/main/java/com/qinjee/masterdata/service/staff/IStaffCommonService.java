@@ -194,8 +194,14 @@ public interface IStaffCommonService {
     /**
      * 展示部门的自定义表
      * @param userSession
-     * @param id
      * @return
      */
-    List<String> selectTableFromOrg(UserSession userSession,Integer id);
+    List<String> selectTableFromOrg(UserSession userSession);
+
+    /**
+     * 展示自定义字段的值
+     * @param customArchiveFieldId
+     * @return
+     */
+    List<String> staffCommonService(Integer customArchiveFieldId);
 }

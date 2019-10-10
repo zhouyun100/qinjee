@@ -204,12 +204,11 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.GET)
     @ApiOperation(value = "展示企业下的自定义表名", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "档案表的业务id", paramType = "query", required = true)
     public ResponseResult<List<String>> selectTableFromGroup(Integer id) {
-        Boolean b = checkParam(getUserSession(),id);
+        Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                List<String> list=staffCommonService.selectTableFromOrg(getUserSession(),id);
+                List<String> list=staffCommonService.selectTableFromOrg(getUserSession());
                 if(CollectionUtils.isEmpty(list)){
                     return failResponseResult("没有相应的表名");
                 }
@@ -324,6 +323,29 @@ public class CommonController extends BaseController {
                return new ResponseResult<>(customArchiveField,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return failResponseResult(" 展示自定义字段失败");
+            }
+        }
+        return  failResponseResult("自定义表id参数错误");
+    }
+
+    /**
+     * 通过字段id找到对应的字段值
+     */
+    @RequestMapping(value = "/selectFieldValueById", method = RequestMethod.GET)
+    @ApiOperation(value = "通过字段id找到对应的字段值", notes = "hkt")
+    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
+    public ResponseResult<List<String>> selectFieldValueById(Integer customArchiveFieldId) {
+
+        Boolean b = checkParam(customArchiveFieldId);
+        if(b){
+            try {
+                List<String> strings=staffCommonService.staffCommonService(customArchiveFieldId);
+                if(CollectionUtils.isEmpty(strings)){
+                    return failResponseResult("字段值不存在");
+                }
+                return new ResponseResult<>(strings,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return failResponseResult(" 通过字段id找到对应的字段值失败");
             }
         }
         return  failResponseResult("自定义表id参数错误");

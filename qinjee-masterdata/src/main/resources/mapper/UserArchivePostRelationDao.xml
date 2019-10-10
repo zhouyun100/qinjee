@@ -257,5 +257,16 @@
     archive_id = #{archiveId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
+  <select id="selectByType" resultType="java.lang.Integer">
+    select archive_id
+    from   t_user_archive_post_relation
+    where   employment_type=#{param1,jdbcType=VARCHAR}
+    AND archive_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{param2}
+    </foreach>
+
+  </select>
+
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.QueryScheme;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,7 +25,5 @@ public interface QuerySchemeDao {
 
     Integer selectMaxPrimaryKey();
 
-    void deleteQueryScheme(Integer integer);
-
-    void deleteQuerySchemeList(List<Integer> list);
+    void deleteQuerySchemeList(@Param("list") List<Integer> list);
 }
