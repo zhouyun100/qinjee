@@ -23,9 +23,9 @@ public interface QuerySchemeSortDao {
 
     int updateByPrimaryKey(QuerySchemeSort record);
 
-    List<QuerySchemeSort> selectByQuerySchemeId(Integer id);
+    List<QuerySchemeSort> selectByQuerySchemeId(@Param("id") Integer id);
 
-    void deleteBySchemeId(Integer querySchemeId);
+    void deleteBySchemeId(@Param("querySchemeId") Integer querySchemeId);
 
     List<Integer> selectSortId(@Param("schemeId") Integer schemeId);
 

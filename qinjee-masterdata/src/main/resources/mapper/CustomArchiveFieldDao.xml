@@ -270,4 +270,9 @@
     #{item}
   </foreach>
   </select>
+  <select id="selectCodeId" resultType="java.lang.Integer">
+    select code_id
+    from t_custom_archive_field
+    where field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
 </mapper>

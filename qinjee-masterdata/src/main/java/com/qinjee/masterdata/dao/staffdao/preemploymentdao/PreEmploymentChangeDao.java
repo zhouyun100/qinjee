@@ -2,6 +2,7 @@ package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmploymentChange;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,8 +20,8 @@ public interface PreEmploymentChangeDao {
 
     int updateByPrimaryKeySelective(PreEmploymentChange record);
 
-    int updateByPrimaryKey(PreEmploymentChange record);
+    int updateByPrimaryKey(@Param("record") PreEmploymentChange record);
 
-    int insertStatusChange(StatusChangeVo statusChangeVo);
+    int insertStatusChange(@Param("statusChangeVo") StatusChangeVo statusChangeVo);
 
 }

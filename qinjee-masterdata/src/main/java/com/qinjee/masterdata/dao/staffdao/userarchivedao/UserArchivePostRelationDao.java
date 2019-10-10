@@ -34,9 +34,11 @@ public interface UserArchivePostRelationDao {
      * @param postId
      * @return
      */
-    List<UserArchivePostRelation> getUserArchivePostRelationList(Integer postId);
+    List<UserArchivePostRelation> getUserArchivePostRelationList(@Param("postId") Integer postId);
 
-    List<UserArchivePostRelation> selectByPrimaryKeyList(List<Integer> list);
+    List<UserArchivePostRelation> selectByPrimaryKeyList(@Param("list") List<Integer> list);
 
     UserArchivePostRelation selectByArcId(@Param("id") Integer id);
+
+    List<Integer> selectByType(@Param("type") String type, @Param("oneList") List<Integer> oneList);
 }

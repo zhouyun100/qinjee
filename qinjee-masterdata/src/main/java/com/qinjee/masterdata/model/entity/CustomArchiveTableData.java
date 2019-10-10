@@ -46,7 +46,7 @@ public class CustomArchiveTableData implements Serializable {
     /**
      * 数据大字段
      */
-    private byte[] bigData;
+    private String bigData;
 
     private static final long serialVersionUID = 1L;
 

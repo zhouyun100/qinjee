@@ -65,12 +65,9 @@ public interface UserArchiveDao {
 
     Integer selectArcNumberIn(Integer id);
 
-    List<UserArchive> getUserArchiveListCustom(String select, String order, Integer orgId);
-
-    List<Integer> selectStaffNoType(String sql, String archiveType, Integer id );
-
-    List<UserArchive> selectStaff(@Param("integerList") List<Integer> integerList);
+    List<UserArchive> getUserArchiveListCustom(@Param("select") String select, @Param("order") String order, @Param("orgId") Integer orgId);
 
     List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 
+    List<Integer> selectStaffNoStandingBook(@Param("archiveType") String archiveType, @Param("id") Integer id);
 }

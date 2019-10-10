@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
@@ -245,8 +246,20 @@ public class StaffStandingBookController extends BaseController {
             @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
 
     })
-    public ResponseResult selectStaff(Integer stangdingBookId,String archiveType,Integer id,String type){
-        return staffStandingBookService.selectStaff(stangdingBookId,archiveType,id,type);
+    public ResponseResult<List<UserArchive>> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type){
+        Boolean b = checkParam(stangdingBookId,archiveType,orgId,type);
+        if (b) {
+            try {
+                List<UserArchive> list=staffStandingBookService.selectStaff(stangdingBookId,archiveType,orgId,type);
+                if(list!=null){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }
+                return failResponseResult("符合条件为空");
+            } catch (Exception e) {
+                return failResponseResult("查询台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
     }
     /**
      * 检验参数

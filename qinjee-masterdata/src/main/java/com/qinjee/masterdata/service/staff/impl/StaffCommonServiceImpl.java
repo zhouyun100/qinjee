@@ -48,6 +48,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private OrganizationDao organizationDao;
     @Autowired
+    private CompanyCodeDao companyCodeDao;
+    @Autowired
     private PostDao postDao;
 
     @Override
@@ -179,13 +181,19 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
 
     @Override
-    public List<String> selectTableFromOrg(UserSession userSession,Integer id) {
-        //通过业务id找到表id
-        List<Integer> list1=customArchiveTableDataDao.selectTableIdByBusinessId(id);
+    public List<String> selectTableFromOrg(UserSession userSession) {
         //根据部门id筛选自己的表id
-        List<Integer> list2=customArchiveTableDao.selectIdByOrgId(userSession.getCompanyId());
-        list1.retainAll(list2);
+        List<Integer> list1=customArchiveTableDao.selectIdByOrgId(userSession.getCompanyId());
         List<String> list=customArchiveTableDao.selectNameById(list1);
+        return list;
+    }
+
+    @Override
+    public List<String> staffCommonService(Integer customArchiveFieldId) {
+        //找到企业代码id
+        Integer id=customArchiveFieldDao.selectCodeId(customArchiveFieldId);
+        //找到自定义字段的值
+        List<String> list=companyCodeDao.selectValue(id);
         return list;
     }
 
@@ -195,12 +203,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         Integer archiveId = userSession.getArchiveId();
         //将前端传过来的大字段进行解析
                  JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
-                for (int i = 0; i < json.size(); i++) {
-                    JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
+                    JSONObject jsono = JSONObject.parseObject(json.toString());
                     for (String s : jsono.keySet()) {
                         s.replace(s, "@" + s + "@");
                     }
-                }
                 customArchiveTableData.setOperatorId(archiveId);
                customArchiveTableDataDao.insert(customArchiveTableData);
     }
@@ -281,7 +287,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                     for (int j = 0; j < json.size(); j++) {
                         JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
                         for (String s : jsono.keySet()) {
-                            map.put(s.split("@qinjee@")[0], jsono.getString(s));
+                            map.put( s.replace("@",""), jsono.getString(s));
                         }
                     }
 

@@ -189,8 +189,8 @@
   <select id="selectPreEmploymentTable" resultType="java.lang.Integer">
     select table_id
     from t_custom_table
-    where  company_id = #{companyId,jdbcType=INTEGER}
-    AND  table_name = #{tableName,jdbcType=VARCHAR}
+    where  company_id = #{param1,jdbcType=INTEGER}
+    AND  table_name = #{param2,jdbcType=VARCHAR}
   </select>
 
 </mapper>

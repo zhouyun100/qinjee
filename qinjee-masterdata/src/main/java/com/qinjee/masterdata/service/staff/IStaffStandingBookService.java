@@ -2,11 +2,11 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
 
@@ -87,9 +87,9 @@ public interface IStaffStandingBookService {
      * 人员查询操作
      * @param stangdingBookId
      * @param archiveType
-     * @param id
+     * @param orgId
      * @param type
      * @return
      */
-    ResponseResult                                                                                                                                                                                                                                            selectStaff(Integer stangdingBookId, String archiveType, Integer id, String type);
+   List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type);
 }

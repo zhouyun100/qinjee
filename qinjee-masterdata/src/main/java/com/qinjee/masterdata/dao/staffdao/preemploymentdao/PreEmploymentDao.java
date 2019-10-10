@@ -43,7 +43,7 @@ public interface PreEmploymentDao {
      */
     List<String> getMail(@Param("list") List<Integer> list);
 
-    List<PreEmployment> selectPreEmployment(Integer companyId);
+    List<PreEmployment> selectPreEmployment(@Param("companyId") Integer companyId);
 
     void deletePreEmploymentList(@Param("list") List<Integer> list);
     void deletePreEmployment(@Param("integer") Integer integer);
