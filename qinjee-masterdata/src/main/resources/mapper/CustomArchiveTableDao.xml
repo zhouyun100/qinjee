@@ -175,4 +175,21 @@
     from t_custom_archive_table
     where is_delete=0
   </select>
+  <select id="selectIdByOrgId" resultType="java.lang.Integer">
+    select  table_id
+    from t_custom_archive_table
+    where
+    company_id = #{companyId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="selectNameById" resultType="java.lang.String">
+    select
+    table_name
+    from t_custom_archive_table
+    where  
+    table_id in 
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

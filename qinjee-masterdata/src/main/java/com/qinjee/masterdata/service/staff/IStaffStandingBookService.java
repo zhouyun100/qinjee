@@ -91,5 +91,5 @@ public interface IStaffStandingBookService {
      * @param type
      * @return
      */
-    ResponseResult selectStaff(Integer stangdingBookId, String archiveType, Integer id, String type);
+    ResponseResult                                                                                                                                                                                                                                            selectStaff(Integer stangdingBookId, String archiveType, Integer id, String type);
 }

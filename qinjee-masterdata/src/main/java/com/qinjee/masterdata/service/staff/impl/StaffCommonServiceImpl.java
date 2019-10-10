@@ -179,6 +179,17 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
 
     @Override
+    public List<String> selectTableFromOrg(UserSession userSession,Integer id) {
+        //通过业务id找到表id
+        List<Integer> list1=customArchiveTableDataDao.selectTableIdByBusinessId(id);
+        //根据部门id筛选自己的表id
+        List<Integer> list2=customArchiveTableDao.selectIdByOrgId(userSession.getCompanyId());
+        list1.retainAll(list2);
+        List<String> list=customArchiveTableDao.selectNameById(list1);
+        return list;
+    }
+
+    @Override
     public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
         //TODO 需要弄清楚数组的形式
         Integer archiveId = userSession.getArchiveId();

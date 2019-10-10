@@ -191,6 +191,11 @@ public interface IStaffCommonService {
      */
     List<Integer> getPostByOrgId(@Param("orgId") Integer orgId);
 
-
-
+    /**
+     * 展示部门的自定义表
+     * @param userSession
+     * @param id
+     * @return
+     */
+    List<String> selectTableFromOrg(UserSession userSession,Integer id);
 }

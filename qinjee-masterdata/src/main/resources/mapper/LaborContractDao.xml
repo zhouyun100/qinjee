@@ -262,8 +262,15 @@
       #{item}
     </foreach>
   </select>
+  <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract">
+    select
+    <include refid="Base_Column_List" />
+    from t_labor_contract
+    where org_id = #{orgId,jdbcType=INTEGER}
+  </select>
   <select id="selectByorgId" resultType="java.lang.Integer">
-    select  contract_id
+    select
+    archive_id
     from t_labor_contract
     where org_id = #{orgId,jdbcType=INTEGER}
   </select>

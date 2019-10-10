@@ -66,6 +66,13 @@ public class StaffContractController extends BaseController {
 
     }
 
+    /**合同状态  新签、变更   续签、解除、终止
+     *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
+     *   审批状态  未提交、审批中、已审批
+     *   导入导出接口可以复用导入导出模块
+     *   导入校验，此时先把excel转成list，需要对list的各个属性进行一一校验，这个规则还需要产品确定，交给前端进行筛选校验
+     */
+
     /**
      * 展示已签合同的人员信息
      */
@@ -75,16 +82,19 @@ public class StaffContractController extends BaseController {
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
             @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
             @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
+            @ApiImplicitParam(name = "isEnable", value = "是否有效", paramType = "query", required = true),
+            @ApiImplicitParam(name = "list", value = "合同状态", paramType = "query", required = true),
 
     })
     public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage,
-                                                                              Integer pageSize
+                                                                              Integer pageSize,Boolean isEnable,
+                                                                              List<String> status
     ) {
-        Boolean b = checkParam(orgId, currentPage, pageSize);
+        Boolean b = checkParam(orgId, currentPage, pageSize,isEnable,status);
         if (b) {
             try {
                 PageResult<UserArchive> pageResult =
-                        staffContractService.selectLaborContractserUser(orgId, currentPage, pageSize);
+                        staffContractService.selectLaborContractserUser(orgId, currentPage, pageSize,isEnable,status);
                 if (pageResult != null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }
@@ -476,23 +486,6 @@ public class StaffContractController extends BaseController {
     }
 
     /**
-     * 机构对应合同信息
-     */
-
-    @RequestMapping(value = "/selectLaborContractFromGroup", method = RequestMethod.POST)
-    @ApiOperation(value = "机构对应合同信息", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "number", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
-    })
-    public ResponseResult<PageResult<List<LaborContract>>> selectLaborContractFromGroup(Integer id, Integer number, Integer pageSize) {
-        PageResult<List<LaborContract>> listPageResult = new PageResult<>();
-        ResponseResult<PageResult<List<LaborContract>>> pageResultResponseResult = new ResponseResult<>(listPageResult, CommonCode.SUCCESS);
-        return pageResultResponseResult;
-    }
-
-    /**
      * 查询在职员工的人数
      */
     @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.POST)
@@ -528,12 +521,7 @@ public class StaffContractController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
-/**合同状态  新签、变更   续签、解除、终止
- *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
- *   审批状态  未提交、审批中、已审批
- *   导入导出接口可以复用导入导出模块
- *   导入校验，此时先把excel转成list，需要对list的各个属性进行一一校验，这个规则还需要产品确定，交给前端进行筛选校验
- */
+
 
     /**
      * 检验参数

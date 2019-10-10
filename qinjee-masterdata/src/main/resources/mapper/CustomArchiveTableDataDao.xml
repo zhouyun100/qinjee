@@ -136,4 +136,9 @@
     #{item}
   </foreach>
   </select>
+  <select id="selectTableIdByBusinessId" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table_data
+    where business_id = #{businessId,jdbcType=INTEGER}
+  </select>
 </mapper>

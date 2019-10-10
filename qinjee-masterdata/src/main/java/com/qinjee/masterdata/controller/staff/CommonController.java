@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -198,6 +199,28 @@ public class CommonController extends BaseController {
         }
         return  failResponseResult("自定义组id参数错误");
     }
+    /**
+     *  展示企业下的自定义表名
+     */
+    @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.GET)
+    @ApiOperation(value = "展示企业下的自定义表名", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "档案表的业务id", paramType = "query", required = true)
+    public ResponseResult<List<String>> selectTableFromGroup(Integer id) {
+        Boolean b = checkParam(getUserSession(),id);
+        if(b){
+            try {
+                List<String> list=staffCommonService.selectTableFromOrg(getUserSession(),id);
+                if(CollectionUtils.isEmpty(list)){
+                    return failResponseResult("没有相应的表名");
+                }
+                return new ResponseResult<>(list,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return failResponseResult("展示企业下的自定义表名失败");
+            }
+        }
+        return  failResponseResult("session错误");
+    }
+
     /**
      * 新增自定义字段类型
      */

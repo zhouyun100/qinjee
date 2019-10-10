@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +43,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private static final String LOOSECHANGE = "解除更改";
     private static final String RENEWAGREE = "同意续签";
     private static final String RENEWREJECT = "不同意续签";
+    private static final String ENDSTATUS = "ENDSTATUS";
+    private static final String RELESESTATUS = "RELESESTATUS";
     @Autowired
     private LaborContractDao laborContractDao;
     @Autowired
@@ -71,17 +74,63 @@ public class StaffContractServiceImpl implements IStaffContractService {
         List<UserArchive> list=userArchiveDao.selectNotInList(arcList);
         return new PageResult<>(list);
     }
+    /**合同状态  新签、变更   续签、解除、终止
+     *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
+     *   审批状态  未提交、审批中、已审批
+     *   导入导出接口可以复用导入导出模块
+     *   导入校验，此时先把excel转成list，需要对list的各个属性进行一一校验，这个规则还需要产品确定，交给前端进行筛选校验
+     */
 
     @Override
-    public PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage, Integer pageSize) {
+    public PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage,
+                                                              Integer pageSize,Boolean isEnable,
+                                                              List<String> status) throws Exception {
         PageHelper.startPage(currentPage,pageSize);
-        //查看机构下的合同id
-        List<Integer> conList=laborContractDao.selectByorgId(orgId);
+        List<LaborContract> noEffectLabList=new ArrayList<>();
+        List<LaborContract> effectLabList=new ArrayList<>();
+        List<Integer> conList=new ArrayList<>();
+        //查看机构下的合同
+        List<LaborContract> labList=laborContractDao.selectLabByorgId(orgId);
+        //把返回的合同进行筛选，通过isEnable，得到合同id
+
+
+        //将合同快到期的，解除合同，终止合同筛选为无效合同
+        for (LaborContract laborContract : labList) {
+            if(!laborContract.getContractState().equals(ENDSTATUS) || laborContract.getContractState().equals(RELESESTATUS)
+            || GetDayUtil.getMonth(laborContract.getContractEndDate(), new Date()) <0
+            ){
+                noEffectLabList.add(laborContract);
+            }
+        }
+            if(labList.removeAll(effectLabList)){
+                Collections.copy(effectLabList,labList);
+            }else {
+                throw new Exception("获取集合失败");
+            }
+        if(isEnable){
+             conList = getConList(status, effectLabList);
+        }else {
+             conList = getConList(status, noEffectLabList);
+        }
+
+
         //根据合同id找到有合同的档案id
         List<Integer> arcList=laborContractDao.seleltByArcIdIn(conList);
         //根据档案id查询档案
         List<UserArchive> list=userArchiveDao.selectNotInList(arcList);
         return new PageResult<>(list);
+    }
+
+    private List<Integer> getConList(List<String> status, List<LaborContract> effectLabList) {
+        List<Integer> conList=new ArrayList<>();
+        for (LaborContract laborContract : effectLabList) {
+            for (String s : status) {
+                if (laborContract.getContractState().equals(s)) {
+                    conList.add(laborContract.getArchiveId());
+                }
+            }
+        }
+        return conList;
     }
 
 

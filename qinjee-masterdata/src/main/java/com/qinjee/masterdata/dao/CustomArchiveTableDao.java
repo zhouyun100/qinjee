@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,4 +28,8 @@ public interface CustomArchiveTableDao {
     Integer deleteCustomTable(List<Integer> list);
 
     List<CustomArchiveTable> selectByPrimaryKeyList(List<Integer> list);
+
+    List<Integer> selectIdByOrgId(Integer companyId);
+
+    List<String> selectNameById(@Param("list1") List<Integer> list1);
 }
