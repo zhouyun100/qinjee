@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
 <!-- status log4j2内部日志级别 -->
-<Configuration status="WARN">
+<Configuration status="INFO">
     <properties>
         <property name="log_home">/home/prod/masterdata/logs</property>
         <property name="file_name">masterdata</property>
@@ -9,12 +9,14 @@
     </properties>
 
     <Appenders>
+
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${pattern_layout}" />
+            <PatternLayout pattern="${pattern_layout}"/>
         </Console>
 
-        <RollingRandomAccessFile name="rolling_file" fileName="${log_home}/${file_name}.log" filePattern="${log_home}/$${date:yyyy-MM-dd}/${file_name}-%d{yyyy-MM-dd HH-mm}-%i.log">
-            <PatternLayout pattern="${pattern_layout}" />
+        <RollingRandomAccessFile name="rolling_file" fileName="${log_home}/${file_name}.log"
+                                 filePattern="${log_home}/$${date:yyyy-MM-dd}/${file_name}-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <PatternLayout pattern="${pattern_layout}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
@@ -30,6 +32,7 @@
 
     <Loggers>
         <Root level="INFO">
+            <AppenderRef ref="console"/>
             <AppenderRef ref="rolling_file"/>
             <AppenderRef ref="socket" />
         </Root>
