@@ -27,4 +27,6 @@ public interface CustomArchiveTableDataDao {
     List<CustomArchiveTableData> selectByPrimaryKeyList(@Param("integerList") List<Integer> integerList);
 
     List<Integer> selectTableIdByBusinessId(Integer id);
+
+    List<CustomArchiveTableData> selectByTableId(@Param("tableId") Integer tableId);
 }

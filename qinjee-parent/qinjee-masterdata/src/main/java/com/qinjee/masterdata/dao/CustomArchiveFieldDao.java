@@ -33,4 +33,10 @@ public interface CustomArchiveFieldDao {
     List<CustomArchiveField> selectByPrimaryKeyList(@Param("integerList") List<Integer> list);
 
     Integer selectCodeId(@Param("customArchiveFieldId") Integer customArchiveFieldId);
+
+    String selectFieldName(@Param("fieldId") Integer fieldId);
+
+    Integer selectTableId(@Param("fieldId") Integer fieldId);
+
+    String selectPhysicName(@Param("fieldId") Integer fieldId);
 }

@@ -141,4 +141,11 @@
     from  t_custom_archive_table_data
     where business_id = #{businessId,jdbcType=INTEGER}
   </select>
+  <select id="selectByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+    select
+    <include refid="Blob_Column_List" />
+    from t_custom_archive_table_data
+    where
+    table_id = #{tableId,jdbcType=INTEGER}
+  </select>
 </mapper>

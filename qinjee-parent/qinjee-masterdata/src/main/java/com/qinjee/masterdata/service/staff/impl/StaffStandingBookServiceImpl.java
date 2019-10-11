@@ -1,19 +1,22 @@
 package com.qinjee.masterdata.service.staff.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.CustomArchiveTableDao;
+import com.qinjee.masterdata.dao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
-import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.StandingBookFilter;
-import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
+import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -23,11 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -46,6 +48,12 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
+    @Autowired
+    private CustomArchiveTableDao customArchiveTableDao;
+    @Autowired
+    private CustomArchiveFieldDao customArchiveFieldDao;
+    @Autowired
+    private CustomArchiveTableDataDao customArchiveTableDataDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -156,56 +164,198 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     public List<StandingBook> selectMyStandingBook(UserSession userSession) {
 
         List<StandingBook> list = standingBookDao.selectByAchiveId(userSession.getArchiveId());
-        return  list;
+        return list;
 
     }
+
     @Override
     public List<StandingBook> selectMyStandingBookShare(UserSession userSession) {
 
-            List<StandingBook> list=new ArrayList<>();
-            List<StandingBook> shareList=standingBookDao.selectShare(userSession.getCompanyId());
-            list.addAll(standingBookDao.selectByAchiveId(userSession.getArchiveId()));
-            list.addAll(shareList);
-            return list;
+        List<StandingBook> list = new ArrayList<>();
+        List<StandingBook> shareList = standingBookDao.selectShare(userSession.getCompanyId());
+        list.addAll(standingBookDao.selectByAchiveId(userSession.getArchiveId()));
+        list.addAll(shareList);
+        return list;
     }
 
     @Override
-    public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) {
-        /**
-         * 关于运算符的思路：
-         */
-        List<Integer> oneList=userArchiveDao.selectStaffNoStandingBook(archiveType,orgId);
-        List<Integer> twoList=userArchivePostRelationDao.selectByType(type,oneList);
+    public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) throws ParseException {
+        List<Integer> oneList = userArchiveDao.selectStaffNoStandingBook(archiveType, orgId);
+        //key是用来存是第几个筛选条件，value存档案id
+        Map<Integer,Integer> map=new HashMap<>();
+        //没经过台账之前筛选的档案id
+        List<Integer> twoList = userArchivePostRelationDao.selectByType(type, oneList);
+        List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(twoList);
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
-        List<StandingBookFilter> filters=standingBookFilterDao.selectByStandingBookId(stangdingBookId);
+        List<StandingBookFilter> filters = standingBookFilterDao.selectByStandingBookId(stangdingBookId);
+        for (int i = 0; i < filters.size(); i++) {
+            //通过字段id找到表id
+            Integer tableId = getTableId(filters.get(i).getFieldId());
+            //判断是否为内置，内置的话直接返回档案id。
+            boolean inside = isInside(tableId);
+            if(!inside){
+                //若不是内置，根据表id找到数据大字段,进行JSON解析。@+字段名+@为key，返回业务id
+                List<CustomArchiveTableData> bigdata = getBigdata(tableId);
+                for (CustomArchiveTableData bigdatum : bigdata) {
+                    JSONObject jsonObject = JSONObject.parseObject(bigdatum.getBigData());
+                    if(getCondition(filters.get(i).getOperateSymbol(),jsonObject.get("@"+getFieldName(filters.get(i).getFieldId())+"@"),
+                            filters.get(i).getFieldValue())){
+                        map.put(i,bigdatum.getBusinessId());
+                    }
 
-        //通过字段id找到表id
-        //判断是否为内置，内置的话直接返回档案id。
-        //若不是内置，根据表id找到数据大字段,进行JSON解析。@+字段名+@为key，返回业务id
-        //根据每条返回的链接福确定是去交集还是并集
-        //查询没有经过台账筛选出来的id，取交集
-        //将此id查询出集合返回
-        return null;
-    }
-    public boolean getCondition(String Symbol,Object o1,Object o2){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if(o1 instanceof Integer && o2 instanceof Integer){
-            if(Symbol.equals(">")){
-                return (Integer)o1 > (Integer) o2;
+                }
+
+                //根据每条返回的连接符确定是去交集还是并集
+                //查询没有经过台账筛选出来的id，取交集（需要考虑括号的问题）
+                //将此id查询出集合返回
             }
-        }
-        if(o1 instanceof String && o2 instanceof String){
-            try {
-                //没有报错说明是时间类型
-                Date parse = sdf.parse((String) o1);
-                Date parse1 = sdf.parse((String) o2);
-            } catch (ParseException e) {
-                //作为字符串处理
-                if(Symbol.equals("包含")){
-                    return ((String) o1).contains((CharSequence) o2);
+            //是内置表，根据字段名获取物理字段名，筛选返回人员档案id
+            for (UserArchive userArchive : list) {
+                if(getCondition(filters.get(i).getOperateSymbol(),getFieldValueByName(getFieldName(filters.get(i).getFieldId()),userArchive),
+                        filters.get(i).getFieldValue())){
+                    map.put(i,userArchive.getArchiveId());
                 }
             }
+
+        }
+
+        return null;
+    }
+    //通过字段id找到物理表名
+    public String getPhysicName(Integer fieldId){
+        String physicName=customArchiveFieldDao.selectPhysicName(fieldId);
+        return physicName;
+    }
+    //通过字段id找到字段名
+    public String getFieldName(Integer fieldId){
+        String fieldName=customArchiveFieldDao.selectFieldName(fieldId);
+        return fieldName;
+    }
+    //通过字段id找到表id
+    public Integer getTableId(Integer fieldId) {
+        Integer tableId = customArchiveFieldDao.selectTableId(fieldId);
+        return tableId;
+    }
+
+    //判断表是否内置
+    public boolean isInside(Integer tableId) {
+        Integer integer = customArchiveTableDao.selectInside(tableId);
+        if (integer > 0) {
+            return true;
         }
         return false;
     }
+    // 根据属性名获取属性值
+    private static Object getFieldValueByName(String fieldName, Object o) {
+        try {
+            String firstLetter = fieldName.substring(0, 1).toUpperCase();
+            String getter = "get" + firstLetter + fieldName.substring(1);
+            Method method = o.getClass().getMethod(getter, new Class[] {});
+            Object value = method.invoke(o, new Object[] {});
+            return value;
+        } catch (Exception e) {
+
+            return null;
+        }
+    }
+
+
+    //找到物理表名
+    public String getTableName(Integer tableId) {
+        boolean inside = isInside(tableId);
+        if (inside) {
+            String tableName = customArchiveTableDao.selectTableName(tableId);
+            return tableName;
+        }
+        return null;
+    }
+
+    //根据表id找到数据表
+    public List<CustomArchiveTableData> getBigdata(Integer tableId) {
+        List<CustomArchiveTableData> list = customArchiveTableDataDao.selectByTableId(tableId);
+        return list;
+    }
+    //根据筛选表的括号以及连接符进行选择合并
+    public Map<Integer,Integer> getLinkFlag(List<StandingBookFilter> filters){
+        Map<Integer,Integer> map=null;
+        Integer j=null;
+        Integer k=null;
+        for (int i = 0; i < filters.size(); i++) {
+            if(filters.get(i).getIsLeftBrackets()==1){
+                j=i;
+            }
+            if(filters.get(i).getIsRightBrackets()==1){
+                k=i;
+            }
+            if(j!=null && k!=null){
+               map.put(j,k);
+            }
+        }
+        return map;
+    }
+
+    //获得运算符
+    public boolean getCondition(String symbol, Object o2,String o1) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (o1.matches("^[0-9]*$ ")) {
+            int i = Integer.parseInt(o1);
+            switch (symbol) {
+                case ">":
+                    return (Integer) o2>i;
+                case ">=":
+                    return  (Integer) o2>=i;
+                case "<":
+                    return  (Integer) o2<i;
+                case "<=":
+                    return  (Integer) o2<=i;
+                case "=":
+                    return  (Integer) o2==i;
+                case "!=":
+                    return  (Integer) o2!=i;
+                //如果运算符是包含，说明是代码型
+                case "包含":
+                    return  o2.equals(o1);
+                case "不包含":
+                    return !o2.equals(o1);
+                default:
+                    return false;
+            }
+        } else if (o1.matches("^(\\d{4})(\\-)(\\d{2})(\\-)(\\d{2})(\\s+)(\\d{2})(\\:)(\\d{2})(\\:)(\\d{2})$")) {
+            Date parse1 = sdf.parse(o1);
+            Date parse2 = sdf.parse((String) o2);
+            switch (symbol) {
+                case ">":
+                    return GetDayUtil.getMonth(parse2, parse1) > 0;
+                case ">=":
+                    return GetDayUtil.getMonth(parse2, parse1) >= 0;
+                case "<":
+                    return GetDayUtil.getMonth(parse2, parse1) < 0;
+                case "<=":
+                    return GetDayUtil.getMonth(parse2, parse1) <= 0;
+                case "=":
+                    return GetDayUtil.getMonth(parse2, parse1) == 0;
+                case "!=":
+                    return GetDayUtil.getMonth(parse2, parse1) != 0;
+                default:
+                    return false;
+            }
+        } else {
+            switch (symbol) {
+                case "等于":
+                    return o2.equals(o1);
+                case "包含":
+                    return  (String) o2.contains(o1);
+                case "不等于":
+                    return !o2.equals(o1);
+                case "不包含":
+                    return !(String)o2.contains(o1);
+                default:
+                    return false;
+            }
+
+        }
+
+    }
+
+
 }
