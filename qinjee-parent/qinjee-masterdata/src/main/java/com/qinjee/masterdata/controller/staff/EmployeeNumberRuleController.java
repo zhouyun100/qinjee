@@ -7,6 +7,7 @@ import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class EmployeeNumberRuleController extends BaseController {
     @Autowired
     private EmployeeNumberRuleService employeeNumberRuleService;
 
-    @RequestMapping("/addEmployeeNumberRule")
+    @PostMapping("/addEmployeeNumberRule")
     @ApiOperation(value = "新增员工规则", notes = "高雄")
     public ResponseResult addEmployeeNumberRule(EmployeeNumberRuleVo employeeNumberRuleVo){
         return employeeNumberRuleService.addEmployeeNumberRule(employeeNumberRuleVo, getUserSession());
