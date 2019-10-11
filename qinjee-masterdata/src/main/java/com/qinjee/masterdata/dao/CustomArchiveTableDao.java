@@ -32,4 +32,8 @@ public interface CustomArchiveTableDao {
     List<Integer> selectIdByOrgId(Integer companyId);
 
     List<String> selectNameById(@Param("list1") List<Integer> list1);
+
+    Integer selectInside(@Param("tableId") Integer tableId);
+
+    String selectTableName(Integer tableId);
 }

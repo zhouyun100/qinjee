@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
@@ -46,6 +48,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
+    @Autowired
+    private CustomArchiveTableDao customArchiveTableDao;
+    @Autowired
+    private CustomArchiveFieldDao customArchiveFieldDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -187,6 +193,30 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         //将此id查询出集合返回
         return null;
     }
+
+    //通过字段id找到表id
+        public Integer getTableId(Integer fieldId){
+            Integer tableId=customArchiveFieldDao.selectTableId(fieldId);
+            return tableId;
+        }
+    //判断表是否内置
+    public boolean isInside(Integer tableId)  {
+        Integer integer = customArchiveTableDao.selectInside(tableId);
+        if(integer>0){
+            return true;
+        }
+        return false;
+    }
+    //找到物理表名
+    public String getTableName(Integer tableId){
+        boolean inside = isInside(tableId);
+        if(inside){
+            String tableName=customArchiveTableDao.selectTableName(tableId);
+            return tableName;
+        }
+        return null;
+    }
+    //获得运算符
     public boolean getCondition(String Symbol,Object o1,Object o2){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(o1 instanceof Integer && o2 instanceof Integer){

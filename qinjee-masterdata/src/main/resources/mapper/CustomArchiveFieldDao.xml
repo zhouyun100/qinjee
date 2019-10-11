@@ -259,6 +259,7 @@
     where  field_id
     in <foreach collection="list" item="item" open="(" separator="," close=")">
     #{item}
+    AND is_delete=0
   </foreach>
   </select>
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
@@ -269,10 +270,18 @@
     in <foreach collection="list" item="item" open="(" separator="," close=")">
     #{item}
   </foreach>
+  AND is_delete=0
   </select>
   <select id="selectCodeId" resultType="java.lang.Integer">
     select code_id
     from t_custom_archive_field
     where field_id = #{fieldId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="selectTableId" resultType="java.lang.Integer">
+    select   table_id
+    from  t_custom_archive_field
+    where  field_id = #{fieldId,jdbcType=INTEGER}
+    AND  is_delete=0
   </select>
 </mapper>
