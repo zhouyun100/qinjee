@@ -192,4 +192,16 @@
       #{item}
     </foreach>
   </select>
+  <select id="selectInside" resultType="java.lang.Integer">
+    select  is_system_define
+    from t_custom_archive_table
+    where  table_id = #{tableId,jdbcType=INTEGER}
+    AND is_delete
+  </select>
+  <select id="selectTableName">
+    select table_name
+    from  t_custom_archive_table
+     where  table_id = #{tableId,jdbcType=INTEGER}
+    AND is_delete
+  </select>
 </mapper>

@@ -599,7 +599,7 @@
     select  archive_id
     from t_user_archive
     where user_category =#{archiveType,jdbcType=VARCHAR}
-    AND org_id =#{orgId,jdbc=INTEGER} AND is_delete=0
+    AND org_id =#{orgId,jdbcType=INTEGER} AND is_delete=0
 
   </select>
 
