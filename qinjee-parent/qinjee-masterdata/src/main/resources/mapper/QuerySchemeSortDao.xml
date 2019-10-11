@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeSortDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.QuerySchemeSort">
+    <id column="query_scheme_sort_id" jdbcType="INTEGER" property="querySchemeSortId" />
+    <result column="query_scheme_id" jdbcType="INTEGER" property="querySchemeId" />
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="order_by_rule" jdbcType="VARCHAR" property="orderByRule" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    query_scheme_sort_id, query_scheme_id, field_id, order_by_rule, sort, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_query_scheme_sort
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_query_scheme_sort
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="query_scheme_sort_id" keyProperty="querySchemeSortId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort" useGeneratedKeys="true">
+    insert into t_query_scheme_sort (query_scheme_id, field_id, order_by_rule,
+      sort, create_time)
+    values (#{querySchemeId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{orderByRule,jdbcType=VARCHAR},
+      #{sort,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="query_scheme_sort_id" keyProperty="querySchemeSortId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort" useGeneratedKeys="true">
+    insert into t_query_scheme_sort
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="querySchemeId != null">
+        query_scheme_id,
+      </if>
+      <if test="fieldId != null">
+        field_id,
+      </if>
+      <if test="orderByRule != null">
+        order_by_rule,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="querySchemeId != null">
+        #{querySchemeId,jdbcType=INTEGER},
+      </if>
+      <if test="fieldId != null">
+        #{fieldId,jdbcType=INTEGER},
+      </if>
+      <if test="orderByRule != null">
+        #{orderByRule,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort">
+    update t_query_scheme_sort
+    <set>
+      <if test="querySchemeId != null">
+        query_scheme_id = #{querySchemeId,jdbcType=INTEGER},
+      </if>
+      <if test="fieldId != null">
+        field_id = #{fieldId,jdbcType=INTEGER},
+      </if>
+      <if test="orderByRule != null">
+        order_by_rule = #{orderByRule,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeSort">
+    update t_query_scheme_sort
+    set query_scheme_id = #{querySchemeId,jdbcType=INTEGER},
+      field_id = #{fieldId,jdbcType=INTEGER},
+      order_by_rule = #{orderByRule,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByQuerySchemeId" resultType="com.qinjee.masterdata.model.entity.QuerySchemeSort">
+    <include refid="Base_Column_List" />
+    from t_query_scheme_sort
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteBySchemeId">
+     delete from t_query_scheme_sort
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+  </delete>
+
+  <select id="selectSortId" resultType="java.lang.Integer">
+    select field_id
+    from t_query_scheme_sort
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+
+  </select>
+  <select id="selectSortSort" resultType="java.lang.String">
+    select order_by_rule
+    from t_query_scheme_sort
+    where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteBySchemeIdList">
+     delete from t_query_scheme_sort
+    where query_scheme_id
+    in <foreach collection="list" item="item" separator="," close=")">
+    #{item}
+  </foreach>
+  </delete>
+  <insert id="insertBatch">
+     insert into t_query_scheme_sort (query_scheme_id, field_id, order_by_rule,
+      sort, create_time)
+    values
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      (#{item.querySchemeId,jdbcType=INTEGER}, #{item.fieldId,jdbcType=INTEGER}, #{item.orderByRule,jdbcType=VARCHAR},
+      #{item.sort,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+
+  </insert>
+</mapper>

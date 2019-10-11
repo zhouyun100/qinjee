@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.sms.SmsConfigDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.SmsConfig">
+    <id column="sms_config_id" jdbcType="INTEGER" property="smsConfigId" />
+    <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="app_key" jdbcType="VARCHAR" property="appKey" />
+    <result column="sms_sign" jdbcType="VARCHAR" property="smsSign" />
+    <result column="template_id" jdbcType="INTEGER" property="templateId" />
+    <result column="template_msg" jdbcType="VARCHAR" property="templateMsg" />
+    <result column="business_type" jdbcType="VARCHAR" property="businessType" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    sms_config_id, app_id, app_key, sms_sign, template_id, template_msg, business_type,
+    operator_id, create_time, is_delete
+  </sql>
+  <select id="selectByBusinessType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_sms_config
+    where business_type = #{businessType,jdbcType=VARCHAR} and is_delete = 0
+  </select>
+</mapper>

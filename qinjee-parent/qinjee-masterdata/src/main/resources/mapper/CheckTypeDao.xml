@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.CheckTypeDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CheckType">
+    <id column="check_code" jdbcType="VARCHAR" property="checkCode" />
+    <result column="check_name" jdbcType="VARCHAR" property="checkName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    check_code, check_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_check_type
+    where check_code = #{checkCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_check_type
+    where check_code = #{checkCode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" keyColumn="check_code" keyProperty="checkCode" parameterType="com.qinjee.masterdata.model.entity.CheckType" useGeneratedKeys="true">
+    insert into t_check_type (check_name)
+    values (#{checkName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="check_code" keyProperty="checkCode" parameterType="com.qinjee.masterdata.model.entity.CheckType" useGeneratedKeys="true">
+    insert into t_check_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="checkName != null">
+        check_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="checkName != null">
+        #{checkName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CheckType">
+    update t_check_type
+    <set>
+      <if test="checkName != null">
+        check_name = #{checkName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where check_code = #{checkCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CheckType">
+    update t_check_type
+    set check_name = #{checkName,jdbcType=VARCHAR}
+    where check_code = #{checkCode,jdbcType=VARCHAR}
+  </update>
+  <select id="selectCheckName" resultType="java.lang.String">
+    select  check_name
+    from     t_check_type
+    where   check_code = #{checkCode,jdbcType=VARCHAR}
+  </select>
+</mapper>

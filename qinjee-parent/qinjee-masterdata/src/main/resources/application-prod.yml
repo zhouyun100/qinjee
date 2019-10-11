@@ -1,0 +1,92 @@
+spring:
+  #资源文件
+  profiles:
+    active: prod
+
+  #应用名
+  application:
+    name: qinjee-masterdata
+
+  #配置国际化
+  messages:
+    basename: i18n/messages
+    encoding: utf-8
+    cache-duration: 3600
+
+  datasource:
+    # mysql 8.0 数据库配置
+    url: jdbc:mysql://localhost:3306/qinjee_ehr?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    username: root
+    password: qinjee2019
+    driver-class-name: com.mysql.jdbc.Driver
+
+    # oracle 12c 数据库配置
+    #    url: jdbc:oracle:thin:@localhost:1521:QINJEEEHR
+    #    username: root
+    #    password: qinjee2019
+    #    driver-class-name: oracle.jdbc.driver.OracleDriver
+
+    # sqlserver 2012 数据库配置
+    #    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    #    url: jdbc:sqlserver://localhost:1433;DatabaseName=qinjeeehr
+    #    username: sa
+    #    password: qinjee2019
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  #RabbitMQ
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: qinjee
+    password: 123456
+    publisher-confirms: false    #消息发送到交换机确认机制,是否确认回调
+
+  #ElasticSearch
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      cluster-nodes: 127.0.0.1:9300
+
+  #  redis集群
+  redis:
+    cluster:
+      nodes: 192.168.252.129:8001,192.168.252.129:8002,192.168.252.129:8003,192.168.252.129:8004,192.168.252.129:8005,192.168.252.129:8006
+      max-redirects: 6
+
+#security:
+#  basic:
+#    enabled: true
+#  user:
+#    name: qinjee
+#    password: qinjee2019
+#    role: USER
+
+#注册中心指向start
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    #以IP地址进行注册
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    #表示eureka client发送心跳给server的频率
+    lease-renewal-interval-in-seconds: 30
+    #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
+    lease-expiration-duration-in-seconds: 90
+  client:
+    service-url:
+      defaultZone: http://qinjee:qinjee2019@192.168.99.100:8888/eureka/
+
+server:
+  port: 8080
+  tomcat:
+    accesslog:
+      enabled: false
+
+logging:
+  config: classpath:log4j/log4j2_prod.xml
+
+#公共配置与profiles选择无关
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
