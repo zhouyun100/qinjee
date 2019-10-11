@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
 <!-- status log4j2内部日志级别 -->
-<Configuration status="WARN">
+<Configuration status="INFO">
     <properties>
         <property name="log_home">D:/eTalent/masterdata</property>
-        <property name="file_name">qinjee-tsc</property>
+        <property name="file_name">masterdata</property>
         <property name="pattern_layout">%d{HH:mm:ss.SSS} [%t] %-5level %l - %msg%n</property>
     </properties>
 
@@ -23,17 +23,17 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <!--         <Socket name="socket" host="localhost" port="4567"> -->
-        <!--             <JsonLayout compact="true" eventEol="true" /> -->
-        <!--             <PatternLayout pattern="${pattern_layout}"/> -->
-        <!--         </Socket> -->
+         <Socket name="socket" host="193.112.188.180" port="4567">
+             <JsonLayout compact="true" eventEol="true" />
+             <PatternLayout pattern="${pattern_layout}"/>
+         </Socket>
     </Appenders>
 
     <Loggers>
         <Root level="INFO">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rolling_file"/>
-            <!--             <AppenderRef ref="socket" /> -->
+            <AppenderRef ref="socket" />
         </Root>
         <!--         <Logger name="com.qinjee.tsc.dao" level="DEBUG" additivity="false" /> -->
     </Loggers>

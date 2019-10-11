@@ -3,8 +3,8 @@
 <!-- status log4j2内部日志级别 -->
 <Configuration status="WARN">
     <properties>
-        <property name="log_home">D:/qinjee-logs</property>
-        <property name="file_name">qinjee-tsc</property>
+        <property name="log_home">/home/prod/masterdata/logs</property>
+        <property name="file_name">masterdata</property>
         <property name="pattern_layout">%d{HH:mm:ss.SSS} [%t] %-5level %l - %msg%n</property>
     </properties>
 
@@ -22,7 +22,7 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <Socket name="socket" host="localhost" port="4567">
+        <Socket name="socket" host="193.112.188.180" port="4567">
             <JsonLayout compact="true" eventEol="true" />
             <PatternLayout pattern="${pattern_layout}"/>
         </Socket>
@@ -30,7 +30,7 @@
 
     <Loggers>
         <Root level="INFO">
-            <AppenderRef ref="rolling_file" />
+            <AppenderRef ref="rolling_file"/>
             <AppenderRef ref="socket" />
         </Root>
     </Loggers>
