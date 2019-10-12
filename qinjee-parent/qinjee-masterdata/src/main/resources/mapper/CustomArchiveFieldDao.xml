@@ -301,4 +301,9 @@
      from t_custom_archive_field
     where  field_id = #{fieldId,jdbcType=INTEGER}
   </select>
+  <select id="selectFieldNameListByTableId" resultType="java.lang.String">
+    select field_name
+    from t_custom_archive_field
+    where  table_id = #{tableId,jdbcType=INTEGER} AND is_delete=0
+  </select>
 </mapper>

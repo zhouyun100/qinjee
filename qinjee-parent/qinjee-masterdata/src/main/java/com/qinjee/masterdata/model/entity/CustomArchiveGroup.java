@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -16,16 +17,19 @@ public class CustomArchiveGroup implements Serializable {
     /**
      * 组名称
      */
+    @NotNull
     private String groupName;
 
     /**
      * 表ID
      */
+    @NotNull
     private Integer tableId;
 
     /**
      * 排序
      */
+    @NotNull
     private Integer sort;
 
     /**

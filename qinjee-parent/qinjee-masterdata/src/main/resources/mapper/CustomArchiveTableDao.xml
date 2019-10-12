@@ -175,7 +175,7 @@
     from t_custom_archive_table
     where is_delete=0
   </select>
-  <select id="selectIdByOrgId" resultType="java.lang.Integer">
+  <select id="selectIdByComId" resultType="java.lang.Integer">
     select  table_id
     from t_custom_archive_table
     where
@@ -205,5 +205,11 @@
     where
     table_id=#{tableId,jdbcType=INTEGER}
     AND is_delete=0
+  </select>
+  <select id="selectTableIdByName" resultType="java.lang.Integer">
+    select table_id
+    from t_custom_archive_table
+    where
+    table_name=#{tableName,jdbcType=INTEGER}
   </select>
 </mapper>

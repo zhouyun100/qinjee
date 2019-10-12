@@ -189,12 +189,17 @@
     select
     <include refid="Base_Column_List" />
     from t_standing_book_filter
-    where filter_id =standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
+    where standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
   </select>
   <select id="selectSqlById" resultType="java.lang.String">
     select
      sql_str
     from t_standing_book_filter
-    where filter_id =standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
+    where standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
+  </select>
+  <select id="selectLinkHandleById" resultType="java.lang.String">
+    select link_symbol
+    from  t_standing_book_filter
+    where  filter_id = #{filterId,jdbcType=INTEGER}
   </select>
 </mapper>

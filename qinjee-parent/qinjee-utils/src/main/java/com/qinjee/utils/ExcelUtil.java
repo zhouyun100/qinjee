@@ -1,13 +1,11 @@
 package com.qinjee.utils;
 
 
-import entity.ExcelEntity;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.checkerframework.checker.nullness.compatqual.NonNullType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,77 +27,6 @@ public class ExcelUtil {
      */
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
-
-    /**
-     * @param title 主题
-     * @param heads 这个参数是所有字段的内容，做为表头显示
-     * @param dates 这个是存储信息的字段，
-     *              示例：
-     *              Map<String, String> map = new LinkedHashMap<String,String>();
-     *              map.put("ID", String.valueOf(i+1));
-     *              map.put("Name", "name"+(i+1));
-     *              map.put("Pass", "pass"+(i+1));
-     *              dates.add(map);
-     * @param url   文件存储路径
-     * @param map   以表头信息为key，类型为value的Map集合
-     */
-    private static void exportExcel(String title, String[] heads,
-                                    List<Map<String, String>> dates, String url, Map<String, String> map) {
-        // 新建excel报表
-        HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
-        // 添加一个sheet名称
-        HSSFSheet hssfSheet = hssfWorkbook.createSheet(title);
-
-        //设置单元格样式
-        HSSFCellStyle style = hssfWorkbook.createCellStyle();
-        //水平居中
-        style.setAlignment(CellStyle.ALIGN_CENTER);
-        // 垂直居中
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-
-        /*
-         * 设定合并单元格区域范围 firstRow 0-based lastRow 0-based firstCol 0-based lastCol
-         * 0-based
-         */
-        CellRangeAddress cra = new CellRangeAddress(0, 0, 0, heads.length - 1);
-        // 在sheet里增加合并单元格
-        hssfSheet.addMergedRegion(cra);
-        HSSFRow row = hssfSheet.createRow(0);
-        HSSFCell cell_1 = row.createCell(0);
-        cell_1.setCellValue(title);
-        //设置样式
-        cell_1.setCellStyle(style);
-        HSSFRow hssfRow = hssfSheet.createRow(1);
-        for (int i = 0; i < heads.length; i++) {
-            HSSFCell hssfCell = hssfRow.createCell(i);
-            hssfCell.setCellValue(heads[i]);
-            hssfCell.setCellType(getCellType(map.get(heads[i]), cell_1));
-        }
-
-        // 循环将list里面的值取出来放进excel中
-        for (int i = 0; i < dates.size(); i++) {
-            HSSFRow hssfRow1 = hssfSheet.createRow(i + 2);
-            int j = 0;
-            Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String> entry = it.next();
-                HSSFCell hssfCell = hssfRow1.createCell(j);
-                hssfCell.setCellValue(entry.getValue());
-                j++;
-            }
-        }
-
-        FileOutputStream fout = null;
-        try {
-            // 用流将其写到D盘
-            fout = new FileOutputStream(url);
-            hssfWorkbook.write(fout);
-            fout.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * @param path  临时存放excel文件路径
      * @param title 工作簿名称
@@ -108,7 +35,7 @@ public class ExcelUtil {
      *              下载excel
      */
     public static void download(String path, HttpServletResponse response,
-                                String title, String[] heads, List<Map<String, String>> dates, Map<String, String> map) {
+                                String title, List<String> heads, List<Map<String, String>> dates, Map<String, String> map) {
         exportExcel(title, heads, dates, path, map);
         try {
             // path是指欲下载的文件的路径。
@@ -138,6 +65,116 @@ public class ExcelUtil {
             ex.printStackTrace();
         }
     }
+    /**
+     * @param title 主题
+     * @param heads 这个参数是所有字段的内容，做为表头显示
+     * @param dates 这个是存储信息的字段，
+     *              示例：
+     *              Map<String, String> map = new LinkedHashMap<String,String>();
+     *              map.put("ID", String.valueOf(i+1));
+     *              map.put("Name", "name"+(i+1));
+     *              map.put("Pass", "pass"+(i+1));
+     *              dates.add(map);
+     * @param url   文件存储路径
+     * @param map   以表头信息为key，类型为value的Map集合
+     */
+    private static void exportExcel(String title, List<String> heads,
+                                    List<Map<String, String>> dates, String url, Map<String, String> map) {
+        // 新建excel报表
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+        // 添加一个sheet名称
+        HSSFSheet hssfSheet = hssfWorkbook.createSheet(title);
+
+        //设置单元格样式
+        HSSFCellStyle style = hssfWorkbook.createCellStyle();
+        //水平居中
+        style.setAlignment(CellStyle.ALIGN_CENTER);
+        // 垂直居中
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+
+        /*
+         * 设定合并单元格区域范围 firstRow 0-based lastRow 0-based firstCol 0-based lastCol
+         * 0-based
+         */
+        CellRangeAddress cra = new CellRangeAddress(0, 0, 0, heads.size() - 1);
+        // 在sheet里增加合并单元格
+        hssfSheet.addMergedRegion(cra);
+        HSSFRow row = hssfSheet.createRow(0);
+        HSSFCell cell_1 = row.createCell(0);
+        cell_1.setCellValue(title);
+        //设置样式
+        cell_1.setCellStyle(style);
+        HSSFRow hssfRow = hssfSheet.createRow(1);
+        for (int i = 0; i < heads.size(); i++) {
+            HSSFCell hssfCell = hssfRow.createCell(i);
+            hssfCell.setCellValue(heads.get(i));
+            hssfCell.setCellType(getCellType(map.get(heads.get(i)), cell_1));
+        }
+
+        // 循环将list里面的值取出来放进excel中
+        for (int i = 0; i < dates.size(); i++) {
+            HSSFRow hssfRow1 = hssfSheet.createRow(i + 2);
+            int j = 0;
+            Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> entry = it.next();
+                HSSFCell hssfCell = hssfRow1.createCell(j);
+                hssfCell.setCellValue(entry.getValue());
+                j++;
+            }
+        }
+
+        FileOutputStream fout = null;
+        try {
+            // 用流将其写到指定的url
+            fout = new FileOutputStream(url);
+            hssfWorkbook.write(fout);
+            fout.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * CellType 类型 值
+     * CELL_TYPE_NUMERIC	数值型	0
+     * CELL_TYPE_STRING	字符串型	1
+     * CELL_TYPE_FORMULA	公式型	2
+     * CELL_TYPE_BLANK	空值	3
+     * CELL_TYPE_BOOLEAN	布尔型	4
+     * CELL_TYPE_ERROR	错误	5
+     *
+     * @param type
+     * @return
+     */
+    public static Integer getCellType( String type, HSSFCell cell) {
+        if ("Integer".equals(type)) {
+            return 0;
+        } else if ("String".equals(type)) {
+            return 1;
+        } else if ("Boolean".equals(type)) {
+            return 4;
+        } else if ("".equals(type)) {
+            return 3;
+        } else if ("Date".equals(type)) {
+            return 0;
+        }
+        return 1;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 读入excel文件，解析后返回
@@ -145,15 +182,14 @@ public class ExcelUtil {
      * @param file
      * @throws IOException
      */
-    public static ExcelEntity readExcel(MultipartFile file)
+    public static Map<String,List<String>> readExcel(MultipartFile file)
             throws IOException {
         // 检查文件
-        ExcelEntity excelEntity = new ExcelEntity();
         checkFile(file);
         // 获得Workbook工作薄对象
         Workbook workbook = getWorkBook(file);
         // 创建返回对象，把每行中的值作为一个数组，所有行作为一个集合返回
-        List<String[]> list = new ArrayList<String[]>();
+        List<String[]> list = new ArrayList<>();
         if (workbook != null) {
             for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
                 // 获得当前sheet工作表
@@ -181,23 +217,24 @@ public class ExcelUtil {
                     for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
                         Cell cell = row.getCell(cellNum);
                         cells[cellNum] = getCellValue(cell);
-
                     }
                     list.add(cells);
                     //此时应该返回一个表属性的list集合，与一个以表头为key，value为数据的map
                 }
             }
         }
-        String[] heads = list.get(0);
-        Map<String, String> map = new HashMap();
-        for (int i = 1; i < list.size(); i++) {
-            for (int j = 0; j < list.get(i).length; j++) {
-                map.put(heads[j], list.get(i)[j]);
+        //TODO 还要根据字段名匹配，还要存进数据库
+        //heads存的是第一行的字段名
+       List<String> heads=Arrays.asList(list.get(0));
+        //map是以表头为key，List<>
+        Map<String, List<String>> map = new HashMap();
+        for (int i = 0; i < heads.size(); i++) {
+            for (int j = 1; j < list.size(); j++) {
+                List<String> list1 = Arrays.asList(list.get(j)[i]);
+                map.put(heads.get(i),list1);
             }
         }
-        excelEntity.setHeads(heads);
-        excelEntity.setMap(map);
-        return excelEntity;
+        return map;
     }
 
     /**
@@ -288,32 +325,7 @@ public class ExcelUtil {
         return cellValue;
     }
 
-    /**
-     * CellType 类型 值
-     * CELL_TYPE_NUMERIC	数值型	0
-     * CELL_TYPE_STRING	字符串型	1
-     * CELL_TYPE_FORMULA	公式型	2
-     * CELL_TYPE_BLANK	空值	3
-     * CELL_TYPE_BOOLEAN	布尔型	4
-     * CELL_TYPE_ERROR	错误	5
-     *
-     * @param type
-     * @return
-     */
-    public static Integer getCellType( String type, HSSFCell cell) {
-        if ("Integer".equals(type)) {
-            return 0;
-        } else if ("String".equals(type)) {
-            return 1;
-        } else if ("Boolean".equals(type)) {
-            return 4;
-        } else if ("".equals(type)) {
-            return 3;
-        } else if ("Date".equals(type)) {
-            return 0;
-        }
-        return 1;
-    }
+
 
     public static MultipartFile getMultipartFile(File file) {
         MultipartFile multipartFile = null;

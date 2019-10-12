@@ -3,6 +3,7 @@ package com.qinjee.masterdata.model.entity;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -20,30 +21,36 @@ public class CustomArchiveField implements Serializable {
     /**
      * 物理字段名
      */
+    @NotNull
     private String fieldCode;
     /**
      * 字段名
      */
+    @NotNull
     private String fieldName;
 
     /**
      * 字段类型
      */
+    @NotNull
     private String fieldType;
 
     /**
      * 验证类型
      */
+    @NotNull
     private String validType;
 
     /**
      * 企业代码ID
      */
+    @NotNull
     private Integer codeId;
 
     /**
      * 企业代码名称
      */
+    @NotNull
     private String codeName;
 
     /**
@@ -64,21 +71,25 @@ public class CustomArchiveField implements Serializable {
     /**
      * 表ID
      */
+    @NotNull
     private Integer tableId;
 
     /**
      * 组ID
      */
+    @NotNull
     private Integer groupId;
 
     /**
      * 是否系统定义
      */
+    @NotNull
     private Short isSystemDefine;
 
     /**
      * 排序
      */
+    @NotNull
     private Integer sort;
 
     /**
@@ -99,6 +110,7 @@ public class CustomArchiveField implements Serializable {
     /**
      * 是否删除
      */
+    @NotNull
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;

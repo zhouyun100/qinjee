@@ -39,4 +39,8 @@ public interface CustomArchiveFieldDao {
     Integer selectTableId(@Param("fieldId") Integer fieldId);
 
     String selectPhysicName(@Param("fieldId") Integer fieldId);
+
+    List<String> selectFieldNameListByTableId(@Param("id") Integer id);
+
+
 }

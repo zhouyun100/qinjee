@@ -28,4 +28,6 @@ public interface StandingBookFilterDao {
     List<StandingBookFilter> selectByStandingBookId(@Param("id") Integer id);
 
     String selectSqlById(@Param("stangdingBookId") Integer stangdingBookId);
+
+    String selectLinkHandleById(@Param("id") Integer id);
 }

@@ -5,7 +5,9 @@ import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -439,32 +441,7 @@ public class CommonController extends BaseController {
         return  failResponseResult("字段id错误");
     }
 
-    /**
-     * 模板导出
-     */
 
-
-    @RequestMapping(value = "/exporttFile ", method = RequestMethod.GET)
-    @ApiOperation(value = "导出模板", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
-            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
-            @ApiImplicitParam(name = "customArchiveTableDataId", value = "自定义表数据id", paramType = "query", required = true),
-    })
-    public ResponseResult exportFile(String path,String title,Integer customArchiveTableDataId) {
-        return staffCommonService.exportFile(path,title,customArchiveTableDataId);
-    }
-
-    /**
-     * 模板导入
-     */
-    @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入", notes = "hkt")
-    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
-    public ResponseResult<List<String[]>> importFile(String path) {
-
-        return staffCommonService.importFile(path);
-    }
     /**
      * 根据档案显示对应权限下的单位
      */
@@ -499,7 +476,6 @@ public class CommonController extends BaseController {
             }
         }
         return  failResponseResult("部门id错误");
-
     }
     /**
      * 显示部门下的岗位
@@ -529,8 +505,16 @@ public class CommonController extends BaseController {
     @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
     public ResponseResult UploadFile(String path) {
-
-        return staffCommonService.putFile(path);
+        Boolean b = checkParam(path);
+        if(b){
+            try {
+                staffCommonService.putFile(path);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("文件上传失败");
+            }
+        }
+        return  failResponseResult("path错误");
     }
 
     /**
@@ -541,9 +525,56 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "文件上传", notes = "hkt")
     @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
-    public ResponseResult UploadFileByForWard() {
+    public ResponseResult<ForWardPutFile> UploadFileByForWard() {
+            try {
+                staffCommonService.UploadFileByForWard();
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("前端获取对象文件上传失败");
+            }
 
-        return staffCommonService.UploadFileByForWard();
+    }
+    /**
+     * 模板导出
+     */
+    @RequestMapping(value = "/exporttFile ", method = RequestMethod.GET)
+    @ApiOperation(value = "导出模板", notes = "hkt")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+            @ApiImplicitParam(name = "customArchiveTableDataId", value = "自定义表数据id", paramType = "query", required = true),
+    })
+    public ResponseResult exportFile(String path,String title,Integer customArchiveTableDataId) {
+        Boolean b = checkParam(path,title,customArchiveTableDataId);
+        if(b){
+            try {
+                staffCommonService.exportFile(path,title,customArchiveTableDataId);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+
+    }
+
+    /**
+     * 模板导入
+     */
+    @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导入", notes = "hkt")
+    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+    public ResponseResult importFile(String path, UserSession userSession) {
+        Boolean b = checkParam(path,getUserSession());
+        if(b){
+            try {
+                staffCommonService.importFile(path,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("导入失败");
+            }
+        }
+        return  failResponseResult("path错误");
     }
 
     /**
@@ -571,6 +602,4 @@ public class CommonController extends BaseController {
         logger.error(message);
         return fail;
     }
-
-
 }
