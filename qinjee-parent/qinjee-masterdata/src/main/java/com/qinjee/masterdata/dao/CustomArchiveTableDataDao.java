@@ -29,4 +29,6 @@ public interface CustomArchiveTableDataDao {
     List<Integer> selectTableIdByBusinessId(Integer id);
 
     List<CustomArchiveTableData> selectByTableId(@Param("tableId") Integer tableId);
+
+    void insertCustom(String s, String fieldSql, String valueSql);
 }

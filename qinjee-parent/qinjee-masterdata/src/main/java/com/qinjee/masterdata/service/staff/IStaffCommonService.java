@@ -149,7 +149,7 @@ public interface IStaffCommonService {
      * @param userSession
      * @return
      */
-    void importFile(String path,UserSession userSession ) throws IOException;
+    void importFile(String path,UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException;
 
     /**
      * 模板导   * @param path

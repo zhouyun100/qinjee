@@ -42,5 +42,5 @@ public interface CustomArchiveFieldDao {
 
     List<String> selectFieldNameListByTableId(@Param("id") Integer id);
 
-
+    List<String> selectPhysicNameByList(List<String> strings);
 }

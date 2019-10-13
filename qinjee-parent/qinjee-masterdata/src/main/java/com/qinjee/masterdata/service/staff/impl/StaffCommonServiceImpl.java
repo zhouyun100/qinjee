@@ -15,11 +15,13 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
 import com.qinjee.utils.UpAndDownUtil;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -231,13 +234,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List<String> checkField(Integer fieldId) {
-
         //通过字段名找到验证code
         return customArchiveFieldCheckDao.selectCheckName(fieldId);
     }
 
     @Override
-    public void importFile(String path,UserSession userSession) throws IOException {
+    public void importFile(String path,UserSession userSession) throws IOException, NoSuchFieldException, IllegalAccessException {
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
         Integer tableId=null;
         //key是字段名称，value是值
@@ -251,16 +253,34 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             List<String> list1 = customArchiveFieldDao.selectFieldNameListByTableId(integer);
             fieldMap.put(integer,list1);
         }
-        //通过匹配找到需要设值的表id
+        //匹配找到需要设值的表id
         for (Map.Entry<Integer, List<String>> integerListEntry : fieldMap.entrySet()) {
             List<String> strings = new ArrayList<>(stringListMap.keySet());
             if(strings.containsAll(integerListEntry.getValue())){
                 tableId= integerListEntry.getKey();
             }
         }
-        // TODO 若表为内置表
-           //将字段设置给自定义表
-           //将值设置给物理表  需要利用反射设置值
+        //  若表为内置表
+            //通过tableId找到物理表名
+        String s = customArchiveTableDao.selectTableName(tableId);
+        //通过物理表名找到实体对象
+        List<Object> objectList=customArchiveTableDao.selectObject(s);
+        //根据集合获得Object对象
+        Object object = getObject(objectList);
+        //将值设入属性
+        Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
+        for (Map.Entry<String, List<String>> entry : entries) {
+            Field declaredField = object.getClass().getDeclaredField(entry.getKey());
+            declaredField.setAccessible(true);
+            declaredField.set(object,entry.getValue());
+        }
+        //将值设置给物理表
+        //物理属性名集合
+        List<String> strings = customArchiveFieldDao.selectPhysicNameByList(new ArrayList<>(stringListMap.keySet()));
+        //拼接sql并插入
+        customArchiveTableDataDao.insertCustom(s,getFieldSql(strings),getValueSql(strings));
+
+
         //TODO 若表为自定义表
             //将字段设置给自定义表
             //将值设置给数据表 直接拼接
@@ -340,6 +360,36 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //TODO 对象键的定义需要制定规则，利用规则生成
         forWardPutFile.setKey("");
         return forWardPutFile;
+    }
+    public Object getObject(List<Object> list){
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }
+        return list.get(0);
+    }
+    public String getFieldSql(List<String> list){
+        String fieldSql=null;
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }else {
+            for (String s : list) {
+                fieldSql+=s+",";
+            }
+            String[] split = fieldSql.split(",", -1);
+            return split[0];
+        }
+    }
+    public String getValueSql(List<String> list){
+        String valueSql=null;
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }else {
+            for (String s : list) {
+                valueSql+="object."+s+",";
+            }
+            String[] split = valueSql.split(",", -1);
+            return split[0];
+        }
     }
 }
 

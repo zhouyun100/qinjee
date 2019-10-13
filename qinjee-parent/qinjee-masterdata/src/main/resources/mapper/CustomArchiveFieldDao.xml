@@ -306,4 +306,12 @@
     from t_custom_archive_field
     where  table_id = #{tableId,jdbcType=INTEGER} AND is_delete=0
   </select>
+  <select id="selectPhysicNameByList">
+    select  field_code
+     from t_custom_archive_field
+    where  field_name  in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

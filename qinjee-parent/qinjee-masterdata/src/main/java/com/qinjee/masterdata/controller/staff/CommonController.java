@@ -564,7 +564,7 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
     @ApiOperation(value = "模板导入", notes = "hkt")
     @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
-    public ResponseResult importFile(String path, UserSession userSession) {
+    public ResponseResult importFile(String path) {
         Boolean b = checkParam(path,getUserSession());
         if(b){
             try {

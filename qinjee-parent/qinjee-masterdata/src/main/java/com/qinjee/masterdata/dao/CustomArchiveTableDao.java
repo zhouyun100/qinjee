@@ -39,5 +39,5 @@ public interface CustomArchiveTableDao {
 
     Integer selectTableIdByName(@Param("tableName") String tableName);
 
-
+    List<Object> selectObject(String s);
 }

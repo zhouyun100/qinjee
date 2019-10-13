@@ -212,4 +212,8 @@
     where
     table_name=#{tableName,jdbcType=INTEGER}
   </select>
+  <select id="selectObject">
+    select *
+    from  #{s,jdbcType=VARCHAR}
+  </select>
 </mapper>
