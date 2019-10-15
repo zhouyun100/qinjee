@@ -80,9 +80,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void deleteCustomArchiveTable(List<Integer> list) throws Exception {
         Integer max = customArchiveTableDao.selectMaxPrimaryKey();
-        for (int i = 0; i < list.size(); i++) {
-            if (max < list.get(i)) {
-                throw new Exception("自定义表参数过大");
+        for (Integer integer : list) {
+            if(max<integer) {
+                throw new Exception("id有误");
             }
         }
         customArchiveTableDao.deleteCustomTable(list);
@@ -99,8 +99,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage, pageSize);
         List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage();
-        PageResult pageResult = new PageResult(customArchiveTables);
-        return pageResult;
+        return new PageResult<>(customArchiveTables);
     }
 
     @Override
@@ -112,9 +111,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteCustomArchiveGroup(List<Integer> list) throws Exception {
         Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
-        for (int i = 0; i < list.size(); i++) {
-            if (max < list.get(i)) {
-                throw new Exception("自定义组参数过大");
+        for (Integer integer : list) {
+            if(max<integer) {
+                throw new Exception("id有误");
             }
         }
         customArchiveGroupDao.deleteCustomGroup(list);
@@ -134,8 +133,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
 
         List<CustomArchiveTable> list = customArchiveTableDao.selectByPrimaryKeyList(integerList);
-        PageResult pageResult = new PageResult(list);
-        return pageResult;
+        return new PageResult<>(list);
     }
 
     @Override
@@ -147,9 +145,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteCustomArchiveField(List<Integer> list) throws Exception {
         Integer max = customArchiveFieldDao.selectMaxPrimaryKey();
-        for (int i = 0; i < list.size(); i++) {
-            if (max < list.get(i)) {
-                throw new Exception("参数不合理！");
+        for (Integer integer : list) {
+            if(max<integer) {
+                throw new Exception("id有误");
             }
         }
         customArchiveFieldDao.deleteCustomField(list);
@@ -180,31 +178,27 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public List<Integer> getCompanyId(UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
-        List<Integer> list = organizationDao.getCompanyIdByArchiveId(archiveId);
-        return list;
+        return organizationDao.getCompanyIdByArchiveId(archiveId);
 
     }
 
     @Override
     public List<Integer> getOrgIdByCompanyId(Integer orgId) {
 
-        List<Integer> list = organizationDao.getOrgIdByCompanyId(orgId);
-        return list;
+        return organizationDao.getOrgIdByCompanyId(orgId);
     }
 
     @Override
     public List<Integer> getPostByOrgId(Integer orgId) {
 
-        List<Integer> list = postDao.getPostByOrgId(orgId);
-        return list;
+        return postDao.getPostByOrgId(orgId);
     }
 
     @Override
     public List<String> selectTableFromOrg(UserSession userSession) {
         //根据部门id筛选自己的表id
         List<Integer> list1 = customArchiveTableDao.selectIdByComId(userSession.getCompanyId());
-        List<String> list = customArchiveTableDao.selectNameById(list1);
-        return list;
+        return customArchiveTableDao.selectNameById(list1);
     }
 
     @Override
@@ -212,22 +206,20 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //找到企业代码id
         Integer id = customArchiveFieldDao.selectCodeId(customArchiveFieldId);
         //找到自定义字段的值
-        List<String> list = companyCodeDao.selectValue(id);
-        return list;
+        return companyCodeDao.selectValue(id);
     }
-
 
 
     @Override
     public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
         //将前端传过来的大字段进行解析
-        StringBuffer bigData=null;
+        StringBuffer bigData = null;
         JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
         JSONObject jsono = JSONObject.parseObject(json.toString());
         List<String> strings = new ArrayList<>(jsono.keySet());
         for (String string : strings) {
-           bigData.append("@@").append(string).append("@@:").append(jsono.get(string)).append(";");
+            bigData.append("@@").append(string).append("@@:").append(jsono.get(string)).append(";");
         }
         //去除最后一个分号
         int i = bigData.toString().lastIndexOf(",");
@@ -317,7 +309,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 List<String> list1 = stringListMap.get(PHONE);
                 for (int i = 0; i < list1.size(); i++) {
                     Integer id = preEmploymentDao.selectIdByNumber(list1.get(i));
-                    if ("".equals(id) || null == id) {
+                    if ( null == id) {
                         PreEmployment preEmployment = new PreEmployment();
                         setValue(stringListMap, i, preEmployment);
                         preEmploymentDao.insertSelective(preEmployment);
@@ -377,7 +369,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         String bigData = getBigData(stringListMap, i);
         customArchiveTableData.setBigData(bigData);
         Integer integer1 = customArchiveTableDataDao.selectTableIdByBusinessIdAndTableId(id, tableId);
-        if ("".equals(integer1) || null == integer1) {
+        if ( null == integer1) {
             customArchiveTableDataDao.insertSelective(customArchiveTableData);
         } else {
             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
@@ -397,123 +389,123 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     private String getBigData(Map<String, List<String>> stringListMap, int i) {
         StringBuffer bigData = null;
-        String substring =null;
         Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
         List<Map.Entry<String, List<String>>> entries1 = new ArrayList<>(entries);
         for (Map.Entry<String, List<String>> stringListEntry : entries1) {
             String key = stringListEntry.getKey();
             String s = stringListEntry.getValue().get(i);
             bigData.append("@@").append(key).append("@@:").append(s).append(";");
-            int j = bigData.toString().lastIndexOf(",");
-             substring=bigData.toString().substring(0, i);
         }
-        return substring;
+        return bigData.toString();
     }
+
     @Override
     public void exportPreFile(String path, String title, List<Integer> list, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
         //得到response对象
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        if(CollectionUtils.isEmpty(list)){
-            list=preEmploymentDao.selectIdByComId(userSession.getCompanyId());
+        if (CollectionUtils.isEmpty(list)) {
+            list = preEmploymentDao.selectIdByComId(userSession.getCompanyId());
         }
         //通过企业id，物理表名找到tableId
-        Integer tableId=customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(),PREEMPTABLE);
+        Integer tableId = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), PREEMPTABLE);
         //通过tableid找到字段名集合
-        List<String> heads= customArchiveFieldDao.selectFieldNameListByTableId(tableId);
+        List<String> heads = customArchiveFieldDao.selectFieldNameListByTableId(tableId);
         //找到预入职表
-        List<PreEmployment> preEmploymentList=preEmploymentDao.selectByPrimaryKeyList(list);
+        List<PreEmployment> preEmploymentList = preEmploymentDao.selectByPrimaryKeyList(list);
         //预入职物理字段名
-        List<String> physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
-        List<Map<String, String>> dates= getDates(list, heads,physicList,preEmploymentList);
-        //map中key是字段名，value是对应的类型
-        Map<String, String> map = getStringStringMap(heads);
-        ExcelUtil.download(path,response,title,heads,dates,map);
+        downloadFile(path,title,response,preEmploymentList,heads);
 
     }
 
     @Override
-    public void exportArcFile(String path, String title,Integer querySchemeId,List<Integer> list,UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
+    public void exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
         //得到response对象
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        if(CollectionUtils.isEmpty(list)){
-            list=userArchiveDao.selectIdByComId(userSession.getCompanyId());
+        if (CollectionUtils.isEmpty(list)) {
+            list = userArchiveDao.selectIdByComId(userSession.getCompanyId());
         }
-        List<String> physicList =null;
         List<UserArchive> userArclist = userArchiveDao.selectByPrimaryKeyList(list);
         //如果没有查询方案
-        if(null==querySchemeId || "".equals(querySchemeId)){
+        if (null == querySchemeId || "".equals(querySchemeId)) {
             //通过企业id，物理表名找到tableId
-            Integer tableId=customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(),ARCHIVETABLE);
+            Integer tableId = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), ARCHIVETABLE);
             //通过tableid找到字段名集合
-            List<String> heads= customArchiveFieldDao.selectFieldNameListByTableId(tableId);
-             physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
-            List<Map<String, String>> dates= getDates(list, heads,physicList,userArclist);
-            //map中key是字段名，value是对应的类型
-            Map<String, String> map = getStringStringMap(heads);
-            ExcelUtil.download(path,response,title,heads,dates,map);
-        }else {
+            List<String> heads = customArchiveFieldDao.selectFieldNameListByTableId(tableId);
+            //找到物理表名集合
+            downloadFile(path, title, response, userArclist, heads);
+        } else {
             //根据查询方案id找到应该展示的字段id
             List<Integer> fieldIdList = querySchemeFieldDao.selectFieldId(querySchemeId);
             //根据id查字段名
-            List<String> heads=customArchiveFieldDao.selectFieldNameByList(fieldIdList);
-            List<Map<String, String>> dates=null;
-            List<Map<String, String>> mapList=null;
+            List<String> heads = customArchiveFieldDao.selectFieldNameByList(fieldIdList);
+            List<Map<String, String>> dates = null;
+            List<Map<String, String>> mapList = null;
+            Map<String, String> stringMap = new HashMap<>();
+            List<String> physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
             //根据字段名判断是否是物理表里的字段
             for (String head : heads) {
                 //如果是
-               if(isSystem(head)){
-                   dates=getDates(list,heads, physicList,userArclist);
-               }
+                if (isSystem(head)) {
+                    dates = getDates(heads, physicList, userArclist);
+                }
                 //如果不是
                 //通过字段名找到表id
-                Integer id=customArchiveFieldDao.selectTableIdByFieldName(head);
+                Integer id = customArchiveFieldDao.selectTableIdByFieldName(head);
                 //将传过来的id作为业务id寻找出数据大字段
                 for (Integer integer : list) {
-                    String bigData=customArchiveTableDataDao.selectBigDataBybusinessIdAndTableId(id,integer);
+                    String bigData = customArchiveTableDataDao.selectBigDataBybusinessIdAndTableId(id, integer);
+                    //大字段进行解析
+                    String s = bigData.split("@@" + head + "@@:")[1].split(";@@")[0];
+                    stringMap.put(head, s);
                 }
-                //大字段进行解析
-                //TODO 大字段的解析需要，后面得到一个新的dates，先写死
-                mapList=new ArrayList<>();
+                mapList.add(stringMap);
             }
             dates.addAll(mapList);
             //得到字段名与类型的集合
             Map<String, String> map = getStringStringMap(heads);
-            ExcelUtil.download(path,response,title,heads,dates,map);
+            ExcelUtil.download(path, response, title, heads, dates, map);
         }
     }
 
+    private void downloadFile(String path, String title, HttpServletResponse response, List objectList, List<String> heads) throws NoSuchFieldException, IllegalAccessException {
+        List<String> physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
+        List<Map<String, String>> dates = getDates(heads, physicList, objectList);
+        //map中key是字段名，value是对应的类型
+        Map<String, String> map = getStringStringMap(heads);
+        ExcelUtil.download(path, response, title, heads, dates, map);
+    }
 
 
-    private List<Map<String, String>> getDates(List<Integer> list, List<String> heads,List<String> physicList,List objectList) throws NoSuchFieldException, IllegalAccessException {
+    private List<Map<String, String>> getDates(List<String> heads, List<String> physicList, List objectList) throws NoSuchFieldException, IllegalAccessException {
         //map中key是字段名，value是对应的值
-        List<Map<String, String>> dates=new ArrayList<>();
+        List<Map<String, String>> dates = new ArrayList<>();
         //通过字段名找到物理字段名
-        Map<String,String> dateMap=new HashMap<>();
+        Map<String, String> dateMap = new HashMap<>();
         for (int i = 0; i < objectList.size(); i++) {
             for (int j = 0; j < physicList.size(); j++) {
                 Field declaredField = objectList.get(i).getClass().getDeclaredField(physicList.get(j));
                 declaredField.setAccessible(true);
                 Object o = declaredField.get(declaredField);
-                dateMap.put(heads.get(j),String.valueOf(o));
+                dateMap.put(heads.get(j), String.valueOf(o));
                 dates.add(dateMap);
             }
         }
         return dates;
     }
 
-    private Boolean isSystem(String fieldName){
-        Short isSystem=customArchiveFieldDao.isSystemField(fieldName);
-        if(isSystem>0){
+    private Boolean isSystem(String fieldName) {
+        Short isSystem = customArchiveFieldDao.isSystemField(fieldName);
+        if (isSystem > 0) {
             return true;
         }
         return false;
     }
 
     private Map<String, String> getStringStringMap(List<String> heads) {
-        Map<String,String> map=new HashMap<>();
-        List<String> stringList=customArchiveFieldDao.selectTypeByNameList(heads);
+        Map<String, String> map = new HashMap<>();
+        List<String> stringList = customArchiveFieldDao.selectTypeByNameList(heads);
         for (int i = 0; i < stringList.size(); i++) {
-            map.put(heads.get(i),stringList.get(i));
+            map.put(heads.get(i), stringList.get(i));
         }
         return map;
     }

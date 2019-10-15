@@ -23,6 +23,8 @@ import java.util.*;
 @Service
 public class StaffArchiveServiceImpl implements IStaffArchiveService {
     //    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
+    private static final String ASC = "升序";
+    private static final String DESC = "降序";
     @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
@@ -88,7 +90,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer companyId) {
         List<UserArchive> list = new ArrayList<>();
-        List<UserArchive> list1 = new ArrayList<>();
+        List<UserArchive> list1;
         //本用户的权限下有哪些机构
         List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
         if (companyId == null) {
@@ -150,13 +152,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public String selectOrgName(Integer id) {
-        String orgName = organizationDao.selectOrgName(id);
-        return orgName;
+        return organizationDao.selectOrgName(id);
     }
 
     @Override
     public PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId, Integer orgId) {
-        StringBuffer stringBuffer=new StringBuffer();
+        StringBuffer stringBuffer = new StringBuffer();
         String order = null;
         //根据查询方案id，找到对应的字段id与顺序和排序id与升降序
         //查询字段排序sort
@@ -168,45 +169,40 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //根据id查询字段名
         List<String> stringList = customArchiveFieldDao.selectFieldNameByList(sortList);
         for (String s : stringList) {
-           stringBuffer.append(s+",");
+            stringBuffer.append(s + ",");
         }
         String s = stringBuffer.toString();
         int i = s.lastIndexOf(",");
-         s = s.substring(0, i);
+        s = s.substring(0, i);
         //根据查询方案id，找到排序id与升降序
-
-
-
         //查询升降序
         //查询查询档案下的字段id
         List<Integer> integerList = querySchemeSortDao.selectSortId(schemeId);
         //根据id查询字段名
         List<String> strings = customArchiveFieldDao.selectFieldNameByList(integerList);
         List<String> list = querySchemeSortDao.selectSortByIdList(integerList);
-        Map<String,String> map=new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         for (int j = 0; j < strings.size(); j++) {
-            map.put(strings.get(j),list.get(j));
+            map.put(strings.get(j), list.get(j));
         }
         for (Map.Entry<String, String> entry : map.entrySet()) {
-             order = stringBuffer.append(entry.getKey()).append(getSort(entry.getValue())).append(",").toString();
+            order = stringBuffer.append(entry.getKey()).append(getSort(entry.getValue())).append(",").toString();
         }
-        order="order by"+order;
+        order = "order by" + order;
         int j = order.lastIndexOf(",");
         order = order.substring(0, j);
         //进行sql查询，返回数据，档案在机构范围内
-
         List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveListCustom(s, order, orgId);
-
         return new PageResult<>(userArchiveList);
     }
 
 
     public String getSort(String sort) {
         if (sort != null) {
-            if (sort.equals("升序")) {
+            if (sort.equals(ASC)) {
                 return "ASC";
             }
-            if (sort.equals("降序")) {
+            if (sort.equals(DESC)) {
                 return "DESC";
             }
         }
@@ -216,11 +212,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteUserArchivePostRelation(List<Integer> list) throws Exception {
-
         Integer max = userArchivePostRelationDao.selectMaxPrimaryKey();
-        for (int i = 0; i < list.size(); i++) {
-            if (max < list.get(i)) {
-                throw new Exception("id不合法");
+        for (Integer integer : list) {
+            if(max<integer) {
+                throw new Exception("id有误");
             }
         }
         userArchivePostRelationDao.deleteUserArchivePostRelation(list);
@@ -236,15 +231,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                                                                              List<Integer> list) {
         PageHelper.startPage(currentPage, pageSize);
         List<UserArchivePostRelation> relationList = userArchivePostRelationDao.selectByPrimaryKeyList(list);
-        return new PageResult(relationList);
+        return new PageResult<>(relationList);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteQueryScheme(List<Integer> list) throws Exception {
         Integer max = querySchemeDao.selectMaxPrimaryKey();
-        for (int i = 0; i < list.size(); i++) {
-            if (max < list.get(i)) {
+        for (Integer integer : list) {
+            if(max<integer) {
                 throw new Exception("id有误");
             }
         }
@@ -266,15 +261,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         querySchemeList.setQuerySchemeFieldList(querySchemeFields);
         querySchemeList.setQuerySchemeSortList(querySchemeSorts);
         return querySchemeList;
-
-
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
                                 List<QuerySchemeSort> querySchemeSortlist) {
-
         if (queryScheme.getQuerySchemeId() == null) {
             //说明是新增操作，新增查询方案
             querySchemeDao.insertSelective(queryScheme);
@@ -287,10 +279,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
 
             querySchemeFieldDao.insertBatch(querySchemeFieldlist);
-
-
             querySchemeSortDao.insertBatch(querySchemeSortlist);
-
         }
         //说明是更新操作
         //将list里面的queryschemeId设置为传过来的id
@@ -301,11 +290,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             querySchemeSort.setQuerySchemeId(queryScheme.getQuerySchemeId());
         }
         querySchemeDao.updateByPrimaryKeySelective(queryScheme);
-        for (int i = 0; i < querySchemeFieldlist.size(); i++) {
-            querySchemeFieldDao.updateByPrimaryKey(querySchemeFieldlist.get(i));
+        for (QuerySchemeField querySchemeField : querySchemeFieldlist) {
+            querySchemeFieldDao.updateByPrimaryKey(querySchemeField);
         }
-        for (int i = 0; i < querySchemeSortlist.size(); i++) {
-            querySchemeSortDao.updateByPrimaryKey(querySchemeSortlist.get(i));
+        for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
+            querySchemeSortDao.updateByPrimaryKey(querySchemeSort);
         }
     }
 }

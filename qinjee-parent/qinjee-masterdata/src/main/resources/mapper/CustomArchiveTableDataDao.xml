@@ -184,7 +184,8 @@
   <select id="selectBigDataBybusinessIdAndTableId" resultType="java.lang.String">
     select   big_data
     from t_custom_archive_table_data
-    where business_id = #{businessId,jdbcType=INTEGER}
+    where
+    business_id = #{businessId,jdbcType=INTEGER}
     AND table_id = #{tableId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
