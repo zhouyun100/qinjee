@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+import lombok.ToString;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -8,17 +11,28 @@ import java.util.Date;
  * t_custom_archive_table
  * @author
  */
+@Data
+@ToString
 public class CustomArchiveTable implements Serializable {
     /**
      * 表ID
      */
     private Integer tableId;
-
     /**
      * 表名
      */
     @NotNull
     private String tableName;
+    /**
+     * 物理表名
+     */
+    @NotNull
+    private String tableCode;
+    /**
+     * 功能code
+     */
+    @NotNull
+    private String funcCode;
 
     /**
      * 企业ID
@@ -67,83 +81,4 @@ public class CustomArchiveTable implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Integer tableId) {
-        this.tableId = tableId;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Short getIsSystemDefine() {
-        return isSystemDefine;
-    }
-
-    public void setIsSystemDefine(Short isSystemDefine) {
-        this.isSystemDefine = isSystemDefine;
-    }
-
-    public Short getIsEnable() {
-        return isEnable;
-    }
-
-    public void setIsEnable(Short isEnable) {
-        this.isEnable = isEnable;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Integer getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Integer creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

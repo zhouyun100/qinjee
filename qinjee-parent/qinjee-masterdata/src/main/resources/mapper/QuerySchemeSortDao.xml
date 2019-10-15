@@ -131,6 +131,14 @@
       (#{item.querySchemeId,jdbcType=INTEGER}, #{item.fieldId,jdbcType=INTEGER}, #{item.orderByRule,jdbcType=VARCHAR},
       #{item.sort,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
     </foreach>
-
   </insert>
+  <select id="selectSortByIdList">
+    select order_by_rule
+    from t_query_scheme_sort
+    where field_id
+    in <foreach collection="list" item="item" separator="," close=")">
+    #{item}
+    </foreach>
+  </select>
+
 </mapper>

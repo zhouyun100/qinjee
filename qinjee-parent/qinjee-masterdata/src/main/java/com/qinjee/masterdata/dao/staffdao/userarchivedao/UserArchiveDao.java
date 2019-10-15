@@ -70,4 +70,10 @@ public interface UserArchiveDao {
     List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 
     List<Integer> selectStaffNoStandingBook(@Param("archiveType") String archiveType, @Param("id") Integer id);
+
+    Integer selectArchiveIdByTel(@Param("phoneNumber") String phoneNumber);
+
+    Integer selectId(@Param("idType") String idType, @Param("idNumber") String idNumber);
+
+    List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 }

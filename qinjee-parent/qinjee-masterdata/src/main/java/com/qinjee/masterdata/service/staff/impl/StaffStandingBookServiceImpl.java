@@ -2,9 +2,9 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.CustomArchiveFieldDao;
-import com.qinjee.masterdata.dao.CustomArchiveTableDao;
-import com.qinjee.masterdata.dao.CustomArchiveTableDataDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;

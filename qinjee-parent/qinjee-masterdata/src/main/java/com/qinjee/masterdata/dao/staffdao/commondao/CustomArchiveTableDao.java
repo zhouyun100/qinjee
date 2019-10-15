@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import org.apache.ibatis.annotations.Param;
@@ -29,8 +29,6 @@ public interface CustomArchiveTableDao {
 
     List<CustomArchiveTable> selectByPrimaryKeyList(List<Integer> list);
 
-    List<Integer> selectIdByComId(Integer companyId);
-
     List<String> selectNameById(@Param("list1") List<Integer> list1);
 
     Integer selectInside(@Param("tableId") Integer tableId);
@@ -39,5 +37,13 @@ public interface CustomArchiveTableDao {
 
     Integer selectTableIdByName(@Param("tableName") String tableName);
 
-    List<Object> selectObject(String s);
+
+    List<Integer> selectidbycomidandfunccode(@Param("companyId") Integer companyId);
+
+    List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
+
+    String selectFuncCode(@Param("tableId") Integer tableId);
+
+    Integer selectByComIdAndPhyName(@Param("companyId") Integer companyId, @Param("archivetable") String archive);
+
 }

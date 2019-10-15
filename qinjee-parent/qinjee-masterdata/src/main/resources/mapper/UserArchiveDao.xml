@@ -600,8 +600,27 @@
     from t_user_archive
     where user_category =#{archiveType,jdbcType=VARCHAR}
     AND org_id =#{orgId,jdbcType=INTEGER} AND is_delete=0
-
   </select>
 
+  <select id="selectArchiveIdByTel" resultType="java.lang.Integer">
+    select archive_id
+    from t_user_archive
+    where #{tel,jdbcType=VARCHAR}
+    AND is_delete=0
+  </select>
+  <select id="selectId" resultType="java.lang.Integer">
+    select id
+    from t_user_archive
+    where id_type=#{idType,jdbType=VARCHAR}
+    AND id_number=#{idNumber,jdbcType=VARCHAR}
+    AND user_category= "在职"
+    AND is_delete=0
+  </select>
+  <select id="selectIdByComId" resultType="java.lang.Integer">
+     select archive_id
+    from t_user_archive
+    where company_id = #{companyId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
 </mapper>
 

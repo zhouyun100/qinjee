@@ -97,7 +97,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //将合同快到期的，解除合同，终止合同筛选为无效合同
         for (LaborContract laborContract : labList) {
             if(!laborContract.getContractState().equals(ENDSTATUS) || laborContract.getContractState().equals(RELESESTATUS)
-            || GetDayUtil.getMonth(laborContract.getContractEndDate(), new Date()) <0
+            || GetDayUtil.getDay(laborContract.getContractEndDate(), new Date()) <0
             ){
                 noEffectLabList.add(laborContract);
             }
@@ -336,7 +336,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         List<Integer> newArcList = laborContractDao.seleltByArcIdIn(arcList);
         for (Integer integer : newArcList) {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
-            if (GetDayUtil.getMonth(laborContract.getContractEndDate(), new Date()) < 3) {
+            if (GetDayUtil.getDay(laborContract.getContractEndDate(), new Date()) < 3) {
                 //根据合同id找到档案id
                 Integer achiveId = laborContractDao.seleltByArcIdSingle(integer);
                 list.add(userArchiveDao.selectByPrimaryKey(achiveId));
