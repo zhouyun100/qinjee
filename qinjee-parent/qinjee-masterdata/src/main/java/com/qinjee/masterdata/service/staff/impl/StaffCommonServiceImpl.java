@@ -81,7 +81,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void deleteCustomArchiveTable(List<Integer> list) throws Exception {
         Integer max = customArchiveTableDao.selectMaxPrimaryKey();
         for (Integer integer : list) {
-            if(max<integer) {
+            if (max < integer) {
                 throw new Exception("id有误");
             }
         }
@@ -112,7 +112,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void deleteCustomArchiveGroup(List<Integer> list) throws Exception {
         Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
         for (Integer integer : list) {
-            if(max<integer) {
+            if (max < integer) {
                 throw new Exception("id有误");
             }
         }
@@ -146,7 +146,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void deleteCustomArchiveField(List<Integer> list) throws Exception {
         Integer max = customArchiveFieldDao.selectMaxPrimaryKey();
         for (Integer integer : list) {
-            if(max<integer) {
+            if (max < integer) {
                 throw new Exception("id有误");
             }
         }
@@ -214,7 +214,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
         //将前端传过来的大字段进行解析
-        StringBuffer bigData = null;
+        StringBuffer bigData = new StringBuffer();
         JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
         JSONObject jsono = JSONObject.parseObject(json.toString());
         List<String> strings = new ArrayList<>(jsono.keySet());
@@ -293,7 +293,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 List<String> list2 = stringListMap.get(IDNUMBER);
                 for (int i = 0; i < list1.size(); i++) {
                     Integer id = userArchiveDao.selectId(list1.get(i), list2.get(i));
-                    if ("".equals(id) || null == id) {
+                    if (null == id) {
                         UserArchive userArchive = new UserArchive();
                         setValue(stringListMap, i, userArchive);
                         userArchiveDao.insertSelective(userArchive);
@@ -309,7 +309,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 List<String> list1 = stringListMap.get(PHONE);
                 for (int i = 0; i < list1.size(); i++) {
                     Integer id = preEmploymentDao.selectIdByNumber(list1.get(i));
-                    if ( null == id) {
+                    if (null == id) {
                         PreEmployment preEmployment = new PreEmployment();
                         setValue(stringListMap, i, preEmployment);
                         preEmploymentDao.insertSelective(preEmployment);
@@ -369,7 +369,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         String bigData = getBigData(stringListMap, i);
         customArchiveTableData.setBigData(bigData);
         Integer integer1 = customArchiveTableDataDao.selectTableIdByBusinessIdAndTableId(id, tableId);
-        if ( null == integer1) {
+        if (null == integer1) {
             customArchiveTableDataDao.insertSelective(customArchiveTableData);
         } else {
             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
@@ -388,7 +388,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     private String getBigData(Map<String, List<String>> stringListMap, int i) {
-        StringBuffer bigData = null;
+        StringBuffer bigData = new StringBuffer();
         Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
         List<Map.Entry<String, List<String>>> entries1 = new ArrayList<>(entries);
         for (Map.Entry<String, List<String>> stringListEntry : entries1) {
@@ -413,7 +413,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //找到预入职表
         List<PreEmployment> preEmploymentList = preEmploymentDao.selectByPrimaryKeyList(list);
         //预入职物理字段名
-        downloadFile(path,title,response,preEmploymentList,heads);
+        downloadFile(path, title, response, preEmploymentList, heads);
 
     }
 
@@ -438,8 +438,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             List<Integer> fieldIdList = querySchemeFieldDao.selectFieldId(querySchemeId);
             //根据id查字段名
             List<String> heads = customArchiveFieldDao.selectFieldNameByList(fieldIdList);
-            List<Map<String, String>> dates = null;
-            List<Map<String, String>> mapList = null;
+            List<Map<String, String>> dates = new LinkedList<>();
+            List<Map<String, String>> mapList = new LinkedList<>();
             Map<String, String> stringMap = new HashMap<>();
             List<String> physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
             //根据字段名判断是否是物理表里的字段
@@ -495,9 +495,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     private Boolean isSystem(String fieldName) {
         Short isSystem = customArchiveFieldDao.isSystemField(fieldName);
-        if (isSystem > 0) {
-            return true;
-        }
+        if (isSystem > 0) return true;
         return false;
     }
 

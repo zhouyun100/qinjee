@@ -111,12 +111,12 @@ public class StaffStandingBookController extends BaseController {
                 if(pageResult!=null){
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }
-                    return failResponseResult("不存在黑名单或者此页没有黑名单");
+                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("展示黑名单表失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -178,12 +178,12 @@ public class StaffStandingBookController extends BaseController {
                 if(standingBookInfo!=null){
                     return new ResponseResult<>(standingBookInfo,CommonCode.SUCCESS);
                 }
-                return failResponseResult("台账为空");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("查询台账失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
     /**
      * 查看我的台账，不含共享
@@ -198,12 +198,12 @@ public class StaffStandingBookController extends BaseController {
                 if(list!=null){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }
-                return failResponseResult("台账为空");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("查询台账失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -229,8 +229,6 @@ public class StaffStandingBookController extends BaseController {
 
     /**
      * 查询台账操作
-     */
-    /**
      *梳理：1，寻找表名，根据企业id，找到自定义表，在前端页面展示为表名。
      *     2，寻找字段名，通过表名找到表id，通过id找到字段名。(用户在添加自定义字段时，会将中文字段名存到字段名中，
      *     将英文存入物理字段名。而后我们会将物理字段名作为key存进自定义数据表中。)
@@ -254,19 +252,14 @@ public class StaffStandingBookController extends BaseController {
                 if(list!=null){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }
-                return failResponseResult("符合条件为空");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("查询台账失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-    /**
-     * 检验参数
-     * @param params
-     * @return
-     */
-    public Boolean checkParam(Object... params) {
+    private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
                 return false;
@@ -274,16 +267,11 @@ public class StaffStandingBookController extends BaseController {
         }
         return true;
     }
-
-    /**
-     * 错误返回值
-     * @param message
-     * @return
-     */
-    public ResponseResult failResponseResult(String message){
+    private ResponseResult failResponseResult(String message){
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
         logger.error(message);
         return fail;
     }
+
 }

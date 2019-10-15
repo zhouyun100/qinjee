@@ -13,8 +13,6 @@ import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,7 @@ import java.util.List;
  */
 @Service
 public class StaffContractServiceImpl implements IStaffContractService {
-    private static final Logger logger = LoggerFactory.getLogger(StaffContractServiceImpl.class);
+//    private static final Logger logger = LoggerFactory.getLogger(StaffContractServiceImpl.class);
     private static final String NEWMARK = "新签";
     private static final String NOTMARK = "未签";
     private static final String RENEWMARK = "续签";
@@ -88,7 +86,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         PageHelper.startPage(currentPage,pageSize);
         List<LaborContract> noEffectLabList=new ArrayList<>();
         List<LaborContract> effectLabList=new ArrayList<>();
-        List<Integer> conList=new ArrayList<>();
+        List<Integer> conList;
         //查看机构下的合同
         List<LaborContract> labList=laborContractDao.selectLabByorgId(orgId);
         //把返回的合同进行筛选，通过isEnable，得到合同id
@@ -132,18 +130,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
         }
         return conList;
     }
-
-
-    /**
-     * 此处不是逻辑删除，是真删除
-     *
-     * @param laborContractid
-     * @return
-     */
+    //此处不是逻辑删除，是真删除
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteLaborContract(Integer laborContractid) {
-            laborContractDao.deleteByPrimaryKey(laborContractid);
+    public void deleteLaborContract(Integer laborContractId) {
+            laborContractDao.deleteByPrimaryKey(laborContractId);
     }
 
     @Override
@@ -368,8 +359,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
 /*
 合同状态分为新签，续签，变更，解除，终止
- */
-/**
  * 档案状态
  * 1，试用期
  * 2，兼职

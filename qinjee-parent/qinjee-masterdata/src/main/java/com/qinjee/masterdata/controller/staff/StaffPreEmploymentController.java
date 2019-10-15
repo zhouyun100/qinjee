@@ -117,13 +117,13 @@ public class StaffPreEmploymentController extends BaseController {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                staffPreEmploymentService.selectPreEmploymentField(getUserSession());
-                return ResponseResult.SUCCESS();
+                Map<String, String> stringStringMap = staffPreEmploymentService.selectPreEmploymentField(getUserSession());
+                return new ResponseResult<>(stringStringMap,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("查看预入职信息失败");
+               return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -146,14 +146,14 @@ public class StaffPreEmploymentController extends BaseController {
                 PageResult<PreEmployment> pageResult =
                         staffPreEmploymentService.selectPreEmployment(companyId, currentPage, pageSize);
                 if(pageResult!=null){
-                    return ResponseResult.SUCCESS();
+                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
                 }
-                return failResponseResult("无入职人员或者此页无信息");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("根据机构查看预入职失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -164,10 +164,10 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "list", value = "预入职登记表id组成的集合", paramType = "query", required = true),
             @ApiImplicitParam(name = "templateId", value = "短信模板", paramType = "query", required = true),
-            @ApiImplicitParam(name = "params[]", value = "所传参数", paramType = "query", required = true),
+            @ApiImplicitParam(name = "list", value = "所传参数", paramType = "query", required = true),
 
     })
-    public ResponseResult sendMessage(List<Integer> list, Integer templateId, String[] params) {
+    public ResponseResult sendMessage(List<Integer> list, Integer templateId, List<String> params) {
         Boolean b = checkParam(list,templateId,params);
         if(b){
             try {
@@ -194,7 +194,7 @@ public class StaffPreEmploymentController extends BaseController {
     })
     public ResponseResult sendMail(List<Integer> prelist,List<Integer> conList,
                                    String content,String subject,
-                                   String[] filepath) {
+                                   List<String> filepath) {
         Boolean b = checkParam(prelist,conList,content,subject,filepath);
         if(b){
             try {
@@ -218,7 +218,7 @@ public class StaffPreEmploymentController extends BaseController {
         if(b){
             try {
                 if(staffPreEmploymentService.checkPhone(phoneNumber)){
-                    return new ResponseResult("手机号验证通过");
+                    return ResponseResult.SUCCESS();
                 }
                 return failResponseResult("手机号验证不通过");
             } catch (Exception e) {
@@ -239,7 +239,7 @@ public class StaffPreEmploymentController extends BaseController {
         if(b){
             try {
                 if(staffPreEmploymentService.checkMail(mail)){
-                    return new ResponseResult("邮箱验证通过");
+                    return ResponseResult.SUCCESS();
                 }
                 return failResponseResult("邮箱验证不通过");
             } catch (Exception e) {
@@ -260,8 +260,7 @@ public class StaffPreEmploymentController extends BaseController {
     @ApiImplicitParam(name = "url", value = "链接地址", paramType = "query", required = true)
     public ResponseResult creatQrcodeForPre(String url) {
 
-        ResponseResult<String> stringResponseResult = new ResponseResult<>("qrcode path", CommonCode.SUCCESS);
-        return stringResponseResult;
+        return  new ResponseResult<>("qrcode path", CommonCode.SUCCESS);
     }
 
     /**
@@ -292,12 +291,7 @@ public class StaffPreEmploymentController extends BaseController {
         return  failResponseResult("参数错误");
     }
 
-    /**
-     * 检验参数
-     * @param params
-     * @return
-     */
-    public Boolean checkParam(Object... params) {
+    private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
                 return false;
@@ -306,12 +300,7 @@ public class StaffPreEmploymentController extends BaseController {
         return true;
     }
 
-    /**
-     * 错误返回值
-     * @param message
-     * @return
-     */
-    public ResponseResult failResponseResult(String message){
+    private ResponseResult failResponseResult(String message){
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
         logger.error(message);

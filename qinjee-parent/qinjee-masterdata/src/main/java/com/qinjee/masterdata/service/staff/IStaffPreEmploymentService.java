@@ -19,7 +19,7 @@ public interface IStaffPreEmploymentService {
      * @param params
      * @return
      */
-    void sendMessage(List<Integer> list, Integer templateId, String[] params) throws Exception;
+    void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception;
 
     /**
      * 发送邮件
@@ -30,7 +30,7 @@ public interface IStaffPreEmploymentService {
      * @param filepath
      * @return
      */
-    void sendManyMail(List<Integer> prelist, List<Integer> conList, String content, String subject, String[] filepath) throws Exception;
+    void sendManyMail(List<Integer> prelist, List<Integer> conList, String content, String subject, List<String> filepath) throws Exception;
 
     /**
      * 验证手机号

@@ -169,7 +169,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //根据id查询字段名
         List<String> stringList = customArchiveFieldDao.selectFieldNameByList(sortList);
         for (String s : stringList) {
-            stringBuffer.append(s + ",");
+            stringBuffer.append(s).append(",");
         }
         String s = stringBuffer.toString();
         int i = s.lastIndexOf(",");
@@ -186,7 +186,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             map.put(strings.get(j), list.get(j));
         }
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            order = stringBuffer.append(entry.getKey()).append(getSort(entry.getValue())).append(",").toString();
+            stringBuffer.append(entry.getKey());
+            stringBuffer.append(getSort(entry.getValue()));
+            stringBuffer.append(",");
+            order = stringBuffer.toString();
         }
         order = "order by" + order;
         int j = order.lastIndexOf(",");
