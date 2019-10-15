@@ -3,6 +3,7 @@ package com.qinjee.masterdata.model.entity;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,16 +22,19 @@ public class CustomArchiveTableData implements Serializable {
     /**
      * 表ID
      */
+    @NotNull
     private Integer tableId;
 
     /**
      * 业务ID
      */
+    @NotNull
     private Integer businessId;
 
     /**
      * 操作人ID
      */
+    @NotNull
     private Integer operatorId;
 
     /**
@@ -46,6 +50,7 @@ public class CustomArchiveTableData implements Serializable {
     /**
      * 数据大字段
      */
+    @NotNull
     private String bigData;
 
     private static final long serialVersionUID = 1L;

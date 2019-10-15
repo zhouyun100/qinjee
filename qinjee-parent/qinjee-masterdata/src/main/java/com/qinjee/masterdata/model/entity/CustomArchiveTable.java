@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -16,26 +17,31 @@ public class CustomArchiveTable implements Serializable {
     /**
      * 表名
      */
+    @NotNull
     private String tableName;
 
     /**
      * 企业ID
      */
+    @NotNull
     private Integer companyId;
 
     /**
      * 是否系统定义
      */
+    @NotNull
     private Short isSystemDefine;
 
     /**
      * 是否启用
      */
+    @NotNull
     private Short isEnable;
 
     /**
      * 排序
      */
+    @NotNull
     private Integer sort;
 
     /**
@@ -56,6 +62,7 @@ public class CustomArchiveTable implements Serializable {
     /**
      * 是否删除
      */
+    @NotNull
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;

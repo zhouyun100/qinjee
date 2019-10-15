@@ -8,6 +8,7 @@ import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -91,5 +92,5 @@ public interface IStaffStandingBookService {
      * @param type
      * @return
      */
-   List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type);
+   List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) throws ParseException;
 }

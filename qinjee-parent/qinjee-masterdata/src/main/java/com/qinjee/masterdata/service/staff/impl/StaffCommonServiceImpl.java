@@ -5,21 +5,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.*;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
+import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.ExcelUtil;
 import com.qinjee.utils.UpAndDownUtil;
-import entity.ExcelEntity;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -54,73 +57,75 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
-         customArchiveTableDao.insertSelective(customArchiveTable);
+        customArchiveTableDao.insertSelective(customArchiveTable);
 
     }
 
-    @Transactional(rollbackFor =Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteCustomArchiveTable(List<Integer> list) throws Exception {
         Integer max = customArchiveTableDao.selectMaxPrimaryKey();
         for (int i = 0; i < list.size(); i++) {
             if (max < list.get(i)) {
-               throw new Exception("自定义表参数过大");
+                throw new Exception("自定义表参数过大");
             }
         }
         customArchiveTableDao.deleteCustomTable(list);
     }
-        @Override
-        public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
+
+    @Override
+    public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
 
         customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
 
-        }
+    }
+
     @Override
     public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
-        PageHelper.startPage(currentPage,pageSize);
+        PageHelper.startPage(currentPage, pageSize);
         List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage();
-        PageResult pageResult=new PageResult(customArchiveTables);
+        PageResult pageResult = new PageResult(customArchiveTables);
         return pageResult;
     }
 
     @Override
     public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
-            customArchiveGroupDao.insertSelective(customArchiveGroup);
+        customArchiveGroupDao.insertSelective(customArchiveGroup);
     }
 
     @Override
-    @Transactional(rollbackFor =Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void deleteCustomArchiveGroup(List<Integer> list) throws Exception {
-            Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
-            for (int i = 0; i < list.size(); i++) {
-                if (max < list.get(i)) {
-                    throw new Exception("自定义组参数过大");
-                }
+        Integer max = customArchiveGroupDao.selectMaxPrimaryKey();
+        for (int i = 0; i < list.size(); i++) {
+            if (max < list.get(i)) {
+                throw new Exception("自定义组参数过大");
             }
-            customArchiveGroupDao.deleteCustomGroup(list);
+        }
+        customArchiveGroupDao.deleteCustomGroup(list);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
-            customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
+        customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
     }
 
-        @Override
-        public PageResult<CustomArchiveTable> selectCustomTableFromGroup (Integer currentPage, Integer
-        pageSize, Integer customArchiveGroupId){
-            PageHelper.startPage(currentPage, pageSize);
-            //获得自定义组中自定义表id的集合
-            List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
+    @Override
+    public PageResult<CustomArchiveTable> selectCustomTableFromGroup(Integer currentPage, Integer
+            pageSize, Integer customArchiveGroupId) {
+        PageHelper.startPage(currentPage, pageSize);
+        //获得自定义组中自定义表id的集合
+        List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
 
-            List<CustomArchiveTable> list= customArchiveTableDao.selectByPrimaryKeyList(integerList);
-            PageResult pageResult=new PageResult(list);
-            return pageResult;
-        }
+        List<CustomArchiveTable> list = customArchiveTableDao.selectByPrimaryKeyList(integerList);
+        PageResult pageResult = new PageResult(list);
+        return pageResult;
+    }
 
     @Override
     public void insertCustomArchiveField(CustomArchiveField customArchiveField) {
-             customArchiveFieldDao.insertSelective(customArchiveField);
+        customArchiveFieldDao.insertSelective(customArchiveField);
     }
 
     @Override
@@ -129,7 +134,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         Integer max = customArchiveFieldDao.selectMaxPrimaryKey();
         for (int i = 0; i < list.size(); i++) {
             if (max < list.get(i)) {
-              throw new Exception("参数不合理！");
+                throw new Exception("参数不合理！");
             }
         }
         customArchiveFieldDao.deleteCustomField(list);
@@ -137,63 +142,62 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public void updateCustomArchiveField(CustomArchiveField customArchiveField) {
-             customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
+        customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
     }
+
     @Override
     public PageResult<CustomArchiveField> selectCustomArchiveField(Integer currentPage, Integer pageSize,
                                                                    Integer customArchiveTableId) {
 
-             PageHelper.startPage(currentPage, pageSize);
-             //根据自定义表找自定义字段id
-            List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
-            List<CustomArchiveField> list= customArchiveFieldDao.selectByPrimaryKeyList(integerList);
-            return new PageResult<>(list);
+        PageHelper.startPage(currentPage, pageSize);
+        //根据自定义表找自定义字段id
+        List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
+        List<CustomArchiveField> list = customArchiveFieldDao.selectByPrimaryKeyList(integerList);
+        return new PageResult<>(list);
     }
 
     @Override
     public CustomArchiveField selectCustomArchiveFieldById(Integer customArchiveFieldId) {
-          return customArchiveFieldDao.selectByPrimaryKey(customArchiveFieldId);
+        return customArchiveFieldDao.selectByPrimaryKey(customArchiveFieldId);
     }
 
 
-
-
     @Override
-        public List<Integer> getCompanyId (UserSession userSession){
+    public List<Integer> getCompanyId(UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
         List<Integer> list = organizationDao.getCompanyIdByArchiveId(archiveId);
         return list;
 
-        }
+    }
 
-        @Override
-        public List<Integer> getOrgIdByCompanyId (Integer orgId){
+    @Override
+    public List<Integer> getOrgIdByCompanyId(Integer orgId) {
 
-                List<Integer> list = organizationDao.getOrgIdByCompanyId(orgId);
-                return list;
-        }
+        List<Integer> list = organizationDao.getOrgIdByCompanyId(orgId);
+        return list;
+    }
 
-        @Override
-        public List<Integer> getPostByOrgId (Integer orgId){
+    @Override
+    public List<Integer> getPostByOrgId(Integer orgId) {
 
-                List<Integer> list = postDao.getPostByOrgId(orgId);
-                return list;
-        }
+        List<Integer> list = postDao.getPostByOrgId(orgId);
+        return list;
+    }
 
     @Override
     public List<String> selectTableFromOrg(UserSession userSession) {
         //根据部门id筛选自己的表id
-        List<Integer> list1=customArchiveTableDao.selectIdByOrgId(userSession.getCompanyId());
-        List<String> list=customArchiveTableDao.selectNameById(list1);
+        List<Integer> list1 = customArchiveTableDao.selectIdByComId(userSession.getCompanyId());
+        List<String> list = customArchiveTableDao.selectNameById(list1);
         return list;
     }
 
     @Override
     public List<String> staffCommonService(Integer customArchiveFieldId) {
         //找到企业代码id
-        Integer id=customArchiveFieldDao.selectCodeId(customArchiveFieldId);
+        Integer id = customArchiveFieldDao.selectCodeId(customArchiveFieldId);
         //找到自定义字段的值
-        List<String> list=companyCodeDao.selectValue(id);
+        List<String> list = companyCodeDao.selectValue(id);
         return list;
     }
 
@@ -202,18 +206,18 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //TODO 需要弄清楚数组的形式
         Integer archiveId = userSession.getArchiveId();
         //将前端传过来的大字段进行解析
-                 JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
-                    JSONObject jsono = JSONObject.parseObject(json.toString());
-                    for (String s : jsono.keySet()) {
-                        s.replace(s, "@" + s + "@");
-                    }
-                customArchiveTableData.setOperatorId(archiveId);
-               customArchiveTableDataDao.insert(customArchiveTableData);
+        JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
+        JSONObject jsono = JSONObject.parseObject(json.toString());
+        for (String s : jsono.keySet()) {
+            s.replace(s, "@" + s + "@");
+        }
+        customArchiveTableData.setOperatorId(archiveId);
+        customArchiveTableDataDao.insert(customArchiveTableData);
     }
 
     @Override
     public void updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData) {
-             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
+        customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
     }
 
     @Override
@@ -222,63 +226,102 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //通过自定义表id找到数据id集合
         List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
 
-         List<CustomArchiveTableData> list=customArchiveTableDataDao.selectByPrimaryKeyList(integerList);
+        List<CustomArchiveTableData> list = customArchiveTableDataDao.selectByPrimaryKeyList(integerList);
 
-         return new PageResult<>(list);
+        return new PageResult<>(list);
     }
 
 
-        @Override
-        public List<String> checkField (Integer fieldId){
+    @Override
+    public List<String> checkField(Integer fieldId) {
+        //通过字段名找到验证code
+        return customArchiveFieldCheckDao.selectCheckName(fieldId);
+    }
 
-                //通过字段名找到验证code
-               return customArchiveFieldCheckDao.selectCheckName(fieldId);
+    @Override
+    public void importFile(String path,UserSession userSession) throws IOException, NoSuchFieldException, IllegalAccessException {
+        MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
+        Integer tableId=null;
+        //key是字段名称，value是值
+        Map<String, List<String>> stringListMap = ExcelUtil.readExcel(multipartFile);
+        Map<Integer,List<String>>  fieldMap=new HashMap<>();
+        //需要进行入库操作
+        //根据companyId找到自定义表的集合
+        List<Integer> list = customArchiveTableDao.selectIdByComId(userSession.getCompanyId());
+        //根据自定义表找到自定义字段名存进map中
+        for (Integer integer : list) {
+            List<String> list1 = customArchiveFieldDao.selectFieldNameListByTableId(integer);
+            fieldMap.put(integer,list1);
         }
-
-        @Override
-        public ResponseResult importFile (String path){
-            ExcelEntity excelEntity = null;
-            MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
-            try {
-                excelEntity = ExcelUtil.readExcel(multipartFile);
-                return new ResponseResult(excelEntity, CommonCode.SUCCESS);
-            } catch (IOException e) {
-                return new ResponseResult(excelEntity, CommonCode.FAIL);
+        //匹配找到需要设值的表id
+        for (Map.Entry<Integer, List<String>> integerListEntry : fieldMap.entrySet()) {
+            List<String> strings = new ArrayList<>(stringListMap.keySet());
+            if(strings.containsAll(integerListEntry.getValue())){
+                tableId= integerListEntry.getKey();
             }
-
         }
+        //  若表为内置表
+            //通过tableId找到物理表名
+        String s = customArchiveTableDao.selectTableName(tableId);
+        //通过物理表名找到实体对象
+        List<Object> objectList=customArchiveTableDao.selectObject(s);
+        //根据集合获得Object对象
+        Object object = getObject(objectList);
+        //将值设入属性
+        Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
+        for (Map.Entry<String, List<String>> entry : entries) {
+            Field declaredField = object.getClass().getDeclaredField(entry.getKey());
+            declaredField.setAccessible(true);
+            declaredField.set(object,entry.getValue());
+        }
+        //将值设置给物理表
+        //物理属性名集合
+        List<String> strings = customArchiveFieldDao.selectPhysicNameByList(new ArrayList<>(stringListMap.keySet()));
+        //拼接sql并插入
+        customArchiveTableDataDao.insertCustom(s,getFieldSql(strings),getValueSql(strings));
 
-        @Override
-        public ResponseResult exportFile (String path, String title, Integer customArchiveTableId){
-            //得到response对象
-            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-            String[] heads = null;
-            Map<String, String> fieldNameTypemap = new HashMap<>();
-            List<Map<String, String>> mapList = new ArrayList<>();
-            //获取heads，通过customTableId找到字段名存入heads
-            try {
-                List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
-                List<CustomArchiveField> list=customArchiveFieldDao.selectByList(integerList);
 
-                for (int i = 0; i < list.size(); i++) {
-                    heads[i] = list.get(i).getFieldName();
-                }
-            } catch (Exception e) {
-                logger.error("获取heads失败");
+        //TODO 若表为自定义表
+            //将字段设置给自定义表
+            //将值设置给数据表 直接拼接
+    }
+
+    @Override
+    public void exportFile(String path, String title, Integer customArchiveTableId) {
+        //得到response对象
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        List<String> heads = new ArrayList<>();
+        Map<String, String> fieldNameTypemap = new HashMap<>();
+        List<Map<String, String>> mapList = new ArrayList<>();
+        //获取heads，通过customTableId找到字段名存入heads
+        try {
+            List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
+            List<CustomArchiveField> list = customArchiveFieldDao.selectByList(integerList);
+            for (int i = 0; i < list.size(); i++) {
+                heads.add(list.get(i).getFieldName());
             }
-            //通过字段表获取字段类型
-            try {
-                List<String> fieldTypeList = customArchiveFieldDao.selectFieldType(customArchiveTableId);
-                //通过类型获取到code
-                for (int i = 0; i < fieldTypeList.size(); i++) {
-                    fieldNameTypemap.put(heads[i], fieldTypeList.get(i));
-                }
-            } catch (Exception e) {
-                logger.error("获取字段类型失败");
+        } catch (Exception e) {
+            logger.error("获取heads失败");
+        }
+        //通过字段表获取字段类型
+        try {
+            List<String> fieldTypeList = customArchiveFieldDao.selectFieldType(customArchiveTableId);
+            //通过类型获取到code
+            for (int i = 0; i < fieldTypeList.size(); i++) {
+                fieldNameTypemap.put(heads.get(i), fieldTypeList.get(i));
             }
+        } catch (Exception e) {
+            logger.error("获取字段类型失败");
+        }
+        //通过表id判断是否是内置表
+        Integer integer = customArchiveTableDao.selectInside(customArchiveTableId);
+        if (integer > 0) {
+            //TODO 是内置表，通过物理表名获得实体对象
+            //找到物理字段，反射判断属性值然后设值
+
+        } else {
             //通过自定义表id获得数据表里的大字段，解析出来值存进dates
             try {
-
                 List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
                 for (int i = 0; i < integerList.size(); i++) {
                     Map<String, String> map = new HashMap<>();
@@ -287,58 +330,68 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                     for (int j = 0; j < json.size(); j++) {
                         JSONObject jsono = JSONObject.parseObject(json.get(i).toString());
                         for (String s : jsono.keySet()) {
-                            map.put( s.replace("@",""), jsono.getString(s));
+                            map.put(s.replace("@", "").trim(), jsono.getString(s));
                         }
+                        mapList.add(map);
                     }
-
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error("获取字段值失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-            try {
-                ExcelUtil.download(path, response, title, heads, mapList, fieldNameTypemap);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("导出文件失败");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-
-        }
-
-        @Override
-        public ResponseResult putFile (String path){
-            //TODO 文件对象键的定义
-            String key = "";
-            try {
-                UpAndDownUtil.putFile(path, key);
-                return new ResponseResult(true, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("文件上传错误");
-                return new ResponseResult(false, CommonCode.FAIL);
-            }
-
-        }
-
-        @Override
-        public ResponseResult UploadFileByForWard () {
-
-            try {
-                String s = UpAndDownUtil.TransToForward();
-                ForWardPutFile forWardPutFile = new ForWardPutFile();
-                forWardPutFile.setString(s);
-                //TODO 对象键的定义需要制定规则，利用规则生成
-                forWardPutFile.setKey("");
-                return new ResponseResult(forWardPutFile, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                logger.error("文件上传获取对象错误");
-                return new ResponseResult(false, CommonCode.FAIL);
             }
         }
+
+        ExcelUtil.download(path, response, title, heads, mapList, fieldNameTypemap);
 
     }
 
+    @Override
+    public void putFile(String path) {
+        //TODO 文件对象键的定义
+        String key = "";
+        UpAndDownUtil.putFile(path, key);
+    }
 
+    @Override
+    public ForWardPutFile UploadFileByForWard() {
+        String s = UpAndDownUtil.TransToForward();
+        ForWardPutFile forWardPutFile = new ForWardPutFile();
+        forWardPutFile.setString(s);
+        //TODO 对象键的定义需要制定规则，利用规则生成
+        forWardPutFile.setKey("");
+        return forWardPutFile;
+    }
+    public Object getObject(List<Object> list){
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }
+        return list.get(0);
+    }
+    public String getFieldSql(List<String> list){
+        String fieldSql=null;
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }else {
+            for (String s : list) {
+                fieldSql+=s+",";
+            }
+            String[] split = fieldSql.split(",", -1);
+            return split[0];
+        }
+    }
+    public String getValueSql(List<String> list){
+        String valueSql=null;
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }else {
+            for (String s : list) {
+                valueSql+="object."+s+",";
+            }
+            String[] split = valueSql.split(",", -1);
+            return split[0];
+        }
+    }
+}
 
 
 

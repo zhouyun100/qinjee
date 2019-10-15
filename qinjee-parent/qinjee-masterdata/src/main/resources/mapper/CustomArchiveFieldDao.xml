@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveField">
     <id column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+    <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
     <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
     <result column="valid_type" jdbcType="VARCHAR" property="validType" />
     <result column="code_id" jdbcType="INTEGER" property="codeId" />
@@ -21,7 +22,7 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    field_id, field_name, field_type, valid_type, code_id, code_name, default_value,
+    field_id, field_name,field_code, field_type, valid_type, code_id, code_name, default_value,
     val_length, val_precision, table_id, group_id, is_system_define, sort, create_time,
     creator_id, update_time, is_delete
   </sql>
@@ -36,13 +37,13 @@
     where field_id = #{fieldId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="field_id" keyProperty="fieldId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveField" useGeneratedKeys="true">
-    insert into t_custom_archive_field (field_name, field_type, valid_type,
+    insert into t_custom_archive_field (field_name,field_code, field_type, valid_type,
       code_id, code_name, default_value,
       val_length, val_precision, table_id,
       group_id, is_system_define, sort,
       create_time, creator_id, update_time,
       is_delete)
-    values (#{fieldName,jdbcType=VARCHAR}, #{fieldType,jdbcType=VARCHAR}, #{validType,jdbcType=VARCHAR},
+    values (#{fieldName,jdbcType=VARCHAR},#{fieldCode,jdbcType=VARCHAR}, #{fieldType,jdbcType=VARCHAR}, #{validType,jdbcType=VARCHAR},
       #{codeId,jdbcType=INTEGER}, #{codeName,jdbcType=VARCHAR}, #{defaultValue,jdbcType=VARCHAR},
       #{valLength,jdbcType=INTEGER}, #{valPrecision,jdbcType=INTEGER}, #{tableId,jdbcType=INTEGER},
       #{groupId,jdbcType=INTEGER}, #{isSystemDefine,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER},
@@ -54,6 +55,9 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="fieldName != null">
         field_name,
+      </if>
+      <if test="fieldCode != null">
+        field_code,
       </if>
       <if test="fieldType != null">
         field_type,
@@ -104,6 +108,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="fieldName != null">
         #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldCode != null">
+        #{fieldCode,jdbcType=VARCHAR},
       </if>
       <if test="fieldType != null">
         #{fieldType,jdbcType=VARCHAR},
@@ -158,6 +165,9 @@
       <if test="fieldName != null">
         field_name = #{fieldName,jdbcType=VARCHAR},
       </if>
+      <if test="fieldCode != null">
+        field_code = #{fieldCode,jdbcType=VARCHAR},
+      </if>
       <if test="fieldType != null">
         field_type = #{fieldType,jdbcType=VARCHAR},
       </if>
@@ -209,6 +219,7 @@
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveField">
     update t_custom_archive_field
     set field_name = #{fieldName,jdbcType=VARCHAR},
+        field_code = #{fieldCode,jdbcType=VARCHAR},
       field_type = #{fieldType,jdbcType=VARCHAR},
       valid_type = #{validType,jdbcType=VARCHAR},
       code_id = #{codeId,jdbcType=INTEGER},
@@ -274,5 +285,33 @@
     select code_id
     from t_custom_archive_field
     where field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
+  <select id="selectFieldName" resultType="java.lang.String">
+    select field_name
+    from t_custom_archive_field
+    where  field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
+  <select id="selectTableId" resultType="java.lang.Integer">
+     select table_id
+    from t_custom_archive_field
+    where  field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
+  <select id="selectPhysicName" resultType="java.lang.String">
+    select  field_code
+     from t_custom_archive_field
+    where  field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
+  <select id="selectFieldNameListByTableId" resultType="java.lang.String">
+    select field_name
+    from t_custom_archive_field
+    where  table_id = #{tableId,jdbcType=INTEGER} AND is_delete=0
+  </select>
+  <select id="selectPhysicNameByList">
+    select  field_code
+     from t_custom_archive_field
+    where  field_name  in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
 </mapper>

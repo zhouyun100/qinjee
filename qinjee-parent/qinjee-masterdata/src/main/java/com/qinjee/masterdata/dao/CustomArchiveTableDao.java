@@ -29,7 +29,15 @@ public interface CustomArchiveTableDao {
 
     List<CustomArchiveTable> selectByPrimaryKeyList(List<Integer> list);
 
-    List<Integer> selectIdByOrgId(Integer companyId);
+    List<Integer> selectIdByComId(Integer companyId);
 
     List<String> selectNameById(@Param("list1") List<Integer> list1);
+
+    Integer selectInside(@Param("tableId") Integer tableId);
+
+    String selectTableName(@Param("tableId") Integer tableId);
+
+    Integer selectTableIdByName(@Param("tableName") String tableName);
+
+    List<Object> selectObject(String s);
 }

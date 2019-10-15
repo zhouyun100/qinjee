@@ -1,11 +1,15 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
+import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 import org.apache.ibatis.annotations.Param;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -142,31 +146,31 @@ public interface IStaffCommonService {
     /**
      * 模板导入
      * @param path
+     * @param userSession
      * @return
      */
-    ResponseResult importFile(String path);
+    void importFile(String path,UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException;
 
     /**
-     * 模板导出
-     * @param path
+     * 模板导   * @param path
      * @param title
      * @param customArchiveTableDataId
      * @return
      */
-    ResponseResult exportFile(String path, String title, Integer customArchiveTableDataId);
+    void exportFile(String path, String title, Integer customArchiveTableDataId);
 
     /**
      * 文件上传
      * @param path
      * @return
      */
-    ResponseResult putFile(String path);
+    void putFile(String path);
 
     /**
      * 返回临时对象给前端
      * @return
      */
-    ResponseResult UploadFileByForWard();
+    ForWardPutFile UploadFileByForWard();
 
 
 
