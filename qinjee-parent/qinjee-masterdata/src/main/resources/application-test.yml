@@ -1,0 +1,133 @@
+spring:
+  #应用名
+  application:
+    name: masterdata
+
+  #配置国际化
+  messages:
+    basename: i18n/messages
+    encoding: utf-8
+    cache-duration: 3600
+
+  datasource:
+    # mysql 8.0 数据库配置
+    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    username: qinjee
+    password: qinjee2019
+    driver-class-name: com.mysql.jdbc.Driver
+
+    # oracle 12c 数据库配置
+    #    url: jdbc:oracle:thin:@localhost:1521:QINJEEEHR
+    #    username: root
+    #    password: qinjee2019
+    #    driver-class-name: oracle.jdbc.driver.OracleDriver
+
+    # sqlserver 2012 数据库配置
+    #    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    #    url: jdbc:sqlserver://localhost:1433;DatabaseName=qinjeeehr
+    #    username: sa
+    #    password: qinjee2019
+
+    # Druid连接池的配置信息
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 100  #初始化连接大小
+      min-idle: 50  #最小连接池数量
+      max-active: 500 #最小连接池数量
+      max-wait: 3000  #获取连接时最大等待时间，单位毫秒
+      query-timeout: 3000 #查询超时时间
+      transaction-query-timeout: 10000  #事务查询超时时间
+      time-between-eviction-runs-millis: 60000 #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      min-evictable-idle-time-millis: 300000  #配置一个连接在池中最小生存的时间，单位是毫秒
+      validation-query: SELECT 1 FROM DUAL  #测试连接
+      test-while-idle: true #申请连接的时候检测，建议配置为true，不影响性能，并且保证安全性
+      test-on-borrow: false #获取连接时执行检测，建议关闭，影响性能
+      test-on-return: false #归还连接时执行检测，建议关闭，影响性能
+      pool-prepared-statements: false #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
+      max-pool-prepared-statement-per-connection-size: 20 #开启poolPreparedStatements后生效
+      filters: stat,wall,log4j2  #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000 #通过connectProperties属性来打开mergeSql功能;慢SQL记录
+
+  #RabbitMQ
+  rabbitmq:
+    addresses: 193.112.188.180:5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 3000 #连接超时时长
+    publisher-confirms: true  #消息发送到交换机确认机制,是否确认回调
+    publisher-returns: true #消息发送到交换机确认机制,是否返回回调
+    listener:
+      simple:
+        acknowledge-mode: manual  #采用手动应答(可靠)
+        concurrency: 1  #指定最小的消费者数量
+        max-concurrency: 1  #指定最大的消费者数量
+        retry:
+          enabled: true #指定是否支持重试
+          max-attempts: 3 #重试次数
+
+  #ElasticSearch
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      cluster-nodes: 193.112.188.180:9200
+
+  #  redis集群
+  redis:
+    cluster:
+      nodes: 193.112.188.180:7001,193.112.188.180:7002,193.112.188.180:7003,193.112.188.180:7004,193.112.188.180:7005,193.112.188.180:7006
+      max-redirects: 6
+    timeout: 2000
+    password: qinjee2019
+
+
+
+#security:
+#  basic:
+#    enabled: true
+#  user:
+#    name: qinjee
+#    password: qinjee2019
+#    role: USER
+
+#注册中心指向start
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    #以IP地址进行注册
+    prefer-ip-address: true
+    instance-id: ${eureka.instance.ip-address}:${server.port}
+    #表示eureka client发送心跳给server的频率
+    lease-renewal-interval-in-seconds: 30
+    #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
+    lease-expiration-duration-in-seconds: 90
+    ip-address: 193.112.188.180
+  client:
+    service-url:
+      defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
+
+server:
+  port: 8080
+  tomcat:
+    accesslog:
+      enabled: false
+
+logging:
+  config: classpath:log4j/log4j2_test.xml
+  level:
+    com:
+      qinjee:
+        masterdata:
+          dao: DEBUG
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml,classpath:mapper/**/*.xml
+
+pagehelper:
+  helperDialect: mysql  #数据库
+  reasonable: true
+  supportMethodsArguments: true
+  pageSizeZero: true
+  params: count=countSql
+

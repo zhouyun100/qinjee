@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PreEmploymentChange">
+    <id column="change_id" jdbcType="INTEGER" property="changeId" />
+    <result column="employment_id" jdbcType="INTEGER" property="employmentId" />
+    <result column="change_state" jdbcType="VARCHAR" property="changeState" />
+    <result column="abandon_reason" jdbcType="VARCHAR" property="abandonReason" />
+    <result column="change_remark" jdbcType="VARCHAR" property="changeRemark" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    change_id, employment_id, change_state, abandon_reason, change_remark, operator_id,
+    create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_pre_employment_change
+    where change_id = #{changeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_pre_employment_change
+    where change_id = #{changeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.entity.PreEmploymentChange" useGeneratedKeys="true">
+    insert into t_pre_employment_change (employment_id, change_state, abandon_reason,
+      change_remark, operator_id, create_time
+      )
+    values (#{employmentId,jdbcType=INTEGER}, #{changeState,jdbcType=VARCHAR}, #{abandonReason,jdbcType=VARCHAR},
+      #{changeRemark,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.entity.PreEmploymentChange" useGeneratedKeys="true">
+    insert into t_pre_employment_change
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="employmentId != null">
+        employment_id,
+      </if>
+      <if test="changeState != null">
+        change_state,
+      </if>
+      <if test="abandonReason != null">
+        abandon_reason,
+      </if>
+      <if test="changeRemark != null">
+        change_remark,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="employmentId != null">
+        #{employmentId,jdbcType=INTEGER},
+      </if>
+      <if test="changeState != null">
+        #{changeState,jdbcType=VARCHAR},
+      </if>
+      <if test="abandonReason != null">
+        #{abandonReason,jdbcType=VARCHAR},
+      </if>
+      <if test="changeRemark != null">
+        #{changeRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.PreEmploymentChange">
+    update t_pre_employment_change
+    <set>
+      <if test="employmentId != null">
+        employment_id = #{employmentId,jdbcType=INTEGER},
+      </if>
+      <if test="changeState != null">
+        change_state = #{changeState,jdbcType=VARCHAR},
+      </if>
+      <if test="abandonReason != null">
+        abandon_reason = #{abandonReason,jdbcType=VARCHAR},
+      </if>
+      <if test="changeRemark != null">
+        change_remark = #{changeRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where change_id = #{changeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PreEmploymentChange">
+    update t_pre_employment_change
+    set employment_id = #{employmentId,jdbcType=INTEGER},
+      change_state = #{changeState,jdbcType=VARCHAR},
+      abandon_reason = #{abandonReason,jdbcType=VARCHAR},
+      change_remark = #{changeRemark,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where change_id = #{changeId,jdbcType=INTEGER}
+  </update>
+  <insert id="insertStatusChange" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.vo.staff.StatusChangeVo" useGeneratedKeys="true">
+    insert into t_pre_employment_change (employment_id, change_state, abandon_reason,
+      change_remark, operator_id
+      )
+    values (#{employmentId,jdbcType=INTEGER}, #{changeState,jdbcType=VARCHAR}, #{abandonReason,jdbcType=VARCHAR},
+      #{changeRemark,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}
+      )
+  </insert>
+</mapper>

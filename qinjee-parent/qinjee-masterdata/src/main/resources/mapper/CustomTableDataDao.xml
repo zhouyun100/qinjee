@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDataDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomTableData">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="big_data" jdbcType="VARCHAR" property="bigData" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="operator_time" jdbcType="TIMESTAMP" property="operatorTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, table_id, business_id, big_data, create_time, creator_id, operator_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_table_data
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_custom_table_data
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomTableData" useGeneratedKeys="true">
+    insert into t_custom_table_data (table_id, business_id, big_data,
+      create_time, creator_id, operator_time
+      )
+    values (#{tableId,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{bigData,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{creatorId,jdbcType=INTEGER}, #{operatorTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomTableData" useGeneratedKeys="true">
+    insert into t_custom_table_data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tableId != null">
+        table_id,
+      </if>
+      <if test="businessId != null">
+        business_id,
+      </if>
+      <if test="bigData != null">
+        big_data,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="creatorId != null">
+        creator_id,
+      </if>
+      <if test="operatorTime != null">
+        operator_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tableId != null">
+        #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="businessId != null">
+        #{businessId,jdbcType=INTEGER},
+      </if>
+      <if test="bigData != null">
+        #{bigData,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creatorId != null">
+        #{creatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorTime != null">
+        #{operatorTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomTableData">
+    update t_custom_table_data
+    <set>
+      <if test="tableId != null">
+        table_id = #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="businessId != null">
+        business_id = #{businessId,jdbcType=INTEGER},
+      </if>
+      <if test="bigData != null">
+        big_data = #{bigData,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creatorId != null">
+        creator_id = #{creatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorTime != null">
+        operator_time = #{operatorTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomTableData">
+    update t_custom_table_data
+    set table_id = #{tableId,jdbcType=INTEGER},
+      business_id = #{businessId,jdbcType=INTEGER},
+      big_data = #{bigData,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      creator_id = #{creatorId,jdbcType=INTEGER},
+      operator_time = #{operatorTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectCustomTableId" resultType="java.lang.Integer">
+ select
+   id
+    from t_custom_table_data
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

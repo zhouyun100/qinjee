@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.CompanyCodeDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CompanyCode">
+    <id column="code_id" jdbcType="INTEGER" property="codeId" />
+    <result column="code_name" jdbcType="VARCHAR" property="codeName" />
+    <result column="code_parent_id" jdbcType="INTEGER" property="codeParentId" />
+    <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    code_id, code_name, code_parent_id, is_system_define, company_id, sort_id, operator_id,
+    create_time, update_time, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_company_code
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_company_code
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="code_id" keyProperty="codeId" parameterType="com.qinjee.masterdata.model.entity.CompanyCode" useGeneratedKeys="true">
+    insert into t_company_code (code_name, code_parent_id, is_system_define,
+      company_id, sort_id, operator_id,
+      create_time, update_time, is_delete
+      )
+    values (#{codeName,jdbcType=VARCHAR}, #{codeParentId,jdbcType=INTEGER}, #{isSystemDefine,jdbcType=SMALLINT},
+      #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="code_id" keyProperty="codeId" parameterType="com.qinjee.masterdata.model.entity.CompanyCode" useGeneratedKeys="true">
+    insert into t_company_code
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="codeName != null">
+        code_name,
+      </if>
+      <if test="codeParentId != null">
+        code_parent_id,
+      </if>
+      <if test="isSystemDefine != null">
+        is_system_define,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="sortId != null">
+        sort_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="codeName != null">
+        #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeParentId != null">
+        #{codeParentId,jdbcType=INTEGER},
+      </if>
+      <if test="isSystemDefine != null">
+        #{isSystemDefine,jdbcType=SMALLINT},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="sortId != null">
+        #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CompanyCode">
+    update t_company_code
+    <set>
+      <if test="codeName != null">
+        code_name = #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeParentId != null">
+        code_parent_id = #{codeParentId,jdbcType=INTEGER},
+      </if>
+      <if test="isSystemDefine != null">
+        is_system_define = #{isSystemDefine,jdbcType=SMALLINT},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="sortId != null">
+        sort_id = #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CompanyCode">
+    update t_company_code
+    set code_name = #{codeName,jdbcType=VARCHAR},
+      code_parent_id = #{codeParentId,jdbcType=INTEGER},
+      is_system_define = #{isSystemDefine,jdbcType=SMALLINT},
+      company_id = #{companyId,jdbcType=INTEGER},
+      sort_id = #{sortId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=SMALLINT}
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </update>
+  <select id="selectValue" resultType="java.lang.String">
+    select code_name
+    from t_company_code
+    where   code_parent_id = #{codeParentId,jdbcType=INTEGER}
+  </select>
+</mapper>

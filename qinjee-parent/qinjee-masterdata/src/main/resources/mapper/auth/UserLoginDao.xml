@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.auth.UserLoginDao">
+
+  <resultMap id="UserInfoResultMap" type="com.qinjee.masterdata.model.vo.auth.UserInfoVO">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+  </resultMap>
+
+  <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
+    <id column="menu_id" jdbcType="INTEGER" property="menuId" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+    <result column="func_type" jdbcType="VARCHAR" property="funcType" />
+    <result column="func_url" jdbcType="VARCHAR" property="funcUrl" />
+    <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
+  </resultMap>
+
+  <select id="searchUserInfoByAccountAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
+    select
+    t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
+    from t_user_info,t_user_company,t_company_info,t_user_archive
+    where (t_user_info.user_name = #{account,jdbcType=VARCHAR} or t_user_info.phone = #{account,jdbcType=VARCHAR} or t_user_info.email = #{account,jdbcType=VARCHAR})
+    and t_user_info.password = #{password,jdbcType=VARCHAR}
+    and t_user_info.user_id = t_user_company.user_id
+    and t_user_company.company_id = t_company_info.company_id
+    and t_user_info.user_id = t_user_archive.user_id
+    and t_user_company.company_id = t_user_archive.company_id
+    and t_user_company.is_enable = 1
+    and t_company_info.is_enable = 1
+  </select>
+
+  <select id="searchUserInfoByPhone" parameterType="java.lang.String" resultMap="UserInfoResultMap">
+    select
+    t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
+    from t_user_info,t_user_company,t_company_info,t_user_archive
+    where t_user_info.phone = #{phone,jdbcType=VARCHAR}
+    and t_user_info.user_id = t_user_company.user_id
+    and t_user_company.company_id = t_company_info.company_id
+    and t_user_info.user_id = t_user_archive.user_id
+    and t_user_company.company_id = t_user_archive.company_id
+    and t_user_company.is_enable = 1
+    and t_company_info.is_enable = 1
+  </select>
+
+  <select id="searchUserInfoByUserIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
+    select
+    t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
+    from t_user_info,t_user_company,t_company_info,t_user_archive
+    where t_user_info.user_id = #{userId,jdbcType=INTEGER}
+    and t_user_info.user_id = t_user_company.user_id
+    and t_user_company.company_id = #{companyId,jdbcType=INTEGER}
+    and t_user_company.company_id = t_company_info.company_id
+    and t_user_info.user_id = t_user_archive.user_id
+    and t_user_company.company_id = t_user_archive.company_id
+    and t_user_company.is_enable = 1
+    and t_company_info.is_enable = 1
+  </select>
+
+  <update id="updateUserPasswordByUserIdAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO">
+    update t_user_info set password = #{newPassword,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER} and password = #{password,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入 -->
+  <select id="searchUserMenuListByArchiveIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="MenuResultMap">
+    select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
+    from t_menu,t_company_menu,t_role_menu_auth,t_role,t_user_role
+    where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
+    and (t_user_role.is_trusteeship = 0
+    or (t_user_role.is_trusteeship = 1
+    and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
+    and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+    ))
+    and t_company_menu.company_id = #{companyId,jdbcType=INTEGER}
+    and t_user_role.role_id = t_role.role_id
+    and t_role.role_id = t_role_menu_auth.role_id
+    and t_role_menu_auth.menu_id = t_menu.menu_id
+    and t_company_menu.menu_id = t_role_menu_auth.menu_id
+    and t_user_role.is_delete = 0
+    and t_role.is_delete = 0
+    and t_role_menu_auth.is_delete = 0
+    and t_menu.is_delete = 0
+    and t_company_menu.is_delete = 0
+  </select>
+
+</mapper>

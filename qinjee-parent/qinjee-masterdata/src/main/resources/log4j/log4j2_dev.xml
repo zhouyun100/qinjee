@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!-- status log4j2内部日志级别 -->
+<Configuration status="INFO">
+    <properties>
+        <property name="log_home">D:/eTalent/masterdata</property>
+        <property name="file_name">masterdata</property>
+        <property name="pattern_layout">%d{HH:mm:ss.SSS} [%t] %-5level %l - %msg%n</property>
+    </properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern_layout}"/>
+        </Console>
+
+        <RollingRandomAccessFile name="rolling_file" fileName="${log_home}/${file_name}.log"
+                                 filePattern="${log_home}/$${date:yyyy-MM-dd}/${file_name}-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <PatternLayout pattern="${pattern_layout}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+
+         <Socket name="socket" host="193.112.188.180" port="4567">
+             <JsonLayout compact="true" eventEol="true" />
+             <PatternLayout pattern="${pattern_layout}"/>
+         </Socket>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="rolling_file"/>
+            <AppenderRef ref="socket" />
+        </Root>
+        <!--         <Logger name="com.qinjee.tsc.dao" level="DEBUG" additivity="false" /> -->
+    </Loggers>
+</Configuration>
