@@ -184,7 +184,7 @@ public class UserLoginController extends BaseController{
     @ApiOperation(value="用户ID和企业ID登录", notes="用户ID和企业ID获取用户信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "companyId", value = "密码", required = true, dataType = "int")
+            @ApiImplicitParam(name = "companyId", value = "企业ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchUserInfoByUserIdAndCompanyId",method = RequestMethod.GET)
     public ResponseResult<UserSession> searchUserInfoByUserIdAndCompanyId(HttpServletResponse response, Integer userId,Integer companyId) {

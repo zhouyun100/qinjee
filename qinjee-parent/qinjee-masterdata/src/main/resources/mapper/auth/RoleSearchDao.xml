@@ -48,14 +48,11 @@
     <select id="searchRoleListByArchiveId" resultMap="RoleResultMap">
         select t_role.role_id,t_role.role_name,t_role.role_group_id,t_role.is_system_define,
         t_user_role.is_trusteeship, t_user_role.trusteeship_begin_time, t_user_role.trusteeship_end_time,t_user_role.id user_role_id
-        from t_role LEFT JOIN t_user_role on t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
+        from t_role,t_user_role
+        where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
         and t_user_role.role_id = t_role.role_id
         and t_user_role.is_delete = 0
-        where t_role.role_group_id in(
-        select role_group_id from t_role_group
-        where company_id = #{companyId,jdbcType=INTEGER}
-        and is_delete = 0
-        )
+        and t_role.company_id = #{companyId,jdbcType=INTEGER}
         and t_role.is_delete = 0
         ORDER BY t_user_role.id DESC
     </select>

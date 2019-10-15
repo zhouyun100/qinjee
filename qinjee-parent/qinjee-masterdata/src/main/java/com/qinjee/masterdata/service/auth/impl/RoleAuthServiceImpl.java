@@ -345,6 +345,24 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
+    public void handlerRoleToTree(List<RoleGroupVO> allRoleGroupList, List<RoleGroupVO> firstLevelRoleList) {
+        for (RoleGroupVO roleGroupVO : firstLevelRoleList) {
+            if(roleGroupVO.getRoleType().equals("ROLE_GROUP")){
+                List<RoleGroupVO> childList = allRoleGroupList.stream().filter(role -> {
+                    if (role.getRoleType().equals("ROLE") && role.getParentRoleGroupId() != null && role.getParentRoleGroupId().equals(roleGroupVO.getRoleGroupId())) {
+                        return true;
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+                if(!CollectionUtils.isEmpty(childList)){
+                    allRoleGroupList.remove(childList);
+                    roleGroupVO.setChildRoleGroupList(childList);
+                }
+            }
+        }
+    }
+
+    @Override
     public int updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode, Integer operatorId) {
         if(null == roleId || null == fieldId){
             return 0;
@@ -370,24 +388,6 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         }
 
         return resultNumber;
-    }
-
-    @Override
-    public void handlerRoleToTree(List<RoleGroupVO> allRoleGroupList, List<RoleGroupVO> firstLevelRoleList) {
-        for (RoleGroupVO roleGroupVO : firstLevelRoleList) {
-            if(roleGroupVO.getRoleType().equals("ROLE_GROUP")){
-                List<RoleGroupVO> childList = allRoleGroupList.stream().filter(role -> {
-                    if (role.getRoleType().equals("ROLE") && role.getParentRoleGroupId().equals(roleGroupVO.getRoleGroupId())) {
-                        return true;
-                    }
-                    return false;
-                }).collect(Collectors.toList());
-                if(!CollectionUtils.isEmpty(childList)){
-                    allRoleGroupList.remove(childList);
-                    roleGroupVO.setChildRoleGroupList(childList);
-                }
-            }
-        }
     }
 
     @Override
