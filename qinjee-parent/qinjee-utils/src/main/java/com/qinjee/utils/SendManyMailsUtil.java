@@ -14,7 +14,9 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeUtility;
+import javax.validation.constraints.Max;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -72,7 +74,7 @@ public class SendManyMailsUtil {
      * @param fileList 附件列表
      * @return
      */
-    public boolean sendMail(String from, String[] to, String[] copyto, String subject, String content, String[] fileList) {
+    public boolean sendMail(String from, List<String> to, List<String> copyto, String subject, String content, List<String> fileList) {
         boolean success = true;
         try {
             mimeMsg = new MimeMessage(session);
@@ -88,14 +90,18 @@ public class SendManyMailsUtil {
             // 设置发件人
 //          mimeMsg.setFrom(new InternetAddress(from));
             mimeMsg.setFrom(new InternetAddress(from, nick));
+            String[] tos=new String[to.size()];
+            to.toArray(tos);
             // 设置收件人
-            if (to != null && to.length > 0) {
-                String toListStr = getMailList(to);
+            if (to != null && to.size() > 0) {
+                String toListStr = getMailList(tos);
                 mimeMsg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toListStr));
             }
             // 设置抄送人
-            if (copyto != null && copyto.length > 0) {
-                String ccListStr = getMailList(copyto);
+            String[] copytos=new String[to.size()];
+            to.toArray(copytos);
+            if (copyto != null && copyto.size() > 0) {
+                String ccListStr = getMailList(copytos);
                 mimeMsg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccListStr));
             }
             // 设置主题
@@ -106,10 +112,10 @@ public class SendManyMailsUtil {
             bp.setContent(content, "text/html;charset=utf-8");
             mp.addBodyPart(bp);
             // 设置附件
-            if (fileList != null && fileList.length > 0) {
-                for (int i = 0; i < fileList.length; i++) {
+            if (fileList != null && fileList.size() > 0) {
+                for (int i = 0; i < fileList.size(); i++) {
                     bp = new MimeBodyPart();
-                    FileDataSource fds = new FileDataSource(fileList[i]);
+                    FileDataSource fds = new FileDataSource(fileList.get(i));
                     bp.setDataHandler(new DataHandler(fds));
                     bp.setFileName(MimeUtility.encodeText(fds.getName(), "UTF-8", "B"));
                     mp.addBodyPart(bp);
@@ -163,15 +169,15 @@ public class SendManyMailsUtil {
         }
         return content;
     }
-    public static void main(String[] args) {
-        String from = username;
-        String[] to = {"huangkt@qinjee.cn"};
-        String[] copyto = null;
-        String subject = "测试一下";
-        String content = "这是邮件内容，仅仅是测试，不需要回复.";
-        String[] fileList = {"C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-utils\\src\\main\\resources\\timg.jpg"};
-        //发送邮件需要获取实例再发送
-        SendManyMailsUtil.getInstance().sendMail(from, to, copyto, subject, content, fileList);
-    }
+//    public static void main(String[] args) {
+//        String from = username;
+//        String[] to = {"huangkt@qinjee.cn"};
+//        String[] copyto = null;
+//        String subject = "测试一下";
+//        String content = "这是邮件内容，仅仅是测试，不需要回复.";
+//        String[] fileList = {"C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-utils\\src\\main\\resources\\timg.jpg"};
+//        //发送邮件需要获取实例再发送
+//        SendManyMailsUtil.getInstance().sendMail(from, to, copyto, subject, content, fileList);
+//    }
 
 }

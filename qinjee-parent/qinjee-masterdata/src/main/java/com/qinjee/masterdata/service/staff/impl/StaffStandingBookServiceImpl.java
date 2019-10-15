@@ -239,7 +239,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 }
             }
             ArrayList<Integer> integers1 = new ArrayList<>(map.keySet());
-            for (int i = 0; i < integers1.size()-1; i=i++) {
+            for (int i = 0; i < integers1.size()-1; i++) {
                 List<UserArchive> list3 = getUserArchives(map, integers, i);
                 tempList.addAll(list3);
                 return tempList;
@@ -278,24 +278,20 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         return null;
     }
     public String getLinkHandle(Integer id){
-        String handleLink=standingBookFilterDao.selectLinkHandleById(id);
-        return handleLink;
+        return standingBookFilterDao.selectLinkHandleById(id);
     }
 
     //通过字段id找到物理字段名
     public String getPhysicName(Integer fieldId){
-        String physicName=customArchiveFieldDao.selectPhysicName(fieldId);
-        return physicName;
+        return customArchiveFieldDao.selectPhysicName(fieldId);
     }
     //通过字段id找到字段名
     public String getFieldName(Integer fieldId){
-        String fieldName=customArchiveFieldDao.selectFieldName(fieldId);
-        return fieldName;
+        return customArchiveFieldDao.selectFieldName(fieldId);
     }
     //通过字段id找到表id
     public Integer getTableId(Integer fieldId) {
-        Integer tableId = customArchiveFieldDao.selectTableId(fieldId);
-        return tableId;
+        return customArchiveFieldDao.selectTableId(fieldId);
     }
 
     //判断表是否内置
@@ -358,7 +354,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     //获得运算符
-    public boolean getCondition(String symbol, Object o2,String o1) throws ParseException {
+    private boolean getCondition(String symbol, Object o2, String o1) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat sdf2= new SimpleDateFormat("yyyy-MM-dd");
         if (o1.matches("^[0-9]*$ ")) {

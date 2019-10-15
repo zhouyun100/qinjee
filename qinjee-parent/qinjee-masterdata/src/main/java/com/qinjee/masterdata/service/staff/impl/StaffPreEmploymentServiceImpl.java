@@ -58,8 +58,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception {
         List<String> phonenumbers=new ArrayList<>();
-        String[] strings = new String[params.size()];
-        params.toArray(strings);
         Integer max = preEmploymentDao.selectMaxId();
         for (Integer integer : list) {
             if (max < integer) {
@@ -69,7 +67,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             phonenumbers.add(phoneNumber);
         }
         //TODO 固定字段需要配置，现已写死
-        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phonenumbers, strings);
+        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phonenumbers, params);
 
     }
 
