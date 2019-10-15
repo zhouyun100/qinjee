@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import org.apache.ibatis.annotations.Param;

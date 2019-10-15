@@ -121,6 +121,18 @@
       (#{item.querySchemeId,jdbcType=INTEGER}, #{item.fieldId,jdbcType=INTEGER}, #{item.sort,jdbcType=INTEGER},
       #{item.createTime,jdbcType=TIMESTAMP})
     </foreach>
-
   </insert>
+  <select id="selectIdBySort" resultType="java.lang.Integer" >
+    select  field_id
+    from  t_query_scheme_field
+    where sort = #{sort,jdbcType=INTEGER}
+  </select>
+  <select id="selectIdBySortList" resultType="java.lang.Integer">
+    select  field_id
+    from t_query_scheme_field
+    where  sort in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

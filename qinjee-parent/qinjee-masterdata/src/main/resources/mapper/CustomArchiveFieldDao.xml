@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.CustomArchiveFieldDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveField">
     <id column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
@@ -270,6 +270,7 @@
     where  field_id
     in <foreach collection="list" item="item" open="(" separator="," close=")">
     #{item}
+    AND is_delete=0
   </foreach>
   </select>
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
@@ -280,6 +281,7 @@
     in <foreach collection="list" item="item" open="(" separator="," close=")">
     #{item}
   </foreach>
+  AND is_delete=0
   </select>
   <select id="selectCodeId" resultType="java.lang.Integer">
     select code_id
@@ -290,28 +292,77 @@
     select field_name
     from t_custom_archive_field
     where  field_id = #{fieldId,jdbcType=INTEGER}
+     AND is_delete=0
   </select>
+  <update id="updatePreEmploymentField" parameterType="hashmap">
+    <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
+      UPDATE t_custom_archive_field
+      field_name= ${value}
+      WHERE field_id= #{key}
+      AND is_delete=0
+    </foreach>
+  </update>
   <select id="selectTableId" resultType="java.lang.Integer">
      select table_id
     from t_custom_archive_field
     where  field_id = #{fieldId,jdbcType=INTEGER}
+     AND is_delete=0
   </select>
   <select id="selectPhysicName" resultType="java.lang.String">
     select  field_code
      from t_custom_archive_field
     where  field_id = #{fieldId,jdbcType=INTEGER}
+     AND is_delete=0
   </select>
   <select id="selectFieldNameListByTableId" resultType="java.lang.String">
     select field_name
     from t_custom_archive_field
     where  table_id = #{tableId,jdbcType=INTEGER} AND is_delete=0
   </select>
-  <select id="selectPhysicNameByList">
+  <select id="selectPhysicNameByList" resultType="java.lang.String">
     select  field_code
-     from t_custom_archive_field
+    from t_custom_archive_field
     where  field_name  in
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
+    AND is_delete=0
+  </select>
+  <select id="selectTypeByNameList" resultType="java.lang.String">
+    select  field_type
+    from t_custom_archive_field
+    where  field_name  in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND is_delete=0
+  </select>
+  <select id="selectFieldNameByList" resultType="java.lang.String">
+    select field_name
+    from t_custom_archive_field
+    where  field_id  in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND is_delete=0
+  </select>
+  <select id="selectFieldByTableiId" resultType="com.qinjee.masterdata.model.entity.CustomField">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_field
+    where tabel_id = #{tableId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="isSystemField" resultType="java.lang.Short">
+    select is_system_define
+    from t_custom_archive_field
+    where  field_name = #{fieldName,jdbcType=INTEGER}
+     AND is_delete=0
+  </select>
+  <select id="selectTableIdByFieldName">
+    SELECT table_id
+    from t_custom_archive_field
+    where  field_name = #{fieldName,jdbcType=INTEGER}
+    AND is_delete=0
   </select>
 </mapper>

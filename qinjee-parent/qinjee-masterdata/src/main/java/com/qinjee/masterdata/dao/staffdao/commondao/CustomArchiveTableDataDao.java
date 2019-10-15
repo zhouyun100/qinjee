@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import org.apache.ibatis.annotations.Param;
@@ -31,4 +31,8 @@ public interface CustomArchiveTableDataDao {
     List<CustomArchiveTableData> selectByTableId(@Param("tableId") Integer tableId);
 
     void insertCustom(String s, String fieldSql, String valueSql);
+
+    Integer selectTableIdByBusinessIdAndTableId(Integer businessId, Integer tableId);
+
+    String selectBigDataBybusinessIdAndTableId(@Param("id") Integer id, @Param("integer") Integer integer);
 }

@@ -53,6 +53,11 @@ public class CustomArchiveTableData implements Serializable {
     @NotNull
     private String bigData;
 
+    /**
+     * 是否删除
+     */
+    @NotNull
+    private  Integer isDelete;
     private static final long serialVersionUID = 1L;
 
 }

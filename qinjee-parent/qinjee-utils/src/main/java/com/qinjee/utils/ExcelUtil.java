@@ -27,6 +27,12 @@ public class ExcelUtil {
      */
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
+    private final static String INTEGER = "Integer";
+    private final static String STRING = "String";
+    private final static String BOOLEAN = "Boolean";
+    private final static String NULL = "";
+    private final static String DATE = "Date";
+    private final static String SHORT = "Short";
     /**
      * @param path  临时存放excel文件路径
      * @param title 工作簿名称
@@ -108,7 +114,7 @@ public class ExcelUtil {
         for (int i = 0; i < heads.size(); i++) {
             HSSFCell hssfCell = hssfRow.createCell(i);
             hssfCell.setCellValue(heads.get(i));
-            hssfCell.setCellType(getCellType(map.get(heads.get(i)), cell_1));
+            hssfCell.setCellType(getCellType(map.get(heads.get(i))));
         }
 
         // 循环将list里面的值取出来放进excel中
@@ -146,16 +152,18 @@ public class ExcelUtil {
      * @param type
      * @return
      */
-    public static Integer getCellType( String type, HSSFCell cell) {
-        if ("Integer".equals(type)) {
+    public static Integer getCellType( String type) {
+        if (INTEGER.equals(type)) {
             return 0;
-        } else if ("String".equals(type)) {
+        } else if (STRING.equals(type)) {
             return 1;
-        } else if ("Boolean".equals(type)) {
+        } else if (BOOLEAN.equals(type)) {
             return 4;
-        } else if ("".equals(type)) {
+        } else if (NULL.equals(type)) {
             return 3;
-        } else if ("Date".equals(type)) {
+        } else if (DATE.equals(type)) {
+            return 0;
+        } else if(SHORT.equals(type)){
             return 0;
         }
         return 1;

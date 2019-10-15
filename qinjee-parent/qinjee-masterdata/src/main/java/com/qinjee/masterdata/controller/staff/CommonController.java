@@ -7,7 +7,6 @@ import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -358,7 +357,7 @@ public class CommonController extends BaseController {
      * 这里还是需要参照数据库中自定义表数据里的字段内容
      */
     @RequestMapping(value = "/insertCustomArchiveTableData", method = RequestMethod.POST)
-    @ApiOperation(value = "此接口需要将页面自定义表中用户填写的信息封装成一个jsonObject，然后传给后台拼接", notes = "hkt")
+    @ApiOperation(value = "需要将自定义表中的值封装成jsonObject形式传到后端，然后传给后台拼接", notes = "hkt")
     @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
     public ResponseResult insertCustomArchiveTableData( @Valid CustomArchiveTableData customArchiveTableData) {
@@ -535,20 +534,21 @@ public class CommonController extends BaseController {
 
     }
     /**
-     * 模板导出
+     * 模板导出档案
      */
-    @RequestMapping(value = "/exporttFile ", method = RequestMethod.GET)
-    @ApiOperation(value = "导出模板", notes = "hkt")
+    @RequestMapping(value = "/exportArcFile ", method = RequestMethod.GET)
+    @ApiOperation(value = "导出档案模板", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
             @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
-            @ApiImplicitParam(name = "customArchiveTableDataId", value = "自定义表数据id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
     })
-    public ResponseResult exportFile(String path,String title,Integer customArchiveTableDataId) {
-        Boolean b = checkParam(path,title,customArchiveTableDataId);
+    public ResponseResult exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list) {
+        Boolean b = checkParam(path,title,list,getUserSession());
         if(b){
             try {
-                staffCommonService.exportFile(path,title,customArchiveTableDataId);
+                staffCommonService.exportArcFile(path,title,querySchemeId,list,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导出失败");
@@ -557,6 +557,31 @@ public class CommonController extends BaseController {
         return  failResponseResult("参数错误");
 
     }
+
+    /**
+     * 模板导出预入职
+     */
+    @RequestMapping(value = "/exportPreFile ", method = RequestMethod.GET)
+    @ApiOperation(value = "导出预入职模板", notes = "hkt")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
+    })
+    public ResponseResult exportPreFile(String path, String title, List<Integer> list ) {
+        Boolean b = checkParam(path,title,list,getUserSession());
+        if(b){
+            try {
+                staffCommonService.exportPreFile(path,title,list,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+
+    }
+
 
     /**
      * 模板导入

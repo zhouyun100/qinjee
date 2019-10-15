@@ -152,12 +152,14 @@ public interface IStaffCommonService {
     void importFile(String path,UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException;
 
     /**
-     * 模板导   * @param path
+     * 模板导出档案
+     * @param path
      * @param title
-     * @param customArchiveTableDataId
+     * @param querySchemeId
+     * @param list
      * @return
      */
-    void exportFile(String path, String title, Integer customArchiveTableDataId);
+    void exportArcFile(String path, String title,Integer querySchemeId,List<Integer> list,UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
 
     /**
      * 文件上传
@@ -208,4 +210,13 @@ public interface IStaffCommonService {
      * @return
      */
     List<String> staffCommonService(Integer customArchiveFieldId);
+
+    /**
+     * 导出预入职
+     * @param path
+     * @param title
+     * @param list
+     * @param userSession
+     */
+    void exportPreFile(String path, String title, List<Integer> list, UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
 }

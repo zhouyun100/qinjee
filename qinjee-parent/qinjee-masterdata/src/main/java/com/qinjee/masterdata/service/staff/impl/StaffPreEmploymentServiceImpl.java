@@ -1,15 +1,14 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomFieldDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomTableDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
-import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -48,13 +47,11 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private PreEmploymentChangeDao preEmploymentChangeDao;
     @Autowired
-    private IStaffArchiveService staffArchiveService;
-    @Autowired
     private BlacklistDao blacklistDao;
     @Autowired
-    private CustomFieldDao customFieldDao;
+    private CustomArchiveFieldDao customArchiveFieldDao;
     @Autowired
-    private CustomTableDao customTableDao;
+    private CustomArchiveTableDao customArchiveTableDao;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -200,12 +197,11 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
     @Override
     public void updatePreEmploymentField(Map<Integer, String> map) {
-        customFieldDao.updatePreEmploymentField(map);
+        customArchiveFieldDao.updatePreEmploymentField(map);
     }
     @Override
     public PageResult<PreEmployment> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize) {
             PageHelper.startPage(currentPage,pageSize);
-            PageResult<PreEmployment> pageResult=new PageResult<>();
             List<PreEmployment> list=preEmploymentDao.selectPreEmployment(companyId);
             return new PageResult<>(list);
 
@@ -214,9 +210,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     public Map<String,String>selectPreEmploymentField(UserSession userSession) {
         Map<String,String> map=new HashMap<>();
         //先找到对应的表id
-        Integer id=customTableDao.selectPreEmploymentTable(userSession.getCompanyId(),PRE_EMPLOYMENT);
+        Integer id=customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(),PRE_EMPLOYMENT);
         //找到table的字段对象
-        List<CustomField> list=customFieldDao.selectPreEmploymentField(id);
+        List<CustomField> list=customArchiveFieldDao.selectFieldByTableiId(id);
         for (CustomField customField : list) {
             map.put(customField.getFieldCode(),customField.getFieldName());
         }

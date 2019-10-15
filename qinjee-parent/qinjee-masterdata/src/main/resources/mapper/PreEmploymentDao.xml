@@ -28,7 +28,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 1
+    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_pre_employment
@@ -258,4 +258,27 @@
       #{item}
     </foreach>
   </update>
+  <select id="selectIdByNumber" resultType="java.lang.Integer">
+    select employment_id
+    from  t_pre_employment
+    where   phone = #{phone,jdbcType=VARCHAR}
+    AND is_delete = 0
+  </select>
+    <select id="selectIdByComId" resultType="java.lang.Integer">
+       select employment_id
+    from  t_pre_employment
+    where
+    company_id = #{companyId,jdbcType=INTEGER}
+    AND is_delete = 0
+    </select>
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
+    select
+    <include refid="Base_Column_List" />
+    from t_pre_employment
+    where employment_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
+    AND  is_delete = 0
+  </select>
 </mapper>
