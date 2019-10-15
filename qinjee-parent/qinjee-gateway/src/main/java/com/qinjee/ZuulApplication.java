@@ -16,10 +16,17 @@ package com.qinjee;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
-@SpringBootApplication
+/**
+ * zuul网关
+ *
+ * @author 周赟
+ * @date 2019/10/15
+ */
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @EnableEurekaClient
 @EnableZuulProxy
 public class ZuulApplication{

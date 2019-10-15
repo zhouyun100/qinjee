@@ -18,10 +18,9 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.RateLimiter;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.qinjee.consts.ResponseConsts;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.zull.redis.RedisService;
+import com.qinjee.zull.redis.RedisClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -47,13 +46,27 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class AuthFilter extends ZuulFilter{
 
 	@Autowired
-	private RedisService redisService;
+	protected RedisClusterService redisClusterService;
 
-	//排除过滤的 uri 地址
-    private static final String LOGIN_URI = "/api/tsc/user/login";
-    private static final String REGISTER_URI = "/api/tsc/user/register";
+	/**
+	 * SESSION
+	 */
+	public static final String SESSION_KEY = "SESSION_KEY";
+	public static final Integer SESSION_INVALID_SECOND = 7200;
+	public static final Integer SESSION_CHECK_SECOND = 1800;
 
-	// 每秒产生1000个令牌
+	/**
+	 * 排除过滤的 uri 地址
+	 */
+    private static final String[] LOGIN_URI = {"/api/masterdata/userLogin/loginByAccountAndPassword",
+				"/api/masterdata/userLogin/loginByPhoneAndCode",
+				"/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId",
+				"/api/masterdata/userLogin/sendCodeByPhone",
+				"/api/masterdata/userLogin/verifyCode"};
+
+	/**
+	 * 每秒产生1000个令牌
+	 */
 	private static final RateLimiter RATE_LIMITER = RateLimiter.create(1000);
 
 	@Override
@@ -62,10 +75,14 @@ public class AuthFilter extends ZuulFilter{
         HttpServletRequest request = requestContext.getRequest();
 
         String requestUri = request.getRequestURI();
-        //注册和登录接口不拦截，其他接口都要拦截校验 token
-        if (LOGIN_URI.equals(requestUri) || REGISTER_URI.equals(requestUri)) {
-            return false;
-        }
+        /**
+         * 注册和登录接口不拦截，其他接口都要拦截校验 token
+		 */
+		for(String loginUri : LOGIN_URI){
+			if (loginUri.equals(requestUri) || loginUri.equals(requestUri)) {
+				return false;
+			}
+		}
         return true;
 	}
 
@@ -75,10 +92,14 @@ public class AuthFilter extends ZuulFilter{
 		RequestContext requestContext = RequestContext.getCurrentContext();
 		HttpServletResponse response = requestContext.getResponse();
 		response.setContentType("application/json;charset=utf-8");
-		//就相当于每调用一次tryAcquire()方法，令牌数量减1，当1000个用完后，那么后面进来的用户无法访问上面接口
-        //当然这里只写类上面一个接口，可以这么写，实际可以在这里要加一层接口判断。
+
+		/**
+		 * 就相当于每调用一次tryAcquire()方法，令牌数量减1，当1000个用完后，那么后面进来的用户无法访问上面接口
+		 * 当然这里只写类上面一个接口，可以这么写，实际可以在这里要加一层接口判断。
+		 */
         if (!RATE_LIMITER.tryAcquire()) {
             requestContext.setSendZuulResponse(false);
+
             //HttpStatus.TOO_MANY_REQUESTS.value()里面有静态代码常量
             requestContext.setResponseStatusCode(HttpStatus.TOO_MANY_REQUESTS.value());
             return null;
@@ -86,27 +107,17 @@ public class AuthFilter extends ZuulFilter{
 
         HttpServletRequest request = requestContext.getRequest();
 
-        //token对象,有可能在请求头传递过来，也有可能是通过参数传过来，实际开发一般都是请求头方式
-//        String token = request.getHeader("token");
-//        if (StringUtils.isEmpty((token))) {
-//            token = request.getParameter("token");
-//        }
-//        if (StringUtils.isEmpty((token))) {
-//        	setUnauthorizedResponse(requestContext);
-//        }
-
-        //先从 cookie 中取 SESSION_KEY
-        Cookie sessionKey = getCookie(request, ResponseConsts.SESSION_KEY);
+		//先从 cookie 中取 SESSION_KEY
+		Cookie sessionKey = getCookie(request, SESSION_KEY);
         if (sessionKey == null || StringUtils.isEmpty(sessionKey.getValue())) {
         	setUnauthorizedResponse(requestContext);
         }else {
-			if (redisService.exists(sessionKey.getValue())) {
-				/**
-				 * 判断登录session失效时间，小于5分钟则重新更换session时长
-				 */
-				Long loginKeyValidTime = redisService.getExpire(sessionKey.getValue());
-				if (loginKeyValidTime < ResponseConsts.SESSION_CHECK_SECCOND) {
-					redisService.expire(sessionKey.getValue(), ResponseConsts.SESSION_INVALID_SECCOND);
+			if (redisClusterService.exists(sessionKey.getValue())) {
+
+				//判断登录session失效时间，小于30分钟则重新更换session时长
+				Long loginKeyValidTime = redisClusterService.getExpire(sessionKey.getValue());
+				if (loginKeyValidTime < SESSION_CHECK_SECOND) {
+					redisClusterService.expire(sessionKey.getValue(), SESSION_INVALID_SECOND);
 				}
 			}else {
 				setUnauthorizedResponse(requestContext);
@@ -148,7 +159,7 @@ public class AuthFilter extends ZuulFilter{
     }
 
 	public Cookie getCookie(HttpServletRequest request,String cookieName) {
-		Cookie cookies[] = request.getCookies();
+		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (int i = 0; i < cookies.length; i++) {
 				if (cookieName.equals(cookies[i].getName())) {
@@ -158,4 +169,5 @@ public class AuthFilter extends ZuulFilter{
 		}
 		return null;
 	}
+
 }

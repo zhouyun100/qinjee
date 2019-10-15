@@ -11,7 +11,6 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.alibaba.fastjson.JSON;
-import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
@@ -28,6 +27,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +48,12 @@ public class UserLoginController extends BaseController{
 
     private static Logger logger = LogManager.getLogger(UserLoginController.class);
 
+    /**
+     * SESSION
+     */
+    private static final String SESSION_KEY = "SESSION_KEY";
+    private static final Integer SESSION_INVALID_SECOND = 7200;
+
     private ResponseResult responseResult;
 
     @Autowired
@@ -62,7 +68,7 @@ public class UserLoginController extends BaseController{
             @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "String")
     })
     @RequestMapping(value = "/loginByPhoneAndCode",method = RequestMethod.GET)
-    public ResponseResult<UserInfoVO> loginByMobileAndCode(HttpServletResponse response, String phone, String code) {
+    public ResponseResult<List<UserInfoVO>> loginByMobileAndCode(HttpServletResponse response, String phone, String code) {
 
         try {
 
@@ -81,40 +87,16 @@ public class UserLoginController extends BaseController{
 
             List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByPhone(phone);
 
-            if (userInfoList.isEmpty() || userInfoList.size() < 1) {
+            if (CollectionUtils.isEmpty(userInfoList)) {
 
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("手机号用户信息为空!");
                 return responseResult;
             }
 
-            if(userInfoList.size() == 1){
-                /**
-                 * 有且仅有一家有效租户信息
-                 */
-                UserInfoVO userInfo = userInfoList.get(0);
-                String loginKey = ResponseConsts.SESSION_KEY + "_" + userInfo.getUserId();
-                /**
-                 * 设置redis登录缓存时间，30分钟过期，与前端保持一致
-                 */
-                redisClusterService.setex(loginKey, ResponseConsts.SESSION_INVALID_SECCOND, JSON.toJSONString(userInfo));
-                Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey);
-                cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECCOND);
-                cookie.setPath("/");
-                response.addCookie(cookie);
+            setResponseResult(response,userInfoList);
 
-                logger.info("Login success！phone={};companyId={}", phone, userInfo.getCompanyId());
-                responseResult = ResponseResult.SUCCESS();
-                responseResult.setResult(userInfo);
-            }else if(userInfoList.size() > 1){
-                /**
-                 * 当前登录用户如果有多家有效租户信息，则提示用户选择所需登录的租户
-                 */
-                responseResult = ResponseResult.LOGIN_MULTIPLE_COMPANY();
-                responseResult.setMessage("请选择需要登录的租户平台");
-                responseResult.setResult(userInfoList);
-
-            }
+            logger.info("Login success！phone={};", phone);
 
         }catch(Exception e) {
             logger.info("Login exception! phone={};code={};exception={}", phone,code,e.toString());
@@ -140,38 +122,15 @@ public class UserLoginController extends BaseController{
 
         try {
             List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByAccountAndPassword(account,password);
-            if (userInfoList.isEmpty() || userInfoList.size() < 1) {
+            if (CollectionUtils.isEmpty(userInfoList)) {
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("账号用户信息为空!");
                 return responseResult;
             }
-            if(userInfoList.size() == 1){
-                /**
-                 * 有且仅有一家有效租户信息
-                 */
-                UserInfoVO userInfo = userInfoList.get(0);
-                String loginKey = ResponseConsts.SESSION_KEY + "_" + userInfo.getUserId();
-                /**
-                 * 设置redis登录缓存时间，30分钟过期，与前端保持一致
-                 */
-                redisClusterService.setex(loginKey, ResponseConsts.SESSION_INVALID_SECCOND, JSON.toJSONString(userInfo));
-                Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey);
-                cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECCOND);
-                cookie.setPath("/");
-                response.addCookie(cookie);
 
-                logger.info("Login success！phone={};companyId={}", account, userInfo.getCompanyId());
-                responseResult = ResponseResult.SUCCESS();
-                responseResult.setResult(userInfo);
-            }else if(userInfoList.size() > 1){
-                /**
-                 * 当前登录用户如果有多家有效租户信息，则提示用户选择所需登录的租户
-                 */
-                responseResult = ResponseResult.LOGIN_MULTIPLE_COMPANY();
-                responseResult.setMessage("请选择需要登录的租户平台");
-                responseResult.setResult(userInfoList);
+            setResponseResult(response,userInfoList);
 
-            }
+            logger.info("Login success！phone={}", account);
         }catch(Exception e) {
             logger.info("Login exception! account={};password={};exception={}", account, password, e.toString());
             e.printStackTrace();
@@ -179,6 +138,26 @@ public class UserLoginController extends BaseController{
             responseResult.setMessage("根据账号、密码登录异常！");
         }
         return responseResult;
+    }
+
+    private void setResponseResult(HttpServletResponse response, List<UserInfoVO> userInfoList){
+        if(userInfoList.size() == 1){
+            /**
+             * 有且仅有一家有效租户信息
+             */
+            UserInfoVO userInfo = userInfoList.get(0);
+            setSessionAndCookie(response,userInfo);
+
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(userInfo);
+        }else if(userInfoList.size() > 1){
+            /**
+             * 当前登录用户如果有多家有效租户信息，则提示用户选择所需登录的租户
+             */
+            responseResult.setMessage("请选择需要登录的租户平台");
+            responseResult = ResponseResult.LOGIN_MULTIPLE_COMPANY();
+            responseResult.setResult(userInfoList);
+        }
     }
 
     @ApiOperation(value="用户ID和企业ID登录", notes="用户ID和企业ID获取用户信息")
@@ -202,15 +181,8 @@ public class UserLoginController extends BaseController{
                 responseResult.setMessage("企业用户信息为空!");
                 return responseResult;
             }
-            String loginKey = ResponseConsts.SESSION_KEY + "_" + userInfo.getUserId();
-            /**
-             * 设置redis登录缓存时间，30分钟过期，与前端保持一致
-             */
-            redisClusterService.setex(loginKey, ResponseConsts.SESSION_INVALID_SECCOND, JSON.toJSONString(userInfo));
-            Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey);
-            cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECCOND);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+
+            setSessionAndCookie(response,userInfo);
 
             logger.info("Login success！userId={};companyId={}", userId, companyId);
             responseResult = ResponseResult.SUCCESS();
@@ -306,7 +278,7 @@ public class UserLoginController extends BaseController{
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {
-                    if (ResponseConsts.SESSION_KEY.equals(cookies[i].getName())) {
+                    if (SESSION_KEY.equals(cookies[i].getName())) {
                         loginKey = cookies[i].getValue();
                         if (loginKey != null) {
                             if(redisClusterService.exists(loginKey)) {
@@ -376,4 +348,17 @@ public class UserLoginController extends BaseController{
         return responseResult;
     }
 
+
+    private void setSessionAndCookie(HttpServletResponse response,UserInfoVO userInfo){
+        StringBuffer loginKey = new StringBuffer();
+        loginKey.append(SESSION_KEY).append("_").append(userInfo.getUserId());
+
+        //设置redis登录缓存时间，120分钟过期，与前端保持一致
+        redisClusterService.setex(loginKey.toString(), SESSION_INVALID_SECOND, JSON.toJSONString(userInfo));
+        Cookie cookie = new Cookie(SESSION_KEY, loginKey.toString());
+        cookie.setMaxAge(SESSION_INVALID_SECOND);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+    }
 }

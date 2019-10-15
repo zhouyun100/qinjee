@@ -14,11 +14,7 @@
  */
 package com.qinjee.api.filter;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.JSON;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
@@ -28,9 +24,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
-import com.qinjee.consts.ResponseConsts;
-import com.qinjee.entity.ResultJsonEntity;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * 熔断，当服务down掉后，会默认返回getStatusText（）中的提示信息

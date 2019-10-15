@@ -15,6 +15,7 @@
         <module>qinjee-entity</module>
         <module>qinjee-utils</module>
         <module>qinjee-masterdata</module>
+        <module>qinjee-gateway</module>
     </modules>
 
     <!-- spring-boot所有项目依赖包 -->
@@ -23,9 +24,6 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.4.RELEASE</version>
     </parent>
-
-
-
 
     <!-- spring-cloud所有项目依赖包 -->
     <dependencyManagement>

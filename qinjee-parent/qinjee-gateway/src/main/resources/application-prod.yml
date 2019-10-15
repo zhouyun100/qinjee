@@ -1,13 +1,15 @@
-server:
-  port: 5555
+spring:
+  #应用名
+  application:
+    name: gateway
 
-#spring:
-#  redis:
-#    host: 127.0.0.1
-#    port: 6379
-#    password: 123456
-#    database: 0
-#    timeout: 0
+  #  redis集群
+  redis:
+    cluster:
+      nodes: 193.112.188.180:7001,193.112.188.180:7002,193.112.188.180:7003,193.112.188.180:7004,193.112.188.180:7005,193.112.188.180:7006
+      max-redirects: 6
+    timeout: 2000
+    password: qinjee2019
 
 zuul:
   host:
@@ -17,9 +19,9 @@ zuul:
   sensitive-headers:
   prefix: /api
   routes:
-    qinjee-tsc:
-      path: /tsc/**
-      serviceId: qinjee-tsc
+    qinjee-masterdata:
+      path: /masterdata/**
+      serviceId: masterdata
 
   #security:
   #  basic:
@@ -34,6 +36,7 @@ zuul:
   #      jwt:
   #        key-value: springcloud123
 
+#注册中心指向start
 eureka:
   instance:
     appname: ${spring.application.name}
@@ -46,4 +49,11 @@ eureka:
     lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://qinjee:qinjee2019@localhost:8888/eureka/
+      defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
+
+
+server:
+  port: 8010
+  tomcat:
+    accesslog:
+      enabled: false

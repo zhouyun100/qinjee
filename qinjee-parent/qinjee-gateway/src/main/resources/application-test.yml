@@ -1,0 +1,59 @@
+spring:
+  #应用名
+  application:
+    name: gateway
+
+  #  redis集群
+  redis:
+    cluster:
+      nodes: 193.112.188.180:7001,193.112.188.180:7002,193.112.188.180:7003,193.112.188.180:7004,193.112.188.180:7005,193.112.188.180:7006
+      max-redirects: 6
+    timeout: 2000
+    password: qinjee2019
+
+zuul:
+  host:
+    connect-timeout-millis: 60000
+    socket-timeout-millis: 60000
+  #  sensitiveHeaders的默认值初始值是"Cookie", "Set-Cookie", "Authorization"这三项，不设置为空会导致无法设置cookie
+  sensitive-headers:
+  prefix: /api
+  routes:
+    qinjee-masterdata:
+      path: /masterdata/**
+      serviceId: masterdata
+
+  #security:
+  #  basic:
+  #    enabled: false
+  #  oauth2:
+  #    client:
+  #      access-token-uri: http://localhost:7777/uaa/oauth/token #令牌端点
+  #      user-authorization-uri: http://localhost:7777/uaa/oauth/authorize #授权端点
+  #      client-id: qinjee-zuul #OAuth2客户端ID
+  #      client-secret: secret #OAuth2客户端密钥
+  #    resource:
+  #      jwt:
+  #        key-value: springcloud123
+
+#注册中心指向start
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    #以IP地址进行注册
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    #表示eureka client发送心跳给server的频率
+    lease-renewal-interval-in-seconds: 30
+    #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
+    lease-expiration-duration-in-seconds: 90
+  client:
+    service-url:
+      defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
+
+
+server:
+  port: 8010
+  tomcat:
+    accesslog:
+      enabled: false
