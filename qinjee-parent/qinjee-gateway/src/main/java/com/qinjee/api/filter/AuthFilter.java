@@ -79,7 +79,7 @@ public class AuthFilter extends ZuulFilter{
          * 注册和登录接口不拦截，其他接口都要拦截校验 token
 		 */
 		for(String loginUri : LOGIN_URI){
-			if (loginUri.equals(requestUri) || loginUri.equals(requestUri)) {
+			if (!StringUtils.isEmpty(requestUri) && loginUri.equals(requestUri)) {
 				return false;
 			}
 		}
