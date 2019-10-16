@@ -16,7 +16,7 @@ public class ResponseConsts {
 	 * SESSION
 	 */
 	public static final String SESSION_KEY = "SESSION_KEY";
-	public static final Integer SESSION_INVALID_SECCOND = 1800;
-	public static final Integer SESSION_CHECK_SECCOND = 300;
+	public static final Integer SESSION_INVALID_SECOND = 7200;
+	public static final Integer SESSION_CHECK_SECOND = 1800;
 
 }

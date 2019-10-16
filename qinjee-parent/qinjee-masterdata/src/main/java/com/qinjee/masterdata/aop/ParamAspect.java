@@ -4,10 +4,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class ParamAspect {
-    @Around("execution(* com.qinjee..*Controller.*(..)) )")
+//    @Around("execution(* com.qinjee..*Controller.*(..)) )")
     public void aroundController(ProceedingJoinPoint proceedingJoinPoint) {
         Object[] args = proceedingJoinPoint.getArgs();
         boolean b = checkParam(args);

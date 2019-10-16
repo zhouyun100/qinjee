@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.RateLimiter;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import com.qinjee.consts.ResponseConsts;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.zull.redis.RedisClusterService;
@@ -47,13 +48,6 @@ public class AuthFilter extends ZuulFilter{
 
 	@Autowired
 	protected RedisClusterService redisClusterService;
-
-	/**
-	 * SESSION
-	 */
-	public static final String SESSION_KEY = "SESSION_KEY";
-	public static final Integer SESSION_INVALID_SECOND = 7200;
-	public static final Integer SESSION_CHECK_SECOND = 1800;
 
 	/**
 	 * 排除过滤的 uri 地址
@@ -109,7 +103,7 @@ public class AuthFilter extends ZuulFilter{
         HttpServletRequest request = requestContext.getRequest();
 
 		//先从 cookie 中取 SESSION_KEY
-		Cookie sessionKey = getCookie(request, SESSION_KEY);
+		Cookie sessionKey = getCookie(request, ResponseConsts.SESSION_KEY);
         if (sessionKey == null || StringUtils.isEmpty(sessionKey.getValue())) {
         	setUnauthorizedResponse(requestContext);
         }else {
@@ -117,8 +111,8 @@ public class AuthFilter extends ZuulFilter{
 
 				//判断登录session失效时间，小于30分钟则重新更换session时长
 				Long loginKeyValidTime = redisClusterService.getExpire(sessionKey.getValue());
-				if (loginKeyValidTime < SESSION_CHECK_SECOND) {
-					redisClusterService.expire(sessionKey.getValue(), SESSION_INVALID_SECOND);
+				if (loginKeyValidTime < ResponseConsts.SESSION_CHECK_SECOND) {
+					redisClusterService.expire(sessionKey.getValue(), ResponseConsts.SESSION_INVALID_SECOND);
 				}
 			}else {
 				setUnauthorizedResponse(requestContext);

@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.alibaba.fastjson.JSON;
+import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
@@ -47,12 +48,6 @@ import java.util.List;
 public class UserLoginController extends BaseController{
 
     private static Logger logger = LogManager.getLogger(UserLoginController.class);
-
-    /**
-     * SESSION
-     */
-    private static final String SESSION_KEY = "SESSION_KEY";
-    private static final Integer SESSION_INVALID_SECOND = 7200;
 
     private ResponseResult responseResult;
 
@@ -278,7 +273,7 @@ public class UserLoginController extends BaseController{
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {
-                    if (SESSION_KEY.equals(cookies[i].getName())) {
+                    if (ResponseConsts.SESSION_KEY.equals(cookies[i].getName())) {
                         loginKey = cookies[i].getValue();
                         if (loginKey != null) {
                             if(redisClusterService.exists(loginKey)) {
@@ -351,12 +346,12 @@ public class UserLoginController extends BaseController{
 
     private void setSessionAndCookie(HttpServletResponse response,UserInfoVO userInfo){
         StringBuffer loginKey = new StringBuffer();
-        loginKey.append(SESSION_KEY).append("_").append(userInfo.getUserId());
+        loginKey.append(ResponseConsts.SESSION_KEY).append("_").append(userInfo.getUserId());
 
         //设置redis登录缓存时间，120分钟过期，与前端保持一致
-        redisClusterService.setex(loginKey.toString(), SESSION_INVALID_SECOND, JSON.toJSONString(userInfo));
-        Cookie cookie = new Cookie(SESSION_KEY, loginKey.toString());
-        cookie.setMaxAge(SESSION_INVALID_SECOND);
+        redisClusterService.setex(loginKey.toString(), ResponseConsts.SESSION_INVALID_SECOND, JSON.toJSONString(userInfo));
+        Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey.toString());
+        cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECOND);
         cookie.setPath("/");
         response.addCookie(cookie);
 
