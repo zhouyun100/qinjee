@@ -20,7 +20,10 @@ import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -37,7 +40,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     @Autowired
     private SmsRecordDao smsRecordDao;
 
-//    @Autowired
+    @Autowired
     private RedisClusterService redisClusterService;
 
     @Autowired
@@ -56,10 +59,13 @@ public class SmsRecordServiceImpl implements SmsRecordService {
          * 生成6位随机数字验证码
          */
         String smsCode = KeyUtils.getNonceCodeNumber(6);
-        String[] params = {smsCode,String.valueOf(SMS_CODE_VALID_MINUTE)};
+        List<String> params = new ArrayList<>();
+        params.add(smsCode);
+        params.add(String.valueOf(SMS_CODE_VALID_MINUTE));
         redisClusterService.setex("LOGIN_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
 
-        String[] phoneNumbers = {phone};
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add(phone);
         SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,params);
 
         SmsRecord smsRecord = new SmsRecord();
@@ -68,7 +74,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
         /**
          * 根据短信模板内容替换相应的参数内容
          */
-        templateMsg.replace("{1}",params[0]).replace("{2}",params[1]);
+        templateMsg.replace("{1}",params.get(0)).replace("{2}",params.get(1));
         smsRecord.setSendMsg(templateMsg);
         smsRecord.setSendTime(new Date());
         smsRecord.setNationCode("86");

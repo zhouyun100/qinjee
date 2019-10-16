@@ -34,7 +34,7 @@
       is_enable, sort, creator_id,
       create_time, update_time, is_delete
       )
-    values (#{tableName,jdbcType=VARCHAR}, #{tableCode,jdbc=VARCHAR},#{companyId,jdbcType=INTEGER},#{funcCode,jdbcType=VARCHAR}, #{isSystemDefine,jdbcType=SMALLINT},
+    values (#{tableName,jdbcType=VARCHAR}, #{tableCode,jdbcType=VARCHAR},#{companyId,jdbcType=INTEGER},#{funcCode,jdbcType=VARCHAR}, #{isSystemDefine,jdbcType=SMALLINT},
       #{isEnable,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{creatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )

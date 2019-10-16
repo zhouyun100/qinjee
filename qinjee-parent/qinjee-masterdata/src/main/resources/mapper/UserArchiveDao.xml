@@ -611,7 +611,7 @@
   <select id="selectId" resultType="java.lang.Integer">
     select id
     from t_user_archive
-    where id_type=#{idType,jdbType=VARCHAR}
+    where id_type=#{idType,jdbcType=VARCHAR}
     AND id_number=#{idNumber,jdbcType=VARCHAR}
     AND user_category= "在职"
     AND is_delete=0
