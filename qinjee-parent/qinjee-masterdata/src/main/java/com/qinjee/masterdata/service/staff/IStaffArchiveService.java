@@ -5,7 +5,6 @@ import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.model.response.ResponseResult;
 
 import java.util.List;
 import java.util.Map;
@@ -122,8 +121,7 @@ public interface IStaffArchiveService {
     /**
      * 根据显示方案展示人员信息
      * @param schemeId
-     * @param orgId
      * @return
      */
-   PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId, Integer orgId);
+   PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession);
 }

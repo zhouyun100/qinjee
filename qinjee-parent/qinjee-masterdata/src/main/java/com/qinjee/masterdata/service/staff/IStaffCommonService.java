@@ -172,7 +172,7 @@ public interface IStaffCommonService {
      * 返回临时对象给前端
      * @return
      */
-    ForWardPutFile UploadFileByForWard();
+    ForWardPutFile uploadFileByForWard();
 
 
 

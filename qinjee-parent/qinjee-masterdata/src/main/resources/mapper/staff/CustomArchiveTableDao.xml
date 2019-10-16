@@ -256,4 +256,13 @@
      company_id=#{companyId,jdbcType=INTEGER}
      table_code=#{tableCode,jdbcType=VARCHAR}
   </select>
+  <select id="selectNotInsideTableId" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table
+    where
+     company_id=#{companyId,jdbcType=INTEGER}
+     AND is_system_define=0
+     AND func_code=#{archive,jdbcType=VARCHAR}
+     AND is_delete=0
+  </select>
 </mapper>

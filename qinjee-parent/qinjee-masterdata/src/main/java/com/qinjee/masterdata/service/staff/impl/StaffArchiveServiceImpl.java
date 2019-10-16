@@ -1,8 +1,9 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
@@ -41,6 +42,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserOrgAuthDao userOrgAuthDao;
     @Autowired
     private OrganizationDao organizationDao;
+    @Autowired
+    private CustomArchiveTableDao customArchiveTableDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -156,9 +159,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId, Integer orgId) {
+    public PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession) {
         StringBuffer stringBuffer = new StringBuffer();
-        String order = null;
+
+        List<String> insideFieldNameList=new ArrayList<>();
+
+        List<String> customFieldNameList=new ArrayList<>();
+        String order=null;
         //根据查询方案id，找到对应的字段id与顺序和排序id与升降序
         //查询字段排序sort
         List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(schemeId);
@@ -170,7 +177,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<String> stringList = customArchiveFieldDao.selectFieldNameByList(sortList);
         for (String s : stringList) {
             stringBuffer.append(s).append(",");
-        }
+                if(isInsideField(s)){
+                    insideFieldNameList.add(s);
+                }
+                customFieldNameList.add(s);
+            }
         String s = stringBuffer.toString();
         int i = s.lastIndexOf(",");
         s = s.substring(0, i);
@@ -195,12 +206,25 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         int j = order.lastIndexOf(",");
         order = order.substring(0, j);
         //进行sql查询，返回数据，档案在机构范围内
-        List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveListCustom(s, order, orgId);
+        List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveListCustom(s,insideFieldNameList,customFieldNameList,
+                order, userSession.getCompanyId());
         return new PageResult<>(userArchiveList);
     }
 
+    //通过字段id找到物理字段名
+    private String getPhysicName(Integer fieldId){
+        return customArchiveFieldDao.selectPhysicName(fieldId);
+    }
 
-    public String getSort(String sort) {
+    //判断是否是内置字段
+    private Boolean isInsideField(String filedName){
+        Short isInside=customArchiveFieldDao.selectIsInsideByName(filedName);
+        if(isInside>0){
+            return true;
+        }
+        return false;
+    }
+    private String getSort(String sort) {
         if (sort != null) {
             if (sort.equals(ASC)) {
                 return "ASC";
@@ -300,6 +324,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             querySchemeSortDao.updateByPrimaryKey(querySchemeSort);
         }
     }
+
 }
 
 

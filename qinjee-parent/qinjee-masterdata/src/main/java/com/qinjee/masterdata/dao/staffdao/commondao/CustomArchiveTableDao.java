@@ -46,4 +46,5 @@ public interface CustomArchiveTableDao {
 
     Integer selectByComIdAndPhyName(@Param("companyId") Integer companyId, @Param("archivetable") String archive);
 
+    List<Integer> selectNotInsideTableId(@Param("companyId") Integer companyId, @Param("archive") String archive);
 }

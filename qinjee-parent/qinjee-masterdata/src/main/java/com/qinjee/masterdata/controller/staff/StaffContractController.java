@@ -57,12 +57,12 @@ public class StaffContractController extends BaseController {
                 if (pageResult != null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }
-                return failResponseResult("没有未签合同");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("显示部门下的未签合同失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("部门id错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
 
@@ -529,7 +529,7 @@ public class StaffContractController extends BaseController {
      * @param params
      * @return
      */
-    public Boolean checkParam(Object... params) {
+    private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
                 return false;
@@ -544,7 +544,7 @@ public class StaffContractController extends BaseController {
      * @param message
      * @return
      */
-    public ResponseResult failResponseResult(String message) {
+    private ResponseResult failResponseResult(String message) {
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
         logger.error(message);

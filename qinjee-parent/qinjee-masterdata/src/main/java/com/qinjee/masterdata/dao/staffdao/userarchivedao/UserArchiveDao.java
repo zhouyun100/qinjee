@@ -76,4 +76,8 @@ public interface UserArchiveDao {
     Integer selectId(@Param("idType") String idType, @Param("idNumber") String idNumber);
 
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
+
+    List<UserArchive> getUserArchiveListCustom(String s, List<String> insideFieldNameList, List<String> customFieldNameList, String order, Integer companyId);
+
+    List<Integer> selectStaff(@Param("sql") String sql);
 }

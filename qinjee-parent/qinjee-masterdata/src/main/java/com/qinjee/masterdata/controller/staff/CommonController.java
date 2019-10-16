@@ -111,10 +111,10 @@ public class CommonController extends BaseController {
                 PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomArchiveTable(currentPage, pageSize);
                 return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("修改自定义表失败");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             }
         }
-        return  failResponseResult("自定义表参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
 
@@ -150,10 +150,10 @@ public class CommonController extends BaseController {
                 staffCommonService.deleteCustomArchiveGroup(list);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义组失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义组id集合参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
     }
 
     /**
@@ -195,10 +195,10 @@ public class CommonController extends BaseController {
                 PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomTableFromGroup(currentPage, pageSize, customArchiveGroupId);
                 return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult(" 展示自定义表失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义组id参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
     }
     /**
      *  展示企业下的自定义表名
@@ -211,14 +211,14 @@ public class CommonController extends BaseController {
             try {
                 List<String> list=staffCommonService.selectTableFromOrg(getUserSession());
                 if(CollectionUtils.isEmpty(list)){
-                    return failResponseResult("没有相应的表名");
+                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
                 }
                 return new ResponseResult<>(list,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("展示企业下的自定义表名失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("session错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -255,10 +255,10 @@ public class CommonController extends BaseController {
                 staffCommonService.deleteCustomArchiveField(list);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义字段失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义字段id集合参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
     }
 
     /**
@@ -303,10 +303,10 @@ public class CommonController extends BaseController {
 
                 return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult(" 展示自定义字段失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义表id参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
     /**
@@ -323,10 +323,10 @@ public class CommonController extends BaseController {
                 CustomArchiveField customArchiveField = staffCommonService.selectCustomArchiveFieldById(customArchiveFieldId);
                return new ResponseResult<>(customArchiveField,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult(" 展示自定义字段失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义表id参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -526,7 +526,7 @@ public class CommonController extends BaseController {
 
     public ResponseResult<ForWardPutFile> UploadFileByForWard() {
             try {
-                staffCommonService.UploadFileByForWard();
+                staffCommonService.uploadFileByForWard();
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("前端获取对象文件上传失败");
@@ -607,7 +607,7 @@ public class CommonController extends BaseController {
      * @param params
      * @return
      */
-    public Boolean checkParam(Object... params) {
+    private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
                 return false;
@@ -621,7 +621,7 @@ public class CommonController extends BaseController {
      * @param message
      * @return
      */
-    public ResponseResult failResponseResult(String message){
+    private ResponseResult failResponseResult(String message){
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
         logger.error(message);

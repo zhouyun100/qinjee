@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.service.staff.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
@@ -10,12 +9,14 @@ import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.Blacklist;
+import com.qinjee.masterdata.model.entity.StandingBook;
+import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
-import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -24,11 +25,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -36,6 +36,17 @@ import java.util.*;
 @Service
 public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookServiceImpl.class);
+    private static final String ARCHIVE="档案";
+    private static final String TYPEDATE="DATE";
+    private static final String TYPENUMBER="NUMBER";
+    private static final String TYPETEXT="TEXT";
+    private static final String TYPECODE="CODE";
+    private static final String DENGYU="等于";
+    private static final String BUDENGYU="不等于";
+    private static final String BAOHAN="包含";
+    private static final String BUBAOHAN="不包含";
+    private static final String AND="并且";
+    private static final String OR="或者";
 
     @Autowired
     private StandingBookDao standingBookDao;
@@ -119,7 +130,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
                 standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
                 standingBookFilter.setOperatorId(userSession.getArchiveId());
-                standingBookFilter.setSqlStr(getSql(standingBookFilterVo));
+                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
                 standingBookFilterDao.insert(standingBookFilter);
             }
         }
@@ -137,18 +148,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
             standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
             standingBookFilter.setOperatorId(userSession.getArchiveId());
-            standingBookFilter.setSqlStr(getSql(standingBookFilterVo));
+            standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
             standingBookFilterDao.updateByPrimaryKey(standingBookFilter);
         }
     }
-
-    //根据台账筛选表得到sql
-    private String getSql(StandingBookFilterVo standingBookFilterVo) {
-
-
-        return null;
-    }
-
     @Override
     public StandingBookInfo selectStandingBook(Integer id) {
         StandingBook standingBook = standingBookDao.selectByPrimaryKey(id);
@@ -158,12 +161,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         standingBookInfo.setStandingBook(standingBook);
         return standingBookInfo;
     }
-
     @Override
     public List<StandingBook> selectMyStandingBook(UserSession userSession) {
 
-        List<StandingBook> list = standingBookDao.selectByAchiveId(userSession.getArchiveId());
-        return list;
+        return standingBookDao.selectByAchiveId(userSession.getArchiveId());
 
     }
 
@@ -178,253 +179,130 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     @Override
-    public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) throws ParseException {
+    public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) {
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("where");
         List<Integer> oneList = userArchiveDao.selectStaffNoStandingBook(archiveType, orgId);
         //存储大数据表字段解析出的档案id
-        List<Integer> list1 = new ArrayList<>();
-        //存储物理表字段解析出的档案id
-        List<Integer> list2 = new ArrayList<>();
         //key是用来存是第几个筛选条件，value存档案id(可能多个)
-        Map<Integer, List<Integer>> map = new HashMap<>();
         //没经过台账之前筛选的档案id
         List<Integer> twoList = userArchivePostRelationDao.selectByType(type, oneList);
-        //筛选后的档案id
-        List<Integer> threeList = new ArrayList<>();
+        //通过id查询档案
         List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(twoList);
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
         List<StandingBookFilter> filters = standingBookFilterDao.selectByStandingBookId(stangdingBookId);
-        //临时存储的档案集合
-        List<UserArchive> tempList=new ArrayList<>();
-        for (int i = 0; i < filters.size(); i++) {
-            //通过字段id找到表id
-            Integer tableId = getTableId(filters.get(i).getFieldId());
-            //判断是否为内置，内置的话直接返回档案id。
-            boolean inside = isInside(tableId);
-            if (!inside) {
-                //若不是内置，根据表id找到数据大字段,进行JSON解析。@+字段名+@为key，返回业务id
-                List<CustomArchiveTableData> bigdata = getBigdata(tableId);
-                for (CustomArchiveTableData bigdatum : bigdata) {
-                    JSONObject jsonObject = JSONObject.parseObject(bigdatum.getBigData());
-                    if (getCondition(filters.get(i).getOperateSymbol(), jsonObject.get("@" + getFieldName(filters.get(i).getFieldId()) + "@"),
-                            filters.get(i).getFieldValue())) {
+        for (StandingBookFilter filter : filters) {
+            String whereSql = getWhereSql(filter);
+            stringBuffer.append(whereSql);
+        }
+        String baseSql = getBaseSql(orgId);
+        String sql=baseSql+stringBuffer.toString();
+        List<Integer> integerList=userArchiveDao.selectStaff(sql);
+        return userArchiveDao.selectByPrimaryKeyList(integerList);
+    }
 
-                        list1.add(bigdatum.getBusinessId());
-                        map.put(i, list1);
-                    }
+    public String getBaseSql(Integer orgId){
+        List<String> fieldNameNotInside = getFieldNameNotInside(orgId);
+        List<String> custom=new ArrayList<>();
+        StringBuffer stringBuffer=new StringBuffer();
+        StringBuffer stringBuffer2=new StringBuffer();
+        String a="select t.archiveId from";
+        String b="( select t0.* ";
+        for (int i = 0; i < fieldNameNotInside.size(); i++) {
+            stringBuffer.append(fieldNameNotInside.get(i)).append(",");
+            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
+                    "'@@"+fieldNameNotInside.get(i)+"@@')+LENGTH('@@"+fieldNameNotInside.get(i)+"@@')+1),';@@',1),");
+        }
+        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
+        String d="where t0.company_id = " +1 +
+                "and t1.func_code = 'ARCHIVE'\n" +
+                "and t0.company_id = t1.company_id\n" +
+                "and t2.table_id=t1.table_id "+
+                "and t0.archive_id = t2.business_id";
+        String e=")t";
+        for (String s : custom) {
+            stringBuffer2.append(s);
+        }
+        int i = stringBuffer2.toString().lastIndexOf(",");
+        String substring = stringBuffer2.toString().substring(0, i);
+        String s = stringBuffer.toString();
+        return a+b+s+substring+c+d+e;
+    }
 
+    /**
+     * 字段类型分四种：
+     * 日期 DATE，数字 NUMBER，代码 CODE，文本 TEXT
+     * @param filter
+     * @return
+     */
+    public String getWhereSql(StandingBookFilter filter){
+        String physicName = getPhysicName(filter.getFieldId());
+        String condition=null;
+        //根据id获得字段类型
+        String type=customArchiveFieldDao.selectTypeByFieldId(filter.getFieldId());
+        if(type!=null) {
+            if (TYPEDATE.equals(type) || TYPENUMBER.equals(type)) {
+                condition = physicName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+            }
+            if (TYPETEXT.equals(type)) {
+                if (DENGYU.equals(filter.getOperateSymbol())) {
+                    condition = physicName + " = " + filter.getFieldValue();
+                }
+                if (BUDENGYU.equals(filter.getOperateSymbol())) {
+                    condition = physicName + " != " + filter.getFieldValue();
+                }
+                if (BAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = physicName + " like " + " %" + filter.getFieldValue() + "% ";
+                }
+
+                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = physicName + "not like" + " %" + filter.getFieldValue() + "% ";
                 }
             }
-            //是内置表，根据字段名获取物理字段名，筛选返回人员档案id
-            for (UserArchive userArchive : list) {
-                if (getCondition(filters.get(i).getOperateSymbol(), getFieldValueByName(getPhysicName(filters.get(i).getFieldId()), userArchive),
-                        filters.get(i).getFieldValue())) {
-                    list2.add(userArchive.getArchiveId());
-                    map.put(i, list2);
+            if (TYPECODE.equals(type)) {
+                if (BAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = physicName + " = " + filter.getFieldValue();
+                }
+
+                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = physicName + "not like" + " %" + filter.getFieldValue() + "% ";
                 }
             }
         }
-        Map<Integer, Integer> linkFlag = getLinkFlag(filters);
-        if (linkFlag != null) {
-            ArrayList<Integer> integers = new ArrayList<>(map.keySet());
-            for (Map.Entry<Integer, Integer> integerIntegerEntry : linkFlag.entrySet()) {
-                for (int i = 0; i < integers.size() - 1; i++) {
-                    String linkHandle = getLinkHandle(integers.get(i));
-                    if(integers.get(i)>integerIntegerEntry.getKey() && integers.get(i)<integerIntegerEntry.getValue()){
-                        map.remove(integers.get(i));
-                        map.put(integers.get(i), getArichivIdList(map.get(integers.get(i)), map.get(integers.get(i + 1)), linkHandle));
-                        tempList = userArchiveDao.selectByPrimaryKeyList(map.get(integers.get(integers.size()-1)));
-                        map.remove(integers.get(i));
-                        map.remove(integers.get(i+1));
-                    }
-                }
+        if(filter.getIsLeftBrackets()!=null) {
+            if (!StringUtils.isEmpty(filter.getIsLeftBrackets())) {
+                return "(" + condition + getLinkSymbol(filter);
             }
-            ArrayList<Integer> integers1 = new ArrayList<>(map.keySet());
-            for (int i = 0; i < integers1.size()-1; i++) {
-                List<UserArchive> list3 = getUserArchives(map, integers, i);
-                tempList.addAll(list3);
-                return tempList;
+            if (!StringUtils.isEmpty(filter.getIsRightBrackets())) {
+                return condition + ")";
             }
-
         }else {
-            ArrayList<Integer> integers = new ArrayList<>(map.keySet());
-            for (int i = 0; i < integers.size()-1; i++) {
-                List<UserArchive> list3 = getUserArchives(map, integers, i);
-                return list3;
-            }
+            return condition+getLinkSymbol(filter);
         }
 
         return null;
     }
+    //找到非内置字段的物理字段名
+    public List<String> getFieldNameNotInside(Integer companyId){
+        //找到企业下的人员表
+        List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(companyId,ARCHIVE);
+        //根据id找到物理字段名
+        return customArchiveFieldDao.selectFieldNameListByTableIdList(tableIdList);
 
-    private List<UserArchive> getUserArchives(Map<Integer, List<Integer>> map, ArrayList<Integer> integers, int i) {
-        String linkHandle = getLinkHandle(integers.get(i));
-        map.remove(integers.get(i));
-        map.put(integers.get(i), getArichivIdList(map.get(integers.get(i)), map.get(integers.get(i + 1)), linkHandle));
-        return userArchiveDao.selectByPrimaryKeyList(map.get(integers.get(integers.size() - 1)));
-    }
 
-    public List<Integer> getArichivIdList(List<Integer> list1,List<Integer> list2,String handleLink){
-        if(list2==null){
-            return list1;
-        }else {
-            if ("或者".equals(handleLink)) {
-                list1.addAll(list2);
-                return list1;
-            }
-            if ("并且".equals(handleLink)) {
-                list1.retainAll(list2);
-            }
-        }
-        return null;
     }
-    public String getLinkHandle(Integer id){
-        return standingBookFilterDao.selectLinkHandleById(id);
-    }
-
     //通过字段id找到物理字段名
-    public String getPhysicName(Integer fieldId){
+    private String getPhysicName(Integer fieldId){
         return customArchiveFieldDao.selectPhysicName(fieldId);
     }
-    //通过字段id找到字段名
-    public String getFieldName(Integer fieldId){
-        return customArchiveFieldDao.selectFieldName(fieldId);
-    }
-    //通过字段id找到表id
-    public Integer getTableId(Integer fieldId) {
-        return customArchiveFieldDao.selectTableId(fieldId);
-    }
-
-    //判断表是否内置
-    public boolean isInside(Integer tableId) {
-        Integer integer = customArchiveTableDao.selectInside(tableId);
-        if (integer > 0) {
-            return true;
+    private String getLinkSymbol(StandingBookFilter filter){
+        if(AND.equals(filter.getLinkSymbol())){
+            return "AND";
         }
-        return false;
-    }
-    // 根据属性名获取属性值
-    private static Object getFieldValueByName(String fieldName, Object o) {
-        try {
-            String firstLetter = fieldName.substring(0, 1).toUpperCase();
-            String getter = "get" + firstLetter + fieldName.substring(1);
-            Method method = o.getClass().getMethod(getter, new Class[] {});
-            Object value = method.invoke(o, new Object[] {});
-            return value;
-        } catch (Exception e) {
-
-            return null;
+        if(OR.equals(filter.getLinkSymbol())){
+            return "OR";
         }
+        return null;
     }
-
-
-    //找到物理表名
-//    public String getTableName(Integer tableId) {
-//        boolean inside = isInside(tableId);
-//        if (inside) {
-//            String tableName = customArchiveTableDao.selectTableName(tableId);
-//            return tableName;
-//        }
-//        return null;
-//    }
-
-    //根据表id找到数据表
-
-    public List<CustomArchiveTableData> getBigdata(Integer tableId) {
-        List<CustomArchiveTableData> list = customArchiveTableDataDao.selectByTableId(tableId);
-        return list;
-    }
-    //根据筛选表的括号以及连接符进行选择合并
-    public Map<Integer,Integer> getLinkFlag(List<StandingBookFilter> filters){
-        //j代表左括号开始的筛选表，k代表右括号结束的筛选表
-        Map<Integer,Integer> map=null;
-        Integer j=null;
-        Integer k=null;
-        for (int i = 0; i < filters.size(); i++) {
-            if(filters.get(i).getIsLeftBrackets()==1){
-                j=i;
-            }
-            if(filters.get(i).getIsRightBrackets()==1){
-                k=i;
-            }
-            if(j!=null && k!=null){
-                map.put(j,k);
-            }
-        }
-        return map;
-    }
-
-    //获得运算符
-    private boolean getCondition(String symbol, Object o2, String o1) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat sdf2= new SimpleDateFormat("yyyy-MM-dd");
-        if (o1.matches("^[0-9]*$ ")) {
-            int i = Integer.parseInt(o1);
-            switch (symbol) {
-                case ">":
-                    return (Integer) o2>i;
-                case ">=":
-                    return  (Integer) o2>=i;
-                case "<":
-                    return  (Integer) o2<i;
-                case "<=":
-                    return  (Integer) o2<=i;
-                case "=":
-                    return  (Integer) o2==i;
-                case "!=":
-                    return  (Integer) o2!=i;
-                //如果运算符是包含，说明是代码型
-                case "包含":
-                    return  o2.equals(o1);
-                case "不包含":
-                    return !o2.equals(o1);
-                default:
-                    return false;
-            }
-        } else if (o1.matches("^(\\d{4})(\\-)(\\d{2})(\\-)(\\d{2})(\\s+)(\\d{2})(\\:)(\\d{2})(\\:)(\\d{2})$")) {
-            Date parse1 = sdf.parse(o1);
-            Date parse2 = sdf.parse((String) o2);
-            return dateCondition(symbol, parse1, parse2);
-        }else if (o1.matches("\\d{4}-(((0[1-9])|(1[0-2])))(-((0[1-9])|([1-2][0-9])|(3[0-1])))?")) {
-            Date parse1 = sdf2.parse(o1);
-            Date parse2 = sdf2.parse((String) o2);
-            return dateCondition(symbol, parse1, parse2);
-        }
-        else {
-            switch (symbol) {
-                case "等于":
-                    return o2.equals(o1);
-                case "包含":
-                    return  String.valueOf(o2).contains(o1);
-                case "不等于":
-                    return !o2.equals(o1);
-                case "不包含":
-                    return !String.valueOf(o2).contains(o1);
-                default:
-                    return false;
-            }
-
-        }
-
-    }
-
-    private boolean dateCondition(String symbol, Date parse1, Date parse2) {
-        switch (symbol) {
-            case ">":
-                return GetDayUtil.getDay(parse2, parse1) > 0;
-            case ">=":
-                return GetDayUtil.getDay(parse2, parse1) >= 0;
-            case "<":
-                return GetDayUtil.getDay(parse2, parse1) < 0;
-            case "<=":
-                return GetDayUtil.getDay(parse2, parse1) <= 0;
-            case "=":
-                return GetDayUtil.getDay(parse2, parse1) == 0;
-            case "!=":
-                return GetDayUtil.getDay(parse2, parse1) != 0;
-            default:
-                return false;
-        }
-    }
-
 
 }

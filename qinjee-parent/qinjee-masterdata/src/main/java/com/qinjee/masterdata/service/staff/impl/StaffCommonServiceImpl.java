@@ -338,6 +338,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             customArchiveTableDataDao.insertCustom(s,getFieldSql(strings),getValueSql(strings));*/
         } else {
             //若此表为自定义表，说明已经存在了基本表。此时需要需要通过传过来的手机号找到业务id确认存进哪张表中
+
             String funcCode = customArchiveTableDao.selectFuncCode(tableId);
             if (ARCHIVE.equals(funcCode)) {
                 //根据证件类型，证件号找到id，作为业务id
@@ -516,7 +517,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public ForWardPutFile UploadFileByForWard() {
+    public ForWardPutFile uploadFileByForWard() {
         String s = UpAndDownUtil.TransToForward();
         ForWardPutFile forWardPutFile = new ForWardPutFile();
         forWardPutFile.setString(s);
@@ -524,30 +525,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         forWardPutFile.setKey("");
         return forWardPutFile;
     }
-//    public String getFieldSql(List<String> list){
-//        String fieldSql=null;
-//        if(CollectionUtils.isEmpty(list)){
-//            return null;
-//        }else {
-//            for (String s : list) {
-//                fieldSql+=s+",";
-//            }
-//            String[] split = fieldSql.split(",", -1);
-//            return split[0];
-//        }
-//    }
-//    public String getValueSql(List<String> list){
-//        String valueSql=null;
-//        if(CollectionUtils.isEmpty(list)){
-//            return null;
-//        }else {
-//            for (String s : list) {
-//                valueSql+="object."+s+",";
-//            }
-//            String[] split = valueSql.split(",", -1);
-//            return split[0];
-//        }
-//    }
+
 }
 
 

@@ -576,13 +576,7 @@
     where user_category != "在职"
   </select>
     <select id="getUserArchiveListCustom" resultType="com.qinjee.masterdata.model.entity.UserArchive">
-        select #{select,jdbcType=VARCHAR}
-        from t_user_archive a
-        left join t_user_org_auth b on a.archive_id =b.archive_id
-        left join t_organization c on b.org_id=c.org_id
-        where a.is_delete=0 AND b.is_delete=0 AND c.is_enable=1
-        AND c.org_id= #{orgId,jdbcType=INTEGER}
-        orderby #{order,jdbcType=VARCHAR}
+
     </select>
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.UserArchive">
     select
@@ -621,6 +615,9 @@
     from t_user_archive
     where company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete=0
+  </select>
+  <select id="selectStaff" resultType="java.lang.Integer">
+    #{sql,jdbcType=VARCHAR}
   </select>
 </mapper>
 

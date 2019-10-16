@@ -5,6 +5,7 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -379,12 +380,13 @@ public class StaffArchiveController extends BaseController {
             @ApiImplicitParam(name = "schemeId", value = "查询方案id", paramType = "query", required = true),
             @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true)
     })
-    public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,Integer orgId) {
-        Boolean b = checkParam(schemeId,orgId);
+    public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,
+                                                                              UserSession userSession ) {
+        Boolean b = checkParam(schemeId,userSession);
         if(b){
             try {
                 PageResult<UserArchive> userArchivePageResult =
-                        staffArchiveService.selectArchiveByQueryScheme(schemeId, orgId);
+                        staffArchiveService.selectArchiveByQueryScheme(schemeId, userSession);
                 if(null!=userArchivePageResult){
                     return new ResponseResult<>(userArchivePageResult,CommonCode.SUCCESS);
                 }
