@@ -62,7 +62,8 @@ public class AuthFilter extends ZuulFilter{
 				"/api/masterdata/userLogin/loginByPhoneAndCode",
 				"/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId",
 				"/api/masterdata/userLogin/sendCodeByPhone",
-				"/api/masterdata/userLogin/verifyCode"};
+				"/api/masterdata/userLogin/verifyCode",
+				"/api/masterdata/swagger-ui.html"};
 
 	/**
 	 * 每秒产生1000个令牌

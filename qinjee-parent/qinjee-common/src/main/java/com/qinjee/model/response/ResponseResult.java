@@ -6,8 +6,9 @@ import lombok.ToString;
 
 /**
  * 响应结果类
+ * @author 高雄
+ * @date 2019/10/16
  */
-
 @Data
 @ToString
 public class ResponseResult<T>{

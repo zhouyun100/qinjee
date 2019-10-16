@@ -4,6 +4,8 @@ import lombok.ToString;
 
 /**
  * 公共的响应代码枚举类
+ * @date 2019/10-16
+ * @author 高雄
  */
 @ToString
 public enum CommonCode implements ResultCode{
@@ -14,7 +16,7 @@ public enum CommonCode implements ResultCode{
     UNAUTHENTICATED(false,10001,"此操作需要登陆系统！"),
     UNAUTHORISE(false,10004,"权限不足，无权操作！"),
     SERVER_ERROR(false,99999,"抱歉，系统繁忙，请稍后重试！"),
-    INVALID_SESSION(false,10101,"无效会话！"),
+    INVALID_SESSION(false,10101,"SESSION失效！"),
     BUSINESS_EXCEPTION(false,10100,"业务异常！"),
     REQUEST_EXCEPTION(false,10200,"请求异常，请联系开发人员！"),
     NET_EXCEPTION(false,10201,"网络异常，服务不可用，请稍后刷新重试！"),
@@ -35,33 +37,36 @@ public enum CommonCode implements ResultCode{
     /**
      * 操作是否成功
      */
-    boolean success;
+    private boolean success;
 
     /**
      * 操作代码
      */
-    int code;
+    private int code;
 
     /**
      * 提示信息
      */
-    String message;
+    private String message;
 
-   private CommonCode(boolean success,int code, String message){
+    CommonCode(boolean success,int code, String message){
         this.success = success;
         this.code = code;
         this.message = message;
     }
 
+    @Override
     public boolean success() {
-        return false;
+        return this.success;
     }
 
+    @Override
     public int code() {
-        return 0;
+        return this.code;
     }
 
+    @Override
     public String message() {
-        return null;
+        return this.message;
     }
 }
