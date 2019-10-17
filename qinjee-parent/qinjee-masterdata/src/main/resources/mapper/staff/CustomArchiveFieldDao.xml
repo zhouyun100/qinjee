@@ -231,14 +231,10 @@
       group_id = #{groupId,jdbcType=INTEGER},
       is_system_define = #{isSystemDefine,jdbcType=SMALLINT},
       sort = #{sort,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      creator_id = #{creatorId,jdbcType=INTEGER},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=SMALLINT}
     where field_id = #{fieldId,jdbcType=INTEGER}
   </update>
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select MAX (field_id)
+    select MAX(field_id)
     from t_custom_archive_field
     WHERE is_delete=0
   </select>

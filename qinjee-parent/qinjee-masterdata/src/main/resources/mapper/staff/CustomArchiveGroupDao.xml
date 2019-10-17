@@ -113,14 +113,10 @@
     set group_name = #{groupName,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=INTEGER},
       sort = #{sort,jdbcType=INTEGER},
-      creator_id = #{creatorId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=SMALLINT}
     where group_id = #{groupId,jdbcType=INTEGER}
   </update>
-  <select id="selectMaxPrimaryKey">
-    select MAX (group_id)
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+    select MAX(group_id)
     from  t_custom_archive_group
     where  is_delete =0
   </select>
@@ -132,10 +128,10 @@
         #{item}
    </foreach>
   </update>
-  <select id="selectTableId">
+  <select id="selectTableId" resultType="java.lang.Integer">
     select table_id
     from t_custom_archive_group
-    where group_id = #{groupId,jdbcType=INTEGER}
+    where group_id = #{customArchiveGroupId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
 </mapper>

@@ -45,7 +45,7 @@ public interface IStaffCommonService {
      * @param pageSize
      * @return
      */
-    PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize);
+    PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize,UserSession userSession);
 
     /**
      * 新增自定义组
@@ -73,10 +73,10 @@ public interface IStaffCommonService {
      *分页展示自定义组中的表
      * @param currentPage
      * @param pageSize
-     * @param CustomArchiveGroupId
+     * @param customArchiveGroupId
      * @return
      */
-  PageResult<CustomArchiveTable>selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer CustomArchiveGroupId);
+  PageResult<CustomArchiveTable>selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer customArchiveGroupId);
 
     /**
      * 新增自定义字段

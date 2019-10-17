@@ -26,7 +26,6 @@ public class CustomArchiveTable implements Serializable {
     /**
      * 物理表名
      */
-    @NotNull
     private String tableCode;
     /**
      * 功能code
