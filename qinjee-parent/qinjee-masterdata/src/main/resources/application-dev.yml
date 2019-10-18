@@ -1,7 +1,7 @@
 spring:
   #应用名
   application:
-    name: masterdata
+    name: masterdata-dev-hkt
 
   #配置国际化
   messages:
@@ -94,7 +94,7 @@ spring:
 #注册中心指向start
 eureka:
   instance:
-    appname: masterdata-dev-hkt
+    appname: ${spring.application.name}
     #以IP地址进行注册
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ip-address}:${server.port}

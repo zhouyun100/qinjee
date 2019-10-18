@@ -210,9 +210,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         //先找到对应的表id
         Integer id = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), PRE_EMPLOYMENT);
         //找到table的字段对象
-        List<CustomField> list = customArchiveFieldDao.selectFieldByTableiId(id);
-        for (CustomField customField : list) {
-            map.put(customField.getFieldCode(), customField.getFieldName());
+        List<CustomArchiveField> list = customArchiveFieldDao.selectFieldByTableId(id);
+        for (CustomArchiveField customArchiveField : list) {
+            map.put(customArchiveField.getFieldCode(), customArchiveField.getFieldName());
         }
         return map;
     }

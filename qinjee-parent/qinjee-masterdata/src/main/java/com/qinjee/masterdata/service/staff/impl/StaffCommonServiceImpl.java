@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.CheckTypeDao;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
@@ -70,6 +70,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private PreEmploymentDao preEmploymentDao;
     @Autowired
     private QuerySchemeFieldDao querySchemeFieldDao;
+    @Autowired
+    private CheckTypeDao checkTypeDao;
 
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
@@ -92,7 +94,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
 
-        customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
+        customArchiveTableDao.updateByPrimaryKeySelective(customArchiveTable);
     }
 
     @Override
@@ -125,7 +127,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
-        customArchiveGroupDao.updateByPrimaryKey(customArchiveGroup);
+        customArchiveGroupDao.updateByPrimaryKeySelective(customArchiveGroup);
     }
 
     @Override
@@ -157,7 +159,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public void updateCustomArchiveField(CustomArchiveField customArchiveField) {
-        customArchiveFieldDao.updateByPrimaryKey(customArchiveField);
+        customArchiveFieldDao.updateByPrimaryKeySelective(customArchiveField);
     }
 
     @Override
@@ -166,8 +168,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
         PageHelper.startPage(currentPage, pageSize);
         //根据自定义表找自定义字段id
-        List<Integer> integerList = customArchiveFieldDao.selectFieldId(customArchiveTableId);
-        List<CustomArchiveField> list = customArchiveFieldDao.selectByPrimaryKeyList(integerList);
+        List<CustomArchiveField> list=customArchiveFieldDao.selectFieldByTableId(customArchiveTableId);
+        for (CustomArchiveField customArchiveField : list) {
+            System.out.println(customArchiveField.getFieldName());
+        }
         return new PageResult<>(list);
     }
 
@@ -179,8 +183,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List<Integer> getCompanyId(UserSession userSession) {
-        Integer archiveId = userSession.getArchiveId();
-        return organizationDao.getCompanyIdByArchiveId(archiveId);
+        return organizationDao.getCompanyIdByArchiveId(userSession.getArchiveId());
 
     }
 
@@ -202,31 +205,28 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public List<String> staffCommonService(Integer customArchiveFieldId) {
+    public List<String> selectFieldValueById(Integer customArchiveFieldId) {
         //找到企业代码id
         Integer id = customArchiveFieldDao.selectCodeId(customArchiveFieldId);
         //找到自定义字段的值
         return companyCodeDao.selectValue(id);
     }
-
-
     @Override
     public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
-        Integer archiveId = userSession.getArchiveId();
         //将前端传过来的大字段进行解析
         StringBuffer bigData = new StringBuffer();
-        JSONArray json = (JSONArray) JSONArray.toJSON(customArchiveTableData.getBigData());
-        JSONObject jsono = JSONObject.parseObject(json.toString());
+        JSONObject jsono = JSONObject.parseObject(customArchiveTableData.getBigData());
         List<String> strings = new ArrayList<>(jsono.keySet());
         for (String string : strings) {
-            bigData.append("@@").append(string).append("@@:").append(jsono.get(string)).append(";");
+            bigData.append("@@").append(string).append("@@:").append(jsono.get(string));
         }
         //去除最后一个分号
-        int i = bigData.toString().lastIndexOf(",");
-        String substring = bigData.toString().substring(0, i);
-        customArchiveTableData.setOperatorId(archiveId);
-        customArchiveTableData.setBigData(substring);
-        customArchiveTableDataDao.insert(customArchiveTableData);
+        System.out.println(bigData.toString());
+        customArchiveTableData.setOperatorId(userSession.getArchiveId());
+        System.out.println(customArchiveTableData.getBigData());
+        customArchiveTableData.setBigData(bigData.toString());
+        System.out.println(customArchiveTableData);
+        customArchiveTableDataDao.insertSelective(customArchiveTableData);
     }
 
     @Override
@@ -239,9 +239,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         PageHelper.startPage(currentPage, pageSize);
         //通过自定义表id找到数据id集合
         List<Integer> integerList = customArchiveTableDataDao.selectCustomArchiveTableId(customArchiveTableId);
-
         List<CustomArchiveTableData> list = customArchiveTableDataDao.selectByPrimaryKeyList(integerList);
-
         return new PageResult<>(list);
     }
 
@@ -249,7 +247,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public List<String> checkField(Integer fieldId) {
         //通过字段名找到验证code
-        return customArchiveFieldCheckDao.selectCheckName(fieldId);
+        List<String> stringList = customArchiveFieldCheckDao.selectCheckName(fieldId);
+        //根据验证code找到验证名称
+        return checkTypeDao.selectCheckNameList(stringList);
+
     }
 
     @Override

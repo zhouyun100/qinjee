@@ -147,6 +147,6 @@
   <select id="selectValue" resultType="java.lang.String">
     select code_name
     from t_company_code
-    where   code_parent_id = #{codeParentId,jdbcType=INTEGER}
+    where   code_parent_id = #{id,jdbcType=INTEGER}
   </select>
 </mapper>

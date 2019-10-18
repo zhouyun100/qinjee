@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -27,18 +28,21 @@ public class UserArchive implements Serializable {
     /**
      * 人员ID
      */
+    @NotNull
     @ApiModelProperty("人员ID")
     private Integer userId;
 
     /**
      * 工号
      */
+    @NotNull
     @ApiModelProperty("工号")
     private String employeeNumber;
 
     /**
      * 企业ID
      */
+    @NotNull
     @ApiModelProperty("企业ID")
     private Integer companyId;
 
@@ -90,6 +94,7 @@ public class UserArchive implements Serializable {
     /**
      * 姓名
      */
+    @NotNull
     @QueryColumn("tua.user_name")
     @ApiModelProperty("姓名")
     private String userName;
@@ -97,18 +102,21 @@ public class UserArchive implements Serializable {
     /**
      * 证件类型
      */
+    @NotNull
     @ApiModelProperty("证件类型")
     private String idType;
 
     /**
      * 证件号码
      */
+    @NotNull
     @ApiModelProperty("证件号码")
     private String idNumber;
 
     /**
      * 性别
      */
+    @NotNull
     @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
     private String gender;
@@ -116,24 +124,28 @@ public class UserArchive implements Serializable {
     /**
      * 出生日期
      */
+    @NotNull
     @ApiModelProperty("出生日期")
     private Date birthdate;
 
     /**
      * 年龄
      */
+    @NotNull
     @ApiModelProperty("年龄")
     private Short age;
 
     /**
      * 民族
      */
+    @NotNull
     @ApiModelProperty("民族")
     private Integer nationality;
 
     /**
      * 籍贯
      */
+    @NotNull
     @ApiModelProperty("籍贯")
     private String birthplace;
 
@@ -195,6 +207,7 @@ public class UserArchive implements Serializable {
     /**
      * 第一学历
      */
+    @NotNull
     @ApiModelProperty("第一学历")
     private String firstDegree;
 
@@ -207,6 +220,7 @@ public class UserArchive implements Serializable {
     /**
      * 联系电话
      */
+    @NotNull
     @QueryColumn("tua.tel")
     @ApiModelProperty("联系电话")
     private String tel;
@@ -214,6 +228,7 @@ public class UserArchive implements Serializable {
     /**
      * 电子邮箱
      */
+    @NotNull
     @QueryColumn("tua.email")
     @ApiModelProperty("电子邮箱")
     private String email;
@@ -221,6 +236,7 @@ public class UserArchive implements Serializable {
     /**
      * 现住址
      */
+    @NotNull
     @ApiModelProperty("现住址")
     private String address;
 
@@ -270,6 +286,7 @@ public class UserArchive implements Serializable {
     /**
      * 操作人ID
      */
+    @NotNull
     @ApiModelProperty("操作人ID")
     private Integer operatorId;
 
@@ -288,6 +305,7 @@ public class UserArchive implements Serializable {
     /**
      * 是否删除
      */
+    @NotNull
     @ApiModelProperty("是否删除")
     private Short isDelete;
 

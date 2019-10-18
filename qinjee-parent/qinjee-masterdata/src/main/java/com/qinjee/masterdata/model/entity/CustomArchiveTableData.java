@@ -34,7 +34,6 @@ public class CustomArchiveTableData implements Serializable {
     /**
      * 操作人ID
      */
-    @NotNull
     private Integer operatorId;
 
     /**

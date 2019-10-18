@@ -209,7 +209,7 @@ public interface IStaffCommonService {
      * @param customArchiveFieldId
      * @return
      */
-    List<String> staffCommonService(Integer customArchiveFieldId);
+    List<String> selectFieldValueById(Integer customArchiveFieldId);
 
     /**
      * 导出预入职

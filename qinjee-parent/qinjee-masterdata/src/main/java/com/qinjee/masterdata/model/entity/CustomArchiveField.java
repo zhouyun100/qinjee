@@ -36,12 +36,6 @@ public class CustomArchiveField implements Serializable {
     private String fieldType;
 
     /**
-     * 验证类型
-     */
-    @NotNull
-    private String validType;
-
-    /**
      * 企业代码ID
      */
     private Integer codeId;

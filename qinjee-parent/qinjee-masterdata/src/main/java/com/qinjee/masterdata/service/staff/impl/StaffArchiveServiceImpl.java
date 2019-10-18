@@ -93,42 +93,40 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer companyId) {
         List<UserArchive> list = new ArrayList<>();
-        List<UserArchive> list1;
+//        List<UserArchive> list1;
         //本用户的权限下有哪些机构
         List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
-        if (companyId == null) {
-            if (orgList != null) {
-                for (Integer integer : orgList) {
-                    //展示所有权限机构下的人员
-                    List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                    list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
-                    list.addAll(list1);
-                }
-                return new PageResult<>(list);
-            } else {
-                //展示自己的档案
-                list.add(userArchiveDao.selectByPrimaryKey(userSession.getArchiveId()));
-                return new PageResult<>(list);
-
-            }
-        } else {
+//        if (companyId == null) {
+//            if (orgList != null) {
+//                for (Integer integer : orgList) {
+//                    //展示所有权限机构下的人员
+//                    List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
+//                    list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
+//                    list.addAll(list1);
+//                }
+//                return new PageResult<>(list);
+//            } else {
+//                //展示自己的档案
+//                list.add(userArchiveDao.selectByPrimaryKey(userSession.getArchiveId()));
+//                return new PageResult<>(list);
+//
+//            }
+//        } else {
             if (orgList != null) {
                 for (Integer integer : orgList) {
                     //如果查看的在权限之内
                     if (companyId.equals(integer)) {
                         //展示机构下的人员信息
                         List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                        list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
-                        list.addAll(list1);
+                        list = userArchiveDao.selectByPrimaryKeyList(achiveList);
                     }
                 }
-
                 return new PageResult<>(list);
             } else {
                 return null;
             }
         }
-    }
+//    }
 
 
     @Override

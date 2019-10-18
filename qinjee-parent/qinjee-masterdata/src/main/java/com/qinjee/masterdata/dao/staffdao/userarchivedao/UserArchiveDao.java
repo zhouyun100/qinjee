@@ -53,7 +53,7 @@ public interface UserArchiveDao {
      */
     List<UserArchive> getUserArchiveList(@Param("pageQueryVo") PageQueryVo pageQueryVo, @Param("sortFieldStr") String sortFieldStr);
 
-    String selectName(Integer id);
+    String selectName(@Param("id") Integer id);
 
     String selectNumber(Integer id);
 

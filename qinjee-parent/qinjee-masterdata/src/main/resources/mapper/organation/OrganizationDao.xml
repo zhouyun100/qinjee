@@ -290,4 +290,13 @@
     left join t_user_archive c on b.archive_id=c.archive_id
     where a.is_enable=1 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
   </select>
+    <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
+</select>
+  <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
+
+  </select>
+  <select id="getOrganizationsByOrgIds" resultType="com.qinjee.masterdata.model.entity.Organization">
+   select
+
+  </select>
 </mapper>
