@@ -25,11 +25,17 @@ import com.qinjee.zull.redis.RedisClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
@@ -50,14 +56,28 @@ public class AuthFilter extends ZuulFilter{
 	protected RedisClusterService redisClusterService;
 
 	/**
-	 * 排除过滤的 uri 地址
+	 * 非拦截地址
 	 */
-    private static final String[] LOGIN_URI = {"/api/masterdata/userLogin/loginByAccountAndPassword",
-				"/api/masterdata/userLogin/loginByPhoneAndCode",
-				"/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId",
-				"/api/masterdata/userLogin/sendCodeByPhone",
-				"/api/masterdata/userLogin/verifyCode",
-				"/api/masterdata/swagger-ui.html"};
+	private List<String> paths;
+
+	public AuthFilter() {
+		super();
+		paths = new ArrayList<>();
+		paths.add("/api/masterdata/userLogin/loginByAccountAndPassword");
+		paths.add("/api/masterdata/userLogin/loginByPhoneAndCode");
+		paths.add("/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId");
+		paths.add("/api/masterdata/userLogin/sendCodeByPhone");
+		paths.add("/api/masterdata/userLogin/verifyCode");
+		paths.add("/ui/**");
+		paths.add("/**/swagger**/**");
+		paths.add("/**/v2/api-docs");
+		paths.add("/**/*.css");
+		paths.add("/**/*.jpg");
+		paths.add("/**/*.png");
+		paths.add("/**/*.gif");
+		paths.add("/**/*.js");
+		paths.add("/**/*.svg");
+	}
 
 	/**
 	 * 每秒产生1000个令牌
@@ -73,12 +93,10 @@ public class AuthFilter extends ZuulFilter{
         /**
          * 注册和登录接口不拦截，其他接口都要拦截校验 token
 		 */
-		for(String loginUri : LOGIN_URI){
-			if (!StringUtils.isEmpty(requestUri) && loginUri.equals(requestUri)) {
-				return false;
-			}
-		}
-        return true;
+		PathMatcher matcher = new AntPathMatcher();
+		Optional<String> optional = paths.stream().filter(t -> matcher.match(t, requestUri)).findFirst();
+
+		return !optional.isPresent();
 	}
 
 
