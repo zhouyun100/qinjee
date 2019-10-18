@@ -155,19 +155,13 @@
     update t_custom_archive_table
     set `table_name` = #{tableName,jdbcType=VARCHAR},
       table_code = #{tableCode,jdbcType=INTEGER},
-      company_id = #{companyId,jdbcType=INTEGER},
-      fun_code = #{funcCode,jdbcType=VARCHAR},
-      is_system_define = #{isSystemDefine,jdbcType=SMALLINT},
       is_enable = #{isEnable,jdbcType=SMALLINT},
       sort = #{sort,jdbcType=INTEGER},
       creator_id = #{creatorId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=SMALLINT}
     where table_id = #{tableId,jdbcType=INTEGER}
   </update>
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select MAX (table_id)
+    select MAX(table_id)
     from  t_custom_archive_table
     where is_delete=0
   </select>
@@ -181,7 +175,7 @@
     #{item}
      </foreach>
   </update>
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+  <select id="selectByPrimaryKeyList" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_custom_archive_table
@@ -191,11 +185,12 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+  <select id="selectByPage" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from t_custom_archive_table
     where is_delete=0
+    AND company_id=#{comId,jdbcType=INTEGER}
   </select>
   <select id="selectidbycomidandfunccode" resultType="java.lang.Integer">
     select  table_id
@@ -204,23 +199,6 @@
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete=0
     AND (func_code="档案" or func_code="预入职")
-  </select>
-  <select id="selectIdByComId" resultType="java.lang.Integer">
-     select  table_id
-    from t_custom_archive_table
-    where
-    company_id = #{companyId,jdbcType=INTEGER}
-    AND is_delete=0
-  </select>
-  <select id="selectNameById" resultType="java.lang.String">
-    select
-    table_name
-    from t_custom_archive_table
-    where  
-    table_id in 
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
   </select>
   <select id="selectInside" resultType="java.lang.Integer">
      select  is_system_define
@@ -255,5 +233,20 @@
     where
      company_id=#{companyId,jdbcType=INTEGER}
      table_code=#{tableCode,jdbcType=VARCHAR}
+  </select>
+  <select id="selectNotInsideTableId" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table
+    where
+     company_id=#{companyId,jdbcType=INTEGER}
+     AND is_system_define=0
+     AND func_code=#{archive,jdbcType=VARCHAR}
+     AND is_delete=0
+  </select>
+  <select id="selectNameBycomId" resultType="java.lang.String">
+    select  `table_name`
+    from   t_custom_archive_table
+    where is_delete=0
+    AND  company_id=#{companyId,jdbcType=INTEGER}
   </select>
 </mapper>

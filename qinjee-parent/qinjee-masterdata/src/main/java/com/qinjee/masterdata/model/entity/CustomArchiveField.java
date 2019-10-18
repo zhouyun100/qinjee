@@ -44,13 +44,11 @@ public class CustomArchiveField implements Serializable {
     /**
      * 企业代码ID
      */
-    @NotNull
     private Integer codeId;
 
     /**
      * 企业代码名称
      */
-    @NotNull
     private String codeName;
 
     /**
@@ -77,7 +75,6 @@ public class CustomArchiveField implements Serializable {
     /**
      * 组ID
      */
-    @NotNull
     private Integer groupId;
 
     /**

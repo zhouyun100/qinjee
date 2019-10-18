@@ -3,7 +3,8 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.*;
+import com.qinjee.masterdata.dao.CompanyCodeDao;
+import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.*;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -92,13 +93,15 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
 
         customArchiveTableDao.updateByPrimaryKey(customArchiveTable);
-
     }
 
     @Override
-    public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
+    public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize,UserSession userSession) {
         PageHelper.startPage(currentPage, pageSize);
-        List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage();
+        List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage(userSession.getCompanyId());
+        for (CustomArchiveTable customArchiveTable : customArchiveTables) {
+           logger.info("展示自定义表名{}",customArchiveTable.getTableName());
+        }
         return new PageResult<>(customArchiveTables);
     }
 
@@ -131,7 +134,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         PageHelper.startPage(currentPage, pageSize);
         //获得自定义组中自定义表id的集合
         List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
-
         List<CustomArchiveTable> list = customArchiveTableDao.selectByPrimaryKeyList(integerList);
         return new PageResult<>(list);
     }
@@ -196,9 +198,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List<String> selectTableFromOrg(UserSession userSession) {
-        //根据部门id筛选自己的表id
-        List<Integer> list1 = customArchiveTableDao.selectIdByComId(userSession.getCompanyId());
-        return customArchiveTableDao.selectNameById(list1);
+        return customArchiveTableDao.selectNameBycomId(userSession.getCompanyId());
     }
 
     @Override
@@ -338,6 +338,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             customArchiveTableDataDao.insertCustom(s,getFieldSql(strings),getValueSql(strings));*/
         } else {
             //若此表为自定义表，说明已经存在了基本表。此时需要需要通过传过来的手机号找到业务id确认存进哪张表中
+
             String funcCode = customArchiveTableDao.selectFuncCode(tableId);
             if (ARCHIVE.equals(funcCode)) {
                 //根据证件类型，证件号找到id，作为业务id
@@ -516,7 +517,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public ForWardPutFile UploadFileByForWard() {
+    public ForWardPutFile uploadFileByForWard() {
         String s = UpAndDownUtil.TransToForward();
         ForWardPutFile forWardPutFile = new ForWardPutFile();
         forWardPutFile.setString(s);
@@ -524,30 +525,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         forWardPutFile.setKey("");
         return forWardPutFile;
     }
-//    public String getFieldSql(List<String> list){
-//        String fieldSql=null;
-//        if(CollectionUtils.isEmpty(list)){
-//            return null;
-//        }else {
-//            for (String s : list) {
-//                fieldSql+=s+",";
-//            }
-//            String[] split = fieldSql.split(",", -1);
-//            return split[0];
-//        }
-//    }
-//    public String getValueSql(List<String> list){
-//        String valueSql=null;
-//        if(CollectionUtils.isEmpty(list)){
-//            return null;
-//        }else {
-//            for (String s : list) {
-//                valueSql+="object."+s+",";
-//            }
-//            String[] split = valueSql.split(",", -1);
-//            return split[0];
-//        }
-//    }
+
 }
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomGroupDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomGroup">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveGroup">
     <id column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
     <result column="table_id" jdbcType="INTEGER" property="tableId" />
@@ -17,25 +17,23 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from t_custom_group
-    where group_id = #{groupId,jdbcType=INTEGER}  AND  is_delete = 0
+    from t_custom_archive_group
+    where group_id = #{groupId,jdbcType=INTEGER}
   </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_custom_group
+    delete from t_custom_archive_group
     where group_id = #{groupId,jdbcType=INTEGER}
   </delete>
-
-  <insert id="insert" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomGroup" useGeneratedKeys="true">
-    insert into t_custom_group (group_name, table_id, sort,
+  <insert id="insert" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveGroup" useGeneratedKeys="true">
+    insert into t_custom_archive_group (group_name, table_id, sort,
       creator_id, create_time, update_time,
       is_delete)
     values (#{groupName,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER},
       #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
       #{isDelete,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomGroup" useGeneratedKeys="true">
-    insert into t_custom_group
+  <insert id="insertSelective" keyColumn="group_id" keyProperty="groupId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveGroup" useGeneratedKeys="true">
+    insert into t_custom_archive_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="groupName != null">
         group_name,
@@ -83,8 +81,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomGroup">
-    update t_custom_group
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveGroup">
+    update t_custom_archive_group
     <set>
       <if test="groupName != null">
         group_name = #{groupName,jdbcType=VARCHAR},
@@ -110,29 +108,30 @@
     </set>
     where group_id = #{groupId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomGroup">
-    update t_custom_group
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveGroup">
+    update t_custom_archive_group
     set group_name = #{groupName,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=INTEGER},
       sort = #{sort,jdbcType=INTEGER},
-      creator_id = #{creatorId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=SMALLINT}
     where group_id = #{groupId,jdbcType=INTEGER}
   </update>
-  <update id="deleteCustomGroup" parameterType="int">
-    update t_custom_group
-    set  is_delete = 0
-     where group_id = #{groupId,jdbcType=INTEGER}
-  </update>
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select MAX (group_id) from t_custom_group WHERE    is_delete = 0
+    select MAX(group_id)
+    from  t_custom_archive_group
+    where  is_delete =0
   </select>
-  <select id="selectTableId" parameterType="integer" resultType="java.lang.Integer">
+  <update id="deleteCustomGroup">
+    update  t_custom_archive_group
+    set is_delete = 1
+     where group_id
+     in <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+   </foreach>
+  </update>
+  <select id="selectTableId" resultType="java.lang.Integer">
     select table_id
-    from t_custom_group
-    where group_id=#{customGroupId,jdbcType=INTEGER}  AND  is_delete = 0
-
+    from t_custom_archive_group
+    where group_id = #{customArchiveGroupId,jdbcType=INTEGER}
+    AND is_delete=0
   </select>
 </mapper>

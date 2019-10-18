@@ -11,8 +11,6 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -41,7 +40,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/insertArchiveCustomTable", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义表", notes = "hkt")
-    @ApiImplicitParam(name = "CustomTable", value = "自定义表", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
     public ResponseResult insertCustomTable( @Valid CustomArchiveTable customArchiveTable) {
         Boolean b = checkParam(customArchiveTable);
         if(b){
@@ -61,8 +60,8 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/deleteCustomArchiveTable", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义表", notes = "hkt")
-    @ApiImplicitParam(name = "customArchiveTableId", value = "自定义表id组成集合", paramType = "query", required = true, example = "{1,2}")
-    public ResponseResult deleteCustomArchiveTable(List<Integer> list) {
+//    @ApiImplicitParam(name = "list", value = "自定义表id组成集合", paramType = "query", example = "{1,2}" ,allowMultiple = true)
+    public ResponseResult deleteCustomArchiveTable( @RequestParam List<Integer> list) {
         Boolean b = checkParam(list);
         if(b){
             try {
@@ -80,7 +79,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/updateCustomArchiveTable", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义表", notes = "hkt")
-    @ApiImplicitParam(name = "customArchiveTable", value = "自定义字段表", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "customArchiveTable", value = "自定义字段表", paramType = "form" )
     public ResponseResult updateCustomArchiveTable( @Valid CustomArchiveTable customArchiveTable) {
         Boolean b = checkParam(customArchiveTable);
         if(b){
@@ -99,22 +98,22 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/selectCustomArchiveTable", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义表", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
+//    })
     public ResponseResult<PageResult<CustomArchiveTable>> selectCustomTable(Integer currentPage, Integer pageSize) {
-        Boolean b = checkParam(currentPage,pageSize);
+        Boolean b = checkParam(currentPage,pageSize,getUserSession());
         if(b){
             try {
 
-                PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomArchiveTable(currentPage, pageSize);
+                PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomArchiveTable(currentPage, pageSize,getUserSession());
                 return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("修改自定义表失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义表参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
 
@@ -123,7 +122,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/insertCustomArchiveGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义组", notes = "hkt")
-    @ApiImplicitParam(name = "customArchiveGroup", value = "自定义组", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "customArchiveGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult insertCustomGroup( @Valid CustomArchiveGroup customArchiveGroup) {
         Boolean b = checkParam(customArchiveGroup);
         if (b) {
@@ -142,18 +141,18 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/deleteCustomArchiveGroup", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义组", notes = "hkt")
-    @ApiImplicitParam(name = "deleteCustomArchiveGroup", value = "自定义组id组成的集合", paramType = "form", required = true, example = "{1,2}")
-    public ResponseResult deleteCustomArchiveGroup(List<Integer> list) {
+//    @ApiImplicitParam(name = "list", value = "自定义组id组成的集合", paramType = "form", allowMultiple = true,example = "{1,2}")
+    public ResponseResult deleteCustomArchiveGroup( @RequestParam List<Integer> list) {
         Boolean b = checkParam(list);
         if(b){
             try {
                 staffCommonService.deleteCustomArchiveGroup(list);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义组失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义组id集合参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
     }
 
     /**
@@ -161,7 +160,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/updateCustomArchiveGroup", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义组", notes = "hkt")
-    @ApiImplicitParam(name = "CustomArchiveGroup", value = "自定义组", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "CustomArchiveGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult updateCustomGroup( @Valid CustomArchiveGroup customArchiveGroup) {
         Boolean b = checkParam(customArchiveGroup);
         if(b){
@@ -181,13 +180,13 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/selectTableFromGroup", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义组中的表", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-            @ApiImplicitParam(name = "CustomArchiveGroupId", value = "当前自定义组的id", paramType = "query", required = true),
-    })
-    public ResponseResult<PageResult<CustomArchiveTable>> selectTableFromGroup(Integer currentPage,
-                                                                               Integer pageSize,
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "customArchiveGroupId", value = "当前自定义组的id", paramType = "query", required = true),
+//    })
+    public ResponseResult<PageResult<CustomArchiveTable>> selectTableFromGroup( Integer currentPage,
+                                                                                Integer pageSize,
                                                                                Integer customArchiveGroupId) {
         Boolean b = checkParam(currentPage,pageSize,customArchiveGroupId);
         if(b){
@@ -195,30 +194,30 @@ public class CommonController extends BaseController {
                 PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomTableFromGroup(currentPage, pageSize, customArchiveGroupId);
                 return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult(" 展示自定义表失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义组id参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
     }
     /**
      *  展示企业下的自定义表名
      */
     @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.GET)
     @ApiOperation(value = "展示企业下的自定义表名", notes = "hkt")
-    public ResponseResult<List<String>> selectTableFromGroup(Integer id) {
+    public ResponseResult<List<String>> selectTableFromGroup() {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
                 List<String> list=staffCommonService.selectTableFromOrg(getUserSession());
                 if(CollectionUtils.isEmpty(list)){
-                    return failResponseResult("没有相应的表名");
+                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
                 }
                 return new ResponseResult<>(list,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("展示企业下的自定义表名失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("session错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -227,7 +226,7 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/insertCustomArchiveField", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义字段", notes = "hkt")
-    @ApiImplicitParam(name = "CustomArchiveField", value = "自定义字段对象", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "CustomArchiveField", value = "自定义字段对象", paramType = "form", required = true)
     public ResponseResult insertCustomField( @Valid CustomArchiveField customArchiveField) {
         Boolean b = checkParam(customArchiveField);
         if (b) {
@@ -247,18 +246,18 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/deleteCustomArchiveField", method = RequestMethod.GET)
     @ApiOperation(value = "删除自定义字段", notes = "hkt")
-    @ApiImplicitParam(name = "list", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
-    public ResponseResult deleteCustomArchiveField(List<Integer> list) {
+//    @ApiImplicitParam(name = "list", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
+    public ResponseResult deleteCustomArchiveField(@RequestParam List<Integer> list) {
         Boolean b = checkParam(list);
         if(b){
             try {
                 staffCommonService.deleteCustomArchiveField(list);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义字段失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义字段id集合参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
     }
 
     /**
@@ -267,7 +266,7 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/updateCustomArchiveField", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义字段", notes = "hkt")
-    @ApiImplicitParam(name = "customArchiveField", value = "自定义字段表", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "customArchiveField", value = "自定义字段表", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveField( @Valid CustomArchiveField customArchiveField) {
         Boolean b = checkParam(customArchiveField);
         if(b){
@@ -287,11 +286,11 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/selectCustomArchiveField", method = RequestMethod.GET)
     @ApiOperation(value = "分页展示指定自定义表下的自定义字段", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-            @ApiImplicitParam(name = "customArchivetableId", value = "自定义表id", paramType = "query", required = true)
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "customArchivetableId", value = "自定义表id", paramType = "query", required = true)
+//    })
     public ResponseResult<PageResult<CustomArchiveField>> selectCustomArchiveField(Integer currentPage,Integer pageSize,
                                                                                    Integer customArchiveTableId) {
         Boolean b = checkParam(currentPage,pageSize,customArchiveTableId);
@@ -303,10 +302,10 @@ public class CommonController extends BaseController {
 
                 return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult(" 展示自定义字段失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义表id参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
     /**
@@ -314,7 +313,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/selectCustomArchiveFieldById", method = RequestMethod.GET)
     @ApiOperation(value = "通过自定义字段id找到对应的自定义字段信息", notes = "hkt")
-    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId) {
 
         Boolean b = checkParam(customArchiveFieldId);
@@ -323,10 +322,10 @@ public class CommonController extends BaseController {
                 CustomArchiveField customArchiveField = staffCommonService.selectCustomArchiveFieldById(customArchiveFieldId);
                return new ResponseResult<>(customArchiveField,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult(" 展示自定义字段失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("自定义表id参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -334,7 +333,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/selectFieldValueById", method = RequestMethod.GET)
     @ApiOperation(value = "通过字段id找到对应的字段值", notes = "hkt")
-    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<List<String>> selectFieldValueById(Integer customArchiveFieldId) {
 
         Boolean b = checkParam(customArchiveFieldId);
@@ -358,7 +357,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/insertCustomArchiveTableData", method = RequestMethod.POST)
     @ApiOperation(value = "需要将自定义表中的值封装成jsonObject形式传到后端，然后传给后台拼接", notes = "hkt")
-    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
     public ResponseResult insertCustomArchiveTableData( @Valid CustomArchiveTableData customArchiveTableData) {
         Boolean b = checkParam(customArchiveTableData);
@@ -379,7 +378,7 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.GET)
     @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
-    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveTableData( @Valid CustomArchiveTableData customArchiveTableData) {
         Boolean b = checkParam(customArchiveTableData);
         if(b){
@@ -398,11 +397,11 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义表数据内容,返回自定义表数据", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-            @ApiImplicitParam(name = "CustomArchiveTableId", value = "自定义表id", paramType = "query", required = true)
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "CustomArchiveTableId", value = "自定义表id", paramType = "query", required = true)
+//    })
     public ResponseResult<PageResult<CustomArchiveTableData>> selectCustomTableData(Integer currentPage,Integer pageSize,
                                                                                     Integer customArchiveTableId) {
         Boolean b = checkParam(currentPage,pageSize,customArchiveTableId);
@@ -426,7 +425,7 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/checkField ", method = RequestMethod.GET)
     @ApiOperation(value = "集合存储字段所需要的检验类型，考虑是否直接放在字段表中", notes = "hkt")
-    @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
+//    @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
     public ResponseResult<List<String>> checkField(Integer fieldId) {
         Boolean b = checkParam(fieldId);
         if(b){
@@ -463,7 +462,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/getOrgIdByCompanyId ", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult getOrgIdByCompanyId(Integer orgId) {
         Boolean b = checkParam(orgId);
         if(b){
@@ -481,7 +480,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/getPostByOrgId ", method = RequestMethod.GET)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult getPostByOrgId(Integer orgId) {
         Boolean b = checkParam(orgId);
         if(b){
@@ -501,7 +500,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/UploadFile ", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
-    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
     public ResponseResult UploadFile(String path) {
         Boolean b = checkParam(path);
@@ -522,11 +521,11 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/UploadFileByForWard ", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
-    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
     public ResponseResult<ForWardPutFile> UploadFileByForWard() {
             try {
-                staffCommonService.UploadFileByForWard();
+                staffCommonService.uploadFileByForWard();
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("前端获取对象文件上传失败");
@@ -538,12 +537,12 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/exportArcFile ", method = RequestMethod.GET)
     @ApiOperation(value = "导出档案模板", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
-            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
-            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
+//    })
     public ResponseResult exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list) {
         Boolean b = checkParam(path,title,list,getUserSession());
         if(b){
@@ -563,11 +562,11 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/exportPreFile ", method = RequestMethod.GET)
     @ApiOperation(value = "导出预入职模板", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
-            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
-            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
+//    })
     public ResponseResult exportPreFile(String path, String title, List<Integer> list ) {
         Boolean b = checkParam(path,title,list,getUserSession());
         if(b){
@@ -588,7 +587,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
     @ApiOperation(value = "模板导入", notes = "hkt")
-    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
     public ResponseResult importFile(String path) {
         Boolean b = checkParam(path,getUserSession());
         if(b){
@@ -607,7 +606,7 @@ public class CommonController extends BaseController {
      * @param params
      * @return
      */
-    public Boolean checkParam(Object... params) {
+    private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
                 return false;
@@ -621,7 +620,7 @@ public class CommonController extends BaseController {
      * @param message
      * @return
      */
-    public ResponseResult failResponseResult(String message){
+    private ResponseResult failResponseResult(String message){
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
         logger.error(message);

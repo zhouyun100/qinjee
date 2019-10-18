@@ -23,13 +23,12 @@ public interface CustomArchiveTableDao {
     Integer selectMaxPrimaryKey();
 
 
-    List<CustomArchiveTable> selectByPage();
+    List<CustomArchiveTable> selectByPage(Integer comId);
 
     Integer deleteCustomTable(List<Integer> list);
 
     List<CustomArchiveTable> selectByPrimaryKeyList(List<Integer> list);
 
-    List<String> selectNameById(@Param("list1") List<Integer> list1);
 
     Integer selectInside(@Param("tableId") Integer tableId);
 
@@ -37,13 +36,14 @@ public interface CustomArchiveTableDao {
 
     Integer selectTableIdByName(@Param("tableName") String tableName);
 
-
     List<Integer> selectidbycomidandfunccode(@Param("companyId") Integer companyId);
 
-    List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
     String selectFuncCode(@Param("tableId") Integer tableId);
 
     Integer selectByComIdAndPhyName(@Param("companyId") Integer companyId, @Param("archivetable") String archive);
 
+    List<Integer> selectNotInsideTableId(@Param("companyId") Integer companyId, @Param("archive") String archive);
+
+    List<String> selectNameBycomId(@Param("companyId") Integer companyId);
 }

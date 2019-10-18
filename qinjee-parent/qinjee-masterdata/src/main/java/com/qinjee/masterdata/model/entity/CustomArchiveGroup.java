@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+import lombok.ToString;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -8,6 +11,8 @@ import java.util.Date;
  * t_custom_archive_group
  * @author
  */
+@Data
+@ToString
 public class CustomArchiveGroup implements Serializable {
     /**
      * 组ID
@@ -35,6 +40,7 @@ public class CustomArchiveGroup implements Serializable {
     /**
      * 操作人ID
      */
+    @NotNull
     private Integer creatorId;
 
     /**
@@ -50,71 +56,9 @@ public class CustomArchiveGroup implements Serializable {
     /**
      * 是否删除
      */
+    @NotNull
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(Integer groupId) {
-        this.groupId = groupId;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public Integer getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Integer tableId) {
-        this.tableId = tableId;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Integer getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Integer creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

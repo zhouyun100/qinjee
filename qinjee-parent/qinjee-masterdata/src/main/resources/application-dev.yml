@@ -94,7 +94,7 @@ spring:
 #注册中心指向start
 eureka:
   instance:
-    appname: ${spring.application.name}
+    appname: masterdata-dev-hkt
     #以IP地址进行注册
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ip-address}:${server.port}

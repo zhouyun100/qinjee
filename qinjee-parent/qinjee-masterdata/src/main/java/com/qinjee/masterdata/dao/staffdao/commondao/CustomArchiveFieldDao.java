@@ -56,5 +56,11 @@ public interface CustomArchiveFieldDao {
 
     Short isSystemField(@Param("head") String head);
 
-    Integer selectTableIdByFieldName(String head);
+    Integer selectTableIdByFieldName(@Param("head") String head);
+
+    Short selectIsInsideByName(@Param("filedName") String filedName);
+
+    List<String> selectFieldNameListByTableIdList(@Param("tableIdList") List<Integer> tableIdList);
+
+    String selectTypeByFieldId(@Param("fieldId") Integer fieldId);
 }
