@@ -483,12 +483,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<Map<String, String>> dates = new ArrayList<>();
         //通过字段名找到物理字段名
         Map<String, String> dateMap = new HashMap<>();
-        for (int i = 0; i < objectList.size(); i++) {
+        for (Object o : objectList) {
             for (int j = 0; j < physicList.size(); j++) {
-                Field declaredField = objectList.get(i).getClass().getDeclaredField(physicList.get(j));
+                Field declaredField = o.getClass().getDeclaredField(physicList.get(j));
                 declaredField.setAccessible(true);
-                Object o = declaredField.get(declaredField);
-                dateMap.put(heads.get(j), String.valueOf(o));
+                Object obj = declaredField.get(declaredField);
+                dateMap.put(heads.get(j), String.valueOf(obj));
                 dates.add(dateMap);
             }
         }
@@ -497,9 +497,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     private Boolean isSystem(String fieldName) {
         Short isSystem = customArchiveFieldDao.isSystemField(fieldName);
-        if (isSystem > 0) return true;
-        return false;
+        return isSystem > 0;
     }
+
 
     private Map<String, String> getStringStringMap(List<String> heads) {
         Map<String, String> map = new HashMap<>();

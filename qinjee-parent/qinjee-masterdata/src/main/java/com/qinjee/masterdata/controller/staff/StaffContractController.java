@@ -98,13 +98,12 @@ public class StaffContractController extends BaseController {
                 if (pageResult != null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }
-                return failResponseResult("没有已签合同");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("显示部门下的" +
-                        "合同失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("部门id错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
 
@@ -382,12 +381,12 @@ public class StaffContractController extends BaseController {
                 if(!CollectionUtils.isEmpty(list)){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }
-                return failResponseResult("此合同没有变更记录");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("查看合同变更失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -442,10 +441,10 @@ public class StaffContractController extends BaseController {
             try {
                 staffContractService.selectContractRenewalIntention(id);
             } catch (Exception e) {
-                return failResponseResult("展示我的续签意向失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -516,19 +515,14 @@ public class StaffContractController extends BaseController {
             try {
                 staffContractService.selectArcDeadLine(id);
             } catch (Exception e) {
-                return failResponseResult("查询合同即将到期人数失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
 
-    /**
-     * 检验参数
-     *
-     * @param params
-     * @return
-     */
+
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
@@ -537,13 +531,6 @@ public class StaffContractController extends BaseController {
         }
         return true;
     }
-
-    /**
-     * 错误返回值
-     *
-     * @param message
-     * @return
-     */
     private ResponseResult failResponseResult(String message) {
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
