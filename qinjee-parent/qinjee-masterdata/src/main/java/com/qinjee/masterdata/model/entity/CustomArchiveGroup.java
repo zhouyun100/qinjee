@@ -40,7 +40,6 @@ public class CustomArchiveGroup implements Serializable {
     /**
      * 操作人ID
      */
-    @NotNull
     private Integer creatorId;
 
     /**
@@ -56,7 +55,6 @@ public class CustomArchiveGroup implements Serializable {
     /**
      * 是否删除
      */
-    @NotNull
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;

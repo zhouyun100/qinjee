@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -41,18 +42,18 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/insertArchiveCustomTable", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult insertCustomTable( @Valid CustomArchiveTable customArchiveTable) {
-        Boolean b = checkParam(customArchiveTable);
+    public ResponseResult insertCustomTable(@Valid CustomArchiveTable customArchiveTable, UserSession userSession) {
+        Boolean b = checkParam(customArchiveTable,userSession);
         if(b){
             try {
-                 staffCommonService.insertCustomArichiveTable(customArchiveTable);
+                 staffCommonService.insertCustomArichiveTable(customArchiveTable,getUserSession());
                  return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("新增自定义表失败");
             }
 
         }
-        return  failResponseResult("自定义表参数错误");
+        return  failResponseResult("自定义表参数错误或者session错误");
     }
 
     /**
@@ -108,7 +109,10 @@ public class CommonController extends BaseController {
         if(b){
             try {
                 PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomArchiveTable(currentPage, pageSize,getUserSession());
-                return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(pageResult.getList())){
+                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
@@ -123,17 +127,17 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/insertCustomArchiveGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveGroup", value = "自定义组", paramType = "form", required = true)
-    public ResponseResult insertCustomGroup( @Valid CustomArchiveGroup customArchiveGroup) {
-        Boolean b = checkParam(customArchiveGroup);
+    public ResponseResult insertCustomGroup( @Valid CustomArchiveGroup customArchiveGroup,UserSession userSession) {
+        Boolean b = checkParam(customArchiveGroup,userSession);
         if (b) {
             try {
-                staffCommonService.insertCustomArchiveGroup(customArchiveGroup);
+                staffCommonService.insertCustomArchiveGroup(customArchiveGroup,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("新增自定义组失败");
             }
         }
-        return  failResponseResult("自定义组参数错误");
+        return  failResponseResult("自定义组参数错误或session错误");
     }
 
     /**
@@ -192,13 +196,17 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(currentPage,pageSize,customArchiveGroupId);
         if(b){
             try {
-                PageResult<CustomArchiveTable> pageResult = staffCommonService.selectCustomTableFromGroup(currentPage, pageSize, customArchiveGroupId);
-                return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                PageResult<CustomArchiveTable> pageResult =
+                        staffCommonService.selectCustomTableFromGroup(currentPage, pageSize, customArchiveGroupId);
+                if(!CollectionUtils.isEmpty(pageResult.getList())){
+                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
     /**
      *  展示企业下的自定义表名
@@ -228,11 +236,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/insertCustomArchiveField", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveField", value = "自定义字段对象", paramType = "form", required = true)
-    public ResponseResult insertCustomField( @Valid CustomArchiveField customArchiveField) {
-        Boolean b = checkParam(customArchiveField);
+    public ResponseResult insertCustomField( @Valid CustomArchiveField customArchiveField,UserSession userSession) {
+        Boolean b = checkParam(customArchiveField,userSession);
         if (b) {
             try {
-                staffCommonService.insertCustomArchiveField(customArchiveField);
+                staffCommonService.insertCustomArchiveField(customArchiveField,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("新增自定义字段失败");
@@ -301,8 +309,10 @@ public class CommonController extends BaseController {
 
                 PageResult<CustomArchiveField> pageResult =
                         staffCommonService.selectCustomArchiveField(currentPage, pageSize, customArchiveTableId);
-
-                return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(pageResult.getList())){
+                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                }
+                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
@@ -322,7 +332,11 @@ public class CommonController extends BaseController {
         if(b){
             try {
                 CustomArchiveField customArchiveField = staffCommonService.selectCustomArchiveFieldById(customArchiveFieldId);
-               return new ResponseResult<>(customArchiveField,CommonCode.SUCCESS);
+                if(customArchiveField!=null){
+
+                    return new ResponseResult<>(customArchiveField,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
@@ -413,10 +427,12 @@ public class CommonController extends BaseController {
             try {
                 PageResult<CustomArchiveTableData> pageResult =
                         staffCommonService.selectCustomArchiveTableData(currentPage, pageSize, customArchiveTableId);
-                return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(pageResult.getList())){
+                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(pageResult,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
@@ -435,7 +451,10 @@ public class CommonController extends BaseController {
         if(b){
             try {
                 List<String> strings = staffCommonService.checkField(fieldId);
-                return new ResponseResult<>(strings,CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(strings)){
+                    return new ResponseResult<>(strings,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
@@ -455,7 +474,10 @@ public class CommonController extends BaseController {
         if(b) {
             try {
                 List<Integer> companyId = staffCommonService.getCompanyId(getUserSession());
-                return new ResponseResult<>(companyId, CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(companyId)){
+                    return new ResponseResult<>(companyId,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return failResponseResult("显示单位id失败");
             }
@@ -473,7 +495,10 @@ public class CommonController extends BaseController {
         if(b){
             try {
                 List<Integer> orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId(orgId);
-                return new ResponseResult<>(orgIdByCompanyId,CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(orgIdByCompanyId)){
+                    return new ResponseResult<>(orgIdByCompanyId,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return failResponseResult("根据档案id显示对应权限下的子集部门失败");
             }
@@ -491,7 +516,10 @@ public class CommonController extends BaseController {
         if(b){
             try {
                 List<Integer> postByOrgId = staffCommonService.getPostByOrgId(orgId);
-                return new ResponseResult<>(postByOrgId,CommonCode.SUCCESS);
+                if(!CollectionUtils.isEmpty(postByOrgId)){
+                    return new ResponseResult<>(postByOrgId,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return failResponseResult("显示部门下的岗位失败");
             }

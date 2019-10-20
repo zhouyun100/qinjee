@@ -16,11 +16,14 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -378,17 +381,18 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "根据显示方案展示人员信息", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "schemeId", value = "查询方案id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true)
+            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
     })
-    public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,
+    public ResponseResult<PageResult<List<Map<Integer,Map<String,Object>>>>> selectArchiveByQueryScheme(Integer schemeId,Integer currentPage,Integer pageSize,
                                                                               UserSession userSession ) {
-        Boolean b = checkParam(schemeId,userSession);
+        Boolean b = checkParam(schemeId,userSession,currentPage,pageSize);
         if(b){
             try {
-                PageResult<UserArchive> userArchivePageResult =
-                        staffArchiveService.selectArchiveByQueryScheme(schemeId, userSession);
-                if(null!=userArchivePageResult){
-                    return new ResponseResult<>(userArchivePageResult,CommonCode.SUCCESS);
+                PageResult<List<Map<Integer, Map<String, Object>>>> listPageResult = staffArchiveService.selectArchiveByQueryScheme(schemeId, userSession, currentPage, pageSize);
+                if(!CollectionUtils.isEmpty(listPageResult.getList())){
+                    return new ResponseResult<>(listPageResult,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

@@ -55,7 +55,6 @@ public class CustomArchiveTableData implements Serializable {
     /**
      * 是否删除
      */
-    @NotNull
     private  Integer isDelete;
     private static final long serialVersionUID = 1L;
 

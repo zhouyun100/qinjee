@@ -74,9 +74,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private CheckTypeDao checkTypeDao;
 
     @Override
-    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable) {
+    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable,UserSession userSession) {
+        customArchiveTable.setCompanyId(userSession.getCompanyId());
+        customArchiveTable.setCreatorId(userSession.getArchiveId());
+        customArchiveTable.setIsDelete((short) 0);
         customArchiveTableDao.insertSelective(customArchiveTable);
-
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -108,7 +110,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup) {
+    public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup,UserSession userSession) {
+        customArchiveGroup.setCreatorId(userSession.getArchiveId());
+        customArchiveGroup.setIsDelete((short) 0);
+
         customArchiveGroupDao.insertSelective(customArchiveGroup);
     }
 
@@ -141,7 +146,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void insertCustomArchiveField(CustomArchiveField customArchiveField) {
+    public void insertCustomArchiveField(CustomArchiveField customArchiveField,UserSession userSession) {
+        customArchiveField.setCreatorId(userSession.getArchiveId());
+        customArchiveField.setIsDelete((short) 0);
         customArchiveFieldDao.insertSelective(customArchiveField);
     }
 
@@ -220,12 +227,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         for (String string : strings) {
             bigData.append("@@").append(string).append("@@:").append(jsono.get(string));
         }
-        //去除最后一个分号
-        System.out.println(bigData.toString());
+        customArchiveTableData.setIsDelete(0);
         customArchiveTableData.setOperatorId(userSession.getArchiveId());
-        System.out.println(customArchiveTableData.getBigData());
         customArchiveTableData.setBigData(bigData.toString());
-        System.out.println(customArchiveTableData);
         customArchiveTableDataDao.insertSelective(customArchiveTableData);
     }
 

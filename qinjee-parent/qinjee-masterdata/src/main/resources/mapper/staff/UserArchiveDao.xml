@@ -575,9 +575,7 @@
     from t_user_archive
     where user_category != "在职"
   </select>
-    <select id="getUserArchiveListCustom" resultType="com.qinjee.masterdata.model.entity.UserArchive">
 
-    </select>
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"  />
@@ -619,5 +617,14 @@
   <select id="selectStaff" resultType="java.lang.Integer">
     #{sql,jdbcType=VARCHAR}
   </select>
+  <select id="getUserArchiveListCustom" resultType="java.util.Map">
+    #{baseSql,jdbcType=VARCHAR}
+    where t.ArchiveId in
+    <foreach item="item" collection="list" open="(" separator="," close=")">
+      #{archiveIdList}
+    </foreach>
+    #{order,jdbcType=VARCHAR}
+  </select>
+
 </mapper>
 
