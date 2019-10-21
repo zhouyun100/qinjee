@@ -20,6 +20,8 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -448,10 +450,10 @@ public class PostServiceImpl implements PostService {
         HSSFCellStyle style = workbook.createCellStyle();
         HSSFFont font = workbook.createFont();
         font.setFontHeightInPoints((short) 11);//字号
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);//加粗
+        font.setBold(true);//加粗
         style.setFont(font);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//左右居中
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+        style.setAlignment(HorizontalAlignment.CENTER);//左右居中
+        style.setVerticalAlignment(VerticalAlignment.CENTER);//上下居中
         style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy-MM-dd HH:mm:ss"));
         //创建表头名称
         HSSFCell cell;

@@ -262,7 +262,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
         Integer tableId = null;
         //key是字段名称，value是值
-        Map<String, List<String>> stringListMap = ExcelUtil.readExcel(multipartFile);
+        //TODO
+        Map<String, List<String>> stringListMap = null;//ExcelUtil.readExcel(multipartFile);
         Map<Integer, List<String>> fieldMap = new HashMap<>();
         //需要进行入库操作
         //根据companyId，功能code为档案和预入职的表

@@ -684,10 +684,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         HSSFCellStyle style = workbook.createCellStyle();
         HSSFFont font = workbook.createFont();
         font.setFontHeightInPoints((short) 11);//字号
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);//加粗
+        font.setBold(true);//加粗
         style.setFont(font);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//左右居中
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//上下居中
+        style.setAlignment(HorizontalAlignment.CENTER);//左右居中
+        style.setVerticalAlignment(VerticalAlignment.CENTER);//上下居中
         style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy-MM-dd HH:mm:ss"));
         List<String> strList = new ArrayList<>();
         strList.add("机构编码");
