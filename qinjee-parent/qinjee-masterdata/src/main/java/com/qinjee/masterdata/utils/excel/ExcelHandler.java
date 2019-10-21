@@ -99,7 +99,7 @@ public class ExcelHandler<T> {
             }
             flag = false;
             for (Cell c : r) {
-                if (c.getCellType() != Cell.CELL_TYPE_BLANK) {
+                if (c.getCellType() != CellType.BLANK) {
                     flag = true;
                     break;
                 }
@@ -109,10 +109,13 @@ public class ExcelHandler<T> {
                 continue;
             } else {
                 // 如果是空白行（即可能没有数据，但是有一定格式）
-                if (i == sheet.getLastRowNum())// 如果到了最后一行，直接将那一行remove掉
+                if (i == sheet.getLastRowNum()){
+                    // 如果到了最后一行，直接将那一行remove掉
                     sheet.removeRow(r);
-                else//如果还没到最后一行，则数据往上移一行
+                }else{
+                    //如果还没到最后一行，则数据往上移一行
                     sheet.shiftRows(i + 1, sheet.getLastRowNum(), -1);
+                }
             }
         }
 //        System.out.println("总行数：" + (sheet.getLastRowNum() + 1));
@@ -130,7 +133,7 @@ public class ExcelHandler<T> {
                 throw new Exception((numOfSheet + 1) + "页,第1行的第" + (i + 1) + "格不能为空!" );
             }else {
                 // 定义每一个cell的数据类型
-                cell.setCellType(Cell.CELL_TYPE_STRING);
+                cell.setCellType(CellType.STRING);
                 // 取出cell中的value
                 String cellValue = cell.getStringCellValue();
                 List<CustomField> fields = customFieldList.stream().filter(customField -> {
@@ -176,7 +179,7 @@ public class ExcelHandler<T> {
             Cell cell = row.getCell(i);
             CellStyle cellStyle = cell.getCellStyle();
             short foregroundColor = cellStyle.getFillForegroundColor();
-            if (foregroundColor == HSSFColor.YELLOW.index) {
+            if (foregroundColor == IndexedColors.YELLOW.index) {
                 //必填
                 isMust = true;
             }
@@ -184,9 +187,9 @@ public class ExcelHandler<T> {
                 throw new Exception((numOfSheet + 1) + "页,第1行的第" + (i + 1) + "格不能为空!");
             } else {
                 if (cell != null) {
-                    int cellType = cell.getCellType();
+                    CellType cellType = cell.getCellType();
                     //判断是否为数字类型
-                    if (cellType == Cell.CELL_TYPE_NUMERIC) {
+                    if (cellType == CellType.NUMERIC) {
                         //如果是判断是否为日期类型
                         if (HSSFDateUtil.isCellDateFormatted(cell)) {
                             //获取日期的时间
@@ -204,7 +207,7 @@ public class ExcelHandler<T> {
                         }
                         //数值类型的值
                         else {
-                            cell.setCellType(Cell.CELL_TYPE_STRING);
+                            cell.setCellType(CellType.STRING);
                             String value = cell.getStringCellValue();
                             if(isSystemDefine == 1){
                                 map.put(fieldName,value);
@@ -212,17 +215,17 @@ public class ExcelHandler<T> {
                                 declaredField.set(obj, value);
                             }
                         }
-                    } else if (cellType == Cell.CELL_TYPE_STRING) {
+                    } else if (cellType == CellType.STRING) {
                         //返回字符类型的值
                         if(isSystemDefine == 1){
                             map.put(fieldName,cell.getStringCellValue());
                         }else {
                             declaredField.set(obj, cell.getStringCellValue());
                         }
-                    } else if (cellType == Cell.CELL_TYPE_BLANK) {
+                    } else if (cellType == CellType.STRING) {
                         //返回null值
                         throw new Exception((numOfSheet + 1) + "页,第1行的第" + (i + 1) + "格不能为空!");
-                    } else if (cellType == Cell.CELL_TYPE_BOOLEAN) {
+                    } else if (cellType == CellType.STRING) {
                         if(isSystemDefine == 1){
                             map.put(fieldName,cell.getStringCellValue());
                         }else {
