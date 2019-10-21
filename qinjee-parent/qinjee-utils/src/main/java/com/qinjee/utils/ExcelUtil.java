@@ -94,9 +94,9 @@ public class ExcelUtil {
         //设置单元格样式
         HSSFCellStyle style = hssfWorkbook.createCellStyle();
         //水平居中
-        style.setAlignment(CellStyle.ALIGN_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
         // 垂直居中
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         /*
          * 设定合并单元格区域范围 firstRow 0-based lastRow 0-based firstCol 0-based lastCol
@@ -152,34 +152,22 @@ public class ExcelUtil {
      * @param type
      * @return
      */
-    public static Integer getCellType( String type) {
+    public static CellType getCellType( String type) {
         if (INTEGER.equals(type)) {
-            return 0;
+            return CellType.NUMERIC;
         } else if (STRING.equals(type)) {
-            return 1;
+            return CellType.STRING;
         } else if (BOOLEAN.equals(type)) {
-            return 4;
+            return CellType.BOOLEAN;
         } else if (NULL.equals(type)) {
-            return 3;
+            return CellType.BLANK;
         } else if (DATE.equals(type)) {
-            return 0;
+            return CellType._NONE;
         } else if(SHORT.equals(type)){
-            return 0;
+            return CellType._NONE;
         }
-        return 1;
+        return CellType.STRING;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -190,7 +178,7 @@ public class ExcelUtil {
      * @param file
      * @throws IOException
      */
-    public static Map<String,List<String>> readExcel(MultipartFile file)
+    public static List<Map<String,String>> readExcel(MultipartFile file)
             throws IOException {
         // 检查文件
         checkFile(file);
@@ -231,19 +219,9 @@ public class ExcelUtil {
                 }
             }
         }
-        //TODO 还要根据字段名匹配，还要存进数据库
+
         //heads存的是第一行的字段名
-       List<String> heads=Arrays.asList(list.get(0));
-
-
-        //map是以表头为key，List<>
-        Map<String, List<String>> map = new HashMap();
-//        for (int i = 0; i < heads.size(); i++) {
-//            for (int j = 1; j < list.size(); j++) {
-//                List<String> list1 = Arrays.asList(list.get(j)[i]);
-//                map.put(heads.get(i),list1);
-//            }
-//        }
+        List<String> heads=Arrays.asList(list.get(0));
 
         List<Map<String,String>> listMap = new ArrayList<>();
         Map<String,String> mapRow;
@@ -256,10 +234,7 @@ public class ExcelUtil {
             listMap.add(mapRow);
         }
 
-        for (Map<String, String> stringStringMap : listMap) {
-            System.out.println(stringStringMap);
-        }
-        return map;
+        return listMap;
     }
 
     /**
@@ -313,11 +288,7 @@ public class ExcelUtil {
         if (cell == null) {
             return cellValue;
         }
-        // 把数字当成String来读，避免出现1读成1.0的情况
-        if (cell.getCellType() == CellType.NUMERIC) {
-            cell.setCellType(Cell.CELL_TYPE_STRING);
-        }
-        // 判断数据的类型
+
         if(cell.getCellType().equals(CellType.BLANK)){
             cellValue = "";
         }else if(cell.getCellType().equals(CellType.ERROR)){
@@ -325,36 +296,6 @@ public class ExcelUtil {
         }else{
             cellValue = String.valueOf(cell.getStringCellValue());
         }
-
-//        switch (cell.getCellType()) {
-//            // 数字
-//            case CellType.NUMERIC:
-//                cellValue = String.valueOf(cell.getNumericCellValue());
-//                break;
-//            // 字符串
-//            case CellType.STRING:
-//                cellValue = String.valueOf(cell.getStringCellValue());
-//                break;
-//            // Boolean
-//            case CellType.BOOLEAN:
-//                cellValue = String.valueOf(cell.getBooleanCellValue());
-//                break;
-//            // 公式
-//            case CellType.FORMULA:
-//                cellValue = String.valueOf(cell.getCellFormula());
-//                break;
-//            // 空值
-//            case CellType.BLANK:
-//                cellValue = "";
-//                break;
-//            // 故障
-//            case CellType.ERROR:
-//                cellValue = "非法字符";
-//                break;
-//            default:
-//                cellValue = "未知类型";
-//                break;
-//        }
         return cellValue;
     }
 
@@ -376,17 +317,15 @@ public class ExcelUtil {
         File file = new File("E:\\import_test.xlsx");
         FileInputStream fileInput = new FileInputStream(file);
         multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
-        Map<String,List<String>> list = null;
+        List<Map<String,String>> list = null;
         try {
             list = ExcelUtil.readExcel(multipartFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Iterator<Map.Entry<String, List<String>>> iterator = list.entrySet().iterator();
-        while (iterator.hasNext()) {
-            iterator.next();
-            System.out.println(iterator.toString() + "\t");
+        for (Map<String, String> stringStringMap : list) {
+            System.out.println(stringStringMap);
         }
 
 //        for (List<String> strings : list) {
