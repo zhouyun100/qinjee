@@ -104,7 +104,7 @@
   <select id="selectArchiveIdByOrg" resultType="java.lang.Integer">
     select archive_id
     from t_user_org_auth
-    where  org_id= #{org_id,jdbcType=INTEGER} AND is_delete=0
+    where  org_id= #{integer,jdbcType=INTEGER} AND is_delete=0
   </select>
   <select id="selectOrgByArc" resultType="java.lang.Integer">
     select org_id

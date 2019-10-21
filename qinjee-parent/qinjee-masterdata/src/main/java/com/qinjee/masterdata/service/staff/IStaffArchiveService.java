@@ -123,5 +123,5 @@ public interface IStaffArchiveService {
      * @param schemeId
      * @return
      */
-   PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession);
+   PageResult<List< Map<Integer, Map<String, Object>>>> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession,Integer currentPage,Integer pageSize);
 }

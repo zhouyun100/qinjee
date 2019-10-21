@@ -36,12 +36,6 @@ public class CustomArchiveField implements Serializable {
     private String fieldType;
 
     /**
-     * 验证类型
-     */
-    @NotNull
-    private String validType;
-
-    /**
      * 企业代码ID
      */
     private Integer codeId;
@@ -107,7 +101,6 @@ public class CustomArchiveField implements Serializable {
     /**
      * 是否删除
      */
-    @NotNull
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;

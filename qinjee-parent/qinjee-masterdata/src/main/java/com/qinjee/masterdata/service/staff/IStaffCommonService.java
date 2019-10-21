@@ -22,7 +22,7 @@ public interface IStaffCommonService {
      * @param customArchiveTable
      * @return
      */
-   void  insertCustomArichiveTable(CustomArchiveTable customArchiveTable);
+   void  insertCustomArichiveTable(CustomArchiveTable customArchiveTable,UserSession userSession);
 
     /**
      * 逻辑删除自定义表
@@ -53,7 +53,7 @@ public interface IStaffCommonService {
      * @return
      */
 
-    void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup);
+    void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup,UserSession userSession);
 
     /**
      * 删除自定义组
@@ -83,7 +83,7 @@ public interface IStaffCommonService {
      * @param customArchiveField
      * @return
      */
-  void insertCustomArchiveField(CustomArchiveField customArchiveField);
+  void insertCustomArchiveField(CustomArchiveField customArchiveField,UserSession userSession);
 
     /**
      * 逻辑删除自定义字段
@@ -209,7 +209,7 @@ public interface IStaffCommonService {
      * @param customArchiveFieldId
      * @return
      */
-    List<String> staffCommonService(Integer customArchiveFieldId);
+    List<String> selectFieldValueById(Integer customArchiveFieldId);
 
     /**
      * 导出预入职

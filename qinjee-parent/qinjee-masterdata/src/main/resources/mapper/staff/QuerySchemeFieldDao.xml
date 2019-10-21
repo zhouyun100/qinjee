@@ -103,7 +103,7 @@
   <select id="selectFieldSort" resultType="java.lang.Integer">
      select sort
     from  t_query_scheme_field
-    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+    where query_scheme_id = #{schemeId,jdbcType=INTEGER}
   </select>
   <delete id="deleteBySchemeIdList">
     delete from t_query_scheme_field

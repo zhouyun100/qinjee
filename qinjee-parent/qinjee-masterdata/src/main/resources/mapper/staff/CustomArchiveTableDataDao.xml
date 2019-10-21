@@ -59,6 +59,9 @@
       <if test="bigData != null">
         big_data,
       </if>
+      <if test="isDelete != null">
+       is_delete,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="tableId != null">
@@ -77,9 +80,9 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
       <if test="bigData != null">
-        #{bigData,jdbcType=LONGVARBINARY},
+        #{bigData,jdbcType=VARCHAR},
       </if>
-      <if test="bigData != null">
+      <if test="isDelete != null">
         #{isDelete,jdbcType=INTEGER},
       </if>
     </trim>
@@ -124,27 +127,25 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     update t_custom_archive_table_data
-    set table_id = #{tableId,jdbcType=INTEGER},
+    set
       business_id = #{businessId,jdbcType=INTEGER},
       operator_id = #{operatorId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
-       is_delete = #{isDelete,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectCustomArchiveTableId" resultType="java.lang.Integer">
     select  id
     from t_custom_archive_table_data
-    where table_id = #{tableId,jdbcType=INTEGER}
+    where table_id = #{customArchiveTableId,jdbcType=INTEGER}
      AND
     is_delete=0
   </select>
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
     select
     <include refid="Blob_Column_List" />
     from t_custom_archive_table_data
     where id
-    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    in <foreach collection="integerList" item="item" open="(" separator="," close=")">
     #{item}
     AND
     is_delete=0

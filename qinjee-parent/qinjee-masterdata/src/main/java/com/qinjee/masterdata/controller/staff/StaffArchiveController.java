@@ -16,11 +16,14 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -143,10 +146,10 @@ public class StaffArchiveController extends BaseController {
                 UserArchive userArchive = staffArchiveService.selectArchive(getUserSession());
                 return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("查看档案失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("session错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
     /**
      * 通过id找到人员姓名与工号
@@ -161,10 +164,10 @@ public class StaffArchiveController extends BaseController {
                 Map<String, String> stringStringMap = staffArchiveService.selectNameAndNumber(id);
                 return new ResponseResult<>(stringStringMap,CommonCode.SUCCESS);
             } catch (Exception e) {
-                return failResponseResult("通过id找到人员姓名与工号失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("id错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -181,12 +184,12 @@ public class StaffArchiveController extends BaseController {
                 if(pageResult!=null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }
-                return failResponseResult("对不起，你没有这个组织的权限");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("查看档案失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("session错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_SESSION);
     }
 
     /**
@@ -269,14 +272,14 @@ public class StaffArchiveController extends BaseController {
                 PageResult<UserArchivePostRelation> pageResult =
                         staffArchiveService.selectUserArchivePostRelation(currentPage, pageSize, list);
                 if(pageResult!=null) {
-                    return ResponseResult.SUCCESS();
+                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
                 }
-                return failResponseResult("没有兼职的人员信息");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("修改人员岗位关系，初期只涉及任职状态是否兼职失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数不合法");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
     /**
@@ -291,7 +294,7 @@ public class StaffArchiveController extends BaseController {
         if(b){
             try {
                 String s = staffArchiveService.selectOrgName(id);
-                return new ResponseResult(s,CommonCode.SUCCESS);
+                return new ResponseResult<>(s,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return failResponseResult("通过id查询到对应机构名称失败");
             }
@@ -363,12 +366,12 @@ public class StaffArchiveController extends BaseController {
                 if(null!=querySchemeList){
                     return new ResponseResult<>(querySchemeList,CommonCode.SUCCESS);
                 }
-                return failResponseResult("您还没有查询方案");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("删除查询方案失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("id错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
     /**
@@ -378,32 +381,29 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "根据显示方案展示人员信息", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "schemeId", value = "查询方案id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true)
+            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true),
+            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
     })
-    public ResponseResult<PageResult<UserArchive>> selectArchiveByQueryScheme(Integer schemeId,
+    public ResponseResult<PageResult<List<Map<Integer,Map<String,Object>>>>> selectArchiveByQueryScheme(Integer schemeId,Integer currentPage,Integer pageSize,
                                                                               UserSession userSession ) {
-        Boolean b = checkParam(schemeId,userSession);
+        Boolean b = checkParam(schemeId,userSession,currentPage,pageSize);
         if(b){
             try {
-                PageResult<UserArchive> userArchivePageResult =
-                        staffArchiveService.selectArchiveByQueryScheme(schemeId, userSession);
-                if(null!=userArchivePageResult){
-                    return new ResponseResult<>(userArchivePageResult,CommonCode.SUCCESS);
+                PageResult<List<Map<Integer, Map<String, Object>>>> listPageResult = staffArchiveService.selectArchiveByQueryScheme(schemeId, userSession, currentPage, pageSize);
+                if(!CollectionUtils.isEmpty(listPageResult.getList())){
+                    return new ResponseResult<>(listPageResult,CommonCode.SUCCESS);
                 }
-                return failResponseResult("没有符合要求的人员");
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("根据查询方案查找失败失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
-    /**
-     * 检验参数
-     * @param params
-     * @return
-     */
-    public Boolean checkParam(Object... params) {
+
+    private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
                 return false;
@@ -412,12 +412,8 @@ public class StaffArchiveController extends BaseController {
         return true;
     }
 
-    /**
-     * 错误返回值
-     * @param message
-     * @return
-     */
-    public ResponseResult failResponseResult(String message){
+
+    private ResponseResult failResponseResult(String message){
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);
         logger.error(message);

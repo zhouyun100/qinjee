@@ -181,7 +181,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) {
         StringBuffer stringBuffer=new StringBuffer();
-        stringBuffer.append("where");
+        stringBuffer.append(" where");
         List<Integer> oneList = userArchiveDao.selectStaffNoStandingBook(archiveType, orgId);
         //存储大数据表字段解析出的档案id
         //key是用来存是第几个筛选条件，value存档案id(可能多个)
@@ -198,20 +198,22 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String baseSql = getBaseSql(orgId);
         String sql=baseSql+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
-        return userArchiveDao.selectByPrimaryKeyList(integerList);
+        List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
+        userArchives.retainAll(list);
+        return userArchives;
     }
 
-    public String getBaseSql(Integer orgId){
+    private String getBaseSql(Integer orgId){
         List<String> fieldNameNotInside = getFieldNameNotInside(orgId);
         List<String> custom=new ArrayList<>();
         StringBuffer stringBuffer=new StringBuffer();
         StringBuffer stringBuffer2=new StringBuffer();
         String a="select t.archiveId from";
         String b="( select t0.* ";
-        for (int i = 0; i < fieldNameNotInside.size(); i++) {
-            stringBuffer.append(fieldNameNotInside.get(i)).append(",");
+        for (String s1 : fieldNameNotInside) {
+            stringBuffer.append(s1).append(",");
             custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
-                    "'@@"+fieldNameNotInside.get(i)+"@@')+LENGTH('@@"+fieldNameNotInside.get(i)+"@@')+1),';@@',1),");
+                    "'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1),");
         }
         String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
         String d="where t0.company_id = " +1 +
@@ -230,12 +232,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     /**
+     * @return String
      * 字段类型分四种：
      * 日期 DATE，数字 NUMBER，代码 CODE，文本 TEXT
-     * @param filter
-     * @return
      */
-    public String getWhereSql(StandingBookFilter filter){
+    private String getWhereSql(StandingBookFilter filter){
         String physicName = getPhysicName(filter.getFieldId());
         String condition=null;
         //根据id获得字段类型
@@ -283,7 +284,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         return null;
     }
     //找到非内置字段的物理字段名
-    public List<String> getFieldNameNotInside(Integer companyId){
+    private List<String> getFieldNameNotInside(Integer companyId){
         //找到企业下的人员表
         List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(companyId,ARCHIVE);
         //根据id找到物理字段名

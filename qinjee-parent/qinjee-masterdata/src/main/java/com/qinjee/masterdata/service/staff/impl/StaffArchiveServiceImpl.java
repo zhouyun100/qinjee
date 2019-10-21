@@ -26,6 +26,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     //    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
     private static final String ASC = "升序";
     private static final String DESC = "降序";
+    private static final String ARCHIVE = "档案";
     @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
@@ -93,42 +94,40 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer companyId) {
         List<UserArchive> list = new ArrayList<>();
-        List<UserArchive> list1;
+//        List<UserArchive> list1;
         //本用户的权限下有哪些机构
         List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
-        if (companyId == null) {
-            if (orgList != null) {
-                for (Integer integer : orgList) {
-                    //展示所有权限机构下的人员
-                    List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                    list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
-                    list.addAll(list1);
-                }
-                return new PageResult<>(list);
-            } else {
-                //展示自己的档案
-                list.add(userArchiveDao.selectByPrimaryKey(userSession.getArchiveId()));
-                return new PageResult<>(list);
-
-            }
-        } else {
+//        if (companyId == null) {
+//            if (orgList != null) {
+//                for (Integer integer : orgList) {
+//                    //展示所有权限机构下的人员
+//                    List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
+//                    list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
+//                    list.addAll(list1);
+//                }
+//                return new PageResult<>(list);
+//            } else {
+//                //展示自己的档案
+//                list.add(userArchiveDao.selectByPrimaryKey(userSession.getArchiveId()));
+//                return new PageResult<>(list);
+//
+//            }
+//        } else {
             if (orgList != null) {
                 for (Integer integer : orgList) {
                     //如果查看的在权限之内
                     if (companyId.equals(integer)) {
                         //展示机构下的人员信息
                         List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-                        list1 = userArchiveDao.selectByPrimaryKeyList(achiveList);
-                        list.addAll(list1);
+                        list = userArchiveDao.selectByPrimaryKeyList(achiveList);
                     }
                 }
-
                 return new PageResult<>(list);
             } else {
                 return null;
             }
         }
-    }
+//    }
 
 
     @Override
@@ -159,14 +158,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult<UserArchive> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession) {
+    public PageResult<List<Map<Integer, Map<String, Object>>>> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession,Integer currentPage,Integer pageSize) {
         StringBuffer stringBuffer = new StringBuffer();
 
-        List<String> insideFieldNameList=new ArrayList<>();
-
-        List<String> customFieldNameList=new ArrayList<>();
+//        List<String> insideFieldNameList=new ArrayList<>();
+//
+//        List<String> customFieldNameList=new ArrayList<>();
+        PageHelper.startPage(currentPage,pageSize);
         String order=null;
-        //根据查询方案id，找到对应的字段id与顺序和排序id与升降序
+        //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序
         //查询字段排序sort
         List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(schemeId);
         Collections.sort(fieldSortList);
@@ -175,22 +175,22 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList);
         //根据id查询字段名
         List<String> stringList = customArchiveFieldDao.selectFieldNameByList(sortList);
-        for (String s : stringList) {
-            stringBuffer.append(s).append(",");
-                if(isInsideField(s)){
-                    insideFieldNameList.add(s);
-                }
-                customFieldNameList.add(s);
-            }
-        String s = stringBuffer.toString();
-        int i = s.lastIndexOf(",");
-        s = s.substring(0, i);
+//        for (String s : stringList) {
+//            stringBuffer.append(s).append(",");
+//                if(isInsideField(s)){
+//                    insideFieldNameList.add(s);
+//                }
+//                customFieldNameList.add(s);
+//            }
+//        String s = stringBuffer.toString();
+//        int i = s.lastIndexOf(",");
+//        s = s.substring(0, i);
         //根据查询方案id，找到排序id与升降序
-        //查询升降序
-        //查询查询档案下的字段id
+        //查询查询档案下的排序字段id
         List<Integer> integerList = querySchemeSortDao.selectSortId(schemeId);
         //根据id查询字段名
         List<String> strings = customArchiveFieldDao.selectFieldNameByList(integerList);
+        //查询升降序
         List<String> list = querySchemeSortDao.selectSortByIdList(integerList);
         Map<String, String> map = new HashMap<>();
         for (int j = 0; j < strings.size(); j++) {
@@ -205,25 +205,73 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         order = "order by" + order;
         int j = order.lastIndexOf(",");
         order = order.substring(0, j);
+        //调用接口查询机构权限范围内的档案集合
         //进行sql查询，返回数据，档案在机构范围内
-        List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveListCustom(s,insideFieldNameList,customFieldNameList,
-                order, userSession.getCompanyId());
-        return new PageResult<>(userArchiveList);
+        //TODO 根据权限查询机构下的档案id集合
+        List<Integer> archiveIdList=new ArrayList<>();
+        Map<Integer, Map<String, Object>> userArchiveListCustom = userArchiveDao.getUserArchiveListCustom(getBaseSql(userSession.getCompanyId(), stringList), order, archiveIdList);
+        List<Map<Integer, Map<String, Object>>> mapList=new ArrayList<>();
+        mapList.add(userArchiveListCustom);
+        return new PageResult(mapList);
     }
-
-    //通过字段id找到物理字段名
-    private String getPhysicName(Integer fieldId){
-        return customArchiveFieldDao.selectPhysicName(fieldId);
-    }
-
-    //判断是否是内置字段
-    private Boolean isInsideField(String filedName){
-        Short isInside=customArchiveFieldDao.selectIsInsideByName(filedName);
-        if(isInside>0){
-            return true;
+    private String getBaseSql(Integer orgId,List<String> strings){
+        List<String> fieldNameNotInside = getFieldNameNotInside(orgId);
+        List<String> custom=new ArrayList<>();
+        StringBuffer stringBuffer=new StringBuffer();
+        StringBuffer stringBuffer2=new StringBuffer();
+        StringBuffer stringBuffer3=new StringBuffer();
+        stringBuffer3.append("select");
+        for (String string : strings) {
+            stringBuffer3.append("t.").append(string).append(",");
         }
-        return false;
+        int i1 = stringBuffer3.toString().lastIndexOf(",");
+        String a=stringBuffer3.toString().substring(0,i1);
+        a=a+"from";
+//        String a="select t.archiveId from";
+        String b="( select t0.* ";
+        for (String s1 : fieldNameNotInside) {
+            stringBuffer.append(s1).append(",");
+            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
+                    "'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1),");
+        }
+        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
+        String d="where t0.company_id = " +1 +
+                "and t1.func_code = 'ARCHIVE'\n" +
+                "and t0.company_id = t1.company_id\n" +
+                "and t2.table_id=t1.table_id "+
+                "and t0.archive_id = t2.business_id";
+        String e=")t";
+        for (String s : custom) {
+            stringBuffer2.append(s);
+        }
+        int i = stringBuffer2.toString().lastIndexOf(",");
+        String substring = stringBuffer2.toString().substring(0, i);
+        String s = stringBuffer.toString();
+        return a+b+s+substring+c+d+e;
     }
+    //找到非内置字段的物理字段名
+    private List<String> getFieldNameNotInside(Integer companyId){
+        //找到企业下的人员表
+        List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(companyId,ARCHIVE);
+        //根据id找到物理字段名
+        return customArchiveFieldDao.selectFieldNameListByTableIdList(tableIdList);
+
+
+    }
+
+//    //通过字段id找到物理字段名
+//    private String getPhysicName(Integer fieldId){
+//        return customArchiveFieldDao.selectPhysicName(fieldId);
+//    }
+//
+//    //判断是否是内置字段
+//    private Boolean isInsideField(String filedName){
+//        Short isInside=customArchiveFieldDao.selectIsInsideByName(filedName);
+//        if(isInside>0){
+//            return true;
+//        }
+//        return false;
+//    }
     private String getSort(String sort) {
         if (sort != null) {
             if (sort.equals(ASC)) {

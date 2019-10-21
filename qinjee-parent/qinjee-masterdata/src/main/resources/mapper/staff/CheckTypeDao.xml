@@ -54,4 +54,13 @@
     from     t_check_type
     where   check_code = #{checkCode,jdbcType=VARCHAR}
   </select>
+  <select id="selectCheckNameList" resultType="java.lang.String">
+    select  check_name
+    from     t_check_type
+    where   check_code in
+    <foreach collection="stringList" item="item" open="("
+             separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

@@ -60,7 +60,7 @@
       check_code = #{checkCode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <select id="selectCheckName">
+  <select id="selectCheckName" resultType="java.lang.String">
     select   check_code
     from t_custom_archive_field_check
     where field_id = #{fieldId,jdbcType=INTEGER}

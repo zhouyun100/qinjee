@@ -2,10 +2,12 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -53,7 +55,7 @@ public interface UserArchiveDao {
      */
     List<UserArchive> getUserArchiveList(@Param("pageQueryVo") PageQueryVo pageQueryVo, @Param("sortFieldStr") String sortFieldStr);
 
-    String selectName(Integer id);
+    String selectName(@Param("id") Integer id);
 
     String selectNumber(Integer id);
 
@@ -65,8 +67,6 @@ public interface UserArchiveDao {
 
     Integer selectArcNumberIn(Integer id);
 
-    List<UserArchive> getUserArchiveListCustom(@Param("select") String select, @Param("order") String order, @Param("orgId") Integer orgId);
-
     List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 
     List<Integer> selectStaffNoStandingBook(@Param("archiveType") String archiveType, @Param("id") Integer id);
@@ -77,7 +77,7 @@ public interface UserArchiveDao {
 
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
-    List<UserArchive> getUserArchiveListCustom(String s, List<String> insideFieldNameList, List<String> customFieldNameList, String order, Integer companyId);
-
     List<Integer> selectStaff(@Param("sql") String sql);
+    @MapKey("ArchiveId")
+    Map<Integer, Map<String, Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order, @Param("archiveIdList") List<Integer> archiveIdList);
 }
