@@ -165,7 +165,7 @@ public class ExcelRender {
                         ExceptionCast.cast(CommonCode.TIME_FORMAT_ERROR);
                     }
                 } else if (cell.getCellStyle().getDataFormat() == 0) {//处理数值格式
-                    cell.setCellType(Cell.CELL_TYPE_STRING);
+                    cell.setCellType(CellType.STRING);
                     cellValue = String.valueOf(cell.getRichStringCellValue().getString());
                 }
                 break;
