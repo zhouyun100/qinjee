@@ -210,7 +210,7 @@ public class ExcelUtil {
                 // 获得当前sheet的结束行
                 int lastRowNum = sheet.getLastRowNum();
                 // 循环除了第一行的所有行
-                for (int rowNum = firstRowNum + 1; rowNum <= lastRowNum; rowNum++) {
+                for (int rowNum = firstRowNum; rowNum <= lastRowNum; rowNum++) {
                     // 获得当前行
                     Row row = sheet.getRow(rowNum);
                     if (row == null) {
@@ -234,13 +234,30 @@ public class ExcelUtil {
         //TODO 还要根据字段名匹配，还要存进数据库
         //heads存的是第一行的字段名
        List<String> heads=Arrays.asList(list.get(0));
+
+
         //map是以表头为key，List<>
         Map<String, List<String>> map = new HashMap();
-        for (int i = 0; i < heads.size(); i++) {
-            for (int j = 1; j < list.size(); j++) {
-                List<String> list1 = Arrays.asList(list.get(j)[i]);
-                map.put(heads.get(i),list1);
+//        for (int i = 0; i < heads.size(); i++) {
+//            for (int j = 1; j < list.size(); j++) {
+//                List<String> list1 = Arrays.asList(list.get(j)[i]);
+//                map.put(heads.get(i),list1);
+//            }
+//        }
+
+        List<Map<String,String>> listMap = new ArrayList<>();
+        Map<String,String> mapRow;
+
+        for (int i = 1; i < list.size(); i++) {
+            mapRow = new HashMap<>();
+            for(int j = 0; j < heads.size(); j++){
+                mapRow.put(heads.get(j),list.get(i)[j]);
             }
+            listMap.add(mapRow);
+        }
+
+        for (Map<String, String> stringStringMap : listMap) {
+            System.out.println(stringStringMap);
         }
         return map;
     }
@@ -297,39 +314,47 @@ public class ExcelUtil {
             return cellValue;
         }
         // 把数字当成String来读，避免出现1读成1.0的情况
-        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+        if (cell.getCellType() == CellType.NUMERIC) {
             cell.setCellType(Cell.CELL_TYPE_STRING);
         }
         // 判断数据的类型
-        switch (cell.getCellType()) {
-            // 数字
-            case Cell.CELL_TYPE_NUMERIC:
-                cellValue = String.valueOf(cell.getNumericCellValue());
-                break;
-            // 字符串
-            case Cell.CELL_TYPE_STRING:
-                cellValue = String.valueOf(cell.getStringCellValue());
-                break;
-            // Boolean
-            case Cell.CELL_TYPE_BOOLEAN:
-                cellValue = String.valueOf(cell.getBooleanCellValue());
-                break;
-            // 公式
-            case Cell.CELL_TYPE_FORMULA:
-                cellValue = String.valueOf(cell.getCellFormula());
-                break;
-            // 空值
-            case Cell.CELL_TYPE_BLANK:
-                cellValue = "";
-                break;
-            // 故障
-            case Cell.CELL_TYPE_ERROR:
-                cellValue = "非法字符";
-                break;
-            default:
-                cellValue = "未知类型";
-                break;
+        if(cell.getCellType().equals(CellType.BLANK)){
+            cellValue = "";
+        }else if(cell.getCellType().equals(CellType.ERROR)){
+            cellValue = "非法字符";
+        }else{
+            cellValue = String.valueOf(cell.getStringCellValue());
         }
+
+//        switch (cell.getCellType()) {
+//            // 数字
+//            case CellType.NUMERIC:
+//                cellValue = String.valueOf(cell.getNumericCellValue());
+//                break;
+//            // 字符串
+//            case CellType.STRING:
+//                cellValue = String.valueOf(cell.getStringCellValue());
+//                break;
+//            // Boolean
+//            case CellType.BOOLEAN:
+//                cellValue = String.valueOf(cell.getBooleanCellValue());
+//                break;
+//            // 公式
+//            case CellType.FORMULA:
+//                cellValue = String.valueOf(cell.getCellFormula());
+//                break;
+//            // 空值
+//            case CellType.BLANK:
+//                cellValue = "";
+//                break;
+//            // 故障
+//            case CellType.ERROR:
+//                cellValue = "非法字符";
+//                break;
+//            default:
+//                cellValue = "未知类型";
+//                break;
+//        }
         return cellValue;
     }
 
@@ -346,23 +371,30 @@ public class ExcelUtil {
         return multipartFile;
     }
 
-//    public static void main(String[] args) throws IOException {
-//        MultipartFile multipartFile = null;
-//        File file = new File("C:\\Users\\Administrator\\Desktop\\hello.xls");
-//        FileInputStream fileInput = new FileInputStream(file);
-//        multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
-//        List<String[]> list = null;
-//        try {
-//            list = ExcelUtil.readExcel(multipartFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        for (String[] strings : list) {
+    public static void main(String[] args) throws IOException {
+        MultipartFile multipartFile = null;
+        File file = new File("E:\\import_test.xlsx");
+        FileInputStream fileInput = new FileInputStream(file);
+        multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
+        Map<String,List<String>> list = null;
+        try {
+            list = ExcelUtil.readExcel(multipartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Iterator<Map.Entry<String, List<String>>> iterator = list.entrySet().iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            System.out.println(iterator.toString() + "\t");
+        }
+
+//        for (List<String> strings : list) {
 //            for (int i = 0; i < strings.length; i++) {
 //                //这里可以获取excel的数据，然后将数据添加进数据库里面
 //                System.out.print(strings[i] + "\t");
 //            }
 //            System.out.println();
 //        }
-//    }
+    }
 }

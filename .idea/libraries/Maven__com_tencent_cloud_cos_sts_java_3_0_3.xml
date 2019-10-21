@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.tencent.cloud:cos-sts-java:3.0.3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Qinjee_Devp_Tools/maven-repository/com/tencent/cloud/cos-sts-java/3.0.3/cos-sts-java-3.0.3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../Qinjee_Devp_Tools/maven-repository/com/tencent/cloud/cos-sts-java/3.0.3/cos-sts-java-3.0.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../Qinjee_Devp_Tools/maven-repository/com/tencent/cloud/cos-sts-java/3.0.3/cos-sts-java-3.0.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="qinjee-gateway" />
+        <module name="qinjee-entity" />
+        <module name="qinjee-common" />
+        <module name="qinjee-config-server" />
+        <module name="qinjee-masterdata" />
+        <module name="qinjee-utils" />
+        <module name="qinjee-tsc" />
+        <module name="qinjee-consts" />
+        <module name="qinjee-eureka" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="qinjee-common" target="1.8" />
+      <module name="qinjee-common (1)" target="1.8" />
+      <module name="qinjee-config-server" target="1.8" />
+      <module name="qinjee-consts" target="1.8" />
+      <module name="qinjee-entity" target="1.8" />
+      <module name="qinjee-eureka" target="1.8" />
+      <module name="qinjee-gateway" target="1.8" />
+      <module name="qinjee-masterdata" target="1.8" />
+      <module name="qinjee-package" target="1.8" />
+      <module name="qinjee-packname" target="1.8" />
+      <module name="qinjee-parent" target="1.8" />
+      <module name="qinjee-tsc" target="1.8" />
+      <module name="qinjee-utils" target="1.8" />
+      <module name="qinjee-zuul" target="1.8" />
+      <module name="qinjeezuul" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="qinjee-common" options="-parameters" />
+      <module name="qinjee-config-server" options="-parameters" />
+      <module name="qinjee-consts" options="-parameters" />
+      <module name="qinjee-entity" options="-parameters" />
+      <module name="qinjee-eureka" options="-parameters" />
+      <module name="qinjee-gateway" options="-parameters" />
+      <module name="qinjee-masterdata" options="-parameters" />
+      <module name="qinjee-package" options="-parameters" />
+      <module name="qinjee-packname" options="-parameters" />
+      <module name="qinjee-tsc" options="-parameters" />
+      <module name="qinjee-utils" options="-parameters" />
+      <module name="qinjee-zuul" options="-parameters" />
+      <module name="qinjeezuul" options="-parameters" />
+    </option>
+  </component>
+</project>
