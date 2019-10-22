@@ -244,21 +244,21 @@
     where
     archive_id not in
     <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-      #{arichiveIds}
+      #{arcList}
     </foreach>
   </select>
 
   <select id="seleltByArcIdSingle" resultType="java.lang.Integer">
     select archive_id
     from  t_labor_contract
-    where contract_id = #{contractId,jdbcType=INTEGER}
+    where contract_id = #{integer,jdbcType=INTEGER}
   </select>
   <select id="seleltByArcIdIn" resultType="java.lang.Integer">
     select archive_id
     from  t_labor_contract
     where
     archive_id  in
-    <foreach  collection="list"  item="item" open="(" separator="," close=")">
+    <foreach  collection="arcList"  item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </select>
@@ -279,7 +279,7 @@
     from t_labor_contract
     where contract_id
     not in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
+    <foreach collection="conList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </select>

@@ -2,19 +2,8 @@ package com.qinjee.utils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.mail.Session;
-import javax.mail.Multipart;
-import javax.mail.Message;
-import javax.mail.BodyPart;
-import javax.mail.Transport;
-import javax.mail.MessagingException;
-
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeUtility;
-import javax.validation.constraints.Max;
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
@@ -30,8 +19,8 @@ import java.util.Properties;
  */
 public class SendManyMailsUtil {
     // 服务邮箱(from邮箱)
-    public static String password = "Kai5211314"; // 邮箱密码
-    public static String username = "17629926998@163.com";
+//    public static String password = "Kai5211314"; // 邮箱密码
+//    public static String username = "17629926998@163.com";
     // 发件人昵称
     public static String senderNick = "qinjee科技";
 
@@ -43,10 +32,11 @@ public class SendManyMailsUtil {
     private Multipart mp;
     // Multipart对象,邮件内容,标题,附件等内容均添加到其中后再生成MimeMessage对象
     private MimeMessage mimeMsg;
+    private volatile  static SendManyMailsUtil instance;
+    private SendManyMailsUtil(){
 
-    private static SendManyMailsUtil instance = new SendManyMailsUtil();
-
-    private SendManyMailsUtil() {
+    }
+    private   SendManyMailsUtil(String username,String password) {
         //对发送放进行数据库查询进行匹配
         props = System.getProperties();
         props.put("mail.smtp.auth", "true");
@@ -59,9 +49,15 @@ public class SendManyMailsUtil {
         session = Session.getDefaultInstance(props);
         session.setDebug(false);
     }
-
-    public static SendManyMailsUtil getInstance() {
-       return instance;
+    public static SendManyMailsUtil getInstance(String username,String password) {
+        if (instance == null) {
+            synchronized (SendManyMailsUtil.class) {
+                if (instance == null) {
+                    instance = new SendManyMailsUtil(username,password);
+                }
+            }
+        }
+        return instance;
     }
 
     /**
