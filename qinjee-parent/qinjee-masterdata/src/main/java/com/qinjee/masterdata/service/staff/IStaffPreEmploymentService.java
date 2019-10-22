@@ -87,7 +87,7 @@ public interface IStaffPreEmploymentService {
     /**
      * 修改预入职信息(显示字段的信息)
      */
-    void updatePreEmploymentField(Map<Integer, String> map);
+    void updatePreEmploymentField(Map<Integer, String> map) throws Exception;
     /**
      * 查看预入职信息(显示字段的信息)
      */

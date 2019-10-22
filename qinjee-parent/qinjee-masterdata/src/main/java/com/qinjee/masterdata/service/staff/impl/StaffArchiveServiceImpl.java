@@ -86,6 +86,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateArchiveField(Map<Integer, String> map) {
 
         customArchiveFieldDao.updatePreEmploymentField(map);

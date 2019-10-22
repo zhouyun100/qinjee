@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -94,8 +95,8 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @RequestMapping(value = "/updatePreEmploymentField ", method = RequestMethod.GET)
     @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
-    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updatePreEmploymentField(Map<Integer,String> map){
+//    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
+    public ResponseResult updatePreEmploymentField(@RequestParam Map<Integer,String> map){
         Boolean b = checkParam(map);
         if(b){
             try {

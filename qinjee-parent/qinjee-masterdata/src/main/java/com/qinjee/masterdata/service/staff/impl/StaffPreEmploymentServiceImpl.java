@@ -190,13 +190,18 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updatePreEmployment(PreEmployment preEmployment) {
         preEmploymentDao.updateByPrimaryKey(preEmployment);
     }
 
     @Override
-    public void updatePreEmploymentField(Map<Integer, String> map) {
-        customArchiveFieldDao.updatePreEmploymentField(map);
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePreEmploymentField(Map<Integer, String> map) throws Exception {
+        if( customArchiveFieldDao.updatePreEmploymentField(map)<=0){
+            throw new Exception("更新失败");
+        }
+
     }
 
     @Override
