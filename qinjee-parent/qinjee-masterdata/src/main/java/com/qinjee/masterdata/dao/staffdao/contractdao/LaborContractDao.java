@@ -22,9 +22,9 @@ public interface LaborContractDao {
 
     int updateByPrimaryKey(LaborContract record);
 
-    List<Integer> seleltByArcId(List<Integer> arcList);
+    List<Integer> seleltByArcId(@Param("arcList") List<Integer> arcList);
 
-    List<Integer> seleltByArcIdIn(List<Integer> arcList);
+    List<Integer> seleltByArcIdIn(@Param("arcList") List<Integer> arcList);
 
     Integer seleltByArcIdSingle(@Param("integer") Integer integer);
 
@@ -34,4 +34,6 @@ public interface LaborContractDao {
     List<Integer> selectArcByCon(@Param("conList") List<Integer> conList);
 
     List<Integer> selectByorgId(@Param("orgId") Integer orgId);
+
+    List<Integer> selectConByArcId(@Param("list") List<Integer> list);
 }

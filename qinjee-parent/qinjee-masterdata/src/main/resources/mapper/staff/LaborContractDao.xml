@@ -58,9 +58,6 @@
       <if test="archiveId != null">
         archive_id,
       </if>
-      <if test=" != null">
-        archive_id,
-      </if>
       <if test="businessUnitId != null">
         business_unit_id,
       </if>
@@ -70,6 +67,9 @@
       <if test="postId != null">
         post_id,
       </if>
+        <if test="contractSignDate != null">
+            contract_sign_date,
+        </if>
       <if test="contractBeginDate != null">
         contract_begin_date,
       </if>
@@ -171,7 +171,7 @@
         business_unit_id = #{businessUnitId,jdbcType=INTEGER},
       </if>
       <if test="orgId != null">
-        org_id = #{org_id,jdbcType=INTEGER},
+        org_id = #{orgId,jdbcType=INTEGER},
       </if>
       <if test="postId != null">
         post_id = #{postId,jdbcType=INTEGER},
@@ -208,9 +208,6 @@
       </if>
       <if test="operatorId != null">
         operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -278,9 +275,18 @@
     select archive_id
     from t_labor_contract
     where contract_id
-    not in
+     not in
     <foreach collection="conList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </select>
+    <select id="selectConByArcId" resultType="java.lang.Integer">
+      select contract_id
+      from t_labor_contract
+      where archive_id
+      in
+      <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </select>
 </mapper>

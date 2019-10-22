@@ -14,9 +14,9 @@ import java.util.Date;
 @ToString
 public class LaborContractVo implements Serializable {
     /**
-     * id
+     * contractId
      */
-    private Integer id;
+    private Integer contractId;
 
     /**
      * 合同签订日期

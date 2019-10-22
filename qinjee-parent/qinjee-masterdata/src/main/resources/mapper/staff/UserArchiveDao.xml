@@ -477,13 +477,13 @@
        #{item}
      </foreach>
   </select>
-  <select id="selectNotInList" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+  <select id="selectNotInList" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_user_archive
     where archive_id in
-    <foreach collection="list" item="item" open="(" separator="," index=")">
-    (#{item,jdbcType=INTEGER})
+    <foreach collection="readyIdList" item="item" open="(" separator="," index=")">
+    #{item}
     </foreach>
     AND is_delete=0
   </select>

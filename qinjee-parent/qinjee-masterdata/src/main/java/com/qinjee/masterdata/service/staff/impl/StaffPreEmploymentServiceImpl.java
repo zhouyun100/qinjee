@@ -15,6 +15,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendManyMailsUtil;
 import com.qinjee.utils.SendMessage;
+import entity.MailConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -91,9 +92,11 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             }
         }
         List<String> mails = userArchiveDao.selectMail(conList);
+        //TODO 邮件配置类需要实例化
+        MailConfig mailConfig = new MailConfig();
 
         //TODO 邮箱工具类中还需要确定模板，这里的发件人也需要再配置，现已写死
-        SendManyMailsUtil.getInstance().sendMail(SENDER, tomails, mails, subject, content, filepath);
+        SendManyMailsUtil.sendMail(mailConfig,tomails, mails, subject, content, filepath);
     }
 
     @Override
