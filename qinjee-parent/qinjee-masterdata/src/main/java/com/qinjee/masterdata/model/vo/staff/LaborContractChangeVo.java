@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -25,16 +26,19 @@ public class LaborContractChangeVo implements Serializable {
     /**
      * 变更类型
      */
+    @NotNull
     private String changeType;
 
     /**
      * 变更日期
      */
+    @NotNull
     private Date changeDate;
 
     /**
      * 变更原因
      */
+    @NotNull
     private String changeReason;
 
     /**

@@ -48,7 +48,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-   void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list, UserSession userSession);
+   void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list, UserSession userSession) throws Exception;
 
     /**更新合同，同时新增更新记录
      * @param laborContract

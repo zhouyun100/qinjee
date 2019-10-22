@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -146,17 +147,30 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list,
-                                                   UserSession userSession) {
-            //将合同vo设置进去
-            LaborContract laborContract = new LaborContract();
-            //批量新签合同
-            for (Integer integer : list) {
-                BeanUtils.copyProperties(laborContractVo, laborContract);
-                laborContract.setArchiveId(integer);
-                laborContract.setOperatorId(userSession.getArchiveId());
-                laborContract.setContractState(NEWMARK);
-                laborContractDao.insertSelective(laborContract);
+                                                   UserSession userSession) throws Exception {
+        StringBuffer stringBuffer=new StringBuffer();
+            //判断是否有已签合同，根据人员id寻找是否存在已签的
+            List<Integer> integerList=laborContractDao.selectConByArcId(list);
+
+            if(CollectionUtils.isEmpty(integerList)){
+                //将合同vo设置进去
+                LaborContract laborContract = new LaborContract();
+                //批量新签合同
+                for (Integer integer : list) {
+                    BeanUtils.copyProperties(laborContractVo, laborContract);
+                    laborContract.setArchiveId(integer);
+                    laborContract.setOperatorId(userSession.getArchiveId());
+                    laborContract.setContractState(NEWMARK);
+                    laborContractDao.insertSelective(laborContract);
+                }
+            }else {
+                for (Integer integer : integerList) {
+                    stringBuffer.append(integer);
+                }
+
+                throw new Exception("存在已签合同人员" + stringBuffer.toString());
             }
     }
 
@@ -187,7 +201,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContract(LaborContractVo laborContractVo, Integer id,
                                                    LaborContractChangeVo laborContractChangeVo, UserSession userSession) {
-
         //新增续签
         LaborContract laborContract = new LaborContract();
         //设置其余字段
@@ -199,6 +212,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         laborContract.setSignNumber(laborContractVo.getSignNumber()+1);
         laborContractDao.updateByPrimaryKeySelective(laborContract);
         //增加更改记录
+        System.out.println(laborContract.getSignNumber());
         change(laborContractChangeVo, RENEWCHANGE, id, userSession.getArchiveId());
     }
 
@@ -353,6 +367,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         laborContractChange.setChangeType(type);
         laborContractChange.setContractId(id);
         laborContractChange.setOperatorId(achiveId);
+        laborContractChangeDao.insertSelective(laborContractChange);
     }
 
 

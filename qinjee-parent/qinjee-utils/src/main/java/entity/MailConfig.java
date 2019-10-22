@@ -11,6 +11,7 @@
 package entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 邮件配置类
@@ -18,6 +19,7 @@ import lombok.Data;
  * @date 2019/10/22
  */
 @Data
+@ToString
 public class MailConfig {
 
     /**

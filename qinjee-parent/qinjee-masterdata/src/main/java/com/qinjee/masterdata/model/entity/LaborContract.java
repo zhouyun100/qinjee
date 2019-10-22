@@ -14,6 +14,10 @@ import java.util.Date;
 @ToString
 public class LaborContract implements Serializable {
     /**
+     * id
+     */
+    private Integer id;
+    /**
      * 合同ID
      */
     private Integer contractId;
@@ -29,7 +33,7 @@ public class LaborContract implements Serializable {
     /**
      * 部门id
      */
-    private Integer OrgId;
+    private Integer orgId;
     /**
      * 岗位id
      */

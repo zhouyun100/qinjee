@@ -131,9 +131,9 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where change_id = #{changeId,jdbcType=INTEGER}
   </update>
-  <select id="selectLaborContractchange" resultType="com.qinjee.masterdata.model.entity.LaborContractChange">
+  <select id="selectLaborContractchange" resultType="com.qinjee.masterdata.model.entity.LaborContractChange" resultMap="BaseResultMap">
     select  <include refid="Base_Column_List" />
     from t_labor_contract_change
-    where  contract_id = #{contractId,jdbcType=INTEGER}
+    where  contract_id = #{id,jdbcType=INTEGER}
   </select>
 </mapper>
