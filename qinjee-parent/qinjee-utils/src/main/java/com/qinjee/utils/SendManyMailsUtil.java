@@ -39,6 +39,7 @@ public class SendManyMailsUtil {
     public static final String MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";
     public static final String MAIL_SMTP_HOST = "mail.smtp.host";
     public static final String MAIL_SMTP_PORT = "mail.smtp.port";
+    public static final String MAIL_SMTP_SSL_ENABLE = "mail.smtp.ssl.enable";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String SENDERNICK = "sendernick";
@@ -55,6 +56,9 @@ public class SendManyMailsUtil {
         props.put(MAIL_TRANSPORT_PROTOCOL, mailConfig.getMailTransportProtocol());
         props.put(MAIL_SMTP_HOST, mailConfig.getMailSmtpHost());
         props.put(MAIL_SMTP_PORT, mailConfig.getMailSmtpPort());
+        if(StringUtils.isNoneBlank(mailConfig.getSslEnable())){
+            props.put(MAIL_SMTP_SSL_ENABLE, mailConfig.getSslEnable());
+        }
         props.put(USERNAME, mailConfig.getUsername());
         props.put(PASSWORD, mailConfig.getPassword());
         props.put(SENDERNICK, mailConfig.getSendernick());

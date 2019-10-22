@@ -41,6 +41,12 @@ public class MailConfig {
     private String mailSmtpPort;
 
     /**
+     * 是否使用 SSL 安全连接(QQ邮箱不需要，QQ企业邮箱需要)
+     * 说明：QQ企业邮箱必须关闭安全登录（微信扫码）
+     */
+    private String sslEnable;
+
+    /**
      * 发件人账号
      */
     private String username;
