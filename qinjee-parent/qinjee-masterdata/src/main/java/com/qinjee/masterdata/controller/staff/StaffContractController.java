@@ -42,11 +42,11 @@ public class StaffContractController extends BaseController {
      */
     @RequestMapping(value = "/selectNoLaborContractU", method = RequestMethod.GET)
     @ApiOperation(value = "展示未签合同", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
+//    })
     public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
     ) {
         Boolean b = checkParam(orgId, currentPage, pageSize);
@@ -113,10 +113,10 @@ public class StaffContractController extends BaseController {
 
     @RequestMapping(value = "/insertLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "新签合同", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "laborContractVo", value = "合同VO表", paramType = "form", required = true),
-            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "laborContractVo", value = "合同VO表", paramType = "form", required = true),
+//            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+//    })
     public ResponseResult insertLaborContract(@Valid LaborContractVo laborContractVo, Integer id) {
         Boolean b = checkParam(laborContractVo,id,getUserSession());
         if(b){
@@ -124,6 +124,7 @@ public class StaffContractController extends BaseController {
                 staffContractService.insertLaborContract(laborContractVo, id, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("新签合同失败");
             }
 

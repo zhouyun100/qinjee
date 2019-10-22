@@ -280,7 +280,7 @@
   <select id="selectOrgName" resultType="java.lang.String">
     select  org_name
     from  t_organization
-    where org_id = #{orgId,jdbcType=INTEGER}
+    where org_id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectByAchiveId" resultType="java.lang.Integer">

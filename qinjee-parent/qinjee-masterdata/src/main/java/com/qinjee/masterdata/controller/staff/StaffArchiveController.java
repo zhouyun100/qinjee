@@ -17,13 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -219,7 +215,7 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/deleteUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "删除人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "人员档案关系表id集合", paramType = "query", required = true)
-    public ResponseResult deleteUserArchivePostRelation(List<Integer> list) {
+    public ResponseResult deleteUserArchivePostRelation(@RequestParam List<Integer> list) {
         Boolean b = checkParam(list);
         if(b){
             try {
@@ -238,7 +234,7 @@ public class StaffArchiveController extends BaseController {
 
     @RequestMapping(value = "/updateUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "修改人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
-    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
     public ResponseResult updateUserArchivePostRelation( @Valid UserArchivePostRelation userArchivePostRelation) {
         Boolean b = checkParam(userArchivePostRelation);
         if(b){
@@ -258,14 +254,14 @@ public class StaffArchiveController extends BaseController {
 
     @RequestMapping(value = "/selectUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "展示人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
-            @ApiImplicitParam(name = "list", value = "员工档案id集合", paramType = "query", required = true)
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
+//            @ApiImplicitParam(name = "list", value = "员工档案id集合", paramType = "query", required = true)
+//    })
     public ResponseResult<PageResult<UserArchivePostRelation>> selectUserArchivePostRelation(Integer currentPage,
                                                                                              Integer pageSize,
-                                                                                             List<Integer> list) {
+                                                                                            @RequestParam List<Integer> list) {
         Boolean b = checkParam(currentPage,pageSize,list);
         if(b){
             try {
@@ -301,20 +297,23 @@ public class StaffArchiveController extends BaseController {
         }
         return  failResponseResult("id错误");
     }
+
+
     /**
      * 保存修改方案
      * 包括新增与更新
      */
-    @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.GET)
+    @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "保存查询方案", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
-            @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
-            @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案顺序", paramType = "form", required = true),
-
-    })
-    public ResponseResult saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
-                                          List<QuerySchemeSort> querySchemeSortlist) {
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
+//            @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
+//            @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案顺序", paramType = "form", required = true),
+//
+//    })
+    public ResponseResult saveQueryScheme(@Valid QueryScheme  queryScheme,
+                                          @RequestBody  List<QuerySchemeField> querySchemeFieldlist ,
+                                          @RequestBody  List<QuerySchemeSort> querySchemeSortlist) {
         Boolean b = checkParam(queryScheme,querySchemeFieldlist,querySchemeSortlist);
         if(b){
             try {
@@ -335,8 +334,8 @@ public class StaffArchiveController extends BaseController {
 
     @RequestMapping(value = "/deleteQueryScheme", method = RequestMethod.GET)
     @ApiOperation(value = "删除查询方案", notes = "hkt")
-    @ApiImplicitParam(name = "list", value = "查询方案id的集合", paramType = "query", required = true)
-    public ResponseResult deleteQueryScheme(List<Integer> list) {
+//    @ApiImplicitParam(name = "list", value = "查询方案id的集合", paramType = "query", required = true)
+    public ResponseResult deleteQueryScheme(@RequestParam List<Integer> list) {
         Boolean b = checkParam(list);
         if(b){
             try {

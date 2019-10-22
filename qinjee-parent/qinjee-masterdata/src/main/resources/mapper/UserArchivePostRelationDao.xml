@@ -183,15 +183,10 @@
       <if test="operatorId != null">
         operator_id = #{operatorId,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
+
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -215,11 +210,12 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select MAX (id)
-    from t_position_grade_relation
+    select MAX(id)
+    from  t_user_archive_post_relation
   </select>
     <update id="deleteUserArchivePostRelation">
     update
+      t_user_archive_post_relation
     set
      is_delete = 0
      where id
