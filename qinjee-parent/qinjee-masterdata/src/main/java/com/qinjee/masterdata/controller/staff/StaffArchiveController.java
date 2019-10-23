@@ -98,7 +98,7 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/updateArchive", method = RequestMethod.POST)
     @ApiOperation(value = "更新档案表", notes = "hkt")
     @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
-    public ResponseResult updateArchive(UserArchive userArchive) {
+    public ResponseResult updateArchive(@Valid UserArchive userArchive) {
         Boolean b = checkParam(userArchive);
         if(b){
             try {
@@ -113,16 +113,17 @@ public class StaffArchiveController extends BaseController {
     /**
      * 更新档案表(自定义表数据)
      */
-    @RequestMapping(value = "/updateArchiveField ", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateArchiveField ", method = RequestMethod.POST)
     @ApiOperation(value = "更新档案表(自定义表数据)", notes = "hkt")
-    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updateArchiveField(Map<Integer,String> map){
+//    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
+    public ResponseResult updateArchiveField(@RequestParam Map<Integer,String> map){
         Boolean b = checkParam(map);
         if(b){
             try {
                 staffArchiveService.updateArchiveField(map);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("更新档案表（自定义字段表）失败");
             }
         }

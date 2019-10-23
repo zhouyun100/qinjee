@@ -279,14 +279,16 @@
     where  field_id = #{fieldId,jdbcType=INTEGER}
      AND is_delete=0
   </select>
-  <update id="updatePreEmploymentField" parameterType="hashmap">
+  <update id="updatePreEmploymentField" parameterType="java.util.HashMap" >
     <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
-      UPDATE t_custom_archive_field
-      field_name= ${value}
-      WHERE field_id= #{key}
-      AND is_delete=0
+    UPDATE t_custom_archive_field
+    set
+      field_name= #{value}
+      WHERE field_id= #{key} AND is_delete=0
     </foreach>
+
   </update>
+
   <select id="selectTableId" resultType="java.lang.Integer">
      select table_id
     from t_custom_archive_field

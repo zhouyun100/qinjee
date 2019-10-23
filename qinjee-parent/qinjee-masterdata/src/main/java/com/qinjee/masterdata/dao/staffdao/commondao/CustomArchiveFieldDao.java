@@ -49,7 +49,7 @@ public interface CustomArchiveFieldDao {
 
     List<String> selectFieldNameByList(@Param("list") List<Integer> list);
 
-    void updatePreEmploymentField(Map<Integer, String> map);
+    Integer updatePreEmploymentField(@Param("map") Map<Integer, String> map);
 
     Short isSystemField(@Param("head") String head);
 
