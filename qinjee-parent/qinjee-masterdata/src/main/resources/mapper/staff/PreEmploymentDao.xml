@@ -190,9 +190,6 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
     </set>
     where employment_id = #{employmentId,jdbcType=INTEGER}
   </update>
@@ -216,7 +213,7 @@
     where employment_id = #{employmentId,jdbcType=INTEGER}
   </update>
   <select id="selectMaxId" resultType="java.lang.Integer">
-    select MAX (employment_id)
+    select MAX(employment_id)
     from t_pre_employment
      WHERE  is_delete = 0
   </select>
@@ -235,12 +232,13 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
-    SELECT
-     a.*
-     from   t_pre_employment  a  left join t_organization b
-     on a.company_id=b.company_id
-     where a.is_delete=0
+  <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_pre_employment
+    where  company_id = #{companyId,jdbcType=INTEGER}
+    AND
+    is_delete =0
   </select>
   <update id="deletePreEmployment">
     update  t_pre_employment
@@ -253,8 +251,8 @@
     update  t_pre_employment
     set
     is_delete=1
-    where employment_id in
-    <foreach collection="list" item="item" open="(" separator="," close="">
+    where employment_id  in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </update>

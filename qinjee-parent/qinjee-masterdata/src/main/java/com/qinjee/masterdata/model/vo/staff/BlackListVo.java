@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
 @AllArgsConstructor
@@ -21,21 +22,25 @@ public class BlackListVo implements Serializable {
     /**
      * 姓名
      */
+    @NotNull
     private String userName;
 
     /**
      * 手机号
      */
+    @NotNull
     private String phone;
 
     /**
      * 证件类型
      */
+    @NotNull
     private String idType;
 
     /**
      * 证件号码
      */
+    @NotNull
     private String idNumber;
 
     /**

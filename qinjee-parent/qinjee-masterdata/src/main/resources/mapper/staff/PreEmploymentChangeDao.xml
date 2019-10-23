@@ -117,4 +117,9 @@
       #{changeRemark,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}
       )
   </insert>
+  <select id="selectIdByPreId" resultType="java.lang.Integer">
+    select  change_id
+    from t_pre_employment_change
+    where  employment_id=#{preEmploymentId,jdbcType=INTEGER}
+  </select>
 </mapper>

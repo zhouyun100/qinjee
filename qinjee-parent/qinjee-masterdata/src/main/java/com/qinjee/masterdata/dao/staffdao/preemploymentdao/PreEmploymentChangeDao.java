@@ -20,8 +20,9 @@ public interface PreEmploymentChangeDao {
 
     int updateByPrimaryKeySelective(PreEmploymentChange record);
 
-    int updateByPrimaryKey(@Param("record") PreEmploymentChange record);
+    int updateByPrimaryKey( PreEmploymentChange preEmploymentChange);
 
     int insertStatusChange(@Param("statusChangeVo") StatusChangeVo statusChangeVo);
 
+    Integer selectIdByPreId(@Param("preEmploymentId") Integer preEmploymentId);
 }

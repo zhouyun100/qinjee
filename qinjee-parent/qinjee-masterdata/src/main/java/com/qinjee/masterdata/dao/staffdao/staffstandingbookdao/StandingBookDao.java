@@ -23,7 +23,7 @@ public interface StandingBookDao {
 
     int updateByPrimaryKey(StandingBook record);
 
-    void deleteStandingBook(Integer standingBookId);
+    void deleteStandingBook(@Param("standingBookId") Integer standingBookId);
 
     List<StandingBook> selectByAchiveId(@Param("archiveId") Integer archiveId);
 

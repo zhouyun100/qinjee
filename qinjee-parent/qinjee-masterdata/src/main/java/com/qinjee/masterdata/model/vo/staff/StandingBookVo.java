@@ -1,15 +1,12 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
 public class StandingBookVo implements Serializable {
     /**
      * 台账ID
@@ -19,6 +16,7 @@ public class StandingBookVo implements Serializable {
     /**
      * 台账名称
      */
+    @NotNull
     private String standingBookName;
 
     /**
@@ -34,6 +32,7 @@ public class StandingBookVo implements Serializable {
     /**
      * 是否共享
      */
+    @NotNull
     private Short isShare;
 
     /**
@@ -44,6 +43,7 @@ public class StandingBookVo implements Serializable {
     /**
      * 是否启用
      */
+    @NotNull
     private Short isEnable;
 
     /**

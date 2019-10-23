@@ -53,7 +53,7 @@ public interface IStaffPreEmploymentService {
      */
 
     void insertStatusChange(UserSession userSession, Integer preEmploymentId,
-                            StatusChangeVo statusChangeVo, String reason);
+                            StatusChangeVo statusChangeVo);
 
     /**
      * 根据机构展示预入职表

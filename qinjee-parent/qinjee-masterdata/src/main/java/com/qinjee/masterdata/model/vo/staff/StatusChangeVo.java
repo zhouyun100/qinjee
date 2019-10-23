@@ -2,6 +2,7 @@ package com.qinjee.masterdata.model.vo.staff;
 
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -21,15 +22,18 @@ public class StatusChangeVo {
     /**
      * 变更状态
      */
+    @NotNull
     private String changeState;
     /**
      * 延期入职时间
+     *
      */
     private Date DelayTime;
 
     /**
      * 放弃原因
      */
+    @NotNull
     private String abandonReason;
 
     /**

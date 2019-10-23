@@ -4,8 +4,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.BlackListVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -17,9 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -40,8 +37,8 @@ public class StaffStandingBookController extends BaseController {
      */
     @RequestMapping(value = "/insertBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "加入黑名单表", notes = "hkt")
-    @ApiImplicitParam(name = "blackListGroup", value = "黑名单表集合", paramType = "query", required = true)
-    public ResponseResult insertBlackList(List<BlackListVo> blacklists,String dataSource) {
+//    @ApiImplicitParam(name = "blackListGroup", value = "黑名单表集合", paramType = "query", required = true)
+    public ResponseResult insertBlackList(@RequestBody List<BlackListVo> blacklists, String dataSource) {
         Boolean b = checkParam(blacklists, dataSource, getUserSession());
         if (b) {
             try {
@@ -59,8 +56,8 @@ public class StaffStandingBookController extends BaseController {
      */
     @RequestMapping(value = "/deleteBalckList", method = RequestMethod.GET)
     @ApiOperation(value = "删除黑名单表", notes = "hkt")
-    @ApiImplicitParam(name = "list", value = "黑名单表id集合", paramType = "query", required = true, example = "{1，2}")
-    public ResponseResult deleteBalckList(List<Integer> list) {
+//    @ApiImplicitParam(name = "list", value = "黑名单表id集合", paramType = "query", required = true, example = "{1，2}")
+    public ResponseResult deleteBalckList(@RequestParam List<Integer> list) {
         Boolean b = checkParam(list);
         if (b) {
             try {
@@ -78,9 +75,9 @@ public class StaffStandingBookController extends BaseController {
      */
     @RequestMapping(value = "/updateBalckList", method = RequestMethod.GET)
     @ApiOperation(value = "修改黑名单表", notes = "hkt")
-    @ApiImplicitParam(name = "BlackLsit", value = "黑名单", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "BlackLsit", value = "黑名单", paramType = "form", required = true)
 
-    public ResponseResult updateBalckList(Blacklist blacklist) {
+    public ResponseResult updateBalckList(@Valid Blacklist blacklist) {
         Boolean b = checkParam(blacklist);
         if (b) {
             try {
@@ -98,17 +95,17 @@ public class StaffStandingBookController extends BaseController {
      */
     @RequestMapping(value = "/selectBalckList", method = RequestMethod.GET)
     @ApiOperation(value = "展示黑名单表", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
+//    })
     public ResponseResult<PageResult<Blacklist>> selectBalckList(Integer currentPage, Integer pageSize) {
         Boolean b = checkParam(currentPage,pageSize);
         if (b) {
             try {
                 PageResult<Blacklist> pageResult =
                         staffStandingBookService.selectBalckList(currentPage, pageSize);
-                if(pageResult!=null){
+                if(pageResult.getList().size()>0){
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }
                     return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
@@ -119,13 +116,14 @@ public class StaffStandingBookController extends BaseController {
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
+
     /**
      * 删除台账
      */
 
     @RequestMapping(value = "/deleteStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "删除台账", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
+//    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult deleteStandingBook(Integer standingBookId) {
         Boolean b = checkParam(standingBookId);
         if (b) {
@@ -140,24 +138,25 @@ public class StaffStandingBookController extends BaseController {
     }
 
     /**
-     * 修改台账
+     * 新增与修改台账
      */
 
-    @RequestMapping(value = "/updateStandingBook", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateStandingBook", method = RequestMethod.POST)
     @ApiOperation(value = "修改台账", notes = "hkt")
-    @ApiImplicitParam(name = "StandingBookInfo", value = "台账表信息", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "StandingBookInfoVo", value = "台账表信息", paramType = "form", required = true)
 
-    public ResponseResult updateStandingBook(@Valid StandingBookInfo standingBookInfo) {
+    public ResponseResult saveStandingBook(@Valid @RequestBody StandingBookInfoVo standingBookInfoVo) {
         //因为页面只有一个保存按钮，所以点保存的时候，需要区分前端是否传过来id
         //如果有id，证明是更新，做两个更新操作
         //如果没有，证明是新增。做两个新增操作。
-        Boolean b = checkParam(standingBookInfo,getUserSession());
+        Boolean b = checkParam(standingBookInfoVo,getUserSession());
         if (b) {
             try {
-                staffStandingBookService.saveStandingBook(getUserSession(),standingBookInfo);
+                staffStandingBookService.saveStandingBook(getUserSession(), standingBookInfoVo);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
-                return failResponseResult("删除台账失败");
+                e.printStackTrace();
+                return failResponseResult("查询台账失败");
             }
         }
         return failResponseResult("参数错误");
@@ -169,17 +168,18 @@ public class StaffStandingBookController extends BaseController {
 
     @RequestMapping(value = "/selectStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "查询台账", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
+//    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult<StandingBookInfo> selectStandingBook(Integer id) {
         Boolean b = checkParam(id);
         if (b) {
             try {
                 StandingBookInfo standingBookInfo = staffStandingBookService.selectStandingBook(id);
-                if(standingBookInfo!=null){
+                if(standingBookInfo !=null){
                     return new ResponseResult<>(standingBookInfo,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
+                e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }

@@ -157,9 +157,7 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
+
     </set>
     where filter_id = #{filterId,jdbcType=INTEGER}
   </update>
@@ -182,14 +180,14 @@
   <update id="deleteStandingBookFilter">
     update t_standing_book_filter
     set
-    is_delete =0
-    where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 1
+    is_delete =1
+    where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 0
   </update>
-  <select id="selectByStandingBookId" resultType="com.qinjee.masterdata.model.entity.StandingBookFilter">
+  <select id="selectByStandingBookId" resultType="com.qinjee.masterdata.model.entity.StandingBookFilter" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_standing_book_filter
-    where standing_book_id = #{standingBookId,jdbcType=INTEGER} AND  is_delete = 0
+    where standing_book_id = #{id,jdbcType=INTEGER} AND  is_delete = 0
   </select>
   <select id="selectSqlById" resultType="java.lang.String">
     select

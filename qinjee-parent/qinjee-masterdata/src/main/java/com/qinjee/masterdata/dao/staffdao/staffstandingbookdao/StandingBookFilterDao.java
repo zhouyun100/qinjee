@@ -19,11 +19,11 @@ public interface StandingBookFilterDao {
 
     StandingBookFilter selectByPrimaryKey(Integer filterId);
 
-    int updateByPrimaryKeySelective(StandingBookFilter record);
+    int updateByPrimaryKeySelective( StandingBookFilter record);
 
     int updateByPrimaryKey(StandingBookFilter record);
 
-    void deleteStandingBookFilter(Integer standingBookId);
+    void deleteStandingBookFilter(@Param("standingBookId") Integer standingBookId);
 
     List<StandingBookFilter> selectByStandingBookId(@Param("id") Integer id);
 

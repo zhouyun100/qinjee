@@ -177,9 +177,6 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
     </set>
     where blacklist_id = #{blacklistId,jdbcType=INTEGER}
   </update>
@@ -202,7 +199,7 @@
     where blacklist_id = #{blacklistId,jdbcType=INTEGER}
   </update>
   <select id="selectMaxId" resultType="java.lang.Integer">
-    select MAX (blacklist_id)
+    select MAX(blacklist_id)
     from  t_blacklist
     where is_delete=0
   </select>
@@ -211,14 +208,14 @@
     set is_delete=1
     where blacklist_id
     in
-    <foreach collection="list" open="(" separator="," close=")">
+    <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </update>
-  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.Blacklist">
+  <select id="selectByPage" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_blacklist
-   where is_delete=0
+    where is_delete=0
   </select>
 </mapper>

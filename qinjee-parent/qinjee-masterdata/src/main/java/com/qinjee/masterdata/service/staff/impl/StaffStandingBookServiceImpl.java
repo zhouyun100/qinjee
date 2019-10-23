@@ -13,9 +13,7 @@ import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.BlackListVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -90,8 +88,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateBalckList(Blacklist blacklist) {
-        blacklistDao.updateByPrimaryKey(blacklist);
+        blacklistDao.updateByPrimaryKeySelective(blacklist);
     }
 
     @Override
@@ -113,50 +112,49 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveStandingBook(UserSession userSession, StandingBookInfo standingBookInfo) {
+    public void saveStandingBook(UserSession userSession, StandingBookInfoVo standingBookInfoVo) {
         StandingBook standingBook = new StandingBook();
-        if (standingBookInfo.getStandingBookVo().getStandingBookId() == null) {
+        if (standingBookInfoVo.getStandingBookVo().getStandingBookId() == 0 || standingBookInfoVo.getStandingBookVo().getStandingBookId() == null ) {
             //说明是新增操作
             //新增台账属性
-            BeanUtils.copyProperties(standingBookInfo.getStandingBookVo(), standingBook);
+            BeanUtils.copyProperties(standingBookInfoVo.getStandingBookVo(), standingBook);
             standingBook.setArchiveId(userSession.getArchiveId());
             standingBook.setCompanyId(userSession.getCompanyId());
             standingBook.setCreatorId(userSession.getArchiveId());
-            standingBookDao.insert(standingBook);
+            standingBookDao.insertSelective(standingBook);
 
             //设置台账属性表的id给筛选表
-            for (StandingBookFilterVo standingBookFilterVo : standingBookInfo.getListVo()) {
+            for (StandingBookFilterVo standingBookFilterVo : standingBookInfoVo.getListVo()) {
                 StandingBookFilter standingBookFilter = new StandingBookFilter();
                 BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
                 standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
                 standingBookFilter.setOperatorId(userSession.getArchiveId());
                 standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
-                standingBookFilterDao.insert(standingBookFilter);
+                standingBookFilterDao.insertSelective(standingBookFilter);
             }
-        }
-
-        //说明是更新操作
-
-        BeanUtils.copyProperties(standingBookInfo.getStandingBookVo(), standingBook);
-        standingBook.setArchiveId(userSession.getArchiveId());
-        standingBook.setCompanyId(userSession.getCompanyId());
-        standingBook.setCreatorId(userSession.getArchiveId());
-        standingBookDao.insert(standingBook);
-        standingBookDao.updateByPrimaryKeySelective(standingBook);
-        for (StandingBookFilterVo standingBookFilterVo : standingBookInfo.getListVo()) {
-            StandingBookFilter standingBookFilter = new StandingBookFilter();
-            BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
-            standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
-            standingBookFilter.setOperatorId(userSession.getArchiveId());
-            standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
-            standingBookFilterDao.updateByPrimaryKey(standingBookFilter);
+        }else {
+            //说明是更新操作
+            BeanUtils.copyProperties(standingBookInfoVo.getStandingBookVo(), standingBook);
+            standingBook.setArchiveId(userSession.getArchiveId());
+            standingBook.setCompanyId(userSession.getCompanyId());
+            standingBook.setCreatorId(userSession.getArchiveId());
+            standingBookDao.updateByPrimaryKeySelective(standingBook);
+            for (StandingBookFilterVo standingBookFilterVo : standingBookInfoVo.getListVo()) {
+                StandingBookFilter standingBookFilter = new StandingBookFilter();
+                BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
+                standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
+                standingBookFilter.setOperatorId(userSession.getArchiveId());
+                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
+                System.out.println(standingBookFilter.getFieldValue());
+                standingBookFilterDao.updateByPrimaryKeySelective(standingBookFilter);
+            }
         }
     }
     @Override
     public StandingBookInfo selectStandingBook(Integer id) {
         StandingBook standingBook = standingBookDao.selectByPrimaryKey(id);
         List<StandingBookFilter> list = standingBookFilterDao.selectByStandingBookId(id);
-        StandingBookInfo standingBookInfo = new StandingBookInfo();
+        StandingBookInfo standingBookInfo= new StandingBookInfo();
         standingBookInfo.setList(list);
         standingBookInfo.setStandingBook(standingBook);
         return standingBookInfo;
@@ -171,11 +169,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public List<StandingBook> selectMyStandingBookShare(UserSession userSession) {
 
-        List<StandingBook> list = new ArrayList<>();
         List<StandingBook> shareList = standingBookDao.selectShare(userSession.getCompanyId());
-        list.addAll(standingBookDao.selectByAchiveId(userSession.getArchiveId()));
-        list.addAll(shareList);
-        return list;
+
+        return shareList;
     }
 
     @Override
@@ -202,6 +198,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         userArchives.retainAll(list);
         return userArchives;
     }
+
+
 
     private String getBaseSql(Integer orgId){
         List<String> fieldNameNotInside = getFieldNameNotInside(orgId);

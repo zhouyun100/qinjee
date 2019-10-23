@@ -38,7 +38,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private static final String CHANGSTATUS_READY = "已入职";
     private static final String CHANGSTATUS_BLACKLIST = "黑名单";
     private static final String CHANGSTATUS_GIVEUP = "放弃入职";
-    private static final String PRE_EMPLOYMENT = "预入职表";
+    private static final String PRE_EMPLOYMENT = "t_pre_employment";
     private static final String APPKEY = "91c94cbe664487bbfb072e717957e08f";
     private static final Integer APPID = 1400249114;
     private static final String SENDER = "huangkt@qinjee.cn";
@@ -119,43 +119,63 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertStatusChange(UserSession userSession, Integer preEmploymentId,
-                                   StatusChangeVo statusChangeVo, String reason) {
+                                   StatusChangeVo statusChangeVo) {
         String changeState = statusChangeVo.getChangeState();
         PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey(preEmploymentId);
+        Integer preChangeId = getPreChangeId(preEmploymentId);
 
         if (CHANGSTATUS_READY.equals(changeState)) {
-            //新增变更表
-            getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
-            //根据预入职id查找预入职对象
-            //预入职信息转化为档案信息
-            //新增档案表
-            UserArchive userArchive = new UserArchive();
-            preEmployment.setEmploymentState(CHANGSTATUS_READY);
-            BeanUtils.copyProperties(userArchive, preEmployment);
+            //如果存在就更新
+            if(preChangeId !=null || preChangeId != 0) {
+               gotPreEmploymentChange(userSession.getArchiveId(),preEmploymentId,statusChangeVo,preChangeId);
+            }else {
+                //新增变更表
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
+            }
+                //根据预入职id查找预入职对象
+                //预入职信息转化为档案信息
+                //新增档案表
+                UserArchive userArchive = new UserArchive();
+                preEmployment.setEmploymentState(CHANGSTATUS_READY);
+                BeanUtils.copyProperties(userArchive, preEmployment);
+                //删除预入职表
+                preEmploymentDao.deletePreEmployment(preEmploymentId);
 
-            //删除预入职表
-            preEmploymentDao.deletePreEmployment(preEmploymentId);
         }
         if (CHANGSTATUS_DELAY.equals(changeState)) {
-            //新增变更表
-            getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
+            if(preChangeId !=null || preChangeId != 0) {
+                gotPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo,preChangeId);
+            }else {
+                //新增变更表
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
+            }
             preEmployment.setEmploymentState(CHANGSTATUS_DELAY);
         }
         if (CHANGSTATUS_GIVEUP.equals(changeState)) {
-            //新增变更表
-            getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
-            preEmployment.setEmploymentState(CHANGSTATUS_GIVEUP);
+            if(preChangeId !=null || preChangeId != 0) {
+                gotPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo,preChangeId);
+            }
+            else {
+                //新增变更表
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
+            }
+                preEmployment.setEmploymentState(CHANGSTATUS_GIVEUP);
         }
 
         if (CHANGSTATUS_BLACKLIST.equals(changeState)) {
-            //新增变更表
-            getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
+            if(preChangeId !=null || preChangeId != 0) {
+                gotPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo,preChangeId);
+            }else {
+                //新增变更表
+                getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
+            }
             preEmployment.setEmploymentState(CHANGSTATUS_BLACKLIST);
             //加入黑名单
             Blacklist blacklist = new Blacklist();
-            blacklist.setBlockReason(reason);
+            blacklist.setBlockReason(statusChangeVo.getAbandonReason());
             blacklist.setDataSource("预入职");
-            blacklist.setCompanyId(userSession.getCompanyId());
+            BeanUtils.copyProperties(preEmployment,blacklist);
+//            blacklist.setCompanyId(userSession.getCompanyId());
             blacklist.setOperatorId(userSession.getArchiveId());
             blacklistDao.insertSelective(blacklist);
         }
@@ -168,6 +188,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         preEmploymentChange.setEmploymentId(preEmploymentId);
         preEmploymentChange.setOperatorId(archiveId);
         preEmploymentChangeDao.insertSelective(preEmploymentChange);
+    }
+    private void gotPreEmploymentChange(Integer archiveId, Integer preEmploymentId, StatusChangeVo statusChangeVo,Integer changId) {
+        PreEmploymentChange preEmploymentChange = new PreEmploymentChange();
+        preEmploymentChange.setChangeId(changId);
+        BeanUtils.copyProperties(statusChangeVo, preEmploymentChange);
+        preEmploymentChange.setEmploymentId(preEmploymentId);
+        preEmploymentChange.setOperatorId(archiveId);
+        System.out.println(preEmploymentChange.getEmploymentId());
+        preEmploymentChangeDao.updateByPrimaryKeySelective(preEmploymentChange);
     }
 
 
@@ -192,16 +221,13 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePreEmployment(PreEmployment preEmployment) {
-        preEmploymentDao.updateByPrimaryKey(preEmployment);
+        preEmploymentDao.updateByPrimaryKeySelective(preEmployment);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePreEmploymentField(Map<Integer, String> map) throws Exception {
-        if( customArchiveFieldDao.updatePreEmploymentField(map)<=0){
-            throw new Exception("更新失败");
-        }
-
+        customArchiveFieldDao.updatePreEmploymentField(map);
     }
 
     @Override
@@ -224,6 +250,11 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         }
         return map;
     }
+    //查询是否已经存在预入职变更表
+    public Integer getPreChangeId(Integer preEmploymentId){
+        return preEmploymentChangeDao.selectIdByPreId(preEmploymentId);
+    }
+
 
 
 }

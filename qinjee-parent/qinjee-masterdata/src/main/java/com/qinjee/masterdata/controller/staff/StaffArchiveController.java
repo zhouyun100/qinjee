@@ -116,7 +116,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/updateArchiveField ", method = RequestMethod.POST)
     @ApiOperation(value = "更新档案表(自定义表数据)", notes = "hkt")
 //    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updateArchiveField(@RequestParam Map<Integer,String> map){
+    public ResponseResult updateArchiveField(@RequestBody Map<Integer,String> map){
+        for (Integer integer : map.keySet()) {
+            System.out.println(integer);
+        }
+
         Boolean b = checkParam(map);
         if(b){
             try {

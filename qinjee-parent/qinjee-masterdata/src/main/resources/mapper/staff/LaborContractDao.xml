@@ -274,8 +274,7 @@
   <select id="selectArcByCon" resultType="java.lang.Integer">
     select archive_id
     from t_labor_contract
-    where contract_id
-     not in
+    where contract_id  not in
     <foreach collection="conList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>

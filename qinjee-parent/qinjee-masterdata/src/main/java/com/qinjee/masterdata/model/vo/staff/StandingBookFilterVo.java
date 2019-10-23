@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
 @AllArgsConstructor
@@ -24,16 +25,19 @@ public class StandingBookFilterVo implements Serializable {
     /**
      * 字段ID
      */
+    @NotNull
     private Integer fieldId;
 
     /**
      * 操作符
      */
+    @NotNull
     private String operateSymbol;
 
     /**
      * 字段值
      */
+    @NotNull
     private String fieldValue;
 
     /**
