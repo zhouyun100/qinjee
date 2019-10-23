@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.email.EmailConfigDao">
+  <resultMap id="EmailConfigResultMap" type="com.qinjee.masterdata.model.entity.EmailConfig">
+    <id column="email_config_id" jdbcType="INTEGER" property="emailConfigId" />
+    <result column="transport_protocol" jdbcType="VARCHAR" property="transportProtocol" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="port" jdbcType="INTEGER" property="port" />
+    <result column="ssl_enable" jdbcType="VARCHAR" property="sslEnable" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="sender_nick" jdbcType="VARCHAR" property="senderNick" />
+    <result column="auth_code" jdbcType="VARCHAR" property="authCode" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <sql id="Email_Config_Column_List">
+    email_config_id,transport_protocol, `host`, port, account, `password`, ssl_enable, sender_nick, auth_code, company_id, operator_id,
+    create_time, is_delete
+  </sql>
+
+  <select id="getEmailConfigByCompanyId" parameterType="java.lang.Integer" resultMap="EmailConfigResultMap">
+    select
+    <include refid="Email_Config_Column_List" />
+    from t_email_config
+    where company_id = #{companyId,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
+
+</mapper>

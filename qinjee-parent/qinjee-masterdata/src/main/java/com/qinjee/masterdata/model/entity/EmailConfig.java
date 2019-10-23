@@ -1,5 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,11 +9,17 @@ import java.util.Date;
  * t_email_config
  * @author
  */
+@Data
 public class EmailConfig implements Serializable {
     /**
      * 邮件配置ID
      */
     private Integer emailConfigId;
+
+    /**
+     * 协议
+     */
+    private String transportProtocol;
 
     /**
      * 主机名
@@ -24,6 +32,11 @@ public class EmailConfig implements Serializable {
     private Integer port;
 
     /**
+     * 是否启用SSL安全链接(true/false)
+     */
+    private String sslEnable;
+
+    /**
      * 用户名
      */
     private String account;
@@ -32,6 +45,11 @@ public class EmailConfig implements Serializable {
      * 密码
      */
     private String password;
+
+    /**
+     * 发件人昵称
+     */
+    private String senderNick;
 
     /**
      * 授权码
@@ -60,83 +78,4 @@ public class EmailConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getEmailConfigId() {
-        return emailConfigId;
-    }
-
-    public void setEmailConfigId(Integer emailConfigId) {
-        this.emailConfigId = emailConfigId;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAuthCode() {
-        return authCode;
-    }
-
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }
