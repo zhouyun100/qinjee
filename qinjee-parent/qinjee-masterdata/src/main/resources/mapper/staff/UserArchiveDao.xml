@@ -520,7 +520,6 @@
     from   t_user_archive
     where is_delete=0
     AND  employee_number = #{employeeNumber,jdbcType=VARCHAR}
-
   </select>
   <select id="getUserArchiveListByOrgId" resultMap="BaseResultMap">
     select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id, tua.post_id,
@@ -571,9 +570,10 @@
 
 </select>
   <select id="selectArcNumberIn" resultType="java.lang.Integer">
-    select count (1)
+    select count(1)
     from t_user_archive
-    where user_category != "在职"
+    where user_category != "离职" AND company_id = #{id,jdbcType=INTEGER}
+    AND  is_delete=0
   </select>
 
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">

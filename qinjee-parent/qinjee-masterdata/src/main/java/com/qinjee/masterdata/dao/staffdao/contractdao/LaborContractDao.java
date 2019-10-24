@@ -16,7 +16,7 @@ public interface LaborContractDao {
 
     int insertSelective(LaborContract record);
 
-    LaborContract selectByPrimaryKey(Integer contractId);
+    LaborContract selectByPrimaryKey(@Param("contractId") Integer contractId);
 
     int updateByPrimaryKeySelective(LaborContract record);
 
@@ -36,4 +36,6 @@ public interface LaborContractDao {
     List<Integer> selectByorgId(@Param("orgId") Integer orgId);
 
     List<Integer> selectConByArcId(@Param("list") List<Integer> list);
+
+    List<LaborContract> selectContractByArcId(@Param("arcList") List<Integer> arcList);
 }

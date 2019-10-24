@@ -407,8 +407,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         try {
             parseFile(file);
 
-
-
         } catch (Exception e) {
             String message = e.getMessage();
             ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);

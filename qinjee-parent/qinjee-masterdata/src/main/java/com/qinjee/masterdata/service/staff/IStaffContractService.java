@@ -168,21 +168,21 @@ public interface IStaffContractService {
      * @param id
      * @return
      */
-    ContractRenewalIntention selectContractRenewalIntention(Integer id);
+    List<ContractRenewalIntention> selectContractRenewalIntention(Integer id);
 
     /**
      * 同意续签
-     * @param contractRenewalIntention
+     * @param xuqianId
      * @return
      */
-    void agreeRenew(ContractRenewalIntention contractRenewalIntention);
+    void agreeRenew(Integer xuqianId);
 
     /**
      * 不同意续签
-     * @param contractRenewalIntention
+     * @param xuqianId
      * @return
      */
-    void rejectRenew(ContractRenewalIntention contractRenewalIntention);
+    void rejectRenew( Integer xuqianId);
     /**
      * 查询在职员工的人数
      */

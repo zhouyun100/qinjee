@@ -4,6 +4,8 @@ import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Administrator
  */
@@ -21,5 +23,5 @@ public interface ContractRenewalIntentionDao {
 
     int updateByPrimaryKey(ContractRenewalIntention record);
 
-    ContractRenewalIntention selectByArchiveId(@Param("id") Integer id);
+    List<ContractRenewalIntention> selectByArchiveId(@Param("id") Integer id);
 }

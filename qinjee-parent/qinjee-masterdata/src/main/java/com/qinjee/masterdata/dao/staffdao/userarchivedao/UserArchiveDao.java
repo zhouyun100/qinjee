@@ -80,4 +80,6 @@ public interface UserArchiveDao {
     List<Integer> selectStaff(@Param("sql") String sql);
     @MapKey("ArchiveId")
     Map<Integer, Map<String, Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order, @Param("archiveIdList") List<Integer> archiveIdList);
+
+
 }

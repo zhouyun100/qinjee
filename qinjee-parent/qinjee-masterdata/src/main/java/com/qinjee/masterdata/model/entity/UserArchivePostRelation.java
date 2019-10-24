@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,6 +30,7 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 员工档案ID
      */
+    @NotNull
     @ApiModelProperty("员工档案ID")
     private Integer archiveId;
     /**
@@ -45,6 +47,7 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 岗位ID
      */
+    @NotNull
     @ApiModelProperty("岗位ID")
     private Integer postId;
 
@@ -117,12 +120,14 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 姓名
      */
+    @NotNull
     @ApiModelProperty("姓名")
     private String userName;
 
     /**
      * 工号
      */
+    @NotNull
     @ApiModelProperty("工号")
     private String employeeNumber;
 

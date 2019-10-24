@@ -283,20 +283,28 @@
     where org_id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByAchiveId" resultType="java.lang.Integer">
-    select  org_id
-    from t_organization a
-    left join t_user_org_auth b on a.org_id=b.org_id
-    left join t_user_archive c on b.archive_id=c.archive_id
-    where a.is_enable=1 AND c.archive_id= #{archiveId,jdbcType=INTEGER}
-  </select>
-    <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
+  <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
+    select org_id
+    from  t_organization
+    where  org_parent_id=#{orgId}
+    AND  is_enable=1
 </select>
   <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
-
+    select
+    org.org_id
+    from  t_organization org, t_user_org_auth auth,t_user_archive  arc
+    where org.org_id=auth.org_id AND auth.archive_id=arc.archive_id AND org.is_enable=1 and arc.archive_id=#{archiveId}
+    AND auth.is_delete=0 and arc.is_delete=0
   </select>
   <select id="getOrganizationsByOrgIds" resultType="com.qinjee.masterdata.model.entity.Organization">
    select
 
+  </select>
+  <select id="getCompanyIdByAuth" resultType="java.lang.Integer">
+    select org.org_id
+    from t_organization org,t_role_org_auth auth,t_user_role user_role,t_user_archive user_archive
+    where org.org_id=auth.org_id AND auth.role_id=user_role.role_id AND user_role.archive_id=user_archive.archive_id
+    AND org.is_enable=1 AND auth.is_delete=0 AND user_role.is_delete=0
+    AND user_archive.is_delete=0  AND user_archive.archive_id=#{archiveId}
   </select>
 </mapper>

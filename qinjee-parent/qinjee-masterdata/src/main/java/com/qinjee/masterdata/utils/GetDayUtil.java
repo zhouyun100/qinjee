@@ -23,7 +23,6 @@ public class GetDayUtil {
         //得到两个日期相差的天数
         int days = Math.round((int) ((caled.getTime().getTime() / 1000) - (int) (calst
                 .getTime().getTime() / 1000)) /3600 /24 );
-
         return days;
     }
 }

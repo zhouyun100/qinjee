@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //根据合同id找到没有合同的档案id
         List<Integer> arcList=laborContractDao.selectArcByCon(conList);
         //根据档案id查询档案
-        List<UserArchive> list=userArchiveDao.selectNotInList(arcList);
+        List<UserArchive> list=userArchiveDao.selectByPrimaryKeyList(arcList);
         return new PageResult<>(list);
     }
     /**合同状态  新签、变更   续签、解除、终止
@@ -86,7 +85,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
                                                               List<String> status) throws Exception {
         PageHelper.startPage(currentPage,pageSize);
         List<LaborContract> noEffectLabList=new ArrayList<>();
-        List<LaborContract> effectLabList=new ArrayList<>();
         List<Integer> conList;
         //查看机构下的合同
         List<LaborContract> labList=laborContractDao.selectLabByorgId(orgId);
@@ -95,19 +93,20 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
         //将合同快到期的，解除合同，终止合同筛选为无效合同
         for (LaborContract laborContract : labList) {
-            if(!laborContract.getContractState().equals(ENDSTATUS) || laborContract.getContractState().equals(RELESESTATUS)
+            if(laborContract.getContractState().equals(ENDSTATUS) || laborContract.getContractState().equals(RELESESTATUS)
             || GetDayUtil.getDay(laborContract.getContractEndDate(), new Date()) <0
             ){
                 noEffectLabList.add(laborContract);
             }
         }
-            if(labList.removeAll(effectLabList)){
-                Collections.copy(effectLabList,labList);
-            }else {
-                throw new Exception("获取集合失败");
-            }
+//            if(labList.removeAll(effectLabList)){
+//                Collections.copy(effectLabList,labList);
+//            }else {
+//                throw new Exception("获取集合失败");
+//            }
+        labList.removeAll(noEffectLabList);
         if(isEnable){
-             conList = getConList(status, effectLabList);
+             conList = getConList(status, labList);
         }else {
              conList = getConList(status, noEffectLabList);
         }
@@ -116,13 +115,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //根据合同id找到有合同的档案id
         List<Integer> arcList=laborContractDao.seleltByArcIdIn(conList);
         //根据档案id查询档案
-        List<UserArchive> list=userArchiveDao.selectNotInList(arcList);
+        List<UserArchive> list=userArchiveDao.selectByPrimaryKeyList(arcList);
         return new PageResult<>(list);
     }
 
-    private List<Integer> getConList(List<String> status, List<LaborContract> effectLabList) {
+    private List<Integer> getConList(List<String> status, List<LaborContract> labList) {
         List<Integer> conList=new ArrayList<>();
-        for (LaborContract laborContract : effectLabList) {
+        for (LaborContract laborContract : labList) {
             for (String s : status) {
                 if (laborContract.getContractState().equals(s)) {
                     conList.add(laborContract.getArchiveId());
@@ -302,24 +301,30 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public ContractRenewalIntention selectContractRenewalIntention(Integer id) {
+    public List<ContractRenewalIntention> selectContractRenewalIntention(Integer id) {
       return contractRenewalIntentionDao.selectByArchiveId(id);
 
     }
 
     @Override
-    public void agreeRenew(ContractRenewalIntention contractRenewalIntention) {
-            //更改续签意向表
+    public void agreeRenew(Integer xuqianId) {
+        //查询续签意向表
+        ContractRenewalIntention contractRenewalIntention =
+                contractRenewalIntentionDao.selectByPrimaryKey(xuqianId);
+        //更改续签意向表
             contractRenewalIntention.setRenewalOpinion(RENEWAGREE);
             contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
     }
 
     @Override
-    public void rejectRenew(ContractRenewalIntention contractRenewalIntention) {
+    public void rejectRenew(Integer xuqianId) {
+        //查询续签意向表
+        ContractRenewalIntention contractRenewalIntention =
+                contractRenewalIntentionDao.selectByPrimaryKey(xuqianId);
             //更改续签意向表
             contractRenewalIntention.setRenewalOpinion(RENEWREJECT);
             contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
-            //前端跳转至解除页面
+            //前端跳转至解除合同页面
     }
     @Override
     public void updateContractRenewalIntention(ContractRenewalIntention contractRenewalIntention) {
@@ -334,16 +339,14 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     public List<UserArchive> selectArcDeadLine(Integer id) {
         List<UserArchive> list = new ArrayList<>();
-
-        //根据机构id找到合同
+        //根据机构id找到档案
         List<Integer> arcList = userArchiveDao.selectByOrgId(id);
-        //合同表里面筛选在机构档案的合同id
-        List<Integer> newArcList = laborContractDao.seleltByArcIdIn(arcList);
-        for (Integer integer : newArcList) {
-            LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
+        //根据档案id找到合同主体
+        List<LaborContract> laborContractList = laborContractDao.selectContractByArcId(arcList);
+        for (LaborContract laborContract : laborContractList) {
             if (GetDayUtil.getDay(laborContract.getContractEndDate(), new Date()) < 3) {
                 //根据合同id找到档案id
-                Integer achiveId = laborContractDao.seleltByArcIdSingle(integer);
+                Integer achiveId = laborContractDao.seleltByArcIdSingle(laborContract.getContractId());
                 list.add(userArchiveDao.selectByPrimaryKey(achiveId));
             }
         }

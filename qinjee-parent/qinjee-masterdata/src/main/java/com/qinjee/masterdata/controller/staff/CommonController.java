@@ -466,10 +466,12 @@ public class CommonController extends BaseController {
 
     /**
      * 根据档案显示对应权限下的单位
+     *
+     * swagger参数不允许为空，test是伪造数据
      */
     @RequestMapping(value = "/getCompany ", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
-    public ResponseResult getCompanyId() {
+    public ResponseResult<List<Integer>> getCompanyId(String test) {
         Boolean b = checkParam(getUserSession());
         if(b) {
             try {
@@ -479,10 +481,11 @@ public class CommonController extends BaseController {
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
-                return failResponseResult("显示单位id失败");
+                e.printStackTrace();
+               return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("session错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
     /**
      * 根据档案id显示对应权限下的子集部门
@@ -500,6 +503,7 @@ public class CommonController extends BaseController {
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("根据档案id显示对应权限下的子集部门失败");
             }
         }
@@ -521,6 +525,7 @@ public class CommonController extends BaseController {
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("显示部门下的岗位失败");
             }
         }

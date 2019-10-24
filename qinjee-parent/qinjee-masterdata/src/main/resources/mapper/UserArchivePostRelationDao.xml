@@ -250,7 +250,7 @@
     <include refid="Base_Column_List"/>
     from t_user_archive_post_relation
     where
-    archive_id = #{archiveId,jdbcType=INTEGER}
+    archive_id = #{id,jdbcType=INTEGER}
     AND is_delete=0
   </select>
   <select id="selectByType" resultType="java.lang.Integer">

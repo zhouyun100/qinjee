@@ -3,6 +3,7 @@
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.LaborContract">
     <id column="contract_id" jdbcType="INTEGER" property="contractId" />
+    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
@@ -259,7 +260,7 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract">
+  <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_labor_contract
@@ -288,4 +289,14 @@
         #{item}
       </foreach>
     </select>
+  <select id="selectContractByArcId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_labor_contract
+    where archive_id
+    in
+    <foreach collection="arcList" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>
