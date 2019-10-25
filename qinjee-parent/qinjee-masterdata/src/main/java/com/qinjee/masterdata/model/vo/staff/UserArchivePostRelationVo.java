@@ -1,9 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -14,8 +12,6 @@ import java.util.Date;
  * @author Administrator
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class UserArchivePostRelationVo implements Serializable {
     /**

@@ -69,7 +69,7 @@ public class PositionController extends BaseController {
     @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
     @ApiOperation(value = "导出职位excel", notes = "高雄")
     @GetMapping("/downloadExcel")
-    public ResponseResult downloadExcel(@RequestParam("positionIds") List<Integer> positionIds){
+    public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds){
 
         return null;
     }

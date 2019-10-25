@@ -8,8 +8,6 @@ import lombok.ToString;
 import java.io.Serializable;
 import java.util.Date;
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class ContractRenewalIntentionVo implements Serializable {
     /**

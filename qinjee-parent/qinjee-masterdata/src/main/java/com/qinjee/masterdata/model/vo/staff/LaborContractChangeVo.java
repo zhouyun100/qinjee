@@ -1,8 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
@@ -11,8 +9,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 @Data
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 public class LaborContractChangeVo implements Serializable {
     /**
      * id

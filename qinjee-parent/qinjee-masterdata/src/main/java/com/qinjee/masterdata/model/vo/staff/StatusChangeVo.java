@@ -10,10 +10,6 @@ import java.util.Date;
  */
 @Data
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
 public class StatusChangeVo {
     /**
      * id

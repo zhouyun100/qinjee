@@ -9,8 +9,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class LaborContractVo implements Serializable {
     /**

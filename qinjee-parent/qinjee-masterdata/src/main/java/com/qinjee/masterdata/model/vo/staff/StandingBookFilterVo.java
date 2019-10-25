@@ -1,15 +1,11 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class StandingBookFilterVo implements Serializable {
     /**

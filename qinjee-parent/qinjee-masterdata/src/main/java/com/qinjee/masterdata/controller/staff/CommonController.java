@@ -183,14 +183,14 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义组中的表
      */
-    @RequestMapping(value = "/selectTableFromGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchiveTableFromGroup", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义组中的表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "customArchiveGroupId", value = "当前自定义组的id", paramType = "query", required = true),
 //    })
-    public ResponseResult<PageResult<CustomArchiveTable>> selectTableFromGroup( Integer currentPage,
+    public ResponseResult<PageResult<CustomArchiveTable>> selectArchiveTableFromGroup( Integer currentPage,
                                                                                 Integer pageSize,
                                                                                Integer customArchiveGroupId) {
         Boolean b = checkParam(currentPage,pageSize,customArchiveGroupId);
@@ -471,7 +471,7 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/getCompany ", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
-    public ResponseResult<List<Integer>> getCompanyId(String test) {
+    public ResponseResult<List<Integer>> getCompanyId() {
         Boolean b = checkParam(getUserSession());
         if(b) {
             try {
