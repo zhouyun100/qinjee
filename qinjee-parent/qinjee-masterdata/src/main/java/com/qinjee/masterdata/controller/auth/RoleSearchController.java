@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -117,7 +118,7 @@ public class RoleSearchController extends BaseController{
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateArchiveRole",method = RequestMethod.GET)
-    public ResponseResult updateArchiveRole(Integer archiveId, List<Integer> roleIdList) {
+    public ResponseResult updateArchiveRole(Integer archiveId,@RequestParam List<Integer> roleIdList) {
         if(null == archiveId || CollectionUtils.isEmpty(roleIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("员工或角色为空！");

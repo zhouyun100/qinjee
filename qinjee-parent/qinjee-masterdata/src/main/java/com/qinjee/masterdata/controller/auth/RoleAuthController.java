@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -349,7 +350,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "menuIdList", value = "功能ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleMenuAuth(Integer roleId, List<Integer> menuIdList) {
+    public ResponseResult updateRoleMenuAuth(Integer roleId,@RequestParam List<Integer> menuIdList) {
         if(null == roleId || CollectionUtils.isEmpty(menuIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色或菜单不能为空!");
@@ -426,7 +427,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleOrgAuth(Integer roleId, List<Integer> orgIdList) {
+    public ResponseResult updateRoleOrgAuth(Integer roleId,@RequestParam  List<Integer> orgIdList) {
         if(null == roleId || CollectionUtils.isEmpty(orgIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID或机构ID不能为空!");
