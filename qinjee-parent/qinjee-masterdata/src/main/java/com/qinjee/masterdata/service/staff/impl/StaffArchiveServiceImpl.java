@@ -6,6 +6,7 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
@@ -341,9 +342,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist,
-                                List<QuerySchemeSort> querySchemeSortlist) {
-        if (queryScheme.getQuerySchemeId() == null) {
+    public void saveQueryScheme(QueryArcVo queryArcVo) {
+        QueryScheme queryScheme = queryArcVo.getQueryScheme();
+        List<QuerySchemeField> querySchemeFieldlist = queryArcVo.getQuerySchemeFieldlist();
+        List<QuerySchemeSort> querySchemeSortlist = queryArcVo.getQuerySchemeSortlist();
+        if (queryScheme.getQuerySchemeId() == null || queryScheme.getQuerySchemeId()==0) {
             //说明是新增操作，新增查询方案
             querySchemeDao.insertSelective(queryScheme);
             //新增查询字段与排序

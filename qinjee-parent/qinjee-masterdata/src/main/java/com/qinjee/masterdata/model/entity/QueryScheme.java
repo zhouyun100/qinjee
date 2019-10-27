@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +10,7 @@ import java.util.Date;
  * t_query_scheme
  * @author
  */
+@Data
 public class QueryScheme implements Serializable {
     /**
      * 查询方案ID
@@ -16,11 +20,13 @@ public class QueryScheme implements Serializable {
     /**
      * 查询方案名称
      */
+    @NotNull
     private String querySchemeName;
 
     /**
      * 档案ID
      */
+    @NotNull
     private Integer archiveId;
 
     /**
@@ -41,63 +47,10 @@ public class QueryScheme implements Serializable {
     /**
      * 是否删除
      */
+    @NotNull
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getQuerySchemeId() {
-        return querySchemeId;
-    }
 
-    public void setQuerySchemeId(Integer querySchemeId) {
-        this.querySchemeId = querySchemeId;
-    }
-
-    public String getQuerySchemeName() {
-        return querySchemeName;
-    }
-
-    public void setQuerySchemeName(String querySchemeName) {
-        this.querySchemeName = querySchemeName;
-    }
-
-    public Integer getArchiveId() {
-        return archiveId;
-    }
-
-    public void setArchiveId(Integer archiveId) {
-        this.archiveId = archiveId;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

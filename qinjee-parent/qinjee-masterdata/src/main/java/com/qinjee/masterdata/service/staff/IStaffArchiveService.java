@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.model.request.UserSession;
@@ -59,14 +60,8 @@ public interface IStaffArchiveService {
      */
     QuerySchemeList selectQueryScheme(Integer id);
 
-    /**
-     * 保存查询方案
-     * @param queryScheme
-     * @param querySchemeFieldlist
-     * @param querySchemeSortlist
-     * @return
-     */
-    void saveQueryScheme(QueryScheme queryScheme, List<QuerySchemeField> querySchemeFieldlist, List<QuerySchemeSort> querySchemeSortlist);
+
+    void saveQueryScheme(QueryArcVo queryArcVo);
 
     /**
      * 逻辑删除档案

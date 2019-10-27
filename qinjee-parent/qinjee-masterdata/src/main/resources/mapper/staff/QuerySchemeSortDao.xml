@@ -127,12 +127,12 @@
      insert into t_query_scheme_sort (query_scheme_id, field_id, order_by_rule,
       sort, create_time)
     values
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      (#{item.querySchemeId,jdbcType=INTEGER}, #{item.fieldId,jdbcType=INTEGER}, #{item.orderByRule,jdbcType=VARCHAR},
-      #{item.sort,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+    <foreach collection="querySchemeSortlist" item="item" open="(" separator="," close=")">
+      #{item.querySchemeId,jdbcType=INTEGER}, #{item.fieldId,jdbcType=INTEGER}, #{item.orderByRule,jdbcType=VARCHAR},
+      #{item.sort,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}
     </foreach>
   </insert>
-  <select id="selectSortByIdList">
+  <select id="selectSortByIdList" resultType="java.lang.String">
     select order_by_rule
     from t_query_scheme_sort
     where field_id
