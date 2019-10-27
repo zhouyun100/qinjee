@@ -105,7 +105,6 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<Integer> selectByAchiveId(Integer archiveId);
 
     /**
      * 根据选择的机构id导出Excel
@@ -117,4 +116,6 @@ public interface OrganizationDao {
     List<Integer> getOrgIdByCompanyId(Integer orgId);
 
     List<Integer> getCompanyIdByArchiveId(Integer archiveId);
+
+    List<Integer> getCompanyIdByAuth(@Param("archiveId") Integer archiveId);
 }

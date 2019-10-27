@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -16,6 +17,7 @@ public class ContractRenewalIntention implements Serializable {
     /**
      * 档案ID
      */
+    @NotNull
     private Integer archiveId;
 
     /**

@@ -134,14 +134,14 @@ public class OrganizationController extends BaseController {
 
     @ApiOperation(value = "下载模板", notes = "高雄")
     @GetMapping("/downloadTemplate")
-    public ResponseResult downloadTemplate(HttpServletResponse response){
+    public ResponseResult downloadTemplateInOrg(HttpServletResponse response){
         return organizationService.downloadTemplate(response);
     }
 
 
     @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
     @PostMapping("/downloadExcelByCondition")
-    public ResponseResult downloadExcelByCondition(@RequestBody OrganizationPageVo organizationPageVo, HttpServletResponse response){
+    public ResponseResult downloadExcelByConditionFromOrg(@RequestBody OrganizationPageVo organizationPageVo, HttpServletResponse response){
         return organizationService.downloadExcelByCondition(organizationPageVo, response, getUserSession());
     }
 

@@ -34,7 +34,7 @@ public class PositionGradeController extends BaseController {
 
     @GetMapping("/getPositionGradeList")
     @ApiOperation(value = "分页查询职等列表",notes = "高雄")
-    public ResponseResult<PageResult<PositionGrade>> getPositionLevelList(PageVo pageVo){
+    public ResponseResult<PageResult<PositionGrade>> getPositionLevelListPage(PageVo pageVo){
         return positionGradeService.getPositionLevelList(pageVo);
     }
 

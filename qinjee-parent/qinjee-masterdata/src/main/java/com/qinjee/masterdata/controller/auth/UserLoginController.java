@@ -326,7 +326,7 @@ public class UserLoginController extends BaseController{
 
     @ApiOperation(value="验证图形验证码", notes="验证图形验证码")
     @RequestMapping(value = "/verifyCode",method = RequestMethod.GET)
-    public ResponseResult verifyCode(HttpServletRequest request, HttpServletResponse response,String code) {
+    public ResponseResult verifyCode(HttpServletRequest request, String code) {
         try{
             String key = (String) request.getSession().getAttribute("CODE");
             if(code != null && code.equalsIgnoreCase(key)){

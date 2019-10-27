@@ -190,8 +190,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List<Integer> getCompanyId(UserSession userSession) {
-        return organizationDao.getCompanyIdByArchiveId(userSession.getArchiveId());
-
+        List<Integer> integerList=organizationDao.getCompanyIdByAuth(userSession.getArchiveId());
+        List<Integer> companyIdByArchiveId = organizationDao.getCompanyIdByArchiveId(userSession.getArchiveId());
+        integerList.removeAll(companyIdByArchiveId);
+        integerList.addAll(companyIdByArchiveId);
+        return integerList;
     }
 
     @Override

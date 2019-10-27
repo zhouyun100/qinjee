@@ -18,19 +18,15 @@ import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 周赟
@@ -92,8 +88,8 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/addArchiveRole",method = RequestMethod.GET)
-    public ResponseResult addArchiveRole(Integer roleId, List<Integer> archiveIdList) {
+    @RequestMapping(value = "/addArchiveRole",method = RequestMethod.POST)
+    public ResponseResult addArchiveRole(Integer roleId,@RequestParam List<Integer> archiveIdList) {
 
         if(null == roleId || CollectionUtils.isEmpty(archiveIdList)){
             responseResult = ResponseResult.FAIL();
@@ -126,7 +122,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/delArchiveRole",method = RequestMethod.GET)
-    public ResponseResult delArchiveRole(Integer roleId, List<Integer> archiveIdList) {
+    public ResponseResult delArchiveRole(Integer roleId,@RequestParam List<Integer> archiveIdList) {
         if(null == roleId || CollectionUtils.isEmpty(archiveIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色或员工为空！");

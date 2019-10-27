@@ -11,7 +11,7 @@ spring:
 
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=UTC&useSSL=false&characterEncoding=utf8
+    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=UTC&useSSL=false&characterEncoding=utf8&allowMultiQueries=true
     username: qinjee
     password: qinjee2019
     driver-class-name: com.mysql.jdbc.Driver
@@ -45,8 +45,12 @@ spring:
       test-on-return: false #归还连接时执行检测，建议关闭，影响性能
       pool-prepared-statements: false #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
       max-pool-prepared-statement-per-connection-size: 20 #开启poolPreparedStatements后生效
-      filters: stat,wall,log4j2  #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
+      filters: stat,log4j2  #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=1000 #通过connectProperties属性来打开mergeSql功能;慢SQL记录
+      filter:
+        wall:
+          config:
+            multi-statement-allow: true #允许一次执行多条语句
 
   #RabbitMQ
   rabbitmq:
@@ -97,12 +101,11 @@ eureka:
     appname: ${spring.application.name}
     #以IP地址进行注册
     prefer-ip-address: true
-    instance-id: ${eureka.instance.ip-address}:${server.port}
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
     #表示eureka client发送心跳给server的频率
     lease-renewal-interval-in-seconds: 30
     #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
     lease-expiration-duration-in-seconds: 90
-    ip-address: 193.112.188.180
   client:
     service-url:
       defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/

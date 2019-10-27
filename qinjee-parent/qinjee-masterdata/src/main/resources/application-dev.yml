@@ -50,7 +50,7 @@ spring:
       filter:
         wall:
           config:
-            multi-statement-allow: true
+            multi-statement-allow: true #允许一次执行多条语句
 
   #RabbitMQ
   rabbitmq:
@@ -109,6 +109,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
+
 
 server:
   port: 8080
