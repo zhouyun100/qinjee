@@ -172,7 +172,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             stringBuffer.append(",");
             order = stringBuffer.toString();
         }
-        order = "order by  " + order;
         int i = order.lastIndexOf(",");
         order = order.substring(0, i);
         //调用接口查询机构权限范围内的档案集合
@@ -180,13 +179,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //TODO 根据权限查询机构下的档案id集合
 //        List<Integer> archiveIdList=userArchiveDao.selectArchiveIdByOrgId(userSession.getCompanyId());
         Map<Integer, Map<String, Object>> userArchiveListCustom =
-                userArchiveDao.getUserArchiveListCustom(getBaseSql(userSession.getCompanyId(), stringList,userSession.getCompanyId(),order));
+                userArchiveDao.getUserArchiveListCustom(getBaseSql(userSession.getCompanyId(), stringList,userSession.getCompanyId()),order);
         List<Map<Integer, Map<String, Object>>> mapList=new ArrayList<>();
         mapList.add(userArchiveListCustom);
         return new PageResult(mapList);
     }
     //list是所查询项的集合
-    private String getBaseSql(Integer orgId,List<String> strings,Integer companyId,String order){
+    private String getBaseSql(Integer orgId,List<String> strings,Integer companyId){
         List<String> fieldNameNotInside = getFieldNameNotInside(orgId);
         List<String> custom=new ArrayList<>();
         StringBuffer stringBuffer=new StringBuffer();
@@ -198,27 +197,19 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         int i1 = stringBuffer3.toString().lastIndexOf(",");
         String a=stringBuffer3.toString().substring(0,i1);
-        a=a+" from";
-        String b="( select t0.* ,";
+        a=a+" from( select t0.* ,";
+        System.out.println(a);
         for (String s1 : fieldNameNotInside) {
-            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
-                    "'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1)"+"as "+s1+"\t"+",yi");
+            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1)as "+s1+"\t"+",");
         }
         for (String s : custom) {
             stringBuffer2.append(s);
         }
         int i = stringBuffer2.toString().lastIndexOf(",");
         String substring = stringBuffer2.toString().substring(0, i);
-        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
-        String d="where t0.company_id = " + companyId +
-                " and t1.func_code = 'ARCHIVE'\n" +
-                "and t0.company_id = t1.company_id\n" +
-                "and t2.table_id=t1.table_id "+
-                "and t0.archive_id = t2.business_id";
-        String e=")t"+"\t";
-
-        String s = stringBuffer.toString();
-        return a+b+s+substring+c+d+e+order;
+        System.out.println(substring);
+        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 where t0.company_id = " + companyId +"\t"+"and t1.func_code = 'ARCHIVE'"+"\t"+"and t0.company_id = t1.company_id and t2.table_id=t1.table_id"+"\t"+" and t0.archive_id = t2.business_id)t"+"\t";
+        return a+substring+c;
     }
     //找到非内置字段的物理字段名
     private List<String> getFieldNameNotInside(Integer companyId){

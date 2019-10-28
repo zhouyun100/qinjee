@@ -607,8 +607,11 @@
   <select id="selectStaff" resultType="java.lang.Integer">
     #{sql,jdbcType=VARCHAR}
   </select>
-  <select id="getUserArchiveListCustom" resultType="java.util.Map" resultMap="BaseResultMap">
-    #{baseSql,jdbcType=VARCHAR}
+  <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap"> 
+        #{baseSql}
+        <if test="order != null">
+        order by ${order} 
+        </if>
   </select>
 <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
   select archive_id
