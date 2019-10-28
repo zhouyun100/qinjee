@@ -1,5 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +9,7 @@ import java.util.Date;
  * t_query_scheme_field
  * @author
  */
+@Data
 public class QuerySchemeField implements Serializable {
     /**
      * 方案字段表主键
@@ -35,43 +38,5 @@ public class QuerySchemeField implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getQuerySchemeFieldId() {
-        return querySchemeFieldId;
-    }
 
-    public void setQuerySchemeFieldId(Integer querySchemeFieldId) {
-        this.querySchemeFieldId = querySchemeFieldId;
-    }
-
-    public Integer getQuerySchemeId() {
-        return querySchemeId;
-    }
-
-    public void setQuerySchemeId(Integer querySchemeId) {
-        this.querySchemeId = querySchemeId;
-    }
-
-    public Integer getFieldId() {
-        return fieldId;
-    }
-
-    public void setFieldId(Integer fieldId) {
-        this.fieldId = fieldId;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
 }

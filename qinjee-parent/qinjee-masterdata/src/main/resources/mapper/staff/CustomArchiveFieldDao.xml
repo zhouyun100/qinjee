@@ -282,8 +282,9 @@
   <update id="updatePreEmploymentField" parameterType="java.util.HashMap" >
     <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
     UPDATE t_custom_archive_field
-    set
+    <set>
       field_name= #{value,jdbcType=VARCHAR}
+    </set>
       WHERE field_id= #{key,jdbcType=INTEGER} AND is_delete=0
     </foreach>
 

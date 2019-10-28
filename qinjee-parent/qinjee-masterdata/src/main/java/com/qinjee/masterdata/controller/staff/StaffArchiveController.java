@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
@@ -113,14 +114,13 @@ public class StaffArchiveController extends BaseController {
     /**
      * 更新档案表(自定义表数据)
      */
-    @RequestMapping(value = "/updateArchiveField ", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateArchiveField", method = RequestMethod.POST )
     @ApiOperation(value = "更新档案表(自定义表数据)", notes = "hkt")
-//    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updateArchiveField(@RequestBody Map<Integer,String> map){
+//    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "query",  required = true,allowMultiple = true)
+    public ResponseResult updateArchiveField(@RequestBody  Map<Integer,String> map){
         for (Integer integer : map.keySet()) {
             System.out.println(integer);
         }
-
         Boolean b = checkParam(map);
         if(b){
             try {
@@ -310,21 +310,14 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "保存查询方案", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "QueryScheme", value = "查询方案", paramType = "form", required = true),
-//            @ApiImplicitParam  (name = "querySchemeFieldlist", value = "查询字段", paramType = "form", required = true),
-//            @ApiImplicitParam (name = "querySchemeSortlist", value = "查询方案顺序", paramType = "form", required = true),
-//
-//    })
-    public ResponseResult saveQueryScheme(@Valid QueryScheme  queryScheme,
-                                          @RequestBody  List<QuerySchemeField> querySchemeFieldlist ,
-                                          @RequestBody  List<QuerySchemeSort> querySchemeSortlist) {
-        Boolean b = checkParam(queryScheme,querySchemeFieldlist,querySchemeSortlist);
+    public ResponseResult saveQueryScheme(@RequestBody @Valid QueryArcVo queryArcVo){
+        Boolean b = checkParam(queryArcVo);
         if(b){
             try {
-                staffArchiveService.saveQueryScheme(queryScheme,querySchemeFieldlist,querySchemeSortlist);
+                staffArchiveService.saveQueryScheme(queryArcVo);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("通过id查询到对应机构名称失败");
             }
         }
