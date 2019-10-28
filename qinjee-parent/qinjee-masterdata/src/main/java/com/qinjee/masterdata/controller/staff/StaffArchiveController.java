@@ -1,18 +1,17 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -376,23 +375,25 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchiveByQueryScheme", method = RequestMethod.GET)
     @ApiOperation(value = "根据显示方案展示人员信息", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "schemeId", value = "查询方案id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
-    })
-    public ResponseResult<PageResult<List<Map<Integer,Map<String,Object>>>>> selectArchiveByQueryScheme(Integer schemeId,Integer currentPage,Integer pageSize,
-                                                                              UserSession userSession ) {
-        Boolean b = checkParam(schemeId,userSession,currentPage,pageSize);
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "schemeId", value = "查询方案id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "orgId", value = "机构id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
+//    })
+    public ResponseResult<PageResult<List<Map<Integer,Map<String,Object>>>>> selectArchiveByQueryScheme(
+            Integer schemeId,Integer currentPage,Integer pageSize ) {
+        Boolean b = checkParam(schemeId,getUserSession(),currentPage,pageSize);
         if(b){
             try {
-                PageResult<List<Map<Integer, Map<String, Object>>>> listPageResult = staffArchiveService.selectArchiveByQueryScheme(schemeId, userSession, currentPage, pageSize);
+                PageResult<List<Map<Integer, Map<String, Object>>>> listPageResult =
+                        staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(), currentPage, pageSize);
                 if(!CollectionUtils.isEmpty(listPageResult.getList())){
                     return new ResponseResult<>(listPageResult,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
+                e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }

@@ -130,7 +130,7 @@
     select  field_id
     from t_query_scheme_field
     where  sort in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
+    <foreach collection="fieldSortList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </select>

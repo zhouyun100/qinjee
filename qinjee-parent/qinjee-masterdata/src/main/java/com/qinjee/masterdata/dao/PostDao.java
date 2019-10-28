@@ -76,5 +76,5 @@ public interface PostDao {
      * @param orgId
      * @return
      */
-    List<Integer> getPostByOrgId(Integer orgId);
+    List<Post> getPostByOrgId(Integer orgId);
 }

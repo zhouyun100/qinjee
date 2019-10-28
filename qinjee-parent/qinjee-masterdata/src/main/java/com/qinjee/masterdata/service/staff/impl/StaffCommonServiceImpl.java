@@ -204,7 +204,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public List<Integer> getPostByOrgId(Integer orgId) {
+    public List<Post> getPostByOrgId(Integer orgId) {
 
         return postDao.getPostByOrgId(orgId);
     }
@@ -428,9 +428,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
-        //得到response对象
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+    public void exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list,
+                              HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
         if (CollectionUtils.isEmpty(list)) {
             list = userArchiveDao.selectIdByComId(userSession.getCompanyId());
         }
@@ -519,9 +518,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void putFile(String path) {
+    public void putFile(String path) throws Exception {
         //TODO 文件对象键的定义
-        String key = "";
+        String key = "黄开天的文件/图片/";
+        UUID uuid = UUID.randomUUID();
+        key+=uuid.toString()+".jpg";
         UpAndDownUtil.putFile(path, key);
     }
 
@@ -531,7 +532,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         ForWardPutFile forWardPutFile = new ForWardPutFile();
         forWardPutFile.setString(s);
         //TODO 对象键的定义需要制定规则，利用规则生成
-        forWardPutFile.setKey("");
+        String key = "黄开天的文件/图片/";
+        UUID uuid = UUID.randomUUID();
+        key+=uuid.toString()+".jpg";
+        forWardPutFile.setKey(key);
         return forWardPutFile;
     }
 

@@ -35,5 +35,5 @@ public interface QuerySchemeSortDao {
 
     void insertBatch(@Param("querySchemeSortlist") List<QuerySchemeSort> querySchemeSortlist);
 
-    List<String> selectSortByIdList(List<Integer> integerList);
+    List<String> selectSortByIdList(@Param("integerList") List<Integer> integerList);
 }

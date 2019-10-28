@@ -1,10 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
-import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
-import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -515,26 +513,26 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getPostByOrgId ", method = RequestMethod.GET)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult getPostByOrgId(Integer orgId) {
+    public ResponseResult<List<Post>> getPostByOrgId(Integer orgId) {
         Boolean b = checkParam(orgId);
         if(b){
             try {
-                List<Integer> postByOrgId = staffCommonService.getPostByOrgId(orgId);
+                List<Post> postByOrgId = staffCommonService.getPostByOrgId(orgId);
                 if(!CollectionUtils.isEmpty(postByOrgId)){
                     return new ResponseResult<>(postByOrgId,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 e.printStackTrace();
-                return failResponseResult("显示部门下的岗位失败");
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("部门id错误");
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
 
     }
     /**
      * 文件上传
-     * 这里需要传文件的路径，上传的地址由后端简历文件然后确定上传位置
+     * 这里需要传文件的路径，上传的地址由后端建立文件然后确定上传位置
      */
     @RequestMapping(value = "/UploadFile ", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
@@ -552,7 +550,6 @@ public class CommonController extends BaseController {
         }
         return  failResponseResult("path错误");
     }
-
     /**
      * 文件上传
      * 这里需要传文件的路径，上传的地址由后端简历文件然后确定上传位置
@@ -561,7 +558,7 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "文件上传", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
-    public ResponseResult<ForWardPutFile> uploadFileByForWard() {
+    public ResponseResult<ForWardPutFile> uploadFileByForWard(String ecd) {
             try {
                 ForWardPutFile forWardPutFile = staffCommonService.uploadFileByForWard();
                 return new ResponseResult<>(forWardPutFile,CommonCode.SUCCESS);
@@ -581,11 +578,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
-    public ResponseResult exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list) {
+    public ResponseResult exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list, HttpServletResponse response) {
         Boolean b = checkParam(path,title,list,getUserSession());
         if(b){
             try {
-                staffCommonService.exportArcFile(path,title,querySchemeId,list,getUserSession());
+                staffCommonService.exportArcFile(path,title,querySchemeId,list,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导出失败");

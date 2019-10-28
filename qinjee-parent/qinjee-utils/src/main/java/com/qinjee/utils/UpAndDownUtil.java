@@ -139,7 +139,7 @@ public class UpAndDownUtil {
      * @param key        对象键，详情见上方说明
      * @param
      */
-    public static void putFile(String path,String key) {
+    public static void putFile(String path,String key) throws Exception {
         try {
             // 指定要上传的文件
             File localFile = new File(path);
@@ -147,9 +147,9 @@ public class UpAndDownUtil {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, localFile);
             PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         } catch (CosServiceException serverException) {
-            serverException.printStackTrace();
+            throw new CosServiceException("服务错误");
         } catch (CosClientException clientException) {
-            clientException.printStackTrace();
+            throw new CosClientException("客户端错误");
         }finally {
             cosClient.shutdown();
         }

@@ -91,6 +91,6 @@ public interface IStaffStandingBookService {
      * @param type
      * @return
      */
-   List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type) throws ParseException;
+   List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) throws ParseException;
 
 }

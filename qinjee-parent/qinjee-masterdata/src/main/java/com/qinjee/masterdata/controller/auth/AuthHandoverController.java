@@ -53,7 +53,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
-    public ResponseResult<MenuVO> searchRoleAuthTree(Integer roleId) {
+    public ResponseResult<MenuVO> searchRoleAuthTreeInOrg(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID不能为空!");
@@ -84,7 +84,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
-    public ResponseResult<OrganizationVO> searchOrgAuthTree(Integer roleId) {
+    public ResponseResult<OrganizationVO> searchOrgAuthTreeInOrg(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID不能为空!");

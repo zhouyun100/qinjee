@@ -1,14 +1,12 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
-import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
-import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -159,14 +157,15 @@ public interface IStaffCommonService {
      * @param list
      * @return
      */
-    void exportArcFile(String path, String title,Integer querySchemeId,List<Integer> list,UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
+    void exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list,
+                       HttpServletResponse response,UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
 
     /**
      * 文件上传
      * @param path
      * @return
      */
-    void putFile(String path);
+    void putFile(String path) throws Exception;
 
     /**
      * 返回临时对象给前端
@@ -195,7 +194,7 @@ public interface IStaffCommonService {
      * @param orgId
      * @return
      */
-    List<Integer> getPostByOrgId(@Param("orgId") Integer orgId);
+    List<Post> getPostByOrgId(@Param("orgId") Integer orgId);
 
     /**
      * 展示部门的自定义表

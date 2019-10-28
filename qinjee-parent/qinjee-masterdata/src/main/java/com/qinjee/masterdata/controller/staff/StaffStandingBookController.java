@@ -4,14 +4,14 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.BlackListVo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,23 +237,24 @@ public class StaffStandingBookController extends BaseController {
      */
     @RequestMapping(value = "/selectStaff", method = RequestMethod.GET)
     @ApiOperation(value = "通过台账查询", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "StandingBookId", value = "员工台账id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "archiveType", value = "人员分类", paramType = "query", required = true),
-            @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true),
-            @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
-
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "StandingBookId", value = "员工台账id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "archiveType", value = "人员分类", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
+//
+//    })
     public ResponseResult<List<UserArchive>> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type){
-        Boolean b = checkParam(stangdingBookId,archiveType,orgId,type);
+        Boolean b = checkParam(stangdingBookId,archiveType,orgId,type,getUserSession());
         if (b) {
             try {
-                List<UserArchive> list=staffStandingBookService.selectStaff(stangdingBookId,archiveType,orgId,type);
+                List<UserArchive> list=staffStandingBookService.selectStaff(stangdingBookId,archiveType,orgId,type,getUserSession());
                 if(list!=null){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
+                e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }

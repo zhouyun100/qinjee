@@ -553,16 +553,6 @@
       ORDER BY ${sortFieldStr}
     </if>
   </select>
-  <select id="selectOrgIdByArchiveId" resultType="java.lang.Integer">
-        select
-  a.org_id
-  from t_organization a
-  left join t_role_org_auth b on a.org_id=b.org_id
-  left join t_user_role c on b.role_id=c.role_id
-  left join t_user_archive d on c.archive_id=d.archive_id
-  where archive_id = #{archiveId,jdbcType=INTEGER}
-  AND a.is_enanle=1 AND b.is_delete=0 AND c.is_delete=0 AND d.is_delete=0
-  </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id
   from t_user_archive
@@ -591,7 +581,7 @@
     select  archive_id
     from t_user_archive
     where user_category =#{archiveType,jdbcType=VARCHAR}
-    AND org_id =#{orgId,jdbcType=INTEGER} AND is_delete=0
+    AND org_id =#{id,jdbcType=INTEGER} AND is_delete=0
   </select>
 
   <select id="selectArchiveIdByTel" resultType="java.lang.Integer">
@@ -617,14 +607,15 @@
   <select id="selectStaff" resultType="java.lang.Integer">
     #{sql,jdbcType=VARCHAR}
   </select>
-  <select id="getUserArchiveListCustom" resultType="java.util.Map">
+  <select id="getUserArchiveListCustom" resultType="java.util.Map" resultMap="BaseResultMap">
     #{baseSql,jdbcType=VARCHAR}
-    where t.ArchiveId in
-    <foreach item="item" collection="list" open="(" separator="," close=")">
-      #{archiveIdList}
-    </foreach>
-    #{order,jdbcType=VARCHAR}
   </select>
+<select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
+  select archive_id
+    from t_user_archive
+    where company_id=#{companyId}
+  AND is_delete=0
+</select>
 
 </mapper>
 

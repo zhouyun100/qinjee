@@ -14,6 +14,7 @@ import java.util.Map;
  */
 @Repository
 public interface UserArchiveDao {
+
     int deleteByPrimaryKey(Integer archiveId);
 
     int insert(UserArchive record);
@@ -61,7 +62,6 @@ public interface UserArchiveDao {
 
     Integer selectArchiveIdByNumber(String employeeNumber);
 
-    List<Integer> selectOrgIdByArchiveId(Integer archiveId);
 
     List<Integer> selectByOrgId(Integer orgId);
 
@@ -79,7 +79,9 @@ public interface UserArchiveDao {
 
     List<Integer> selectStaff(@Param("sql") String sql);
     @MapKey("ArchiveId")
-    Map<Integer, Map<String, Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order, @Param("archiveIdList") List<Integer> archiveIdList);
+    Map<Integer, Map<String, Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql);
 
+
+    List<Integer> selectArchiveIdByOrgId(@Param("companyId") Integer companyId);
 
 }

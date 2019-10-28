@@ -11,22 +11,26 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestRoleArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 周赟
@@ -46,7 +50,7 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="当前登录用户角色树查询", notes="当前登录用户角色树查询")
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
-    public ResponseResult<RoleGroupVO> searchRoleTree() {
+    public ResponseResult<RoleGroupVO> searchRoleTreeInOrg() {
         userSession = getUserSession();
         if(userSession == null){
             responseResult = ResponseResult.FAIL();

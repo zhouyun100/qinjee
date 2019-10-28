@@ -256,10 +256,10 @@
   <select id="selectByType" resultType="java.lang.Integer">
     select archive_id
     from   t_user_archive_post_relation
-    where   employment_type=#{param1,jdbcType=VARCHAR}
+    where   employment_type=#{type,jdbcType=VARCHAR}
     AND archive_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{param2}
+    <foreach collection="oneList" item="item" open="(" separator="," close=")">
+      #{item}
     </foreach>
 
   </select>
