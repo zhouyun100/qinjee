@@ -24,17 +24,17 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <Socket name="socket" host="193.112.188.180" port="4567">
-            <JsonLayout compact="true" eventEol="true" />
-            <PatternLayout pattern="${pattern_layout}"/>
-        </Socket>
+<!--        <Socket name="socket" host="193.112.188.180" port="4567">-->
+<!--            <JsonLayout compact="true" eventEol="true" />-->
+<!--            <PatternLayout pattern="${pattern_layout}"/>-->
+<!--        </Socket>-->
     </Appenders>
 
     <Loggers>
         <Root level="INFO">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rolling_file"/>
-            <AppenderRef ref="socket" />
+<!--            <AppenderRef ref="socket" />-->
         </Root>
     </Loggers>
 </Configuration>
