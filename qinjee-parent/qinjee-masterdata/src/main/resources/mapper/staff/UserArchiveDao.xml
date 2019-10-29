@@ -608,7 +608,9 @@
     #{sql,jdbcType=VARCHAR}
   </select>
   <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap"> 
-        #{baseSql}
+        <if test="baseSql != null">
+            ${baseSql}
+        </if>
         <if test="order != null">
         order by ${order} 
         </if>
