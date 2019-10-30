@@ -51,6 +51,9 @@ spring:
         wall:
           config:
             multi-statement-allow: true #允许一次执行多条语句
+            none-base-statement-allow: false #是否允许非以上基本语句的其他语句, 缺省关闭, 通过这个选项就能够屏蔽DDL.
+            update-where-none-check: true #检查UPDATE语句是否无where条件, 这是有风险的, 但不是SQL注入类型的风险
+            metadata-allow: false #是否允许调用Connection.getMetadata方法, 这个方法调用会暴露数据库的表信息
 
   #RabbitMQ
   rabbitmq:
