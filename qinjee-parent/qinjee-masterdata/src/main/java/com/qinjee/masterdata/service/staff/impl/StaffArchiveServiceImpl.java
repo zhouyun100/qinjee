@@ -146,7 +146,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId, UserSession userSession,List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Map<Integer, Map<String, Object>> userArchiveListCustom;
-        if (schemeId != 0 && !"".equals(schemeId)) {
+        if (schemeId != 0 ) {
             StringBuffer stringBuffer = new StringBuffer();
             String order = null;
             //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序

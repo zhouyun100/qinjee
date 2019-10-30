@@ -63,4 +63,7 @@ public interface CustomArchiveFieldDao {
 
     List<CustomArchiveField> selectFieldByTableId(@Param("customArchiveTableId") Integer customArchiveTableId);
 
+    List<String> selectFieldNameByCodeList(@Param("strings") List<String> strings);
+
+    List<String> selectFieldTypeByNameList(@Param("heads") List<String> heads);
 }

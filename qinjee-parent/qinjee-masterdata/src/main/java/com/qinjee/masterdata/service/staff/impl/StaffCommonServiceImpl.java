@@ -18,6 +18,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
 import com.qinjee.utils.UpAndDownUtil;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -431,14 +432,29 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession, Map<Integer, Map<String,Object>> map) {
 
-
+        ExcelUtil.download(exportVo.getPath(),response,exportVo.getTittle(),
+                getHeads(exportVo.getQuerySchemeId()),getDates(map),getTypeMap(getHeads(exportVo.getQuerySchemeId())));
 
     }
     public List<Map<String,String>> getDates(Map<Integer, Map<String,Object>> map) {
-        return null;
+        List<Map<String,String>> mapList=new ArrayList<>();
+        List<String> keyList=null;
+        List<Map<String, Object>> maps = new ArrayList<>(map.values());
+        for (Map<String, Object> stringObjectMap : maps) {
+            keyList=new ArrayList<>(customArchiveFieldDao.selectFieldNameByCodeList(new ArrayList<>(stringObjectMap.keySet())));
+        }
+        for (Map<String, Object> stringObjectMap : maps) {
+            Map<String,String> stringMap=new HashMap<>();
+            List<Object> objects = new ArrayList<>(stringObjectMap.values());
+            for (int i = 0; i < objects.size(); i++) {
+                stringMap.put(keyList.get(i),String.valueOf(objects.get(i)));
+            }
+            mapList.add(stringMap);
+        }
+        return mapList;
     }
-    public List<String> getHeads(Integer querySchemeId){
-        if(querySchemeId!=0 && !"".equals(querySchemeId)){
+    private List<String> getHeads(Integer querySchemeId){
+        if(querySchemeId!=0){
             List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(querySchemeId);
             Collections.sort(fieldSortList);
             //将字段排序按照顺序拼接成查询项
@@ -450,6 +466,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期到期时间","直接上级","联系电话","任职类型"};
             return Arrays.asList(strings);
     }
+
+    private Map<String,String> getTypeMap(List<String> heads){
+        List<String> list=customArchiveFieldDao.selectFieldTypeByNameList(heads);
+        Map<String,String> map=new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+           map.put(heads.get(i),list.get(i));
+        }
+        return map;
+    }
+
 
     @Override
     public void putFile(String path) throws Exception {

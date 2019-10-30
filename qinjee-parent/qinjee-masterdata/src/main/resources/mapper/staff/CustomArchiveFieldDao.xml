@@ -373,4 +373,22 @@
     where  field_id  = #{fieldId,jdbcType=INTEGER}
     AND is_delete=0;
   </select>
+  <select id="selectFieldNameByCodeList" resultType="java.lang.String">
+    select  field_name
+    from  t_custom_archive_field
+    where field_code in
+    <foreach collection="strings" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND is_delete=0
+  </select>
+  <select id="selectFieldTypeByNameList" resultType="java.lang.String">
+    select field_type
+    from  t_custom_archive_field
+    where field_code in
+    <foreach collection="heads" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND is_delete=0
+  </select>
 </mapper>
