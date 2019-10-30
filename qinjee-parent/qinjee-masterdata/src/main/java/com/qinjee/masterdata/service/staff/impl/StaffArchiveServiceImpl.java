@@ -138,10 +138,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult<List<Map<Integer, Map<String, Object>>>>
-                                     selectArchiveByQueryScheme(Integer schemeId,UserSession userSession,Integer currentPage,Integer pageSize) {
+    @Transactional
+    public Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId, UserSession userSession,List<Integer> archiveIdList) {
         StringBuffer stringBuffer = new StringBuffer();
-        PageHelper.startPage(currentPage,pageSize);
         String order=null;
         //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序
         //查询字段排序sort
@@ -176,13 +175,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         order = order.substring(0, i);
         //调用接口查询机构权限范围内的档案集合
         //进行sql查询，返回数据，档案在机构范围内
-        //TODO 根据权限查询机构下的档案id集合
-//        List<Integer> archiveIdList=userArchiveDao.selectArchiveIdByOrgId(userSession.getCompanyId());
-        Map<Integer, Map<String, Object>> userArchiveListCustom =
+
+        Map<Integer,Map<String,Object>> userArchiveListCustom =
                 userArchiveDao.getUserArchiveListCustom(getBaseSql(userSession.getCompanyId(), stringList,userSession.getCompanyId()),order);
-        List<Map<Integer, Map<String, Object>>> mapList=new ArrayList<>();
-        mapList.add(userArchiveListCustom);
-        return new PageResult(mapList);
+        ArrayList<Integer> integers = new ArrayList<>(userArchiveListCustom.keySet());
+        archiveIdList.retainAll(integers);
+        Map<Integer,Map<String,Object>> mapMap=new HashMap<>();
+        for (Integer integer : archiveIdList) {
+            mapMap.put(integer,userArchiveListCustom.get(integer));
+        }
+        return mapMap;
     }
     //list是所查询项的集合
     private String getBaseSql(Integer orgId,List<String> strings,Integer companyId){

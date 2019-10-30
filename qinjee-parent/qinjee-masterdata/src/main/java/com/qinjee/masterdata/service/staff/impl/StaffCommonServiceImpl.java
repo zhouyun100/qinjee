@@ -11,6 +11,7 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
@@ -29,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -40,7 +40,7 @@ import java.util.*;
 public class StaffCommonServiceImpl implements IStaffCommonService {
     private static final Logger logger = LoggerFactory.getLogger(StaffCommonServiceImpl.class);
     private static final String ARCHIVE = "档案";
-    private static final String ARCHIVETABLE = "档案表";
+    private static final String ARCHIVETABLE = "t_user_archive";
     private static final String PREEMP = "预入职";
     private static final String PREEMPTABLE = "预入职表";
     private static final String IDTYPE = "证件类型";
@@ -261,7 +261,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void importFile(String path, UserSession userSession) throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void importFile(String path, UserSession userSession) throws  NoSuchFieldException, IllegalAccessException {
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
         Integer tableId = null;
         //key是字段名称，value是值
@@ -428,8 +428,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list,
-                              HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
+    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
+         List<Integer> list = exportVo.getList();
+        Integer querySchemeId = exportVo.getQuerySchemeId();
         if (CollectionUtils.isEmpty(list)) {
             list = userArchiveDao.selectIdByComId(userSession.getCompanyId());
         }
@@ -441,7 +442,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             //通过tableid找到字段名集合
             List<String> heads = customArchiveFieldDao.selectFieldNameListByTableId(tableId);
             //找到物理表名集合
-            downloadFile(path, title, response, userArclist, heads);
+            downloadFile(exportVo.getPath(), exportVo.getTittle(), response, userArclist, heads);
         } else {
             //根据查询方案id找到应该展示的字段id
             List<Integer> fieldIdList = querySchemeFieldDao.selectFieldId(querySchemeId);
@@ -472,7 +473,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             dates.addAll(mapList);
             //得到字段名与类型的集合
             Map<String, String> map = getStringStringMap(heads);
-            ExcelUtil.download(path, response, title, heads, dates, map);
+            ExcelUtil.download(exportVo.getPath(), response, exportVo.getTittle(), heads, dates, map);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -151,14 +152,9 @@ public interface IStaffCommonService {
 
     /**
      * 模板导出档案
-     * @param path
-     * @param title
-     * @param querySchemeId
-     * @param list
      * @return
      */
-    void exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list,
-                       HttpServletResponse response,UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
+    void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
 
     /**
      * 文件上传

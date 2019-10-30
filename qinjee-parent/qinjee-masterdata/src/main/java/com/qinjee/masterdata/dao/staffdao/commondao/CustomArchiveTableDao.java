@@ -41,7 +41,7 @@ public interface CustomArchiveTableDao {
 
     String selectFuncCode(@Param("tableId") Integer tableId);
 
-    Integer selectByComIdAndPhyName(@Param("companyId") Integer companyId, @Param("archivetable") String archive);
+    Integer selectByComIdAndPhyName(@Param("companyId") Integer companyId, @Param("archive") String archive);
 
     List<Integer> selectNotInsideTableId(@Param("companyId") Integer companyId, @Param("archive") String archive);
 
