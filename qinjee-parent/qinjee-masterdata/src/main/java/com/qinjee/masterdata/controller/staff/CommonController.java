@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
@@ -14,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -441,7 +439,7 @@ public class CommonController extends BaseController {
      * 获取字段校验类型
      */
 
-    @RequestMapping(value = "/checkField ", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkField", method = RequestMethod.GET)
     @ApiOperation(value = "集合存储字段所需要的检验类型，考虑是否直接放在字段表中", notes = "hkt")
 //    @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
     public ResponseResult<List<String>> checkField(Integer fieldId) {
@@ -467,7 +465,7 @@ public class CommonController extends BaseController {
      *
      * swagger参数不允许为空，test是伪造数据
      */
-    @RequestMapping(value = "/getCompany ", method = RequestMethod.GET)
+    @RequestMapping(value = "/getCompany", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
     public ResponseResult<List<Integer>> getCompanyId() {
         Boolean b = checkParam(getUserSession());
@@ -488,7 +486,7 @@ public class CommonController extends BaseController {
     /**
      * 根据档案id显示对应权限下的子集部门
      */
-    @RequestMapping(value = "/getOrgIdByCompanyId ", method = RequestMethod.GET)
+    @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult getOrgIdByCompanyId(Integer orgId) {
@@ -510,7 +508,7 @@ public class CommonController extends BaseController {
     /**
      * 显示部门下的岗位
      */
-    @RequestMapping(value = "/getPostByOrgId ", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.GET)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult<List<Post>> getPostByOrgId(Integer orgId) {
@@ -534,7 +532,7 @@ public class CommonController extends BaseController {
      * 文件上传
      * 这里需要传文件的路径，上传的地址由后端建立文件然后确定上传位置
      */
-    @RequestMapping(value = "/UploadFile ", method = RequestMethod.POST)
+    @RequestMapping(value = "/UploadFile", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
@@ -554,7 +552,7 @@ public class CommonController extends BaseController {
      * 文件上传
      * 这里需要传文件的路径，上传的地址由后端简历文件然后确定上传位置
      */
-    @RequestMapping(value = "/uploadFileByForWard ", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFileByForWard", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
 
@@ -570,7 +568,7 @@ public class CommonController extends BaseController {
     /**
      * 模板导出档案
      */
-    @RequestMapping(value = "/exportArcFile ", method = RequestMethod.GET)
+    @RequestMapping(value = "/exportArcFile", method = RequestMethod.POST)
     @ApiOperation(value = "导出档案模板", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
@@ -578,13 +576,15 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
-    public ResponseResult exportArcFile(String path, String title, Integer querySchemeId, List<Integer> list, HttpServletResponse response) {
-        Boolean b = checkParam(path,title,list,getUserSession());
+    public ResponseResult exportArcFile(@Valid ExportVo exportVo,
+                                        HttpServletResponse response) {
+        Boolean b = checkParam(exportVo,getUserSession(),response);
         if(b){
             try {
-                staffCommonService.exportArcFile(path,title,querySchemeId,list,response,getUserSession());
+                staffCommonService.exportArcFile(exportVo,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("导出失败");
             }
         }
@@ -595,7 +595,7 @@ public class CommonController extends BaseController {
     /**
      * 模板导出预入职
      */
-    @RequestMapping(value = "/exportPreFile ", method = RequestMethod.GET)
+    @RequestMapping(value = "/exportPreFile", method = RequestMethod.GET)
     @ApiOperation(value = "导出预入职模板", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
@@ -620,7 +620,7 @@ public class CommonController extends BaseController {
     /**
      * 模板导入
      */
-    @RequestMapping(value = "/importFile ", method = RequestMethod.POST)
+    @RequestMapping(value = "/importFile", method = RequestMethod.POST)
     @ApiOperation(value = "模板导入", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
     public ResponseResult importFile(String path) {

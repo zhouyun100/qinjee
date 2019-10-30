@@ -175,6 +175,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         return shareList;
     }
 
+
+
     @Override
     public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) {
         StringBuffer stringBuffer=new StringBuffer();
@@ -194,6 +196,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String baseSql = getBaseSql(userSession);
         String sql=baseSql+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
+        System.out.println(sql);
         List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
         userArchives.retainAll(list);
         return userArchives;
@@ -206,7 +209,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         List<String> custom=new ArrayList<>();
         StringBuffer stringBuffer=new StringBuffer();
         StringBuffer stringBuffer2=new StringBuffer();
-        String a="select t.archiveId from";
+        String a="select t.archive_id from";
         String b="( select t0.* , ";
         for (String s1 : fieldNameNotInside) {
             custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
@@ -251,11 +254,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                     condition = physicName + " != " + filter.getFieldValue();
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " like " + " %" + filter.getFieldValue() + "% ";
+                    condition = physicName + " like " + "'%" + filter.getFieldValue() + "%' ";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + "not like" + " %" + filter.getFieldValue() + "% ";
+                    condition = physicName + "not like" + " '%" + filter.getFieldValue() + "%' ";
                 }
             }
             if (TYPECODE.equals(type)) {
@@ -264,7 +267,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + "not like" + " %" + filter.getFieldValue() + "% ";
+                    condition = physicName + "<" + filter.getFieldValue() + ">";
                 }
             }
 
@@ -295,7 +298,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         if(OR.equals(filter.getLinkSymbol())){
             return "OR";
         }
-        return null;
+        return "";
     }
 
 }

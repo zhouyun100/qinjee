@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -381,15 +380,14 @@ public class StaffArchiveController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
 //    })
-    public ResponseResult<PageResult<List<Map<Integer,Map<String,Object>>>>> selectArchiveByQueryScheme(
-            Integer schemeId,Integer currentPage,Integer pageSize ) {
-        Boolean b = checkParam(schemeId,getUserSession(),currentPage,pageSize);
+    public ResponseResult<Map<Integer, Map<String, Object>>> selectArchiveByQueryScheme(Integer schemeId,List<Integer> archiveIdList) {
+        Boolean b = checkParam(schemeId,getUserSession(),archiveIdList);
         if(b){
             try {
-                PageResult<List<Map<Integer, Map<String, Object>>>> listPageResult =
-                        staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(), currentPage, pageSize);
-                if(!CollectionUtils.isEmpty(listPageResult.getList())){
-                    return new ResponseResult<>(listPageResult,CommonCode.SUCCESS);
+                Map<Integer, Map<String, Object>> integerMapMap =
+                        staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(),archiveIdList);
+                if(integerMapMap!=null){
+                    return new ResponseResult<>(integerMapMap,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

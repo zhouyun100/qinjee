@@ -605,14 +605,14 @@
     AND is_delete=0
   </select>
   <select id="selectStaff" resultType="java.lang.Integer">
-    #{sql,jdbcType=VARCHAR}
+    ${sql}
   </select>
-  <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap"> 
+  <select id="getUserArchiveListCustom" parameterType="String" resultType="hashmap">
         <if test="baseSql != null">
             ${baseSql}
         </if>
         <if test="order != null">
-        order by ${order} 
+        order by ${order}
         </if>
   </select>
 <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
