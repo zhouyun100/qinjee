@@ -47,7 +47,7 @@ public interface CustomArchiveFieldDao {
 
     List<String> selectTypeByNameList(List<String> heads);
 
-    List<String> selectFieldNameByList(@Param("list") List<Integer> list);
+    List<String> selectFieldNameByList(@Param("sortList") List<Integer> sortList);
 
     Integer updatePreEmploymentField(@Param("map") Map<Integer, String> map);
 

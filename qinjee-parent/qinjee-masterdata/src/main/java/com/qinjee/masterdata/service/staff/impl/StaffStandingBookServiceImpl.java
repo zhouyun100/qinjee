@@ -18,6 +18,7 @@ import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
+import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -211,25 +212,23 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         StringBuffer stringBuffer2=new StringBuffer();
         String a="select t.archive_id from";
         String b="( select t0.* , ";
-        for (String s1 : fieldNameNotInside) {
-            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
-                    "'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1) as"+"\t"+s1+"\t"+",");
-        }
-        for (String s : custom) {
-            stringBuffer2.append(s);
-        }
-        int i = stringBuffer2.toString().lastIndexOf(",");
-        String substring = stringBuffer2.toString().substring(0, i);
-        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
-        String d="where t0.company_id = " +1 +"\t"+
-                "and t1.func_code = 'ARCHIVE'\n" +
-                "and t0.company_id = t1.company_id\n" +
-                "and t2.table_id=t1.table_id "+"\t"+
-                "and t0.archive_id = t2.business_id";
-        String e=")t"+"\t";
-
-        String s = stringBuffer.toString();
-        return a+b+s+substring+c+d+e;
+//        for (String s1 : fieldNameNotInside) {
+//            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
+//                    "'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1) as"+"\t"+s1+"\t"+",");
+//        }
+//        for (String s : custom) {
+//            stringBuffer2.append(s);
+//        }
+//        int i = stringBuffer2.toString().lastIndexOf(",");
+//        String substring = stringBuffer2.toString().substring(0, i);
+//        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
+//        String d="where t0.company_id = " +1 +"\t"+
+//                "and t1.func_code = 'ARCHIVE'\n" +
+//                "and t0.company_id = t1.company_id\n" +
+//                "and t2.table_id=t1.table_id "+"\t"+
+//                "and t0.archive_id = t2.business_id";
+//        String e=")t"+"\t";
+        return a+b+SqlUtil.getsql(userSession.getCompanyId(),fieldNameNotInside,custom,stringBuffer2);
     }
 
     /**

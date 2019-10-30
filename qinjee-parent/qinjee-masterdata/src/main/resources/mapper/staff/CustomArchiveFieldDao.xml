@@ -304,7 +304,7 @@
   <select id="selectFieldNameListByTableId" resultType="java.lang.String">
     select field_name
     from t_custom_archive_field
-    where  table_id = #{tableId,jdbcType=INTEGER} AND is_delete=0
+    where  table_id = #{id,jdbcType=INTEGER} AND is_delete=0
   </select>
   <select id="selectPhysicNameByList" resultType="java.lang.String">
     select  field_code
@@ -328,7 +328,7 @@
     select field_name
     from t_custom_archive_field
     where  field_id  in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
+    <foreach collection="sortList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
     AND is_delete=0

@@ -232,7 +232,7 @@
     form t_custom_archive_table
     where
      company_id=#{companyId,jdbcType=INTEGER}
-     table_code=#{archive,jdbcType=VARCHAR}
+     `table_name`=#{archive,jdbcType=VARCHAR}
   </select>
   <select id="selectNotInsideTableId" resultType="java.lang.Integer">
     select table_id

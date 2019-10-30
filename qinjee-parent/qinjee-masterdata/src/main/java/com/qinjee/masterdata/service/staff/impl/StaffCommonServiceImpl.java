@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -39,14 +40,14 @@ import java.util.*;
 @Service
 public class StaffCommonServiceImpl implements IStaffCommonService {
     private static final Logger logger = LoggerFactory.getLogger(StaffCommonServiceImpl.class);
-    private static final String ARCHIVE = "档案";
-    private static final String ARCHIVETABLE = "t_user_archive";
-    private static final String PREEMP = "预入职";
-    private static final String PREEMPTABLE = "预入职表";
-    private static final String IDTYPE = "证件类型";
-    private static final String IDNUMBER = "证件号码";
-    private static final String USERCATEGORY = "人员分类";
-    private static final String PHONE = "手机";
+    private static final String ARCHIVE ="档案";
+    private static final String ARCHIVETABLE ="档案表";
+    private static final String PREEMP ="预入职";
+    private static final String PREEMPTABLE ="预入职表";
+    private static final String IDTYPE ="证件类型";
+    private static final String IDNUMBER ="证件号码";
+    private static final String USERCATEGORY ="人员分类";
+    private static final String PHONE ="手机";
 
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
@@ -428,17 +429,19 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
+    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, UnsupportedEncodingException {
          List<Integer> list = exportVo.getList();
         Integer querySchemeId = exportVo.getQuerySchemeId();
         if (CollectionUtils.isEmpty(list)) {
             list = userArchiveDao.selectIdByComId(userSession.getCompanyId());
         }
+
         List<UserArchive> userArclist = userArchiveDao.selectByPrimaryKeyList(list);
         //如果没有查询方案
         if (null == querySchemeId || "".equals(querySchemeId)) {
             //通过企业id，物理表名找到tableId
-            Integer tableId = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), ARCHIVETABLE);
+            String s = new String(ARCHIVETABLE.getBytes(), "utf-8");
+            Integer tableId = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), s);
             //通过tableid找到字段名集合
             List<String> heads = customArchiveFieldDao.selectFieldNameListByTableId(tableId);
             //找到物理表名集合

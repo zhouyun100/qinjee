@@ -10,6 +10,7 @@ import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.BeanUtils;
@@ -148,11 +149,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         Collections.sort(fieldSortList);
         //将字段排序按照顺序拼接成查询项
         //根据排序id找到字段id
-        List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList);
+        List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList,schemeId);
         //根据id查询字段名
         List<String> stringList = customArchiveFieldDao.selectFieldNameByList(sortList);
-        System.out.println(sortList.get(0));
-
 
         //根据查询方案id，找到排序id与升降序
         //查询查询档案下的排序字段id
@@ -200,19 +199,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         int i1 = stringBuffer3.toString().lastIndexOf(",");
         String a=stringBuffer3.toString().substring(0,i1);
         a=a+" from( select t0.* ,";
-        System.out.println(a);
-        for (String s1 : fieldNameNotInside) {
-            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1)as "+s1+"\t"+",");
-        }
-        for (String s : custom) {
-            stringBuffer2.append(s);
-        }
-        int i = stringBuffer2.toString().lastIndexOf(",");
-        String substring = stringBuffer2.toString().substring(0, i);
-        System.out.println(substring);
-        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 where t0.company_id = " + companyId +"\t"+"and t1.func_code = 'ARCHIVE'"+"\t"+"and t0.company_id = t1.company_id and t2.table_id=t1.table_id"+"\t"+" and t0.archive_id = t2.business_id)t"+"\t";
-        return a+substring+c;
+        return a+SqlUtil.getsql(companyId, fieldNameNotInside, custom, stringBuffer2);
     }
+
+
+
     //找到非内置字段的物理字段名
     private List<String> getFieldNameNotInside(Integer companyId){
         //找到企业下的人员表

@@ -133,5 +133,6 @@
     <foreach collection="fieldSortList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
+    and query_scheme_id=#{schemeId}
   </select>
 </mapper>

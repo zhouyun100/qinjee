@@ -380,7 +380,8 @@ public class StaffArchiveController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
 //    })
-    public ResponseResult<Map<Integer, Map<String, Object>>> selectArchiveByQueryScheme(Integer schemeId,List<Integer> archiveIdList) {
+    public ResponseResult<Map<Integer, Map<String, Object>>> selectArchiveByQueryScheme(Integer schemeId,
+                                                                                        @RequestParam List<Integer> archiveIdList) {
         Boolean b = checkParam(schemeId,getUserSession(),archiveIdList);
         if(b){
             try {
