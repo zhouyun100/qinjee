@@ -263,6 +263,11 @@
     </foreach>
 
   </select>
-
+  <select id="selectEmploymentTypeByArichiveId">
+    select employment_type
+    from  t_user_archive_post_relation
+    where  archive_id = #{id,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
 
 </mapper>

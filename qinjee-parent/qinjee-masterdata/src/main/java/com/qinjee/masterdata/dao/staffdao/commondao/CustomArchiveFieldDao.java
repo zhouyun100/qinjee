@@ -62,4 +62,5 @@ public interface CustomArchiveFieldDao {
     String selectTypeByFieldId(@Param("fieldId") Integer fieldId);
 
     List<CustomArchiveField> selectFieldByTableId(@Param("customArchiveTableId") Integer customArchiveTableId);
+
 }

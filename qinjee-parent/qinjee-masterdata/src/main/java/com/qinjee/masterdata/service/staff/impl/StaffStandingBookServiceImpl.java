@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -171,9 +170,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public List<StandingBook> selectMyStandingBookShare(UserSession userSession) {
 
-        List<StandingBook> shareList = standingBookDao.selectShare(userSession.getCompanyId());
-
-        return shareList;
+        return standingBookDao.selectShare(userSession.getCompanyId());
     }
 
 
@@ -207,28 +204,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
     private String getBaseSql(UserSession userSession){
         List<String> fieldNameNotInside = getFieldNameNotInside(userSession);
-        List<String> custom=new ArrayList<>();
-        StringBuffer stringBuffer=new StringBuffer();
-        StringBuffer stringBuffer2=new StringBuffer();
-        String a="select t.archive_id from";
-        String b="( select t0.* , ";
-//        for (String s1 : fieldNameNotInside) {
-//            custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,"+
-//                    "'@@"+s1+"@@')+LENGTH('@@"+s1+"@@')+1),';@@',1) as"+"\t"+s1+"\t"+",");
-//        }
-//        for (String s : custom) {
-//            stringBuffer2.append(s);
-//        }
-//        int i = stringBuffer2.toString().lastIndexOf(",");
-//        String substring = stringBuffer2.toString().substring(0, i);
-//        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 ";
-//        String d="where t0.company_id = " +1 +"\t"+
-//                "and t1.func_code = 'ARCHIVE'\n" +
-//                "and t0.company_id = t1.company_id\n" +
-//                "and t2.table_id=t1.table_id "+"\t"+
-//                "and t0.archive_id = t2.business_id";
-//        String e=")t"+"\t";
-        return a+b+SqlUtil.getsql(userSession.getCompanyId(),fieldNameNotInside,custom,stringBuffer2);
+        String a="select t.archive_id from( select t0.* , ";
+        return a+SqlUtil.getsql(userSession.getCompanyId(),fieldNameNotInside);
     }
 
     /**
@@ -279,14 +256,18 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
         return condition+getLinkSymbol(filter)+"\t";
     }
-    //找到非内置字段的物理字段名
+    /**
+     * 找到非内置字段的物理字段名
+     */
     private List<String> getFieldNameNotInside(UserSession userSession){
         //找到企业下的人员表
         List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(userSession.getCompanyId(),ARCHIVE);
         //根据id找到物理字段名
         return customArchiveFieldDao.selectFieldNameListByTableIdList(tableIdList);
     }
-    //通过字段id找到物理字段名
+    /**
+     *  通过字段id找到物理字段名
+     */
     private String getPhysicName(Integer fieldId){
         return customArchiveFieldDao.selectPhysicName(fieldId);
     }

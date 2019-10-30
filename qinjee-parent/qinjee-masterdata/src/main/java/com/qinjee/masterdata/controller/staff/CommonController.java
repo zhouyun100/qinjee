@@ -15,11 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -577,11 +581,12 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     public ResponseResult exportArcFile(@Valid ExportVo exportVo,
-                                        HttpServletResponse response) {
-        Boolean b = checkParam(exportVo,getUserSession(),response);
+                                        HttpServletResponse response,
+                                        Map<Integer, Map<String,Object>> map) {
+        Boolean b = checkParam(exportVo,getUserSession(),response,map);
         if(b){
             try {
-                staffCommonService.exportArcFile(exportVo,response,getUserSession());
+                staffCommonService.exportArcFile(exportVo,response,getUserSession(),map);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();

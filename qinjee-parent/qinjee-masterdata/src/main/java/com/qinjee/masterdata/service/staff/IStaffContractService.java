@@ -93,7 +93,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void SaveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession);
+    void saveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession);
 
     /**
      * 批量续签合同

@@ -172,7 +172,7 @@ public class StaffContractController extends BaseController {
         Boolean b = checkParam(laborContractVo,id,getUserSession());
         if(b){
             try {
-                staffContractService.SaveLaborContract(laborContractVo, id, getUserSession());
+                staffContractService.saveLaborContract(laborContractVo, id, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("保存合同失败");
@@ -515,13 +515,13 @@ public class StaffContractController extends BaseController {
         if(b){
             try {
                 Integer integer = staffContractService.selectArcNumberIn(id);
-                return new ResponseResult(integer,CommonCode.SUCCESS);
+                return new ResponseResult(integer, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
-                return failResponseResult("查询在职员工人数失败");
+              return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return  failResponseResult("参数错误");
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
 
     }
 

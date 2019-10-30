@@ -41,7 +41,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private static final String PRE_EMPLOYMENT = "t_pre_employment";
     private static final String APPKEY = "91c94cbe664487bbfb072e717957e08f";
     private static final Integer APPID = 1400249114;
-    private static final String SENDER = "huangkt@qinjee.cn";
     @Autowired
     private PreEmploymentDao preEmploymentDao;
     @Autowired
@@ -58,31 +57,31 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception {
-        List<String> phonenumbers=new ArrayList<>();
+        List<String> phoneNumbers=new ArrayList<>();
         Integer max = preEmploymentDao.selectMaxId();
         for (Integer integer : list) {
             if (max < integer) {
                 throw new Exception("id出错");
             }
             String phoneNumber = preEmploymentDao.getPhoneNumber(integer);
-            phonenumbers.add(phoneNumber);
+            phoneNumbers.add(phoneNumber);
         }
         //TODO 固定字段需要配置，现已写死
-        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phonenumbers, params);
+        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phoneNumbers, params);
 
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void sendManyMail(List<Integer> prelist, List<Integer> conList, String content,
+    public void sendManyMail(List<Integer> preList, List<Integer> conList, String content,
                              String subject, List<String> filepath) throws Exception {
         //根据预入职id查找邮箱
-        for (Integer integer1 : prelist) {
+        for (Integer integer1 : preList) {
             if (preEmploymentDao.selectMaxId() < integer1) {
                 throw new Exception("id出错");
             }
         }
-        List<String> tomails = preEmploymentDao.getMail(prelist);
+        List<String> tomails = preEmploymentDao.getMail(preList);
 
         //根据档案id查询邮箱
         Integer max = userArchiveDao.selectMaxId();
@@ -126,7 +125,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
         if (CHANGSTATUS_READY.equals(changeState)) {
             //如果存在就更新
-            if(preChangeId !=null || preChangeId != 0) {
+            if(preChangeId !=null && preChangeId != 0) {
                gotPreEmploymentChange(userSession.getArchiveId(),preEmploymentId,statusChangeVo,preChangeId);
             }else {
                 //新增变更表
@@ -143,7 +142,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
         }
         if (CHANGSTATUS_DELAY.equals(changeState)) {
-            if(preChangeId !=null || preChangeId != 0) {
+            if(preChangeId !=null && preChangeId != 0) {
                 gotPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo,preChangeId);
             }else {
                 //新增变更表
@@ -152,7 +151,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             preEmployment.setEmploymentState(CHANGSTATUS_DELAY);
         }
         if (CHANGSTATUS_GIVEUP.equals(changeState)) {
-            if(preChangeId !=null || preChangeId != 0) {
+            if(preChangeId !=null && preChangeId != 0) {
                 gotPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo,preChangeId);
             }
             else {
@@ -163,7 +162,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         }
 
         if (CHANGSTATUS_BLACKLIST.equals(changeState)) {
-            if(preChangeId !=null || preChangeId != 0) {
+            if(preChangeId !=null && preChangeId != 0) {
                 gotPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo,preChangeId);
             }else {
                 //新增变更表
@@ -175,7 +174,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             blacklist.setBlockReason(statusChangeVo.getAbandonReason());
             blacklist.setDataSource("预入职");
             BeanUtils.copyProperties(preEmployment,blacklist);
-//            blacklist.setCompanyId(userSession.getCompanyId());
             blacklist.setOperatorId(userSession.getArchiveId());
             blacklistDao.insertSelective(blacklist);
         }
@@ -226,7 +224,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updatePreEmploymentField(Map<Integer, String> map) throws Exception {
+    public void updatePreEmploymentField(Map<Integer, String> map)  {
         customArchiveFieldDao.updatePreEmploymentField(map);
     }
 
@@ -250,8 +248,11 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         }
         return map;
     }
-    //查询是否已经存在预入职变更表
-    public Integer getPreChangeId(Integer preEmploymentId){
+    /**
+     *
+     查询是否已经存在预入职变更表
+     */
+    private Integer getPreChangeId(Integer preEmploymentId){
         return preEmploymentChangeDao.selectIdByPreId(preEmploymentId);
     }
 

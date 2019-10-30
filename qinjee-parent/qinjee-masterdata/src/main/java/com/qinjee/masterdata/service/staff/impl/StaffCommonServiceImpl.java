@@ -30,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -73,6 +72,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private QuerySchemeFieldDao querySchemeFieldDao;
     @Autowired
     private CheckTypeDao checkTypeDao;
+    @Autowired
+    private StaffArchiveServiceImpl staffArchiveService;
 
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable,UserSession userSession) {
@@ -395,7 +396,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             declaredField.setAccessible(true);
             declaredField.set(o, stringListEntry.getValue().get(i));
         }
-
     }
 
     private String getBigData(Map<String, List<String>> stringListMap, int i) {
@@ -411,7 +411,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportPreFile(String path, String title, List<Integer> list, UserSession userSession) throws NoSuchFieldException, IllegalAccessException {
+    public void exportPreFile(String path, String title, List<Integer> list, UserSession userSession)  {
         //得到response对象
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         if (CollectionUtils.isEmpty(list)) {
@@ -424,101 +424,31 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //找到预入职表
         List<PreEmployment> preEmploymentList = preEmploymentDao.selectByPrimaryKeyList(list);
         //预入职物理字段名
-        downloadFile(path, title, response, preEmploymentList, heads);
+//        downloadFile(path, title, response, preEmploymentList, heads);
 
     }
 
     @Override
-    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, UnsupportedEncodingException {
-         List<Integer> list = exportVo.getList();
-        Integer querySchemeId = exportVo.getQuerySchemeId();
-        if (CollectionUtils.isEmpty(list)) {
-            list = userArchiveDao.selectIdByComId(userSession.getCompanyId());
-        }
+    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession, Map<Integer, Map<String,Object>> map) {
 
-        List<UserArchive> userArclist = userArchiveDao.selectByPrimaryKeyList(list);
-        //如果没有查询方案
-        if (null == querySchemeId || "".equals(querySchemeId)) {
-            //通过企业id，物理表名找到tableId
-            String s = new String(ARCHIVETABLE.getBytes(), "utf-8");
-            Integer tableId = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), s);
-            //通过tableid找到字段名集合
-            List<String> heads = customArchiveFieldDao.selectFieldNameListByTableId(tableId);
-            //找到物理表名集合
-            downloadFile(exportVo.getPath(), exportVo.getTittle(), response, userArclist, heads);
-        } else {
-            //根据查询方案id找到应该展示的字段id
-            List<Integer> fieldIdList = querySchemeFieldDao.selectFieldId(querySchemeId);
-            //根据id查字段名
-            List<String> heads = customArchiveFieldDao.selectFieldNameByList(fieldIdList);
-            List<Map<String, String>> dates = new LinkedList<>();
-            List<Map<String, String>> mapList = new LinkedList<>();
-            Map<String, String> stringMap = new HashMap<>();
-            List<String> physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
-            //根据字段名判断是否是物理表里的字段
-            for (String head : heads) {
-                //如果是
-                if (isSystem(head)) {
-                    dates = getDates(heads, physicList, userArclist);
-                }
-                //如果不是
-                //通过字段名找到表id
-                Integer id = customArchiveFieldDao.selectTableIdByFieldName(head);
-                //将传过来的id作为业务id寻找出数据大字段
-                for (Integer integer : list) {
-                    String bigData = customArchiveTableDataDao.selectBigDataBybusinessIdAndTableId(id, integer);
-                    //大字段进行解析
-                    String s = bigData.split("@@" + head + "@@:")[1].split(";@@")[0];
-                    stringMap.put(head, s);
-                }
-                mapList.add(stringMap);
-            }
-            dates.addAll(mapList);
-            //得到字段名与类型的集合
-            Map<String, String> map = getStringStringMap(heads);
-            ExcelUtil.download(exportVo.getPath(), response, exportVo.getTittle(), heads, dates, map);
-        }
+
+
     }
-
-    private void downloadFile(String path, String title, HttpServletResponse response, List objectList, List<String> heads) throws NoSuchFieldException, IllegalAccessException {
-        List<String> physicList = customArchiveFieldDao.selectPhysicNameByList(heads);
-        List<Map<String, String>> dates = getDates(heads, physicList, objectList);
-        //map中key是字段名，value是对应的类型
-        Map<String, String> map = getStringStringMap(heads);
-        ExcelUtil.download(path, response, title, heads, dates, map);
+    public List<Map<String,String>> getDates(Map<Integer, Map<String,Object>> map) {
+        return null;
     }
-
-
-    private List<Map<String, String>> getDates(List<String> heads, List<String> physicList, List objectList) throws NoSuchFieldException, IllegalAccessException {
-        //map中key是字段名，value是对应的值
-        List<Map<String, String>> dates = new ArrayList<>();
-        //通过字段名找到物理字段名
-        Map<String, String> dateMap = new HashMap<>();
-        for (Object o : objectList) {
-            for (int j = 0; j < physicList.size(); j++) {
-                Field declaredField = o.getClass().getDeclaredField(physicList.get(j));
-                declaredField.setAccessible(true);
-                Object obj = declaredField.get(declaredField);
-                dateMap.put(heads.get(j), String.valueOf(obj));
-                dates.add(dateMap);
-            }
+    public List<String> getHeads(Integer querySchemeId){
+        if(querySchemeId!=0 && !"".equals(querySchemeId)){
+            List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(querySchemeId);
+            Collections.sort(fieldSortList);
+            //将字段排序按照顺序拼接成查询项
+            //根据排序id找到字段id
+            List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList,querySchemeId);
+            //根据id查询字段名
+            return customArchiveFieldDao.selectFieldNameByList(sortList);
         }
-        return dates;
-    }
-
-    private Boolean isSystem(String fieldName) {
-        Short isSystem = customArchiveFieldDao.isSystemField(fieldName);
-        return isSystem > 0;
-    }
-
-
-    private Map<String, String> getStringStringMap(List<String> heads) {
-        Map<String, String> map = new HashMap<>();
-        List<String> stringList = customArchiveFieldDao.selectTypeByNameList(heads);
-        for (int i = 0; i < stringList.size(); i++) {
-            map.put(heads.get(i), stringList.get(i));
-        }
-        return map;
+            String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期到期时间","直接上级","联系电话","任职类型"};
+            return Arrays.asList(strings);
     }
 
     @Override

@@ -13,6 +13,8 @@ import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ import java.util.List;
  */
 @Service
 public class StaffContractServiceImpl implements IStaffContractService {
-//    private static final Logger logger = LoggerFactory.getLogger(StaffContractServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(StaffContractServiceImpl.class);
     private static final String NEWMARK = "新签";
     private static final String NOTMARK = "未签";
     private static final String RENEWMARK = "续签";
@@ -99,11 +101,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
                 noEffectLabList.add(laborContract);
             }
         }
-//            if(labList.removeAll(effectLabList)){
-//                Collections.copy(effectLabList,labList);
-//            }else {
-//                throw new Exception("获取集合失败");
-//            }
         labList.removeAll(noEffectLabList);
         if(isEnable){
              conList = getConList(status, labList);
@@ -130,7 +127,10 @@ public class StaffContractServiceImpl implements IStaffContractService {
         }
         return conList;
     }
-    //此处不是逻辑删除，是真删除
+    /**
+     *
+     此处不是逻辑删除，是真删除
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteLaborContract(Integer laborContractId) {
@@ -141,7 +141,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void insertLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
 
             //将合同vo设置进去
-            Mark(laborContractVo, id, userSession.getArchiveId(), NEWMARK);
+            mark(laborContractVo, id, userSession.getArchiveId(), NEWMARK);
 
     }
 
@@ -174,8 +174,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public void SaveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
-            Mark(laborContractVo, id, userSession.getArchiveId(), NOTMARK);
+    public void saveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
+            mark(laborContractVo, id, userSession.getArchiveId(), NOTMARK);
     }
 
 
@@ -353,7 +353,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return list;
     }
 
-    private void Mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) {
+    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) {
         //新增合同
         LaborContract laborContract = new LaborContract();
         //设置其余字段

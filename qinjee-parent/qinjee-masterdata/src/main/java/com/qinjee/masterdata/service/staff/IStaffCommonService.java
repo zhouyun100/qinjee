@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Param;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -155,7 +155,7 @@ public interface IStaffCommonService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, UnsupportedEncodingException;
+    void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession, Map<Integer, Map<String,Object>> map) ;
 
     /**
      * 文件上传

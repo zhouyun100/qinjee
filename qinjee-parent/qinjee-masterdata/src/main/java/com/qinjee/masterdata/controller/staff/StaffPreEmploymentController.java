@@ -217,9 +217,6 @@ public class StaffPreEmploymentController extends BaseController {
     }
 
     /**
-     * 确认入职
-     */
-    /**
      * 发短信给预入职人员
      */
     @RequestMapping(value = "/sendMessage ", method = RequestMethod.GET)

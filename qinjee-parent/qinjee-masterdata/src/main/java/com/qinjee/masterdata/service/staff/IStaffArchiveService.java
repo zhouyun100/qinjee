@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -118,5 +119,5 @@ public interface IStaffArchiveService {
      * @param schemeId
      * @return
      */
-    Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession,List<Integer> archiveIdList);
+    Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession,List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 }
