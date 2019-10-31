@@ -7,10 +7,13 @@ import com.qinjee.masterdata.dao.CompanyCodeDao;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.*;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
 import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -18,20 +21,19 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
 import com.qinjee.utils.UpAndDownUtil;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -74,7 +76,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private CheckTypeDao checkTypeDao;
     @Autowired
-    private StaffArchiveServiceImpl staffArchiveService;
+    private PreEmploymentChangeDao preEmploymentChangeDao;
+    @Autowired
+    private BlacklistDao blacklistDao;
 
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable,UserSession userSession) {
@@ -179,9 +183,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         PageHelper.startPage(currentPage, pageSize);
         //根据自定义表找自定义字段id
         List<CustomArchiveField> list=customArchiveFieldDao.selectFieldByTableId(customArchiveTableId);
-        for (CustomArchiveField customArchiveField : list) {
-            System.out.println(customArchiveField.getFieldName());
-        }
         return new PageResult<>(list);
     }
 
@@ -264,12 +265,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void importFile(String path, UserSession userSession) throws  NoSuchFieldException, IllegalAccessException {
+    public void importFile(String path, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, IOException {
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
         Integer tableId = null;
         //key是字段名称，value是值
         //TODO
-        Map<String, List<String>> stringListMap = null;//ExcelUtil.readExcel(multipartFile);
+        Map<String, List<String>> stringListMap = null;
+        ExcelUtil.readExcel(multipartFile);
         Map<Integer, List<String>> fieldMap = new HashMap<>();
         //需要进行入库操作
         //根据companyId，功能code为档案和预入职的表
@@ -382,7 +384,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         String bigData = getBigData(stringListMap, i);
         customArchiveTableData.setBigData(bigData);
         Integer integer1 = customArchiveTableDataDao.selectTableIdByBusinessIdAndTableId(id, tableId);
-        if (null == integer1) {
+        if (null == integer1 || 0==integer1) {
             customArchiveTableDataDao.insertSelective(customArchiveTableData);
         } else {
             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
@@ -412,31 +414,56 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportPreFile(String path, String title, List<Integer> list, UserSession userSession)  {
-        //得到response对象
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        if (CollectionUtils.isEmpty(list)) {
-            list = preEmploymentDao.selectIdByComId(userSession.getCompanyId());
-        }
-        //通过企业id，物理表名找到tableId
-        Integer tableId = customArchiveTableDao.selectByComIdAndPhyName(userSession.getCompanyId(), PREEMPTABLE);
-        //通过tableid找到字段名集合
-        List<String> heads = customArchiveFieldDao.selectFieldNameListByTableId(tableId);
-        //找到预入职表
-        List<PreEmployment> preEmploymentList = preEmploymentDao.selectByPrimaryKeyList(list);
-        //预入职物理字段名
-//        downloadFile(path, title, response, preEmploymentList, heads);
+    public void exportPreFile(ExportVo exportVo,HttpServletResponse response,UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        ExcelUtil.download(exportVo.getPath(),response,exportVo.getTittle(),getHeadsByPre(),
+                getDatesForPre(exportVo.getList(),exportVo),getTypeMap(getHeadsByPre()));
 
     }
+    private List<Map<String,String>> getDatesForPre(List<Integer> list,ExportVo exportVo) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        List<String> phoneList=new ArrayList<>();
+        List<ExportPreVo> exportPreVoList=new ArrayList<>();
+        List<Map<String,String>> mapList=new ArrayList<>();
+        List<PreEmployment> preEmploymentList = preEmploymentDao.selectByPrimaryKeyList(list);
+        for (PreEmployment preEmployment : preEmploymentList) {
+            phoneList.add(preEmployment.getPhone());
+        }
+        List<PreEmploymentChange> preEmploymentChangeList=preEmploymentChangeDao.selectByPreIdList(list);
+        //根据电话号码查到那些进入黑名单的预入职
+        List<Blacklist> blacklistList=blacklistDao.selectByPhone(phoneList);
+        for (int i = 0; i < preEmploymentList.size(); i++) {
+            ExportPreVo exportPreVo=new ExportPreVo();
+            BeanUtils.copyProperties(preEmploymentList.get(i),exportPreVo);
+            BeanUtils.copyProperties(preEmploymentChangeList.get(i),exportPreVo);
+            setBlockReason(exportPreVo,blacklistList);
+            exportPreVoList.add(exportPreVo);
+        }
+        return getMap(exportVo.getList(),mapList,exportPreVoList);
+    }
 
+    /**
+     * 通过号码匹配得到拉黑原因，设置进VO类
+     * @param exportPreVo
+     * @param list
+     */
+    private void setBlockReason(ExportPreVo exportPreVo,List<Blacklist> list){
+        for (Blacklist blacklist : list) {
+            if(blacklist.getPhone().equals(exportPreVo.getPhone())){
+                exportPreVo.setBlockReason(blacklist.getBlockReason());
+            }
+        }
+    }
+    private List<String> getHeadsByPre(){
+        String[] strings={"姓名","手机","入职状态","邮箱","应聘职位","入职机构","入职岗位","入职日期","放弃原因","拉黑原因","入职登记","变更描述"};
+        return Arrays.asList(strings);
+    }
     @Override
     public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession, Map<Integer, Map<String,Object>> map) {
 
         ExcelUtil.download(exportVo.getPath(),response,exportVo.getTittle(),
-                getHeads(exportVo.getQuerySchemeId()),getDates(map),getTypeMap(getHeads(exportVo.getQuerySchemeId())));
+                getHeadsByArc(exportVo.getQuerySchemeId()), getDatesForArc(map),getTypeMap(getHeadsByArc(exportVo.getQuerySchemeId())));
 
     }
-    public List<Map<String,String>> getDates(Map<Integer, Map<String,Object>> map) {
+    public List<Map<String,String>> getDatesForArc(Map<Integer, Map<String,Object>> map) {
         List<Map<String,String>> mapList=new ArrayList<>();
         List<String> keyList=null;
         List<Map<String, Object>> maps = new ArrayList<>(map.values());
@@ -453,8 +480,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return mapList;
     }
-    private List<String> getHeads(Integer querySchemeId){
-        if(querySchemeId!=0){
+
+    private List<String> getHeadsByArc(Integer querySchemeId){
+        if(0!=querySchemeId && null!=querySchemeId){
             List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(querySchemeId);
             Collections.sort(fieldSortList);
             //将字段排序按照顺序拼接成查询项
@@ -467,6 +495,38 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             return Arrays.asList(strings);
     }
 
+    /**
+     * 通过反射获得属性名与属性值，存到List<map>中
+     * @param preEmploymentList
+     * @param mapList
+     * @param exportPreVoList
+     * @return
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     */
+    private  List<Map<String,String>>  getMap(List<Integer> preEmploymentList, List<Map<String,String>> mapList,  List<ExportPreVo> exportPreVoList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        for (int i = 0; i < preEmploymentList.size(); i++) {
+            Map<String,String> map=new HashMap<>();
+            //获得类
+            Class clazz = exportPreVoList.get(i).getClass();
+            // 获取实体类的所有属性信息，返回Field数组
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                map.put(field.getName(), String.valueOf(field.get(exportPreVoList.get(i))));
+            }
+           mapList.add(map);
+        }
+        return mapList;
+    }
+
+   
+    /**
+     * 存储字段类型的集合
+     * @param heads
+     * @return
+     */
     private Map<String,String> getTypeMap(List<String> heads){
         List<String> list=customArchiveFieldDao.selectFieldTypeByNameList(heads);
         Map<String,String> map=new HashMap<>();
@@ -475,6 +535,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return map;
     }
+
 
 
     @Override

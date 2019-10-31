@@ -34,20 +34,20 @@ public class DownLoadVo implements Serializable {
      * 单位名称
      */
     @ApiModelProperty("单位名称")
-    private Integer businessUnitName;
+    private String businessUnitName;
 
 
     /**
      * 部门名称
      */
     @ApiModelProperty("部门名称")
-    private Integer orgName;
+    private String orgName;
 
     /**
      * 岗位名称
      */
     @ApiModelProperty("岗位名称")
-    private Integer postName;
+    private String postName;
 
     /**
      * 姓名
@@ -68,7 +68,6 @@ public class DownLoadVo implements Serializable {
      * 联系电话
      */
     @NotNull
-    @QueryColumn("tua.tel")
     @ApiModelProperty("联系电话")
     private String tel;
 

@@ -148,6 +148,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 //新增变更表
                 getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
             }
+            //将预入职的入职时间重新设置
+            preEmployment.setEmploymentDate(statusChangeVo.getDelayTime());
+            preEmploymentDao.updateByPrimaryKeySelective(preEmployment);
             preEmployment.setEmploymentState(CHANGSTATUS_DELAY);
         }
         if (CHANGSTATUS_GIVEUP.equals(changeState)) {
@@ -193,7 +196,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         BeanUtils.copyProperties(statusChangeVo, preEmploymentChange);
         preEmploymentChange.setEmploymentId(preEmploymentId);
         preEmploymentChange.setOperatorId(archiveId);
-        System.out.println(preEmploymentChange.getEmploymentId());
         preEmploymentChangeDao.updateByPrimaryKeySelective(preEmploymentChange);
     }
 

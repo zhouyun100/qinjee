@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -208,11 +209,7 @@ public interface IStaffCommonService {
     List<String> selectFieldValueById(Integer customArchiveFieldId);
 
     /**
-     * 导出预入职
-     * @param path
-     * @param title
-     * @param list
      * @param userSession
      */
-    void exportPreFile(String path, String title, List<Integer> list, UserSession userSession) throws NoSuchFieldException, IllegalAccessException;
+    void exportPreFile(ExportVo exportVo,HttpServletResponse response,UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 }

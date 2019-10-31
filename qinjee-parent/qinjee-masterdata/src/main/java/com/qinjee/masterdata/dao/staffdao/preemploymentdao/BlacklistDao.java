@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface BlacklistDao {
     void deleteBlackList(List<Integer> list);
 
     List<Blacklist> selectByPage();
+
+    List<Blacklist> selectByPhone(@Param("phoneList") List<String> phoneList);
 }

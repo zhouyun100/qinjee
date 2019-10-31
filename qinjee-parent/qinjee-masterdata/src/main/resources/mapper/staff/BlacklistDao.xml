@@ -218,4 +218,15 @@
     from t_blacklist
     where is_delete=0
   </select>
+  <select id="selectByPhone" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_blacklist
+    where   phone
+    in
+    <foreach collection="phoneList" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND is_delete=0
+  </select>
 </mapper>

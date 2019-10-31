@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -49,6 +49,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserOrgAuthDao userOrgAuthDao;
     @Autowired
     private OrganizationDao organizationDao;
+    @Autowired
+    private PostDao postDao;
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
 
@@ -146,7 +148,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId, UserSession userSession,List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Map<Integer, Map<String, Object>> userArchiveListCustom;
-        if (schemeId != 0 ) {
+        if (0!=schemeId && null!=schemeId) {
             StringBuffer stringBuffer = new StringBuffer();
             String order = null;
             //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序
@@ -181,7 +183,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //调用接口查询机构权限范围内的档案集合
             //进行sql查询，返回数据，档案在机构范围内
             userArchiveListCustom =
-                    userArchiveDao.getUserArchiveListCustom(getBaseSql(userSession.getCompanyId(), stringList, userSession.getCompanyId()), order);
+                    userArchiveDao.getUserArchiveListCustom(getBaseSql(stringList, userSession.getCompanyId()), order);
         }else{
             userArchiveListCustom =new HashMap<>();
             List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(archiveIdList);
@@ -189,22 +191,14 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             for (UserArchive userArchive : list) {
                 DownLoadVo downLoadVo=new DownLoadVo();
                 BeanUtils.copyProperties(userArchive,downLoadVo);
+                downLoadVo.setBusinessUnitName(organizationDao.selectOrgName(userArchive.getBusinessUnitId()));
+                downLoadVo.setOrgName(organizationDao.selectOrgName(userArchive.getOrgId()));
+                downLoadVo.setPostName(postDao.selectPostNameById(userArchive.getPostId()));
                 String type=userArchivePostRelationDao.selectEmploymentTypeByArichiveId(userArchive.getArchiveId());
                 downLoadVo.setEmploymentType(type);
                 downLoadVoList.add(downLoadVo);
             }
-            for (int i = 0; i < archiveIdList.size(); i++) {
-                Map<String,Object> map=new HashMap<>();
-                //获得类
-                Class clazz = downLoadVoList.get(i).getClass();
-                // 获取实体类的所有属性信息，返回Field数组
-                Field[] fields = clazz.getDeclaredFields();
-                for (Field field : fields) {
-                    field.setAccessible(true);
-                   map.put(field.getName(), getFieldValueByName(field.getName(), downLoadVoList.get(i)));
-                }
-                userArchiveListCustom.put(archiveIdList.get(i),map);
-            }
+            getMap(archiveIdList, userArchiveListCustom, downLoadVoList);
         }
             ArrayList<Integer> integers = new ArrayList<>(userArchiveListCustom.keySet());
             archiveIdList.retainAll(integers);
@@ -213,28 +207,30 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 mapMap.put(integer, userArchiveListCustom.get(integer));
             }
             return mapMap;
-
-
     }
-   public static Object getFieldValueByName(String name, DownLoadVo t) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
-       String firstletter = name.substring(0, 1).toUpperCase();
+    private void getMap(List<Integer> archiveIdList, Map<Integer, Map<String, Object>> userArchiveListCustom, List<DownLoadVo> downLoadVoList) throws IllegalAccessException{
+        for (int i = 0; i < archiveIdList.size(); i++) {
+            Map<String,Object> map=new HashMap<>();
+            //获得类
+            Class clazz = downLoadVoList.get(i).getClass();
+            // 获取实体类的所有属性信息，返回Field数组
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+               map.put(field.getName(), String.valueOf(field.get(downLoadVoList.get(i))));
+            }
+            userArchiveListCustom.put(archiveIdList.get(i),map);
+        }
+    }
 
-       String getter = "get" + firstletter + name.substring(1);
-
-       Method method = t.getClass().getMethod(getter, new Class[]{});
-
-       Object invoke = method.invoke(t, new DownLoadVo[]{});
-
-       return invoke;
-   }
 
     /**
      *
      list是所查询项的集合
      */
-    private String getBaseSql(Integer orgId,List<String> strings,Integer companyId){
-        List<String> fieldNameNotInside = getFieldNameNotInside(orgId);
+    private String getBaseSql(List<String> strings,Integer companyId){
+        List<String> fieldNameNotInside = getFieldNameNotInside(companyId);
         StringBuffer stringBuffer=new StringBuffer();
         stringBuffer.append("select archive_id ,");
         for (String string : strings) {

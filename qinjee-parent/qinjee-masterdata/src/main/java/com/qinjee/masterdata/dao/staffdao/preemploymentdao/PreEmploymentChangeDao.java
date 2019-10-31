@@ -5,6 +5,8 @@ import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Administrator
  */
@@ -25,4 +27,6 @@ public interface PreEmploymentChangeDao {
     int insertStatusChange(@Param("statusChangeVo") StatusChangeVo statusChangeVo);
 
     Integer selectIdByPreId(@Param("preEmploymentId") Integer preEmploymentId);
+
+    List<PreEmploymentChange> selectByPreIdList(@Param("list") List<Integer> list);
 }

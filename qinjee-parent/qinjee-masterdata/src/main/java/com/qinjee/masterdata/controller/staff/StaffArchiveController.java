@@ -382,7 +382,7 @@ public class StaffArchiveController extends BaseController {
 //    })
     public ResponseResult<Map<Integer, Map<String, Object>>> selectArchiveByQueryScheme(Integer schemeId,
                                                                                         @RequestParam List<Integer> archiveIdList) {
-        Boolean b = checkParam(schemeId,getUserSession(),archiveIdList);
+        Boolean b = checkParam(getUserSession(),archiveIdList);
         if(b){
             try {
                 Map<Integer, Map<String, Object>> integerMapMap =

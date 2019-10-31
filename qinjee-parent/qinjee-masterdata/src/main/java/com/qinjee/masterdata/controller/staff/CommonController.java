@@ -607,11 +607,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
-    public ResponseResult exportPreFile(String path, String title, List<Integer> list ) {
-        Boolean b = checkParam(path,title,list,getUserSession());
+    public ResponseResult exportPreFile(@Valid ExportVo exportVo,HttpServletResponse response) {
+        Boolean b = checkParam(exportVo,response,getUserSession());
         if(b){
             try {
-                staffCommonService.exportPreFile(path,title,list,getUserSession());
+                staffCommonService.exportPreFile(exportVo,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导出失败");

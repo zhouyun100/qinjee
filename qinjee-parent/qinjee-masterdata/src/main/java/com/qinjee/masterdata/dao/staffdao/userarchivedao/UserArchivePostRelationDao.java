@@ -42,5 +42,5 @@ public interface UserArchivePostRelationDao {
 
     List<Integer> selectByType(@Param("type") String type, @Param("oneList") List<Integer> oneList);
 
-    String selectEmploymentTypeByArichiveId(Integer archiveId);
+    String selectEmploymentTypeByArichiveId(@Param("archiveId") Integer archiveId);
 }

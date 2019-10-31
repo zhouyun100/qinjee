@@ -24,7 +24,7 @@ public class StatusChangeVo {
      * 延期入职时间
      *
      */
-    private Date DelayTime;
+    private Date delayTime;
 
     /**
      * 放弃原因

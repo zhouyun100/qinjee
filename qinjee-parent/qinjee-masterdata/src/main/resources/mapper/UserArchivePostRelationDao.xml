@@ -263,10 +263,10 @@
     </foreach>
 
   </select>
-  <select id="selectEmploymentTypeByArichiveId">
+  <select id="selectEmploymentTypeByArichiveId" resultType="java.lang.String">
     select employment_type
     from  t_user_archive_post_relation
-    where  archive_id = #{id,jdbcType=INTEGER}
+    where  archive_id = #{archiveId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
 

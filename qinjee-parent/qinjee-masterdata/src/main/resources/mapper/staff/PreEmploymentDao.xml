@@ -269,7 +269,7 @@
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete = 0
     </select>
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_pre_employment
