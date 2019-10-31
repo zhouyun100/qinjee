@@ -148,7 +148,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId, UserSession userSession,List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Map<Integer, Map<String, Object>> userArchiveListCustom;
-        if (0!=schemeId && null!=schemeId) {
+        if (null != schemeId && 0 != schemeId) {
             StringBuffer stringBuffer = new StringBuffer();
             String order = null;
             //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序
@@ -159,12 +159,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //根据排序id找到字段id
             List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList, schemeId);
             //根据id查询字段名
-            List<String> stringList = customArchiveFieldDao.selectFieldNameByList(sortList);
+            List<String> stringList = customArchiveFieldDao.selectFieldCodeByList(sortList);
             //根据查询方案id，找到排序id与升降序
             //查询查询档案下的排序字段id
             List<Integer> integerList = querySchemeSortDao.selectSortId(schemeId);
             //根据id查询字段名
-            List<String> strings = customArchiveFieldDao.selectFieldNameByList(integerList);
+            List<String> strings = customArchiveFieldDao.selectFieldCodeByList(integerList);
             //查询升降序
             List<String> list = querySchemeSortDao.selectSortByIdList(integerList);
             Map<String, String> map = new HashMap<>();
@@ -184,32 +184,70 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //进行sql查询，返回数据，档案在机构范围内
             userArchiveListCustom =
                     userArchiveDao.getUserArchiveListCustom(getBaseSql(stringList, userSession.getCompanyId()), order);
-        }else{
-            userArchiveListCustom =new HashMap<>();
+            ArrayList<Integer> integers = new ArrayList<>(userArchiveListCustom.keySet());
+            archiveIdList.retainAll(integers);
+            Map<Integer, Map<String, Object>> temMapMap = new HashMap<>();
+            Collection<Map<String, Object>> temValues = temMapMap.values();
+            List<Map<String, Object>> values = new ArrayList<>();
+            Map<Integer, Map<String, Object>> mapMap = new HashMap<>();
+            for (Integer integer : archiveIdList) {
+                temMapMap.put(integer, userArchiveListCustom.get(integer));
+            }
+            for (Map<String, Object> value : temValues) {
+                Map<String, Object> stringObjectHashMap = new HashMap<>();
+                List<String> stringField = customArchiveFieldDao.selectFieldNameByCodeList(new ArrayList<>(value.keySet()));
+                List<Object> objects = new ArrayList<>(value.values());
+                for (int k = 0; k < objects.size(); k++) {
+                    stringObjectHashMap.put(stringField.get(k), objects.get(k));
+                }
+                values.add(stringObjectHashMap);
+            }
+            ArrayList<Integer> integers1 = new ArrayList<>(temMapMap.keySet());
+            for (int j = 0; j < integers1.size(); j++) {
+                mapMap.put(integers1.get(j), values.get(j));
+            }
+            return mapMap;
+        } else {
             List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(archiveIdList);
-            List<DownLoadVo> downLoadVoList =new ArrayList<>();
+            List<DownLoadVo> downLoadVoList = new ArrayList<>();
             for (UserArchive userArchive : list) {
-                DownLoadVo downLoadVo=new DownLoadVo();
-                BeanUtils.copyProperties(userArchive,downLoadVo);
+                DownLoadVo downLoadVo = new DownLoadVo();
+                BeanUtils.copyProperties(userArchive, downLoadVo);
                 downLoadVo.setBusinessUnitName(organizationDao.selectOrgName(userArchive.getBusinessUnitId()));
                 downLoadVo.setOrgName(organizationDao.selectOrgName(userArchive.getOrgId()));
                 downLoadVo.setPostName(postDao.selectPostNameById(userArchive.getPostId()));
-                String type=userArchivePostRelationDao.selectEmploymentTypeByArichiveId(userArchive.getArchiveId());
+                String type = userArchivePostRelationDao.selectEmploymentTypeByArichiveId(userArchive.getArchiveId());
                 downLoadVo.setEmploymentType(type);
                 downLoadVoList.add(downLoadVo);
             }
-            getMap(archiveIdList, userArchiveListCustom, downLoadVoList);
-        }
+            userArchiveListCustom = getMap(archiveIdList, downLoadVoList);
             ArrayList<Integer> integers = new ArrayList<>(userArchiveListCustom.keySet());
             archiveIdList.retainAll(integers);
+            Map<Integer, Map<String, Object>> temMapMap = new HashMap<>();
+            Collection<Map<String, Object>> temValues = temMapMap.values();
+            List<Map<String, Object>> values = new ArrayList<>();
             Map<Integer, Map<String, Object>> mapMap = new HashMap<>();
             for (Integer integer : archiveIdList) {
-                mapMap.put(integer, userArchiveListCustom.get(integer));
+                temMapMap.put(integer, userArchiveListCustom.get(integer));
+            }
+            for (Map<String, Object> value : temValues) {
+                Map<String, Object> stringObjectHashMap = new HashMap<>();
+                List<String> strings = customArchiveFieldDao.selectFieldNameByEntityList(new ArrayList<>(value.keySet()));
+                List<Object> objects = new ArrayList<>(value.values());
+                for (int i = 0; i < objects.size(); i++) {
+                    stringObjectHashMap.put(strings.get(i), objects.get(i));
+                }
+                values.add(stringObjectHashMap);
+            }
+            ArrayList<Integer> integers1 = new ArrayList<>(temMapMap.keySet());
+            for (int i = 0; i < integers1.size(); i++) {
+                mapMap.put(integers1.get(i), values.get(i));
             }
             return mapMap;
+        }
     }
-
-    private void getMap(List<Integer> archiveIdList, Map<Integer, Map<String, Object>> userArchiveListCustom, List<DownLoadVo> downLoadVoList) throws IllegalAccessException{
+    private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<DownLoadVo> downLoadVoList) throws IllegalAccessException{
+        Map<Integer, Map<String, Object>> userArchiveListCustom=new HashMap<>();
         for (int i = 0; i < archiveIdList.size(); i++) {
             Map<String,Object> map=new HashMap<>();
             //获得类
@@ -222,6 +260,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
             userArchiveListCustom.put(archiveIdList.get(i),map);
         }
+        return userArchiveListCustom;
     }
 
 
@@ -232,7 +271,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private String getBaseSql(List<String> strings,Integer companyId){
         List<String> fieldNameNotInside = getFieldNameNotInside(companyId);
         StringBuffer stringBuffer=new StringBuffer();
-        stringBuffer.append("select archive_id ,");
+        stringBuffer.append("select t.archive_id ,");
+
         for (String string : strings) {
             stringBuffer.append("t.").append(string).append(",");
         }

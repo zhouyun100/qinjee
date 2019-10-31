@@ -468,7 +468,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<String> keyList=null;
         List<Map<String, Object>> maps = new ArrayList<>(map.values());
         for (Map<String, Object> stringObjectMap : maps) {
-            keyList=new ArrayList<>(customArchiveFieldDao.selectFieldNameByCodeList(new ArrayList<>(stringObjectMap.keySet())));
+            keyList=new ArrayList<>((new ArrayList<>(stringObjectMap.keySet())));
         }
         for (Map<String, Object> stringObjectMap : maps) {
             Map<String,String> stringMap=new HashMap<>();
