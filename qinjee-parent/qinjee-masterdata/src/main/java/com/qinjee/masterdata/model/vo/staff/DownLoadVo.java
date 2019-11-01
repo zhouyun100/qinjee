@@ -23,14 +23,6 @@ public class DownLoadVo implements Serializable {
     private String employeeNumber;
 
     /**
-     * 企业ID
-     */
-    @NotNull
-    @ApiModelProperty("企业ID")
-    private Integer companyId;
-
-
-    /**
      * 单位名称
      */
     @ApiModelProperty("单位名称")

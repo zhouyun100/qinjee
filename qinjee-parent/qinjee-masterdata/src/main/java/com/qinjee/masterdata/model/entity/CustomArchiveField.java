@@ -29,10 +29,6 @@ public class CustomArchiveField implements Serializable {
     @NotNull
     private String fieldName;
     /**
-     * 属性名
-     */
-    private String fieldEntity;
-    /**
      * 字段类型
      */
     @NotNull

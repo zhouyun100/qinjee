@@ -3,7 +3,6 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
@@ -62,8 +61,6 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private CustomArchiveFieldDao customArchiveFieldDao;
-    @Autowired
-    private CustomArchiveTableDataDao customArchiveTableDataDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -116,7 +113,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Transactional(rollbackFor = Exception.class)
     public void saveStandingBook(UserSession userSession, StandingBookInfoVo standingBookInfoVo) {
         StandingBook standingBook = new StandingBook();
-        if (standingBookInfoVo.getStandingBookVo().getStandingBookId() == 0 || standingBookInfoVo.getStandingBookVo().getStandingBookId() == null ) {
+        if (standingBookInfoVo.getStandingBookVo().getStandingBookId() == null || standingBookInfoVo.getStandingBookVo().getStandingBookId() == 0 ) {
             //说明是新增操作
             //新增台账属性
             BeanUtils.copyProperties(standingBookInfoVo.getStandingBookVo(), standingBook);
@@ -147,6 +144,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
                 standingBookFilter.setOperatorId(userSession.getArchiveId());
                 standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
+                if(standingBookFilter.getFilterId()==null||standingBookFilter.getFilterId()==0){
+                    standingBookFilterDao.insertSelective(standingBookFilter);
+                }
                 standingBookFilterDao.updateByPrimaryKeySelective(standingBookFilter);
             }
         }
@@ -194,7 +194,6 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String baseSql = getBaseSql(userSession);
         String sql=baseSql+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
-        System.out.println(sql);
         List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
         userArchives.retainAll(list);
         return userArchives;
@@ -230,20 +229,20 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                     condition = physicName + " != " + filter.getFieldValue();
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " like " + "'%" + filter.getFieldValue() + "%' ";
+                    condition = physicName + " like "+"'%" + filter.getFieldValue() + "%' ";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + "not like" + " '%" + filter.getFieldValue() + "%' ";
+                    condition = physicName + " not like "+"'%" + filter.getFieldValue() + "%' ";
                 }
             }
             if (TYPECODE.equals(type)) {
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " = " + filter.getFieldValue();
+                    condition = physicName +" = " + filter.getFieldValue();
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + "<" + filter.getFieldValue() + ">";
+                    condition = physicName + " != " + filter.getFieldValue() ;
                 }
             }
 
@@ -273,10 +272,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
     private String getLinkSymbol(StandingBookFilter filter){
         if(AND.equals(filter.getLinkSymbol())){
-            return "AND";
+            return " AND ";
         }
         if(OR.equals(filter.getLinkSymbol())){
-            return "OR";
+            return " OR ";
         }
         return "";
     }

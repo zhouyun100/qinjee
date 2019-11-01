@@ -15,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -568,7 +565,27 @@ public class CommonController extends BaseController {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
     }
-   
+
+    /**
+     * 文件下载
+     */
+    @RequestMapping(value = "/downLoadFile", method = RequestMethod.POST)
+    @ApiOperation(value = "文件下载", notes = "hkt")
+//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
+
+    public ResponseResult downLoadFile(String path) {
+        Boolean b = checkParam(path);
+        if(b) {
+            try {
+                staffCommonService.downLoadFile(path);
+               return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("下载文件失败！");
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+    }
+
     /**
      * 模板导出档案
      */
@@ -582,7 +599,7 @@ public class CommonController extends BaseController {
 //    })
     public ResponseResult exportArcFile(@Valid ExportVo exportVo,
                                         HttpServletResponse response,
-                                        Map<Integer, Map<String,Object>> map) {
+                                        @RequestBody Map<Integer, Map<String,Object>> map) {
         Boolean b = checkParam(exportVo,getUserSession(),response,map);
         if(b){
             try {

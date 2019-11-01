@@ -212,4 +212,10 @@ public interface IStaffCommonService {
      * @param userSession
      */
     void exportPreFile(ExportVo exportVo,HttpServletResponse response,UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+
+    /**
+     * 下载文件
+     * @param path
+     */
+    void downLoadFile(String path) throws Exception;
 }

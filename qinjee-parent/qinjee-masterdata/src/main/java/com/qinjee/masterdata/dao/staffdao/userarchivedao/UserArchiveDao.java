@@ -2,6 +2,7 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
+import com.qinjee.masterdata.model.vo.staff.DownLoadVo;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -85,4 +86,5 @@ public interface UserArchiveDao {
 
     List<Integer> selectArchiveIdByOrgId(@Param("companyId") Integer companyId);
 
+    List<DownLoadVo> selectDownLoadVoList(@Param("archiveIdList") List<Integer> archiveIdList);
 }

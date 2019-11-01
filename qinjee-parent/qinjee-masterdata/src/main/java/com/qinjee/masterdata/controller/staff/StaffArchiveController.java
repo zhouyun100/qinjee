@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
@@ -380,15 +381,15 @@ public class StaffArchiveController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
 //    })
-    public ResponseResult<Map<Integer, Map<String, Object>>> selectArchiveByQueryScheme(Integer schemeId,
-                                                                                        @RequestParam List<Integer> archiveIdList) {
+    public ResponseResult<ArchiveShowVo> selectArchiveByQueryScheme(Integer schemeId,
+                                                                    @RequestParam List<Integer> archiveIdList) {
         Boolean b = checkParam(getUserSession(),archiveIdList);
         if(b){
             try {
-                Map<Integer, Map<String, Object>> integerMapMap =
-                        staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(),archiveIdList);
-                if(integerMapMap!=null){
-                    return new ResponseResult<>(integerMapMap,CommonCode.SUCCESS);
+                ArchiveShowVo archiveShowVo =
+                        staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(), archiveIdList);
+                if(archiveShowVo!=null){
+                    return new ResponseResult<>(archiveShowVo,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

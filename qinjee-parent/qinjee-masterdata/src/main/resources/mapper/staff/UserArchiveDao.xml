@@ -43,6 +43,18 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
   </resultMap>
+  <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.DownLoadVo">
+    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="post_name" jdbcType="VARCHAR" property="postName" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
+    <result column="probation_due_date" jdbcType="VARCHAR" property="probationDueDate" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
+    <result column="employment_type" jdbcType="VARCHAR" property="employmentType" />
+  </resultMap>
   <sql id="Base_Column_List">
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
     user_name, id_type, id_number, gender, birthdate, age, nationality, birthplace, political_status,
@@ -621,6 +633,22 @@
     where company_id=#{companyId}
   AND is_delete=0
 </select>
-
+<select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.DownLoadVo" resultMap="downloadVo">
+      select arc.archive_id,arc.probation_due_date,arc.user_name,arc.employee_number,arc.tel,org.org_name,post.post_name ,
+      arch.user_name as supervisor_user_name ,relation.employment_type,orga.org_name as business_unit_name
+      from
+      t_user_archive arc
+      left join t_organization org on arc.org_id = org.org_id=arc.business_unit_id
+      left join t_organization orga on orga.org_id=arc.business_unit_id
+      left join t_post post on (arc.post_id = post.post_id and post.is_delete=0)
+      left join t_user_archive_post_relation relation on (arc.archive_id=relation.archive_id and relation.is_delete=0)
+      left join t_user_archive arch on (arc.supervisor_id=arch.archive_id and arch.is_delete=0)
+      where arc.archive_id=1 and arc.is_delete=0
+      and arc.archive_id in
+       <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
+       #{item}
+       and arc.is_delete=0
+ </foreach>
+</select>
 </mapper>
 

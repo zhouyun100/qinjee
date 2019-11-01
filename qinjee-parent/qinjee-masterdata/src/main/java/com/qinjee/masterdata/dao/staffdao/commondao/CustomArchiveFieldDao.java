@@ -4,7 +4,6 @@ import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,6 @@ public interface CustomArchiveFieldDao {
 
     List<String> selectFieldNameListByTableId(@Param("id") Integer id);
 
-    List<String> selectPhysicNameByList(List<String> strings);
 
     List<String> selectTypeByNameList(List<String> heads);
 
@@ -68,7 +66,7 @@ public interface CustomArchiveFieldDao {
 
     List<String> selectFieldTypeByNameList(@Param("heads") List<String> heads);
 
-    List<String> selectFieldNameByList(@Param("sortList") List<Integer> sortList);
+    List<String> selectFieldNameByList(@Param("strings") List<String> stringList);
 
-    List<String> selectFieldNameByEntityList(@Param("strings") ArrayList<String> strings);
+    List<String> selectFieldNameByIntList(@Param("sortList") List<Integer> sortList);
 }

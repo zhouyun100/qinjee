@@ -419,6 +419,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 getDatesForPre(exportVo.getList(),exportVo),getTypeMap(getHeadsByPre()));
 
     }
+
     private List<Map<String,String>> getDatesForPre(List<Integer> list,ExportVo exportVo) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         List<String> phoneList=new ArrayList<>();
         List<ExportPreVo> exportPreVoList=new ArrayList<>();
@@ -461,7 +462,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
         ExcelUtil.download(exportVo.getPath(),response,exportVo.getTittle(),
                 getHeadsByArc(exportVo.getQuerySchemeId()), getDatesForArc(map),getTypeMap(getHeadsByArc(exportVo.getQuerySchemeId())));
-
     }
     public List<Map<String,String>> getDatesForArc(Map<Integer, Map<String,Object>> map) {
         List<Map<String,String>> mapList=new ArrayList<>();
@@ -480,16 +480,15 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return mapList;
     }
-
     private List<String> getHeadsByArc(Integer querySchemeId){
-        if(0!=querySchemeId && null!=querySchemeId){
+        if(querySchemeId!=null && querySchemeId!=0){
             List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(querySchemeId);
             Collections.sort(fieldSortList);
             //将字段排序按照顺序拼接成查询项
             //根据排序id找到字段id
             List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList,querySchemeId);
             //根据id查询字段名
-            return customArchiveFieldDao.selectFieldNameByList(sortList);
+            return customArchiveFieldDao.selectFieldNameByIntList(sortList);
         }
             String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期到期时间","直接上级","联系电话","任职类型"};
             return Arrays.asList(strings);
@@ -558,6 +557,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         key+=uuid.toString()+".jpg";
         forWardPutFile.setKey(key);
         return forWardPutFile;
+    }
+
+
+    @Override
+    public void downLoadFile(String path) throws Exception {
+        try {
+            UpAndDownUtil.downFile("黄开天的文件/timg.jpg",path);
+        } catch (Exception e) {
+            throw new Exception("下载失败!");
+        }
     }
 
 }

@@ -34,11 +34,11 @@ import java.util.*;
  * @author Administrator
  */
 public class UpAndDownUtil {
-    private static final String secretId = "AKIDMi3OgwqoGh8YvMu7C6ovseEdy87v3s56";
-    private static final String secretKey = "1pU9icMvJWm1A7wa7SgKrGVbWfgVaVFo";
-    private static final String bucket = "qinjee-datacenter-1253673776";
-    private static final String regionName = "ap-guangzhou";
-    private static final COSClient cosClient=UpAndDownUtil.InitClient();
+    private static final String SECRET_ID= "AKIDMi3OgwqoGh8YvMu7C6ovseEdy87v3s56";
+    private static final String SECRET_KEY = "1pU9icMvJWm1A7wa7SgKrGVbWfgVaVFo";
+    private static final String BUCKET = "qinjee-datacenter-1253673776";
+    private static final String REGION_NAME= "ap-guangzhou";
+    private static final COSClient COS_ClIENT=UpAndDownUtil.initClient();
 
     /**
      * @return  前端需要调用的方法
@@ -46,11 +46,11 @@ public class UpAndDownUtil {
     public static  JSONObject getCredential(){
         TreeMap<String, Object> config = new TreeMap<String, Object>();
         try {
-            config.put("SecretId",secretId );
-            config.put("SecretKey", secretKey);
+            config.put("SecretId",SECRET_ID );
+            config.put("SecretKey", SECRET_KEY);
             config.put("durationSeconds", 1800);
-            config.put("bucket", bucket);
-            config.put("region", regionName);
+            config.put("bucket", BUCKET);
+            config.put("region", REGION_NAME);
             // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的目录，例子：* 或者 doc/* 或者 picture.jpg
             config.put("allowPrefix", "*");
             // 密钥的权限列表。简单上传、表单上传和分片上传需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
@@ -98,7 +98,7 @@ public class UpAndDownUtil {
         BasicSessionCredentials cred = new BasicSessionCredentials(tmpSecretId, tmpSecretKey, sessionToken);
         //设置bucket的地域信息
         String cosAccessKeyId = cred.getCOSAccessKeyId();
-        Region region = new Region(regionName);
+        Region region = new Region(REGION_NAME);
         ClientConfig clientConfig = new ClientConfig(region);
         //生成客户端
         COSClient cosClient = new COSClient(cred, clientConfig);
@@ -120,12 +120,12 @@ public class UpAndDownUtil {
      *
      * @return
      */
-    public static COSClient InitClient() {
+    public static COSClient initClient() {
         // 1 初始化用户身份信息（secretId, secretKey）。
-        COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
+        COSCredentials cred = new BasicCOSCredentials(SECRET_ID, SECRET_KEY);
         // 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
         // clientConfig 中包含了设置 region, https(默认 http), 超时, 代理等 set 方法, 使用可参见源码或者常见问题 Java SDK 部分。
-        Region region = new Region(regionName);
+        Region region = new Region(REGION_NAME);
         ClientConfig clientConfig = new ClientConfig(region);
         // 3 生成 cos 客户端。
         return new COSClient(cred, clientConfig);
@@ -143,15 +143,16 @@ public class UpAndDownUtil {
         try {
             // 指定要上传的文件
             File localFile = new File(path);
+
             // 指定要上传到 COS 上对象键
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, localFile);
-            PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET, key, localFile);
+            PutObjectResult putObjectResult = COS_ClIENT.putObject(putObjectRequest);
         } catch (CosServiceException serverException) {
             throw new CosServiceException("服务错误");
         } catch (CosClientException clientException) {
             throw new CosClientException("客户端错误");
         }finally {
-            cosClient.shutdown();
+            COS_ClIENT.shutdown();
         }
 
     }
@@ -168,7 +169,7 @@ public class UpAndDownUtil {
         try {
             ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
             // 设置 bucket 名称
-            listObjectsRequest.setBucketName(bucket);
+            listObjectsRequest.setBucketName(BUCKET);
             // prefix 表示列出的 object 的 key 以 prefix 开始
             listObjectsRequest.setPrefix(prefix);
             // 设置最大遍历出多少个对象, 一次 listobject 最大支持1000
@@ -207,15 +208,15 @@ public class UpAndDownUtil {
      */
     public static void downFile(String key, String downFilePath) {
         try {
-            GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, key);
+            GetObjectRequest getObjectRequest = new GetObjectRequest(BUCKET, key);
             File downFile = new File(downFilePath);
-            ObjectMetadata downObjectMeta = cosClient.getObject(getObjectRequest, downFile);
+            ObjectMetadata downObjectMeta = COS_ClIENT.getObject(getObjectRequest, downFile);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
         } catch (CosClientException clientException) {
             clientException.printStackTrace();
         }finally {
-            cosClient.shutdown();
+            COS_ClIENT.shutdown();
         }
 
     }
@@ -230,13 +231,13 @@ public class UpAndDownUtil {
      */
     public static void delFile( String key) {
         try {
-            cosClient.deleteObject(bucket, key);
+            COS_ClIENT.deleteObject(BUCKET, key);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
         } catch (CosClientException clientException) {
             clientException.printStackTrace();
         }finally {
-            cosClient.shutdown();
+            COS_ClIENT.shutdown();
         }
     }
     public static String getKey(){

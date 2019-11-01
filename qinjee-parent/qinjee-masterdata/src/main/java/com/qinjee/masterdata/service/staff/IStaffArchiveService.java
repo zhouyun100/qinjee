@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
 import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
 import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
@@ -119,5 +121,5 @@ public interface IStaffArchiveService {
      * @param schemeId
      * @return
      */
-    Map<Integer, Map<String, Object>> selectArchiveByQueryScheme(Integer schemeId,UserSession userSession,List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 }
