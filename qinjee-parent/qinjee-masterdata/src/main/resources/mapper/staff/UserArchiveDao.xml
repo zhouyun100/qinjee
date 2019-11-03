@@ -14,14 +14,14 @@
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
     <result column="gender" jdbcType="VARCHAR" property="gender" />
-    <result column="birthdate" jdbcType="DATE" property="birthdate" />
+    <result column="birth_date" jdbcType="DATE" property="birthDate" />
     <result column="age" jdbcType="SMALLINT" property="age" />
     <result column="nationality" jdbcType="INTEGER" property="nationality" />
     <result column="birthplace" jdbcType="VARCHAR" property="birthplace" />
     <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
     <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
     <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
-    <result column="hiredate" jdbcType="DATE" property="hiredate" />
+    <result column="hire_Date" jdbcType="DATE" property="hireDate" />
     <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
     <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
     <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
@@ -47,6 +47,7 @@
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="hiredate" jdbcType="VARCHAR" property="hiredate" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
@@ -634,15 +635,16 @@
   AND is_delete=0
 </select>
 <select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.DownLoadVo" resultMap="downloadVo">
-      select arc.archive_id,arc.probation_due_date,arc.user_name,arc.employee_number,arc.tel,org.org_name,post.post_name ,
-      arch.user_name as supervisor_user_name ,relation.employment_type,orga.org_name as business_unit_name
+      select arc.archive_id,arc.user_name,arc.employee_number,orga.org_name as business_unit_name,
+      org.org_name,post.post_name ,arc.hire_date,arc.probation_due_date, arch.user_name as supervisor_user_name ,
+      arc.tel,relation.employment_type
       from
       t_user_archive arc
-      left join t_organization org on arc.org_id = org.org_id=arc.business_unit_id
-      left join t_organization orga on orga.org_id=arc.business_unit_id
+      left join t_organization org on  org.org_id = arc.org_id
+      left join t_organization orga on orga.org_id = arc.business_unit_id
       left join t_post post on (arc.post_id = post.post_id and post.is_delete=0)
       left join t_user_archive_post_relation relation on (arc.archive_id=relation.archive_id and relation.is_delete=0)
-      left join t_user_archive arch on (arc.supervisor_id=arch.archive_id and arch.is_delete=0)
+      left join t_user_archive arch on (arc.supervisor_id = arch.archive_id and arch.is_delete=0)
       where arc.archive_id=1 and arc.is_delete=0
       and arc.archive_id in
        <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">

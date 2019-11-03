@@ -45,7 +45,6 @@ public class DownLoadVo implements Serializable {
      * 姓名
      */
     @NotNull
-    @QueryColumn("tua.user_name")
     @ApiModelProperty("姓名")
     private String userName;
 
@@ -54,6 +53,10 @@ public class DownLoadVo implements Serializable {
      */
     @ApiModelProperty("试用到期时间")
     private Date probationDueDate;
+    /**
+     * 入职日期
+     */
+    private Date hiredate;
 
 
     /**

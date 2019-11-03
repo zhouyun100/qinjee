@@ -10,8 +10,6 @@ public class ExportVo implements Serializable {
     @NotNull
     private String path;
     private String tittle;
-    private  Integer querySchemeId;
     @NotNull
-    private List<Integer> list;
-
+    private ArchiveShowVo archiveShowVo;
 }

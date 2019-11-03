@@ -181,45 +181,46 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //调用接口查询机构权限范围内的档案集合
             //进行sql查询，返回数据，档案在机构范围内
              userArchiveListCustom= userArchiveDao.getUserArchiveListCustom(getBaseSql(stringList, userSession.getCompanyId()), order);
+            List<Integer> integers = new ArrayList<>(userArchiveListCustom.keySet());
+            integers.removeAll(archiveIdList);
+            for (Integer integer : integers) {
+                userArchiveListCustom.remove(integer);
+            }
             List<String> stringList1 = customArchiveFieldDao.selectFieldNameByList(stringList);
             Map<String,String> fieldMap=new HashMap<>();
             for (int i1 = 0; i1 < stringList.size(); i1++) {
                 fieldMap.put(stringList.get(i1),stringList1.get(i1));
             }
+            archiveShowVo.setQuerySchemaId(schemeId);
             archiveShowVo.setFieldMap(fieldMap);
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         } else {
-            List<DownLoadVo> downLoadVoList = new ArrayList<>();
-//            List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(archiveIdList);
-//            for (UserArchive userArchive : list) {
-//                DownLoadVo downLoadVo = new DownLoadVo();
-//                BeanUtils.copyProperties(userArchive, downLoadVo);
-//                downLoadVo.setBusinessUnitName(organizationDao.selectOrgName(userArchive.getBusinessUnitId()));
-//                downLoadVo.setOrgName(organizationDao.selectOrgName(userArchive.getOrgId()));
-//                downLoadVo.setPostName(postDao.selectPostNameById(userArchive.getPostId()));
-//                String type = userArchivePostRelationDao.selectEmploymentTypeByArichiveId(userArchive.getArchiveId());
-//                downLoadVo.setEmploymentType(type);
-//                downLoadVoList.add(downLoadVo);
-//            }
+            List<DownLoadVo> downLoadVoList ;
             downLoadVoList=userArchiveDao.selectDownLoadVoList(archiveIdList);
             userArchiveListCustom= getMap(archiveIdList, downLoadVoList);
-            Map<String,String> entityMap=new HashMap<>();
-            entityMap.put("archiveId","档案id");
-            entityMap.put("employeeNumber","工号");
-            entityMap.put("businessName","单位名称");
-            entityMap.put("orgName","部门名称");
-            entityMap.put("postName","岗位名称");
-            entityMap.put("userName","姓名");
-            entityMap.put("tel","联系电话");
-            entityMap.put("probationDueDate","试用到期时间");
-            entityMap.put("supervisorUserName","上级领导名称");
-            entityMap.put("employmentType","任职类型");
+            Map<String, String> entityMap = getStringStringMap();
             archiveShowVo.setEntityMap(entityMap);
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         }
     }
+
+    private Map<String, String> getStringStringMap() {
+        Map<String,String> entityMap=new HashMap<>();
+        entityMap.put("archiveId","档案id");
+        entityMap.put("employeeNumber","工号");
+        entityMap.put("businessName","单位名称");
+        entityMap.put("orgName","部门名称");
+        entityMap.put("postName","岗位名称");
+        entityMap.put("userName","姓名");
+        entityMap.put("tel","联系电话");
+        entityMap.put("probationDueDate","试用到期时间");
+        entityMap.put("supervisorUserName","上级领导名称");
+        entityMap.put("employmentType","任职类型");
+        return entityMap;
+    }
+
     private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<DownLoadVo> downLoadVoList) throws IllegalAccessException{
         Map<Integer, Map<String, Object>> userArchiveListCustom=new HashMap<>();
         for (int i = 0; i < archiveIdList.size(); i++) {

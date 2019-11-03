@@ -126,7 +126,7 @@ public class UserArchive implements Serializable {
      */
     @NotNull
     @ApiModelProperty("出生日期")
-    private Date birthdate;
+    private Date birthDate;
 
     /**
      * 年龄
@@ -172,7 +172,7 @@ public class UserArchive implements Serializable {
      */
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
-    private Date hiredate;
+    private Date hireDate;
 
     /**
      * 司龄

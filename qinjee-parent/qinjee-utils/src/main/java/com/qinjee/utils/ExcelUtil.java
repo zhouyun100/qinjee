@@ -3,6 +3,7 @@ package com.qinjee.utils;
 
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -60,7 +61,7 @@ public class ExcelUtil {
                     + new String(filename.getBytes()));
             response.addHeader("Content-Length", "" + file.length());
             OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-            response.setContentType("application/vnd.ms-excel;charset=gb2312");
+//            response.setContentType("application/vnd.ms-excel;charset=gb2312");
             toClient.write(buffer);
             toClient.flush();
             toClient.close();
@@ -115,20 +116,22 @@ public class ExcelUtil {
             HSSFCell hssfCell = hssfRow.createCell(i);
             hssfCell.setCellValue(heads.get(i));
             hssfCell.setCellType(getCellType(map.get(heads.get(i))));
+            System.out.println(heads.get(i)+",,,"+getCellType(map.get(heads.get(i))));
         }
 
         // 循环将list里面的值取出来放进excel中
         for (int i = 0; i < dates.size(); i++) {
-            HSSFRow hssfRow1 = hssfSheet.createRow(i + 2);
+            HSSFRow  hssfRow1 = hssfSheet.createRow(i + 2);
             int j = 0;
             Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, String> entry = it.next();
-                HSSFCell hssfCell = hssfRow1.createCell(j);
+                    HSSFCell hssfCell = hssfRow1.createCell(j);
                 hssfCell.setCellValue(entry.getValue());
                 j++;
             }
         }
+
 
         FileOutputStream fout = null;
         try {

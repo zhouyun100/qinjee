@@ -13,10 +13,12 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
 import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.masterdata.utils.HeadMapUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
@@ -42,14 +44,14 @@ import java.util.*;
 @Service
 public class StaffCommonServiceImpl implements IStaffCommonService {
     private static final Logger logger = LoggerFactory.getLogger(StaffCommonServiceImpl.class);
-    private static final String ARCHIVE ="档案";
-    private static final String ARCHIVETABLE ="档案表";
-    private static final String PREEMP ="预入职";
-    private static final String PREEMPTABLE ="预入职表";
-    private static final String IDTYPE ="证件类型";
-    private static final String IDNUMBER ="证件号码";
-    private static final String USERCATEGORY ="人员分类";
-    private static final String PHONE ="手机";
+    private static final String ARCHIVE = "档案";
+    private static final String ARCHIVETABLE = "档案表";
+    private static final String PREEMP = "预入职";
+    private static final String PREEMPTABLE = "预入职表";
+    private static final String IDTYPE = "证件类型";
+    private static final String IDNUMBER = "证件号码";
+    private static final String USERCATEGORY = "人员分类";
+    private static final String PHONE = "手机";
 
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
@@ -81,7 +83,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private BlacklistDao blacklistDao;
 
     @Override
-    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable,UserSession userSession) {
+    public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable, UserSession userSession) {
         customArchiveTable.setCompanyId(userSession.getCompanyId());
         customArchiveTable.setCreatorId(userSession.getArchiveId());
         customArchiveTable.setIsDelete((short) 0);
@@ -107,17 +109,17 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize,UserSession userSession) {
+    public PageResult<CustomArchiveTable> selectCustomArchiveTable(Integer currentPage, Integer pageSize, UserSession userSession) {
         PageHelper.startPage(currentPage, pageSize);
         List<CustomArchiveTable> customArchiveTables = customArchiveTableDao.selectByPage(userSession.getCompanyId());
         for (CustomArchiveTable customArchiveTable : customArchiveTables) {
-           logger.info("展示自定义表名{}",customArchiveTable.getTableName());
+            logger.info("展示自定义表名{}", customArchiveTable.getTableName());
         }
         return new PageResult<>(customArchiveTables);
     }
 
     @Override
-    public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup,UserSession userSession) {
+    public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup, UserSession userSession) {
         customArchiveGroup.setCreatorId(userSession.getArchiveId());
         customArchiveGroup.setIsDelete((short) 0);
 
@@ -153,7 +155,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void insertCustomArchiveField(CustomArchiveField customArchiveField,UserSession userSession) {
+    public void insertCustomArchiveField(CustomArchiveField customArchiveField, UserSession userSession) {
         customArchiveField.setCreatorId(userSession.getArchiveId());
         customArchiveField.setIsDelete((short) 0);
         customArchiveFieldDao.insertSelective(customArchiveField);
@@ -182,7 +184,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
         PageHelper.startPage(currentPage, pageSize);
         //根据自定义表找自定义字段id
-        List<CustomArchiveField> list=customArchiveFieldDao.selectFieldByTableId(customArchiveTableId);
+        List<CustomArchiveField> list = customArchiveFieldDao.selectFieldByTableId(customArchiveTableId);
         return new PageResult<>(list);
     }
 
@@ -194,7 +196,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List<Integer> getCompanyId(UserSession userSession) {
-        List<Integer> integerList=organizationDao.getCompanyIdByAuth(userSession.getArchiveId());
+        List<Integer> integerList = organizationDao.getCompanyIdByAuth(userSession.getArchiveId());
         List<Integer> companyIdByArchiveId = organizationDao.getCompanyIdByArchiveId(userSession.getArchiveId());
         integerList.removeAll(companyIdByArchiveId);
         integerList.addAll(companyIdByArchiveId);
@@ -225,10 +227,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //找到自定义字段的值
         return companyCodeDao.selectValue(id);
     }
+
     @Override
     public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
         //将前端传过来的大字段进行解析
-        StringBuffer bigData = new StringBuffer();
+        StringBuilder bigData = new StringBuilder();
         JSONObject jsono = JSONObject.parseObject(customArchiveTableData.getBigData());
         List<String> strings = new ArrayList<>(jsono.keySet());
         for (String string : strings) {
@@ -283,6 +286,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         //匹配找到需要设值的表id
         for (Map.Entry<Integer, List<String>> integerListEntry : fieldMap.entrySet()) {
+            assert stringListMap != null;
             List<String> strings = new ArrayList<>(stringListMap.keySet());
             //将需要设置进行业务id寻找的字段剔除，保证能找到tableId
             for (String s : strings) {
@@ -384,7 +388,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         String bigData = getBigData(stringListMap, i);
         customArchiveTableData.setBigData(bigData);
         Integer integer1 = customArchiveTableDataDao.selectTableIdByBusinessIdAndTableId(id, tableId);
-        if (null == integer1 || 0==integer1) {
+        if (null == integer1 || 0 == integer1) {
             customArchiveTableDataDao.insertSelective(customArchiveTableData);
         } else {
             customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
@@ -402,7 +406,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     private String getBigData(Map<String, List<String>> stringListMap, int i) {
-        StringBuffer bigData = new StringBuffer();
+        StringBuilder bigData = new StringBuilder();
         Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
         List<Map.Entry<String, List<String>>> entries1 = new ArrayList<>(entries);
         for (Map.Entry<String, List<String>> stringListEntry : entries1) {
@@ -414,99 +418,114 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportPreFile(ExportVo exportVo,HttpServletResponse response,UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        ExcelUtil.download(exportVo.getPath(),response,exportVo.getTittle(),getHeadsByPre(),
-                getDatesForPre(exportVo.getList(),exportVo),getTypeMap(getHeadsByPre()));
+    public void exportPreFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) throws IllegalAccessException {
+        ExcelUtil.download(exportVo.getPath(), response, exportVo.getTittle(), getHeadsByPre(),
+                getDatesForPre(getList(exportVo), exportVo), getTypeMapForPre(getHeadsByPre()));
 
     }
 
-    private List<Map<String,String>> getDatesForPre(List<Integer> list,ExportVo exportVo) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        List<String> phoneList=new ArrayList<>();
-        List<ExportPreVo> exportPreVoList=new ArrayList<>();
-        List<Map<String,String>> mapList=new ArrayList<>();
+    private List<Map<String, String>> getDatesForPre(List<Integer> list, ExportVo exportVo) throws IllegalAccessException {
+        List<String> phoneList = new ArrayList<>();
+        List<ExportPreVo> exportPreVoList = new ArrayList<>();
+        List<Map<String, String>> mapList = new ArrayList<>();
         List<PreEmployment> preEmploymentList = preEmploymentDao.selectByPrimaryKeyList(list);
         for (PreEmployment preEmployment : preEmploymentList) {
             phoneList.add(preEmployment.getPhone());
         }
-        List<PreEmploymentChange> preEmploymentChangeList=preEmploymentChangeDao.selectByPreIdList(list);
+        List<PreEmploymentChange> preEmploymentChangeList = preEmploymentChangeDao.selectByPreIdList(list);
         //根据电话号码查到那些进入黑名单的预入职
-        List<Blacklist> blacklistList=blacklistDao.selectByPhone(phoneList);
+        List<Blacklist> blacklistList = blacklistDao.selectByPhone(phoneList);
         for (int i = 0; i < preEmploymentList.size(); i++) {
-            ExportPreVo exportPreVo=new ExportPreVo();
-            BeanUtils.copyProperties(preEmploymentList.get(i),exportPreVo);
-            BeanUtils.copyProperties(preEmploymentChangeList.get(i),exportPreVo);
-            setBlockReason(exportPreVo,blacklistList);
+            ExportPreVo exportPreVo = new ExportPreVo();
+            BeanUtils.copyProperties(preEmploymentList.get(i), exportPreVo);
+            BeanUtils.copyProperties(preEmploymentChangeList.get(i), exportPreVo);
+            setBlockReason(exportPreVo, blacklistList);
             exportPreVoList.add(exportPreVo);
         }
-        return getMap(exportVo.getList(),mapList,exportPreVoList);
+        return getMap(getList(exportVo), mapList, exportPreVoList);
+    }
+    private List<Integer> getList(ExportVo exportVo){
+        return new ArrayList<>(exportVo.getArchiveShowVo().getMap().keySet());
     }
 
     /**
      * 通过号码匹配得到拉黑原因，设置进VO类
-     * @param exportPreVo
-     * @param list
      */
-    private void setBlockReason(ExportPreVo exportPreVo,List<Blacklist> list){
+    private void setBlockReason(ExportPreVo exportPreVo, List<Blacklist> list) {
         for (Blacklist blacklist : list) {
-            if(blacklist.getPhone().equals(exportPreVo.getPhone())){
+            if (blacklist.getPhone().equals(exportPreVo.getPhone())) {
                 exportPreVo.setBlockReason(blacklist.getBlockReason());
             }
         }
     }
-    private List<String> getHeadsByPre(){
-        String[] strings={"姓名","手机","入职状态","邮箱","应聘职位","入职机构","入职岗位","入职日期","放弃原因","拉黑原因","入职登记","变更描述"};
+
+    private List<String> getHeadsByPre() {
+        String[] strings = {"姓名", "手机", "入职状态", "邮箱", "应聘职位", "入职机构", "入职岗位", "入职日期", "放弃原因", "拉黑原因", "入职登记", "变更描述"};
         return Arrays.asList(strings);
     }
-    @Override
-    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession, Map<Integer, Map<String,Object>> map) {
 
-        ExcelUtil.download(exportVo.getPath(),response,exportVo.getTittle(),
-                getHeadsByArc(exportVo.getQuerySchemeId()), getDatesForArc(map),getTypeMap(getHeadsByArc(exportVo.getQuerySchemeId())));
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) {
+        ExcelUtil.download(exportVo.getPath(), response, exportVo.getTittle(),
+                getHeadsByArc(exportVo),
+                getDatesForArc(exportVo),
+                getTypeMapForArc(exportVo, getHeadsByArc(exportVo)));
     }
-    public List<Map<String,String>> getDatesForArc(Map<Integer, Map<String,Object>> map) {
-        List<Map<String,String>> mapList=new ArrayList<>();
-        List<String> keyList=null;
-        List<Map<String, Object>> maps = new ArrayList<>(map.values());
-        for (Map<String, Object> stringObjectMap : maps) {
-            keyList=new ArrayList<>((new ArrayList<>(stringObjectMap.keySet())));
-        }
-        for (Map<String, Object> stringObjectMap : maps) {
-            Map<String,String> stringMap=new HashMap<>();
-            List<Object> objects = new ArrayList<>(stringObjectMap.values());
-            for (int i = 0; i < objects.size(); i++) {
-                stringMap.put(keyList.get(i),String.valueOf(objects.get(i)));
+
+    private List<Map<String, String>> getDatesForArc(ExportVo exportVo) {
+        List<Map<String, String>> mapList = new ArrayList<>();
+        List<String> keyList = getKeyList(exportVo);
+        if(exportVo.getArchiveShowVo().getQuerySchemaId() ==null || exportVo.getArchiveShowVo().getQuerySchemaId() ==0){
+            List<String> strings = new ArrayList<>();
+            for (String s : keyList) {
+                strings.add(HeadMapUtil.transHeadList().get(s));
             }
-            mapList.add(stringMap);
+            keyList.clear();
+            keyList.addAll(strings);
         }
-        return mapList;
+        List<Map<String, Object>> maps = new ArrayList<>(exportVo.getArchiveShowVo().getMap().values());
+            for (Map<String, Object> stringObjectMap : maps) {
+                Map<String, String> stringMap = new HashMap<>();
+                List<Object> objects = new ArrayList<>(stringObjectMap.values());
+                for (int i = 0; i < objects.size(); i++) {
+                    stringMap.put(keyList.get(i), String.valueOf(objects.get(i)));
+                }
+                mapList.add(stringMap);
+            }
+            return mapList;
     }
-    private List<String> getHeadsByArc(Integer querySchemeId){
-        if(querySchemeId!=null && querySchemeId!=0){
-            List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(querySchemeId);
-            Collections.sort(fieldSortList);
-            //将字段排序按照顺序拼接成查询项
-            //根据排序id找到字段id
-            List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList,querySchemeId);
-            //根据id查询字段名
-            return customArchiveFieldDao.selectFieldNameByIntList(sortList);
+      private List<String> getHeadsByArc(ExportVo exportVo) {
+          Integer querySchemaId = exportVo.getArchiveShowVo().getQuerySchemaId();
+          List<String> keyList = getKeyList(exportVo);
+          if(querySchemaId ==null || querySchemaId ==0){
+              List<String> strings = new ArrayList<>();
+              for (String s : keyList) {
+                  strings.add(HeadMapUtil.transHeadList().get(s));
+              }
+              keyList.clear();
+              keyList.addAll(strings);
+              return keyList;
+          }
+          List<String> list = customArchiveFieldDao.selectFieldNameByCodeList(keyList);
+          return list;
+      }
+
+    private List<String> getKeyList(ExportVo exportVo) {
+        List<String> keyList=new ArrayList<>();
+        List<Map<String, Object>> maps = new ArrayList<>(exportVo.getArchiveShowVo().getMap().values());
+        for (Map<String, Object> stringObjectMap : maps) {
+            keyList = new ArrayList<>((new ArrayList<>(stringObjectMap.keySet())));
         }
-            String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期到期时间","直接上级","联系电话","任职类型"};
-            return Arrays.asList(strings);
+        return keyList;
     }
 
     /**
      * 通过反射获得属性名与属性值，存到List<map>中
-     * @param preEmploymentList
-     * @param mapList
-     * @param exportPreVoList
-     * @return
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     */
-    private  List<Map<String,String>>  getMap(List<Integer> preEmploymentList, List<Map<String,String>> mapList,  List<ExportPreVo> exportPreVoList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+     * */
+    private List<Map<String, String>> getMap(List<Integer> preEmploymentList, List<Map<String, String>> mapList, List<ExportPreVo> exportPreVoList) throws IllegalAccessException {
         for (int i = 0; i < preEmploymentList.size(); i++) {
-            Map<String,String> map=new HashMap<>();
+            Map<String, String> map = new HashMap<>();
             //获得类
             Class clazz = exportPreVoList.get(i).getClass();
             // 获取实体类的所有属性信息，返回Field数组
@@ -515,26 +534,38 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 field.setAccessible(true);
                 map.put(field.getName(), String.valueOf(field.get(exportPreVoList.get(i))));
             }
-           mapList.add(map);
+            mapList.add(map);
         }
         return mapList;
     }
 
-   
+
     /**
      * 存储字段类型的集合
-     * @param heads
-     * @return
-     */
-    private Map<String,String> getTypeMap(List<String> heads){
-        List<String> list=customArchiveFieldDao.selectFieldTypeByNameList(heads);
-        Map<String,String> map=new HashMap<>();
+   **/
+    private Map<String, String> getTypeMapForArc(ExportVo exportVo,List<String> heads) {
+        Map<String, String> map = new HashMap<>();
+        if(exportVo.getArchiveShowVo().getQuerySchemaId()==null || exportVo.getArchiveShowVo().getQuerySchemaId()==0) {
+            for (String head : heads) {
+                map.put(head,"String");
+            }
+            return map;
+        }
+        List<String> list = customArchiveFieldDao.selectFieldTypeByNameList(heads);
         for (int i = 0; i < list.size(); i++) {
-           map.put(heads.get(i),list.get(i));
+            map.put(heads.get(i), list.get(i));
+        }
+
+        return map;
+    }
+    private Map<String, String> getTypeMapForPre(List<String> heads) {
+        Map<String, String> map = new HashMap<>();
+        List<String> list = customArchiveFieldDao.selectFieldTypeByNameList(heads);
+        for (int i = 0; i < list.size(); i++) {
+            map.put(heads.get(i), list.get(i));
         }
         return map;
     }
-
 
 
     @Override
@@ -542,7 +573,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //TODO 文件对象键的定义
         String key = "黄开天的文件/图片/";
         UUID uuid = UUID.randomUUID();
-        key+=uuid.toString()+".jpg";
+        key += uuid.toString() + ".jpg";
         UpAndDownUtil.putFile(path, key);
     }
 
@@ -554,7 +585,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //TODO 对象键的定义需要制定规则，利用规则生成
         String key = "黄开天的文件/图片/";
         UUID uuid = UUID.randomUUID();
-        key+=uuid.toString()+".jpg";
+        key += uuid.toString() + ".jpg";
         forWardPutFile.setKey(key);
         return forWardPutFile;
     }
@@ -563,7 +594,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void downLoadFile(String path) throws Exception {
         try {
-            UpAndDownUtil.downFile("黄开天的文件/timg.jpg",path);
+            UpAndDownUtil.downFile("黄开天的文件/timg.jpg", path);
         } catch (Exception e) {
             throw new Exception("下载失败!");
         }

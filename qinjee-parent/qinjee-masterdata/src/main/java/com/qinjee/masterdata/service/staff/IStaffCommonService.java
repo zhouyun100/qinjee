@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.model.request.UserSession;
@@ -156,7 +157,7 @@ public interface IStaffCommonService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession, Map<Integer, Map<String,Object>> map) ;
+    void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) ;
 
     /**
      * 文件上传

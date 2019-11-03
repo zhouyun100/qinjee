@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -597,13 +598,13 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
-    public ResponseResult exportArcFile(@Valid ExportVo exportVo,
-                                        HttpServletResponse response,
-                                        @RequestBody Map<Integer, Map<String,Object>> map) {
-        Boolean b = checkParam(exportVo,getUserSession(),response,map);
+    //导出的文件应该是以.xls结尾
+    public ResponseResult exportArcFile( @Valid @RequestBody ExportVo exportVo,
+                                         HttpServletResponse response) {
+        Boolean b = checkParam(exportVo,getUserSession(),response);
         if(b){
             try {
-                staffCommonService.exportArcFile(exportVo,response,getUserSession(),map);
+                staffCommonService.exportArcFile(exportVo,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
