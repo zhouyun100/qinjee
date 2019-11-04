@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -56,7 +55,7 @@ public class DownLoadVo implements Serializable {
     /**
      * 入职日期
      */
-    private Date hiredate;
+    private Date hireDate;
 
 
     /**
@@ -76,6 +75,5 @@ public class DownLoadVo implements Serializable {
      * 任职类型
      */
     private String employmentType;
-    private static final long serialVersionUID = 1L;
 
 }

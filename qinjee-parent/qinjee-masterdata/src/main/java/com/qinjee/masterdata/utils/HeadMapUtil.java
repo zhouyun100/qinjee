@@ -2,7 +2,6 @@ package com.qinjee.masterdata.utils;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HeadMapUtil {
@@ -23,7 +22,7 @@ public class HeadMapUtil {
     }
     public static Map<String,String> transTypeList(){
         Map<String,String> map=new HashMap<>();
-        map.put("档案id","String");
+        map.put("档案id","Short");
         map.put("姓名","String");
         map.put("工号","String");
         map.put("单位","String");
@@ -34,6 +33,14 @@ public class HeadMapUtil {
         map.put("直接上级","String");
         map.put("联系电话","String");
         map.put("任职类型","String");
+        return map;
+    }
+    public static Map<String,String> transTypeCode(){
+        Map<String,String> map=new HashMap<>();
+        map.put("TEXT","String");
+        map.put("CODE","String");
+        map.put("NUMBER","Integer");
+        map.put("DATE","Date");
         return map;
     }
 }

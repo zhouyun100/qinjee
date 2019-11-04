@@ -376,7 +376,7 @@
   <select id="selectFieldTypeByNameList" resultType="java.lang.String">
     select field_type
     from  t_custom_archive_field
-    where field_code in
+    where  field_name in
     <foreach collection="heads" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>

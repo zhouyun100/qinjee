@@ -2,7 +2,6 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Administrator
@@ -641,7 +639,7 @@ public class CommonController extends BaseController {
 
 
     /**
-     * 模板导入
+     * 模板导入档案
      */
     @RequestMapping(value = "/importFile", method = RequestMethod.POST)
     @ApiOperation(value = "模板导入", notes = "hkt")

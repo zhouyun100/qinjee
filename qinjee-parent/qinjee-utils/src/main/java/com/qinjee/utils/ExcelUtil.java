@@ -3,7 +3,6 @@ package com.qinjee.utils;
 
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -114,9 +113,8 @@ public class ExcelUtil {
         HSSFRow hssfRow = hssfSheet.createRow(1);
         for (int i = 0; i < heads.size(); i++) {
             HSSFCell hssfCell = hssfRow.createCell(i);
-            hssfCell.setCellValue(heads.get(i));
             hssfCell.setCellType(getCellType(map.get(heads.get(i))));
-            System.out.println(heads.get(i)+",,,"+getCellType(map.get(heads.get(i))));
+            hssfCell.setCellValue(heads.get(i));
         }
 
         // 循环将list里面的值取出来放进excel中
@@ -156,20 +154,24 @@ public class ExcelUtil {
      * @return
      */
     public static CellType getCellType( String type) {
-        if (INTEGER.equals(type)) {
-            return CellType.NUMERIC;
-        } else if (STRING.equals(type)) {
-            return CellType.STRING;
-        } else if (BOOLEAN.equals(type)) {
-            return CellType.BOOLEAN;
-        } else if (NULL.equals(type)) {
-            return CellType.BLANK;
-        } else if (DATE.equals(type)) {
-            return CellType._NONE;
-        } else if(SHORT.equals(type)){
-            return CellType._NONE;
+
+        switch (type){
+            case INTEGER:
+                return CellType.NUMERIC;
+            case STRING:
+                return CellType.STRING;
+            case BOOLEAN:
+                return CellType.BOOLEAN;
+            case NULL:
+                return CellType.BLANK;
+            case DATE:
+                return CellType.NUMERIC;
+            case SHORT:
+                return CellType.NUMERIC;
+                default:
+                return CellType.STRING;
         }
-        return CellType.STRING;
+
     }
 
 

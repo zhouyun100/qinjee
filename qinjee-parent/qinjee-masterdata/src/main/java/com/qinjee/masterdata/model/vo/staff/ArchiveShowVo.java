@@ -10,7 +10,4 @@ public class ArchiveShowVo implements Serializable {
     private Integer querySchemaId;
     @NotNull
     private Map<Integer,Map<String,Object>> map;
-    private Map<String,String> fieldMap;
-    private Map<String,String> entityMap;
-
 }

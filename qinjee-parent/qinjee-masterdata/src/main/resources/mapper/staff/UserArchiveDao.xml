@@ -47,7 +47,7 @@
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="hiredate" jdbcType="VARCHAR" property="hiredate" />
+    <result column="hire_date" jdbcType="VARCHAR" property="hireDate" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />

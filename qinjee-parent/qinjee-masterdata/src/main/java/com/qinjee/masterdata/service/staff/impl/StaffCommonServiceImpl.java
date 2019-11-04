@@ -13,7 +13,6 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
 import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
 import com.qinjee.masterdata.model.vo.staff.ExportVo;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
@@ -35,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -270,11 +268,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void importFile(String path, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, IOException {
         MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
+        ExcelUtil.readExcel(multipartFile);
         Integer tableId = null;
         //key是字段名称，value是值
         //TODO
         Map<String, List<String>> stringListMap = null;
-        ExcelUtil.readExcel(multipartFile);
+
         Map<Integer, List<String>> fieldMap = new HashMap<>();
         //需要进行入库操作
         //根据companyId，功能code为档案和预入职的表
@@ -286,7 +285,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         //匹配找到需要设值的表id
         for (Map.Entry<Integer, List<String>> integerListEntry : fieldMap.entrySet()) {
-            assert stringListMap != null;
             List<String> strings = new ArrayList<>(stringListMap.keySet());
             //将需要设置进行业务id寻找的字段剔除，保证能找到tableId
             for (String s : strings) {
@@ -497,16 +495,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
       private List<String> getHeadsByArc(ExportVo exportVo) {
           Integer querySchemaId = exportVo.getArchiveShowVo().getQuerySchemaId();
-          List<String> keyList = getKeyList(exportVo);
           if(querySchemaId ==null || querySchemaId ==0){
-              List<String> strings = new ArrayList<>();
-              for (String s : keyList) {
-                  strings.add(HeadMapUtil.transHeadList().get(s));
-              }
-              keyList.clear();
-              keyList.addAll(strings);
-              return keyList;
+              String[] strings={"姓名","单位","部门","联系电话","任职类型","工号","档案id","直接上级","岗位","试用期到期时间","入职日期"};
+              return Arrays.asList(strings);
           }
+          List<String> keyList = getKeyList(exportVo);
           List<String> list = customArchiveFieldDao.selectFieldNameByCodeList(keyList);
           return list;
       }
@@ -547,22 +540,22 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         Map<String, String> map = new HashMap<>();
         if(exportVo.getArchiveShowVo().getQuerySchemaId()==null || exportVo.getArchiveShowVo().getQuerySchemaId()==0) {
             for (String head : heads) {
-                map.put(head,"String");
+                map.put(head,HeadMapUtil.transTypeList().get(head));
             }
             return map;
         }
         List<String> list = customArchiveFieldDao.selectFieldTypeByNameList(heads);
         for (int i = 0; i < list.size(); i++) {
-            map.put(heads.get(i), list.get(i));
+            map.put(heads.get(i),HeadMapUtil.transTypeCode().get(list.get(i)));
         }
-
         return map;
     }
     private Map<String, String> getTypeMapForPre(List<String> heads) {
         Map<String, String> map = new HashMap<>();
         List<String> list = customArchiveFieldDao.selectFieldTypeByNameList(heads);
+
         for (int i = 0; i < list.size(); i++) {
-            map.put(heads.get(i), list.get(i));
+            map.put(heads.get(i), HeadMapUtil.transTypeCode().get(list.get(i)));
         }
         return map;
     }
