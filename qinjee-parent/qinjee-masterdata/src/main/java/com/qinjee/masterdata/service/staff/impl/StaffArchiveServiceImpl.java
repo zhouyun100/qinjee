@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
@@ -44,8 +43,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserOrgAuthDao userOrgAuthDao;
     @Autowired
     private OrganizationDao organizationDao;
-    @Autowired
-    private PostDao postDao;
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
@@ -129,12 +126,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public Map<String, String> selectNameAndNumber(Integer id) {
-        Map<String, String> map = new HashMap<>();
-        String name = userArchiveDao.selectName(id);
-        String number = userArchiveDao.selectNumber(id);
-        map.put("name", name);
-        map.put("number", number);
-        return map;
+        return userArchiveDao.selectNameAndNumber(id);
     }
     @Override
     public String selectOrgName(Integer id) {
@@ -147,17 +139,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         ArchiveShowVo archiveShowVo=new ArchiveShowVo();
         Map<Integer, Map<String, Object>> userArchiveListCustom;
         if (null != schemeId && 0 != schemeId) {
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder stringBuffer = new StringBuilder();
             String order = null;
-            //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序
+            //根据查询方案id，找到对应的字段id与顺序
             //查询字段排序sort
-            List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(schemeId);
-            Collections.sort(fieldSortList);
-            //将字段排序按照顺序拼接成查询项
-            //根据排序id找到字段id
-            List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList, schemeId);
-            //根据id查询字段名
-            List<String> stringList = customArchiveFieldDao.selectFieldCodeByList(sortList);
+            List<String> stringList=querySchemeFieldDao.selectFieldCode(schemeId);
+
+
             //根据查询方案id，找到排序id与升降序
             //查询查询档案下的排序字段id
             List<Integer> integerList = querySchemeSortDao.selectSortId(schemeId);
@@ -197,6 +185,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         }
+    }
+
+    @Override
+    public List<String> selectFieldByTableIdAndAuth(Integer tableId, UserSession userSession) {
+        return  customArchiveFieldDao.selectFieldByTableIdAndAuth(tableId,userSession.getArchiveId());
+    }
+
+    @Override
+    public List<String> selectFieldByArcAndAuth(UserSession userSession) {
+        return  customArchiveFieldDao.selectFieldByArcAndAuth(userSession.getArchiveId(),userSession.getCompanyId());
     }
 
     private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<DownLoadVo> downLoadVoList) throws IllegalAccessException{

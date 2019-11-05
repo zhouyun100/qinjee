@@ -205,7 +205,7 @@ public class CommonController extends BaseController {
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
     /**
-     *  展示企业下的自定义表名
+     *  展示企业下自定义表名
      */
     @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.GET)
     @ApiOperation(value = "展示企业下的自定义表名", notes = "hkt")
@@ -623,6 +623,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
+
     public ResponseResult exportPreFile(@Valid ExportVo exportVo,HttpServletResponse response) {
         Boolean b = checkParam(exportVo,response,getUserSession());
         if(b){
@@ -644,6 +645,7 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/importFile", method = RequestMethod.POST)
     @ApiOperation(value = "模板导入", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+
     public ResponseResult importFile(String path) {
         Boolean b = checkParam(path,getUserSession());
         if(b){

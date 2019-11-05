@@ -29,7 +29,6 @@ public interface QuerySchemeFieldDao {
 
     List<Integer> selectFieldId(@Param("schemeId") Integer schemeId);
 
-    List<Integer> selectFieldSort(@Param("schemeId") Integer schemeId);
 
     void deleteBySchemeIdList(@Param("list") List<Integer> list);
 
@@ -37,6 +36,5 @@ public interface QuerySchemeFieldDao {
 
     Integer selectIdBySort(@Param("sort") Integer integer);
 
-    List<Integer> selectIdBySortList(@Param("fieldSortList") List<Integer> fieldSortList, @Param("schemeId") Integer schemeId);
-
+    List<String> selectFieldCode(@Param("schemeId") Integer schemeId);
 }

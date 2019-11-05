@@ -122,4 +122,19 @@ public interface IStaffArchiveService {
      * @return
      */
     ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+
+    /**
+     * 显示权限下，对应表的字段
+     * @param tableId
+     * @param userSession
+     * @return
+     */
+    List<String> selectFieldByTableIdAndAuth(Integer tableId, UserSession userSession);
+
+    /**
+     * 显示权限下档案表的字段
+     * @param userSession
+     * @return
+     */
+    List<String> selectFieldByArcAndAuth(UserSession userSession);
 }

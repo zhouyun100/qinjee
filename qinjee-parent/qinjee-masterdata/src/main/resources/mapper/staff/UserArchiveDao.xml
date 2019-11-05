@@ -516,17 +516,11 @@
     is_delete=1
     where  archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
-  <select id="selectName" resultType="java.lang.String">
-    select user_name
+  <select id="selectNameAndNumber" resultType="java.util.Map">
+    select user_name,employee_number
     from   t_user_archive
     where is_delete=0
     AND archive_id=#{id,jdbcType=INTEGER}
-  </select>
-  <select id="selectNumber" resultType="java.lang.String">
-    select employee_number
-    from   t_user_archive
-    where is_delete=0
-      AND archive_id=#{id,jdbcType=INTEGER}
   </select>
   <select id="selectArchiveIdByNumber" resultType="java.lang.Integer">
     select archive_id
