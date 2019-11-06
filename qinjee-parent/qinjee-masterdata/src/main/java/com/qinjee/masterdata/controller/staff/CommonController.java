@@ -2,7 +2,8 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.ExportVo;
+import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
+import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
@@ -597,12 +598,12 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile( @Valid @RequestBody ExportVo exportVo,
+    public ResponseResult exportArcFile( @Valid @RequestBody ExportArc exportArc,
                                          HttpServletResponse response) {
-        Boolean b = checkParam(exportVo,getUserSession(),response);
+        Boolean b = checkParam(exportArc,getUserSession(),response);
         if(b){
             try {
-                staffCommonService.exportArcFile(exportVo,response,getUserSession());
+                staffCommonService.exportArcFile(exportArc,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -612,32 +613,6 @@ public class CommonController extends BaseController {
         return  failResponseResult("参数错误");
 
     }
-
-    /**
-     * 模板导出预入职
-     */
-    @RequestMapping(value = "/exportPreFile", method = RequestMethod.GET)
-    @ApiOperation(value = "导出预入职模板", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
-//    })
-
-    public ResponseResult exportPreFile(@Valid ExportVo exportVo,HttpServletResponse response) {
-        Boolean b = checkParam(exportVo,response,getUserSession());
-        if(b){
-            try {
-                staffCommonService.exportPreFile(exportVo,response,getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("导出失败");
-            }
-        }
-        return  failResponseResult("参数错误");
-
-    }
-
 
     /**
      * 模板导入档案
@@ -658,6 +633,58 @@ public class CommonController extends BaseController {
         }
         return  failResponseResult("path错误");
     }
+
+
+    /**
+     * 模板导出预入职
+     */
+    @RequestMapping(value = "/exportPreFile", method = RequestMethod.GET)
+    @ApiOperation(value = "导出预入职模板", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
+//    })
+
+    public ResponseResult exportPreFile(@Valid ExportArc exportArc, HttpServletResponse response) {
+        Boolean b = checkParam(exportArc,response,getUserSession());
+        if(b){
+            try {
+                staffCommonService.exportPreFile(exportArc,response,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+
+    /**
+     * 模板导出业务类
+     */
+    @RequestMapping(value = "/exportBusiness", method = RequestMethod.GET)
+    @ApiOperation(value = "模板导出业务类", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
+//    })
+
+    public ResponseResult exportBusiness(@Valid ExportBusiness exportBusiness, HttpServletResponse response) {
+        Boolean b = checkParam(exportBusiness,response,getUserSession());
+        if(b){
+            try {
+                staffCommonService.exportBusiness(exportBusiness,response,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+
+
+
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {

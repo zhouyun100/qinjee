@@ -43,7 +43,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
   </resultMap>
-  <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.DownLoadVo">
+  <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
@@ -628,7 +628,7 @@
     where company_id=#{companyId}
   AND is_delete=0
 </select>
-<select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.DownLoadVo" resultMap="downloadVo">
+<select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo" resultMap="downloadVo">
       select arc.archive_id,arc.user_name,arc.employee_number,orga.org_name as business_unit_name,
       org.org_name,post.post_name ,arc.hire_date,arc.probation_due_date, arch.user_name as supervisor_user_name ,
       arc.tel,relation.employment_type

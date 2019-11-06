@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.staff;
+package com.qinjee.masterdata.model.vo.staff.export;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 @Data
-public class DownLoadVo implements Serializable {
+public class ExportArcVo implements Serializable {
     /**
      * 档案ID
      */

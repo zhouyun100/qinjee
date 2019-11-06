@@ -7,6 +7,7 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
@@ -179,9 +180,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         } else {
-            List<DownLoadVo> downLoadVoList ;
-            downLoadVoList=userArchiveDao.selectDownLoadVoList(archiveIdList);
-            userArchiveListCustom= getMap(archiveIdList, downLoadVoList);
+            List<ExportArcVo> exportArcVoList;
+            exportArcVoList =userArchiveDao.selectDownLoadVoList(archiveIdList);
+            userArchiveListCustom= getMap(archiveIdList, exportArcVoList);
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         }
@@ -197,17 +198,17 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return  customArchiveFieldDao.selectFieldByArcAndAuth(userSession.getArchiveId(),userSession.getCompanyId());
     }
 
-    private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<DownLoadVo> downLoadVoList) throws IllegalAccessException{
+    private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<ExportArcVo> exportArcVoList) throws IllegalAccessException{
         Map<Integer, Map<String, Object>> userArchiveListCustom=new HashMap<>();
         for (int i = 0; i < archiveIdList.size(); i++) {
             Map<String,Object> map=new HashMap<>();
             //获得类
-            Class clazz = downLoadVoList.get(i).getClass();
+            Class clazz = exportArcVoList.get(i).getClass();
             // 获取实体类的所有属性信息，返回Field数组
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
-               map.put(field.getName(), String.valueOf(field.get(downLoadVoList.get(i))));
+               map.put(field.getName(), String.valueOf(field.get(exportArcVoList.get(i))));
             }
             userArchiveListCustom.put(archiveIdList.get(i),map);
         }

@@ -224,13 +224,10 @@ public class ExcelUtil {
                 }
             }
         }
-
         //heads存的是第一行的字段名
         List<String> heads=Arrays.asList(list.get(0));
-
         List<Map<String,String>> listMap = new ArrayList<>();
         Map<String,String> mapRow;
-
         for (int i = 1; i < list.size(); i++) {
             mapRow = new HashMap<>();
             for(int j = 0; j < heads.size(); j++){
@@ -293,7 +290,6 @@ public class ExcelUtil {
         if (cell == null) {
             return cellValue;
         }
-
         if(cell.getCellType().equals(CellType.BLANK)){
             cellValue = "";
         }else if(cell.getCellType().equals(CellType.ERROR)){
@@ -303,8 +299,6 @@ public class ExcelUtil {
         }
         return cellValue;
     }
-
-
 
     public static MultipartFile getMultipartFile(File file) {
         MultipartFile multipartFile = null;
