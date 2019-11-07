@@ -43,11 +43,11 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
   </resultMap>
-  <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.DownLoadVo">
+  <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="hiredate" jdbcType="VARCHAR" property="hiredate" />
+    <result column="hire_date" jdbcType="VARCHAR" property="hireDate" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
@@ -516,17 +516,11 @@
     is_delete=1
     where  archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
-  <select id="selectName" resultType="java.lang.String">
-    select user_name
+  <select id="selectNameAndNumber" resultType="java.util.Map">
+    select user_name,employee_number
     from   t_user_archive
     where is_delete=0
     AND archive_id=#{id,jdbcType=INTEGER}
-  </select>
-  <select id="selectNumber" resultType="java.lang.String">
-    select employee_number
-    from   t_user_archive
-    where is_delete=0
-      AND archive_id=#{id,jdbcType=INTEGER}
   </select>
   <select id="selectArchiveIdByNumber" resultType="java.lang.Integer">
     select archive_id
@@ -634,7 +628,7 @@
     where company_id=#{companyId}
   AND is_delete=0
 </select>
-<select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.DownLoadVo" resultMap="downloadVo">
+<select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo" resultMap="downloadVo">
       select arc.archive_id,arc.user_name,arc.employee_number,orga.org_name as business_unit_name,
       org.org_name,post.post_name ,arc.hire_date,arc.probation_due_date, arch.user_name as supervisor_user_name ,
       arc.tel,relation.employment_type

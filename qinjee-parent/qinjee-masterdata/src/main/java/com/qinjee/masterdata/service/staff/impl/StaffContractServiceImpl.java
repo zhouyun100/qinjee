@@ -68,11 +68,9 @@ public class StaffContractServiceImpl implements IStaffContractService {
         PageHelper.startPage(currentPage,pageSize);
         //查看机构下的合同id
         List<Integer> conList=laborContractDao.selectByorgId(orgId);
-        //根据合同id找到没有合同的档案id
-        List<Integer> arcList=laborContractDao.selectArcByCon(conList);
-        //根据档案id查询档案
-        List<UserArchive> list=userArchiveDao.selectByPrimaryKeyList(arcList);
-        return new PageResult<>(list);
+        //根据合同id找到没有合同的档案
+        List<UserArchive> arcList=laborContractDao.selectArcByNotCon(conList);
+        return new PageResult<>(arcList);
     }
     /**合同状态  新签、变更   续签、解除、终止
      *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
@@ -84,7 +82,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     public PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage,
                                                               Integer pageSize,Boolean isEnable,
-                                                              List<String> status) throws Exception {
+                                                              List<String> status) {
         PageHelper.startPage(currentPage,pageSize);
         List<LaborContract> noEffectLabList=new ArrayList<>();
         List<Integer> conList;

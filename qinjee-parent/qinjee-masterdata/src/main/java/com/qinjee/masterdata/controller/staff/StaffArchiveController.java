@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -301,6 +302,54 @@ public class StaffArchiveController extends BaseController {
         }
         return  failResponseResult("id错误");
     }
+
+    /**
+     * 查看权限下的对应表的显示字段
+     */
+    @RequestMapping(value = "/selectFieldByTableIdAndAuth", method = RequestMethod.GET)
+    @ApiOperation(value = "查看权限下的对应表的显示字段", notes = "hkt")
+//    @ApiImplicitParam(name = "id", value = "tableId", paramType = "query", required = true)
+
+    public ResponseResult<List<String>> selectFieldByTableIdAndAuth(Integer tableId) {
+        Boolean b = checkParam(tableId,getUserSession());
+        if(b){
+            try {
+                List<String> list= staffArchiveService.selectFieldByTableIdAndAuth(tableId,getUserSession());
+                if(!CollectionUtils.isEmpty(list)){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }
+                return new ResponseResult(null,CommonCode.FAIL_VALUE_NULL);
+            } catch (Exception e) {
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+
+        }
+       return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 查看权限下的档案表的显示字段
+     */
+    @RequestMapping(value = "/selectFieldByArcAndAuth", method = RequestMethod.GET)
+    @ApiOperation(value = "查看权限下的档案表的显示字段", notes = "hkt")
+    public ResponseResult<List<String>> selectFieldByArcAndAuth() {
+        Boolean b = checkParam(getUserSession());
+        if(b){
+            try {
+                List<String> list= staffArchiveService.selectFieldByArcAndAuth(getUserSession());
+                if(!CollectionUtils.isEmpty(list)){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }
+                return new ResponseResult(null,CommonCode.FAIL_VALUE_NULL);
+            } catch (Exception e) {
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+
+
+
 
 
     /**

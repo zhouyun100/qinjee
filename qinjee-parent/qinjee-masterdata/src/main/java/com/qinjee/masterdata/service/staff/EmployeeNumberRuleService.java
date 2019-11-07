@@ -18,4 +18,6 @@ public interface EmployeeNumberRuleService {
      * @return
      */
     ResponseResult addEmployeeNumberRule(EmployeeNumberRuleVo employeeNumberRuleVo, UserSession userSession);
+
+    ResponseResult createEmployeeNumber(Integer id,UserSession userSession) throws Exception;
 }

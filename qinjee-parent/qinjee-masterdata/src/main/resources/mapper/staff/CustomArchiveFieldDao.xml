@@ -310,7 +310,7 @@
     select  field_type
     from t_custom_archive_field
     where  field_name  in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
+    <foreach collection="heads" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
     AND is_delete=0
@@ -376,7 +376,7 @@
   <select id="selectFieldTypeByNameList" resultType="java.lang.String">
     select field_type
     from  t_custom_archive_field
-    where field_code in
+    where  field_name in
     <foreach collection="heads" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
@@ -399,5 +399,24 @@
       #{item}
     </foreach>
     AND is_delete=0
+  </select>
+  <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
+  select field.field_name from
+    t_user_archive arc
+    right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{archiveId})
+    right join t_role_custom_field_auth auth on role.role_id=auth.role_id
+    right join t_custom_archive_field field on field.field_id=auth.field_id
+    where field.table_id=#{tableId}
+    and arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0
+  </select>
+
+  <select id="selectFieldByArcAndAuth" resultType="java.lang.String">
+ select DISTINCT(field.field_name) from
+    t_user_archive arc
+    right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{achiveId})
+    right join t_role_custom_field_auth auth on role.role_id=auth.role_id
+    right join t_custom_archive_table arctable on (arctable.func_code="ARCHIVE" and arctable.company_id=#{companyId})
+    right join t_custom_archive_field field on arctable.table_id=field.table_id
+    where  arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0 and arctable.is_delete=0
   </select>
 </mapper>

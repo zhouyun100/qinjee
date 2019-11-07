@@ -1,13 +1,13 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
@@ -44,8 +44,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserOrgAuthDao userOrgAuthDao;
     @Autowired
     private OrganizationDao organizationDao;
-    @Autowired
-    private PostDao postDao;
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
@@ -129,12 +127,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public Map<String, String> selectNameAndNumber(Integer id) {
-        Map<String, String> map = new HashMap<>();
-        String name = userArchiveDao.selectName(id);
-        String number = userArchiveDao.selectNumber(id);
-        map.put("name", name);
-        map.put("number", number);
-        return map;
+        return userArchiveDao.selectNameAndNumber(id);
     }
     @Override
     public String selectOrgName(Integer id) {
@@ -147,17 +140,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         ArchiveShowVo archiveShowVo=new ArchiveShowVo();
         Map<Integer, Map<String, Object>> userArchiveListCustom;
         if (null != schemeId && 0 != schemeId) {
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder stringBuffer = new StringBuilder();
             String order = null;
-            //根据查询方案id，找到对应的字段id与顺序和  排序id与升降序
+            //根据查询方案id，找到对应的字段id与顺序
             //查询字段排序sort
-            List<Integer> fieldSortList = querySchemeFieldDao.selectFieldSort(schemeId);
-            Collections.sort(fieldSortList);
-            //将字段排序按照顺序拼接成查询项
-            //根据排序id找到字段id
-            List<Integer> sortList = querySchemeFieldDao.selectIdBySortList(fieldSortList, schemeId);
-            //根据id查询字段名
-            List<String> stringList = customArchiveFieldDao.selectFieldCodeByList(sortList);
+            List<String> stringList=querySchemeFieldDao.selectFieldCode(schemeId);
+
+
             //根据查询方案id，找到排序id与升降序
             //查询查询档案下的排序字段id
             List<Integer> integerList = querySchemeSortDao.selectSortId(schemeId);
@@ -186,52 +175,40 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             for (Integer integer : integers) {
                 userArchiveListCustom.remove(integer);
             }
-            List<String> stringList1 = customArchiveFieldDao.selectFieldNameByList(stringList);
-            Map<String,String> fieldMap=new HashMap<>();
-            for (int i1 = 0; i1 < stringList.size(); i1++) {
-                fieldMap.put(stringList.get(i1),stringList1.get(i1));
-            }
             archiveShowVo.setQuerySchemaId(schemeId);
-            archiveShowVo.setFieldMap(fieldMap);
+
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         } else {
-            List<DownLoadVo> downLoadVoList ;
-            downLoadVoList=userArchiveDao.selectDownLoadVoList(archiveIdList);
-            userArchiveListCustom= getMap(archiveIdList, downLoadVoList);
-            Map<String, String> entityMap = getStringStringMap();
-            archiveShowVo.setEntityMap(entityMap);
+            List<ExportArcVo> exportArcVoList;
+            exportArcVoList =userArchiveDao.selectDownLoadVoList(archiveIdList);
+            userArchiveListCustom= getMap(archiveIdList, exportArcVoList);
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         }
     }
 
-    private Map<String, String> getStringStringMap() {
-        Map<String,String> entityMap=new HashMap<>();
-        entityMap.put("archiveId","档案id");
-        entityMap.put("employeeNumber","工号");
-        entityMap.put("businessName","单位名称");
-        entityMap.put("orgName","部门名称");
-        entityMap.put("postName","岗位名称");
-        entityMap.put("userName","姓名");
-        entityMap.put("tel","联系电话");
-        entityMap.put("probationDueDate","试用到期时间");
-        entityMap.put("supervisorUserName","上级领导名称");
-        entityMap.put("employmentType","任职类型");
-        return entityMap;
+    @Override
+    public List<String> selectFieldByTableIdAndAuth(Integer tableId, UserSession userSession) {
+        return  customArchiveFieldDao.selectFieldByTableIdAndAuth(tableId,userSession.getArchiveId());
     }
 
-    private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<DownLoadVo> downLoadVoList) throws IllegalAccessException{
+    @Override
+    public List<String> selectFieldByArcAndAuth(UserSession userSession) {
+        return  customArchiveFieldDao.selectFieldByArcAndAuth(userSession.getArchiveId(),userSession.getCompanyId());
+    }
+
+    private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<ExportArcVo> exportArcVoList) throws IllegalAccessException{
         Map<Integer, Map<String, Object>> userArchiveListCustom=new HashMap<>();
         for (int i = 0; i < archiveIdList.size(); i++) {
             Map<String,Object> map=new HashMap<>();
             //获得类
-            Class clazz = downLoadVoList.get(i).getClass();
+            Class clazz = exportArcVoList.get(i).getClass();
             // 获取实体类的所有属性信息，返回Field数组
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
-               map.put(field.getName(), String.valueOf(field.get(downLoadVoList.get(i))));
+               map.put(field.getName(), String.valueOf(field.get(exportArcVoList.get(i))));
             }
             userArchiveListCustom.put(archiveIdList.get(i),map);
         }

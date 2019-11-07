@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
-import com.qinjee.masterdata.model.vo.staff.ExportVo;
+import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
+import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Administrator
@@ -157,7 +156,7 @@ public interface IStaffCommonService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportVo exportVo, HttpServletResponse response, UserSession userSession) ;
+    void exportArcFile(ExportArc exportArcVo, HttpServletResponse response, UserSession userSession) ;
 
     /**
      * 文件上传
@@ -212,11 +211,13 @@ public interface IStaffCommonService {
     /**
      * @param userSession
      */
-    void exportPreFile(ExportVo exportVo,HttpServletResponse response,UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    void exportPreFile(ExportArc exportArcVo, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 下载文件
      * @param path
      */
     void downLoadFile(String path) throws Exception;
+
+    void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
 }

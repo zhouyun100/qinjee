@@ -9,9 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.prefs.BackingStoreException;
 
 /**
  * @author 高雄
@@ -31,6 +30,13 @@ public class EmployeeNumberRuleController extends BaseController {
     @ApiOperation(value = "新增员工规则", notes = "高雄")
     public ResponseResult addEmployeeNumberRule(EmployeeNumberRuleVo employeeNumberRuleVo){
         return employeeNumberRuleService.addEmployeeNumberRule(employeeNumberRuleVo, getUserSession());
+    }
+
+    //根据工号规则生成工号
+    @RequestMapping(value = "/createEmployeeNumber" ,method = RequestMethod.POST)
+    @ApiOperation(value = "根据工号规则生成工号", notes = "hkt")
+    public ResponseResult createEmployeeNumber(Integer id) throws Exception {
+        return employeeNumberRuleService.createEmployeeNumber(id,getUserSession());
     }
 
 }

@@ -61,7 +61,14 @@ public class OrganizationController extends BaseController {
     @PostMapping("/addOrganization")
     @ApiOperation(value = "新增机构",notes = "高雄")
     public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
-        return organizationService.addOrganization(getUserSession(),organizationVo);
+        ResponseResult responseResult ;
+        try {
+            responseResult=organizationService.addOrganization(getUserSession(), organizationVo);
+            return responseResult;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

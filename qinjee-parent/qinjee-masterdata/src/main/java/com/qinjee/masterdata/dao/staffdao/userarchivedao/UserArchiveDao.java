@@ -2,7 +2,7 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
-import com.qinjee.masterdata.model.vo.staff.DownLoadVo;
+import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -57,9 +57,8 @@ public interface UserArchiveDao {
      */
     List<UserArchive> getUserArchiveList(@Param("pageQueryVo") PageQueryVo pageQueryVo, @Param("sortFieldStr") String sortFieldStr);
 
-    String selectName(@Param("id") Integer id);
+    Map<String,String> selectNameAndNumber(@Param("id") Integer id);
 
-    String selectNumber(Integer id);
 
     Integer selectArchiveIdByNumber(String employeeNumber);
 
@@ -86,5 +85,5 @@ public interface UserArchiveDao {
 
     List<Integer> selectArchiveIdByOrgId(@Param("companyId") Integer companyId);
 
-    List<DownLoadVo> selectDownLoadVoList(@Param("archiveIdList") List<Integer> archiveIdList);
+    List<ExportArcVo> selectDownLoadVoList(@Param("archiveIdList") List<Integer> archiveIdList);
 }

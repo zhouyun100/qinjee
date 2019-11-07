@@ -44,7 +44,7 @@ public interface CustomArchiveFieldDao {
     List<String> selectFieldNameListByTableId(@Param("id") Integer id);
 
 
-    List<String> selectTypeByNameList(List<String> heads);
+    List<String> selectTypeByNameList(@Param("heads") List<String> heads);
 
     List<String> selectFieldCodeByList(@Param("sortList") List<Integer> sortList);
 
@@ -69,4 +69,8 @@ public interface CustomArchiveFieldDao {
     List<String> selectFieldNameByList(@Param("strings") List<String> stringList);
 
     List<String> selectFieldNameByIntList(@Param("sortList") List<Integer> sortList);
+
+    List<String> selectFieldByTableIdAndAuth(@Param("tableId") Integer tableId, @Param("archiveId") Integer archiveId);
+
+    List<String> selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
 }

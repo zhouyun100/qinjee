@@ -268,14 +268,15 @@
   </select>
   <select id="selectByorgId" resultType="java.lang.Integer">
     select
-    archive_id
+    contract_id
     from t_labor_contract
     where org_id = #{orgId,jdbcType=INTEGER}
   </select>
-  <select id="selectArcByCon" resultType="java.lang.Integer">
-    select archive_id
-    from t_labor_contract
-    where contract_id  not in
+  <select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
+    select arc.*
+    from t_user_archive arc
+    left join t_labor_contract con on arc.archive_id=con.archive_id
+    where con.contract_id not in
     <foreach collection="conList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
