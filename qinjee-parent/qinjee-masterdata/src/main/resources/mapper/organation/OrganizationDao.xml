@@ -54,7 +54,7 @@
       <if test="orgParentId != null">
         org_parent_id,
       </if>
-      <if test="orgfull_name != null">
+      <if test="orgFullName != null">
         org_full_name,
       </if>
       <if test="orgManagerId != null">
@@ -89,7 +89,7 @@
       <if test="orgParentId != null">
         #{orgParentId,jdbcType=INTEGER},
       </if>
-      <if test="orgfull_name != null">
+      <if test="orgFullName != null">
         #{orgFullName,jdbcType=VARCHAR},
       </if>
       <if test="orgManagerId != null">
@@ -127,7 +127,7 @@
       <if test="orgParentId != null">
         org_parent_id = #{orgParentId,jdbcType=INTEGER},
       </if>
-      <if test="orgfull_name != null">
+      <if test="orgFullName != null">
         org_full_name = #{orgFullName,jdbcType=VARCHAR},
       </if>
       <if test="orgManagerId != null">
