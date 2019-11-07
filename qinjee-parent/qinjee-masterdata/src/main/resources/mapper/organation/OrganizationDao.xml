@@ -214,6 +214,7 @@
           <if test="querField.fieldName != null and querField.fieldName != ''">
                 ${querField.condition}
           </if>
+
           <if test="querField.isFilterNull">
             and ${querField.fieldName} IS NULL
           </if>
