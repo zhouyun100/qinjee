@@ -36,7 +36,7 @@ import java.util.*;
 public class UpAndDownUtil {
     private static final String SECRET_ID= "AKIDMi3OgwqoGh8YvMu7C6ovseEdy87v3s56";
     private static final String SECRET_KEY = "1pU9icMvJWm1A7wa7SgKrGVbWfgVaVFo";
-    private static final String BUCKET = "qinjee-datacenter-1253673776";
+    private static final String BUCKET = "masterdata-1253673776";
     private static final String REGION_NAME= "ap-guangzhou";
     private static final COSClient COS_ClIENT=UpAndDownUtil.initClient();
 
@@ -134,18 +134,14 @@ public class UpAndDownUtil {
     /**
      * 上传文件到指定存储桶
      *
-     * @param path
      * @param
      * @param key        对象键，详情见上方说明
      * @param
      */
-    public static void putFile(String path,String key) throws Exception {
+    public static void putFile(File file,String key) throws Exception {
         try {
-            // 指定要上传的文件
-            File localFile = new File(path);
-
             // 指定要上传到 COS 上对象键
-            PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET, key, localFile);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET, key, file);
             PutObjectResult putObjectResult = COS_ClIENT.putObject(putObjectRequest);
         } catch (CosServiceException serverException) {
             throw new CosServiceException("服务错误");

@@ -646,5 +646,11 @@
        and arc.is_delete=0
  </foreach>
 </select>
+  <select id="selectEmployNumber" resultType="java.lang.String">
+    select employee_number
+    from  t_user_archive
+    where  archive_id=#{businessId}
+    and is_delete=0
+  </select>
 </mapper>
 

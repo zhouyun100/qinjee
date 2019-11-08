@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.Date;
  * @author
  */
 @Data
-@NoArgsConstructor
 public class AttachmentRecord implements Serializable {
     /**
      * 附件ID
@@ -37,7 +35,14 @@ public class AttachmentRecord implements Serializable {
      * 业务类型
      */
     private String businessType;
-
+    /**
+     * 业务模块
+     */
+    private String 	businessModule;
+    /**
+     * 附件类型
+     */
+    private String 	attachmentType;
     /**
      * 业务ID
      */

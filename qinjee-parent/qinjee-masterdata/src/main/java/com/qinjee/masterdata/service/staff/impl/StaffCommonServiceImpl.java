@@ -2,19 +2,17 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.CheckTypeDao;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.*;
-import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
-import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
-import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -24,8 +22,10 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
 import com.qinjee.utils.UpAndDownUtil;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +51,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private static final String IDNUMBER = "证件号码";
     private static final String USERCATEGORY = "人员分类";
     private static final String PHONE = "手机";
+    private static final String BUCKETNAME = "masterdata-1253673776";
+
 
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
@@ -73,14 +75,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private PreEmploymentDao preEmploymentDao;
     @Autowired
-    private QuerySchemeFieldDao querySchemeFieldDao;
-    @Autowired
     private CheckTypeDao checkTypeDao;
     @Autowired
-    private PreEmploymentChangeDao preEmploymentChangeDao;
-    @Autowired
-    private BlacklistDao blacklistDao;
-
+    private AttachmentRecordDao attachmentRecordDao;
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable, UserSession userSession) {
         customArchiveTable.setCompanyId(userSession.getCompanyId());
@@ -144,12 +141,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public PageResult<CustomArchiveTable> selectCustomTableFromGroup(Integer currentPage, Integer
-            pageSize, Integer customArchiveGroupId) {
-        PageHelper.startPage(currentPage, pageSize);
+    public PageResult<CustomArchiveField> selectArchiveFieldFromGroup(Integer currentPage, Integer pageSize, Integer customArchiveGroupId) {
+          PageHelper.startPage(currentPage, pageSize);
         //获得自定义组中自定义表id的集合
-        List<Integer> integerList = customArchiveGroupDao.selectTableId(customArchiveGroupId);
-        List<CustomArchiveTable> list = customArchiveTableDao.selectByPrimaryKeyList(integerList);
+        List<CustomArchiveField> list=customArchiveFieldDao.selectCustomArchiveField(customArchiveGroupId);
         return new PageResult<>(list);
     }
 
@@ -500,31 +495,28 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return map;
     }
-
-
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void putFile(String path) throws Exception {
-        //TODO 文件对象键的定义
-        String key = "黄开天的文件/图片/";
-        UUID uuid = UUID.randomUUID();
-        key += uuid.toString() + ".jpg";
-        UpAndDownUtil.putFile(path, key);
+    public void putFile(MultipartFile multipartFile,AttachmentVo attachmentVo,UserSession userSession) throws Exception {
+        AttachmentRecord attachmentRecord=new AttachmentRecord();
+        BeanUtils.copyProperties(attachmentVo,attachmentRecord);
+        attachmentRecord.setCompanyId(userSession.getCompanyId());
+        attachmentRecord.setIsDelete((short) 0);
+        String pathUrl = getPathUrl(attachmentVo, userSession);
+        attachmentRecord.setAttachmentUrl(pathUrl);
+        attachmentRecord.setAttachmentSize((int) multipartFile.getSize());
+        attachmentRecordDao.insertSelective(attachmentRecord);
+        //上传文件
+//        String key = "黄开天的文件/图片/";
+//        UUID uuid = UUID.randomUUID();
+//        key += uuid.toString() + ".jpg";
+//        UpAndDownUtil.putFile(path, key);
+        File file= new File(multipartFile.getOriginalFilename());
+        FileUtils.copyInputStreamToFile(multipartFile.getInputStream(),file);
+        UpAndDownUtil.putFile(file,pathUrl);
+//        File del = new File(file.toURI());
+//        del.delete();
     }
-
-    @Override
-    public ForWardPutFile uploadFileByForWard() {
-        String s = UpAndDownUtil.TransToForward();
-        ForWardPutFile forWardPutFile = new ForWardPutFile();
-        forWardPutFile.setString(s);
-        //TODO 对象键的定义需要制定规则，利用规则生成
-        String key = "黄开天的文件/图片/";
-        UUID uuid = UUID.randomUUID();
-        key += uuid.toString() + ".jpg";
-        forWardPutFile.setKey(key);
-        return forWardPutFile;
-    }
-
 
     @Override
     public void downLoadFile(String path) throws Exception {
@@ -539,8 +531,21 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
 
     }
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAttachment(Integer id) {
+        attachmentRecordDao.deleteByPrimaryKey(id);
+    }
 
+    private String getPathUrl(AttachmentVo attachmentVo,UserSession userSession) {
+         String businessModule = attachmentVo.getBusinessModule();
+         Integer companyId = userSession.getCompanyId();
+         Integer businessId = attachmentVo.getBusinessId();
+         String employNumber=userArchiveDao.selectEmployNumber(attachmentVo.getBusinessId());
+         String attachmentName = employNumber+attachmentVo.getAttachmentName();
+         return businessModule+companyId+businessId+attachmentName;
+    }
 }
+
 
 
 

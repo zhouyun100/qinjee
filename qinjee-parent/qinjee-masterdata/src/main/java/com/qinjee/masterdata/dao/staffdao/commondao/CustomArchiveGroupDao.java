@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public interface CustomArchiveGroupDao {
 
     Integer selectMaxPrimaryKey();
 
-    List<Integer> selectTableId(@Param("customArchiveGroupId") Integer customArchiveGroupId);
-
     Integer deleteCustomGroup(List<Integer> list);
+
 }

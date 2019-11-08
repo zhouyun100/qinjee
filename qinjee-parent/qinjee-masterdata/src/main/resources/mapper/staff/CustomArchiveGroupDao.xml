@@ -128,10 +128,5 @@
         #{item}
    </foreach>
   </update>
-  <select id="selectTableId" resultType="java.lang.Integer">
-    select table_id
-    from t_custom_archive_group
-    where group_id = #{customArchiveGroupId,jdbcType=INTEGER}
-    AND is_delete=0
-  </select>
+
 </mapper>

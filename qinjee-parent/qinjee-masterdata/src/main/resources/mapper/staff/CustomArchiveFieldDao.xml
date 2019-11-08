@@ -419,4 +419,12 @@
     right join t_custom_archive_field field on arctable.table_id=field.table_id
     where  arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0 and arctable.is_delete=0
   </select>
+  <select id="selectCustomArchiveField" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField" resultMap="BaseResultMap">
+  select field.*  from
+  t_custom_archive_field field
+  left join t_custom_archive_group gro on gro.group_id=field.group_id
+  where
+  gro.group_id=#{customArchiveGroupId}
+  and field.is_delete=0 and gro.is_delete=0
+ </select>
 </mapper>

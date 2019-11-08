@@ -216,7 +216,6 @@ public class StaffArchiveController extends BaseController {
     /**
      * 删除人员岗位关系，初期只涉及到是否兼职
      */
-
     @RequestMapping(value = "/deleteUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "删除人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
     @ApiImplicitParam(name = "list", value = "人员档案关系表id集合", paramType = "query", required = true)
@@ -236,7 +235,6 @@ public class StaffArchiveController extends BaseController {
     /**
      * 修改人员岗位关系，初期值涉及到是否兼职
      */
-
     @RequestMapping(value = "/updateUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "修改人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
 //    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
@@ -256,7 +254,6 @@ public class StaffArchiveController extends BaseController {
     /**
      * 展示人员岗位关系，初期只涉及到是否兼职
      */
-
     @RequestMapping(value = "/selectUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "展示人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
 //    @ApiImplicitParams({
@@ -370,14 +367,12 @@ public class StaffArchiveController extends BaseController {
             }
         }
         return  failResponseResult("参数错误");
-
     }
 
 
     /**
      * 删除查询方案
      */
-
     @RequestMapping(value = "/deleteQueryScheme", method = RequestMethod.GET)
     @ApiOperation(value = "删除查询方案", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "查询方案id的集合", paramType = "query", required = true)
@@ -417,8 +412,9 @@ public class StaffArchiveController extends BaseController {
             }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-
     }
+
+
     /**
      * 根据显示方案展示人员信息
      */
@@ -448,6 +444,7 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
 
 
     private Boolean checkParam(Object... params) {

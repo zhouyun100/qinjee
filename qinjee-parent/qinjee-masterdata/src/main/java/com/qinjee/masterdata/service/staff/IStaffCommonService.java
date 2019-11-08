@@ -1,12 +1,13 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
-import com.qinjee.masterdata.model.vo.staff.ForWardPutFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -77,7 +78,7 @@ public interface IStaffCommonService {
      * @param customArchiveGroupId
      * @return
      */
-  PageResult<CustomArchiveTable>selectCustomTableFromGroup(Integer currentPage, Integer pageSize, Integer customArchiveGroupId);
+  PageResult<CustomArchiveField>selectArchiveFieldFromGroup(Integer currentPage, Integer pageSize, Integer customArchiveGroupId);
 
     /**
      * 新增自定义字段
@@ -160,19 +161,10 @@ public interface IStaffCommonService {
 
     /**
      * 文件上传
-     * @param path
+     * @param multipartFile
      * @return
      */
-    void putFile(String path) throws Exception;
-
-    /**
-     * 返回临时对象给前端
-     * @return
-     */
-    ForWardPutFile uploadFileByForWard();
-
-
-
+    void putFile(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession) throws Exception;
     /**
      * 据档案显示对应权限下的单位
      * @param userSession
@@ -219,5 +211,12 @@ public interface IStaffCommonService {
      */
     void downLoadFile(String path) throws Exception;
 
+    /**
+     * 导出业务类
+     * @param exportBusiness
+     * @param response
+     * @param userSession
+     */
     void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
+
 }

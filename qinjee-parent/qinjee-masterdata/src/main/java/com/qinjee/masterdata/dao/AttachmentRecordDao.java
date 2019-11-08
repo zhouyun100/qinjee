@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AttachmentRecordDao {
     int deleteByPrimaryKey(Integer attachmentId);
 
