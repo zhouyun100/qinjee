@@ -122,7 +122,7 @@ public class UserLoginServiceImpl implements UserLoginService {
          */
         roleAuthService.handlerMenuToTree(allMenuVOList,firstLevelMenuList);
 
-        return allMenuVOList;
+        return firstLevelMenuList;
     }
 
 }
