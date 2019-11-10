@@ -13,6 +13,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
+import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -501,8 +503,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         AttachmentRecord attachmentRecord=new AttachmentRecord();
         BeanUtils.copyProperties(attachmentVo,attachmentRecord);
         attachmentRecord.setCompanyId(userSession.getCompanyId());
+        attachmentRecord.setAttachmentName(multipartFile.getOriginalFilename());
         attachmentRecord.setIsDelete((short) 0);
-        String pathUrl = getPathUrl(attachmentVo, userSession);
+        String pathUrl = getPathUrl(attachmentVo, userSession,multipartFile);
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int) multipartFile.getSize());
         attachmentRecordDao.insertSelective(attachmentRecord);
@@ -531,18 +534,27 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
 
     }
+
+    @Override
+    public List<String> getFilePath(GetFilePath getFilePath, UserSession userSession) {
+        List<String> list=attachmentRecordDao.selectFilePath(getFilePath,userSession.getCompanyId());
+        return null;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void deleteAttachment(Integer id) {
         attachmentRecordDao.deleteByPrimaryKey(id);
     }
 
-    private String getPathUrl(AttachmentVo attachmentVo,UserSession userSession) {
+    private String getPathUrl(AttachmentVo attachmentVo,UserSession userSession,MultipartFile multipartFile) {
          String businessModule = attachmentVo.getBusinessModule();
          Integer companyId = userSession.getCompanyId();
          Integer businessId = attachmentVo.getBusinessId();
+         String businessType = attachmentVo.getBusinessType();
          String employNumber=userArchiveDao.selectEmployNumber(attachmentVo.getBusinessId());
-         String attachmentName = employNumber+attachmentVo.getAttachmentName();
-         return businessModule+companyId+businessId+attachmentName;
+         String originalFilename = multipartFile.getOriginalFilename();
+         String attachmentName = employNumber+originalFilename;
+         return businessModule+companyId+businessId+businessType+attachmentName;
     }
 }
 

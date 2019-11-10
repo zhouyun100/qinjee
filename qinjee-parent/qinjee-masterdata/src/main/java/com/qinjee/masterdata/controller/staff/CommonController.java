@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
+import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -554,6 +555,30 @@ public class CommonController extends BaseController {
         }
         return failResponseResult("path错误");
     }
+    /**
+     * 获得文件路径
+     */
+    @RequestMapping(value = "/getFilePath", method = RequestMethod.POST)
+    @ApiOperation(value = "获得文件路径", notes = "hkt")
+//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
+    public ResponseResult<List<String>> getFilePath(@Valid @RequestBody GetFilePath getFilePath) {
+        Boolean b = checkParam(getFilePath,userSession);
+        if (b) {
+            try {
+                List<String> list=staffCommonService.getFilePath(getFilePath,getUserSession());
+                if(list.size()>0){
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }else{
+                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+
 
     /**
      * 文件下载

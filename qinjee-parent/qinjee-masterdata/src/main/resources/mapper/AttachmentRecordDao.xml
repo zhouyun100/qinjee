@@ -181,4 +181,13 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where attachment_id = #{attachmentId,jdbcType=INTEGER}
   </update>
+  <select id="selectFilePath" resultType="java.lang.String">
+    select  attachment_url  from
+    t_attachment_record
+    where business_id = #{getFilePath.businessId,jdbcType=INTEGER}
+    and   business_type = #{getFilePath.businessType,jdbcType=VARCHAR}
+    and   business_module = #{getFilePath.bussinessModule,jdbcType=VARCHAR}
+    and   company_id = #{companyId,jdbcType=INTEGER}
+    and   is_delete=0
+  </select>
 </mapper>

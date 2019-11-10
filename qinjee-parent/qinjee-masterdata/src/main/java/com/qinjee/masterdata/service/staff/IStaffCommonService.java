@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
+import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.model.request.UserSession;
@@ -219,4 +220,5 @@ public interface IStaffCommonService {
      */
     void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
 
+    List<String> getFilePath(GetFilePath getFilePath, UserSession userSession);
 }

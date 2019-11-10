@@ -40,10 +40,10 @@ public class EmployeeNumberRuleServiceImpl implements EmployeeNumberRuleService 
     }
 
     @Override
-    public ResponseResult createEmployeeNumber(Integer id,UserSession userSession) throws Exception {
+    public ResponseResult<String> createEmployeeNumber(Integer id,UserSession userSession) throws Exception {
         EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey(id);
-        if(employeeNumberRule!=null){
-            throw new Exception("没有你要找的工号生成规则吗？");
+        if(employeeNumberRule==null){
+            throw new Exception("没有你要找的工号生成规则码");
         }
         String employeeNumberPrefix = employeeNumberRule.getEmployeeNumberPrefix();
         String dateModel = getDateModel(employeeNumberRule.getDateRule());
@@ -95,7 +95,6 @@ public class EmployeeNumberRuleServiceImpl implements EmployeeNumberRuleService 
         String s = String.valueOf(id);
         if (s.length() > capacity) {
             throw new Exception("sorry,你选的位数不够");
-
         }
         if (s.length() == capacity) {
             return String.valueOf(id);
