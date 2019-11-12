@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.qcloud.cos.model.COSObjectInputStream;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.CheckTypeDao;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
@@ -12,9 +11,7 @@ import com.qinjee.masterdata.dao.staffdao.commondao.*;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
-import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -23,12 +20,8 @@ import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
-import com.qinjee.utils.UpAndDownUtil;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -497,75 +488,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return map;
     }
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void putFile(MultipartFile multipartFile,AttachmentVo attachmentVo,UserSession userSession) throws Exception {
-        File file = new File(multipartFile.getOriginalFilename());
-        String pathUrl = getPathUrl(attachmentVo, userSession, multipartFile);
-        insertAttachment(multipartFile, attachmentVo, userSession, pathUrl);
-        FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), file);
-        UpAndDownUtil.putFile(file, pathUrl);
-        file.delete();
-    }
-
-    private void insertAttachment(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession,String pathUrl) {
-        AttachmentRecord attachmentRecord=new AttachmentRecord();
-        BeanUtils.copyProperties(attachmentVo,attachmentRecord);
-        attachmentRecord.setCompanyId(userSession.getCompanyId());
-        attachmentRecord.setAttachmentName(multipartFile.getOriginalFilename());
-        attachmentRecord.setIsDelete((short) 0);
-        attachmentRecord.setAttachmentUrl(pathUrl);
-        attachmentRecord.setAttachmentSize((int)(multipartFile.getSize())/1024);
-        attachmentRecord.setOperatorId(userSession.getArchiveId());
-        attachmentRecordDao.insertSelective(attachmentRecord);
-    }
-
-    @Override
-    public void downLoadFile(HttpServletResponse response,String path) throws Exception {
-        try {
-            COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile(path);
-            int i = path.lastIndexOf("/");
-            String fileName=path.substring(i+1);
-            // 将文件输入流写入response的输出流中
-            response.setHeader("content-disposition", "attachment;fileName="+fileName);
-            response.setHeader("content-disposition", "attachment;fileName="+ URLEncoder.encode(fileName, "UTF-8"));
-            IOUtils.copy(cosObjectInputStream,response.getOutputStream());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("下载失败!");
-        }
-    }
-
     @Override
     public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
 
     }
 
-    @Override
-    public List<URL> getFilePath(GetFilePath getFilePath, UserSession userSession) {
-        List<URL> stringList=new ArrayList<>();
-        List<String> list = attachmentRecordDao.selectFilePath(getFilePath, userSession.getCompanyId());
-        for (String s : list) {
-            stringList.add(UpAndDownUtil.getPath(s));
-        }
-        return stringList;
-    }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteAttachment(Integer id) {
-        attachmentRecordDao.deleteByPrimaryKey(id);
-    }
-
-    private String getPathUrl(AttachmentVo attachmentVo,UserSession userSession,MultipartFile multipartFile) {
-         String businessModule = attachmentVo.getBusinessModule();
-         Integer companyId = userSession.getCompanyId();
-         Integer businessId = attachmentVo.getBusinessId();
-         String businessType = attachmentVo.getBusinessType();
-         String employNumber=userArchiveDao.selectEmployNumber(attachmentVo.getBusinessId());
-         String originalFilename = multipartFile.getOriginalFilename();
-         String attachmentName = employNumber+originalFilename;
-         return businessModule+"/"+companyId+"/"+businessId+"/"+businessType+"/"+attachmentName;
-    }
 }
 
 

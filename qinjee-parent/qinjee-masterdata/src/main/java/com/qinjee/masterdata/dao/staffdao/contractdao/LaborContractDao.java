@@ -38,5 +38,6 @@ public interface LaborContractDao {
 
     List<Integer> selectConByArcId(@Param("list") List<Integer> list);
 
-    List<LaborContract> selectContractByArcId(@Param("arcList") List<Integer> arcList);
+    List<LaborContract> selectContractByarcIdList(@Param("arcList") List<Integer> arcList);
+
 }

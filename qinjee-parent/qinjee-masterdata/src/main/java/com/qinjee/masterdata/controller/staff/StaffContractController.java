@@ -404,11 +404,11 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/insertLaborContractIntention", method = RequestMethod.GET)
     @ApiOperation(value = "发送续签意向表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult insertLaborContractIntention(Integer id) {
-        Boolean b = checkParam(id,getUserSession());
+    public ResponseResult insertLaborContractIntention(List<Integer> list) {
+        Boolean b = checkParam(list,getUserSession());
         if(b){
             try {
-                staffContractService.insertLaborContractIntention(id,getUserSession());
+                staffContractService.insertLaborContractIntention(list,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();

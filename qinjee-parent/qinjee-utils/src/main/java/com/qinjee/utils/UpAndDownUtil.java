@@ -111,6 +111,11 @@ public class UpAndDownUtil {
         return url;
     }
 
+    /**
+     *
+     * @param path
+     * @return
+     */
     public static URL getPath(String path) {
         GeneratePresignedUrlRequest req =
                 new GeneratePresignedUrlRequest(BUCKET, path, HttpMethodName.GET);

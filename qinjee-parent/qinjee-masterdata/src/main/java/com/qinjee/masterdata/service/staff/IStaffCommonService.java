@@ -1,19 +1,15 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
-import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -161,12 +157,7 @@ public interface IStaffCommonService {
      */
     void exportArcFile(ExportArc exportArcVo, HttpServletResponse response, UserSession userSession) ;
 
-    /**
-     * 文件上传
-     * @param multipartFile
-     * @return
-     */
-    void putFile(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession) throws Exception;
+
     /**
      * 据档案显示对应权限下的单位
      * @param userSession
@@ -207,10 +198,7 @@ public interface IStaffCommonService {
      */
     void exportPreFile(ExportArc exportArcVo, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
-    /**
-     * 下载文件
-     */
-    void downLoadFile(HttpServletResponse response,String path) throws Exception;
+
 
     /**
      * 导出业务类
@@ -220,5 +208,5 @@ public interface IStaffCommonService {
      */
     void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
 
-    List<URL> getFilePath(GetFilePath getFilePath, UserSession userSession);
+
 }

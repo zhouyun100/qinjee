@@ -158,10 +158,10 @@ public interface IStaffContractService {
 
     /**
      * 发送续签意向
-     * @param id
+     * @param list
      * @return
      */
-    void insertLaborContractIntention(Integer id, UserSession userSession);
+    void insertLaborContractIntention(List<Integer> list, UserSession userSession);
 
     /**
      * 展示我的续签意向表
