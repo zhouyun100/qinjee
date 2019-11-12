@@ -1,5 +1,7 @@
 package com.qinjee.utils;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import java.awt.*;
@@ -13,15 +15,13 @@ import java.util.Arrays;
 public class ImgCompressUtil {
     /**
      * 将图片压缩到指定大小以内
-     *
-     * @param imgLocalUrl 源图片数据路径
      * @param maxSize 目的图片大小
      * @return 压缩后的图片数据
      */
-    public static void compressUnderSize(String imgLocalUrl , long maxSize,String imgLocalNewUrl) {
+    public static void compressUnderSize(MultipartFile multipartFile, long maxSize,File file) {
         byte[] imgBytes =null;
         try {
-            imgBytes = getByteByPic(imgLocalUrl);
+            imgBytes = multipartFile.getBytes();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,21 +38,8 @@ public class ImgCompressUtil {
 
             } while (imgData.length > maxSize);
         }
-        byte2image(imgData,imgLocalNewUrl);
+        byte2image(imgData,multipartFile,file);
     }
-    public static byte[] getByteByPic(String imageUrl) throws IOException{
-        File imageFile = new File(imageUrl);
-        InputStream inStream = new FileInputStream(imageFile);
-        BufferedInputStream bis = new BufferedInputStream(inStream);
-        BufferedImage bm = ImageIO.read(bis);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        String type = imageUrl.substring(imageUrl.length() - 3);
-        ImageIO.write(bm, type, bos);
-        bos.flush();
-        byte[] data = bos.toByteArray();
-        return data;
-    }
-
 
     /**
      * 按照 宽高 比例压缩
@@ -84,26 +71,18 @@ public class ImgCompressUtil {
     }
 
     //byte数组到图片
-    public static void byte2image(byte[] data,String path){
-        if(data.length<3||path.equals("")){
+    public static void byte2image(byte[] data,MultipartFile multipartFile,File file){
+        if(data.length<3){
             return;
         }
         try{
-            FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));
+            FileImageOutputStream imageOutput = new FileImageOutputStream(file);
             imageOutput.write(data, 0, data.length);
             imageOutput.close();
-            System.out.println("Make Picture success,Please find image in " + path);
+            System.out.println("Make Picture success,Please find image in " + multipartFile.getOriginalFilename());
         } catch(Exception ex) {
             System.out.println("Exception: " + ex);
             ex.printStackTrace();
         }
-    }
-    public static void main(String[] args)  {
-        long timeStart = System.currentTimeMillis();
-        String imgLocalUrl = "C:\\Users\\Administrator\\IdeaProjects\\demo\\src\\main\\resources\\static\\timg.jpg";
-        String imgLocalNewUrl="C:\\Users\\Administrator\\IdeaProjects\\demo\\src\\main\\resources\\static\\timga.jpg";
-        compressUnderSize(imgLocalUrl,10*1024,imgLocalNewUrl);
-        long timeEnd = System.currentTimeMillis();
-        System.out.println("耗时："+ (timeEnd - timeStart));
     }
 }

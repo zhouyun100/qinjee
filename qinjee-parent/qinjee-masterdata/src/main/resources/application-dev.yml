@@ -88,6 +88,11 @@ spring:
     timeout: 2000
     password: qinjee2019
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB  #文件最大单次上传限制
+      max-request-size: 5MB
 
 
 #security:
@@ -139,4 +144,7 @@ pagehelper:
   supportMethodsArguments: true
   pageSizeZero: true
   params: count=countSql
+
+
+
 

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.qcloud.cos.model.COSObjectInputStream;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.CheckTypeDao;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
@@ -24,6 +25,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,10 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -46,14 +49,13 @@ import java.util.*;
 public class StaffCommonServiceImpl implements IStaffCommonService {
     private static final Logger logger = LoggerFactory.getLogger(StaffCommonServiceImpl.class);
     private static final String ARCHIVE = "档案";
-    private static final String ARCHIVETABLE = "档案表";
     private static final String PREEMP = "预入职";
-    private static final String PREEMPTABLE = "预入职表";
     private static final String IDTYPE = "证件类型";
     private static final String IDNUMBER = "证件号码";
-    private static final String USERCATEGORY = "人员分类";
     private static final String PHONE = "手机";
-    private static final String BUCKETNAME = "masterdata-1253673776";
+    private static final Integer MAXISM= 5242880;
+    private static final String FILE="FILE";
+    private static final  String PHOTO="PHOTO";
 
 
     @Autowired
@@ -260,7 +262,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<String> stringList = customArchiveFieldCheckDao.selectCheckName(fieldId);
         //根据验证code找到验证名称
         return checkTypeDao.selectCheckNameList(stringList);
-
     }
 
     @Override
@@ -269,7 +270,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         ExcelUtil.readExcel(multipartFile);
         Integer tableId = null;
         //key是字段名称，value是值
-        //TODO
         Map<String, List<String>> stringListMap = null;
 
         Map<Integer, List<String>> fieldMap = new HashMap<>();
@@ -500,32 +500,38 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void putFile(MultipartFile multipartFile,AttachmentVo attachmentVo,UserSession userSession) throws Exception {
+        File file = new File(multipartFile.getOriginalFilename());
+        String pathUrl = getPathUrl(attachmentVo, userSession, multipartFile);
+        insertAttachment(multipartFile, attachmentVo, userSession, pathUrl);
+        FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), file);
+        UpAndDownUtil.putFile(file, pathUrl);
+        file.delete();
+    }
+
+    private void insertAttachment(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession,String pathUrl) {
         AttachmentRecord attachmentRecord=new AttachmentRecord();
         BeanUtils.copyProperties(attachmentVo,attachmentRecord);
         attachmentRecord.setCompanyId(userSession.getCompanyId());
         attachmentRecord.setAttachmentName(multipartFile.getOriginalFilename());
         attachmentRecord.setIsDelete((short) 0);
-        String pathUrl = getPathUrl(attachmentVo, userSession,multipartFile);
         attachmentRecord.setAttachmentUrl(pathUrl);
-        attachmentRecord.setAttachmentSize((int) multipartFile.getSize());
+        attachmentRecord.setAttachmentSize((int)(multipartFile.getSize())/1024);
+        attachmentRecord.setOperatorId(userSession.getArchiveId());
         attachmentRecordDao.insertSelective(attachmentRecord);
-        //上传文件
-//        String key = "黄开天的文件/图片/";
-//        UUID uuid = UUID.randomUUID();
-//        key += uuid.toString() + ".jpg";
-//        UpAndDownUtil.putFile(path, key);
-        File file= new File(multipartFile.getOriginalFilename());
-        FileUtils.copyInputStreamToFile(multipartFile.getInputStream(),file);
-        UpAndDownUtil.putFile(file,pathUrl);
-//        File del = new File(file.toURI());
-//        del.delete();
     }
 
     @Override
-    public void downLoadFile(String path) throws Exception {
+    public void downLoadFile(HttpServletResponse response,String path) throws Exception {
         try {
-            UpAndDownUtil.downFile("黄开天的文件/timg.jpg", path);
+            COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile(path);
+            int i = path.lastIndexOf("/");
+            String fileName=path.substring(i+1);
+            // 将文件输入流写入response的输出流中
+            response.setHeader("content-disposition", "attachment;fileName="+fileName);
+            response.setHeader("content-disposition", "attachment;fileName="+ URLEncoder.encode(fileName, "UTF-8"));
+            IOUtils.copy(cosObjectInputStream,response.getOutputStream());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("下载失败!");
         }
     }
@@ -536,9 +542,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public List<String> getFilePath(GetFilePath getFilePath, UserSession userSession) {
-        List<String> list=attachmentRecordDao.selectFilePath(getFilePath,userSession.getCompanyId());
-        return null;
+    public List<URL> getFilePath(GetFilePath getFilePath, UserSession userSession) {
+        List<URL> stringList=new ArrayList<>();
+        List<String> list = attachmentRecordDao.selectFilePath(getFilePath, userSession.getCompanyId());
+        for (String s : list) {
+            stringList.add(UpAndDownUtil.getPath(s));
+        }
+        return stringList;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -554,7 +564,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
          String employNumber=userArchiveDao.selectEmployNumber(attachmentVo.getBusinessId());
          String originalFilename = multipartFile.getOriginalFilename();
          String attachmentName = employNumber+originalFilename;
-         return businessModule+companyId+businessId+businessType+attachmentName;
+         return businessModule+"/"+companyId+"/"+businessId+"/"+businessType+"/"+attachmentName;
     }
 }
 

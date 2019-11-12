@@ -31,7 +31,7 @@
     where attachment_id = #{attachmentId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="attachment_id" keyProperty="attachmentId" parameterType="com.qinjee.masterdata.model.entity.AttachmentRecord" useGeneratedKeys="true">
-    insert into t_attachment_record (attachment_name, attachment_url,,attachment_type, business_module,attachment_size,
+    insert into t_attachment_record (attachment_name, attachment_url,attachment_type, business_module,attachment_size,
       business_type, business_id, company_id,
       operator_id, create_time, update_time,
       is_delete)
@@ -50,14 +50,11 @@
       <if test="attachmentUrl != null">
       attachment_url,
       </if>
-      <if test="attachmentType != null">
-        attachment_type,
-      </if>
       <if test="businessModule != null">
         business_module,
       </if>
-      <if test="attachmentUrl != null">
-        attachment_url,
+      <if test="attachmentType != null">
+        attachment_type,
       </if>
       <if test="attachmentSize != null">
         attachment_size,
@@ -92,10 +89,10 @@
         #{attachmentUrl,jdbcType=VARCHAR},
       </if>
       <if test="businessModule != null">
-        #{businessModule}
+        #{businessModule,jdbcType=VARCHAR},
       </if>
       <if test="attachmentType != null">
-        #{attachmentType}
+        #{attachmentType,jdbcType=VARCHAR},
       </if>
       <if test="attachmentSize != null">
         #{attachmentSize,jdbcType=INTEGER},
@@ -186,7 +183,8 @@
     t_attachment_record
     where business_id = #{getFilePath.businessId,jdbcType=INTEGER}
     and   business_type = #{getFilePath.businessType,jdbcType=VARCHAR}
-    and   business_module = #{getFilePath.bussinessModule,jdbcType=VARCHAR}
+    and   business_module = #{getFilePath.businessModule,jdbcType=VARCHAR}
+    and   attachment_type = #{getFilePath.attachmentType,jdbcType=VARCHAR}
     and   company_id = #{companyId,jdbcType=INTEGER}
     and   is_delete=0
   </select>

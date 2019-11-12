@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -208,9 +209,8 @@ public interface IStaffCommonService {
 
     /**
      * 下载文件
-     * @param path
      */
-    void downLoadFile(String path) throws Exception;
+    void downLoadFile(HttpServletResponse response,String path) throws Exception;
 
     /**
      * 导出业务类
@@ -220,5 +220,5 @@ public interface IStaffCommonService {
      */
     void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
 
-    List<String> getFilePath(GetFilePath getFilePath, UserSession userSession);
+    List<URL> getFilePath(GetFilePath getFilePath, UserSession userSession);
 }

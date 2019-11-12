@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -542,7 +543,7 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ApiOperation(value = "文件上传", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
-    public ResponseResult uploadFile(MultipartFile multipartFile,@RequestBody @Valid AttachmentVo attachmentVo) {
+    public ResponseResult uploadFile(MultipartFile multipartFile, @Valid AttachmentVo attachmentVo) {
         Boolean b = checkParam(multipartFile,attachmentVo,getUserSession());
         if (b) {
             try {
@@ -553,23 +554,25 @@ public class CommonController extends BaseController {
                 return failResponseResult("文件上传失败");
             }
         }
-        return failResponseResult("path错误");
+        return failResponseResult("session失效");
     }
     /**
      * 获得文件路径
      */
+    @CrossOrigin
     @RequestMapping(value = "/getFilePath", method = RequestMethod.POST)
     @ApiOperation(value = "获得文件路径", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
-    public ResponseResult<List<String>> getFilePath(@Valid @RequestBody GetFilePath getFilePath) {
-        Boolean b = checkParam(getFilePath,userSession);
+    public ResponseResult<List<URL>> getFilePath(@Valid  GetFilePath getFilePath) {
+        Boolean b = checkParam(getFilePath,getUserSession());
         if (b) {
             try {
-                List<String> list=staffCommonService.getFilePath(getFilePath,getUserSession());
+                List<URL> list=staffCommonService.getFilePath(getFilePath,getUserSession());
                 if(list.size()>0){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }else{
-                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+                    ResponseResult<List<URL>> listResponseResult = new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+                    return listResponseResult;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -578,20 +581,18 @@ public class CommonController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
-
     /**
      * 文件下载
      */
     @RequestMapping(value = "/downLoadFile", method = RequestMethod.POST)
     @ApiOperation(value = "文件下载", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "path", value = "数据库查询出来的对象键", paramType = "query", required = true)
 
-    public ResponseResult downLoadFile(String path) {
-        Boolean b = checkParam(path);
+    public ResponseResult downLoadFile(HttpServletResponse response,String path) {
+        Boolean b = checkParam(response,path);
         if(b) {
             try {
-                staffCommonService.downLoadFile(path);
+                staffCommonService.downLoadFile(response,path);
                return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("下载文件失败！");
@@ -625,7 +626,6 @@ public class CommonController extends BaseController {
             }
         }
         return  failResponseResult("参数错误");
-
     }
 
     /**

@@ -7,7 +7,6 @@ import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.auth.COSCredentials;
-import com.qcloud.cos.auth.COSSigner;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.http.HttpMethodName;
@@ -16,7 +15,10 @@ import com.qcloud.cos.region.Region;
 import entity.CosStsClient;
 
 import java.io.File;
-import java.util.*;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeMap;
 /**
  腾讯云对象存储 COS 中的对象需具有合法的对象键，对象键（ObjectKey）是对象在存储桶中的唯一标识。
  例如：在对象的访问地址examplebucket-1250000000.cos.ap-guangzhou.myqcloud.com/folder/picture.jpg 中，对象键为folder/picture.jpg。
@@ -38,7 +40,7 @@ public class UpAndDownUtil {
     private static final String SECRET_KEY = "1pU9icMvJWm1A7wa7SgKrGVbWfgVaVFo";
     private static final String BUCKET = "masterdata-1253673776";
     private static final String REGION_NAME= "ap-guangzhou";
-    private static final COSClient COS_ClIENT=UpAndDownUtil.initClient();
+    private static final COSClient COSClIENT=UpAndDownUtil.initClient();
 
     /**
      * @return  前端需要调用的方法
@@ -67,9 +69,8 @@ public class UpAndDownUtil {
                     "name/cos:CompleteMultipartUpload"
             };
             config.put("allowActions", allowActions);
-
             JSONObject credential = CosStsClient.getCredential(config);
-            System.out.println(credential.toJSONString());
+            System.out.println(credential);
              return  credential;
             //成功返回临时密钥信息，如下打印密钥信息
         } catch (Exception e) {
@@ -83,36 +84,43 @@ public class UpAndDownUtil {
      //     *
      //     * @return
      //     */
-    public static String TransToForward() {
+    public static URL getTempPath(String path) {
         //获取临时连接所需要的接送对象
         JSONObject credential = UpAndDownUtil.getCredential();
-        Map<String,String> map=new HashMap();
         //解析获取临时参数
         String s = credential.getString("credentials");
         JSONObject jsonObject = JSON.parseObject(s);
         String tmpSecretId = jsonObject.getString("tmpSecretId");
         String tmpSecretKey= jsonObject.getString("tmpSecretKey");
         String sessionToken= jsonObject.getString("sessionToken");
-        map.put("sessionToken",sessionToken);
         //初始化用户身份信息
         BasicSessionCredentials cred = new BasicSessionCredentials(tmpSecretId, tmpSecretKey, sessionToken);
         //设置bucket的地域信息
-        String cosAccessKeyId = cred.getCOSAccessKeyId();
         Region region = new Region(REGION_NAME);
         ClientConfig clientConfig = new ClientConfig(region);
         //生成客户端
         COSClient cosClient = new COSClient(cred, clientConfig);
         //根据此对象获取认证信息
-        COSSigner cosSigner=new COSSigner();
-        //设置过期时间为半小时
-        Date expirationDate = new Date(System.currentTimeMillis() + 30 * 60 * 1000);
-        //使用post方式上传到”“”“‘/’目录下。
-        String authorizationStr = cosSigner.buildAuthorizationStr(HttpMethodName.POST, "/",
-                cred, expirationDate);
-        map.put("Authorization",authorizationStr);
-        System.out.println(authorizationStr);
+        GeneratePresignedUrlRequest req =
+                new GeneratePresignedUrlRequest(BUCKET, path, HttpMethodName.GET);
+        // 设置下载时返回的 http 头
+        Date expirationDate = new Date(System.currentTimeMillis() + 30L * 60L * 1000L);
+        req.setExpiration(expirationDate);
+        URL url = cosClient.generatePresignedUrl(req);
         cosClient.shutdown();
-        return JSON.toJSONString(map);
+        return url;
+    }
+
+    public static URL getPath(String path) {
+        GeneratePresignedUrlRequest req =
+                new GeneratePresignedUrlRequest(BUCKET, path, HttpMethodName.GET);
+// 设置签名过期时间(可选), 若未进行设置, 则默认使用 ClientConfig 中的签名过期时间(1小时)
+// 这里设置签名在半个小时后过期
+        Date expirationDate = new Date(System.currentTimeMillis() + 30L * 60L * 1000L);
+        req.setExpiration(expirationDate);
+        URL url = COSClIENT.generatePresignedUrl(req);
+        COSClIENT.shutdown();
+        return url;
     }
 
     /**
@@ -142,13 +150,13 @@ public class UpAndDownUtil {
         try {
             // 指定要上传到 COS 上对象键
             PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET, key, file);
-            PutObjectResult putObjectResult = COS_ClIENT.putObject(putObjectRequest);
+            PutObjectResult putObjectResult = COSClIENT.putObject(putObjectRequest);
         } catch (CosServiceException serverException) {
             throw new CosServiceException("服务错误");
         } catch (CosClientException clientException) {
             throw new CosClientException("客户端错误");
         }finally {
-            COS_ClIENT.shutdown();
+            COSClIENT.shutdown();
         }
 
     }
@@ -196,25 +204,25 @@ public class UpAndDownUtil {
 
     /**
      * 下载文件到指定路径
-     *
+     *  @param
      * @param
      * @param key          对象键
-     * @param downFilePath 下载到指定的路径
-     * @param
+     * @return
      */
-    public static void downFile(String key, String downFilePath) {
+    public static COSObjectInputStream downFile(String key) {
         try {
             GetObjectRequest getObjectRequest = new GetObjectRequest(BUCKET, key);
-            File downFile = new File(downFilePath);
-            ObjectMetadata downObjectMeta = COS_ClIENT.getObject(getObjectRequest, downFile);
+            COSObject cosObject = COSClIENT.getObject(getObjectRequest);
+            return cosObject.getObjectContent();
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
         } catch (CosClientException clientException) {
             clientException.printStackTrace();
         }finally {
-            COS_ClIENT.shutdown();
+            COSClIENT.shutdown();
         }
 
+        return null;
     }
 
 
@@ -227,18 +235,14 @@ public class UpAndDownUtil {
      */
     public static void delFile( String key) {
         try {
-            COS_ClIENT.deleteObject(BUCKET, key);
+            COSClIENT.deleteObject(BUCKET, key);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
         } catch (CosClientException clientException) {
             clientException.printStackTrace();
         }finally {
-            COS_ClIENT.shutdown();
+            COSClIENT.shutdown();
         }
-    }
-    public static String getKey(){
-        //TODO 此时对象键的生成，是根据文件桶里面的路径。目前讨论的是根据项目来定义桶，根据公司新建文件夹,在公司文件夹下根据模块再定义文件夹。
-        return null;
     }
 
 }

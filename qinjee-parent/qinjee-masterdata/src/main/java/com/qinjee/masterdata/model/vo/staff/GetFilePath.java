@@ -1,8 +1,12 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import javax.validation.constraints.NotNull;
+import lombok.Data;
 
-public class GetFilePath {
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+
+@Data
+public class GetFilePath implements Serializable {
     /**
      * 业务模块
      */
