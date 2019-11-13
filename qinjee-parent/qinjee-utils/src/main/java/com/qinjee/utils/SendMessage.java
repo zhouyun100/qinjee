@@ -53,7 +53,7 @@ public class SendMessage {
             String[] phoneNumbers = new String[phoneNumber.size()];
             phoneNumber.toArray(phoneNumbers);
             String[] params = new String[param.size()];
-            phoneNumber.toArray(params);
+            param.toArray(params);
             SmsMultiSender smsMultiSender = new SmsMultiSender(appid, appkey, httpclient);
             SmsThread[] threads = new SmsThread[phoneNumber.size()];
             for (int i = 0; i < phoneNumber.size(); i++) {
