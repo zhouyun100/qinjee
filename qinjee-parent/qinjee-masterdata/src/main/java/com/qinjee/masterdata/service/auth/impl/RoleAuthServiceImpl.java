@@ -356,6 +356,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 if(!CollectionUtils.isEmpty(childList)){
                     allRoleGroupList.remove(childList);
                     roleGroupVO.setChildRoleGroupList(childList);
+                }else{
+                    roleGroupVO.setChildRoleGroupList(new ArrayList<>());
                 }
             }
         }
@@ -405,6 +407,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 menuVO.setChildMenuList(childList);
                 allMenuVOList.removeAll(childList);
                 handlerMenuToTree(allMenuVOList,childList);
+            }else{
+                menuVO.setChildMenuList(new ArrayList<>());
             }
         }
     }
@@ -425,6 +429,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 organizationVO.setChildOrganizationList(childList);
                 allOrgList.removeAll(childList);
                 handlerOrgToTree(allOrgList,childList);
+            }else{
+                organizationVO.setChildOrganizationList(new ArrayList<>());
             }
         }
     }
