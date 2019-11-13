@@ -85,12 +85,11 @@ public class RoleAuthController extends BaseController{
 
     @ApiOperation(value="新增角色组", notes="新增角色组")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "parentRoleGroupId", value = "父级角色组ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleGroupName", value = "角色组名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/addRoleGroup",method = RequestMethod.GET)
-    public ResponseResult addRoleGroup(Integer parentRoleGroupId, String roleGroupName) {
-        if(null == parentRoleGroupId || StringUtils.isEmpty(roleGroupName)){
+    public ResponseResult addRoleGroup(String roleGroupName) {
+        if(StringUtils.isEmpty(roleGroupName)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色组名称或父角色不能为空!");
             return responseResult;
@@ -102,17 +101,17 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.addRoleGroup(parentRoleGroupId,roleGroupName, userSession.getCompanyId(), userSession.getArchiveId());
+            int resultNumber = roleAuthService.addRoleGroup(roleGroupName, userSession.getCompanyId(), userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("addRoleGroup success！parentRoleGroupId={},roleGroupName={},operatorId={}", parentRoleGroupId, roleGroupName, userSession.getArchiveId());
+                logger.info("addRoleGroup success！roleGroupName={},operatorId={}", roleGroupName, userSession.getArchiveId());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("addRoleGroup fail！parentRoleGroupId={},roleGroupName={},operatorId={}", parentRoleGroupId, roleGroupName, userSession.getArchiveId());
+                logger.info("addRoleGroup fail！roleGroupName={},operatorId={}", roleGroupName, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
             }
 
         }catch (Exception e){
-            logger.info("addRoleGroup exception！parentRoleGroupId={},roleGroupName={},exception={}", parentRoleGroupId, roleGroupName, e.toString());
+            logger.info("addRoleGroup exception！roleGroupName={},exception={}", roleGroupName, e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("新增角色组异常！");
@@ -139,7 +138,7 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.addRole(roleGroupId,roleName,userSession.getArchiveId());
+            int resultNumber = roleAuthService.addRole(roleGroupId,roleName,userSession.getCompanyId(),userSession.getArchiveId());
             if(resultNumber > 0){
                 logger.info("addRole success！roleGroupId={},roleName={},operatorId={}", roleGroupId, roleName, userSession.getArchiveId());
                 responseResult = ResponseResult.SUCCESS();

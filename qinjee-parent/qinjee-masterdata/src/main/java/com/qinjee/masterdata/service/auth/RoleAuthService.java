@@ -48,22 +48,22 @@ public interface RoleAuthService {
 
     /**
      * 新增角色组
-     * @param parentRoleGroupId
      * @param roleGroupName
      * @param companyId
      * @param operatorId
      * @return
      */
-    int addRoleGroup(Integer parentRoleGroupId, String roleGroupName, Integer companyId, Integer operatorId);
+    int addRoleGroup(String roleGroupName, Integer companyId, Integer operatorId);
 
     /**
      * 新增角色
      * @param roleGroupId
      * @param roleName
+     * @param companyId
      * @param operatorId
      * @return
      */
-    int addRole(Integer roleGroupId, String roleName, Integer operatorId);
+    int addRole(Integer roleGroupId, String roleName, Integer companyId, Integer operatorId);
 
     /**
      * 修改角色

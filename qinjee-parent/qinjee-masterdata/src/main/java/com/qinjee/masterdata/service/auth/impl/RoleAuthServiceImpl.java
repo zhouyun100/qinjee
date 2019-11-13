@@ -144,14 +144,13 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public int addRoleGroup(Integer parentRoleGroupId, String roleGroupName, Integer companyId, Integer operatorId) {
+    public int addRoleGroup(String roleGroupName, Integer companyId, Integer operatorId) {
 
-        if(null == parentRoleGroupId || StringUtils.isEmpty(roleGroupName) || null == companyId || null == operatorId){
+        if(StringUtils.isEmpty(roleGroupName) || null == companyId || null == operatorId){
             return 0;
         }
         int resultNumber;
         RoleGroup roleGroup = new RoleGroup();
-        roleGroup.setParentRoleGroupId(parentRoleGroupId);
         roleGroup.setRoleGroupName(roleGroupName);
         roleGroup.setCompanyId(companyId);
         roleGroup.setOperatorId(operatorId);
@@ -160,14 +159,15 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public int addRole(Integer roleGroupId, String roleName, Integer operatorId) {
-        if(null == roleGroupId || StringUtils.isEmpty(roleName) || null == operatorId){
+    public int addRole(Integer roleGroupId, String roleName, Integer companyId, Integer operatorId) {
+        if(StringUtils.isEmpty(roleName) || null == roleGroupId || null == companyId || null == operatorId){
             return 0;
         }
         int resultNumber;
         Role role = new Role();
         role.setRoleGroupId(roleGroupId);
         role.setRoleName(roleName);
+        role.setCompanyId(companyId);
         role.setOperatorId(operatorId);
         resultNumber = roleAuthDao.addRole(role);
         return resultNumber;

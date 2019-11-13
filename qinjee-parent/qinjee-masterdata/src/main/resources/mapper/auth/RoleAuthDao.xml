@@ -111,14 +111,14 @@
 
     <!-- 新增角色组 -->
     <insert id="addRoleGroup" keyColumn="role_group_id" keyProperty="roleGroupId" parameterType="com.qinjee.masterdata.model.entity.RoleGroup" useGeneratedKeys="true">
-    insert into t_role_group (role_group_name, parent_role_group_id, company_id, operator_id)
-    values (#{parentRoleGroupId,jdbcType=INTEGER}, #{roleGroupName,jdbcType=VARCHAR},#{companyId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    insert into t_role_group (role_group_name, company_id, operator_id)
+    values (#{roleGroupName,jdbcType=VARCHAR},#{companyId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
     </insert>
 
     <!-- 新增角色 -->
     <insert id="addRole" keyColumn="role_id" keyProperty="roleId" parameterType="com.qinjee.masterdata.model.entity.Role" useGeneratedKeys="true">
-    insert into t_role (role_name, role_group_id, operator_id)
-    values (#{roleName,jdbcType=VARCHAR}, #{roleGroupId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER})
+    insert into t_role (role_name, role_group_id, company_id, operator_id)
+    values (#{roleName,jdbcType=VARCHAR}, #{roleGroupId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER})
     </insert>
 
     <!-- 修改角色 -->
