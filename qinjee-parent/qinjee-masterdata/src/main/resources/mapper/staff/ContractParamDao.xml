@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.ContractParam">
+        <id column="contract_param_id" jdbcType="INTEGER" property="contractParamId" />
+        <result column="contract_param_name" jdbcType="VARCHAR" property="contractParamName" />
+        <result column="contract_param_describe" jdbcType="VARCHAR" property="contractParamDescribe" />
+        <result column="application_scope_code" jdbcType="VARCHAR" property="applicationScopeCode" />
+        <result column="remember_days" jdbcType="SMALLINT" property="rememberDays" />
+        <result column="contract_rule_prefix" jdbcType="VARCHAR" property="contractRulePrefix" />
+        <result column="date_rule" jdbcType="VARCHAR" property="dateRule" />
+        <result column="contract_rule_infix" jdbcType="VARCHAR" property="contractRuleInfix" />
+        <result column="digit_capacity" jdbcType="SMALLINT" property="digitCapacity" />
+        <result column="contract_rule_suffix" jdbcType="VARCHAR" property="contractRuleSuffix" />
+        <result column="company_id" jdbcType="INTEGER" property="companyId" />
+        <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+    </resultMap>
+    <sql id="Base_Column_List">
+   contract_param_name,contract_param_describe,application_scope_code,remember_days,contract_rule_prefix,date_rule,
+   contract_rule_infix,digit_capacity,contract_rule_suffix,company_id,is_enable,operator_id,update_time,is_delete
+  </sql>
+    <insert id="insertSelective" parameterType="com.qinjee.masterdata.model.entity.ContractParam" useGeneratedKeys="true">
+        insert into t_contract_param
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractParamName != null">
+                contract_param_name,
+            </if>
+            <if test="contractParamDescribe != null">
+                contract_param_describe,
+            </if>
+            <if test="applicationScopeCode != null">
+                application_scope_code,
+            </if>
+            <if test="rememberDays != null">
+                remember_days,
+            </if>
+            <if test="contractRulePrefix != null">
+                contract_rule_prefix,
+            </if>
+            <if test="dateRule != null">
+                date_rule,
+            </if>
+            <if test="contractRuleInfix != null">
+                contract_rule_infix,
+            </if>
+            <if test="digitCapacity != null">
+                digit_capacity,
+            </if>
+            <if test="contractRuleSuffix != null">
+                contract_rule_suffix,
+            </if>
+            <if test="isEnable != null">
+                is_enable,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractParamName != null">
+                #{contract_param_name}
+            </if>
+            <if test="contractParamDescribe != null">
+                #{contract_param_describe},
+            </if>
+            <if test="applicationScopeCode != null">
+                {#application_scope_code},
+            </if>
+            <if test="rememberDays != null">
+                {#remember_days},
+            </if>
+            <if test="contractRulePrefix != null">
+                {#contract_rule_prefix},
+            </if>
+            <if test="dateRule != null">
+                {#date_rule},
+            </if>
+            <if test="contractRuleInfix != null">
+                {#contract_rule_infix},
+            </if>
+            <if test="digitCapacity != null">
+                {# digit_capacity},
+            </if>
+            <if test="contractRuleSuffix != null">
+                {#contract_rule_suffix},
+            </if>
+            <if test="isEnable != null">
+                {#is_enable},
+            </if>
+            <if test="operatorId != null">
+                {#operator_id},
+            </if>
+            <if test="companyId != null">
+                {#company_id},
+            </if>
+            <if test="updateTime != null">
+                {#update_time},
+            </if>
+            <if test="isDelete != null">
+                {#is_delete},
+            </if>
+
+        </trim>
+    </insert>
+</mapper>

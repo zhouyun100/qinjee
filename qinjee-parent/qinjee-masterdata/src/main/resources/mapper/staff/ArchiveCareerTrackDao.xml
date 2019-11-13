@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.ArchiveCareerTrack">
+        <id column="change_id" jdbcType="INTEGER" property="changeId" />
+        <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+        <result column="change_type" jdbcType="VARCHAR" property="changType" />
+        <result column="effective_date" jdbcType="TIMESTAMP" property="effectiveDate" />
+        <result column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="post_id" jdbcType="INTEGER" property="postId" />
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+</mapper>

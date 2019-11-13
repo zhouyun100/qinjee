@@ -2,19 +2,16 @@ package com.qinjee.utils;
 
 import com.github.qcloudsms.SmsMultiSender;
 import com.github.qcloudsms.SmsMultiSenderResult;
+import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.httpclient.HTTPException;
 import com.github.qcloudsms.httpclient.PoolingHTTPClient;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.List;
-
 /**
  * @author Administrator
- *
  */
 public class SendMessage {
-
     public static class SmsThread extends Thread {
         private final SmsMultiSender msender;
         private final String nationCode;
@@ -57,37 +54,31 @@ public class SendMessage {
             }
         }
     }
-    public static void sendMessageMany(int appid, String appkey, int templateId, String smsSign, List<String> phoneNumber, List<String> param) {
-        // 创建一个连接池 httpclient, 并设置最大连接量为10
 
-        PoolingHTTPClient httpclient = new PoolingHTTPClient(10);
+        public static void sendMessage() throws InterruptedException {
+            // 创建一个连接池 httpclient, 并设置最大连接量为10
+            PoolingHTTPClient httpclient = new PoolingHTTPClient(10);
 
-        // 创建 SmsSingleSender 时传入连接池 http client
-        SmsMultiSender smsMultiSender = new SmsMultiSender(appid, appkey, httpclient);
-        String[] phoneNumbers = (String[]) phoneNumber.toArray();
-        String[] params = (String[]) param.toArray();
-        // 创建线程
-        SmsThread[] threads = new SmsThread[phoneNumber.size()];
-        for (int i = 0; i < phoneNumber.size(); i++) {
-            threads[i] = new SmsThread(smsMultiSender, "86", appid, appkey, templateId, smsSign, phoneNumbers, params);
-        }
+            // 创建 SmsSingleSender 时传入连接池 http client
+            SmsSingleSender ssender = new SmsSingleSender(appid, appkey, httpclient);
 
-        // 运行线程
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].start();
-        }
-
-        // join 线程
-        for (int i = 0; i < threads.length; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            // 创建线程
+            SmsThread[] threads = new SmsThread[phoneNumbers.length];
+            for (int i = 0; i < phoneNumbers.length; i++) {
+                threads[i] = new SmsThread(ssender, "86", phoneNumbers[i], "您验证码是：5678");
             }
+
+            // 运行线程
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].start();
+            }
+
+            // join 线程
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
+
+            // 关闭连接池 httpclient
+            httpclient.close();
         }
-
-        // 关闭连接池 httpclient
-        httpclient.close();
-    }
-
 }

@@ -1,57 +1,58 @@
-package com.qinjee.masterdata.service.staff.impl;
+package com.qinjee.masterdata.service.employeenumberrule.impl;
 
 import com.qinjee.masterdata.dao.EmployeeNumberRuleDao;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
+import com.qinjee.masterdata.model.entity.ContractParam;
 import com.qinjee.masterdata.model.entity.EmployeeNumberRule;
+import com.qinjee.masterdata.model.vo.staff.ContractParamVo;
+import com.qinjee.masterdata.model.vo.staff.CreatNumberVo;
 import com.qinjee.masterdata.model.vo.staff.EmployeeNumberRuleVo;
-import com.qinjee.masterdata.service.staff.EmployeeNumberRuleService;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
-import com.qinjee.model.response.ResponseResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月25日 09:47:00
+ * @author Administrator
  */
-@Service
-public class EmployeeNumberRuleServiceImpl implements EmployeeNumberRuleService {
-
+public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService {
     @Autowired
     private EmployeeNumberRuleDao employeeNumberRuleDao;
+    @Autowired
+    private ContractParamDao contractParamDao;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseResult addEmployeeNumberRule(EmployeeNumberRuleVo employeeNumberRuleVo, UserSession userSession) {
+    public void addEmployeeNumberRule(EmployeeNumberRuleVo employeeNumberRuleVo, UserSession userSession) {
         EmployeeNumberRule employeeNumberRule = new EmployeeNumberRule();
         BeanUtils.copyProperties(employeeNumberRuleVo, employeeNumberRule);
         employeeNumberRule.setOperatorId(userSession.getArchiveId());
         employeeNumberRule.setCompanyId(userSession.getCompanyId());
         employeeNumberRule.setIsDelete((short) 0);
         employeeNumberRuleDao.insertSelective(employeeNumberRule);
-        return new ResponseResult();
     }
 
     @Override
-    public ResponseResult<String> createEmployeeNumber(Integer id,UserSession userSession) throws Exception {
-        EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey(id);
-        if(employeeNumberRule==null){
-            throw new Exception("没有你要找的工号生成规则码");
-        }
-        String employeeNumberPrefix = employeeNumberRule.getEmployeeNumberPrefix();
-        String dateModel = getDateModel(employeeNumberRule.getDateRule());
-        String employeeNumberInfix = employeeNumberRule.getEmployeeNumberInfix();
-        String employeeNumberSuffix = employeeNumberRule.getEmployeeNumberSuffix();
-        String digtaNumber = getDigtaNumber(employeeNumberRule.getDigitCapacity(), userSession.getArchiveId());
-        String s = employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
-        return new ResponseResult(s, CommonCode.SUCCESS);
+    public void addContractParam(ContractParamVo contractParamVo, UserSession userSession) {
+        ContractParam contractParam=new ContractParam();
+        contractParam.setCompanyId(userSession.getCompanyId());
+        contractParam.setIsDelete((short) 0);
+        contractParam.setOperatorId(userSession.getArchiveId());
+        contractParamDao.insertSelective(contractParam);
+    }
+
+    @Override
+    public String createNumber(CreatNumberVo creatNumberVo, UserSession userSession) throws Exception {
+        String employeeNumberPrefix = creatNumberVo.getRulePrefix();
+        String dateModel = getDateModel(creatNumberVo.getDateRule());
+        String employeeNumberInfix = creatNumberVo.getRulePrefix();
+        String employeeNumberSuffix = creatNumberVo.getRuleInfix();
+        String digtaNumber = getDigtaNumber(creatNumberVo.getDigitCapacity(), userSession.getArchiveId());
+        return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
     }
 
     private String getDateModel(String rule) {
@@ -90,24 +91,22 @@ public class EmployeeNumberRuleServiceImpl implements EmployeeNumberRuleService 
         return null;
     }
 
-    private String getDigtaNumber(short capacity, Integer id) throws Exception {
+    private String getDigtaNumber(short capacity, Integer number) throws Exception {
         String t = "";
-        String s = String.valueOf(id);
+        String s = String.valueOf(number);
         if (s.length() > capacity) {
             throw new Exception("sorry,你选的位数不够");
         }
         if (s.length() == capacity) {
-            return String.valueOf(id);
+            return String.valueOf(number);
         }
         if (s.length() < capacity) {
             int i = capacity - s.length();
             for (int j = 0; j < i; j++) {
                 t += "0";
             }
-            return t + id;
+            return t + number;
         }
         return null;
     }
-
-
 }
