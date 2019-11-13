@@ -78,12 +78,11 @@ public interface RoleAuthService {
     /**
      * 修改角色组
      * @param roleGroupId
-     * @param parentRoleGroupId
      * @param roleGroupName
      * @param operatorId
      * @return
      */
-    int updateRoleGroup(Integer roleGroupId, Integer parentRoleGroupId, String roleGroupName, Integer operatorId);
+    int updateRoleGroup(Integer roleGroupId, String roleGroupName, Integer operatorId);
 
     /**
      * 根据角色ID删除角色

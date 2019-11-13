@@ -26,7 +26,7 @@
         <result column="org_type" jdbcType="VARCHAR" property="orgType" />
         <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
-        <result column="has_menu" jdbcType="INTEGER" property="hasOrg" />
+        <result column="has_org" jdbcType="INTEGER" property="hasOrg" />
     </resultMap>
 
     <resultMap id="CustomArchiveTableFieldResultMap" type="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
@@ -39,10 +39,10 @@
     <!--根据企业ID查询角色列表 -->
     <select id="searchRoleTree" parameterType="java.lang.Integer" resultMap="RoleGroupResultMap">
         select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type
-        from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER}
+        from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
         UNION ALL
         select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'ROLE' as role_type
-        from t_role where t_role.company_id = #{companyId,jdbcType=INTEGER}
+        from t_role where t_role.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
     </select>
 
     <!--根据角色ID和企业ID查询角色菜单树 -->
@@ -79,10 +79,10 @@
 
     <!--根据角色ID和企业ID查询角色机构树 -->
     <select id="searchOrgAuthTree" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" resultMap="OrgResultMap">
-        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_fullname,
+        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_full_name,
         CASE WHEN t.org_id is not NULL THEN 1 ELSE 0 END has_org from (
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
-        t_organization.org_parent_id,t_organization.org_fullname
+        t_organization.org_parent_id,t_organization.org_full_name
         from t_role_org_auth,t_role,t_user_role,t_organization
         where t_user_role.archive_id = #{operatorId,jdbcType=INTEGER}
         and (t_user_role.is_trusteeship = 0
@@ -99,7 +99,7 @@
         and t_organization.is_enable = 1
         GROUP BY t_organization.org_id,t_organization.org_code,
         t_organization.org_name,t_organization.org_type,
-        t_organization.org_parent_id,t_organization.org_fullname) v
+        t_organization.org_parent_id,t_organization.org_full_name) v
         LEFT JOIN (
         select t_role_org_auth.org_id from t_role_org_auth,t_role
         where t_role.role_id = #{roleId,jdbcType=INTEGER}
@@ -129,7 +129,7 @@
 
     <!-- 修改角色组 -->
     <update id="updateRoleGroup" parameterType="com.qinjee.masterdata.model.entity.RoleGroup">
-        update t_role_group set role_group_name = #{roleGroupName,jdbcType=VARCHAR},parent_role_group_id = #{parentRoleGroupId,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
+        update t_role_group set role_group_name = #{roleGroupName,jdbcType=VARCHAR},operator_id = #{operatorId,jdbcType=INTEGER}
         where role_group_id = #{roleGroupId,jdbcType=INTEGER} and is_delete = 0
     </update>
 

@@ -189,14 +189,13 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public int updateRoleGroup(Integer roleGroupId, Integer parentRoleGroupId, String roleGroupName, Integer operatorId) {
-        if(null == roleGroupId || null == parentRoleGroupId || StringUtils.isEmpty(roleGroupName) || null == operatorId){
+    public int updateRoleGroup(Integer roleGroupId, String roleGroupName, Integer operatorId) {
+        if(null == roleGroupId || StringUtils.isEmpty(roleGroupName) || null == operatorId){
             return 0;
         }
         int resultNumber;
         RoleGroup roleGroup = new RoleGroup();
         roleGroup.setRoleGroupId(roleGroupId);
-        roleGroup.setParentRoleGroupId(parentRoleGroupId);
         roleGroup.setRoleGroupName(roleGroupName);
         roleGroup.setOperatorId(operatorId);
         resultNumber = roleAuthDao.updateRoleGroup(roleGroup);
@@ -303,7 +302,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     }
                 }
             }
-            orgIdList.remove(tempOrgIdList);
+            orgIdList.removeAll(tempOrgIdList);
             for(Integer orgId : orgIdList){
                 roleOrgAuth.setOrgId(orgId);
                 rowNumber = roleAuthDao.addRoleOrgAuth(roleOrgAuth);
@@ -312,7 +311,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         }
 
         if(!CollectionUtils.isEmpty(organizationList)){
-            organizationList.remove(tempOrganizationList);
+            organizationList.removeAll(tempOrganizationList);
             for(OrganizationVO organization : organizationList){
                 roleOrgAuth.setOrgId(organization.getOrgId());
                 rowNumber = roleAuthDao.delRoleOrgAuth(roleOrgAuth);

@@ -197,14 +197,13 @@ public class RoleAuthController extends BaseController{
     @ApiOperation(value="修改角色组", notes="修改角色组")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "parentRoleGroupId", value = "父级角色组ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleGroupName", value = "角色组名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/updateRoleGroup",method = RequestMethod.GET)
-    public ResponseResult updateRoleGroup(Integer roleGroupId, Integer parentRoleGroupId, String roleGroupName) {
-        if(null == roleGroupId || null == parentRoleGroupId || StringUtils.isEmpty(roleGroupName)){
+    public ResponseResult updateRoleGroup(Integer roleGroupId, String roleGroupName) {
+        if(null == roleGroupId || StringUtils.isEmpty(roleGroupName)){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("角色组或父角色不能为空!");
+            responseResult.setMessage("角色组不能为空!");
             return responseResult;
         }
         try{
@@ -214,17 +213,17 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.updateRoleGroup(roleGroupId, parentRoleGroupId, roleGroupName, userSession.getArchiveId());
+            int resultNumber = roleAuthService.updateRoleGroup(roleGroupId, roleGroupName, userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("updateRole success！roleGroupId={},parentRoleGroupId={},roleGroupName={},operatorId={}", roleGroupId, parentRoleGroupId, roleGroupName, userSession.getArchiveId());
+                logger.info("updateRole success！roleGroupId={},roleGroupName={},operatorId={}", roleGroupId, roleGroupName, userSession.getArchiveId());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("updateRole fail！roleGroupId={},parentRoleGroupId={},roleGroupName={},operatorId={}", roleGroupId, parentRoleGroupId, roleGroupName, userSession.getArchiveId());
+                logger.info("updateRole fail！roleGroupId={},roleGroupName={},operatorId={}", roleGroupId, roleGroupName, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
             }
 
         }catch (Exception e){
-            logger.info("updateRole exception！roleGroupId={},parentRoleGroupId={},roleGroupName={},exception={}", roleGroupId, parentRoleGroupId, roleGroupName, e.toString());
+            logger.info("updateRole exception！roleGroupId={},roleGroupName={},exception={}", roleGroupId, roleGroupName, e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色组异常！");
@@ -381,7 +380,7 @@ public class RoleAuthController extends BaseController{
     }
 
 
-    @ApiOperation(value="查询角色机限树", notes="根据角色ID查询机构树")
+    @ApiOperation(value="根据角色ID查询角色机构权限树", notes="根据角色ID查询角色机构权限树")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
