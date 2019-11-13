@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.dao;
+package com.qinjee.masterdata.dao.email;
 
 import com.qinjee.masterdata.model.entity.EmailTemplete;
 

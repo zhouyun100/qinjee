@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.EmailTempleteDao">
+<mapper namespace="com.qinjee.masterdata.dao.email.EmailTempleteDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.EmailTemplete">
     <id column="email_templete_id" jdbcType="INTEGER" property="emailTempleteId" />
     <result column="email_templete_title" jdbcType="VARCHAR" property="emailTempleteTitle" />
