@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,8 +93,10 @@ public class SmsRecordServiceImpl implements SmsRecordService {
         /**
          * 根据短信模板内容替换相应的参数内容
          */
-        templateMsg.replace("{1}",params.get(0)).replace("{2}",params.get(1));
-        smsRecord.setSendMsg(templateMsg);
+        MessageFormat messageFormat = new MessageFormat(templateMsg);
+        String[] param = new String[params.size()];
+        params.toArray(param);
+        smsRecord.setSendMsg(messageFormat.format(param));
         smsRecord.setSendTime(new Date());
         smsRecord.setNationCode("86");
         smsRecord.setSmsConfigId(smsConfig.getSmsConfigId());

@@ -74,7 +74,7 @@ public class UserLoginController extends BaseController{
             }
 
             String redisPhoneLoginCode = redisClusterService.get("LOGIN_" + phone);
-            if(redisPhoneLoginCode.isEmpty() || redisPhoneLoginCode.equals(code)){
+            if(redisPhoneLoginCode.isEmpty() || !redisPhoneLoginCode.equals(code)){
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("手机号验证码无效!");
                 return responseResult;
