@@ -2,8 +2,6 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
-import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -18,11 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -536,70 +532,9 @@ public class CommonController extends BaseController {
 
     }
 
-    /**
-     * 文件上传
-     * 这里需要传文件的路径，上传的地址由后端建立文件然后确定上传位置
-     */
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
-    @ApiOperation(value = "文件上传", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
-    public ResponseResult uploadFile(MultipartFile multipartFile, @Valid AttachmentVo attachmentVo) {
-        Boolean b = checkParam(multipartFile,attachmentVo,getUserSession());
-        if (b) {
-            try {
-                staffCommonService.putFile(multipartFile,attachmentVo,getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("文件上传失败");
-            }
-        }
-        return failResponseResult("session失效");
-    }
-    /**
-     * 获得文件路径
-     */
-    @CrossOrigin
-    @RequestMapping(value = "/getFilePath", method = RequestMethod.POST)
-    @ApiOperation(value = "获得文件路径", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文档路径", paramType = "query", required = true)
-    public ResponseResult<List<URL>> getFilePath(@Valid  GetFilePath getFilePath) {
-        Boolean b = checkParam(getFilePath,getUserSession());
-        if (b) {
-            try {
-                List<URL> list=staffCommonService.getFilePath(getFilePath,getUserSession());
-                if(list.size()>0){
-                    return new ResponseResult<>(list,CommonCode.SUCCESS);
-                }else{
-                    ResponseResult<List<URL>> listResponseResult = new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-                    return listResponseResult;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-    }
-    /**
-     * 文件下载
-     */
-    @RequestMapping(value = "/downLoadFile", method = RequestMethod.POST)
-    @ApiOperation(value = "文件下载", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "数据库查询出来的对象键", paramType = "query", required = true)
 
-    public ResponseResult downLoadFile(HttpServletResponse response,String path) {
-        Boolean b = checkParam(response,path);
-        if(b) {
-            try {
-                staffCommonService.downLoadFile(response,path);
-               return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("下载文件失败！");
-            }
-        }
-        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-    }
+
+
 
     /**
      * 模板导出档案

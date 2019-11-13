@@ -22,4 +22,8 @@ public interface AttachmentRecordDao {
     int updateByPrimaryKey(AttachmentRecord record);
 
     List<String> selectFilePath(@Param("getFilePath") GetFilePath getFilePath, @Param("companyId") Integer companyId);
+
+    void deleteByIdList(@Param("list") List<Integer> list);
+
+    List<AttachmentRecord> selectAttach(@Param("businessModule") String businessModule, @Param("businessType") String businessType, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 }

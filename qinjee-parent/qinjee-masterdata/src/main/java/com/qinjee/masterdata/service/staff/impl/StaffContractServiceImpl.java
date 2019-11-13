@@ -45,6 +45,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private static final String RENEWREJECT = "不同意续签";
     private static final String ENDSTATUS = "ENDSTATUS";
     private static final String RELESESTATUS = "RELESESTATUS";
+    private static final String NOTCONFIRM = "待确认";
+    private static final String CONFIRM = "已确认";
     @Autowired
     private LaborContractDao laborContractDao;
     @Autowired
@@ -286,16 +288,19 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public void insertLaborContractIntention(Integer id,UserSession userSession) {
-          //根据档案id找到员工档案关系表中的合同开始时间，结束时间以及类型
-            UserArchivePostRelation relation=userArchivePostRelationDao.selectByArcId(id);
-            ContractRenewalIntention contractRenewalIntention = new ContractRenewalIntention();
-            contractRenewalIntention.setArchiveId(id);
-            contractRenewalIntention.setContractBeginDate(relation.getEmploymentBeginDate());
-            contractRenewalIntention.setContractEndDate(relation.getEmploymentEndDate());
-            contractRenewalIntention.setContractPeriodType(relation.getEmploymentType());
-            contractRenewalIntention.setOperatorId(userSession.getArchiveId());
-            contractRenewalIntentionDao.insertSelective(contractRenewalIntention);
+    @Transactional(rollbackFor = Exception.class)
+    public void insertLaborContractIntention(List<Integer> list,UserSession userSession) {
+        List<ContractRenewalIntention> contractRenewalIntentions=new ArrayList<>();
+        //根据档案id找到合同表中的合同信息
+        List<LaborContract> laborContractList=laborContractDao.selectContractByarcIdList(list);
+        for (LaborContract laborContract : laborContractList) {
+            ContractRenewalIntention cri=new ContractRenewalIntention();
+            BeanUtils.copyProperties(laborContract,cri);
+            cri.setOperatorId(userSession.getArchiveId());
+            cri.setIntensionStatus(NOTCONFIRM);
+            contractRenewalIntentions.add(cri);
+        }
+        contractRenewalIntentionDao.insertBatch(contractRenewalIntentions);
     }
 
     @Override
@@ -311,6 +316,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
                 contractRenewalIntentionDao.selectByPrimaryKey(xuqianId);
         //更改续签意向表
             contractRenewalIntention.setRenewalOpinion(RENEWAGREE);
+            contractRenewalIntention.setIntensionStatus(CONFIRM);
+            //TODO 还剩续签意见还未设置
             contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
     }
 
@@ -321,6 +328,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
                 contractRenewalIntentionDao.selectByPrimaryKey(xuqianId);
             //更改续签意向表
             contractRenewalIntention.setRenewalOpinion(RENEWREJECT);
+            contractRenewalIntention.setIntensionStatus(CONFIRM);
             contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
             //前端跳转至解除合同页面
     }
@@ -340,7 +348,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //根据机构id找到档案
         List<Integer> arcList = userArchiveDao.selectByOrgId(id);
         //根据档案id找到合同主体
-        List<LaborContract> laborContractList = laborContractDao.selectContractByArcId(arcList);
+        List<LaborContract> laborContractList = laborContractDao.selectContractByarcIdList(arcList);
         for (LaborContract laborContract : laborContractList) {
             if (GetDayUtil.getDay(laborContract.getContractEndDate(), new Date()) < 3) {
                 //根据合同id找到档案id

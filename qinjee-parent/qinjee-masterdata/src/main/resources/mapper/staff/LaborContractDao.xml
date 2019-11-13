@@ -290,7 +290,7 @@
         #{item}
       </foreach>
     </select>
-  <select id="selectContractByArcId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
+  <select id="selectContractByarcIdList" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from t_labor_contract

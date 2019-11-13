@@ -188,4 +188,24 @@
     and   company_id = #{companyId,jdbcType=INTEGER}
     and   is_delete=0
   </select>
+  <update id="deleteByIdList">
+    update  t_attachment_record
+    set
+    is_delete=1
+    where
+    attachment_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+  <select id="selectAttach" resultType="com.qinjee.masterdata.model.entity.AttachmentRecord">
+    select * from
+    t_attachment_record
+    where
+    business_id = #{archiveId,jdbcType=INTEGER}
+    and   business_type = #{businessType,jdbcType=VARCHAR}
+    and   business_module = #{businessModule,jdbcType=VARCHAR}
+    and   company_id = #{companyId,jdbcType=INTEGER}
+    and is_delete=0
+  </select>
 </mapper>
