@@ -221,19 +221,21 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @RequestMapping(value = "/sendMessage ", method = RequestMethod.GET)
     @ApiOperation(value = "短信发送入职登记表", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "list", value = "预入职登记表id组成的集合", paramType = "query", required = true),
-            @ApiImplicitParam(name = "templateId", value = "短信模板", paramType = "query", required = true),
-            @ApiImplicitParam(name = "list", value = "所传参数", paramType = "query", required = true),
-
-    })
-    public ResponseResult sendMessage(List<Integer> list, Integer templateId, List<String> params) {
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "list", value = "预入职登记表id组成的集合", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "templateId", value = "短信模板", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "所传参数", paramType = "query", required = true),
+//
+//    })
+    public ResponseResult sendMessage(@RequestParam List<Integer> list, Integer templateId, @RequestParam List<String> params) {
         Boolean b = checkParam(list,templateId,params);
         if(b){
             try {
                 staffPreEmploymentService.sendMessage(list,templateId,params);
+
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("发短信给预入职人员失败");
             }
         }
