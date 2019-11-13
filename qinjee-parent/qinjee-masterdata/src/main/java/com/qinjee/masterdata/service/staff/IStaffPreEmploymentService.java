@@ -12,14 +12,6 @@ import java.util.Map;
  * @author Administrator
  */
 public interface IStaffPreEmploymentService {
-    /**
-     * 发送短信
-     * @param list
-     * @param templateId
-     * @param params
-     * @return
-     */
-    void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception;
 
     /**
      * 发送邮件

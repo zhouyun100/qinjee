@@ -11,6 +11,7 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.model.request.UserSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
@@ -19,6 +20,7 @@ import java.util.Date;
 /**
  * @author Administrator
  */
+@Service
 public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService {
     @Autowired
     private EmployeeNumberRuleDao employeeNumberRuleDao;
@@ -35,16 +37,17 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         employeeNumberRule.setIsDelete((short) 0);
         employeeNumberRuleDao.insertSelective(employeeNumberRule);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addContractParam(ContractParamVo contractParamVo, UserSession userSession) {
         ContractParam contractParam=new ContractParam();
+        BeanUtils.copyProperties(contractParamVo,contractParam);
         contractParam.setCompanyId(userSession.getCompanyId());
         contractParam.setIsDelete((short) 0);
         contractParam.setOperatorId(userSession.getArchiveId());
         contractParamDao.insertSelective(contractParam);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String createNumber(CreatNumberVo creatNumberVo, UserSession userSession) throws Exception {
         String employeeNumberPrefix = creatNumberVo.getRulePrefix();

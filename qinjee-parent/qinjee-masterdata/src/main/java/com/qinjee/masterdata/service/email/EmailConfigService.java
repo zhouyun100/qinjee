@@ -25,4 +25,5 @@ public interface EmailConfigService {
      */
     EmailConfig getEmailConfigByCompanyId(Integer companyId);
 
+
 }

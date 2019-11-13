@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.sms.impl;
 
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.SmsConfig;
 import com.qinjee.masterdata.model.entity.SmsRecord;
 import com.qinjee.masterdata.redis.RedisClusterService;
@@ -20,6 +21,7 @@ import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +38,8 @@ public class SmsRecordServiceImpl implements SmsRecordService {
      * 短信验证码有效分钟数
      */
     private static final int SMS_CODE_VALID_MINUTE = 5;
+    private static final String APPKEY = "91c94cbe664487bbfb072e717957e08f";
+    private static final Integer APPID = 1400249114;
 
     @Autowired
     private SmsRecordDao smsRecordDao;
@@ -45,6 +49,20 @@ public class SmsRecordServiceImpl implements SmsRecordService {
 
     @Autowired
     private SmsConfigService smsConfigService;
+    @Autowired
+    private  PreEmploymentDao preEmploymentDao;
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception {
+        Integer max = preEmploymentDao.selectMaxId();
+        for (Integer integer : list) {
+            if (max < integer) {
+                throw new Exception("id出错");
+            }
+        }
+        List<String> phoneNumber = preEmploymentDao.getPhoneNumber(list);
+        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phoneNumber, params);
+    }
 
     @Override
     public void sendSmsLoginCode(String phone) {
@@ -80,6 +98,5 @@ public class SmsRecordServiceImpl implements SmsRecordService {
         smsRecord.setNationCode("86");
         smsRecord.setSmsConfigId(smsConfig.getSmsConfigId());
         smsRecordDao.insertSelective(smsRecord);
-
     }
 }
