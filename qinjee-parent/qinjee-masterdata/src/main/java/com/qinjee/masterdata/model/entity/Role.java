@@ -29,6 +29,11 @@ public class Role implements Serializable {
     private Short isSystemDefine;
 
     /**
+     * 企业ID
+     */
+    private Integer companyId;
+
+    /**
      * 操作人ID
      */
     private Integer operatorId;
@@ -80,6 +85,14 @@ public class Role implements Serializable {
 
     public void setIsSystemDefine(Short isSystemDefine) {
         this.isSystemDefine = isSystemDefine;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
     }
 
     public Integer getOperatorId() {

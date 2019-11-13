@@ -144,14 +144,13 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public int addRoleGroup(Integer parentRoleGroupId, String roleGroupName, Integer companyId, Integer operatorId) {
+    public int addRoleGroup(String roleGroupName, Integer companyId, Integer operatorId) {
 
-        if(null == parentRoleGroupId || StringUtils.isEmpty(roleGroupName) || null == companyId || null == operatorId){
+        if(StringUtils.isEmpty(roleGroupName) || null == companyId || null == operatorId){
             return 0;
         }
         int resultNumber;
         RoleGroup roleGroup = new RoleGroup();
-        roleGroup.setParentRoleGroupId(parentRoleGroupId);
         roleGroup.setRoleGroupName(roleGroupName);
         roleGroup.setCompanyId(companyId);
         roleGroup.setOperatorId(operatorId);
@@ -160,14 +159,15 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public int addRole(Integer roleGroupId, String roleName, Integer operatorId) {
-        if(null == roleGroupId || StringUtils.isEmpty(roleName) || null == operatorId){
+    public int addRole(Integer roleGroupId, String roleName, Integer companyId, Integer operatorId) {
+        if(StringUtils.isEmpty(roleName) || null == roleGroupId || null == companyId || null == operatorId){
             return 0;
         }
         int resultNumber;
         Role role = new Role();
         role.setRoleGroupId(roleGroupId);
         role.setRoleName(roleName);
+        role.setCompanyId(companyId);
         role.setOperatorId(operatorId);
         resultNumber = roleAuthDao.addRole(role);
         return resultNumber;
@@ -189,14 +189,13 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public int updateRoleGroup(Integer roleGroupId, Integer parentRoleGroupId, String roleGroupName, Integer operatorId) {
-        if(null == roleGroupId || null == parentRoleGroupId || StringUtils.isEmpty(roleGroupName) || null == operatorId){
+    public int updateRoleGroup(Integer roleGroupId, String roleGroupName, Integer operatorId) {
+        if(null == roleGroupId || StringUtils.isEmpty(roleGroupName) || null == operatorId){
             return 0;
         }
         int resultNumber;
         RoleGroup roleGroup = new RoleGroup();
         roleGroup.setRoleGroupId(roleGroupId);
-        roleGroup.setParentRoleGroupId(parentRoleGroupId);
         roleGroup.setRoleGroupName(roleGroupName);
         roleGroup.setOperatorId(operatorId);
         resultNumber = roleAuthDao.updateRoleGroup(roleGroup);
@@ -303,7 +302,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     }
                 }
             }
-            orgIdList.remove(tempOrgIdList);
+            orgIdList.removeAll(tempOrgIdList);
             for(Integer orgId : orgIdList){
                 roleOrgAuth.setOrgId(orgId);
                 rowNumber = roleAuthDao.addRoleOrgAuth(roleOrgAuth);
@@ -312,7 +311,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         }
 
         if(!CollectionUtils.isEmpty(organizationList)){
-            organizationList.remove(tempOrganizationList);
+            organizationList.removeAll(tempOrganizationList);
             for(OrganizationVO organization : organizationList){
                 roleOrgAuth.setOrgId(organization.getOrgId());
                 rowNumber = roleAuthDao.delRoleOrgAuth(roleOrgAuth);
@@ -357,6 +356,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 if(!CollectionUtils.isEmpty(childList)){
                     allRoleGroupList.remove(childList);
                     roleGroupVO.setChildRoleGroupList(childList);
+                }else{
+                    roleGroupVO.setChildRoleGroupList(new ArrayList<>());
                 }
             }
         }
@@ -406,6 +407,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 menuVO.setChildMenuList(childList);
                 allMenuVOList.removeAll(childList);
                 handlerMenuToTree(allMenuVOList,childList);
+            }else{
+                menuVO.setChildMenuList(new ArrayList<>());
             }
         }
     }
@@ -426,6 +429,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                 organizationVO.setChildOrganizationList(childList);
                 allOrgList.removeAll(childList);
                 handlerOrgToTree(allOrgList,childList);
+            }else{
+                organizationVO.setChildOrganizationList(new ArrayList<>());
             }
         }
     }
