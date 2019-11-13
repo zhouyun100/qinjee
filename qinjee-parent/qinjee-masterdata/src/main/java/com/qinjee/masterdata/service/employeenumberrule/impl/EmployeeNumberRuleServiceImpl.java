@@ -44,10 +44,11 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         BeanUtils.copyProperties(contractParamVo,contractParam);
         contractParam.setCompanyId(userSession.getCompanyId());
         contractParam.setIsDelete((short) 0);
+        contractParam.setIsEnable((short) 1);
         contractParam.setOperatorId(userSession.getArchiveId());
         contractParamDao.insertSelective(contractParam);
     }
-    @Transactional(rollbackFor = Exception.class)
+
     @Override
     public String createNumber(CreatNumberVo creatNumberVo, UserSession userSession) throws Exception {
         String employeeNumberPrefix = creatNumberVo.getRulePrefix();
