@@ -220,7 +220,12 @@
   <select id="getPhoneNumber" resultType="java.lang.String">
     select phone
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
+    where employment_id
+    in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and is_delete=0
   </select>
   <select id="getMail" resultType="java.lang.String" >
     select email

@@ -25,4 +25,5 @@ public interface IEmployeeNumberRuleService {
      * @throws Exception
      */
     String createNumber(CreatNumberVo creatNumberVo, UserSession userSession) throws Exception;
+
 }

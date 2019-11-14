@@ -31,10 +31,9 @@ public interface PreEmploymentDao {
 
     /**
      * 根据id得到电话号码
-     * @param integer
      * @return
      */
-    String getPhoneNumber(Integer integer);
+    List<String> getPhoneNumber(@Param("list") List<Integer> list);
 
     /**
      * 根据id得到邮箱

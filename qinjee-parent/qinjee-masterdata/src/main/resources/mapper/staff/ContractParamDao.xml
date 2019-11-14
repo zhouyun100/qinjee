@@ -70,46 +70,46 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="contractParamName != null">
-                #{contract_param_name}
+                #{contractParamName}
             </if>
             <if test="contractParamDescribe != null">
-                #{contract_param_describe},
+                #{contractParamDescribe},
             </if>
             <if test="applicationScopeCode != null">
-                {#application_scope_code},
+                #{applicationScopeCode},
             </if>
             <if test="rememberDays != null">
-                {#remember_days},
+                #{remember_days},
             </if>
             <if test="contractRulePrefix != null">
-                {#contract_rule_prefix},
+                #{contractRulePrefix},
             </if>
             <if test="dateRule != null">
-                {#date_rule},
+                #{dateRule},
             </if>
             <if test="contractRuleInfix != null">
-                {#contract_rule_infix},
+                #{contractRuleInfix},
             </if>
             <if test="digitCapacity != null">
-                {# digit_capacity},
+                #{digitCapacity},
             </if>
             <if test="contractRuleSuffix != null">
-                {#contract_rule_suffix},
+                #{contractRuleSuffix},
             </if>
             <if test="isEnable != null">
-                {#is_enable},
+                #{isEnable},
             </if>
             <if test="operatorId != null">
-                {#operator_id},
+                #{operatorId},
             </if>
             <if test="companyId != null">
-                {#company_id},
+                #{companyId},
             </if>
             <if test="updateTime != null">
-                {#update_time},
+                #{updateTime},
             </if>
             <if test="isDelete != null">
-                {#is_delete},
+                #{isDelete},
             </if>
 
         </trim>

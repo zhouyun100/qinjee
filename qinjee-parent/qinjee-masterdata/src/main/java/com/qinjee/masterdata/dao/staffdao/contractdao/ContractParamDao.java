@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ContractParamDao {
-    void insertSelective(@Param("contractParam") ContractParam contractParam);
+    int insertSelective(ContractParam contractParam);
 }

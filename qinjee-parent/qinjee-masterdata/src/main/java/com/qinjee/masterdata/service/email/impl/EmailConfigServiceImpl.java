@@ -43,7 +43,6 @@ public class EmailConfigServiceImpl implements EmailConfigService {
                     // 获取平台默认的邮件配置信息(当企业未配置邮件信息时使用平台默认配置)
                     emailConfig = emailConfigDao.getEmailConfigByCompanyId(COMPANY_QINJEE_1);
                 }
-
                 // 邮件账号密码密文解密
                 emailConfig.setPassword(AesUtils.aesDecode(emailConfig.getPassword(),emailConfig.getAccount()));
 

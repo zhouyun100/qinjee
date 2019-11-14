@@ -14,7 +14,6 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendManyMailsUtil;
-import com.qinjee.utils.SendMessage;
 import entity.MailConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +37,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private static final String CHANGSTATUS_BLACKLIST = "黑名单";
     private static final String CHANGSTATUS_GIVEUP = "放弃入职";
     private static final String PRE_EMPLOYMENT = "t_pre_employment";
-    private static final String APPKEY = "91c94cbe664487bbfb072e717957e08f";
-    private static final Integer APPID = 1400249114;
+
     @Autowired
     private PreEmploymentDao preEmploymentDao;
     @Autowired
@@ -54,22 +51,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception {
-        List<String> phoneNumbers=new ArrayList<>();
-        Integer max = preEmploymentDao.selectMaxId();
-        for (Integer integer : list) {
-            if (max < integer) {
-                throw new Exception("id出错");
-            }
-            String phoneNumber = preEmploymentDao.getPhoneNumber(integer);
-            phoneNumbers.add(phoneNumber);
-        }
-        //TODO 固定字段需要配置，现已写死
-        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phoneNumbers, params);
 
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
