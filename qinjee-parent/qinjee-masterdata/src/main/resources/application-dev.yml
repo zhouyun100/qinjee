@@ -1,7 +1,7 @@
 spring:
   #应用名
   application:
-    name: masterdata-dev-hkt
+    name: masterdata-dev-zhouyun
 
   #配置国际化
   messages:
@@ -14,7 +14,7 @@ spring:
     url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
     username: qinjee
     password: qinjee2019
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
     # oracle 12c 数据库配置
     #    url: jdbc:oracle:thin:@localhost:1521:QINJEEEHR
