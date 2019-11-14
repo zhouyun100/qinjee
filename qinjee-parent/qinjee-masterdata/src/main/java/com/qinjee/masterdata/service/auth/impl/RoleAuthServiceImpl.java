@@ -257,7 +257,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     }
                 }
             }
-            menuIdList.remove(tempMenuIdList);
+
+            menuIdList.removeAll(tempMenuIdList);
             for(Integer menuId : menuIdList){
                 roleMenuAuth.setMenuId(menuId);
                 rowNumber = roleAuthDao.addRoleMenuAuth(roleMenuAuth);
@@ -266,7 +267,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         }
 
         if(!CollectionUtils.isEmpty(menuList)){
-            menuList.remove(tempMenuList);
+            menuList.removeAll(tempMenuList);
             for(MenuVO menu : menuList){
                 roleMenuAuth.setMenuId(menu.getMenuId());
                 rowNumber = roleAuthDao.delRoleMenuAuth(roleMenuAuth);
@@ -292,8 +293,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         List<OrganizationVO> organizationList = roleAuthDao.searchRoleOrgListByRoleId(roleId);
 
         if(!CollectionUtils.isEmpty(orgIdList)){
-            for(Integer orgId : orgIdList){
-                if(!CollectionUtils.isEmpty(organizationList)){
+            if(!CollectionUtils.isEmpty(organizationList)){
+                for(Integer orgId : orgIdList){
                     for(OrganizationVO organization : organizationList){
                         if(orgId.equals(organization.getOrgId())){
                             tempOrgIdList.add(orgId);
