@@ -6,7 +6,10 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
+import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
+import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
+import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.utils.SqlUtil;
@@ -18,14 +21,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
  */
 @Service
 public class StaffArchiveServiceImpl implements IStaffArchiveService {
+    /**
+     * 档案状态：实习，试用，转正，离职，挂编，兼职
+     * 岗位，部门，
+     *
+     */
     //    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
     private static final String ASC = "升序";
     private static final String DESC = "降序";
@@ -59,7 +69,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
         }
         userArchiveDao.deleteArchiveById(archiveid);
-
     }
 
     @Override
@@ -91,6 +100,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateArchiveField(Map<Integer, String> map) {
+        //TODO 在对档案进行更改时，需要考虑到岗位等进行匹配，记录下想关心息进入员工轨迹表
         customArchiveFieldDao.updatePreEmploymentField(map);
     }
 
@@ -136,7 +146,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException {
         ArchiveShowVo archiveShowVo=new ArchiveShowVo();
         Map<Integer, Map<String, Object>> userArchiveListCustom;
         if (null != schemeId && 0 != schemeId) {
@@ -145,7 +155,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //根据查询方案id，找到对应的字段id与顺序
             //查询字段排序sort
             List<String> stringList=querySchemeFieldDao.selectFieldCode(schemeId);
-
 
             //根据查询方案id，找到排序id与升降序
             //查询查询档案下的排序字段id
@@ -222,7 +231,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
      */
     private String getBaseSql(List<String> strings,Integer companyId){
         List<String> fieldNameNotInside = getFieldNameNotInside(companyId);
-        StringBuffer stringBuffer=new StringBuffer();
+        StringBuilder stringBuffer=new StringBuilder();
         stringBuffer.append("select t.archive_id ,");
 
         for (String string : strings) {

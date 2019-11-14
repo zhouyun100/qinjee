@@ -21,7 +21,7 @@
     <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
     <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
     <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
-    <result column="hire_Date" jdbcType="DATE" property="hireDate" />
+    <result column="hire_date" jdbcType="DATE" property="hireDate" />
     <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
     <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
     <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
@@ -651,6 +651,15 @@
     from  t_user_archive
     where  archive_id=#{businessId}
     and is_delete=0
+  </select>
+  <select id="selectByStatus" resultType="java.lang.Integer">
+    select
+    archive_id
+    from t_user_archive
+    where archive_status in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
 </mapper>
 

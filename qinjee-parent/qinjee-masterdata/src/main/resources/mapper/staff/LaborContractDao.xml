@@ -246,11 +246,7 @@
     </foreach>
   </select>
 
-  <select id="seleltByArcIdSingle" resultType="java.lang.Integer">
-    select archive_id
-    from  t_labor_contract
-    where contract_id = #{integer,jdbcType=INTEGER}
-  </select>
+
   <select id="seleltByArcIdIn" resultType="java.lang.Integer">
     select archive_id
     from  t_labor_contract

@@ -27,7 +27,6 @@ public interface LaborContractDao {
 
     List<Integer> seleltByArcIdIn(@Param("arcList") List<Integer> arcList);
 
-    Integer seleltByArcIdSingle(@Param("integer") Integer integer);
 
     List<LaborContract> selectLabByorgId(@Param("orgId") Integer orgId);
 
@@ -39,5 +38,6 @@ public interface LaborContractDao {
     List<Integer> selectConByArcId(@Param("list") List<Integer> list);
 
     List<LaborContract> selectContractByarcIdList(@Param("arcList") List<Integer> arcList);
+
 
 }

@@ -64,7 +64,7 @@ public class ContractParam implements Serializable {
     /**
      *创建时间
      */
-    private Date    creatTime;
+    private Date    createTime;
     /**
      *修改时间
      */

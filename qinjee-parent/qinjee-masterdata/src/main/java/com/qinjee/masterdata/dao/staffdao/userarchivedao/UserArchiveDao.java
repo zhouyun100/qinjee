@@ -88,4 +88,6 @@ public interface UserArchiveDao {
     List<ExportArcVo> selectDownLoadVoList(@Param("archiveIdList") List<Integer> archiveIdList);
 
     String selectEmployNumber(@Param("businessId") Integer businessId);
+
+    List<Integer> selectByStatus(@Param("strings") List<String> strings);
 }

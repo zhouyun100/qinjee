@@ -1,11 +1,11 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
     @Autowired
-    private UserArchivePostRelationDao userArchivePostRelationDao;
+    private ContractParamDao contractParamDao;
     /**
      * 展示未签合同的人员信息
      *
@@ -149,7 +150,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list,
                                                    UserSession userSession) throws Exception {
-        StringBuffer stringBuffer=new StringBuffer();
+        StringBuilder stringBuffer=new StringBuilder();
             //判断是否有已签合同，根据人员id寻找是否存在已签的
             List<Integer> integerList=laborContractDao.selectConByArcId(list);
 
@@ -343,20 +344,28 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public List<UserArchive> selectArcDeadLine(Integer id) {
-        List<UserArchive> list = new ArrayList<>();
-        //根据机构id找到档案
-        List<Integer> arcList = userArchiveDao.selectByOrgId(id);
-        //根据档案id找到合同主体
-        List<LaborContract> laborContractList = laborContractDao.selectContractByarcIdList(arcList);
-        for (LaborContract laborContract : laborContractList) {
-            if (GetDayUtil.getDay(laborContract.getContractEndDate(), new Date()) < 3) {
-                //根据合同id找到档案id
-                Integer achiveId = laborContractDao.seleltByArcIdSingle(laborContract.getContractId());
-                list.add(userArchiveDao.selectByPrimaryKey(achiveId));
+    public List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list) {
+        HashMap<String,Object> map=new HashMap<>();
+        map.put("companyId",id);
+        List<ContractParam> contractParams = contractParamDao.findContractParamByCondition(map);
+        List<String> strings=new ArrayList<>();
+        strings.add("正式");
+        strings.add("试用");
+        strings.add("实习");
+        List<Integer> integers = userArchiveDao.selectByStatus(strings);
+        return null;
+    }
+    private Integer getDeadLineDays(String status,List<ContractParam> contractParams) throws Exception {
+       List<ContractParam> list=new ArrayList<>();
+        for (ContractParam contractParam : contractParams) {
+            if(status.equals(contractParam.getApplicationScopeCode())){
+                list.add(contractParam);
             }
         }
-        return list;
+        if(list.size()>0){
+            throw new Exception("同类型只能设置一种临近天数");
+        }
+        return Integer.parseInt(list.get(0).getDateRule());
     }
 
     private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) {

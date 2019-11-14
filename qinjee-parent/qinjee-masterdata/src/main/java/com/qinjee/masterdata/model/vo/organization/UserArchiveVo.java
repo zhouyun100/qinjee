@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.model.vo.organization;
 
-import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -49,7 +48,7 @@ public class UserArchiveVo {
      * 入职时间
      */
     @ApiModelProperty("入职时间")
-    private Date hiredate;
+    private Date hireDate;
 
     /**
      * 联系电话

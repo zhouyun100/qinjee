@@ -531,11 +531,11 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.POST)
     @ApiOperation(value = "查询机构下合同即将到期的员工", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id) {
+    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id,@RequestParam List<UserArchive> list) {
         Boolean b = checkParam(id);
         if(b){
             try {
-                List<UserArchive> list = staffContractService.selectArcDeadLine(id);
+                List<UserArchive> userArchives=staffContractService.selectArcDeadLine(id,list);
                 if(list.size()>0){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }else {
