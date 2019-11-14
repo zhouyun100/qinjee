@@ -193,5 +193,5 @@ public interface IStaffContractService {
      * @param id
      * @return
      */
-    List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list);
+    List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list) throws Exception;
 }
