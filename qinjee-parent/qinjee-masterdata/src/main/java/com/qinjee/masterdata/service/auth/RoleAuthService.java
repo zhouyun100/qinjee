@@ -127,12 +127,11 @@ public interface RoleAuthService {
 
     /**
      * 根据角色ID和自定义表ID查询自定义字段列表
-     * @param archiveId
      * @param roleId
      * @param tableId
      * @return
      */
-    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer archiveId, Integer roleId, Integer tableId);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer roleId, Integer tableId);
 
     /**
      * 根据角色ID查询角色自定义表字段列表

@@ -361,14 +361,9 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.updateRoleMenuAuth(roleId, menuIdList, userSession.getArchiveId());
-            if(resultNumber > 0){
-                logger.info("updateRoleMenuAuth success！roleId={}, menuIdList={}, operatorId={}", roleId, menuIdList, userSession.getArchiveId());
-                responseResult = ResponseResult.SUCCESS();
-            }else{
-                logger.info("updateRoleMenuAuth fail！roleId={}, menuIdList={}, operatorId={}", roleId, menuIdList, userSession.getArchiveId());
-                responseResult = ResponseResult.FAIL();
-            }
+            roleAuthService.updateRoleMenuAuth(roleId, menuIdList, userSession.getArchiveId());
+            logger.info("updateRoleMenuAuth success！roleId={}, menuIdList={}, operatorId={}", roleId, menuIdList, userSession.getArchiveId());
+            responseResult = ResponseResult.SUCCESS();
 
         }catch (Exception e){
             logger.info("updateRoleMenuAuth exception！roleId={}, menuIdList={}, exception={}", roleId, menuIdList, e.toString());
@@ -438,14 +433,9 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.updateRoleOrgAuth(roleId, orgIdList, userSession.getArchiveId());
-            if(resultNumber > 0){
-                logger.info("updateRoleOrgAuth success！roleId={},orgIdList={},operatorId={}", roleId, orgIdList,userSession.getArchiveId());
-                responseResult = ResponseResult.SUCCESS();
-            }else{
-                logger.info("updateRoleOrgAuth fail！roleId={},orgIdList={},operatorId={}", roleId, orgIdList,userSession.getArchiveId());
-                responseResult = ResponseResult.FAIL();
-            }
+            roleAuthService.updateRoleOrgAuth(roleId, orgIdList, userSession.getArchiveId());
+            logger.info("updateRoleOrgAuth success！roleId={},orgIdList={},operatorId={}", roleId, orgIdList,userSession.getArchiveId());
+            responseResult = ResponseResult.SUCCESS();
 
         }catch (Exception e){
             logger.info("updateRole exception！roleId={},orgIdList={},exception={}", roleId, orgIdList, e.toString());
@@ -457,7 +447,7 @@ public class RoleAuthController extends BaseController{
     }
 
 
-    @ApiOperation(value="根据企业ID查询角色自定义表列表", notes="根据企业ID查询角色自定义表列表")
+    @ApiOperation(value="查询当前登录企业档案自定义表列表", notes="查询当前登录企业档案自定义表列表")
     @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.GET)
     public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableList() {
         try{
@@ -500,7 +490,7 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByTableId(userSession.getArchiveId(),roleId,tableId);
+            List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByTableId(roleId,tableId);
             logger.info("searchCustomArchiveTableFieldListByTableId success！tableId={}", tableId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(customArchiveTableList);

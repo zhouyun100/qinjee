@@ -329,9 +329,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer archiveId, Integer roleId, Integer tableId) {
+    public List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer roleId, Integer tableId) {
         RequestCustomTableFieldVO requestCustomTableField = new RequestCustomTableFieldVO();
-        requestCustomTableField.setArchiveId(archiveId);
         requestCustomTableField.setRoleId(roleId);
         requestCustomTableField.setTableId(tableId);
         List<CustomArchiveTableFieldVO> customArchiveFieldList = roleAuthDao.searchCustomArchiveTableFieldListByTableId(requestCustomTableField);

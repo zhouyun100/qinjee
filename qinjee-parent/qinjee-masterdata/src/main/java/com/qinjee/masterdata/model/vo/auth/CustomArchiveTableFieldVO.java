@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,6 +33,18 @@ public class CustomArchiveTableFieldVO {
     private Integer tableId;
 
     /**
+     * 物理表名
+     */
+    @ApiModelProperty("物理表名")
+    private String tableCode;
+
+    /**
+     * 功能CODE
+     */
+    @ApiModelProperty("功能CODE")
+    private String funcCode;
+
+    /**
      * 表名
      */
     @ApiModelProperty("表名")
@@ -42,6 +55,12 @@ public class CustomArchiveTableFieldVO {
      */
     @ApiModelProperty("字段ID")
     private Integer fieldId;
+
+    /**
+     * 物理字段名
+     */
+    @ApiModelProperty("物理字段名")
+    private String fieldCode;
 
     /**
      * 字段名

@@ -30,6 +30,20 @@ public class RequestCustomTableFieldVO {
     private Integer tableId;
 
     /**
+     * 物理表名
+     */
+    @ApiModelProperty("物理表名")
+    @QueryColumn("table_code")
+    private String tableCode;
+
+    /**
+     * 功能CODE
+     */
+    @ApiModelProperty("功能CODE")
+    @QueryColumn("func_code")
+    private String funcCode;
+
+    /**
      * 档案ID
      */
     @ApiModelProperty("档案ID")
@@ -49,6 +63,13 @@ public class RequestCustomTableFieldVO {
     @ApiModelProperty("字段ID")
     @QueryColumn("field_id")
     private Integer fieldId;
+
+    /**
+     * 物理字段名
+     */
+    @ApiModelProperty("物理字段名")
+    @QueryColumn("field_code")
+    private String fieldCode;
 
     /**
      * 读写CODE

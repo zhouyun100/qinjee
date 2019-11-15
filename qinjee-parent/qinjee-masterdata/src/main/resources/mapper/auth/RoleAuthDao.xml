@@ -31,9 +31,13 @@
 
     <resultMap id="CustomArchiveTableFieldResultMap" type="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
         <result column="table_id" jdbcType="INTEGER" property="tableId" />
+        <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
         <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+        <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
         <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+        <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
         <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+        <result column="read_write_code" jdbcType="VARCHAR" property="readWriteCode" />
     </resultMap>
 
     <!--根据企业ID查询角色列表 -->
@@ -186,8 +190,9 @@
 
     <!--根据企业ID查询自定义表列表 -->
     <select id="searchCustomArchiveTableListByCompanyId" parameterType="java.lang.Integer" resultMap="CustomArchiveTableFieldResultMap">
-        select t.table_id,t.table_name from t_custom_archive_table t
+        select t.table_id,t.table_code,t.table_name,t.func_code from t_custom_archive_table t
         where t.company_id = #{companyId,jdbcType=INTEGER}
+        and t.func_code = 'ARC'
         and t.is_delete = 0
         and t.is_enable = 1
         ORDER BY t.sort asc
@@ -195,8 +200,9 @@
 
     <!--根据角色和自定义表ID查询自定义字段列表 -->
     <select id="searchCustomArchiveTableFieldListByTableId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestCustomTableFieldVO" resultMap="CustomArchiveTableFieldResultMap">
-        select t.table_id,t.table_name,f.field_id,f.field_name,v.read_write_code
-        from t_user_role r,t_role_custom_field_auth a,t_custom_archive_table t,t_custom_archive_field f
+        select t.table_id,t.table_code,t.table_name,t.func_code,f.field_id,f.field_code,f.field_name,
+        CASE WHEN v.read_write_code is NOT NULL THEN v.read_write_code ELSE '' end read_write_code
+        from t_custom_archive_table t,t_custom_archive_field f
         LEFT JOIN (
         select f.field_id,a.read_write_code from t_role_custom_field_auth a,t_custom_archive_field f
         where a.role_id = #{roleId,jdbcType=INTEGER}
@@ -204,15 +210,9 @@
         and a.is_delete = 0
         and f.is_delete = 0
         ) v ON f.field_id = v.field_id
-        where r.archive_id = #{archiveId,jdbcType=INTEGER}
-        and r.role_id = a.role_id
-        and a.field_id = f.field_id
-        and f.table_id = t.table_id
-        and t.table_id = #{tableId,jdbcType=INTEGER}
-        and r.is_delete = 0
-        and a.is_delete = 0
-        and f.is_delete = 0
+        where t.table_id = #{tableId,jdbcType=INTEGER}
         and t.is_delete = 0
+        and f.is_delete = 0
     </select>
 
     <!--根据角色和自定义表ID查询自定义字段列表 -->
