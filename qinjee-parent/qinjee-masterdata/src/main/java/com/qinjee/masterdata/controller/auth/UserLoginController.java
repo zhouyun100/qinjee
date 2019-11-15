@@ -62,7 +62,7 @@ public class UserLoginController extends BaseController{
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
             @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/loginByPhoneAndCode",method = RequestMethod.GET)
+    @RequestMapping(value = "/loginByPhoneAndCode",method = RequestMethod.POST)
     public ResponseResult<List<UserInfoVO>> loginByMobileAndCode(HttpServletResponse response, String phone, String code) {
 
         try {
@@ -107,7 +107,7 @@ public class UserLoginController extends BaseController{
             @ApiImplicitParam(name = "account", value = "用户名/手机号/邮箱", required = true, dataType = "String"),
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/loginByAccountAndPassword",method = RequestMethod.GET)
+    @RequestMapping(value = "/loginByAccountAndPassword",method = RequestMethod.POST)
     public ResponseResult<UserSession> loginByAccountAndPassword(HttpServletResponse response, String account, String password) {
         if(account.isEmpty() || password.isEmpty()){
             responseResult = ResponseResult.FAIL();
@@ -160,7 +160,7 @@ public class UserLoginController extends BaseController{
             @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "companyId", value = "企业ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchUserInfoByUserIdAndCompanyId",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchUserInfoByUserIdAndCompanyId",method = RequestMethod.POST)
     public ResponseResult<UserSession> searchUserInfoByUserIdAndCompanyId(HttpServletResponse response, Integer userId,Integer companyId) {
 
         if(null == userId || null == companyId){
@@ -198,7 +198,7 @@ public class UserLoginController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/sendCodeByPhone",method = RequestMethod.GET)
+    @RequestMapping(value = "/sendCodeByPhone",method = RequestMethod.POST)
     public ResponseResult sendCodeByMobile(String phone) {
 
         if(phone.isEmpty() || !RegexpUtils.checkPhone(phone)){
@@ -227,7 +227,7 @@ public class UserLoginController extends BaseController{
             @ApiImplicitParam(name = "oldPassword", value = "旧密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "newPassword", value = "新密码", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/updatePasswordByCurrentAccount",method = RequestMethod.GET)
+    @RequestMapping(value = "/updatePasswordByCurrentAccount",method = RequestMethod.POST)
     public ResponseResult<UserSession> updatePasswordByCurrentAccount(String oldPassword, String newPassword) {
         try{
             userSession = getUserSession();
@@ -246,7 +246,7 @@ public class UserLoginController extends BaseController{
 
 
     @ApiOperation(value="加载当前登录用户菜单树", notes="加载当前登录用户菜单树")
-    @RequestMapping(value = "/loadMenuTreeByCurrentLoginUser",method = RequestMethod.GET)
+    @RequestMapping(value = "/loadMenuTreeByCurrentLoginUser",method = RequestMethod.POST)
     public ResponseResult<MenuVO> loadMenuTreeByCurrentLoginUser() {
         try{
             userSession = getUserSession();
@@ -266,7 +266,7 @@ public class UserLoginController extends BaseController{
 
 
     @ApiOperation(value="退出", notes="退出")
-    @RequestMapping(value = "/logout",method = RequestMethod.GET)
+    @RequestMapping(value = "/logout",method = RequestMethod.POST)
     public ResponseResult logout(HttpServletResponse response) {
         try{
             String loginKey = null;
@@ -300,7 +300,7 @@ public class UserLoginController extends BaseController{
     }
 
     @ApiOperation(value="生成图形验证码", notes="生成图形验证码")
-    @RequestMapping(value = "/createCode",method = RequestMethod.GET)
+    @RequestMapping(value = "/createCode",method = RequestMethod.POST)
     public void createCode(HttpServletRequest request, HttpServletResponse response) {
         try{
             response.setHeader("Pragma", "No-cache");
@@ -325,7 +325,7 @@ public class UserLoginController extends BaseController{
 
 
     @ApiOperation(value="验证图形验证码", notes="验证图形验证码")
-    @RequestMapping(value = "/verifyCode",method = RequestMethod.GET)
+    @RequestMapping(value = "/verifyCode",method = RequestMethod.POST)
     public ResponseResult verifyCode(HttpServletRequest request, String code) {
         try{
             String key = (String) request.getSession().getAttribute("CODE");

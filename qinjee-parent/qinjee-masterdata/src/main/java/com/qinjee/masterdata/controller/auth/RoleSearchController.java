@@ -12,7 +12,6 @@ package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Role;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
@@ -27,10 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -85,7 +81,7 @@ public class RoleSearchController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchRoleListByArchiveId",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchRoleListByArchiveId",method = RequestMethod.POST)
     public ResponseResult<Role> searchRoleListByArchiveId(Integer archiveId) {
         if(null == archiveId){
             responseResult = ResponseResult.FAIL();
@@ -117,8 +113,8 @@ public class RoleSearchController extends BaseController{
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/updateArchiveRole",method = RequestMethod.GET)
-    public ResponseResult updateArchiveRole(Integer archiveId,@RequestParam List<Integer> roleIdList) {
+    @RequestMapping(value = "/updateArchiveRole",method = RequestMethod.POST)
+    public ResponseResult updateArchiveRole(Integer archiveId,@RequestBody List<Integer> roleIdList) {
         if(null == archiveId || CollectionUtils.isEmpty(roleIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("员工或角色为空！");

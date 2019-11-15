@@ -24,10 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -52,7 +49,7 @@ public class AuthHandoverController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.POST)
     public ResponseResult<MenuVO> searchRoleAuthTreeInOrg(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -83,7 +80,7 @@ public class AuthHandoverController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.POST)
     public ResponseResult<OrganizationVO> searchOrgAuthTreeInOrg(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -115,8 +112,8 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/roleRecoveryByArchiveId",method = RequestMethod.GET)
-    public ResponseResult roleRecoveryByArchiveId(Integer archiveId,@RequestParam List<Integer> roleIdList) {
+    @RequestMapping(value = "/roleRecoveryByArchiveId",method = RequestMethod.POST)
+    public ResponseResult roleRecoveryByArchiveId(Integer archiveId,@RequestBody List<Integer> roleIdList) {
         if(null == archiveId || CollectionUtils.isEmpty(roleIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案或角色不能为空!");
@@ -152,8 +149,8 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/orgRecoveryByArchiveId",method = RequestMethod.GET)
-    public ResponseResult orgRecoveryByArchiveId(Integer archiveId,@RequestParam List<Integer> orgIdList) {
+    @RequestMapping(value = "/orgRecoveryByArchiveId",method = RequestMethod.POST)
+    public ResponseResult orgRecoveryByArchiveId(Integer archiveId,@RequestBody List<Integer> orgIdList) {
         if(null == archiveId || CollectionUtils.isEmpty(orgIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案或机构不能为空!");
@@ -189,8 +186,8 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "acceptArchiveId", value = "接收人档案ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/roleHandoverByArchiveId",method = RequestMethod.GET)
-    public ResponseResult roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, @RequestParam List<Integer> roleIdList) {
+    @RequestMapping(value = "/roleHandoverByArchiveId",method = RequestMethod.POST)
+    public ResponseResult roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, @RequestBody List<Integer> roleIdList) {
         if(null == handoverArchiveId || null == acceptArchiveId ||CollectionUtils.isEmpty(roleIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("移交人或接收人或角色不能为空!");
@@ -226,8 +223,8 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "acceptArchiveId", value = "接收人档案ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/orgHandoverByArchiveId",method = RequestMethod.GET)
-    public ResponseResult orgHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, @RequestParam List<Integer> orgIdList) {
+    @RequestMapping(value = "/orgHandoverByArchiveId",method = RequestMethod.POST)
+    public ResponseResult orgHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, @RequestBody List<Integer> orgIdList) {
         if(null == handoverArchiveId || null == acceptArchiveId ||CollectionUtils.isEmpty(orgIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("移交人或接收人或角色不能为空!");
@@ -265,8 +262,8 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "trusteeshipEndTime", value = "托管结束时间", dataType = "String"),
             @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/roleTrusteeshipByArchiveId",method = RequestMethod.GET)
-    public ResponseResult roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, @RequestParam List<Integer> roleIdList) {
+    @RequestMapping(value = "/roleTrusteeshipByArchiveId",method = RequestMethod.POST)
+    public ResponseResult roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, @RequestBody List<Integer> roleIdList) {
 
         if(trusteeshipArchiveId != null && acceptArchiveId != null && CollectionUtils.isEmpty(roleIdList)){
 
@@ -316,8 +313,8 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "trusteeshipEndTime", value = "托管结束时间", required = true, dataType = "String"),
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/orgTrusteeshipByArchiveId",method = RequestMethod.GET)
-    public ResponseResult orgTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime,@RequestParam List<Integer> orgIdList) {
+    @RequestMapping(value = "/orgTrusteeshipByArchiveId",method = RequestMethod.POST)
+    public ResponseResult orgTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime,@RequestBody List<Integer> orgIdList) {
         if(null == trusteeshipArchiveId || null == acceptArchiveId ||CollectionUtils.isEmpty(orgIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("移交人或接收人或角色不能为空!");

@@ -54,7 +54,7 @@
         select v.menu_id,v.menu_name,v.icon_url,v.func_type,v.func_url,v.parent_menu_id,
         CASE WHEN t.menu_id is not NULL THEN 1 ELSE 0 END has_menu
         from (
-        select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
+            select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
             from t_menu,t_company_menu,t_role_menu_auth,t_role,t_user_role
             where t_user_role.archive_id = #{operatorId,jdbcType=INTEGER}
             and (t_user_role.is_trusteeship = 0
@@ -71,7 +71,9 @@
             and t_role.is_delete = 0
             and t_role_menu_auth.is_delete = 0
             and t_menu.is_delete = 0
-            and t_company_menu.is_delete = 0) v
+            and t_company_menu.is_delete = 0
+            GROUP BY t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
+            ) v
         LEFT JOIN (
         select t_role_menu_auth.menu_id from t_role,t_role_menu_auth
         where t_role.role_id = #{roleId,jdbcType=INTEGER}
@@ -266,4 +268,11 @@
         where role_id = #{roleId,jdbcType=INTEGER}
         and field_id = #{fieldId,jdbcType=INTEGER}
     </update>
+
+    <!-- 新增角色自定义人员表字段权限 -->
+    <insert id="saveRoleDataLevelAuth" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO" useGeneratedKeys="true">
+        insert into t_role_custom_field_auth(role_id,field_id,read_write_code,operator_id,is_delete) values(
+        #{roleId,jdbcType=INTEGER},#{fieldId,jdbcType=INTEGER},#{readWriteCode,jdbcType=VARCHAR},#{operatorId,jdbcType=INTEGER},0
+        )
+    </insert>
 </mapper>
