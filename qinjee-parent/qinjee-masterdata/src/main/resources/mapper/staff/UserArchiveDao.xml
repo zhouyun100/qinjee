@@ -652,14 +652,13 @@
     where  archive_id=#{businessId}
     and is_delete=0
   </select>
-  <select id="selectByStatus" resultType="java.lang.Integer">
+  <select id="selectDateByStatus" resultType="java.util.Date">
     select
-    archive_id
-    from t_user_archive
-    where archive_status in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
+    con.contract_end_date from
+    t_labor_contract con
+    left join  t_user_archive arc on arc.archive_id = con.archive_id
+    where archive_status = #{string}
+    and arc.is_delete=0
   </select>
 </mapper>
 

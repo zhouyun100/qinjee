@@ -344,7 +344,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list) {
+    public List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list) throws Exception {
         HashMap<String,Object> map=new HashMap<>();
         map.put("companyId",id);
         List<ContractParam> contractParams = contractParamDao.findContractParamByCondition(map);
@@ -352,8 +352,15 @@ public class StaffContractServiceImpl implements IStaffContractService {
         strings.add("正式");
         strings.add("试用");
         strings.add("实习");
-        List<Integer> integers = userArchiveDao.selectByStatus(strings);
-        return null;
+        for (String string : strings) {
+            Date date = userArchiveDao.selectDateByStatus(string);
+            for (UserArchive userArchive : list) {
+                if(GetDayUtil.getDay(new Date(),date) > getDeadLineDays(string,contractParams)){
+                    list.remove(userArchive);
+                }
+            }
+        }
+        return list;
     }
     private Integer getDeadLineDays(String status,List<ContractParam> contractParams) throws Exception {
        List<ContractParam> list=new ArrayList<>();
@@ -364,8 +371,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
         }
         if(list.size()>0){
             throw new Exception("同类型只能设置一种临近天数");
-        }
-        return Integer.parseInt(list.get(0).getDateRule());
+        }else
+            return Integer.parseInt(list.get(0).getDateRule());
     }
 
     private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) {

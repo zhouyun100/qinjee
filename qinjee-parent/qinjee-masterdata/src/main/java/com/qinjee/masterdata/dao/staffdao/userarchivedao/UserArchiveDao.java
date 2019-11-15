@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -89,5 +90,5 @@ public interface UserArchiveDao {
 
     String selectEmployNumber(@Param("businessId") Integer businessId);
 
-    List<Integer> selectByStatus(@Param("strings") List<String> strings);
+    Date selectDateByStatus(@Param("string") String string);
 }
