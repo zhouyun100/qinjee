@@ -189,6 +189,29 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
+    public Role searchRoleDetailByRoleId(Integer roleId) {
+        if(null == roleId){
+            return null;
+        }
+        Role role = roleAuthDao.searchRoleDetailByRoleId(roleId);
+        return role;
+    }
+
+    @Override
+    public int updateRoleAutoAuthChildOrgByRoleId(Integer roleId, Integer isAutoAuthChildOrg, Integer operatorId) {
+        if(null == roleId || null == isAutoAuthChildOrg || null == operatorId){
+            return 0;
+        }
+        int resultNumber;
+        Role role = new Role();
+        role.setRoleId(roleId);
+        role.setIsAutoAuthChildOrg(isAutoAuthChildOrg);
+        role.setOperatorId(operatorId);
+        resultNumber = roleAuthDao.updateRoleAutoAuthChildOrgByRoleId(role);
+        return resultNumber;
+    }
+
+    @Override
     public int updateRoleGroup(Integer roleGroupId, String roleGroupName, Integer operatorId) {
         if(null == roleGroupId || StringUtils.isEmpty(roleGroupName) || null == operatorId){
             return 0;

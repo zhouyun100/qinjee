@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO;
 import com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO;
@@ -190,6 +191,80 @@ public class RoleAuthController extends BaseController{
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="根据角色ID查询角色详情", notes="根据角色ID查询角色详情")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
+    })
+    @RequestMapping(value = "/searchRoleDetailByRoleId",method = RequestMethod.GET)
+    public ResponseResult<Role> searchRoleDetailByRoleId(Integer roleId) {
+        if(null == roleId){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色ID不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            Role role = roleAuthService.searchRoleDetailByRoleId(roleId);
+            if(role != null){
+                logger.info("searchRoleDetailByRoleId success！roleId={}", roleId);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(role);
+            }else{
+                logger.info("searchRoleDetailByRoleId fail！roleId={}", roleId);
+                responseResult = ResponseResult.FAIL();
+            }
+
+        }catch (Exception e){
+            logger.info("searchRoleDetailByRoleId exception！roleId={},roleGroupId={},roleName={},exception={}", roleId);
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据角色ID查询角色详情异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="根据角色ID修改角色是否自动授权新增子集机构权限", notes="根据角色ID修改角色自动授权新增子集机构权限")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "isAutoAuthChildOrg", value = "是否自动授权新增子集机构权限", required = true, dataType = "int")
+    })
+    @RequestMapping(value = "/updateRoleAutoAuthChildOrgByRoleId",method = RequestMethod.GET)
+    public ResponseResult updateRoleAutoAuthChildOrgByRoleId(Integer roleId, Integer isAutoAuthChildOrg) {
+        if(null == roleId || null == isAutoAuthChildOrg){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色ID或是否授权不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            int resultNumber = roleAuthService.updateRoleAutoAuthChildOrgByRoleId(roleId,isAutoAuthChildOrg,userSession.getArchiveId());
+            if(resultNumber > 0){
+                logger.info("updateRoleAutoAuthChildOrgByRoleId success！roleId={},isAutoAuthChildOrg={},operatorId={}", roleId, isAutoAuthChildOrg, userSession.getArchiveId());
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                logger.info("updateRoleAutoAuthChildOrgByRoleId fail！roleId={},isAutoAuthChildOrg={},operatorId={}", roleId, isAutoAuthChildOrg, userSession.getArchiveId());
+                responseResult = ResponseResult.FAIL();
+            }
+
+        }catch (Exception e){
+            logger.info("updateRoleAutoAuthChildOrgByRoleId exception！roleId={},isAutoAuthChildOrg={},exception={}", roleId, isAutoAuthChildOrg, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据角色ID修改角色是否自动授权新增子集机构权限异常！");
         }
         return responseResult;
     }

@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.auth;
 
 
+import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.model.vo.auth.*;
 
 import java.util.List;
@@ -74,6 +75,22 @@ public interface RoleAuthService {
      * @return
      */
     int updateRole(Integer roleId, Integer roleGroupId, String roleName, Integer operatorId);
+
+    /**
+     * 根据角色ID查询角色详情
+     * @param roleId
+     * @return
+     */
+    Role searchRoleDetailByRoleId(Integer roleId);
+
+    /**
+     * 根据角色ID修改角色是否自动授权新增子集机构权限
+     * @param roleId
+     * @param isAutoAuthChildOrg
+     * @param operatorId
+     * @return
+     */
+    int updateRoleAutoAuthChildOrgByRoleId(Integer roleId, Integer isAutoAuthChildOrg, Integer operatorId);
 
     /**
      * 修改角色组
