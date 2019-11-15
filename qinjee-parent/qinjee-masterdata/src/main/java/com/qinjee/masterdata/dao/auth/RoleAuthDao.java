@@ -10,10 +10,12 @@
  */
 package com.qinjee.masterdata.dao.auth;
 
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.Role;
+import com.qinjee.masterdata.model.entity.RoleGroup;
+import com.qinjee.masterdata.model.entity.RoleMenuAuth;
+import com.qinjee.masterdata.model.entity.RoleOrgAuth;
 import com.qinjee.masterdata.model.vo.auth.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -193,5 +195,5 @@ public interface RoleAuthDao {
      * @param roleDataLevelAuthVO
      * @return
      */
-    int saveRoleDataLevelAuth(RoleDataLevelAuthVO roleDataLevelAuthVO);
+//    int saveRoleDataLevelAuth(RoleDataLevelAuthVO roleDataLevelAuthVO);
 }

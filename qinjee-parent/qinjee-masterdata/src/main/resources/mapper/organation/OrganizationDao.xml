@@ -308,4 +308,17 @@
     AND org.is_enable=1 AND auth.is_delete=0 AND user_role.is_delete=0
     AND user_archive.is_delete=0  AND user_archive.archive_id=#{archiveId}
   </select>
+  <select id="selectOrgIdByName" resultType="java.lang.Integer">
+    select org_id
+    from t_organization
+    where org_name=#{name}
+    and org.is_enable=1
+  </select>
+  <select id="selectManyId" resultType="com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos" >
+   select org.org_id as orgId ,orga.org_id as businessUnitId, post.post_id as postId ,pos.position_id as positionId
+   from t_organization org,t_organization orga ,t_post post ,t_position pos
+   where org.org_name=#{orgName} and orga.org_name=#{unitName} and post.post_name=#{postName}
+     and pos. position_name=#{positionName} and org.is_enable = 1 and orga.is_enable=1 and post.is_enable=1
+     and pos.is_delete=0
+  </select>
 </mapper>

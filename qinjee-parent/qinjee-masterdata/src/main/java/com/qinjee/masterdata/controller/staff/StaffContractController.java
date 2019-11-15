@@ -404,7 +404,7 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/insertLaborContractIntention", method = RequestMethod.GET)
     @ApiOperation(value = "发送续签意向表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult insertLaborContractIntention(List<Integer> list) {
+    public ResponseResult insertLaborContractIntention(@RequestParam List<Integer> list) {
         Boolean b = checkParam(list,getUserSession());
         if(b){
             try {
@@ -536,8 +536,8 @@ public class StaffContractController extends BaseController {
         if(b){
             try {
                 List<UserArchive> userArchives=staffContractService.selectArcDeadLine(id,list);
-                if(list.size()>0){
-                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                if(userArchives.size()>0){
+                    return new ResponseResult<>(userArchives,CommonCode.SUCCESS);
                 }else {
                     return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
                 }
