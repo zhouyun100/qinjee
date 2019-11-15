@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
+import com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
@@ -345,10 +347,6 @@ public class StaffArchiveController extends BaseController {
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
-
-
-
-
     /**
      * 保存修改方案
      * 包括新增与更新
@@ -444,6 +442,68 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+    /**
+     * 新增员工轨迹
+     */
+    @RequestMapping(value = "/insertCareerTrack", method = RequestMethod.POST)
+    @ApiOperation(value = "新增员工轨迹", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult selectCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo) {
+        Boolean b = checkParam(archiveCareerTrackVo,getUserSession());
+        if(b){
+            try {
+                staffArchiveService.insertCareerTrack(archiveCareerTrackVo,getUserSession());
+                return  ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                return ResponseResult.FAIL();
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+
+
+    /**
+     * 展示员工轨迹
+     */
+    @RequestMapping(value = "/selectCareerTrack", method = RequestMethod.GET)
+    @ApiOperation(value = "展示员工轨迹", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult<List<ArchiveCareerTrack>> selectCareerTrack(Integer id) {
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                List<ArchiveCareerTrack> list=staffArchiveService.selectCareerTrack(id);
+                if(list.size()>0){
+                    return new ResponseResult(list,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+            } catch (Exception e) {
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+
+    /**
+     * 修改员工轨迹
+     */
+    @RequestMapping(value = "/updateCareerTrack", method = RequestMethod.GET)
+    @ApiOperation(value = "修改员工轨迹", notes = "hkt")
+    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo) {
+        Boolean b = checkParam(archiveCareerTrackVo,getUserSession());
+        if(b){
+            try {
+                staffArchiveService.updateCareerTrack(archiveCareerTrackVo,getUserSession());
+               return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+
 
 
 

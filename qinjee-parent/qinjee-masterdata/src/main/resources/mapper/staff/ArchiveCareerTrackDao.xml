@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 员工职业轨迹表(t_archive_career_track) -->
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao">
+    <!-- 结果映射 -->
+    <resultMap id="ArchiveCareerTrackMap" type="com.qinjee.masterdata.model.entity.ArchiveCareerTrack">
+        <id column="change_id" property="changeId" jdbcType="INTEGER" />
+        <result column="archive_id" property="archiveId" jdbcType="INTEGER" />
+        <result column="user_category" property="userCategory" jdbcType="VARCHAR" />
+        <result column="business_unit_id" property="businessUnitId" jdbcType="INTEGER" />
+        <result column="org_id" property="orgId" jdbcType="INTEGER" />
+        <result column="post_id" property="postId" jdbcType="INTEGER" />
+        <result column="position_id" property="positionId" jdbcType="INTEGER" />
+        <result column="change_type" property="changeType" jdbcType="VARCHAR" />
+        <result column="change_date" property="changeDate" jdbcType="VARCHAR" />
+        <result column="change_reason" property="changeReason" jdbcType="VARCHAR" />
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        tArchiveCareerTrack.change_id, tArchiveCareerTrack.archive_id, tArchiveCareerTrack.user_category, tArchiveCareerTrack.business_unit_id, tArchiveCareerTrack.org_id, tArchiveCareerTrack.post_id,
+        tArchiveCareerTrack.position_id, tArchiveCareerTrack.change_type, tArchiveCareerTrack.change_date, tArchiveCareerTrack.change_reason, tArchiveCareerTrack.operator_id, tArchiveCareerTrack.create_time
+    </sql>
+    
+    <!-- 查询所有数据 -->
+    <select id="findArchiveCareerTrackAll" resultMap="ArchiveCareerTrackMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_archive_career_track tArchiveCareerTrack
+    </select>
+    
+    <!-- 根据条件查询数据 -->
+    <select id="findArchiveCareerTrackByCondition" resultMap="ArchiveCareerTrackMap" parameterType="map">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_archive_career_track tArchiveCareerTrack WHERE 1 = 1
+        <if test="archiveId != null">
+            AND tArchiveCareerTrack.archive_id = #{archiveId}
+        </if>
+        <if test="userCategory != null and userCategory != ''">
+            AND tArchiveCareerTrack.user_category LIKE CONCAT('%',#{userCategory},'%')
+        </if>
+        <if test="businessUnitId != null">
+            AND tArchiveCareerTrack.business_unit_id = #{businessUnitId}
+        </if>
+        <if test="orgId != null">
+            AND tArchiveCareerTrack.org_id = #{orgId}
+        </if>
+        <if test="postId != null">
+            AND tArchiveCareerTrack.post_id = #{postId}
+        </if>
+        <if test="positionId != null">
+            AND tArchiveCareerTrack.position_id = #{positionId}
+        </if>
+        <if test="changeType != null and changeType != ''">
+            AND tArchiveCareerTrack.change_type LIKE CONCAT('%',#{changeType},'%')
+        </if>
+        <if test="changeDate != null">
+            AND tArchiveCareerTrack.change_date = #{changeDate}
+        </if>
+        <if test="changeReason != null and changeReason != ''">
+            AND tArchiveCareerTrack.change_reason LIKE CONCAT('%',#{changeReason},'%')
+        </if>
+        <if test="operatorId != null">
+            AND tArchiveCareerTrack.operator_id = #{operatorId}
+        </if>
+        <if test="createTime != null">
+            AND tArchiveCareerTrack.create_time = #{createTime}
+        </if>
+    </select>
+    
+    <!-- 根据主键查询数据 -->
+    <select id="findArchiveCareerTrackByIds" resultMap="ArchiveCareerTrackMap" parameterType="list">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_archive_career_track tArchiveCareerTrack WHERE tArchiveCareerTrack.change_id IN
+        <foreach collection="list" index="index" item="changeId" open="(" separator="," close=")">
+            #{changeId}
+        </foreach>
+    </select>
+    <select id="selectCareerTrack" resultType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack">
+        select
+        <include refid="allColumns"/>
+        from  t_archive_career_track tArchiveCareerTrack
+        where  archive_id=#{id}
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="insertArchiveCareerTrack" parameterType="map">
+        INSERT INTO t_archive_career_track (
+            change_id, archive_id, user_category, business_unit_id, org_id, post_id, 
+            position_id, change_type, change_date, change_reason, operator_id, create_time
+        ) VALUES (
+            #{changeId},
+            #{archiveId},
+            #{userCategory},
+            #{businessUnitId},
+            #{orgId},
+            #{postId},
+            #{positionId},
+            #{changeType},
+            #{changeDate},
+            #{changeReason},
+            #{operatorId},
+            #{createTime}
+        )
+    </insert>
+    
+    <!-- 批量插入数据 -->
+    <insert id="insertArchiveCareerTracks" parameterType="list">
+        INSERT INTO t_archive_career_track (
+            change_id, archive_id, user_category, business_unit_id, org_id, post_id, 
+            position_id, change_type, change_date, change_reason, operator_id, create_time
+        ) VALUES (
+        <foreach collection="list" index="index" item="item" separator=",">
+            (
+                #{item.changeId},
+                #{item.archiveId},
+                #{item.userCategory},
+                #{item.businessUnitId},
+                #{item.orgId},
+                #{item.postId},
+                #{item.positionId},
+                #{item.changeType},
+                #{item.changeDate},
+                #{item.changeReason},
+                #{item.operatorId},
+                #{item.createTime}
+            )
+        </foreach>
+    </insert>
+    
+    <!-- 修改数据 -->
+    <update id="updateArchiveCareerTrack" parameterType="map">
+        UPDATE t_archive_career_track SET
+            archive_id = #{archiveId},
+            user_category = #{userCategory},
+            business_unit_id = #{businessUnitId},
+            org_id = #{orgId},
+            post_id = #{postId},
+            position_id = #{positionId},
+            change_type = #{changeType},
+            change_date = #{changeDate},
+            change_reason = #{changeReason},
+            operator_id = #{operatorId},
+            create_time = #{createTime}
+        WHERE change_id = #{changeId}
+    </update>
+    
+    <!-- 批量修改数据 -->
+    <update id="updateArchiveCareerTracks" parameterType="list">
+        <foreach collection="list" index="index" item="item" separator=";">
+            UPDATE t_archive_career_track SET
+                archive_id = #{item.archiveId},
+                user_category = #{item.userCategory},
+                business_unit_id = #{item.businessUnitId},
+                org_id = #{item.orgId},
+                post_id = #{item.postId},
+                position_id = #{item.positionId},
+                change_type = #{item.changeType},
+                change_date = #{item.changeDate},
+                change_reason = #{item.changeReason},
+                operator_id = #{item.operatorId},
+                create_time = #{item.createTime}
+            WHERE change_id = #{item.changeId}
+        </foreach>
+    </update>
+</mapper>

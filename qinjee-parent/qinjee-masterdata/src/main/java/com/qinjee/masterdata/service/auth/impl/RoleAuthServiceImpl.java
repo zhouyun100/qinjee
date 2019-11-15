@@ -460,6 +460,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Override
     public int saveRoleDataLevelAuth(RoleDataLevelAuthVO roleDataLevelAuthVO) {
-        return roleAuthDao.saveRoleDataLevelAuth(roleDataLevelAuthVO);
+//        return roleAuthDao.saveRoleDataLevelAuth(roleDataLevelAuthVO);
+        return 0;
     }
 }

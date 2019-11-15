@@ -6,10 +6,7 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
-import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
-import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
-import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.utils.SqlUtil;
@@ -21,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -58,6 +52,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private CustomArchiveFieldDao customArchiveFieldDao;
+    @Autowired
+    private ArchiveCareerTrackDao archiveCareerTrackdao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -206,6 +202,37 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public List<String> selectFieldByArcAndAuth(UserSession userSession) {
         return  customArchiveFieldDao.selectFieldByArcAndAuth(userSession.getArchiveId(),userSession.getCompanyId());
     }
+
+    @Override
+    public List<ArchiveCareerTrack> selectCareerTrack(Integer id) {
+            return archiveCareerTrackdao.selectCareerTrack(id);
+    }
+
+    @Override
+    public void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) {
+
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
+       ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack();
+       BeanUtils.copyProperties(archiveCareerTrackVo,archiveCareerTrack);
+       archiveCareerTrack.setOperatorId(userSession.getArchiveId());
+       BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId(
+                archiveCareerTrackVo.getBusinessUnitName(), archiveCareerTrackVo.getOrgName(),
+                archiveCareerTrackVo.getPostName(), archiveCareerTrackVo.getPositionName());
+       BeanUtils.copyProperties(businessOrgPostPos,archiveCareerTrack);
+       archiveCareerTrack.setCreateTime(new Date());
+       Class clazz=archiveCareerTrack.getClass();
+       Map<String,Object> map=new HashMap<>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            map.put(field.getName(), field.get(archiveCareerTrack));
+        }
+       archiveCareerTrackdao.insertArchiveCareerTrack(map);
+    }
+
 
     private Map<Integer, Map<String, Object>> getMap(List<Integer> archiveIdList,List<ExportArcVo> exportArcVoList) throws IllegalAccessException{
         Map<Integer, Map<String, Object>> userArchiveListCustom=new HashMap<>();

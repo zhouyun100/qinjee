@@ -127,4 +127,5 @@
       from t_organization torg left join t_post tp on tp.org_id = torg.org_id left join t_position tps on tps.position_id = tp.position_id
       where tp.is_delete = 0 and tps.is_delete = 0 and tp.is_enable = 1
     </select>
+
 </mapper>

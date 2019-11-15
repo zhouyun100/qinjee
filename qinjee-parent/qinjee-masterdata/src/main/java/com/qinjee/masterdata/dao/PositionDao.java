@@ -1,9 +1,10 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.Position;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface PositionDao {
     int deleteByPrimaryKey(Integer positionId);
 
@@ -19,6 +20,7 @@ public interface PositionDao {
 
     /**
      * 根据职位族id获取职位
+     *
      * @param positionGroupId
      * @return
      */
@@ -26,6 +28,7 @@ public interface PositionDao {
 
     /**
      * 根据公司id获取职位
+     *
      * @param companyId
      * @return
      */
@@ -33,8 +36,10 @@ public interface PositionDao {
 
     /**
      * 查询机构下的职位
+     *
      * @param orgId
      * @return
      */
     List<Position> getPositionListByOrgId(Integer orgId);
+
 }

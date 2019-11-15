@@ -1,11 +1,9 @@
 package com.qinjee.masterdata.service.staff;
 
+import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.staff.ArchiveShowVo;
-import com.qinjee.masterdata.model.vo.staff.QueryArcVo;
-import com.qinjee.masterdata.model.vo.staff.QuerySchemeList;
-import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -137,4 +135,23 @@ public interface IStaffArchiveService {
      * @return
      */
     List<String> selectFieldByArcAndAuth(UserSession userSession);
+
+    /**
+     * @param id
+     * @return
+     */
+    List<ArchiveCareerTrack> selectCareerTrack(Integer id);
+
+    /**
+     * @param archiveCareerTrackVo
+     * @param userSession
+     */
+    void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession);
+
+    /**
+     *
+     * @param archiveCareerTrackVo
+     * @param userSession
+     */
+    void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException;
 }

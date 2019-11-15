@@ -371,7 +371,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         }
         if(list.size()>0){
             throw new Exception("同类型只能设置一种临近天数");
-        }else
+        }
             return Integer.parseInt(list.get(0).getDateRule());
     }
 

@@ -3,6 +3,7 @@ package com.qinjee.masterdata.dao.organation;
 
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -118,4 +119,9 @@ public interface OrganizationDao {
     List<Integer> getCompanyIdByArchiveId(Integer archiveId);
 
     List<Integer> getCompanyIdByAuth(@Param("archiveId") Integer archiveId);
+
+    Integer selectOrgIdByName(@Param("name") String name);
+
+    BusinessOrgPostPos selectManyId(@Param("unitName") String businessUnitName, @Param("orgName") String orgName,
+                                    @Param("postName") String postName, @Param("positionName") String positionName);
 }
