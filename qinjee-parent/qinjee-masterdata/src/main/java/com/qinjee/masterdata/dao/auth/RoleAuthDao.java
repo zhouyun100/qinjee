@@ -68,6 +68,20 @@ public interface RoleAuthDao {
     int updateRole(Role role);
 
     /**
+     * 根据角色ID查询角色详情
+     * @param roleId
+     * @return
+     */
+    Role searchRoleDetailByRoleId(Integer roleId);
+
+    /**
+     * 根据角色ID修改角色是否自动授权新增子集机构权限
+     * @param role
+     * @return
+     */
+    int updateRoleAutoAuthChildOrgByRoleId(Role role);
+
+    /**
      * 修改角色组
      * @param roleGroup
      * @return
