@@ -146,7 +146,7 @@ public interface IStaffArchiveService {
      * @param archiveCareerTrackVo
      * @param userSession
      */
-    void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession);
+    void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException;
 
     /**
      *
@@ -154,4 +154,10 @@ public interface IStaffArchiveService {
      * @param userSession
      */
     void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException;
+
+    /**
+     *
+     * @param id
+     */
+    void deleteCareerTrack(Integer id);
 }

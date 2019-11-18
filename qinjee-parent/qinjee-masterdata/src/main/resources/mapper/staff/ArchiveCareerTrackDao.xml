@@ -14,10 +14,10 @@
         <result column="post_id" property="postId" jdbcType="INTEGER" />
         <result column="position_id" property="positionId" jdbcType="INTEGER" />
         <result column="change_type" property="changeType" jdbcType="VARCHAR" />
-        <result column="change_date" property="changeDate" jdbcType="VARCHAR" />
+        <result column="change_date" property="changeDate" jdbcType="TIMESTAMP" />
         <result column="change_reason" property="changeReason" jdbcType="VARCHAR" />
         <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
-        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     </resultMap>
     
     <!-- 表所有字段 -->
@@ -82,7 +82,7 @@
             #{changeId}
         </foreach>
     </select>
-    <select id="selectCareerTrack" resultType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack">
+    <select id="selectCareerTrack" resultType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack" resultMap="ArchiveCareerTrackMap">
         select
         <include refid="allColumns"/>
         from  t_archive_career_track tArchiveCareerTrack
@@ -168,5 +168,10 @@
                 create_time = #{item.createTime}
             WHERE change_id = #{item.changeId}
         </foreach>
+    </update>
+    <update id="deleteCareerTrack">
+        update  t_archive_career_track SET
+        is_delete=1
+        where change_id = #{id}
     </update>
 </mapper>

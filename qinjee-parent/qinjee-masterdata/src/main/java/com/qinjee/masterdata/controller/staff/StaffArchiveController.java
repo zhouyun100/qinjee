@@ -474,7 +474,7 @@ public class StaffArchiveController extends BaseController {
             try {
                 List<ArchiveCareerTrack> list=staffArchiveService.selectCareerTrack(id);
                 if(list.size()>0){
-                    return new ResponseResult(list,CommonCode.SUCCESS);
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
@@ -489,13 +489,33 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/updateCareerTrack", method = RequestMethod.GET)
     @ApiOperation(value = "修改员工轨迹", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo) {
         Boolean b = checkParam(archiveCareerTrackVo,getUserSession());
         if(b){
             try {
-                staffArchiveService.updateCareerTrack(archiveCareerTrackVo,getUserSession());
+                staffArchiveService. updateCareerTrack(archiveCareerTrackVo,getUserSession());
                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 删除员工轨迹
+     */
+    @RequestMapping(value = "/deleteCareerTrack", method = RequestMethod.GET)
+    @ApiOperation(value = "修改员工轨迹", notes = "hkt")
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult deleteCareerTrack(Integer id) {
+        //TODO 表里没有删除字段
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                staffArchiveService. deleteCareerTrack(id);
+                return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);

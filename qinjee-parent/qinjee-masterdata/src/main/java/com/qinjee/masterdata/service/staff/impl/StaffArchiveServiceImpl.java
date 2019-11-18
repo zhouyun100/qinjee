@@ -209,28 +209,39 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) {
-
+    public void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
+        Map<String, Object> map = getParamMap(archiveCareerTrackVo, userSession);
+        archiveCareerTrackdao.updateArchiveCareerTrack(map);
     }
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
-       ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack();
-       BeanUtils.copyProperties(archiveCareerTrackVo,archiveCareerTrack);
-       archiveCareerTrack.setOperatorId(userSession.getArchiveId());
-       BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId(
-                archiveCareerTrackVo.getBusinessUnitName(), archiveCareerTrackVo.getOrgName(),
-                archiveCareerTrackVo.getPostName(), archiveCareerTrackVo.getPositionName());
-       BeanUtils.copyProperties(businessOrgPostPos,archiveCareerTrack);
-       archiveCareerTrack.setCreateTime(new Date());
-       Class clazz=archiveCareerTrack.getClass();
-       Map<String,Object> map=new HashMap<>();
+        Map<String, Object> map = getParamMap(archiveCareerTrackVo, userSession);
+        archiveCareerTrackdao.insertArchiveCareerTrack(map);
+    }
+
+    @Override
+    public void deleteCareerTrack(Integer id) {
+        archiveCareerTrackdao.deleteCareerTrack(id);
+    }
+
+    private Map<String, Object> getParamMap(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
+        ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack();
+        BeanUtils.copyProperties(archiveCareerTrackVo,archiveCareerTrack);
+        archiveCareerTrack.setOperatorId(userSession.getArchiveId());
+        BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId(
+                 archiveCareerTrackVo.getBusinessUnitName(), archiveCareerTrackVo.getOrgName(),
+                 archiveCareerTrackVo.getPostName(), archiveCareerTrackVo.getPositionName());
+        BeanUtils.copyProperties(businessOrgPostPos,archiveCareerTrack);
+        archiveCareerTrack.setCreateTime(new Date());
+        Class clazz=archiveCareerTrack.getClass();
+        Map<String,Object> map=new HashMap<>();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             map.put(field.getName(), field.get(archiveCareerTrack));
         }
-       archiveCareerTrackdao.insertArchiveCareerTrack(map);
+        return map;
     }
 
 

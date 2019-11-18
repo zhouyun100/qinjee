@@ -23,4 +23,6 @@ public interface ArchiveCareerTrackDao {
     int updateArchiveCareerTrack (Map<String,Object> map);
     int updateArchiveCareerTracks (List<Map<String,Object>> list);
     List<ArchiveCareerTrack> selectCareerTrack(@Param("id") Integer id);
+
+    int deleteCareerTrack(@Param("id") Integer id);
 }
