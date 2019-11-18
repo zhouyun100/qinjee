@@ -114,21 +114,65 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
-        Organization organization = getNewOrgCode(organizationVo.getOrgParentId());
-        String full_name="";
-        if(organization.getOrgFullName()!=null){
-          full_name = organization.getOrgFullName() + "/" + organizationVo.getOrgName();
-        }else {
-            full_name=organizationVo.getOrgName();
+        //根据父级机构id查询一些基础信息，构建Organization对象
+        Organization orgBean = initOrganization(organizationVo.getOrgParentId());
+
+        //Organization organization = getNewOrgCode(organizationVo.getOrgParentId());
+        String full_name = "";
+        if (orgBean.getOrgFullName() != null) {
+            full_name = orgBean.getOrgFullName() + "/" + organizationVo.getOrgName();
+        } else {
+            full_name = organizationVo.getOrgName();
         }
-        BeanUtils.copyProperties(organizationVo, organization);
-        organization.setOrgFullName(full_name);
-        organization.setOperatorId(userSession.getArchiveId());
-        organization.setIsEnable((short) 1);
-        //设置企业id, CompanyId如何获取
-        organization.setCompanyId(1);
-        int insert = organizationDao.insertSelective(organization);
+        //BeanUtils.copyProperties(organizationVo, organization);
+
+        orgBean.setOrgParentId(organizationVo.getOrgParentId());
+        orgBean.setOrgType(organizationVo.getOrgType());
+        orgBean.setOrgName(organizationVo.getOrgName());
+        orgBean.setOrgManagerId(organizationVo.getOrgManagerId());
+        orgBean.setOrgFullName(full_name);
+        orgBean.setOperatorId(userSession.getArchiveId());
+        orgBean.setIsEnable((short) 1);
+        //设置企业id
+        orgBean.setCompanyId(userSession.getCompanyId());
+        int insert = organizationDao.insertSelective(orgBean);
         return insert == 1 ? new ResponseResult(CommonCode.SUCCESS) : new ResponseResult(CommonCode.FAIL);
+    }
+
+    private Organization initOrganization(Integer orgParentId) {
+        Organization orgBean = new Organization();
+        if (orgParentId > 0) {
+            //查询父级机构
+            Organization parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
+            //查询最新的同级机构
+            List<Organization> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
+            //如果没有同级机构，则当前机构为parentOrg下第一个子机构
+            //计算机构编码与排序id
+            /**
+             * 根据规则计算机构编码
+             * 规则如下：顶级机构默认编码为1
+             * 余下各层级编码规则：上级机构编码+2位数流水号。
+             * 如顶级机构：XX集团，编码为1，下级A单位的编码为：101
+             */
+            String orgCode;
+            Integer sortId;
+            if (CollectionUtils.isEmpty(brotherOrgList)) {
+                orgCode = parentOrg.getOrgCode() + "001";
+                sortId = 1000;
+            } else {
+                sortId = brotherOrgList.get(0).getSortId() + 1000;
+                orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
+            }
+            orgBean.setSortId(sortId);
+            orgBean.setOrgCode(orgCode);
+            orgBean.setOrgFullName(parentOrg.getOrgFullName());
+            return orgBean;
+
+        } else {
+            orgBean.setSortId(1);
+            orgBean.setOrgCode("001");
+            return orgBean;
+        }
     }
 
     /**
@@ -137,10 +181,13 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param orgParentId
      * @return
      */
+    @Deprecated
     private Organization getNewOrgCode(Integer orgParentId) {
         Organization organization = new Organization();
         if (orgParentId != 0) {
+            //查询父级机构
             Organization parentOrganization = organizationDao.selectByPrimaryKey(orgParentId);
+            //查询父级机构的所有子机构
             List<Organization> organizationList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
             String parentOrgCode = parentOrganization.getOrgCode();
             String newOrgCode;
@@ -150,10 +197,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 newOrgCode = parentOrgCode + "001";
                 sortId = 1000;
             } else {
-                //有子级
+                //有子级，获取最新的子机构
                 Organization Lastorganization = organizationList.get(0);
                 String orgCode = Lastorganization.getOrgCode();
-                newOrgCode = getNewCode(orgCode);
+                newOrgCode = culOrgCode(orgCode);
                 sortId = Lastorganization.getSortId() + 1000;
             }
             organization.setSortId(sortId);
@@ -168,14 +215,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
 
-
     /**
      * 获取新orgCode
      *
      * @param orgCode
      * @return
      */
-    private String getNewCode(String orgCode) {
+    private String culOrgCode(String orgCode) {
         String number = orgCode.substring(orgCode.length() - 3);
         String preCode = orgCode.substring(0, orgCode.length() - 3);
         Integer new_OrgCode = Integer.parseInt(number) + 1;
@@ -190,6 +236,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         String newOrgCode = preCode + code;
         return newOrgCode;
     }
+
 
     @Transactional
     @Override
@@ -307,8 +354,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization newOrganization = new Organization();
         newOrganization.setOrgParentId(targetOrgId);
         newOrganization.setOrgName(newOrgName);
-        Organization newOrgCode = getNewOrgCode(targetOrgId);
-
+        Organization newOrgCode = initOrganization(targetOrgId);
         String orgfull_name = newOrgCode.getOrgFullName();
         BeanUtils.copyProperties(newOrgCode, newOrganization);
         newOrganization.setIsEnable((short) 1);
@@ -639,7 +685,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             organizationHistoryService.addOrganizationHistory(organizationHistory);
             organization.setOrgParentId(parentOrganization.getOrgId());
             organization.setOrgFullName(parentOrganization.getOrgFullName() + "/" + organization.getOrgName());
-            newOrgCode = getNewCode(newOrgCode);
+            newOrgCode = culOrgCode(newOrgCode);
             organization.setOrgCode(newOrgCode);
             organizationDao.updateByPrimaryKeySelective(organization);
 

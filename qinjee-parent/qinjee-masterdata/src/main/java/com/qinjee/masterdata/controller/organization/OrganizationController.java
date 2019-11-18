@@ -66,7 +66,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
         ResponseResult responseResult ;
         try {
-            logger.info("新增结构");
+            logger.info("新增机构");
             responseResult=organizationService.addOrganization(getUserSession(), organizationVo);
             return responseResult;
         } catch (Exception e) {

@@ -262,6 +262,8 @@
     from t_organization
     where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY org_id DESC
   </select>
+
+
   <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List" />
@@ -321,4 +323,7 @@
      and pos. position_name=#{positionName} and org.is_enable = 1 and orga.is_enable=1 and post.is_enable=1
      and pos.is_delete=0
   </select>
+
+
+
 </mapper>
