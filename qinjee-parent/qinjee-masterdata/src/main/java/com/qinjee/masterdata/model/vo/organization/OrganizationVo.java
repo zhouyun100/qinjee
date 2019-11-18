@@ -25,7 +25,7 @@ public class OrganizationVo implements Serializable {
     /**
      * 机构编码
      */
-    @ApiModelProperty(value = "机构编码", example = "01")
+    @ApiModelProperty(value = "机构编码", example = "1")
     private String orgCode;
 
     /**
@@ -49,7 +49,7 @@ public class OrganizationVo implements Serializable {
     /**
      * 机构负责人
      */
-    @ApiModelProperty(value = "机构负责人", example = "小明")
+    @ApiModelProperty(value = "机构负责人", example = "1")
     private Integer orgManagerId;
 
 
