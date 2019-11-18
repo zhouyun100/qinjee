@@ -1,11 +1,12 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -145,17 +146,17 @@ public interface IStaffCommonService {
 
     /**
      * 模板导入
-     * @param path
+     * @param multipartFile
      * @param userSession
      * @return
      */
-    void importFile(String path,UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException;
+    void importFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException;
 
     /**
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportArc exportArcVo, HttpServletResponse response, UserSession userSession) ;
+    void exportArcFile(ExportFile exportArcVo, HttpServletResponse response, UserSession userSession) ;
 
 
     /**
@@ -196,7 +197,7 @@ public interface IStaffCommonService {
     /**
      * @param userSession
      */
-    void exportPreFile(ExportArc exportArcVo, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    void exportPreFile(ExportFile exportArcVo, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
 
 

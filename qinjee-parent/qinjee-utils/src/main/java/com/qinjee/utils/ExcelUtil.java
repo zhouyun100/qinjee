@@ -50,10 +50,9 @@ public class ExcelUtil {
      *              map.put("Name", "name"+(i+1));
      *              map.put("Pass", "pass"+(i+1));
      *              dates.add(map);
-     * @param path   文件存储路径
      * @param map   以表头信息为key，类型为value的Map集合
      */
-    public static void download(String path, HttpServletResponse response,
+    public static void download(HttpServletResponse response,
                                 String title, List<String> heads, List<Map<String, String>> dates, Map<String, String> map) {
         // 新建excel报表
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
@@ -99,6 +98,7 @@ public class ExcelUtil {
         }
 
         FileOutputStream fout = null;
+        String path="d:\\a.xls";
         try {
             // 用流将其写到指定的url
             fout = new FileOutputStream(path);
@@ -127,7 +127,6 @@ public class ExcelUtil {
             toClient.write(buffer);
             toClient.flush();
             toClient.close();
-            // 删除d:/test文件夹下面临时存放的文件
             File file2 = new File(path);
             file2.delete();
         } catch (IOException ex) {

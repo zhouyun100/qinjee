@@ -5,10 +5,11 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+/**
+ * @author Administrator
+ */
 @Data
-public class ExportArc implements Serializable {
-    @NotNull
-    private String path;
+public class ExportFile implements Serializable {
     private String tittle;
     @NotNull
     private ArchiveShowVo archiveShowVo;

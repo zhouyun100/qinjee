@@ -75,4 +75,6 @@ public interface CustomArchiveFieldDao {
     List<String> selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
 
     List<CustomArchiveField> selectCustomArchiveField(@Param("customArchiveGroupId") Integer customArchiveGroupId);
+
+    String selectFieldCodeByName(@Param("s") String s);
 }

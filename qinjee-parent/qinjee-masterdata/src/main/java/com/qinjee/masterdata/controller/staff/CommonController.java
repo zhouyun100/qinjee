@@ -2,7 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -531,11 +532,6 @@ public class CommonController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
     }
-
-
-
-
-
     /**
      * 模板导出档案
      */
@@ -548,7 +544,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile( @Valid @RequestBody ExportArc exportArc,
+    public ResponseResult exportArcFile( @Valid @RequestBody ExportFile exportArc,
                                          HttpServletResponse response) {
         Boolean b = checkParam(exportArc,getUserSession(),response);
         if(b){
@@ -570,11 +566,11 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "模板导入", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importFile(String path) {
-        Boolean b = checkParam(path,getUserSession());
+    public ResponseResult importFile(MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile,getUserSession());
         if(b){
             try {
-                staffCommonService.importFile(path,getUserSession());
+                staffCommonService.importFile(multipartFile,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导入失败");
@@ -595,7 +591,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreFile(@Valid ExportArc exportArc, HttpServletResponse response) {
+    public ResponseResult exportPreFile(@Valid ExportFile exportArc, HttpServletResponse response) {
         Boolean b = checkParam(exportArc,response,getUserSession());
         if(b){
             try {
