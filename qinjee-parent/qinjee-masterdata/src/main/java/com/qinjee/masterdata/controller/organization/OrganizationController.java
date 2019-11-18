@@ -30,6 +30,7 @@ public class OrganizationController extends BaseController {
 
     @Autowired
     private OrganizationService organizationService;
+    //测试提交
 
     @GetMapping("/getOrganizationTree")
     @ApiOperation(value = "根据是否封存查询用户下所有的机构,树形结构展示",notes = "高雄")
