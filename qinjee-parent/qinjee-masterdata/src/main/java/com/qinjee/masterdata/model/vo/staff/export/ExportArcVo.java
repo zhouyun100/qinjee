@@ -12,51 +12,50 @@ public class ExportArcVo implements Serializable {
      * 档案ID
      */
     @ApiModelProperty("档案ID")
-    private Integer archiveId;
+    private Integer archive_id;
 
     /**
      * 工号
      */
     @NotNull
     @ApiModelProperty("工号")
-    private String employeeNumber;
+    private String employee_number;
 
     /**
      * 单位名称
      */
     @ApiModelProperty("单位名称")
-    private String businessUnitName;
+    private String business_unit_name;
 
 
     /**
      * 部门名称
      */
     @ApiModelProperty("部门名称")
-    private String orgName;
+    private String org_name;
 
     /**
      * 岗位名称
      */
     @ApiModelProperty("岗位名称")
-    private String postName;
+    private String post_name;
 
     /**
      * 姓名
      */
     @NotNull
     @ApiModelProperty("姓名")
-    private String userName;
+    private String user_name;
 
     /**
      * 试用到期时间
      */
     @ApiModelProperty("试用到期时间")
-    private Date probationDueDate;
+    private Date probation_due_date;
     /**
      * 入职日期
      */
-    private Date hireDate;
-
+    private Date hire_date;
 
     /**
      * 联系电话
@@ -69,11 +68,11 @@ public class ExportArcVo implements Serializable {
      * 上级领导姓名
      */
     @ApiModelProperty("上级领导姓名")
-    private Integer supervisorUserName;
+    private String supervisor_user_name;
 
     /**
      * 任职类型
      */
-    private String employmentType;
+    private String employment_type;
 
 }

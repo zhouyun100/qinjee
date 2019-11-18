@@ -181,7 +181,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 userArchiveListCustom.remove(integer);
             }
             archiveShowVo.setQuerySchemaId(schemeId);
-
             archiveShowVo.setMap(userArchiveListCustom);
             return archiveShowVo;
         } else {

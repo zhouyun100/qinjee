@@ -427,4 +427,10 @@
   gro.group_id=#{customArchiveGroupId}
   and field.is_delete=0 and gro.is_delete=0
  </select>
+  <select id="selectFieldCodeByName" resultType="java.lang.String">
+    select field_code
+    from t_custom_archive_field
+    where field_name=#{s}
+    and is_delete=0
+  </select>
 </mapper>

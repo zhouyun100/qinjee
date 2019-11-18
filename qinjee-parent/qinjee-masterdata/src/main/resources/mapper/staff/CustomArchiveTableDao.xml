@@ -198,7 +198,7 @@
     where
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete=0
-    AND (func_code="档案" or func_code="预入职")
+    AND (func_code="ARC" or func_code="PRE")
   </select>
   <select id="selectInside" resultType="java.lang.Integer">
      select  is_system_define
@@ -208,7 +208,7 @@
     AND is_delete=0
   </select>
   <select id="selectTableName" resultType="java.lang.String">
-    select table_name
+    select `table_name`
      from t_custom_archive_table
     where
     table_id=#{tableId,jdbcType=INTEGER}

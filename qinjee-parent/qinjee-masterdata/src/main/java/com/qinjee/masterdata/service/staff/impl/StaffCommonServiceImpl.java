@@ -12,10 +12,9 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
-import com.qinjee.masterdata.model.vo.staff.export.ExportArc;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
-import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -28,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -256,9 +254,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void importFile(String path, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, IOException {
-        MultipartFile multipartFile = ExcelUtil.getMultipartFile(new File(path));
-        ExcelUtil.readExcel(multipartFile);
+    public void importFile(MultipartFile multipartFile, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, IOException {
+        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         Integer tableId = null;
         //key是字段名称，value是值
         Map<String, List<String>> stringListMap = null;
@@ -328,19 +325,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 }
             }
             logger.error("未找到对应的物理表,导入失败");
-           /*
-            //将值设入属性
-            Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
-            for (Map.Entry<String, List<String>> entry : entries) {
-                Field declaredField = object.getClass().getDeclaredField(entry.getKey());
-                declaredField.setAccessible(true);
-                declaredField.set(object,entry.getValue());
-            }
-            //将值设置给物理表
-            //物理属性名集合
-            List<String> strings = customArchiveFieldDao.selectPhysicNameByList(new ArrayList<>(stringListMap.keySet()));
-            //拼接sql并插入
-            customArchiveTableDataDao.insertCustom(s,getFieldSql(strings),getValueSql(strings));*/
         } else {
             //若此表为自定义表，说明已经存在了基本表。此时需要需要通过传过来的手机号找到业务id确认存进哪张表中
 
@@ -405,7 +389,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportPreFile(ExportArc exportArc, HttpServletResponse response, UserSession userSession){
+    public void exportPreFile(ExportFile exportArc, HttpServletResponse response, UserSession userSession){
+//        ExcelUtil.download(response,e);
     }
 
 
@@ -422,49 +407,43 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportArcFile(ExportArc exportArc, HttpServletResponse response, UserSession userSession) {
-        ExcelUtil.download(exportArc.getPath(), response, exportArc.getTittle(),
-                getHeadsByArc(exportArc),
-                getDatesForArc(exportArc),
-                getTypeMapForArc(exportArc, getHeadsByArc(exportArc)));
+    public void exportArcFile(ExportFile exportFile, HttpServletResponse response, UserSession userSession) {
+        ExcelUtil.download( response, exportFile.getTittle(),
+                getHeadsByArc(exportFile),
+                getDatesForArc(exportFile),
+                getTypeMapForArc(exportFile, getHeadsByArc(exportFile)));
     }
 
-    private List<Map<String, String>> getDatesForArc(ExportArc exportArcVo) {
+    private List<Map<String, String>> getDatesForArc(ExportFile exportFile) {
         List<Map<String, String>> mapList = new ArrayList<>();
-        List<String> keyList = getKeyList(exportArcVo);
-        if(exportArcVo.getArchiveShowVo().getQuerySchemaId() ==null || exportArcVo.getArchiveShowVo().getQuerySchemaId() ==0){
-            List<String> strings = new ArrayList<>();
-            for (String s : keyList) {
-                strings.add(HeadMapUtil.getHeadForArc().get(s));
-            }
-            keyList.clear();
-            keyList.addAll(strings);
-        }
-        List<Map<String, Object>> maps = new ArrayList<>(exportArcVo.getArchiveShowVo().getMap().values());
+        List<String> keyList = getKeyList(exportFile);
+        List<Map<String, Object>> maps = new ArrayList<>(exportFile.getArchiveShowVo().getMap().values());
             for (Map<String, Object> stringObjectMap : maps) {
                 Map<String, String> stringMap = new HashMap<>();
-                List<Object> objects = new ArrayList<>(stringObjectMap.values());
-                for (int i = 0; i < objects.size(); i++) {
-                    stringMap.put(keyList.get(i), String.valueOf(objects.get(i)));
+                for (String s : keyList) {
+                    stringMap.put(s,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(s))));
                 }
                 mapList.add(stringMap);
             }
             return mapList;
     }
-      private List<String> getHeadsByArc(ExportArc exportArcVo) {
-          Integer querySchemaId = exportArcVo.getArchiveShowVo().getQuerySchemaId();
+      private List<String> getHeadsByArc(ExportFile exportFile) {
+          Integer querySchemaId = exportFile.getArchiveShowVo().getQuerySchemaId();
+          List<String> keyList=new ArrayList<>(11);
           if(querySchemaId ==null || querySchemaId ==0){
               String[] strings={"姓名","单位","部门","联系电话","任职类型","工号","档案id","直接上级","岗位","试用期到期时间","入职日期"};
-              return Arrays.asList(strings);
+              for (String string : strings) {
+                  keyList.add(string);
+              }
+              return keyList;
           }
-          List<String> keyList = getKeyList(exportArcVo);
-          List<String> list = customArchiveFieldDao.selectFieldNameByCodeList(keyList);
-          return list;
+           keyList = getKeyList(exportFile);
+          return customArchiveFieldDao.selectFieldNameByCodeList(keyList);
       }
 
-    private List<String> getKeyList(ExportArc exportArcVo) {
+    private List<String> getKeyList(ExportFile exportFile) {
         List<String> keyList=new ArrayList<>();
-        List<Map<String, Object>> maps = new ArrayList<>(exportArcVo.getArchiveShowVo().getMap().values());
+        List<Map<String, Object>> maps = new ArrayList<>(exportFile.getArchiveShowVo().getMap().values());
         for (Map<String, Object> stringObjectMap : maps) {
             keyList = new ArrayList<>((new ArrayList<>(stringObjectMap.keySet())));
         }
@@ -474,9 +453,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     /**
      * 存储字段类型的集合
    **/
-    private Map<String, String> getTypeMapForArc(ExportArc exportArcVo, List<String> heads) {
+    private Map<String, String> getTypeMapForArc(ExportFile exportFile, List<String> heads) {
         Map<String, String> map = new HashMap<>();
-        if(exportArcVo.getArchiveShowVo().getQuerySchemaId()==null || exportArcVo.getArchiveShowVo().getQuerySchemaId()==0) {
+        if(exportFile.getArchiveShowVo().getQuerySchemaId()==null || exportFile.getArchiveShowVo().getQuerySchemaId()==0) {
             for (String head : heads) {
                 map.put(head, HeadTypeUtil.getTypeForArc().get(head));
             }
