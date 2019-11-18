@@ -1,8 +1,10 @@
 package com.qinjee.model.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.io.Serializable;
 
 /**
  * 响应结果类
@@ -11,7 +13,8 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class ResponseResult<T>{
+@JsonInclude
+public class ResponseResult<T> implements Serializable {
 
     /**
      * 操作是否成功

@@ -9,6 +9,7 @@
  * 原始作者：周赟
  */
 package com.qinjee.masterdata.model.vo.auth;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -25,6 +26,7 @@ import java.io.Serializable;
 @ApiModel(description = "用户信息类")
 @Data
 @NoArgsConstructor
+@JsonInclude
 public class UserInfoVO implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -10,11 +10,14 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.model.request.PageVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * @author 周赟
@@ -24,7 +27,8 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "人员分页请求参数封装类")
 @Data
 @NoArgsConstructor
-public class RequestArchivePageVO extends PageVo {
+@JsonInclude
+public class RequestArchivePageVO extends PageVo implements Serializable {
 
     /**
      * 用户姓名或者工号

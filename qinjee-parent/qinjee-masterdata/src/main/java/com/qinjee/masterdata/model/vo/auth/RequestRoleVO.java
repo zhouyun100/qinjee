@@ -10,9 +10,11 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -21,7 +23,8 @@ import java.util.Date;
  * @date 2019/9/20
  */
 @Data
-public class RequestRoleVO {
+@JsonInclude
+public class RequestRoleVO implements Serializable {
 
     /**
      * 主键ID

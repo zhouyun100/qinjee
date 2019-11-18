@@ -10,11 +10,13 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +28,8 @@ import java.util.List;
 @ApiModel(description = "菜单树")
 @Data
 @NoArgsConstructor
-public class MenuVO {
+@JsonInclude
+public class MenuVO implements Serializable {
 
     /**
      * 菜单ID

@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -21,6 +22,7 @@ import java.util.Date;
  * @date 2019/9/19
  */
 @Data
+@JsonInclude
 public class RequestLoginVO  implements Serializable {
 
     private static final long serialVersionUID = 1L;

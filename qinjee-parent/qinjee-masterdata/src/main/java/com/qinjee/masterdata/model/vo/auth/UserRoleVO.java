@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,7 +27,8 @@ import java.util.Date;
 @ApiModel(description = "用户角色类")
 @Data
 @NoArgsConstructor
-public class UserRoleVO  implements Serializable {
+@JsonInclude
+public class UserRoleVO implements Serializable {
     /**
      * 角色ID
      */

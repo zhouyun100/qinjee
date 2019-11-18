@@ -10,11 +10,14 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * @author 周赟
@@ -24,7 +27,8 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "自定义人员表字段类")
 @Data
 @NoArgsConstructor
-public class CustomArchiveTableFieldVO {
+@JsonInclude
+public class CustomArchiveTableFieldVO implements Serializable {
 
     /**
      * 表ID

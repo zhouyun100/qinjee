@@ -10,9 +10,12 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 登录自定义表字段封装类
@@ -20,7 +23,8 @@ import lombok.Data;
  * @date 2019/9/24
  */
 @Data
-public class RequestCustomTableFieldVO {
+@JsonInclude
+public class RequestCustomTableFieldVO implements Serializable {
 
     /**
      * 表ID

@@ -10,11 +10,13 @@
  */
 package com.qinjee.masterdata.model.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -25,7 +27,8 @@ import java.util.List;
 @ApiModel(description = "角色树")
 @Data
 @NoArgsConstructor
-public class RoleGroupVO {
+@JsonInclude
+public class RoleGroupVO implements Serializable {
     /**
      * 角色组ID
      */
