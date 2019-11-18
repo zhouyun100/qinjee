@@ -12,11 +12,7 @@ package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Role;
-import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
-import com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO;
-import com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO;
-import com.qinjee.masterdata.model.vo.auth.MenuVO;
-import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.model.response.ResponseResult;
@@ -607,17 +603,12 @@ public class RoleAuthController extends BaseController{
     }
 
 
-    @ApiOperation(value="修改角色自定义人员表字段权限", notes="修改角色自定义人员表字段权限")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "fieldId", value = "字段ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "readWriteCode", value = "读写CODE(READ<ADDWRITE<WRITE)", required = true, dataType = "String")
-    })
+    @ApiOperation(value="修改角色自定义人员表字段权限", notes="参数只需roleId、fieldId、readWriteCode")
     @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.POST)
-    public ResponseResult updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode) {
-        if(null == roleId || null == fieldId){
+    public ResponseResult updateRoleCustomArchiveTableFieldAuth(@RequestBody List<CustomArchiveTableFieldVO> customTableFieldList) {
+        if(CollectionUtils.isEmpty(customTableFieldList)){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("角色ID或自定义字段ID不能为空!");
+            responseResult.setMessage("请求对象不能为空!");
             return responseResult;
         }
         try{
@@ -627,16 +618,16 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.updateRoleCustomArchiveTableFieldAuth(roleId, fieldId, readWriteCode, userSession.getArchiveId());
+            int resultNumber = roleAuthService.updateRoleCustomArchiveTableFieldAuth(customTableFieldList, userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("updateRoleCustomArchiveTableFieldAuth success！roleId={},fieldId={},readWriteCode={},operatorId={}", roleId, fieldId, readWriteCode, userSession.getArchiveId());
+                logger.info("updateRoleCustomArchiveTableFieldAuth success！customTableFieldList={},operatorId={}", customTableFieldList, userSession.getArchiveId());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("updateRoleCustomArchiveTableFieldAuth fail！roleId={},fieldId={},readWriteCode={},operatorId={}", roleId, fieldId, readWriteCode, userSession.getArchiveId());
+                logger.info("updateRoleCustomArchiveTableFieldAuth fail！customTableFieldList={},operatorId={}", customTableFieldList, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
             }
         }catch (Exception e){
-            logger.info("updateRoleCustomArchiveTableFieldAuth exception！roleId={},fieldId={},readWriteCode={},exception={}", roleId, fieldId, readWriteCode, e.toString());
+            logger.info("updateRoleCustomArchiveTableFieldAuth exception！customTableFieldList={},exception={}", customTableFieldList, e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色自定义人员表字段权限异常！");
