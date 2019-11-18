@@ -19,6 +19,7 @@ import com.qinjee.masterdata.service.auth.UserLoginService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.VerifyCodeUtils;
 import io.swagger.annotations.Api;
@@ -114,6 +115,8 @@ public class UserLoginController extends BaseController{
             responseResult.setMessage("账号或密码为空，请重新输入!");
             return responseResult;
         }
+
+        password = MD5Utils.getMd5(password);
 
         try {
             List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByAccountAndPassword(account,password);

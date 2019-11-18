@@ -32,11 +32,11 @@ public class MD5Utils {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(plainText.getBytes());
-			byte b[] = md.digest();
+			byte[] b = md.digest();
 
 			int i;
 
-			StringBuffer buf = new StringBuffer("");
+			StringBuffer buf = new StringBuffer();
 			for (int offset = 0; offset < b.length; offset++) {
 				i = b[offset];
 				if (i < 0){
@@ -47,10 +47,8 @@ public class MD5Utils {
 				}
 				buf.append(Integer.toHexString(i));
 			}
-			// 32位加密
-			return buf.toString();
 			// 16位的加密
-			// return buf.toString().substring(8, 24);
+			return buf.toString();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return null;
@@ -69,5 +67,12 @@ public class MD5Utils {
 		String s = new String(a);
 		return s;
 
+	}
+
+	public static void main(String [] args){
+		String password = "123456";
+		//e10adc3949ba59abbe56e057f20f883e
+		System.out.println(MD5Utils.getMd5(password));
+		System.out.println(MD5Utils.convertMD5(MD5Utils.convertMD5(MD5Utils.getMd5(password))));
 	}
 }
