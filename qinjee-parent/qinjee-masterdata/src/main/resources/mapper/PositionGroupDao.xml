@@ -111,11 +111,12 @@
     where position_group_id = #{positionGroupId,jdbcType=INTEGER}
   </update>
 
-  <select id="getPositionGroupByPosG" resultType="com.qinjee.masterdata.model.entity.PositionGroup">
+  <select id="getPositionGroupByPosG" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_position_group
     where
+        1 = 1
     <if test="positionGroupName != null">
       AND position_group_name = #{positionGroupName,jdbcType=VARCHAR}
     </if>
@@ -131,6 +132,6 @@
     <if test="isDelete != null">
       AND is_delete = #{isDelete,jdbcType=SMALLINT}
     </if>
-    ORDER BY ASC sort_id
+    ORDER BY  sort_id ASC
   </select>
 </mapper>
