@@ -35,7 +35,7 @@ import java.util.List;
 @Service
 public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookServiceImpl.class);
-    private static final String ARCHIVE="ARCHIVE";
+    private static final String ARCHIVE="ARC";
     private static final String TYPEDATE="DATE";
     private static final String TYPENUMBER="NUMBER";
     private static final String TYPETEXT="TEXT";

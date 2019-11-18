@@ -19,7 +19,7 @@ public class SqlUtil {
         }
         int i = stringBuffer.toString().lastIndexOf(",");
         String substring = stringBuffer.toString().substring(0, i);
-        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 where t0.company_id = " + companyId +"\t"+"and t1.func_code = 'ARCHIVE'"+"\t"+"and t0.company_id = t1.company_id and t2.table_id=t1.table_id"+"\t"+" and t0.archive_id = t2.business_id)t"+"\t";
+        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 where t0.company_id = " + companyId +"\t"+"and t1.func_code = 'ARC'"+"\t"+"and t0.company_id = t1.company_id and t2.table_id=t1.table_id"+"\t"+" and t0.archive_id = t2.business_id)t"+"\t";
         return substring+c;
     }
 }
