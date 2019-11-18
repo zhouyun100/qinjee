@@ -30,6 +30,7 @@
     </resultMap>
 
     <resultMap id="CustomArchiveTableFieldResultMap" type="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
         <result column="table_id" jdbcType="INTEGER" property="tableId" />
         <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
         <result column="table_name" jdbcType="VARCHAR" property="tableName" />
@@ -213,7 +214,7 @@
     </select>
 
     <!--根据角色和自定义表ID查询自定义字段列表 -->
-    <select id="searchCustomArchiveTableFieldListByTableId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestCustomTableFieldVO" resultMap="CustomArchiveTableFieldResultMap">
+    <select id="searchCustomArchiveTableFieldListByTableId" parameterType="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO" resultMap="CustomArchiveTableFieldResultMap">
         select t.table_id,t.table_code,t.table_name,t.func_code,f.field_id,f.field_code,f.field_name,
         CASE WHEN v.read_write_code is NOT NULL THEN v.read_write_code ELSE '' end read_write_code
         from t_custom_archive_table t,t_custom_archive_field f
@@ -231,7 +232,7 @@
 
     <!--根据角色和自定义表ID查询自定义字段列表 -->
     <select id="searchCustomArchiveTableFieldListByRoleId" parameterType="java.lang.Integer" resultMap="CustomArchiveTableFieldResultMap">
-        select t.table_id,t.table_name,f.field_id,f.field_name
+        select a.role_id,t.table_id,t.table_code,t.table_name,f.field_id,f.field_code,f.field_name,a.read_write_code
         from t_role_custom_field_auth a,t_custom_archive_field f,t_custom_archive_table t
         where a.role_id = #{roleId,jdbcType=INTEGER}
         and a.field_id = f.field_id
@@ -242,7 +243,7 @@
     </select>
 
     <!--查询角色自定义人员表字段 -->
-    <select id="searchRoleCustomArchiveTableFieldAuth" parameterType="com.qinjee.masterdata.model.vo.auth.RequestCustomTableFieldVO" resultType="com.qinjee.masterdata.model.vo.auth.RequestCustomTableFieldVO">
+    <select id="searchRoleCustomArchiveTableFieldAuth" parameterType="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO" resultType="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
         select role_id,field_id,read_write_code,operator_id,is_delete
         from t_role_custom_field_auth
         where role_id = #{roleId,jdbcType=INTEGER}
@@ -250,14 +251,14 @@
     </select>
 
     <!-- 新增角色自定义人员表字段权限 -->
-    <insert id="addRoleCustomArchiveTableFieldAuth" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.vo.auth.RequestCustomTableFieldVO" useGeneratedKeys="true">
+    <insert id="addRoleCustomArchiveTableFieldAuth" parameterType="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
         insert into t_role_custom_field_auth(role_id,field_id,read_write_code,operator_id,is_delete) values(
         #{roleId,jdbcType=INTEGER},#{fieldId,jdbcType=INTEGER},#{readWriteCode,jdbcType=VARCHAR},#{operatorId,jdbcType=INTEGER},0
         )
     </insert>
 
     <!-- 修改角色自定义人员表字段权限 -->
-    <update id="updateRoleCustomArchiveTableFieldAuth" parameterType="com.qinjee.masterdata.model.vo.auth.RequestCustomTableFieldVO">
+    <update id="updateRoleCustomArchiveTableFieldAuth" parameterType="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO">
         update t_role_custom_field_auth
         set
         <if test="readWriteCode != null">
@@ -267,6 +268,7 @@
         operator_id = #{operatorId,jdbcType=INTEGER}
         where role_id = #{roleId,jdbcType=INTEGER}
         and field_id = #{fieldId,jdbcType=INTEGER}
+        and is_delete = 0
     </update>
 
     <!-- 新增角色自定义人员表字段权限 -->

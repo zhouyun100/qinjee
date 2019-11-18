@@ -160,7 +160,7 @@ public interface RoleAuthDao {
      * @param requestCustomTableField
      * @return
      */
-    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(RequestCustomTableFieldVO requestCustomTableField);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(CustomArchiveTableFieldVO requestCustomTableField);
 
     /**
      * 根据角色ID查询角色自定义表字段列表
@@ -174,21 +174,21 @@ public interface RoleAuthDao {
      * @param requestCustomTableField
      * @return
      */
-    RequestCustomTableFieldVO searchRoleCustomArchiveTableFieldAuth(RequestCustomTableFieldVO requestCustomTableField);
+    CustomArchiveTableFieldVO searchRoleCustomArchiveTableFieldAuth(CustomArchiveTableFieldVO requestCustomTableField);
 
     /**
      * 新增角色自定义人员表字段权限
      * @param requestCustomTableField
      * @return
      */
-    int addRoleCustomArchiveTableFieldAuth(RequestCustomTableFieldVO requestCustomTableField);
+    int addRoleCustomArchiveTableFieldAuth(CustomArchiveTableFieldVO requestCustomTableField);
 
     /**
      * 修改角色自定义人员表字段权限
      * @param requestCustomTableField
      * @return
      */
-    int updateRoleCustomArchiveTableFieldAuth(RequestCustomTableFieldVO requestCustomTableField);
+    int updateRoleCustomArchiveTableFieldAuth(CustomArchiveTableFieldVO requestCustomTableField);
 
     /**
      * 保存数据级权限定义

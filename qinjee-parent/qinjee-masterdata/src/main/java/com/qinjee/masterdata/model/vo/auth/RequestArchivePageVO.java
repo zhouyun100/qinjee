@@ -29,7 +29,7 @@ public class RequestArchivePageVO extends PageVo {
     /**
      * 用户姓名或者工号
      */
-    @ApiModelProperty("用户姓名或者工号")
+    @ApiModelProperty(name = "userName", value = "用户姓名或者工号", required = true)
     private String userName;
 
     /**

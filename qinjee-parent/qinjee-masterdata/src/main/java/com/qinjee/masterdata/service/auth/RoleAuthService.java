@@ -159,13 +159,11 @@ public interface RoleAuthService {
 
     /**
      * 修改角色自定义人员表字段权限
-     * @param roleId
-     * @param fieldId
-     * @param readWriteCode
+     * @param requestCustomTableFieldList
      * @param operatorId
      * @return
      */
-    int updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode, Integer operatorId);
+    int updateRoleCustomArchiveTableFieldAuth(List<CustomArchiveTableFieldVO> requestCustomTableFieldList, Integer operatorId);
 
     /**
      * 处理所有角色列表以树形结构展示
