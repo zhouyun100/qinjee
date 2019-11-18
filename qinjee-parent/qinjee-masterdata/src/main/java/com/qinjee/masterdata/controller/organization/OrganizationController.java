@@ -10,6 +10,8 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +29,7 @@ import java.util.List;
 @RestController
 @Api(tags = "【机构管理】机构接口")
 public class OrganizationController extends BaseController {
-
+    private static Logger logger = LogManager.getLogger(OrganizationController.class);
     @Autowired
     private OrganizationService organizationService;
     //测试提交
@@ -64,6 +66,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
         ResponseResult responseResult ;
         try {
+            logger.info("新增结构");
             responseResult=organizationService.addOrganization(getUserSession(), organizationVo);
             return responseResult;
         } catch (Exception e) {

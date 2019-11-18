@@ -33,7 +33,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     //    private static final Logger logger = LoggerFactory.getLogger(StaffArchiveServiceImpl.class);
     private static final String ASC = "升序";
     private static final String DESC = "降序";
-    private static final String ARCHIVE = "ARCHIVE";
+    private static final String ARCHIVE = "ARC";
     @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
