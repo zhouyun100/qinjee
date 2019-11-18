@@ -353,7 +353,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Override
     public List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer roleId, Integer tableId) {
-        RequestCustomTableFieldVO requestCustomTableField = new RequestCustomTableFieldVO();
+        CustomArchiveTableFieldVO requestCustomTableField = new CustomArchiveTableFieldVO();
         requestCustomTableField.setRoleId(roleId);
         requestCustomTableField.setTableId(tableId);
         List<CustomArchiveTableFieldVO> customArchiveFieldList = roleAuthDao.searchCustomArchiveTableFieldListByTableId(requestCustomTableField);
@@ -386,31 +386,63 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public int updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode, Integer operatorId) {
-        if(null == roleId || null == fieldId){
-            return 0;
-        }
+    public int updateRoleCustomArchiveTableFieldAuth(List<CustomArchiveTableFieldVO> requestCustomTableFieldList, Integer operatorId) {
+        int resultNumber = 0;
+        if(!CollectionUtils.isEmpty(requestCustomTableFieldList)){
 
-        RequestCustomTableFieldVO requestCustomTableField = new RequestCustomTableFieldVO();
-        requestCustomTableField.setRoleId(roleId);
-        requestCustomTableField.setFieldId(fieldId);
-        requestCustomTableField.setReadWriteCode(readWriteCode);
-        requestCustomTableField.setOperatorId(operatorId);
+            //定义已存在的字段权限列表
+            List<CustomArchiveTableFieldVO> customArchiveTableList = null;
 
-        RequestCustomTableFieldVO customTableField = roleAuthDao.searchRoleCustomArchiveTableFieldAuth(requestCustomTableField);
-        int resultNumber;
-        if(customTableField == null){
-            resultNumber = roleAuthDao.addRoleCustomArchiveTableFieldAuth(requestCustomTableField);
-        }else{
-            if(StringUtils.isEmpty(readWriteCode)){
-                requestCustomTableField.setIsDelete(1);
-            }else{
-                requestCustomTableField.setIsDelete(0);
+            //定义更新前后同时存在的字段权限列表
+            List<CustomArchiveTableFieldVO> tempCustomArchiveTableList = new ArrayList<>();
+            List<CustomArchiveTableFieldVO> tempRequestCustomTableFieldList = new ArrayList<>();
+
+            //获取角色ID
+            Integer roleId = requestCustomTableFieldList.get(0).getRoleId();
+
+            //查询角色已有字段权限
+            if(null != roleId){
+                customArchiveTableList = roleAuthDao.searchCustomArchiveTableFieldListByRoleId(roleId);
             }
-            resultNumber = roleAuthDao.updateRoleCustomArchiveTableFieldAuth(requestCustomTableField);
-        }
 
+            //筛选
+            if(!CollectionUtils.isEmpty(customArchiveTableList)){
+                for(CustomArchiveTableFieldVO requestCustomTableField : requestCustomTableFieldList){
+                    for(CustomArchiveTableFieldVO customTableField : customArchiveTableList){
+                        if(requestCustomTableField.getFieldId().equals(customTableField.getFieldId())
+                                && requestCustomTableField.getRoleId().equals(customTableField.getRoleId())){
+                            tempCustomArchiveTableList.add(customTableField);
+                            tempRequestCustomTableFieldList.add(requestCustomTableField);
+                        }
+                    }
+                }
+                customArchiveTableList.removeAll(tempCustomArchiveTableList);
+                requestCustomTableFieldList.removeAll(tempRequestCustomTableFieldList);
+            }
+
+            //删除
+            for(CustomArchiveTableFieldVO customTableField : customArchiveTableList){
+                customTableField.setOperatorId(operatorId);
+                customTableField.setIsDelete(1);
+                resultNumber = roleAuthDao.updateRoleCustomArchiveTableFieldAuth(customTableField);
+            }
+
+            //修改
+            for(CustomArchiveTableFieldVO tempRequestCustomTableField : tempRequestCustomTableFieldList){
+                tempRequestCustomTableField.setOperatorId(operatorId);
+                tempRequestCustomTableField.setIsDelete(0);
+                resultNumber = roleAuthDao.updateRoleCustomArchiveTableFieldAuth(tempRequestCustomTableField);
+            }
+
+            //新增
+            for(CustomArchiveTableFieldVO requestCustomTableField : requestCustomTableFieldList){
+                requestCustomTableField.setOperatorId(operatorId);
+                requestCustomTableField.setIsDelete(0);
+                resultNumber = roleAuthDao.addRoleCustomArchiveTableFieldAuth(requestCustomTableField);
+            }
+        }
         return resultNumber;
     }
 

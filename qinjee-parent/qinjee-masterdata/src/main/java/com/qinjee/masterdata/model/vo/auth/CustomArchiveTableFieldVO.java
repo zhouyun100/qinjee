@@ -30,19 +30,15 @@ public class CustomArchiveTableFieldVO {
      * 表ID
      */
     @ApiModelProperty("表ID")
+    @QueryColumn("table_id")
     private Integer tableId;
 
     /**
      * 物理表名
      */
     @ApiModelProperty("物理表名")
+    @QueryColumn("table_code")
     private String tableCode;
-
-    /**
-     * 功能CODE
-     */
-    @ApiModelProperty("功能CODE")
-    private String funcCode;
 
     /**
      * 表名
@@ -51,15 +47,38 @@ public class CustomArchiveTableFieldVO {
     private String tableName;
 
     /**
+     * 功能CODE
+     */
+    @ApiModelProperty("功能CODE")
+    @QueryColumn("func_code")
+    private String funcCode;
+
+    /**
+     * 档案ID
+     */
+    @ApiModelProperty("档案ID")
+    @QueryColumn("archive_id")
+    private Integer archiveId;
+
+    /**
+     * 角色ID
+     */
+    @ApiModelProperty("角色ID")
+    @QueryColumn("role_id")
+    private Integer roleId;
+
+    /**
      * 字段ID
      */
     @ApiModelProperty("字段ID")
+    @QueryColumn("field_id")
     private Integer fieldId;
 
     /**
      * 物理字段名
      */
     @ApiModelProperty("物理字段名")
+    @QueryColumn("field_code")
     private String fieldCode;
 
     /**
@@ -69,8 +88,24 @@ public class CustomArchiveTableFieldVO {
     private String fieldName;
 
     /**
-     * 读写CODE（WRITE：读写，READ：只读）
+     * 操作人ID
      */
-    @ApiModelProperty("是否有字段权限")
+    @ApiModelProperty("操作人ID")
+    @QueryColumn("operator_id")
+    private Integer operatorId;
+
+    /**
+     * 读写CODE(READ<ADDWRITE<WRITE)
+     */
+    @ApiModelProperty("读写CODE")
+    @QueryColumn("read_write_code")
     private String readWriteCode;
+
+    /**
+     * 是否删除
+     */
+    @ApiModelProperty("是否删除")
+    @QueryColumn("is_delete")
+    private Integer isDelete;
+
 }
