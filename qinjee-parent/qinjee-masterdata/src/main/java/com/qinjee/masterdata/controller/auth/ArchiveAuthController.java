@@ -25,10 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,7 +46,7 @@ public class ArchiveAuthController extends BaseController {
     private ArchiveAuthService archiveAuthService;
 
     @ApiOperation(value="当前登录用户角色树查询", notes="当前登录用户角色树查询")
-    @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchRoleTree",method = RequestMethod.POST)
     public ResponseResult<RoleGroupVO> searchRoleTreeInOrg() {
         userSession = getUserSession();
         if(userSession == null){
@@ -71,7 +68,7 @@ public class ArchiveAuthController extends BaseController {
     }
 
     @ApiOperation(value="根据角色ID查询员工列表", notes="根据角色ID查询员工")
-    @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.POST)
     public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(RequestRoleArchivePageVO roleArchivePageVO) {
 
         try{
@@ -93,7 +90,7 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
     @RequestMapping(value = "/addArchiveRole",method = RequestMethod.POST)
-    public ResponseResult addArchiveRole(Integer roleId,@RequestParam List<Integer> archiveIdList) {
+    public ResponseResult addArchiveRole(Integer roleId,@RequestBody List<Integer> archiveIdList) {
 
         if(null == roleId || CollectionUtils.isEmpty(archiveIdList)){
             responseResult = ResponseResult.FAIL();
@@ -125,8 +122,8 @@ public class ArchiveAuthController extends BaseController {
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/delArchiveRole",method = RequestMethod.GET)
-    public ResponseResult delArchiveRole(Integer roleId,@RequestParam List<Integer> archiveIdList) {
+    @RequestMapping(value = "/delArchiveRole",method = RequestMethod.POST)
+    public ResponseResult delArchiveRole(Integer roleId,@RequestBody List<Integer> archiveIdList) {
         if(null == roleId || CollectionUtils.isEmpty(archiveIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色或员工为空！");

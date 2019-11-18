@@ -29,10 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,7 +53,7 @@ public class RoleAuthController extends BaseController{
     private RoleAuthService roleAuthService;
 
     @ApiOperation(value="角色树查询", notes="角色树查询")
-    @RequestMapping(value = "/searchRoleTree",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchRoleTree",method = RequestMethod.POST)
     public ResponseResult<RoleGroupVO> searchRoleTree() {
         userSession = getUserSession();
         if(userSession == null){
@@ -88,7 +85,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleGroupName", value = "角色组名称", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/addRoleGroup",method = RequestMethod.GET)
+    @RequestMapping(value = "/addRoleGroup",method = RequestMethod.POST)
     public ResponseResult addRoleGroup(String roleGroupName) {
         if(StringUtils.isEmpty(roleGroupName)){
             responseResult = ResponseResult.FAIL();
@@ -125,7 +122,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/addRole",method = RequestMethod.GET)
+    @RequestMapping(value = "/addRole",method = RequestMethod.POST)
     public ResponseResult addRole(Integer roleGroupId, String roleName) {
         if(null == roleGroupId || StringUtils.isEmpty(roleName)){
             responseResult = ResponseResult.FAIL();
@@ -163,7 +160,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/updateRole",method = RequestMethod.GET)
+    @RequestMapping(value = "/updateRole",method = RequestMethod.POST)
     public ResponseResult updateRole(Integer roleId, Integer roleGroupId, String roleName) {
         if(null == roleId || null == roleGroupId || StringUtils.isEmpty(roleName)){
             responseResult = ResponseResult.FAIL();
@@ -199,7 +196,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchRoleDetailByRoleId",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchRoleDetailByRoleId",method = RequestMethod.POST)
     public ResponseResult<Role> searchRoleDetailByRoleId(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -235,9 +232,9 @@ public class RoleAuthController extends BaseController{
     @ApiOperation(value="根据角色ID修改角色是否自动授权新增子集机构权限", notes="根据角色ID修改角色自动授权新增子集机构权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "isAutoAuthChildOrg", value = "是否自动授权新增子集机构权限", required = true, dataType = "int")
+            @ApiImplicitParam(name = "isAutoAuthChildOrg", value = "是否自动授权新增子集机构权限(1:是;0:否)", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/updateRoleAutoAuthChildOrgByRoleId",method = RequestMethod.GET)
+    @RequestMapping(value = "/updateRoleAutoAuthChildOrgByRoleId",method = RequestMethod.POST)
     public ResponseResult updateRoleAutoAuthChildOrgByRoleId(Integer roleId, Integer isAutoAuthChildOrg) {
         if(null == roleId || null == isAutoAuthChildOrg){
             responseResult = ResponseResult.FAIL();
@@ -274,7 +271,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "roleGroupName", value = "角色组名称", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/updateRoleGroup",method = RequestMethod.GET)
+    @RequestMapping(value = "/updateRoleGroup",method = RequestMethod.POST)
     public ResponseResult updateRoleGroup(Integer roleGroupId, String roleGroupName) {
         if(null == roleGroupId || StringUtils.isEmpty(roleGroupName)){
             responseResult = ResponseResult.FAIL();
@@ -310,7 +307,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/delRole",method = RequestMethod.GET)
+    @RequestMapping(value = "/delRole",method = RequestMethod.POST)
     public ResponseResult delRole(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -346,7 +343,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/delRoleGroup",method = RequestMethod.GET)
+    @RequestMapping(value = "/delRoleGroup",method = RequestMethod.POST)
     public ResponseResult delRoleGroup(Integer roleGroupId) {
         if(null == roleGroupId){
             responseResult = ResponseResult.FAIL();
@@ -383,7 +380,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchRoleAuthTree",method = RequestMethod.POST)
     public ResponseResult<MenuVO> searchRoleAuthTree(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -422,8 +419,8 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "menuIdList", value = "功能ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleMenuAuth(Integer roleId,@RequestParam List<Integer> menuIdList) {
+    @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.POST)
+    public ResponseResult updateRoleMenuAuth(Integer roleId,@RequestBody List<Integer> menuIdList) {
         if(null == roleId || CollectionUtils.isEmpty(menuIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色或菜单不能为空!");
@@ -454,7 +451,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchOrgAuthTree",method = RequestMethod.POST)
     public ResponseResult<OrganizationVO> searchOrgAuthTree(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -488,14 +485,13 @@ public class RoleAuthController extends BaseController{
     }
 
 
-
     @ApiOperation(value="修改角色机构权限", notes="修改角色机构权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
     })
-    @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.GET)
-    public ResponseResult updateRoleOrgAuth(Integer roleId,@RequestParam  List<Integer> orgIdList) {
+    @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.POST)
+    public ResponseResult updateRoleOrgAuth(Integer roleId,@RequestBody  List<Integer> orgIdList) {
         if(null == roleId || CollectionUtils.isEmpty(orgIdList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID或机构ID不能为空!");
@@ -523,7 +519,7 @@ public class RoleAuthController extends BaseController{
 
 
     @ApiOperation(value="查询当前登录企业档案自定义表列表", notes="查询当前登录企业档案自定义表列表")
-    @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.POST)
     public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableList() {
         try{
             userSession = getUserSession();
@@ -551,7 +547,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "tableId", value = "自定义表ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchCustomArchiveTableFieldListByTableId",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchCustomArchiveTableFieldListByTableId",method = RequestMethod.POST)
     public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer roleId,Integer tableId) {
         if(null == tableId){
             responseResult = ResponseResult.FAIL();
@@ -583,7 +579,7 @@ public class RoleAuthController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchCustomArchiveTableFieldListByRoleId",method = RequestMethod.GET)
+    @RequestMapping(value = "/searchCustomArchiveTableFieldListByRoleId",method = RequestMethod.POST)
     public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleId(Integer roleId) {
         if(null == roleId){
             responseResult = ResponseResult.FAIL();
@@ -617,7 +613,7 @@ public class RoleAuthController extends BaseController{
             @ApiImplicitParam(name = "fieldId", value = "字段ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "readWriteCode", value = "读写CODE(READ<ADDWRITE<WRITE)", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.GET)
+    @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.POST)
     public ResponseResult updateRoleCustomArchiveTableFieldAuth(Integer roleId, Integer fieldId, String readWriteCode) {
         if(null == roleId || null == fieldId){
             responseResult = ResponseResult.FAIL();
