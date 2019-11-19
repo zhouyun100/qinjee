@@ -18,10 +18,7 @@ import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.DateFormatUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -114,13 +111,9 @@ public class AuthHandoverController extends BaseController{
     }
 
     @ApiOperation(value="角色回收", notes="根据档案回收角色")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/roleRecoveryByArchiveId",method = RequestMethod.POST)
-    public ResponseResult roleRecoveryByArchiveId(Integer archiveId,@RequestBody List<Integer> roleIdList) {
-        if(null == archiveId || CollectionUtils.isEmpty(roleIdList)){
+    public ResponseResult roleRecoveryByArchiveId(@RequestBody @ApiParam(value = "请求参数：\narchiveId：档案ID\nroleIdList：角色ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
+        if(null == requestAuthHandoverVO.getArchiveId() || CollectionUtils.isEmpty(requestAuthHandoverVO.getRoleIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案或角色不能为空!");
             return responseResult;
@@ -132,17 +125,17 @@ public class AuthHandoverController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = authHandoverService.roleRecoveryByArchiveId(archiveId,roleIdList,userSession.getArchiveId());
+            int resultNumber = authHandoverService.roleRecoveryByArchiveId(requestAuthHandoverVO.getArchiveId(),requestAuthHandoverVO.getRoleIdList(),userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("roleRecoveryByArchiveId success！archiveId={},roleIdList={}", archiveId, roleIdList);
+                logger.info("roleRecoveryByArchiveId success！archiveId={},roleIdList={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getRoleIdList());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("roleRecoveryByArchiveId fail！archiveId={},roleIdList={}", archiveId, roleIdList);
+                logger.info("roleRecoveryByArchiveId fail！archiveId={},roleIdList={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getRoleIdList());
                 responseResult = ResponseResult.FAIL();
             }
 
         }catch (Exception e){
-            logger.info("roleRecoveryByArchiveId exception！archiveId={},roleIdList={},exception={}", archiveId, roleIdList, e.toString());
+            logger.info("roleRecoveryByArchiveId exception！archiveId={},roleIdList={},exception={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getRoleIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案回收角色异常！");
@@ -151,13 +144,9 @@ public class AuthHandoverController extends BaseController{
     }
 
     @ApiOperation(value="机构回收", notes="根据档案回收机构")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/orgRecoveryByArchiveId",method = RequestMethod.POST)
-    public ResponseResult orgRecoveryByArchiveId(Integer archiveId,@RequestBody List<Integer> orgIdList) {
-        if(null == archiveId || CollectionUtils.isEmpty(orgIdList)){
+    public ResponseResult orgRecoveryByArchiveId(@RequestBody @ApiParam(value = "请求参数：\narchiveId：档案ID\norgIdList：机构ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
+        if(null == requestAuthHandoverVO.getArchiveId() || CollectionUtils.isEmpty(requestAuthHandoverVO.getOrgIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案或机构不能为空!");
             return responseResult;
@@ -169,16 +158,16 @@ public class AuthHandoverController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = authHandoverService.orgRecoveryByArchiveId(archiveId,orgIdList,userSession.getArchiveId());
+            int resultNumber = authHandoverService.orgRecoveryByArchiveId(requestAuthHandoverVO.getArchiveId(),requestAuthHandoverVO.getOrgIdList(),userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("orgRecoveryByArchiveId success！archiveId={},orgIdList={}", archiveId, orgIdList);
+                logger.info("orgRecoveryByArchiveId success！archiveId={},orgIdList={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getOrgIdList());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("orgRecoveryByArchiveId fail！archiveId={},orgIdList={}", archiveId, orgIdList);
+                logger.info("orgRecoveryByArchiveId fail！archiveId={},orgIdList={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getOrgIdList());
                 responseResult = ResponseResult.FAIL();
             }
         }catch (Exception e){
-            logger.info("orgRecoveryByArchiveId exception！archiveId={},orgIdList={},exception={}", archiveId, orgIdList, e.toString());
+            logger.info("orgRecoveryByArchiveId exception！archiveId={},orgIdList={},exception={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getOrgIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案回收机构异常！");
@@ -187,14 +176,9 @@ public class AuthHandoverController extends BaseController{
     }
 
     @ApiOperation(value="角色移交", notes="根据档案移交角色")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "handoverArchiveId", value = "移交人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "acceptArchiveId", value = "接收人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/roleHandoverByArchiveId",method = RequestMethod.POST)
-    public ResponseResult roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, @RequestBody List<Integer> roleIdList) {
-        if(null == handoverArchiveId || null == acceptArchiveId ||CollectionUtils.isEmpty(roleIdList)){
+    public ResponseResult roleHandoverByArchiveId(@RequestBody @ApiParam(value = "请求参数：\nhandoverArchiveId：移交人档案ID\nacceptArchiveId：接收人档案ID\nroleIdList：角色ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
+        if(null == requestAuthHandoverVO.getHandoverArchiveId() || null == requestAuthHandoverVO.getAcceptArchiveId() ||CollectionUtils.isEmpty(requestAuthHandoverVO.getRoleIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("移交人或接收人或角色不能为空!");
             return responseResult;
@@ -206,16 +190,16 @@ public class AuthHandoverController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = authHandoverService.roleHandoverByArchiveId(handoverArchiveId,acceptArchiveId,roleIdList,userSession.getArchiveId());
+            int resultNumber = authHandoverService.roleHandoverByArchiveId(requestAuthHandoverVO.getHandoverArchiveId(),requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getRoleIdList(),userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("roleHandoverByArchiveId success！handoverArchiveId={},acceptArchiveId={},roleIdList={}", handoverArchiveId, acceptArchiveId, roleIdList);
+                logger.info("roleHandoverByArchiveId success！handoverArchiveId={},acceptArchiveId={},roleIdList={}", requestAuthHandoverVO.getHandoverArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(), requestAuthHandoverVO.getRoleIdList());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("roleHandoverByArchiveId fail！handoverArchiveId={},acceptArchiveId={},roleIdList={}", handoverArchiveId, acceptArchiveId, roleIdList);
+                logger.info("roleHandoverByArchiveId fail！handoverArchiveId={},acceptArchiveId={},roleIdList={}", requestAuthHandoverVO.getHandoverArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(), requestAuthHandoverVO.getRoleIdList());
                 responseResult = ResponseResult.FAIL();
             }
         }catch (Exception e){
-            logger.info("roleHandoverByArchiveId exception！handoverArchiveId={},acceptArchiveId={},roleIdList={},exception={}", handoverArchiveId, acceptArchiveId, roleIdList, e.toString());
+            logger.info("roleHandoverByArchiveId exception！handoverArchiveId={},acceptArchiveId={},roleIdList={},exception={}", requestAuthHandoverVO.getHandoverArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(), requestAuthHandoverVO.getRoleIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案移交角色异常！");
@@ -224,14 +208,9 @@ public class AuthHandoverController extends BaseController{
     }
 
     @ApiOperation(value="机构移交", notes="根据档案移交机构")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "handoverArchiveId", value = "移交人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "acceptArchiveId", value = "接收人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/orgHandoverByArchiveId",method = RequestMethod.POST)
-    public ResponseResult orgHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, @RequestBody List<Integer> orgIdList) {
-        if(null == handoverArchiveId || null == acceptArchiveId ||CollectionUtils.isEmpty(orgIdList)){
+    public ResponseResult orgHandoverByArchiveId(@RequestBody @ApiParam(value = "请求参数：\nhandoverArchiveId：移交人档案ID\nacceptArchiveId：接收人档案ID\norgIdList：机构ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
+        if(null == requestAuthHandoverVO.getHandoverArchiveId() || null == requestAuthHandoverVO.getAcceptArchiveId() || CollectionUtils.isEmpty(requestAuthHandoverVO.getOrgIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("移交人或接收人或角色不能为空!");
             return responseResult;
@@ -243,16 +222,16 @@ public class AuthHandoverController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = authHandoverService.orgHandoverByArchiveId(handoverArchiveId,acceptArchiveId,orgIdList,userSession.getArchiveId());
+            int resultNumber = authHandoverService.orgHandoverByArchiveId(requestAuthHandoverVO.getHandoverArchiveId(),requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getOrgIdList(),userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("orgHandoverByArchiveId success！handoverArchiveId={},acceptArchiveId={},orgIdList={}", handoverArchiveId, acceptArchiveId, orgIdList);
+                logger.info("orgHandoverByArchiveId success！handoverArchiveId={},acceptArchiveId={},orgIdList={}", requestAuthHandoverVO.getHandoverArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(), requestAuthHandoverVO.getOrgIdList());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("orgHandoverByArchiveId fail！handoverArchiveId={},acceptArchiveId={},orgIdList={}", handoverArchiveId, acceptArchiveId, orgIdList);
+                logger.info("orgHandoverByArchiveId fail！handoverArchiveId={},acceptArchiveId={},orgIdList={}", requestAuthHandoverVO.getHandoverArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(), requestAuthHandoverVO.getOrgIdList());
                 responseResult = ResponseResult.FAIL();
             }
         }catch (Exception e){
-            logger.info("orgHandoverByArchiveId exception！handoverArchiveId={},acceptArchiveId={},orgIdList={},exception={}", handoverArchiveId, acceptArchiveId, orgIdList, e.toString());
+            logger.info("orgHandoverByArchiveId exception！handoverArchiveId={},acceptArchiveId={},orgIdList={},exception={}", requestAuthHandoverVO.getHandoverArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(), requestAuthHandoverVO.getOrgIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案移交机构异常！");
@@ -261,22 +240,15 @@ public class AuthHandoverController extends BaseController{
     }
 
     @ApiOperation(value="角色托管", notes="根据档案托管角色")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "trusteeshipArchiveId", value = "托管人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "acceptArchiveId", value = "接收人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "trusteeshipBeginTime", value = "托管开始时间", dataType = "String"),
-            @ApiImplicitParam(name = "trusteeshipEndTime", value = "托管结束时间", dataType = "String"),
-            @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/roleTrusteeshipByArchiveId",method = RequestMethod.POST)
-    public ResponseResult roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime, @RequestBody List<Integer> roleIdList) {
+    public ResponseResult roleTrusteeshipByArchiveId(@RequestBody @ApiParam(value = "请求参数：\nacceptArchiveId：托管接收人档案ID\ntrusteeshipBeginTime：托管开始时间\ntrusteeshipEndTime：托管结束时间\nroleIdList：角色ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
 
-        if(trusteeshipArchiveId != null && acceptArchiveId != null && CollectionUtils.isEmpty(roleIdList)){
+        if(requestAuthHandoverVO.getAcceptArchiveId() != null && !CollectionUtils.isEmpty(requestAuthHandoverVO.getRoleIdList())){
 
-            Date beginTime = DateFormatUtil.formatStrToDate(trusteeshipBeginTime,DateFormatUtil.DATE_FORMAT);
-            Date endTime = DateFormatUtil.formatStrToDate(trusteeshipEndTime,DateFormatUtil.DATE_FORMAT);
+            Date beginTime = DateFormatUtil.formatStrToDate(requestAuthHandoverVO.getTrusteeshipBeginTime(),DateFormatUtil.DATE_FORMAT);
+            Date endTime = DateFormatUtil.formatStrToDate(requestAuthHandoverVO.getTrusteeshipEndTime(),DateFormatUtil.DATE_FORMAT);
             if(null == beginTime || null == endTime){
-                logger.info("roleTrusteeshipByArchiveId exception！trusteeshipBeginTime={},trusteeshipEndTime={}", trusteeshipBeginTime,trusteeshipEndTime);
+                logger.info("roleTrusteeshipByArchiveId exception！trusteeshipBeginTime={},trusteeshipEndTime={}", requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime());
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("托管起止时间为空或格式不正确!");
                 return responseResult;
@@ -289,16 +261,16 @@ public class AuthHandoverController extends BaseController{
                     responseResult.setMessage("Session失效！");
                     return responseResult;
                 }
-                int resultNumber = authHandoverService.roleTrusteeshipByArchiveId(trusteeshipArchiveId,acceptArchiveId,beginTime,endTime,roleIdList,userSession.getArchiveId());
+                int resultNumber = authHandoverService.roleTrusteeshipByArchiveId(requestAuthHandoverVO.getAcceptArchiveId(),beginTime,endTime,requestAuthHandoverVO.getRoleIdList(),userSession.getArchiveId());
                 if(resultNumber > 0){
-                    logger.info("roleTrusteeshipByArchiveId success！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,roleIdList);
+                    logger.info("roleTrusteeshipByArchiveId success！acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList={}", requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getRoleIdList());
                     responseResult = ResponseResult.SUCCESS();
                 }else{
-                    logger.info("roleTrusteeshipByArchiveId fail！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,roleIdList);
+                    logger.info("roleTrusteeshipByArchiveId fail！acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList={}", requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getRoleIdList());
                     responseResult = ResponseResult.FAIL();
                 }
             }catch (Exception e){
-                logger.info("roleTrusteeshipByArchiveId exception！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList,exception={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,roleIdList, e.toString());
+                logger.info("roleTrusteeshipByArchiveId exception！acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList,exception={}", requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getRoleIdList(), e.toString());
                 e.printStackTrace();
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("根据档案托管角色异常！");
@@ -311,26 +283,19 @@ public class AuthHandoverController extends BaseController{
         return responseResult;
     }
 
-    @ApiOperation(value="机构托管", notes="根据档案移交机构")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "trusteeshipArchiveId", value = "托管人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "acceptArchiveId", value = "接收人档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "trusteeshipBeginTime", value = "托管开始时间", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "trusteeshipEndTime", value = "托管结束时间", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
+    @ApiOperation(value="机构托管", notes="根据档案移交机构托管")
     @RequestMapping(value = "/orgTrusteeshipByArchiveId",method = RequestMethod.POST)
-    public ResponseResult orgTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, String trusteeshipBeginTime, String trusteeshipEndTime,@RequestBody List<Integer> orgIdList) {
-        if(null == trusteeshipArchiveId || null == acceptArchiveId ||CollectionUtils.isEmpty(orgIdList)){
+    public ResponseResult orgTrusteeshipByArchiveId(@RequestBody @ApiParam(value = "请求参数：\nacceptArchiveId：托管接收人档案ID\ntrusteeshipBeginTime：托管开始时间\ntrusteeshipEndTime：托管结束时间\norgIdList：机构ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
+        if(null == requestAuthHandoverVO.getAcceptArchiveId() ||CollectionUtils.isEmpty(requestAuthHandoverVO.getOrgIdList())){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("移交人或接收人或角色不能为空!");
+            responseResult.setMessage("托管接收人或机构ID不能为空!");
             return responseResult;
         }
 
-        Date beginTime = DateFormatUtil.formatStrToDate(trusteeshipBeginTime,DateFormatUtil.DATE_FORMAT);
-        Date endTime = DateFormatUtil.formatStrToDate(trusteeshipEndTime,DateFormatUtil.DATE_FORMAT);
+        Date beginTime = DateFormatUtil.formatStrToDate(requestAuthHandoverVO.getTrusteeshipBeginTime(),DateFormatUtil.DATE_FORMAT);
+        Date endTime = DateFormatUtil.formatStrToDate(requestAuthHandoverVO.getTrusteeshipEndTime(),DateFormatUtil.DATE_FORMAT);
         if(null == beginTime || null == endTime){
-            logger.info("orgTrusteeshipByArchiveId exception！trusteeshipBeginTime={},trusteeshipEndTime={}", trusteeshipBeginTime,trusteeshipEndTime);
+            logger.info("orgTrusteeshipByArchiveId exception！trusteeshipBeginTime={},trusteeshipEndTime={}", requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime());
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("托管起止时间为空或格式不正确!");
             return responseResult;
@@ -343,17 +308,17 @@ public class AuthHandoverController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = authHandoverService.orgTrusteeshipByArchiveId(trusteeshipArchiveId,acceptArchiveId,beginTime,endTime,orgIdList,userSession.getArchiveId());
+            int resultNumber = authHandoverService.orgTrusteeshipByArchiveId(requestAuthHandoverVO.getAcceptArchiveId(),beginTime,endTime,requestAuthHandoverVO.getOrgIdList(),userSession.getArchiveId());
             if(resultNumber > 0){
-                logger.info("orgTrusteeshipByArchiveId success！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,orgIdList);
+                logger.info("orgTrusteeshipByArchiveId success！acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList={}", requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getOrgIdList());
                 responseResult = ResponseResult.SUCCESS();
             }else{
-                logger.info("orgTrusteeshipByArchiveId fail！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,orgIdList);
+                logger.info("orgTrusteeshipByArchiveId fail！acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList={}", requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getOrgIdList());
                 responseResult = ResponseResult.FAIL();
             }
 
         }catch (Exception e){
-            logger.info("orgTrusteeshipByArchiveId exception！trusteeshipArchiveId={},acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList,exception={}", trusteeshipArchiveId,acceptArchiveId,trusteeshipBeginTime,trusteeshipEndTime,orgIdList, e.toString());
+            logger.info("orgTrusteeshipByArchiveId exception！acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},orgIdList,exception={}", requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getOrgIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案托管角色异常！");
