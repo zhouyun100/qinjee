@@ -54,7 +54,7 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/getOrganizationList")
     @ApiOperation(value = "根据条件分页查询用户下所有的机构",notes = "高雄")
-    public ResponseResult<PageResult<Organization>> getOrganizationList(OrganizationPageVo organizationPageVo){
+    public ResponseResult<PageResult<Organization>> getOrganizationList(@RequestBody(required = false) OrganizationPageVo organizationPageVo){
         UserSession userSession = getUserSession();
         PageResult<Organization> pageResult = organizationService.getOrganizationList(organizationPageVo,userSession);
         return new ResponseResult<>(pageResult);
@@ -66,7 +66,6 @@ public class OrganizationController extends BaseController {
     public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
         ResponseResult responseResult ;
         try {
-            logger.info("新增机构");
             responseResult=organizationService.addOrganization(getUserSession(), organizationVo);
             return responseResult;
         } catch (Exception e) {
@@ -79,14 +78,13 @@ public class OrganizationController extends BaseController {
     @PostMapping("/editOrganization")
     @ApiOperation(value = "编辑机构",notes = "高雄")
     public ResponseResult editOrganization(@RequestBody OrganizationVo organizationVo){
-        //编辑机构旧的信息存入机构历史表
         return organizationService.editOrganization(organizationVo);
     }
 
-    @GetMapping("/deleteOrganizationById")
+    //TODO 递归与循环中涉及多次数据库操作与对象的创建，待优化
+    @PostMapping("/deleteOrganizationById")
     @ApiOperation(value = "删除机构",notes = "高雄")
-    @ApiImplicitParam(name="orgIds", value = "机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-    public ResponseResult deleteOrganizationById(List<Integer> orgIds){
+    public ResponseResult deleteOrganizationById(@RequestBody List<Integer> orgIds){
         return organizationService.deleteOrganizationById(orgIds);
     }
 

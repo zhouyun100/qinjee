@@ -101,7 +101,6 @@
         and t_role.role_id = t_role_org_auth.role_id
         and t_role_org_auth.org_id = t_organization.org_id
         and t_role.is_delete = 0
-        and t_role.is_delete = 0
         and t_role_org_auth.is_delete = 0
         and t_organization.is_enable = 1
         GROUP BY t_organization.org_id,t_organization.org_code,

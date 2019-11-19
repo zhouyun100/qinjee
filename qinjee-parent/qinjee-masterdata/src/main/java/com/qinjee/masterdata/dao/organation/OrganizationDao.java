@@ -35,6 +35,10 @@ public interface OrganizationDao {
                                           @Param("roleIds") Set<Integer> roleIds,
                                           @Param("now") Date now);
 
+    List<Organization> getAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
+                                          @Param("isEnable") Short isEnable,
+                                          @Param("now") Date now);
+
     /**
      * 根据查询条件查询机构
      *

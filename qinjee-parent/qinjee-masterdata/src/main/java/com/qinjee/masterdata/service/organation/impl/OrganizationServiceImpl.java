@@ -1,7 +1,8 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.aop.OrganizationEditAnno;
+import com.qinjee.masterdata.aop.OrganizationSaveAnno;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
@@ -61,13 +62,17 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
         Integer archiveId = userSession.getArchiveId();
-        List<UserRole> userRoleList = userRoleService.getUserRoleList(userSession.getArchiveId());
-        Set<Integer> roleIds = userRoleList.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toSet());
 
-        List<Organization> organizationList = organizationDao.getAllOrganization(archiveId, isEnable, roleIds, new Date());
+        List<Organization> organizationList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
 
         //获取第一级机构
-        List<Organization> organizations = getFirstOrganizationList(organizationList);
+        List<Organization> organizations = organizationList.stream().filter(organization -> {
+            if (organization.getOrgParentId() != null && organization.getOrgParentId() == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
 
         //递归处理机构,使其以树形结构展示
         handlerOrganizationToTree(organizationList, organizations);
@@ -113,6 +118,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
+    @OrganizationSaveAnno
     public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
         //根据父级机构id查询一些基础信息，构建Organization对象
         Organization orgBean = initOrganization(organizationVo.getOrgParentId());
@@ -125,18 +131,26 @@ public class OrganizationServiceImpl implements OrganizationService {
             full_name = organizationVo.getOrgName();
         }
         //BeanUtils.copyProperties(organizationVo, organization);
-
         orgBean.setOrgParentId(organizationVo.getOrgParentId());
         orgBean.setOrgType(organizationVo.getOrgType());
         orgBean.setOrgName(organizationVo.getOrgName());
         orgBean.setOrgManagerId(organizationVo.getOrgManagerId());
         orgBean.setOrgFullName(full_name);
+        orgBean.setCreateTime(new Date());
         orgBean.setOperatorId(userSession.getArchiveId());
         orgBean.setIsEnable((short) 1);
         //设置企业id
         orgBean.setCompanyId(userSession.getCompanyId());
         int insert = organizationDao.insertSelective(orgBean);
-        return insert == 1 ? new ResponseResult(CommonCode.SUCCESS) : new ResponseResult(CommonCode.FAIL);
+
+        ResponseResult responseResult;
+        if (insert == 1) {
+            responseResult = new ResponseResult(CommonCode.SUCCESS);
+        } else {
+            responseResult = new ResponseResult(CommonCode.FAIL);
+        }
+        responseResult.setResult(orgBean);
+        return responseResult;
     }
 
     private Organization initOrganization(Integer orgParentId) {
@@ -240,20 +254,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
+    @OrganizationEditAnno
     public ResponseResult editOrganization(OrganizationVo organizationVo) {
-        //通过机构id新增一条机构历史表
-        Organization organization = addOrganizationHistoryByOrgId(organizationVo.getOrgId());
+        Organization organization = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
         BeanUtils.copyProperties(organizationVo, organization);
-        //业务场景不清楚, 代码出现问题
-       /* Organization parentOrganization = organizationDao.selectByPrimaryKey(organization.getOrgParentId());
-        String orgfull_name = parentOrganization.getOrgFullName();
-        organization.setOrgFullName(orgfull_name + "/" + organization.getOrgName());*/
-        int i = organizationDao.updateByPrimaryKeySelective(organization);
-
-        //修改子级的机构全名称
-        updateOrganizationfull_name(organization);
-
-        return i == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
+        int result = organizationDao.updateByPrimaryKey(organization);
+        return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
 
     /**
@@ -291,23 +297,75 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organization;
     }
 
+    /**
+     * 删除机构的校验：
+     * 1、被删除的机构（包含子机构）下若存在人员档案，提示“该机构下存在人员档案”，不能删除
+     * 2、被删除的机构（包含子机构在人事异动表、工资、考勤等相关表存在记录，不能删除）
+     * <p>
+     * 要删除什么：
+     * 删除机构（包含子机构）以及机构下的岗位，所有删除的信息都需要维护到历史表
+     *
+     * @param orgIds
+     * @return
+     */
     @Transactional
     @Override
     public ResponseResult deleteOrganizationById(List<Integer> orgIds) {
+        List<Integer> idList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orgIds)) {
             for (Integer orgId : orgIds) {
-                //若被删除的机构在人事异动表、工资、考勤等相关数据表存在记录，也不允许删除
-
-                //被删除的机构下若存在人员档案，提示“该机构下存在人员信息，不允许删除
-                List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveListByOrgId(orgId);
-                if (!CollectionUtils.isEmpty(userArchiveList)) {
-                    return new ResponseResult(CommonCode.ORG_EXIST_USER);
-                }
-                addOrganizationHistoryByOrgId(orgId);
-                organizationDao.deleteByPrimaryKey(orgId);
+                //递归至每一层机构
+                idList.add(orgId);
+                recursive(orgId, idList);
             }
         }
-        return new ResponseResult();
+        //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
+        //TODO 人事异动表、工资、考勤暂时不考虑
+        boolean isExsit = false;
+        for (Integer orgId : idList) {
+            List<Integer> userArchiveList = userArchiveDao.selectByOrgId(orgId);
+            if (userArchiveList != null && userArchiveList.size() > 0) {
+                isExsit = true;
+                //只要有一个存在则跳出循环
+                return new ResponseResult(CommonCode.ORG_EXIST_USER);
+            }
+        }
+        //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
+        if (!isExsit) {
+            for (Integer orgId : idList) {
+                //删除前，通过aop进行历史存档
+                Organization orgBean = organizationDao.selectByPrimaryKey(orgId);
+                OrganizationHistory orgHisBean = new OrganizationHistory();
+                if (Objects.nonNull(orgBean)) {
+                    BeanUtils.copyProperties(orgBean, orgHisBean);
+                }
+                orgHisBean.setUpdateTime(new Date());
+                orgHisBean.setCreateTime(orgBean.getCreateTime());
+                //存档
+                organizationHistoryService.addOrganizationHistory(orgHisBean);
+                //删除
+                organizationDao.deleteByPrimaryKey(orgId);
+                //删除岗位,逻辑删除
+                postDao.deleteByOrgId(orgId);
+            }
+        }
+        return new ResponseResult(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 递归查找机构id
+     *
+     * @param orgId
+     * @param idSet
+     */
+    public void recursive(Integer orgId, List idSet) {
+        List<Organization> parentOrgList = organizationDao.getOrganizationListByParentOrgId(orgId);
+        if (parentOrgList != null && parentOrgList.size() > 0) {
+            for (Organization Organization : parentOrgList) {
+                idSet.add(Organization.getOrgId());
+                recursive(Organization.getOrgId(), idSet);
+            }
+        }
     }
 
     @Transactional
@@ -480,6 +538,16 @@ public class OrganizationServiceImpl implements OrganizationService {
             return responseResult;
         }
         return new ResponseResult();
+    }
+
+    @Override
+    public Organization selectByPrimaryKey(Integer orgId) {
+        return organizationDao.selectByPrimaryKey(orgId);
+    }
+
+    @Override
+    public List<Organization> getOrganizationListByParentOrgId(Integer orgId) {
+        return organizationDao.getOrganizationListByParentOrgId(orgId);
     }
 
     private List<Organization> parseFile(MultipartFile file) throws Exception {

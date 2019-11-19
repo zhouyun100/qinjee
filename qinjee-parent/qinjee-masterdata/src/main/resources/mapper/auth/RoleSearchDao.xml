@@ -25,23 +25,36 @@
 
     <!-- 根据工号或姓名模糊查询员工列表 -->
     <select id="searchArchiveListByUserName" parameterType="com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO" resultMap="ArchiveInfoMap">
-        select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
-        CASE
-        WHEN t_user_archive.gender = 1 THEN '男'
-        WHEN t_user_archive.gender = 2 THEN '女'
-        ELSE '未知'
-        END AS gender,
+        SELECT t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,t_sys_dict.dict_value gender,
         a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
-        from t_user_archive
-        LEFT JOIN t_post on t_user_archive.post_id = t_post.post_id
+        FROM t_user_archive
+        LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
         LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
         LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
-        where t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
+        LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE' AND t_user_archive.gender = t_sys_dict.dict_code
+        <if test="roleId != null">
+            ,t_user_role
+        </if>
+        WHERE t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
+        <if test="orgId != null">
+            AND t_user_archive.org_id = #{orgId,jdbcType=INTEGER}
+        </if>
+        <if test="roleId != null">
+            and t_user_role.role_id = #{roleId,jdbcType=INTEGER}
+            and t_user_role.archive_id = t_user_archive.archive_id
+            and (t_user_role.is_trusteeship = 0
+            or (t_user_role.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
+            and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+            ))
+            and t_user_role.is_delete = 0
+        </if>
         <if test="userName != null and userName != ''">
             <bind name="pattern" value="'%' + userName + '%'" />
-            and (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
+            AND (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
         </if>
-        and t_user_archive.archive_status = 'INCUMBENCY'
+        AND t_user_archive.archive_status = 'INCUMBENCY'
+        GROUP BY archive_id,user_name,employee_number,gender,business_unit_name,dept_name,post_name
     </select>
 
     <!-- 根据档案ID查询角色列表 -->

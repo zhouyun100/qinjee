@@ -12,15 +12,17 @@ package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.RequestRoleArchivePageVO;
+import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
+import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,9 @@ public class ArchiveAuthController extends BaseController {
     @Autowired
     private ArchiveAuthService archiveAuthService;
 
+    @Autowired
+    private RoleSearchService roleSearchService;
+
     @ApiOperation(value="当前登录用户角色树查询", notes="当前登录用户角色树查询")
     @RequestMapping(value = "/searchRoleTree",method = RequestMethod.POST)
     public ResponseResult<RoleGroupVO> searchRoleTreeInOrg() {
@@ -67,19 +72,38 @@ public class ArchiveAuthController extends BaseController {
         return responseResult;
     }
 
-    @ApiOperation(value="根据角色ID查询员工列表", notes="根据角色ID查询员工")
+    @ApiOperation(value="根据角色I查询员工列表", notes="根据角色I查询员工列表")
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(RequestRoleArchivePageVO roleArchivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(RequestArchivePageVO archivePageVO) {
+        if(archivePageVO == null || archivePageVO.getRoleId() == null){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色ID不能为空!");
+            return responseResult;
+        }else if(StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("工号或姓名至少2位字符!");
+            return responseResult;
+        }
 
         try{
-            PageResult<ArchiveInfoVO> archiveInfoVOList = archiveAuthService.searchArchiveListByRoleId(roleArchivePageVO);
+            userSession = getUserSession();
+
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            archivePageVO.setCompanyId(userSession.getCompanyId());
+            PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+
             responseResult = ResponseResult.SUCCESS();
-            responseResult.setResult(archiveInfoVOList);
+            responseResult.setResult(pageResult);
+            logger.info("searchArchiveListByUserName success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
         }catch (Exception e){
-            logger.info("searchArchiveListByRoleId exception! roleArchivePageVO={};exception={}", roleArchivePageVO,e.toString());
+            logger.info("searchArchiveListByUserName exception!userName={},exception={}", archivePageVO.getUserName(),e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("根据角色ID查询员工列表异常！");
+            responseResult.setMessage("根据工号或姓名模糊查询员工列表异常！");
         }
         return responseResult;
     }

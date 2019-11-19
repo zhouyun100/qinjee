@@ -190,6 +190,38 @@
     ORDER BY org.org_id ASC
   </select>
 
+  <select id="getAllOrganizationByArchiveId" resultMap="BaseResultMap">
+    select v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable from (
+    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+    t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
+    from t_organization,t_role_org_auth,t_user_role
+    where t_user_role.archive_id = #{archiveId}
+    and (t_user_role.is_trusteeship = 0
+    or (t_user_role.is_trusteeship = 1
+    and #{now} >= t_user_role.trusteeship_begin_time
+    and t_user_role.trusteeship_end_time >= #{now}
+    ))
+    and t_role_org_auth.role_id = t_user_role.role_id
+    and t_organization.org_id = t_role_org_auth.org_id
+    and t_user_role.is_delete = 0
+    and t_role_org_auth.is_delete = 0
+    <if test="isEnable != null and isEnable == 1">
+      and t_organization.is_enable = #{isEnable}
+    </if>
+    UNION
+    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+    t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
+    from t_organization,t_user_org_auth
+    where t_user_org_auth.archive_id = #{archiveId}
+    and t_organization.org_id = t_user_org_auth.org_id
+    and t_user_org_auth.is_delete = 0
+    <if test="isEnable != null and isEnable == 1">
+      and t_organization.is_enable = #{isEnable}
+    </if>
+    ) v GROUP BY v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
+    ORDER BY v.org_id ASC
+  </select>
+
   <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.entity.Organization">
     select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName,
     parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from t_organization org

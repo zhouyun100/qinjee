@@ -83,4 +83,11 @@ public interface PostDao {
      * @return
      */
     String selectPostNameById(@Param("postId") Integer postId);
+
+    /**
+     * 逻辑删除
+     * @param orgId
+     */
+    void deleteByOrgId(Integer orgId);
+
 }
