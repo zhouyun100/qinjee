@@ -11,17 +11,18 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
+import com.qinjee.masterdata.service.organation.OrganizationService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,41 @@ public class RoleSearchController extends BaseController{
     @Autowired
     private RoleSearchService roleSearchService;
 
-    @ApiOperation(value="根据工号或姓名模糊查询员工列表", notes="根据工号或姓名模糊查询员工列表")
+    @Autowired
+    private OrganizationService organizationService;
+
+    @GetMapping("/getOrganizationTree")
+    @ApiOperation(value = "根据是否封存查询当前登录用户下所有的机构树",notes = "根据是否封存查询当前登录用户下所有的机构树")
+    public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            //还需要查托管的机构
+            PageResult<Organization> pageResult = organizationService.getOrganizationTree(userSession,isEnable);
+            logger.info("getOrganizationTree success！isEnable={},archiveId={}",isEnable,userSession.getArchiveId());
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(pageResult);
+        }catch (Exception e){
+            logger.info("getOrganizationTree exception!isEnable={},exception={}", isEnable,e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据是否封存查询当前登录用户下所有的机构树异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="根据机构ID、工号或姓名模糊查询员工列表", notes="根据工号或姓名模糊查询员工列表")
     @RequestMapping(value = "/searchArchiveListByUserName",method = RequestMethod.POST)
     public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(RequestArchivePageVO archivePageVO) {
-        if(archivePageVO == null || archivePageVO.getUserName() == null || archivePageVO.getUserName().length() < 2){
+        if(archivePageVO == null || archivePageVO.getOrgId() == null){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("机构ID不能为空!");
+            return responseResult;
+        }else if(StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("工号或姓名至少2位字符!");
             return responseResult;

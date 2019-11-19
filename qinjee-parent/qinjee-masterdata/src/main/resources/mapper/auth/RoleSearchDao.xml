@@ -37,6 +37,7 @@
         LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
         LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
         where t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
+        and t_user_archive.org_id = #{orgId,jdbcType=INTEGER}
         <if test="userName != null and userName != ''">
             <bind name="pattern" value="'%' + userName + '%'" />
             and (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})

@@ -31,14 +31,20 @@ import java.io.Serializable;
 public class RequestArchivePageVO extends PageVo implements Serializable {
 
     /**
+     * 机构ID
+     */
+    @ApiModelProperty(name = "orgId", value = "机构ID(Example:35:勤杰广西分公司青秀区办事处1号办公室)", required = true)
+    private Integer orgId;
+
+    /**
      * 用户姓名或者工号
      */
-    @ApiModelProperty(name = "userName", value = "用户姓名或者工号", required = true)
+    @ApiModelProperty(name = "userName", value = "用户姓名或者工号(非必填，为空时查全量，不为空时至少2位字符)")
     private String userName;
 
     /**
      * 企业ID
      */
-    @ApiModelProperty("企业ID")
+    @ApiModelProperty(name = "companyId", value = "企业ID(前端不用提供，后端自动从session中取值)")
     private Integer companyId;
 }
