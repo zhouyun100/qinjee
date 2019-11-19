@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.util.Date;
  * @author Administrator
  */
 @Data
+@JsonInclude
 public class ContractParam implements Serializable {
     /**
      * 合同参数

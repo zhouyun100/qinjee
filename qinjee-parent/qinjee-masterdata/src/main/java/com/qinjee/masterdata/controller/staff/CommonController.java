@@ -2,10 +2,9 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -40,8 +39,8 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/insertArchiveCustomTable", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult insertCustomTable(@Valid CustomArchiveTable customArchiveTable, UserSession userSession) {
-        Boolean b = checkParam(customArchiveTable, userSession);
+    public ResponseResult insertCustomTable( @RequestBody @Valid CustomArchiveTable customArchiveTable) {
+        Boolean b = checkParam(customArchiveTable);
         if (b) {
             try {
                 staffCommonService.insertCustomArichiveTable(customArchiveTable, getUserSession());
@@ -57,10 +56,10 @@ public class CommonController extends BaseController {
     /**
      * 删除自定义表
      */
-    @RequestMapping(value = "/deleteCustomArchiveTable", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteCustomArchiveTable", method = RequestMethod.POST)
     @ApiOperation(value = "删除自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "自定义表id组成集合", paramType = "query", example = "{1,2}" ,allowMultiple = true)
-    public ResponseResult deleteCustomArchiveTable(@RequestParam List<Integer> list) {
+    public ResponseResult deleteCustomArchiveTable(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
         if (b) {
             try {
@@ -76,10 +75,10 @@ public class CommonController extends BaseController {
     /**
      * 自定义表修改
      */
-    @RequestMapping(value = "/updateCustomArchiveTable", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateCustomArchiveTable", method = RequestMethod.POST)
     @ApiOperation(value = "修改自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义字段表", paramType = "form" )
-    public ResponseResult updateCustomArchiveTable(@Valid CustomArchiveTable customArchiveTable) {
+    public ResponseResult updateCustomArchiveTable(@RequestBody @Valid CustomArchiveTable customArchiveTable) {
         Boolean b = checkParam(customArchiveTable);
         if (b) {
             try {
@@ -125,8 +124,8 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/insertCustomArchiveGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveGroup", value = "自定义组", paramType = "form", required = true)
-    public ResponseResult insertCustomGroup(@Valid CustomArchiveGroup customArchiveGroup, UserSession userSession) {
-        Boolean b = checkParam(customArchiveGroup, userSession);
+    public ResponseResult insertCustomGroup(@RequestBody @Valid CustomArchiveGroup customArchiveGroup) {
+        Boolean b = checkParam(customArchiveGroup);
         if (b) {
             try {
                 staffCommonService.insertCustomArchiveGroup(customArchiveGroup, getUserSession());
@@ -141,10 +140,10 @@ public class CommonController extends BaseController {
     /**
      * 删除自定义组
      */
-    @RequestMapping(value = "/deleteCustomArchiveGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteCustomArchiveGroup", method = RequestMethod.POST)
     @ApiOperation(value = "删除自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "自定义组id组成的集合", paramType = "form", allowMultiple = true,example = "{1,2}")
-    public ResponseResult deleteCustomArchiveGroup(@RequestParam List<Integer> list) {
+    public ResponseResult deleteCustomArchiveGroup(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
         if (b) {
             try {
@@ -160,10 +159,10 @@ public class CommonController extends BaseController {
     /**
      * 自定义组修改
      */
-    @RequestMapping(value = "/updateCustomArchiveGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateCustomArchiveGroup", method = RequestMethod.POST)
     @ApiOperation(value = "修改自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveGroup", value = "自定义组", paramType = "form", required = true)
-    public ResponseResult updateCustomGroup(@Valid CustomArchiveGroup customArchiveGroup) {
+    public ResponseResult updateCustomGroup(@RequestBody @Valid CustomArchiveGroup customArchiveGroup) {
         Boolean b = checkParam(customArchiveGroup);
         if (b) {
             try {
@@ -235,8 +234,8 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/insertCustomArchiveField", method = RequestMethod.POST)
     @ApiOperation(value = "新增自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveField", value = "自定义字段对象", paramType = "form", required = true)
-    public ResponseResult insertCustomField(@Valid CustomArchiveField customArchiveField, UserSession userSession) {
-        Boolean b = checkParam(customArchiveField, userSession);
+    public ResponseResult insertCustomField(@RequestBody @Valid CustomArchiveField customArchiveField) {
+        Boolean b = checkParam(customArchiveField);
         if (b) {
             try {
                 staffCommonService.insertCustomArchiveField(customArchiveField, getUserSession());
@@ -252,10 +251,10 @@ public class CommonController extends BaseController {
      * 删除自定义字段
      */
 
-    @RequestMapping(value = "/deleteCustomArchiveField", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteCustomArchiveField", method = RequestMethod.POST)
     @ApiOperation(value = "删除自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
-    public ResponseResult deleteCustomArchiveField(@RequestParam List<Integer> list) {
+    public ResponseResult deleteCustomArchiveField(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
         if (b) {
             try {
@@ -272,10 +271,10 @@ public class CommonController extends BaseController {
      * 修改自定义字段类型
      */
 
-    @RequestMapping(value = "/updateCustomArchiveField", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateCustomArchiveField", method = RequestMethod.POST)
     @ApiOperation(value = "修改自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveField", value = "自定义字段表", paramType = "form", required = true)
-    public ResponseResult updateCustomArchiveField(@Valid CustomArchiveField customArchiveField) {
+    public ResponseResult updateCustomArchiveField(@RequestBody @Valid CustomArchiveField customArchiveField) {
         Boolean b = checkParam(customArchiveField);
         if (b) {
             try {
@@ -375,7 +374,7 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "将自定义字段信息存储到自定义表中,需要将自定义表中的值封装成jsonObject形式传到后端，然后传给后台拼接", notes = "hkt")
 //    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
-    public ResponseResult insertCustomArchiveTableData(@Valid CustomArchiveTableData customArchiveTableData) {
+    public ResponseResult insertCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableData customArchiveTableData) {
         Boolean b = checkParam(customArchiveTableData);
         if (b) {
             try {
@@ -392,10 +391,10 @@ public class CommonController extends BaseController {
     /**
      * 修改自定义字段表中的数据
      */
-    @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.POST)
     @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
-    public ResponseResult updateCustomArchiveTableData(@Valid CustomArchiveTableData customArchiveTableData) {
+    public ResponseResult updateCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableData customArchiveTableData) {
         Boolean b = checkParam(customArchiveTableData);
         if (b) {
             try {
@@ -544,7 +543,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile( @Valid @RequestBody ExportFile exportArc,
+    public ResponseResult exportArcFile(@RequestBody @Valid  ExportFile exportArc,
                                          HttpServletResponse response) {
         Boolean b = checkParam(exportArc,getUserSession(),response);
         if(b){
@@ -591,7 +590,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreFile(@Valid ExportFile exportArc, HttpServletResponse response) {
+    public ResponseResult exportPreFile(@RequestBody @Valid ExportFile exportArc, HttpServletResponse response) {
         Boolean b = checkParam(exportArc,response,getUserSession());
         if(b){
             try {
@@ -615,7 +614,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportBusiness(@Valid ExportBusiness exportBusiness, HttpServletResponse response) {
+    public ResponseResult exportBusiness(@RequestBody @Valid ExportBusiness exportBusiness, HttpServletResponse response) {
         Boolean b = checkParam(exportBusiness,response,getUserSession());
         if(b){
             try {

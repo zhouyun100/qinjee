@@ -77,7 +77,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void updateArchive(UserArchive userArchive) {
+    public void updateArchive(UserArchiveVo userArchiveVo,UserSession userSession) {
+        UserArchive userArchive=new UserArchive();
+        BeanUtils.copyProperties(userArchiveVo,userArchive);
+        userArchive.setOperatorId(userSession.getArchiveId());
+        userArchive.setIsDelete((short) 0);
         userArchiveDao.updateByPrimaryKeySelective(userArchive);
     }
 
@@ -88,7 +92,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void insertArchive(UserArchive userArchive) {
+    public void insertArchive(UserArchiveVo userArchiveVo,UserSession userSession) {
+        UserArchive userArchive=new UserArchive();
+        BeanUtils.copyProperties(userArchiveVo,userArchive);
+        userArchive.setOperatorId(userSession.getArchiveId());
+        userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
     }
 
@@ -96,7 +104,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateArchiveField(Map<Integer, String> map) {
-        //TODO 在对档案进行更改时，需要考虑到岗位等进行匹配，记录下想关心息进入员工轨迹表
         customArchiveFieldDao.updatePreEmploymentField(map);
     }
 

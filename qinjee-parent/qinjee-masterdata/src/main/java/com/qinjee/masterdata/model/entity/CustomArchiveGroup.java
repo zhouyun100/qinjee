@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
 
@@ -13,6 +14,7 @@ import java.util.Date;
  */
 @Data
 @ToString
+@JsonInclude
 public class CustomArchiveGroup implements Serializable {
     /**
      * 组ID

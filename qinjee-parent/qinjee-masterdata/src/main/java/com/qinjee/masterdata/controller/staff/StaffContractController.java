@@ -17,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -76,7 +73,7 @@ public class StaffContractController extends BaseController {
     /**
      * 展示已签合同的人员信息
      */
-    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.POST)
     @ApiOperation(value = "展示已签合同的人员信息", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -88,8 +85,7 @@ public class StaffContractController extends BaseController {
 //    })
     public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage,
                                                                               Integer pageSize,Boolean isEnable,
-                                                                              @RequestParam List<String> status
-    ) {
+                                                                              @RequestBody List<String> status) {
         Boolean b = checkParam(orgId, currentPage, pageSize,isEnable,status);
         if (b) {
             try {
@@ -118,7 +114,7 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractVo", value = "合同VO表", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
 //    })
-    public ResponseResult insertLaborContract(@Valid LaborContractVo laborContractVo, Integer id) {
+    public ResponseResult insertLaborContract(@RequestBody @Valid LaborContractVo laborContractVo, Integer id) {
         Boolean b = checkParam(laborContractVo,id,getUserSession());
         if(b){
             try {
@@ -147,7 +143,7 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractVo", value = "合同vo表", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true)
 //    })
-    public ResponseResult insertLaborContractBatch(@Valid LaborContractVo laborContractVo, @RequestParam List<Integer> list) {
+    public ResponseResult insertLaborContractBatch(@RequestBody @Valid LaborContractVo laborContractVo, List<Integer> list) {
         Boolean b = checkParam(laborContractVo, list, getUserSession());
         if (b) {
             try {
@@ -168,7 +164,7 @@ public class StaffContractController extends BaseController {
      */
     @RequestMapping(value = "/SaveLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "保存合同", notes = "hkt")
-    public ResponseResult SaveLaborContract(LaborContractVo laborContractVo, Integer id) {
+    public ResponseResult SaveLaborContract(@RequestBody @Valid LaborContractVo laborContractVo, Integer id) {
         Boolean b = checkParam(laborContractVo,id,getUserSession());
         if(b){
             try {
@@ -208,14 +204,14 @@ public class StaffContractController extends BaseController {
      * 修改合同表中的数据
      * 添加变更记录
      */
-    @RequestMapping(value = "/updatelaborContract", method = RequestMethod.GET)
+    @RequestMapping(value = "/updatelaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "修改合同内容同时添加变更记录", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "laborContractId", value = "合同id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContract", value = "合同信息", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult updatelaborContract(@Valid LaborContract laborContract,
+    public ResponseResult updatelaborContract(@RequestBody @Valid LaborContract laborContract,
                                               @Valid LaborContractChangeVo laborContractChangeVo,
                                               Integer id) {
         Boolean b = checkParam(laborContract,laborContractChangeVo,id,getUserSession());
@@ -243,7 +239,7 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult insertReNewLaborContract(@Valid LaborContractVo laborContractVo, Integer id,
+    public ResponseResult insertReNewLaborContract(@RequestBody @Valid LaborContractVo laborContractVo, Integer id,
                                                    @Valid LaborContractChangeVo laborContractChangeVo) {
         Boolean b = checkParam(laborContractVo,laborContractChangeVo,id,getUserSession());
         if(b){
@@ -268,7 +264,7 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult insertReNewLaborContractBatch(@Valid LaborContractVo laborContractVo, @RequestParam List<Integer> list,
+    public ResponseResult insertReNewLaborContractBatch(@RequestBody @Valid LaborContractVo laborContractVo, List<Integer> list,
                                                         @Valid LaborContractChangeVo laborContractChangeVo) {
         Boolean b = checkParam(laborContractVo,laborContractChangeVo,list,getUserSession());
         if(b){
@@ -287,13 +283,13 @@ public class StaffContractController extends BaseController {
     /**
      * 终止合同信息
      */
-    @RequestMapping(value = "/endlaborContract", method = RequestMethod.GET)
+    @RequestMapping(value = "/endlaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "终止合同信息", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "laborContractId", value = "合同id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult EndlaborContract(@Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
+    public ResponseResult endlaborContract(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
         Boolean b = checkParam(laborContractChangeVo,id,getUserSession());
         if(b){
             try {
@@ -311,13 +307,13 @@ public class StaffContractController extends BaseController {
     /**
      * 批量终止合同
      */
-    @RequestMapping(value = "/endlaborContractBatch", method = RequestMethod.GET)
+    @RequestMapping(value = "/endlaborContractBatch", method = RequestMethod.POST)
     @ApiOperation(value = "批量终止合同", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "list", value = "合同id集合", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult EndlaborContract(@Valid LaborContractChangeVo laborContractChangeVo, @RequestParam List<Integer> list) {
+    public ResponseResult endlaborContract(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo,@RequestParam List<Integer> list) {
         Boolean b = checkParam(laborContractChangeVo,list,getUserSession());
         if(b){
             try {
@@ -333,13 +329,13 @@ public class StaffContractController extends BaseController {
     /**
      * 解除合同信息
      */
-    @RequestMapping(value = "/looselaborContract", method = RequestMethod.GET)
+    @RequestMapping(value = "/looselaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "解除合同信息", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "laborContractId", value = "合同id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult looselaborContract(@Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
+    public ResponseResult looselaborContract(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
         Boolean b = checkParam(laborContractChangeVo,id,getUserSession());
         if(b){
             try {
@@ -355,13 +351,13 @@ public class StaffContractController extends BaseController {
     /**
      * 批量解除合同信息
      */
-    @RequestMapping(value = "/looselaborContractBatch", method = RequestMethod.GET)
+    @RequestMapping(value = "/looselaborContractBatch", method = RequestMethod.POST)
     @ApiOperation(value = "批量解除合同信息", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "list", value = "合同id集合", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult looselaborContractBatch(@Valid LaborContractChangeVo laborContractChangeVo,@RequestParam List<Integer> list) {
+    public ResponseResult looselaborContractBatch(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo,@RequestParam List<Integer> list) {
         Boolean b = checkParam(laborContractChangeVo,list,getUserSession());
         if(b){
             try {
@@ -401,10 +397,10 @@ public class StaffContractController extends BaseController {
      * 发送续签意向表
      * 实现思路：拿到续签人员的档案id，根据档案中信息设置续签意向表。
      */
-    @RequestMapping(value = "/insertLaborContractIntention", method = RequestMethod.GET)
+    @RequestMapping(value = "/insertLaborContractIntention", method = RequestMethod.POST)
     @ApiOperation(value = "发送续签意向表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult insertLaborContractIntention(@RequestParam List<Integer> list) {
+    public ResponseResult insertLaborContractIntention(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list,getUserSession());
         if(b){
             try {
@@ -424,7 +420,7 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/updateContractRenewalIntention", method = RequestMethod.POST)
     @ApiOperation(value = "续签反馈", notes = "hkt")
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "续签反馈表", paramType = "form", required = true)
-    public ResponseResult insertResponseLaborContract(@Valid ContractRenewalIntention contractRenewalIntention) {
+    public ResponseResult insertResponseLaborContract(@RequestBody @Valid ContractRenewalIntention contractRenewalIntention) {
         Boolean b = checkParam(contractRenewalIntention);
         if(b){
             try {
@@ -442,7 +438,7 @@ public class StaffContractController extends BaseController {
     /**
      * 展示我的续签意向
      */
-    @RequestMapping(value = "/selectContractRenewalIntention", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectContractRenewalIntention", method = RequestMethod.GET)
     @ApiOperation(value = "展示我的续签意向", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
     public ResponseResult<List<ContractRenewalIntention>> selectContractRenewalIntention(Integer id) {
@@ -466,7 +462,7 @@ public class StaffContractController extends BaseController {
     /**
      * 同意续签
      */
-    @RequestMapping(value = "/agreeRenew", method = RequestMethod.POST)
+    @RequestMapping(value = "/agreeRenew", method = RequestMethod.GET)
     @ApiOperation(value = "同意续签", notes = "hkt")
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
     public ResponseResult agreeRenew(Integer xuqianId) {
@@ -487,7 +483,7 @@ public class StaffContractController extends BaseController {
     /**
      * 拒绝续签
      */
-    @RequestMapping(value = "/rejectRenew", method = RequestMethod.POST)
+    @RequestMapping(value = "/rejectRenew", method = RequestMethod.GET)
     @ApiOperation(value = "不同意续签", notes = "hkt")
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
     public ResponseResult rejectRenew(Integer xuqianId) {
@@ -507,7 +503,7 @@ public class StaffContractController extends BaseController {
     /**
      * 查询在职员工的人数
      */
-    @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.GET)
     @ApiOperation(value = "查询在职员工的人数", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
     public ResponseResult<Integer> selectArcNumberIn(Integer id) {
@@ -531,7 +527,7 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.POST)
     @ApiOperation(value = "查询机构下合同即将到期的员工", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id,@RequestParam List<UserArchive> list) {
+    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id,@RequestBody List<UserArchive> list) {
         Boolean b = checkParam(id);
         if(b){
             try {

@@ -1,8 +1,7 @@
-package com.qinjee.masterdata.model.entity;
+package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,15 +9,9 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-/**
- * 员工档案表
- * @author
- */
-@ApiModel(description = "员工档案表")
 @Data
 @JsonInclude
-public class UserArchive implements Serializable {
+public class UserArchiveVo implements Serializable {
     /**
      * 档案ID
      */
@@ -282,30 +275,6 @@ public class UserArchive implements Serializable {
      */
     @ApiModelProperty("上级领导姓名")
     private Integer supervisorUserName;
-
-    /**
-     * 操作人ID
-     */
-    @ApiModelProperty("操作人ID")
-    private Integer operatorId;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @ApiModelProperty("更新时间")
-    private Date updateTime;
-
-    /**
-     * 是否删除
-     */
-    @ApiModelProperty("是否删除")
-    private Short isDelete;
 
     private static final long serialVersionUID = 1L;
 

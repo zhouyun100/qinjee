@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import java.util.Date;
  */
 @Data
 @ToString
+@JsonInclude
 public class StatusChangeVo {
     /**
      * id

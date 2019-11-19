@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import java.util.Date;
  * @author 
  */
 @Data
+@JsonInclude
 public class ContractRenewalIntention implements Serializable {
     /**
      * 续签意向ID
