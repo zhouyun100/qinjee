@@ -257,9 +257,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @OrganizationEditAnno
     public ResponseResult editOrganization(OrganizationVo organizationVo) {
         Organization organization = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
-        System.out.println("旧的Organization：" + organization);
         BeanUtils.copyProperties(organizationVo, organization);
-        System.out.println("新的organization：" + organization);
         int result = organizationDao.updateByPrimaryKey(organization);
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
@@ -320,7 +318,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                 idList.add(orgId);
                 recursive(orgId, idList);
             }
-            System.out.println("机构及子机构id列表：" + idList);
         }
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑

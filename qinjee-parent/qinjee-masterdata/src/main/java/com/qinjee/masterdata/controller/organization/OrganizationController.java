@@ -85,7 +85,6 @@ public class OrganizationController extends BaseController {
     @PostMapping("/deleteOrganizationById")
     @ApiOperation(value = "删除机构",notes = "高雄")
     public ResponseResult deleteOrganizationById(@RequestBody List<Integer> orgIds){
-        System.out.println("删除的id列表："+orgIds);
         return organizationService.deleteOrganizationById(orgIds);
     }
 
