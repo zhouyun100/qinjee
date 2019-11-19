@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.aop.OrganizationAnoDot;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
@@ -117,6 +118,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
+    @OrganizationAnoDot
     public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
         //根据父级机构id查询一些基础信息，构建Organization对象
         Organization orgBean = initOrganization(organizationVo.getOrgParentId());
@@ -129,18 +131,26 @@ public class OrganizationServiceImpl implements OrganizationService {
             full_name = organizationVo.getOrgName();
         }
         //BeanUtils.copyProperties(organizationVo, organization);
-
         orgBean.setOrgParentId(organizationVo.getOrgParentId());
         orgBean.setOrgType(organizationVo.getOrgType());
         orgBean.setOrgName(organizationVo.getOrgName());
         orgBean.setOrgManagerId(organizationVo.getOrgManagerId());
         orgBean.setOrgFullName(full_name);
+        orgBean.setCreateTime(new Date());
         orgBean.setOperatorId(userSession.getArchiveId());
         orgBean.setIsEnable((short) 1);
         //设置企业id
         orgBean.setCompanyId(userSession.getCompanyId());
         int insert = organizationDao.insertSelective(orgBean);
-        return insert == 1 ? new ResponseResult(CommonCode.SUCCESS) : new ResponseResult(CommonCode.FAIL);
+
+        ResponseResult responseResult ;
+        if(insert == 1){
+            responseResult= new ResponseResult(CommonCode.SUCCESS);
+        }else{
+            responseResult= new ResponseResult(CommonCode.FAIL);
+        }
+        responseResult.setResult(orgBean);
+        return responseResult;
     }
 
     private Organization initOrganization(Integer orgParentId) {

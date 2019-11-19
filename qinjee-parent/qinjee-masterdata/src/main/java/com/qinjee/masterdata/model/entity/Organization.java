@@ -1,10 +1,13 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,11 +15,13 @@ import java.util.List;
 
 /**
  * 机构表
+ *
  * @author
  */
 @Data
 @NoArgsConstructor
 @ApiModel(description = "机构实体类")
+@ToString
 public class Organization implements Serializable {
     /**
      * 机构ID
@@ -114,6 +119,8 @@ public class Organization implements Serializable {
      * 创建时间
      */
     @ApiModelProperty("创建时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
     private Date createTime;
 
     /**

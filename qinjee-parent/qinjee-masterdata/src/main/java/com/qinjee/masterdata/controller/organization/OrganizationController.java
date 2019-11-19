@@ -54,7 +54,7 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/getOrganizationList")
     @ApiOperation(value = "根据条件分页查询用户下所有的机构",notes = "高雄")
-    public ResponseResult<PageResult<Organization>> getOrganizationList(OrganizationPageVo organizationPageVo){
+    public ResponseResult<PageResult<Organization>> getOrganizationList(@RequestBody(required = false) OrganizationPageVo organizationPageVo){
         UserSession userSession = getUserSession();
         PageResult<Organization> pageResult = organizationService.getOrganizationList(organizationPageVo,userSession);
         return new ResponseResult<>(pageResult);
@@ -66,8 +66,8 @@ public class OrganizationController extends BaseController {
     public ResponseResult addOrganization(@RequestBody OrganizationVo organizationVo){
         ResponseResult responseResult ;
         try {
-            logger.info("新增机构");
             responseResult=organizationService.addOrganization(getUserSession(), organizationVo);
+            Object result = responseResult.getResult();
             return responseResult;
         } catch (Exception e) {
             e.printStackTrace();

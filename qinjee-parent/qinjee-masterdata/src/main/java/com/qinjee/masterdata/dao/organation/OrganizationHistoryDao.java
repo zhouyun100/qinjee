@@ -3,15 +3,47 @@ package com.qinjee.masterdata.dao.organation;
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
 
 public interface OrganizationHistoryDao {
-    int deleteByPrimaryKey(Integer orgId);
 
-    int insert(OrganizationHistory record);
+    /**
+     * 根据主键查找
+     * @param orgId
+     * @return
+     */
+    OrganizationHistory getOrganizationHistoryByPK(Integer orgId);
 
-    int insertSelective(OrganizationHistory record);
+    /**
+     * 根据主键移除
+     * @param orgId
+     * @return
+     */
+    Integer removeOrganizationHistoryByPK(Integer orgId);
 
-    OrganizationHistory selectByPrimaryKey(Integer orgId);
+    /**
+     * 保存
+     * @param orgHis
+     * @return
+     */
+    Integer saveOrganizationHistory(OrganizationHistory orgHis);
 
-    int updateByPrimaryKeySelective(OrganizationHistory record);
+    /**
+     * 保存选择的字段
+     * @param orgHis
+     * @return
+     */
+    Integer saveOrganizationHistorySelectived(OrganizationHistory orgHis);
 
-    int updateByPrimaryKey(OrganizationHistory record);
+    /**
+     * 更新已选择的字段
+     * @param orgHis
+     * @return
+     */
+    Integer updateOrganizationHistorySelectived(OrganizationHistory orgHis);
+
+    /**
+     * 更新所有字段
+     * @param orgHis
+     * @return
+     */
+    Integer updateOrganizationHistory(OrganizationHistory orgHis);
+
 }
