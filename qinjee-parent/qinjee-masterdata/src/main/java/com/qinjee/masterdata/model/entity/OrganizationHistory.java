@@ -1,5 +1,10 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Data;
+import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +12,8 @@ import java.util.Date;
  * t_organization_history
  * @author
  */
+@Data
+@ToString
 public class OrganizationHistory implements Serializable {
     /**
      * 机构ID
@@ -36,7 +43,7 @@ public class OrganizationHistory implements Serializable {
     /**
      * 机构全称
      */
-    private String orgfull_name;
+    private String orgFullName;
 
     /**
      * 机构负责人
@@ -61,11 +68,15 @@ public class OrganizationHistory implements Serializable {
     /**
      * 创建时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
     private Date updateTime;
 
     /**
@@ -75,107 +86,4 @@ public class OrganizationHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Integer orgId) {
-        this.orgId = orgId;
-    }
-
-    public String getOrgCode() {
-        return orgCode;
-    }
-
-    public void setOrgCode(String orgCode) {
-        this.orgCode = orgCode;
-    }
-
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    public String getOrgType() {
-        return orgType;
-    }
-
-    public void setOrgType(String orgType) {
-        this.orgType = orgType;
-    }
-
-    public Integer getOrgParentId() {
-        return orgParentId;
-    }
-
-    public void setOrgParentId(Integer orgParentId) {
-        this.orgParentId = orgParentId;
-    }
-
-    public String getorgfull_name() {
-        return orgfull_name;
-    }
-
-    public void setorgfull_name(String orgfull_name) {
-        this.orgfull_name = orgfull_name;
-    }
-
-    public Integer getOrgManagerId() {
-        return orgManagerId;
-    }
-
-    public void setOrgManagerId(Integer orgManagerId) {
-        this.orgManagerId = orgManagerId;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getSortId() {
-        return sortId;
-    }
-
-    public void setSortId(Integer sortId) {
-        this.sortId = sortId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsEnable() {
-        return isEnable;
-    }
-
-    public void setIsEnable(Short isEnable) {
-        this.isEnable = isEnable;
-    }
 }

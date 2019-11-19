@@ -22,7 +22,7 @@ public class OrganizationHistoryServiceImpl implements OrganizationHistoryServic
 
     @Override
     public ResponseResult addOrganizationHistory(OrganizationHistory organizationHistory) {
-        int insert = organizationHistoryDao.insertSelective(organizationHistory);
+        int insert = organizationHistoryDao.saveOrganizationHistory(organizationHistory);
         return insert == 1 ? new ResponseResult(CommonCode.SUCCESS) : new ResponseResult(CommonCode.FAIL);
     }
 
