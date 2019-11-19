@@ -61,13 +61,17 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
         Integer archiveId = userSession.getArchiveId();
-        List<UserRole> userRoleList = userRoleService.getUserRoleList(userSession.getArchiveId());
-        Set<Integer> roleIds = userRoleList.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toSet());
 
-        List<Organization> organizationList = organizationDao.getAllOrganization(archiveId, isEnable, roleIds, new Date());
+        List<Organization> organizationList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
 
         //获取第一级机构
-        List<Organization> organizations = getFirstOrganizationList(organizationList);
+        List<Organization> organizations = organizationList.stream().filter(organization -> {
+            if(organization.getOrgParentId() != null && organization.getOrgParentId() == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
 
         //递归处理机构,使其以树形结构展示
         handlerOrganizationToTree(organizationList, organizations);
