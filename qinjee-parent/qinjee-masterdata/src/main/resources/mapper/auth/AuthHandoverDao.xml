@@ -20,7 +20,7 @@
             is_delete)
         values (
             #{roleId,jdbcType=INTEGER},
-            #{archiveId,jdbcType=INTEGER},
+            #{acceptArchiveId,jdbcType=INTEGER},
             <if test="isTrusteeship != null">
                 #{isTrusteeship,jdbcType=TINYINT},
             </if>
@@ -52,7 +52,7 @@
         is_delete)
         values (
         #{orgId,jdbcType=INTEGER},
-        #{archiveId,jdbcType=INTEGER},
+        #{acceptArchiveId,jdbcType=INTEGER},
         <if test="isTrusteeship != null">
             #{isTrusteeship,jdbcType=TINYINT},
         </if>

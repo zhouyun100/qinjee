@@ -20,7 +20,6 @@
         <result column="is_trusteeship" jdbcType="TINYINT" property="isTrusteeship" />
         <result column="trusteeship_begin_time" jdbcType="TIMESTAMP" property="trusteeshipBeginTime" />
         <result column="trusteeship_end_time" jdbcType="TIMESTAMP" property="trusteeshipEndTime" />
-        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     </resultMap>
 
     <!-- 根据工号或姓名模糊查询员工列表 -->
