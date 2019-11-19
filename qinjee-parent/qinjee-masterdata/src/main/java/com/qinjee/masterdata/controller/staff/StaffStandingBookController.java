@@ -54,10 +54,10 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 删除黑名单表
      */
-    @RequestMapping(value = "/deleteBalckList", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "删除黑名单表", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "黑名单表id集合", paramType = "query", required = true, example = "{1，2}")
-    public ResponseResult deleteBalckList(@RequestParam List<Integer> list) {
+    public ResponseResult deleteBalckList(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
         if (b) {
             try {
@@ -73,11 +73,11 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 修改黑名单表
      */
-    @RequestMapping(value = "/updateBalckList", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "修改黑名单表", notes = "hkt")
 //    @ApiImplicitParam(name = "BlackLsit", value = "黑名单", paramType = "form", required = true)
 
-    public ResponseResult updateBalckList(@Valid Blacklist blacklist) {
+    public ResponseResult updateBalckList(@RequestBody @Valid Blacklist blacklist) {
         Boolean b = checkParam(blacklist);
         if (b) {
             try {

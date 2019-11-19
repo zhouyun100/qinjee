@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import java.util.Date;
  * @author Administrator
  */
 @Data
+@JsonInclude
 public class ArchiveCareerTrackVo implements Serializable {
     /** 变更ID */
     private Integer changeId;

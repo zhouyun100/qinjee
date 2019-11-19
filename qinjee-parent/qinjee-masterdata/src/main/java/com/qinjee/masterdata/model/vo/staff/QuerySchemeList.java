@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.masterdata.model.entity.QuerySchemeField;
 import com.qinjee.masterdata.model.entity.QuerySchemeSort;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Data
 @ToString
+@JsonInclude
 public class QuerySchemeList implements Serializable {
     private List<QuerySchemeField> querySchemeFieldList;
     private List<QuerySchemeSort>  querySchemeSortList;

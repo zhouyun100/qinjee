@@ -15,13 +15,9 @@ public interface PreEmploymentDao {
 
     int insert(PreEmployment record);
 
-    int insertSelective(PreEmployment record);
-
     PreEmployment selectByPrimaryKey(Integer employmentId);
 
-    int updateByPrimaryKeySelective(PreEmployment record);
-
-    int updateByPrimaryKey(PreEmployment record);
+    int updateByPrimaryKey(@Param("record") PreEmployment record);
 
     /**
      * 查询预入职id的最大值

@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.vo.staff.ExportPreVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -314,7 +315,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                     if (null == id) {
                         PreEmployment preEmployment = new PreEmployment();
                         setValue(stringListMap, i, preEmployment);
-                        preEmploymentDao.insertSelective(preEmployment);
+                        preEmploymentDao.insert(preEmployment);
                     } else {
                         //将值设入属性
                         PreEmployment preEmployment = new PreEmployment();
@@ -414,9 +415,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 getTypeMapForArc(exportFile, getHeadsByArc(exportFile)));
     }
 
+    /**
+     * 从传过来map中解析数据并转化封装到Dates中
+     * @param exportFile
+     * @return
+     */
     private List<Map<String, String>> getDatesForArc(ExportFile exportFile) {
         List<Map<String, String>> mapList = new ArrayList<>();
-        List<String> keyList = getKeyList(exportFile);
+        List<String> keyList = getHeadsByArc(exportFile);
         List<Map<String, Object>> maps = new ArrayList<>(exportFile.getArchiveShowVo().getMap().values());
             for (Map<String, Object> stringObjectMap : maps) {
                 Map<String, String> stringMap = new HashMap<>();
@@ -427,19 +433,23 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             }
             return mapList;
     }
+
+    /**
+     * 分情况获得文件头
+     * @param exportFile
+     * @return
+     */
       private List<String> getHeadsByArc(ExportFile exportFile) {
           Integer querySchemaId = exportFile.getArchiveShowVo().getQuerySchemaId();
           List<String> keyList=new ArrayList<>(11);
           if(querySchemaId ==null || querySchemaId ==0){
-              String[] strings={"姓名","单位","部门","联系电话","任职类型","工号","档案id","直接上级","岗位","试用期到期时间","入职日期"};
-              for (String string : strings) {
-                  keyList.add(string);
-              }
-              return keyList;
+              return HeadMapUtil.getHeadForArc(keyList);
           }
            keyList = getKeyList(exportFile);
           return customArchiveFieldDao.selectFieldNameByCodeList(keyList);
       }
+
+
 
     private List<String> getKeyList(ExportFile exportFile) {
         List<String> keyList=new ArrayList<>();

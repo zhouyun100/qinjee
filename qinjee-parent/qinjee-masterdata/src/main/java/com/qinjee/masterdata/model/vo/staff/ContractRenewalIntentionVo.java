@@ -1,14 +1,14 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
 @Data
 @ToString
+@JsonInclude
 public class ContractRenewalIntentionVo implements Serializable {
     /**
      * 续签意向ID

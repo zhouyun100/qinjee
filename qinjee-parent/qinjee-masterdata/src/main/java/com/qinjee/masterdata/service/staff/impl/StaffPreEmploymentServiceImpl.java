@@ -8,6 +8,7 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDa
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
@@ -37,6 +38,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private static final String CHANGSTATUS_BLACKLIST = "黑名单";
     private static final String CHANGSTATUS_GIVEUP = "放弃入职";
     private static final String PRE_EMPLOYMENT = "t_pre_employment";
+    private static final String PRE_DATASOURSE= "PRE";
 
     @Autowired
     private PreEmploymentDao preEmploymentDao;
@@ -73,10 +75,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             }
         }
         List<String> mails = userArchiveDao.selectMail(conList);
-        //TODO 邮件配置类需要实例化
         MailConfig mailConfig = new MailConfig();
-
-        //TODO 邮箱工具类中还需要确定模板，这里的发件人也需要再配置，现已写死
         SendManyMailsUtil.sendMail(mailConfig,tomails, mails, subject, content, filepath);
     }
 
@@ -121,7 +120,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 BeanUtils.copyProperties(userArchive, preEmployment);
                 //删除预入职表
                 preEmploymentDao.deletePreEmployment(preEmploymentId);
-
         }
         if (CHANGSTATUS_DELAY.equals(changeState)) {
             if(preChangeId !=null && preChangeId != 0) {
@@ -131,8 +129,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
             }
             //将预入职的入职时间重新设置
-            preEmployment.setEmploymentDate(statusChangeVo.getDelayTime());
-            preEmploymentDao.updateByPrimaryKeySelective(preEmployment);
+            preEmployment.setHireDate(statusChangeVo.getDelayTime());
+            preEmploymentDao.updateByPrimaryKey(preEmployment);
             preEmployment.setEmploymentState(CHANGSTATUS_DELAY);
         }
         if (CHANGSTATUS_GIVEUP.equals(changeState)) {
@@ -157,7 +155,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             //加入黑名单
             Blacklist blacklist = new Blacklist();
             blacklist.setBlockReason(statusChangeVo.getAbandonReason());
-            blacklist.setDataSource("预入职");
+            blacklist.setDataSource(PRE_DATASOURSE);
             BeanUtils.copyProperties(preEmployment,blacklist);
             blacklist.setOperatorId(userSession.getArchiveId());
             blacklistDao.insertSelective(blacklist);
@@ -183,8 +181,13 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
 
     @Override
-    public void insertPreEmployment(PreEmployment preEmployment) {
-        preEmploymentDao.insertSelective(preEmployment);
+    public void insertPreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession) {
+        PreEmployment preEmployment=new PreEmployment();
+        BeanUtils.copyProperties(preEmploymentVo,preEmployment);
+        preEmployment.setCompanyId(userSession.getCompanyId());
+        preEmployment.setOperatorId(userSession.getArchiveId());
+        preEmployment.setIsDelete((short) 0);
+        preEmploymentDao.insert(preEmployment);
     }
 
     @Override
@@ -202,8 +205,13 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updatePreEmployment(PreEmployment preEmployment) {
-        preEmploymentDao.updateByPrimaryKeySelective(preEmployment);
+    public void updatePreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession) {
+        PreEmployment preEmployment=new PreEmployment();
+        BeanUtils.copyProperties(preEmploymentVo,preEmployment);
+        preEmployment.setCompanyId(userSession.getCompanyId());
+        preEmployment.setOperatorId(userSession.getArchiveId());
+        preEmployment.setIsDelete((short) 0);
+        preEmploymentDao.updateByPrimaryKey(preEmployment);
     }
 
     @Override
@@ -217,7 +225,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         PageHelper.startPage(currentPage, pageSize);
         List<PreEmployment> list = preEmploymentDao.selectPreEmployment(companyId);
         return new PageResult<>(list);
-
     }
 
     @Override

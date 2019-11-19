@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.response.CommonCode;
@@ -36,14 +37,14 @@ public class StaffPreEmploymentController extends BaseController {
      * 预入职表与档案表用物理表进行对应，此时需要物理表的存在，新增两个自定义表，新增n个自定义字段，物理字段名与物理属性名分别是物理表与属性的对应
      * 在项目初始化应该建好此表
      */
-    @RequestMapping(value = "/insertPreEmployment ", method = RequestMethod.GET)
+    @RequestMapping(value = "/insertPreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "新增预入职", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form", required = true)
-    public ResponseResult insertPreEmployment(@Valid PreEmployment preEmployment ){
-        Boolean b = checkParam(preEmployment);
+    public ResponseResult insertPreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo ){
+        Boolean b = checkParam(preEmploymentVo,getUserSession());
         if(b){
             try {
-                staffPreEmploymentService.insertPreEmployment(preEmployment);
+                staffPreEmploymentService.insertPreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -56,10 +57,10 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 删除预入职
      */
-    @RequestMapping(value = "/deletePreEmployment ", method = RequestMethod.GET)
+    @RequestMapping(value = "/deletePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "删除预入职", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true)
-    public ResponseResult deletePreEmployment(@RequestParam List<Integer> list ){
+    public ResponseResult deletePreEmployment(@RequestBody List<Integer> list ){
         Boolean b = checkParam(list);
         if(b){
             try {
@@ -75,14 +76,14 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 修改预入职信息(值的信息)
      */
-    @RequestMapping(value = "/updatePreEmployment ", method = RequestMethod.GET)
+    @RequestMapping(value = "/updatePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
-    public ResponseResult updatePreEmployment(@Valid PreEmployment preEmployment){
-        Boolean b = checkParam(preEmployment);
+    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo){
+        Boolean b = checkParam(preEmploymentVo,getUserSession());
         if(b){
             try {
-                staffPreEmploymentService.updatePreEmployment(preEmployment);
+                staffPreEmploymentService.updatePreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -94,10 +95,10 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 修改预入职信息(显示字段的信息)
      */
-    @RequestMapping(value = "/updatePreEmploymentField ", method = RequestMethod.GET)
+    @RequestMapping(value = "/updatePreEmploymentField", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updatePreEmploymentField(@RequestParam Map<Integer,String> map){
+    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map){
         Boolean b = checkParam(map);
         if(b){
             try {
@@ -114,7 +115,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 查看预入职信息(显示字段的信息)
      */
-    @RequestMapping(value = "/selectPreEmploymentField ", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectPreEmploymentField", method = RequestMethod.GET)
     @ApiOperation(value = "查看预入职信息(显示字段的信息)，返回值中map是物理表属性，value是字段名", notes = "hkt")
     public ResponseResult<Map<String,String>> selectPreEmploymentField(){
         Boolean b = checkParam(getUserSession());
@@ -133,7 +134,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 根据机构查看预入职
      */
-    @RequestMapping(value = "/selectPreEmployment ", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectPreEmployment", method = RequestMethod.GET)
     @ApiOperation(value = "根据机构查看预入职(物理表)", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
@@ -174,7 +175,7 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
     public ResponseResult updatePreEmploymentChange(Integer preEmploymentId,
-                                                    StatusChangeVo statusChangeVo) {
+                                                    @RequestBody @Valid StatusChangeVo statusChangeVo) {
         Boolean b = checkParam(preEmploymentId,statusChangeVo,getUserSession());
         if(b){
             try {
@@ -197,7 +198,7 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult confirmPreemployment(@RequestParam   List<Integer> preEmploymentId) {
+    public ResponseResult confirmPreemployment(@RequestBody List<Integer> preEmploymentId) {
         Boolean b = checkParam(preEmploymentId,getUserSession());
         if(b){
             try {
@@ -219,7 +220,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 发邮件给预入职人员
      */
-    @RequestMapping(value = "/sendMail ", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendMail", method = RequestMethod.POST)
     @ApiOperation(value = "邮箱发送入职登记表", notes = "hkt")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "list", value = "预入职收信人id集合", paramType = "query", required = true),
@@ -228,7 +229,7 @@ public class StaffPreEmploymentController extends BaseController {
             @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
             @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
     })
-    public ResponseResult sendMail(List<Integer> prelist,List<Integer> conList,
+    public ResponseResult sendMail(@RequestBody List<Integer> prelist,List<Integer> conList,
                                    String content,String subject,
                                    List<String> filepath) {
         Boolean b = checkParam(prelist,conList,content,subject,filepath);
@@ -246,7 +247,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 校验手机号码
      */
-    @RequestMapping(value = "/checkPhone ", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkPhone", method = RequestMethod.GET)
     @ApiOperation(value = "校验手机号码", notes = "hkt")
 //    @ApiImplicitParam(name = "String", value = "手机号", paramType = "query", required = true)
     public ResponseResult checkPhone(String phoneNumber) {
@@ -269,7 +270,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 校验邮箱
      */
-    @RequestMapping(value = "/checkMail ", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkMail", method = RequestMethod.GET)
     @ApiOperation(value = "校验邮箱", notes = "hkt")
 //    @ApiImplicitParam(name = "String", value = "邮箱", paramType = "query", required = true)
     public ResponseResult checkMail(String mail) {

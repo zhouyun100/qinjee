@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import java.util.Date;
  */
 @Data
 @ToString
+@JsonInclude
 public class UserArchivePostRelationVo implements Serializable {
     /**
      * id
