@@ -253,6 +253,11 @@ public class UserLoginController extends BaseController{
     public ResponseResult<MenuVO> loadMenuTreeByCurrentLoginUser() {
         try{
             userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
             List<MenuVO> menuVOList = userLoginService.searchUserMenuTreeByArchiveIdAndCompanyId(userSession.getArchiveId(),userSession.getCompanyId());
 
             logger.info("loadMenuTreeByCurrentLoginUser！archiveId={},companyId={} ", userSession.getArchiveId(),userSession.getCompanyId());

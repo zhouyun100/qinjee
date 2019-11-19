@@ -11,7 +11,6 @@
 package com.qinjee.masterdata.service.auth;
 
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.RequestRoleArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.model.response.PageResult;
 
@@ -31,12 +30,6 @@ public interface ArchiveAuthService {
      */
     List<RoleGroupVO> searchRoleTree(Integer companyId);
 
-    /**
-     * 根据角色ID查询用户列表
-     * @param roleArchivePageVO
-     * @return
-     */
-    PageResult<ArchiveInfoVO> searchArchiveListByRoleId(RequestRoleArchivePageVO roleArchivePageVO);
 
     /**
      * 角色新增员工

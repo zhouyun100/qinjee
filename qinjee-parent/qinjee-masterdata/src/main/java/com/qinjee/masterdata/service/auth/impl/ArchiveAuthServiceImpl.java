@@ -14,7 +14,6 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.auth.ArchiveAuthDao;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.RequestRoleArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
@@ -43,19 +42,6 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     public List<RoleGroupVO> searchRoleTree(Integer companyId) {
         List<RoleGroupVO> roleGroupList = roleAuthService.searchRoleTree(companyId);
         return roleGroupList;
-    }
-
-    @Override
-    public PageResult<ArchiveInfoVO> searchArchiveListByRoleId(RequestRoleArchivePageVO roleArchivePageVO) {
-        List<ArchiveInfoVO> archiveInfoVOList = null;
-        if(null != roleArchivePageVO && roleArchivePageVO.getRoleId() != null){
-            if(roleArchivePageVO.getCurrentPage() != null && roleArchivePageVO.getPageSize() != null){
-                PageHelper.startPage(roleArchivePageVO.getCurrentPage(),roleArchivePageVO.getPageSize());
-            }
-            archiveInfoVOList = archiveAuthDao.searchArchiveListByRoleId(roleArchivePageVO.getRoleId());
-        }
-        PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoVOList);
-        return pageResult;
     }
 
     @Override

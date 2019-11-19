@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,6 +44,7 @@ public class RoleSearchServiceImpl implements RoleSearchService {
         if(archivePageVO.getCurrentPage() != null && archivePageVO.getPageSize() != null){
             PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
         }
+        archivePageVO.setCurrentDateTime(new Date());
         List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO);
         PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoList);
         return pageResult;

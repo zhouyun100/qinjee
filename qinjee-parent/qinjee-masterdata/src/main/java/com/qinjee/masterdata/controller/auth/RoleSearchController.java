@@ -118,7 +118,9 @@ public class RoleSearchController extends BaseController{
         if(null == archiveId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案ID不能为空!");
+            return responseResult;
         }
+
         try{
             userSession = getUserSession();
             if(userSession == null){
@@ -127,12 +129,12 @@ public class RoleSearchController extends BaseController{
                 return responseResult;
             }
             List<UserRoleVO> userRoleList = roleSearchService.searchRoleListByArchiveId(archiveId,userSession.getCompanyId());
-            logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(userRoleList);
+            logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);
         }catch (Exception e){
-            logger.info("searchRoleListByArchiveId exception!archiveId={},exception={}", archiveId, e.toString());
             e.printStackTrace();
+            logger.info("searchRoleListByArchiveId exception!archiveId={},exception={}", archiveId, e.toString());
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案ID查询角色列表异常！");
         }
