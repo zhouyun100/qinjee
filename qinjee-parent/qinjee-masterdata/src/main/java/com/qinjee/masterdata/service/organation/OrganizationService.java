@@ -143,4 +143,9 @@ public interface OrganizationService {
      * @return
      */
     ResponseResult uploadExcel(MultipartFile file, UserSession userSession);
+
+    Organization selectByPrimaryKey(Integer orgId);
+
+    List<Organization> getOrganizationListByParentOrgId(Integer orgId);
+
 }
