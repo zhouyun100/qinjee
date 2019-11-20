@@ -11,10 +11,7 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
-import com.qinjee.masterdata.model.vo.auth.RequestRoleArchiveVO;
-import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.model.response.PageResult;
@@ -172,6 +169,63 @@ public class ArchiveAuthController extends BaseController {
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色移除员工异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="根据姓名或工号模糊查询员工列表", notes="姓名或工号至少2位字符")
+    @RequestMapping(value = "/searchArchiveListByUserNameOrJobNumber",method = RequestMethod.POST)
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(@RequestBody RequestArchivePageVO archivePageVO) {
+        if(StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("工号或姓名至少2位字符!");
+            return responseResult;
+        }
+
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            archivePageVO.setCompanyId(userSession.getCompanyId());
+            PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+
+            logger.info("searchArchiveListByUserNameOrJobNumber success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(pageResult);
+        }catch (Exception e){
+            logger.info("searchArchiveListByUserNameOrJobNumber exception!userName={},exception={}", archivePageVO.getUserName(),e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据工号或姓名模糊查询员工列表异常！");
+        }
+        return responseResult;
+    }
+
+
+    @ApiOperation(value="获取机构档案树", notes="默认当前登录用户")
+    @RequestMapping(value = "/getOrganizationArchiveTree",method = RequestMethod.POST)
+    public ResponseResult<OrganizationArchiveVO> getOrganizationArchiveTree() {
+
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            List<OrganizationArchiveVO> organizationArchiveList= archiveAuthService.getOrganizationArchiveTreeByArchiveId(userSession.getCompanyId(),userSession.getArchiveId());
+
+            logger.info("getOrganizationArchiveTree success！userName={},companyId={}",userSession.getUserName(),userSession.getCompanyId());
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(organizationArchiveList);
+        }catch (Exception e){
+            logger.info("getOrganizationArchiveTree exception!userName={},exception={}", userSession.getUserName(),e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("获取当前登录用户机构档案树异常！");
         }
         return responseResult;
     }

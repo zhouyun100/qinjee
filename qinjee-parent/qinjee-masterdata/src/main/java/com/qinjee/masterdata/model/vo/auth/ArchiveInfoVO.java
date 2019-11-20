@@ -54,6 +54,12 @@ public class ArchiveInfoVO implements Serializable {
     private String gender;
 
     /**
+     * 机构ID
+     */
+    @ApiModelProperty("机构ID")
+    private Integer orgId;
+
+    /**
      * 单位
      */
     @ApiModelProperty("单位")
@@ -64,6 +70,12 @@ public class ArchiveInfoVO implements Serializable {
      */
     @ApiModelProperty("部门")
     private String deptName;
+
+    /**
+     * 部门全称
+     */
+    @ApiModelProperty("部门全称")
+    private String deptFullName;
 
     /**
      * 岗位

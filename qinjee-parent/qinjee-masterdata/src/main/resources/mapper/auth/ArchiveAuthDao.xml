@@ -6,25 +6,34 @@
     <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
+    <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="gender" jdbcType="VARCHAR" property="gender" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
     <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+    <result column="dept_full_name" jdbcType="VARCHAR" property="deptFullName" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
+  </resultMap>
+
+  <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO">
+    <id column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_type" jdbcType="VARCHAR" property="orgType" />
+    <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
   </resultMap>
 
   <!-- 根据角色ID查询档案列表 -->
   <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
     select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
-    CASE
-    WHEN t_user_archive.gender = 1 THEN '男'
-    WHEN t_user_archive.gender = 2 THEN '女'
-    ELSE '未知'
-    END AS gender,
-    a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
+        t_sys_dict.dict_value gender,a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
     from t_user_role,t_user_archive
     LEFT JOIN t_post on t_user_archive.post_id = t_post.post_id
     LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
     LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
+    LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE'
+    AND t_user_archive.gender = t_sys_dict.dict_code
     where t_user_role.role_id = #{roleId,jdbcType=INTEGER}
     and t_user_archive.archive_status = 'INCUMBENCY'
     and t_user_role.archive_id = t_user_archive.archive_id
@@ -66,5 +75,59 @@
     </if>
       #{operatorId,jdbcType=INTEGER})
   </insert>
+
+
+  <!-- 根据档案ID查询所有机构列表 -->
+  <select id="searchOrganizationListByArchiveId" resultMap="OrgResultMap">
+    select v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.sort_id from (
+    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+    t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id
+    from t_organization,t_role_org_auth,t_user_role
+    where t_user_role.archive_id = #{archiveId}
+    and (t_user_role.is_trusteeship = 0
+    or (t_user_role.is_trusteeship = 1
+    and #{now} >= t_user_role.trusteeship_begin_time
+    and t_user_role.trusteeship_end_time >= #{now}
+    ))
+    and t_role_org_auth.role_id = t_user_role.role_id
+    and t_organization.org_id = t_role_org_auth.org_id
+    and t_user_role.is_delete = 0
+    and t_role_org_auth.is_delete = 0
+    and t_organization.is_enable = 1
+    UNION
+    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+    t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id
+    from t_organization,t_user_org_auth
+    where t_user_org_auth.archive_id = #{archiveId}
+    and t_organization.org_id = t_user_org_auth.org_id
+    and t_user_org_auth.is_delete = 0
+    and t_organization.is_enable = 1
+    ) v GROUP BY v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.sort_id
+    ORDER BY v.sort_id ASC
+  </select>
+
+  <!-- 根据企业ID查询所有档案列表 -->
+  <select id="searchArchiveListByCompanyId" resultMap="ArchiveResultMap">
+    SELECT
+        t_user_archive.archive_id,
+        t_user_archive.user_name,
+        t_user_archive.employee_number,
+        t_user_archive.org_id,
+        t_sys_dict.dict_value gender,
+        a.org_name business_unit_name,
+        b.org_name dept_name,
+        b.org_full_name dept_full_name,
+        t_post.post_name
+    FROM
+        t_user_archive
+    LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
+    LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
+    LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
+    LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE'
+    AND t_user_archive.gender = t_sys_dict.dict_code
+    WHERE
+        t_user_archive.company_id = #{companyId}
+    AND t_user_archive.archive_status = 'INCUMBENCY'
+  </select>
 
 </mapper>

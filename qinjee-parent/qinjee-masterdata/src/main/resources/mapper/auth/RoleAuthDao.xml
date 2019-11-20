@@ -271,9 +271,9 @@
     </update>
 
     <!-- 新增角色自定义人员表字段权限 -->
-    <insert id="saveRoleDataLevelAuth" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO" useGeneratedKeys="true">
-        insert into t_role_custom_field_auth(role_id,field_id,read_write_code,operator_id,is_delete) values(
-        #{roleId,jdbcType=INTEGER},#{fieldId,jdbcType=INTEGER},#{readWriteCode,jdbcType=VARCHAR},#{operatorId,jdbcType=INTEGER},0
-        )
-    </insert>
+<!--    <insert id="saveRoleDataLevelAuth" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.vo.auth.RoleDataLevelAuthVO" useGeneratedKeys="true">-->
+<!--        insert into t_role_custom_field_auth(role_id,field_id,read_write_code,operator_id,is_delete) values(-->
+<!--        #{roleId,jdbcType=INTEGER},#{fieldId,jdbcType=INTEGER},#{readWriteCode,jdbcType=VARCHAR},#{operatorId,jdbcType=INTEGER},0-->
+<!--        )-->
+<!--    </insert>-->
 </mapper>

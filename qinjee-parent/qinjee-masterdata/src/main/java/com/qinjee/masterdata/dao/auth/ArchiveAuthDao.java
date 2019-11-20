@@ -12,10 +12,13 @@ package com.qinjee.masterdata.dao.auth;
 
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
+import com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,4 +49,18 @@ public interface ArchiveAuthDao {
      * @return
      */
     int delArchiveRole(UserRole userRole);
+
+    /**
+     * 根据档案ID查询机构列表
+     * @param archiveId
+     * @return
+     */
+    List<OrganizationArchiveVO> searchOrganizationListByArchiveId(Integer archiveId,Date now);
+
+    /**
+     * 根据企业ID查询档案列表
+     * @param companyId
+     * @return
+     */
+    List<ArchiveInfoVO> searchArchiveListByCompanyId(Integer companyId);
 }
