@@ -61,7 +61,10 @@
         <result column="post_id" property="post_id" jdbcType="INTEGER" />
         <result column="description" property="description" jdbcType="VARCHAR" />
         <result column="org_name" property="org_name" jdbcType="VARCHAR" />
+        <result column="org_code" property="org_code" jdbcType="VARCHAR" />
         <result column="post_name" property="post_name" jdbcType="VARCHAR" />
+        <result column="post_code" property="post_code" jdbcType="VARCHAR" />
+        <result column="application_position" property="application_position" jdbcType="VARCHAR" />
     </resultMap>
 
   <!-- 表所有字段 -->
@@ -455,8 +458,8 @@
   </select>
     <select id="selectExportPreList" resultType="hashmap">
         select pre.employment_id,pre.user_name,pre.phone,pre.gender,pre.email,pre.id_type,pre.id_number,pre.age,pre.first_work_date,pre.highest_degree,
-        pre.graduated_school,pre.graduated_speciality,pre.last_work_company,pre.probation_period,pre.hire_date,
-        pre.org_id,pre.post_id,pre.description,org.org_name as org_name,post.post_name as post_name
+        pre.graduated_school,pre.graduated_speciality,pre.last_work_company,pre.probation_period,pre.hire_date,org.org_code,post.post_code,
+        pre.description,org.org_name as org_name,post.post_name as post_name,pre.application_position
         from t_pre_employment pre
         left join t_organization org on org.org_id = pre.org_id
         left join t_post post on pre.post_id = post.post_id

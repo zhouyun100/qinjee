@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
@@ -150,13 +150,13 @@ public interface IStaffCommonService {
      * @param userSession
      * @return
      */
-    void importFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException;
+    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, ClassNotFoundException;
 
     /**
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportFile exportArcVo, HttpServletResponse response) ;
+    void exportArcFile(ExportFile exportFile, HttpServletResponse response) ;
 
 
     /**

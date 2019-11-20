@@ -11,14 +11,17 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
+import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,127 +255,28 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void importFile(MultipartFile multipartFile, UserSession userSession) throws NoSuchFieldException, IllegalAccessException, IOException {
+    public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException, NoSuchFieldException {
+       //excel方法获得值
+        //根据导入文档建立Vo类，然后利用反射设值，此处先用Export代替
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        Integer tableId = null;
-        //key是字段名称，value是值
-        Map<String, List<String>> stringListMap = null;
-
-        Map<Integer, List<String>> fieldMap = new HashMap<>();
-        //需要进行入库操作
-        //根据companyId，功能code为档案和预入职的表
-        List<Integer> list = customArchiveTableDao.selectidbycomidandfunccode(userSession.getCompanyId());
-        //根据自定义表找到自定义字段名存进map中
-        for (Integer integer : list) {
-            List<String> list1 = customArchiveFieldDao.selectFieldNameListByTableId(integer);
-            fieldMap.put(integer, list1);
+        List<ExportArcVo> list=new ArrayList<>();
+        //获得反射对象
+        Class<ExportArcVo> exportArcVoClass = ExportArcVo.class;
+        ExportArcVo exportArcVo =exportArcVoClass.newInstance();
+        //循环设值
+        for (Map<String, String> map : mapList) {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                Field declaredField =exportArcVoClass.getDeclaredField(entry.getKey());
+                declaredField.setAccessible(true);
+                declaredField.set(exportArcVoClass,entry.getValue());
+            }
+            list.add(exportArcVo);
         }
-        //匹配找到需要设值的表id
-        for (Map.Entry<Integer, List<String>> integerListEntry : fieldMap.entrySet()) {
-            List<String> strings = new ArrayList<>(stringListMap.keySet());
-            //将需要设置进行业务id寻找的字段剔除，保证能找到tableId
-            for (String s : strings) {
-                if (PHONE.equals(s) || IDNUMBER.equals(s) || IDTYPE.equals(s)) {
-                    strings.remove(s);
-                }
-            }
-            if (integerListEntry.getValue().containsAll(strings)) {
-                tableId = integerListEntry.getKey();
-            } else {
-                logger.error("字段有误");
-            }
-        }
-        Integer integer = customArchiveTableDao.selectInside(tableId);
-        if (integer > 0) {
-            //  若表为内置表
-            //根据表id确认是档案表还是预入职表
-            String funcCode = customArchiveTableDao.selectFuncCode(tableId);
-            if (ARCHIVE.equals(funcCode)) {
-                //将值设入属性,判断是新增还是更新
-                List<String> list1 = stringListMap.get(IDTYPE);
-                List<String> list2 = stringListMap.get(IDNUMBER);
-                for (int i = 0; i < list1.size(); i++) {
-                    Integer id = userArchiveDao.selectId(list1.get(i), list2.get(i));
-                    if (null == id) {
-                        UserArchive userArchive = new UserArchive();
-                        setValue(stringListMap, i, userArchive);
-                        userArchiveDao.insertSelective(userArchive);
-                    } else {
-                        UserArchive userArchive = new UserArchive();
-                        userArchive.setArchiveId(id);
-                        setValue(stringListMap, i, userArchive);
-                        userArchiveDao.updateByPrimaryKeySelective(userArchive);
-                    }
-                }
-            }
-            if (PREEMP.equals(funcCode)) {
-                List<String> list1 = stringListMap.get(PHONE);
-                for (int i = 0; i < list1.size(); i++) {
-                    Integer id = preEmploymentDao.selectIdByNumber(list1.get(i));
-                    if (null == id) {
-                        PreEmployment preEmployment = new PreEmployment();
-                        setValue(stringListMap, i, preEmployment);
-                        preEmploymentDao.insert(preEmployment);
-                    } else {
-                        //将值设入属性
-                        PreEmployment preEmployment = new PreEmployment();
-                        preEmployment.setEmploymentId(id);
-                        setValue(stringListMap, i, preEmployment);
-                        preEmploymentDao.updateByPrimaryKey(preEmployment);
-                    }
-                }
-            }
-            logger.error("未找到对应的物理表,导入失败");
-        } else {
-            //若此表为自定义表，说明已经存在了基本表。此时需要需要通过传过来的手机号找到业务id确认存进哪张表中
-
-            String funcCode = customArchiveTableDao.selectFuncCode(tableId);
-            if (ARCHIVE.equals(funcCode)) {
-                //根据证件类型，证件号找到id，作为业务id
-                List<String> list1 = stringListMap.get(IDTYPE);
-                List<String> list2 = stringListMap.get(IDNUMBER);
-                for (int i = 0; i < list1.size(); i++) {
-                    //业务id
-                    Integer id = userArchiveDao.selectId(list1.get(i), list2.get(i));
-                    setCustom(userSession, tableId, stringListMap, i, id);
-                }
-            }
-            if (PREEMP.equals(funcCode)) {
-                List<String> list1 = stringListMap.get(PHONE);
-                for (int i = 0; i < list1.size(); i++) {
-                    Integer id = preEmploymentDao.selectIdByNumber(list1.get(i));
-                    setCustom(userSession, tableId, stringListMap, i, id);
-                }
-            }
-            logger.error("未找到对应的自定义表,导入失败");
-        }
+        //入库操作
+        HeadListUtil.getObjectList(mapList, ExportArcVo.class)
     }
 
-    private void setCustom(UserSession userSession, Integer tableId, Map<String, List<String>> stringListMap, int i, Integer id) {
-        CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData();
-        customArchiveTableData.setBusinessId(id);
-        customArchiveTableData.setTableId(tableId);
-        customArchiveTableData.setOperatorId(userSession.getArchiveId());
-        customArchiveTableData.setIsDelete(0);
-        String bigData = getBigData(stringListMap, i);
-        customArchiveTableData.setBigData(bigData);
-        Integer integer1 = customArchiveTableDataDao.selectTableIdByBusinessIdAndTableId(id, tableId);
-        if (null == integer1 || 0 == integer1) {
-            customArchiveTableDataDao.insertSelective(customArchiveTableData);
-        } else {
-            customArchiveTableDataDao.updateByPrimaryKey(customArchiveTableData);
-        }
-    }
 
-    private void setValue(Map<String, List<String>> stringListMap, int i, Object o) throws NoSuchFieldException, IllegalAccessException {
-        Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
-        List<Map.Entry<String, List<String>>> entries1 = new ArrayList<>(entries);
-        for (Map.Entry<String, List<String>> stringListEntry : entries1) {
-            Field declaredField = o.getClass().getDeclaredField(stringListEntry.getKey());
-            declaredField.setAccessible(true);
-            declaredField.set(o, stringListEntry.getValue().get(i));
-        }
-    }
 
     private String getBigData(Map<String, List<String>> stringListMap, int i) {
         StringBuilder bigData = new StringBuilder();
@@ -386,17 +290,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         return bigData.toString();
     }
 
-
-//    /**
-//     * 通过号码匹配得到拉黑原因，设置进VO类
-//     */
-//    private void setBlockReason(ExportPreVo exportPreVo, List<Blacklist> list) {
-//        for (Blacklist blacklist : list) {
-//            if (blacklist.getPhone().equals(exportPreVo.getPhone())) {
-//                exportPreVo.setBlockReason(blacklist.getBlockReason());
-//            }
-//        }
-//    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -415,9 +308,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         exportList.setMap(map);
         exportFile.setExportList(exportList);
         ExcelUtil.download(response,exportFile.getTittle(),
-                HeadMapUtil.getHeadsByPre(),
-                getDates(exportFile,getKeyList(exportFile)),
-                getTypeMap(HeadMapUtil.getHeadsByPre()));
+                HeadMapUtil.getHeadsForPre(),
+                getDates(exportFile,HeadMapUtil.getHeadsForPre()),
+                getTypeMap(HeadMapUtil.getHeadsForPre()));
     }
 
     /**
@@ -425,13 +318,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
      * @param exportFile
      * @return
      */
-    private List<Map<String, String>> getDates(ExportFile exportFile,List<String> keyList) {
+    private List<Map<String, String>> getDates(ExportFile exportFile,List<String> heads ) {
         List<Map<String, String>> mapList = new ArrayList<>();
         List<Map<String, Object>> maps = new ArrayList<>(exportFile.getExportList().getMap().values());
             for (Map<String, Object> stringObjectMap : maps) {
-                Map<String, String> stringMap = new HashMap<>();
-                for (String s : keyList) {
-                    stringMap.put(s,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(s))));
+                Map<String, String> stringMap = new LinkedHashMap<>();
+                for (String head : heads) {
+                    stringMap.put(head,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(head))));
                 }
                 mapList.add(stringMap);
             }
@@ -490,9 +383,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
      **/
     private Map<String, String> getTypeMap(List<String> heads) {
         Map<String, String> map = new HashMap<>();
-        List<String> list = customArchiveFieldDao.selectFieldTypeByNameList(heads);
-        for (int i = 0; i < list.size(); i++) {
-            map.put(heads.get(i),HeadTypeUtil.transTypeCode().get(list.get(i)));
+        for (String head : heads) {
+            map.put(head, HeadTypeUtil.getTypeForPre().get(head));
         }
         return map;
     }
