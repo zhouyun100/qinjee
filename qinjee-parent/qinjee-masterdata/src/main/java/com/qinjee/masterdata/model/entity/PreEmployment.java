@@ -96,8 +96,7 @@ public class PreEmployment implements Serializable {
         /** 藉贯 */
         private String birthplace;
 
-        /** 入职岗位 */
-        @NotNull
+        /** 应聘岗位*/
         private String applicationPosition;
 
         /** 试用期限(月) */
@@ -116,6 +115,7 @@ public class PreEmployment implements Serializable {
         private String employmentState;
 
         /** 入职登记 */
+        @NotNull
         private String employmentRegister;
 
         /** 备注 */

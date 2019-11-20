@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -53,4 +55,6 @@ public interface PreEmploymentDao {
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
     List<PreEmployment> selectByPrimaryKeyList(@Param("list") List<Integer> list);
+    @MapKey("employment_id")
+    Map<Integer,Map<String,Object>> selectExportPreList(@Param("list") List<Integer> list);
 }

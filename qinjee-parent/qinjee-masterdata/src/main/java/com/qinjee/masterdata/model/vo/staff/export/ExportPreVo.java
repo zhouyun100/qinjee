@@ -4,21 +4,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author Administrator
+ */
 @Data
 @JsonInclude
 public class ExportPreVo implements Serializable {
 
+    /**
+     * 预入职ID
+     */
+    private Integer employment_id;
     /** 用户姓名 */
     private String user_name;
+    /** 性别 */
+    private String gender;
 
     /** 电话 */
     private String phone;
-
-    /** 性别 */
-    private String gender;
 
     /** 邮箱 */
     private String email;
@@ -35,9 +40,6 @@ public class ExportPreVo implements Serializable {
     /** 参加工作时间 */
     private Date first_work_date;
 
-    /** 婚姻状况 */
-    private String marital_status;
-
     /** 最高学历 */
     private String highest_degree;
 
@@ -50,62 +52,26 @@ public class ExportPreVo implements Serializable {
     /** 最近工作单位 */
     private String last_work_company;
 
-    /** 是否已育 */
-    private Integer is_give_birth;
-
-    /** 户口性质 */
-    private String resident_character;
-
-    /** 身高 */
-    private BigDecimal height;
-
-    /** 血型 */
-    private String blood_type;
-
-    /** 英文名 */
-    private String english_name;
-
-    /** 民族 */
-    private Integer nationality;
-
-    /** 出生日期 */
-    private Date birth_date;
-
-    /** 政治面貌 */
-    private Integer political_status;
-
-    /** 藉贯 */
-    private String birthplace;
-
-    /** 入职岗位 */
-    private String application_position;
-
-    /** 试用期限(月) */
-    private Integer probation_period;
-
     /** 入职日期 */
     private Date hire_date;
 
+    /** 试用期限(月) */
+    private Integer probation_period;
+    /** 应聘岗位*/
+    private String applicationPosition;
     /** 入职部门 */
     private Integer org_id;
-
+    /**
+     * 部门名称
+     */
+    private String org_name;
     /** 入职岗位 */
     private Integer post_id;
-
-    /** 入职状态 */
-    private String employment_state;
-
-    /** 入职登记 */
-    private String employment_register;
+    /**
+     * 岗位名称
+     */
+    private String post_name;
 
     /** 备注 */
     private String description;
-
-    /** 数据来源 */
-    private String data_source;
-
-    /** 企业ID */
-    private Integer company_id;
-
-
 }

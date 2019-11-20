@@ -156,7 +156,7 @@ public interface IStaffCommonService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportFile exportArcVo, HttpServletResponse response, UserSession userSession) ;
+    void exportArcFile(ExportFile exportArcVo, HttpServletResponse response) ;
 
 
     /**
@@ -195,9 +195,8 @@ public interface IStaffCommonService {
     List<String> selectFieldValueById(Integer customArchiveFieldId);
 
     /**
-     * @param userSession
      */
-    void exportPreFile(ExportFile exportArcVo, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    void exportPreFile(String title,List<Integer> list, HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
 
 

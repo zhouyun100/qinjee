@@ -420,14 +420,14 @@ public class StaffArchiveController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
 //    })
-    public ResponseResult<ArchiveShowVo> selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList,Integer schemeId) {
+    public ResponseResult<ExportList> selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList,Integer schemeId) {
         Boolean b = checkParam(getUserSession(),archiveIdList);
         if(b){
             try {
-                ArchiveShowVo archiveShowVo =
+                ExportList exportList =
                         staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(), archiveIdList);
-                if(archiveShowVo!=null){
-                    return new ResponseResult<>(archiveShowVo,CommonCode.SUCCESS);
+                if(exportList!=null){
+                    return new ResponseResult<>(exportList,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

@@ -543,12 +543,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile(@RequestBody @Valid  ExportFile exportArc,
-                                         HttpServletResponse response) {
-        Boolean b = checkParam(exportArc,getUserSession(),response);
+    public ResponseResult exportArcFile(@RequestBody @Valid  ExportFile exportArc, HttpServletResponse response) {
+        Boolean b = checkParam(exportArc,response);
         if(b){
             try {
-                staffCommonService.exportArcFile(exportArc,response,getUserSession());
+                staffCommonService.exportArcFile(exportArc,response);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -582,7 +581,7 @@ public class CommonController extends BaseController {
     /**
      * 模板导出预入职
      */
-    @RequestMapping(value = "/exportPreFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/exportPreFile", method = RequestMethod.POST)
     @ApiOperation(value = "导出预入职模板", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
@@ -590,13 +589,14 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreFile(@RequestBody @Valid ExportFile exportArc, HttpServletResponse response) {
-        Boolean b = checkParam(exportArc,response,getUserSession());
+    public ResponseResult exportPreFile(@RequestParam List<Integer> list,String title, HttpServletResponse response) {
+        Boolean b = checkParam(title,list,response);
         if(b){
             try {
-                staffCommonService.exportPreFile(exportArc,response,getUserSession());
+                staffCommonService.exportPreFile(title,list,response);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("导出失败");
             }
         }
