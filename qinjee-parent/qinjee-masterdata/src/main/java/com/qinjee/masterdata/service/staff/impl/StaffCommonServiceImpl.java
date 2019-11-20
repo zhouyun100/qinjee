@@ -21,6 +21,7 @@ import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -253,11 +255,26 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws IOException, IllegalAccessException, NoSuchFieldException, InstantiationException {
+    public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException, NoSuchFieldException {
+       //excel方法获得值
+        //根据导入文档建立Vo类，然后利用反射设值，此处先用Export代替
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-
+        List<ExportArcVo> list=new ArrayList<>();
+        //获得反射对象
+        Class<ExportArcVo> exportArcVoClass = ExportArcVo.class;
+        ExportArcVo exportArcVo =exportArcVoClass.newInstance();
+        //循环设值
+        for (Map<String, String> map : mapList) {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                Field declaredField =exportArcVoClass.getDeclaredField(entry.getKey());
+                declaredField.setAccessible(true);
+                declaredField.set(exportArcVoClass,entry.getValue());
+            }
+            list.add(exportArcVo);
+        }
+        //入库操作
+        HeadListUtil.getObjectList(mapList, ExportArcVo.class)
     }
-
 
 
 

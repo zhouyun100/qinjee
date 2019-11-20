@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.utils.export;
 
-import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
+
 import org.apache.poi.ss.formula.functions.T;
 
 import java.lang.reflect.Field;
@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class HeadListUtil {
+
+
     //导出思路：通过业务id与表id找到对应的数据，生成一业务id为key，value为装着属性名与属性值的list的map。通过如下方法进行解析。
     public static List<Map<String, String>> getMapList(List<T> list) throws IllegalAccessException {
         Map<String, String> map = new HashMap<>();
@@ -28,21 +30,22 @@ public class HeadListUtil {
     }
     //导入思路：对于非内置表的类，建造一个Vo类，并在数据库中建立fieldName与code的联系。通过反射设值得到list集合，然后遍历设置进大字段表中
 
-    public static List<ExportArcVo> getObjectList(List<Map<String,String>> list, Class<ExportArcVo> clazz) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
-        List<ExportArcVo> list1=new ArrayList<>();
-        ExportArcVo t= getInstance(clazz);
+    public static <T> List getObjectList(List<Map<String,String>> list,Class<T> tClass) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+        List<T> tList=new ArrayList<>();
+//        Class<Object> objectClass = Object.class;
+        T t = tClass.newInstance();
         for (Map<String, String> map : list) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Field declaredField = t.getClass().getDeclaredField(entry.getKey());
                 declaredField.setAccessible(true);
-                declaredField.set(t,entry.getValue());
+                declaredField.set(t.getClass(),entry.getValue());
             }
-            list1.add(t);
+            tList.add(t);
         }
-        return list1;
+        return tList;
     }
 
-    private static ExportArcVo getInstance(Class<ExportArcVo> clazz) throws InstantiationException, IllegalAccessException{
+    private static T getInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException{
         return clazz.newInstance();
     }
 }

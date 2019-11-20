@@ -150,7 +150,7 @@ public interface IStaffCommonService {
      * @param userSession
      * @return
      */
-    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException;
+    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, ClassNotFoundException;
 
     /**
      * 模板导出档案
