@@ -9,6 +9,7 @@
         <result column="gender" jdbcType="VARCHAR" property="gender" />
         <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="dept_full_name" jdbcType="VARCHAR" property="deptFullName" />
         <result column="post_name" jdbcType="VARCHAR" property="postName" />
     </resultMap>
 
@@ -26,7 +27,7 @@
     <!-- 根据工号或姓名模糊查询员工列表 -->
     <select id="searchArchiveListByUserName" parameterType="com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO" resultMap="ArchiveInfoMap">
         SELECT t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,t_sys_dict.dict_value gender,
-        a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
+        a.org_name business_unit_name,b.org_name dept_name,b.org_full_name dept_full_name,t_post.post_name
         FROM t_user_archive
         LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
         LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id

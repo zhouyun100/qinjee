@@ -10,8 +10,11 @@
  */
 package com.qinjee.masterdata.service.auth;
 
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
+import com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
 import java.util.List;
@@ -48,4 +51,12 @@ public interface ArchiveAuthService {
      * @return
      */
     void delArchiveRole(Integer roleId, List<Integer> archiveIdList, Integer operatorId);
+
+    /**
+     * 查询当前机构员工树
+     * @param companyId
+     * @param archiveId
+     * @return
+     */
+    List<OrganizationArchiveVO> getOrganizationArchiveTreeByArchiveId(Integer companyId,Integer archiveId);
 }
