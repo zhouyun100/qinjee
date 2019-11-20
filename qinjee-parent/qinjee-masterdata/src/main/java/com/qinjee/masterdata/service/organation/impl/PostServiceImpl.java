@@ -9,6 +9,7 @@ import com.qinjee.masterdata.dao.PostLevelRelationDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
@@ -403,8 +404,8 @@ public class PostServiceImpl implements PostService {
     private String getPostCode(Integer orgId) {
         String postCode = postDao.getLastPostByOrgId(orgId);
         if(postCode == null){
-            Organization organization = organizationDao.selectByPrimaryKey(orgId);
-            String orgCode = organization.getOrgCode();
+            OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
+            String orgCode = organizationVO.getOrgCode();
             postCode += orgCode + "001";
         }else {
             Integer integer = Integer.valueOf(postCode);

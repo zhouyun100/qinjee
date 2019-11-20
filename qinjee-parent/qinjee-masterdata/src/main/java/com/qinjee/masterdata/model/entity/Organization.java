@@ -58,18 +58,6 @@ public class Organization implements Serializable {
     @QueryColumn("org_parent_id")
     private Integer orgParentId;
 
-    /**
-     * 机构父级名称
-     */
-    @ApiModelProperty("机构父级名称")
-    @QueryColumn("parent_org.org_name")
-    private String orgParentName;
-
-    /**
-     * 机构父级编码
-     */
-    @ApiModelProperty("机构父级编码")
-    private String orgParentCode;
 
     /**
      * 机构全称
@@ -84,18 +72,8 @@ public class Organization implements Serializable {
     @ApiModelProperty("机构负责人Id")
     private Integer orgManagerId;
 
-    /**
-     * 机构负责人姓名
-     */
-    @ApiModelProperty("机构负责人姓名")
-    @QueryColumn("tua.user_name")
-    private String orgManagerName;
 
-    /**
-     * 机构负责人工号
-     */
-    @ApiModelProperty("机构负责人工号")
-    private String managerEmployeeNumber;
+
 
     /**
      * 企业ID
@@ -129,25 +107,6 @@ public class Organization implements Serializable {
     @ApiModelProperty("是否启用 0 封存、1 未封存")
     private Short isEnable;
 
-    /**
-     * 子机机构
-     */
-    private List<Organization> childList;
-
-    /**
-     * 图片url
-     */
-    private String attachmentUrl;
-
-    /**
-     * 机构下的职位
-     */
-    private List<Position> positionList;
-
-    /**
-     * 机构的下岗位
-     */
-    private List<Post> postList;
 
     private static final long serialVersionUID = 1L;
 

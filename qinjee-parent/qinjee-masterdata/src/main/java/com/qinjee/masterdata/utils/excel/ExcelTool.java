@@ -25,6 +25,7 @@ public class ExcelTool {
         if (!"".equals(postfix)) {
             InputStream input = file.getInputStream();
             Workbook workbook = null;
+            //如果不是xls、xlsx，返回null
             if ("xls".equals(postfix)) {
                 workbook = new HSSFWorkbook(input);
             } else if ("xlsx".equals(postfix)) {

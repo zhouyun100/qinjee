@@ -1,15 +1,17 @@
 package com.qinjee.masterdata.service.organation;
 
-import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVoo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,14 +28,16 @@ public interface OrganizationService {
      * @param isEnable
      * @return
      */
-    PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable);
+    PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable);
+
+
 
     /**
      * 根据条件分页查询用户下所有的机构
      * @param organizationPageVo
      * @return
      */
-    PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession);
+    PageResult<OrganizationVO> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
     /**
      * 根据是否封存查询用户下所有的机构,图形化展示
@@ -41,7 +45,8 @@ public interface OrganizationService {
      * @param isEnable
      * @return
      */
-    PageResult<Organization> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId);
+    PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId);
+
 
     /**
      * 新增机构
@@ -49,14 +54,14 @@ public interface OrganizationService {
      * @param organizationVo
      * @return
      */
-    ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo);
+    ResponseResult addOrganization(UserSession userSession, OrganizationVoo organizationVo);
 
     /**
      * 编辑机构
      * @param organizationVo
      * @return
      */
-    ResponseResult editOrganization(OrganizationVo organizationVo);
+    ResponseResult editOrganization(OrganizationVoo organizationVo);
 
     /**
      * 删除机构
@@ -91,12 +96,10 @@ public interface OrganizationService {
 
     /**
      * 机构排序
-     * @param preOrgId
-     * @param midOrgId
-     * @param nextOrgId
+     *
      * @return
      */
-    ResponseResult sortOrganization(Integer preOrgId, Integer midOrgId, Integer nextOrgId);
+    ResponseResult sortOrganization(LinkedList<String> linkMap);
 
     /**
      * 划转机构
@@ -111,7 +114,7 @@ public interface OrganizationService {
      * @param userSession
      * @return
      */
-    ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable);
+    ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(UserSession userSession, Short isEnable);
 
     /**
      * 下载模板
@@ -144,8 +147,10 @@ public interface OrganizationService {
      */
     ResponseResult uploadExcel(MultipartFile file, UserSession userSession);
 
-    Organization selectByPrimaryKey(Integer orgId);
+    OrganizationVO selectByPrimaryKey(Integer orgId);
 
-    List<Organization> getOrganizationListByParentOrgId(Integer orgId);
+    List<OrganizationVO> getOrganizationListByParentOrgId(Integer orgId);
+
+    List<OrganizationVO> getAllOrganizationTree(UserSession userSession, Short isEnable);
 
 }
