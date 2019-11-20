@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,11 +48,36 @@ public class RoleGroupVO implements Serializable {
     @ApiModelProperty("角色类型")
     private String roleType;
 
+
+    /**
+     * 是否托管
+     */
+    @ApiModelProperty("是否托管")
+    private Integer isTrusteeship;
+
+    /**
+     * 托管开始时间
+     */
+    @ApiModelProperty("托管开始时间")
+    private Date trusteeshipBeginTime;
+
+    /**
+     * 托管结束时间
+     */
+    @ApiModelProperty("托管结束时间")
+    private Date trusteeshipEndTime;
+
     /**
      * 父角色组ID
      */
     @ApiModelProperty("父角色组ID")
     private Integer parentRoleGroupId;
+
+    /**
+     * 是否拥有该角色
+     */
+    @ApiModelProperty("是否拥有该角色(1:是,0:否)")
+    private Integer hasRole;
 
     /**
      * 子集角色组列表

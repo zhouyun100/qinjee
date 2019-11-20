@@ -63,6 +63,12 @@ public class RequestRoleVO implements Serializable {
     private Integer acceptArchiveId;
 
     /**
+     * 是否托管
+     */
+    @ApiModelProperty("是否托管(1：是，0：否)")
+    private Integer isTrusteeship;
+
+    /**
      * 托管开始时间
      */
     @ApiModelProperty("托管开始时间")

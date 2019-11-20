@@ -1,11 +1,13 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
+@JsonInclude
 public class GetFilePath implements Serializable {
     /**
      * 业务模块

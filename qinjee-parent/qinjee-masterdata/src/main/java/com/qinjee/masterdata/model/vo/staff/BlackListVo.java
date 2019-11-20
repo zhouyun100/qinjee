@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
 @ToString
+@JsonInclude
 public class BlackListVo implements Serializable {
 
 

@@ -79,10 +79,10 @@ public interface IStaffArchiveService {
 
     /**
      * 更新档案
-     * @param userArchive
+     * @param userArchiveVo
      * @return
      */
-    void updateArchive(UserArchive userArchive);
+    void updateArchive(UserArchiveVo userArchiveVo,UserSession userSession);
 
     /**
      * 查看人员档案
@@ -93,10 +93,10 @@ public interface IStaffArchiveService {
 
     /**
      * 新增档案
-     * @param userArchive
+     * @param userArchiveVo
      * @return
      */
-   void insertArchive(UserArchive userArchive);
+   void insertArchive(UserArchiveVo userArchiveVo,UserSession userSession);
     /**
      * 修改预入职信息(显示字段的信息)
      */
@@ -119,7 +119,7 @@ public interface IStaffArchiveService {
      * @param schemeId
      * @return
      */
-    ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    ExportList selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 显示权限下，对应表的字段

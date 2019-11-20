@@ -11,8 +11,12 @@
 package com.qinjee.masterdata.dao.auth;
 
 import com.qinjee.masterdata.model.vo.auth.RequestRoleVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 权限移交
@@ -35,6 +39,15 @@ public interface AuthHandoverDao {
      * @return
      */
     int orgRecoveryByArchiveId(RequestRoleVO userRole);
+
+
+    /**
+     * 根据档案ID查询角色和角色组列表
+     * @param archiveId
+     * @param companyId
+     * @return
+     */
+    List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId);
 
     /**
      * 角色移交

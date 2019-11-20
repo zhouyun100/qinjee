@@ -12,6 +12,8 @@ package com.qinjee.masterdata.service.auth;
 
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 
 import java.util.Date;
 import java.util.List;
@@ -80,7 +82,6 @@ public interface AuthHandoverService {
 
     /**
      * 角色托管
-     * @param trusteeshipArchiveId
      * @param acceptArchiveId
      * @param trusteeshipBeginTime
      * @param trusteeshipEndTime
@@ -88,11 +89,10 @@ public interface AuthHandoverService {
      * @param operatorId
      * @return
      */
-    int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId);
+    int roleTrusteeshipByArchiveId(Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId);
 
     /**
      * 机构托管
-     * @param trusteeshipArchiveId
      * @param acceptArchiveId
      * @param trusteeshipBeginTime
      * @param trusteeshipEndTime
@@ -100,5 +100,13 @@ public interface AuthHandoverService {
      * @param operatorId
      * @return
      */
-    int orgTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> orgIdList, Integer operatorId);
+    int orgTrusteeshipByArchiveId(Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> orgIdList, Integer operatorId);
+
+    /**
+     * 根据档案ID查询角色列表
+     * @param archiveId
+     * @param companyId
+     * @return
+     */
+    List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId);
 }

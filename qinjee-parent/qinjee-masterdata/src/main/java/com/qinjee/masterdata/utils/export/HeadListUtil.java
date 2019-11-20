@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HeadListUtil {
-
+    //导出思路：通过业务id与表id找到对应的数据，生成一业务id为key，value为装着属性名与属性值的list的map。通过如下方法进行解析。
     public static List<Map<String, String>> getMapList(List<T> list) throws IllegalAccessException {
         Map<String, String> map = new HashMap<>();
         List<Map<String, String>> mapList = new ArrayList<>();
@@ -25,6 +25,7 @@ public class HeadListUtil {
         }
         return mapList;
     }
+    //导入思路：对于非内置表的类，建造一个Vo类，并在数据库中建立fieldName与code的联系。通过反射设值得到list集合，然后遍历设置进大字段表中
 
     public static List<T> getObjectList(List<Map<String,String>> list, Class<T> clazz) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
         List<T> list1=new ArrayList<>();

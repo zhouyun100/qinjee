@@ -13,12 +13,9 @@ package com.qinjee.masterdata.controller.auth;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Role;
-import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
-import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -76,7 +73,7 @@ public class RoleSearchController extends BaseController{
 
     @ApiOperation(value="根据机构ID、工号或姓名模糊查询员工列表", notes="根据工号或姓名模糊查询员工列表")
     @RequestMapping(value = "/searchArchiveListByUserName",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(RequestArchivePageVO archivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(@RequestBody RequestArchivePageVO archivePageVO) {
         if(archivePageVO == null || archivePageVO.getOrgId() == null){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("机构ID不能为空!");
@@ -93,13 +90,14 @@ public class RoleSearchController extends BaseController{
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("Session失效！");
                 return responseResult;
-            }
-            archivePageVO.setCompanyId(userSession.getCompanyId());
-            PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+            }else{
+                archivePageVO.setCompanyId(userSession.getCompanyId());
+                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
 
-            logger.info("searchArchiveListByUserName success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
-            responseResult = ResponseResult.SUCCESS();
-            responseResult.setResult(pageResult);
+                logger.info("searchArchiveListByUserName success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(pageResult);
+            }
         }catch (Exception e){
             logger.info("searchArchiveListByUserName exception!userName={},exception={}", archivePageVO.getUserName(),e.toString());
             e.printStackTrace();
@@ -109,16 +107,18 @@ public class RoleSearchController extends BaseController{
         return responseResult;
     }
 
-    @ApiOperation(value="根据档案ID查询角色列表", notes="根据档案ID查询角色列表")
+    @ApiOperation(value="根据档案ID查询角色树", notes="根据档案ID查询角色列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchRoleListByArchiveId",method = RequestMethod.POST)
+    @RequestMapping(value = "/searchRoleTreeByArchiveId",method = RequestMethod.POST)
     public ResponseResult<Role> searchRoleListByArchiveId(Integer archiveId) {
         if(null == archiveId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案ID不能为空!");
+            return responseResult;
         }
+
         try{
             userSession = getUserSession();
             if(userSession == null){
@@ -126,13 +126,13 @@ public class RoleSearchController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<UserRoleVO> userRoleList = roleSearchService.searchRoleListByArchiveId(archiveId,userSession.getCompanyId());
-            logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);
+            List<RoleGroupVO> userRoleList = roleSearchService.searchRoleTreeByArchiveId(archiveId,userSession.getCompanyId());
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(userRoleList);
+            logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);
         }catch (Exception e){
-            logger.info("searchRoleListByArchiveId exception!archiveId={},exception={}", archiveId, e.toString());
             e.printStackTrace();
+            logger.info("searchRoleListByArchiveId exception!archiveId={},exception={}", archiveId, e.toString());
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案ID查询角色列表异常！");
         }
@@ -141,13 +141,9 @@ public class RoleSearchController extends BaseController{
 
 
     @ApiOperation(value="修改用户角色", notes="修改用户角色")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "roleIdList", value = "角色ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/updateArchiveRole",method = RequestMethod.POST)
-    public ResponseResult updateArchiveRole(Integer archiveId,@RequestBody List<Integer> roleIdList) {
-        if(null == archiveId || CollectionUtils.isEmpty(roleIdList)){
+    public ResponseResult updateArchiveRole(@RequestBody RequestArchiveRoleVO requestArchiveRoleVO) {
+        if(null == requestArchiveRoleVO.getArchiveId() || CollectionUtils.isEmpty(requestArchiveRoleVO.getRoleIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("员工或角色为空！");
             return responseResult;
@@ -159,12 +155,12 @@ public class RoleSearchController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            roleSearchService.updateArchiveRole(archiveId, roleIdList, userSession.getArchiveId());
+            roleSearchService.updateArchiveRole(requestArchiveRoleVO.getArchiveId(), requestArchiveRoleVO.getRoleIdList(), userSession.getArchiveId());
 
-            logger.info("updateArchiveRole success! archiveId={};roleIdList={};", archiveId, roleIdList);
+            logger.info("updateArchiveRole success! archiveId={};roleIdList={};", requestArchiveRoleVO.getArchiveId(), requestArchiveRoleVO.getRoleIdList());
             responseResult = ResponseResult.SUCCESS();
         }catch (Exception e){
-            logger.info("updateArchiveRole exception! archiveId={};roleIdList={};exception={}", archiveId, roleIdList, e.toString());
+            logger.info("updateArchiveRole exception! archiveId={};roleIdList={};exception={}", requestArchiveRoleVO.getArchiveId(), requestArchiveRoleVO.getRoleIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改用户角色异常！");

@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -13,94 +15,128 @@ import java.util.Date;
  */
 @Data
 @ToString
+@JsonInclude
 public class PreEmployment implements Serializable {
-    /**
-     * 入职ID
-     */
-    private Integer employmentId;
+        /** 版本号 */
+        private static final long serialVersionUID = 1L;
 
-    /**
-     * 姓名
-     */
-    @NotNull
-    private String userName;
+        /** 预入职ID */
+        private Integer employmentId;
 
-    /**
-     * 工号
-     */
-    private String employeeNumber;
+        /** 用户姓名 */
+        @NotNull
+        private String userName;
 
-    /**
-     * 企业ID
-     */
-    @NotNull
-    private Integer companyId;
+        /** 电话 */
+        @NotNull
+        private String phone;
 
-    /**
-     * 应聘职位
-     */
-    @NotNull
-    private String positionName;
+        /** 性别 */
+        @NotNull
+        private String gender;
 
-    /**
-     * 入职机构
-     */
-    @NotNull
-    private Integer orgId;
+        /** 邮箱 */
+        @NotNull
+        private String email;
 
-    /**
-     * 入职岗位
-     */
-    @NotNull
-    private Integer postId;
+        /** 证件类型 */
+        private String idType;
 
-    /**
-     * 入职日期
-     */
-    private Date employmentDate;
+        /** 证件号码 */
+        private String idNumber;
 
-    /**
-     * 入职状态
-     */
-    @NotNull
-    private String employmentState;
+        /** 年龄 */
+        private Integer age;
 
-    /**
-     * 入职登记
-     */
-    private String employmentRegister;
+        /** 参加工作时间 */
+        private Date firstWorkDate;
 
-    /**
-     * 手机
-     */
-    @NotNull
-    private String phone;
+        /** 婚姻状况 */
+        @NotNull
+        private String maritalStatus;
 
-    /**
-     * 邮箱
-     */
-    @NotNull
-    private String email;
+        /** 最高学历 */
+        @NotNull
+        private String highestDegree;
 
-    /**
-     * 数据来源
-     */
-    private String dataSource;
+        /** 毕业院校 */
+        private String graduatedSchool;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
+        /** 毕业专业 */
+        @NotNull
+        private String graduatedSpeciality;
 
-    /**
-     * 修改时间
-     */
-    private Date updateTime;
+        /** 最近工作单位 */
+        private String lastWorkCompany;
 
-    /**
-     * 是否删除
-     */
-    private Short isDelete;
+        /** 是否已育 */
+        private Integer isGiveBirth;
 
-    private static final long serialVersionUID = 1L;
-}
+        /** 户口性质 */
+        private String residentCharacter;
+
+        /** 身高 */
+        private BigDecimal height;
+
+        /** 血型 */
+        private String bloodType;
+
+        /** 英文名 */
+        private String englishName;
+
+        /** 民族 */
+        private Integer nationality;
+
+        /** 出生日期 */
+        private Date birthDate;
+
+        /** 政治面貌 */
+        private Integer politicalStatus;
+
+        /** 藉贯 */
+        private String birthplace;
+
+        /** 应聘岗位*/
+        private String applicationPosition;
+
+        /** 试用期限(月) */
+        private Integer probationPeriod;
+
+        /** 入职日期 */
+        private Date hireDate;
+
+        /** 入职部门 */
+        private Integer orgId;
+
+        /** 入职岗位 */
+        private Integer postId;
+
+        /** 入职状态 */
+        private String employmentState;
+
+        /** 入职登记 */
+        @NotNull
+        private String employmentRegister;
+
+        /** 备注 */
+        private String description;
+
+        /** 数据来源 */
+        private String dataSource;
+
+        /** 企业ID */
+        private Integer companyId;
+
+        /** 操作人ID */
+        private Integer operatorId;
+
+        /** 创建时间 */
+        private Date createTime;
+
+        /** 更新时间 */
+        private Date updateTime;
+
+        /** 是否删除 */
+        private Short isDelete;
+
+    }

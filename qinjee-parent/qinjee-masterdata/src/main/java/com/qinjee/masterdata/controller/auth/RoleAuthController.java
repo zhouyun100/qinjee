@@ -16,10 +16,7 @@ import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -411,13 +408,9 @@ public class RoleAuthController extends BaseController{
 
 
     @ApiOperation(value="修改角色功能权限", notes="修改角色功能权限")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "menuIdList", value = "功能ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.POST)
-    public ResponseResult updateRoleMenuAuth(Integer roleId,@RequestBody List<Integer> menuIdList) {
-        if(null == roleId || CollectionUtils.isEmpty(menuIdList)){
+    public ResponseResult updateRoleMenuAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\nmenuIdList：功能ID集合")RequestRoleAuthVO requestRoleAuthVO) {
+        if(null == requestRoleAuthVO.getRoleId() || CollectionUtils.isEmpty(requestRoleAuthVO.getMenuIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色或菜单不能为空!");
             return responseResult;
@@ -429,12 +422,12 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            roleAuthService.updateRoleMenuAuth(roleId, menuIdList, userSession.getArchiveId());
-            logger.info("updateRoleMenuAuth success！roleId={}, menuIdList={}, operatorId={}", roleId, menuIdList, userSession.getArchiveId());
+            roleAuthService.updateRoleMenuAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
+            logger.info("updateRoleMenuAuth success！roleId={}, menuIdList={}, operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
 
         }catch (Exception e){
-            logger.info("updateRoleMenuAuth exception！roleId={}, menuIdList={}, exception={}", roleId, menuIdList, e.toString());
+            logger.info("updateRoleMenuAuth exception！roleId={}, menuIdList={}, exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色功能权限异常！");
@@ -482,13 +475,9 @@ public class RoleAuthController extends BaseController{
 
 
     @ApiOperation(value="修改角色机构权限", notes="修改角色机构权限")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "orgIdList", value = "机构ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.POST)
-    public ResponseResult updateRoleOrgAuth(Integer roleId,@RequestBody  List<Integer> orgIdList) {
-        if(null == roleId || CollectionUtils.isEmpty(orgIdList)){
+    public ResponseResult updateRoleOrgAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\norgIdList：机构ID集合")RequestRoleAuthVO requestRoleAuthVO) {
+        if(null == requestRoleAuthVO.getRoleId() || CollectionUtils.isEmpty(requestRoleAuthVO.getOrgIdList())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID或机构ID不能为空!");
             return responseResult;
@@ -500,12 +489,12 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            roleAuthService.updateRoleOrgAuth(roleId, orgIdList, userSession.getArchiveId());
-            logger.info("updateRoleOrgAuth success！roleId={},orgIdList={},operatorId={}", roleId, orgIdList,userSession.getArchiveId());
+            roleAuthService.updateRoleOrgAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(), userSession.getArchiveId());
+            logger.info("updateRoleOrgAuth success！roleId={},orgIdList={},operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(),userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
 
         }catch (Exception e){
-            logger.info("updateRole exception！roleId={},orgIdList={},exception={}", roleId, orgIdList, e.toString());
+            logger.info("updateRole exception！roleId={},orgIdList={},exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色机构权限异常！");

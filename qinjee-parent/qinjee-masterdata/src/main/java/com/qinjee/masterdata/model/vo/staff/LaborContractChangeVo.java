@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 @Data
 @ToString
+@JsonInclude
 public class LaborContractChangeVo implements Serializable {
     /**
      * id

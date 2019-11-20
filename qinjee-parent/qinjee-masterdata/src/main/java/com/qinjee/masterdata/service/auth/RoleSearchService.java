@@ -12,6 +12,7 @@ package com.qinjee.masterdata.service.auth;
 
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.model.response.PageResult;
 
@@ -32,12 +33,12 @@ public interface RoleSearchService {
     PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO);
 
     /**
-     * 根据档案ID查询角色列表
+     * 根据档案ID查询角色树
      * @param archiveId
      * @param companyId
      * @return
      */
-    List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId);
+    List<RoleGroupVO> searchRoleTreeByArchiveId(Integer archiveId, Integer companyId);
 
     /**
      * 更新员工角色

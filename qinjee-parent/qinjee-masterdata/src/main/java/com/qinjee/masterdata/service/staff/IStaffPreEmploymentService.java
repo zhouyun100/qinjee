@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -65,17 +66,17 @@ public interface IStaffPreEmploymentService {
 
     /**
      * 更新预入职表（物理表信息）
-     * @param preEmployment
+     * @param preEmploymentVo
      * @return
      */
-    void updatePreEmployment(PreEmployment preEmployment);
+    void updatePreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession);
 
     /**
      * 新增预入职表
-     * @param preEmployment
+     * @param preEmploymentVo
      * @return
      */
-    void insertPreEmployment(PreEmployment preEmployment);
+    void insertPreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession);
     /**
      * 修改预入职信息(显示字段的信息)
      */

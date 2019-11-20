@@ -12,50 +12,95 @@
         <result column="post_name" jdbcType="VARCHAR" property="postName" />
     </resultMap>
 
-    <resultMap id="RoleResultMap" type="com.qinjee.masterdata.model.vo.auth.UserRoleVO">
-        <result column="role_id" jdbcType="INTEGER" property="roleId" />
-        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
-        <result column="role_group_id" jdbcType="INTEGER" property="roleGroupId" />
-        <result column="is_system_define" jdbcType="INTEGER" property="isSystemDefine" />
+    <resultMap id="RoleTreeResultMap" type="com.qinjee.masterdata.model.vo.auth.RoleGroupVO">
+        <id column="role_group_id" jdbcType="INTEGER" property="roleGroupId" />
+        <result column="role_group_name" jdbcType="VARCHAR" property="roleGroupName" />
+        <result column="parent_role_group_id" jdbcType="INTEGER" property="parentRoleGroupId" />
+        <result column="role_type" jdbcType="VARCHAR" property="roleType" />
         <result column="is_trusteeship" jdbcType="TINYINT" property="isTrusteeship" />
         <result column="trusteeship_begin_time" jdbcType="TIMESTAMP" property="trusteeshipBeginTime" />
         <result column="trusteeship_end_time" jdbcType="TIMESTAMP" property="trusteeshipEndTime" />
-        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="has_role" jdbcType="INTEGER" property="hasRole" />
     </resultMap>
 
     <!-- 根据工号或姓名模糊查询员工列表 -->
     <select id="searchArchiveListByUserName" parameterType="com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO" resultMap="ArchiveInfoMap">
-        select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
-        CASE
-        WHEN t_user_archive.gender = 1 THEN '男'
-        WHEN t_user_archive.gender = 2 THEN '女'
-        ELSE '未知'
-        END AS gender,
+        SELECT t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,t_sys_dict.dict_value gender,
         a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
-        from t_user_archive
-        LEFT JOIN t_post on t_user_archive.post_id = t_post.post_id
+        FROM t_user_archive
+        LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
         LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
         LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
-        where t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
-        and t_user_archive.org_id = #{orgId,jdbcType=INTEGER}
+        LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE' AND t_user_archive.gender = t_sys_dict.dict_code
+        <if test="roleId != null">
+            ,t_user_role
+        </if>
+        WHERE t_user_archive.company_id = #{companyId,jdbcType=INTEGER}
+        <if test="orgId != null">
+            AND t_user_archive.org_id = #{orgId,jdbcType=INTEGER}
+        </if>
+        <if test="roleId != null">
+            and t_user_role.role_id = #{roleId,jdbcType=INTEGER}
+            and t_user_role.archive_id = t_user_archive.archive_id
+            and (t_user_role.is_trusteeship = 0
+            or (t_user_role.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
+            and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+            ))
+            and t_user_role.is_delete = 0
+        </if>
         <if test="userName != null and userName != ''">
             <bind name="pattern" value="'%' + userName + '%'" />
-            and (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
+            AND (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
         </if>
-        and t_user_archive.archive_status = 'INCUMBENCY'
+        AND t_user_archive.archive_status = 'INCUMBENCY'
+        GROUP BY archive_id,user_name,employee_number,gender,business_unit_name,dept_name,post_name
     </select>
 
     <!-- 根据档案ID查询角色列表 -->
-    <select id="searchRoleListByArchiveId" resultMap="RoleResultMap">
-        select t_role.role_id,t_role.role_name,t_role.role_group_id,t_role.is_system_define,
-        t_user_role.is_trusteeship, t_user_role.trusteeship_begin_time, t_user_role.trusteeship_end_time,t_user_role.id user_role_id
-        from t_role,t_user_role
-        where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
-        and t_user_role.role_id = t_role.role_id
-        and t_user_role.is_delete = 0
-        and t_role.company_id = #{companyId,jdbcType=INTEGER}
-        and t_role.is_delete = 0
-        ORDER BY t_user_role.id DESC
+    <select id="searchRoleListByArchiveId" resultMap="RoleTreeResultMap">
+        SELECT
+            t_role_group.role_group_id,
+            t_role_group.role_group_name,
+            t_role_group.parent_role_group_id,
+            'ROLE_GROUP' AS role_type,
+            0 is_trusteeship,
+            NULL trusteeship_begin_time,
+            NULL trusteeship_end_time,
+            0 has_role
+        FROM
+            t_role_group
+        WHERE
+            t_role_group.company_id = #{companyId,jdbcType=INTEGER}
+        AND is_delete = 0
+        UNION ALL
+            SELECT
+                t_role.role_id role_group_id,
+                t_role.role_name role_group_name,
+                t_role.role_group_id parent_role_group_id,
+                'ROLE' AS role_type,
+                CASE
+                    WHEN t_user_role.is_trusteeship IS NOT NULL THEN
+                        t_user_role.is_trusteeship
+                    ELSE
+                        0
+                END is_trusteeship,
+                t_user_role.trusteeship_begin_time,
+                t_user_role.trusteeship_end_time,
+                CASE
+                    WHEN t_user_role.role_id IS NOT NULL THEN
+                        1
+                    WHEN t_user_role.role_id IS NULL THEN
+                        0
+                END has_role
+            FROM
+                t_role
+            LEFT JOIN t_user_role ON t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
+            AND t_user_role.role_id = t_role.role_id
+            AND t_user_role.is_delete = 0
+            WHERE
+                t_role.company_id = #{companyId,jdbcType=INTEGER}
+            AND t_role.is_delete = 0
     </select>
 
     <!-- 添加用户角色 -->
