@@ -2,7 +2,6 @@ package com.qinjee.masterdata.utils.pexcel;
 
 import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
 import com.qinjee.masterdata.utils.pexcel.util.FieldReflectionUtil;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,6 @@ public class ExcelImportUtil {
                 if (rowIndex > 0) {
                     Object rowObj = sheetClass.newInstance();
                     for (int i = 0; i < fields.size(); i++) {
-
                         // cell
                         Cell cell = rowX.getCell(i);
                         if (cell == null) {
@@ -80,7 +78,8 @@ public class ExcelImportUtil {
 
                         // call val str
                         cell.setCellType(CellType.STRING);
-                        String fieldValueStr = cell.getStringCellValue();       // cell.getCellTypeEnum()
+                        // cell.getCellTypeEnum()
+                        String fieldValueStr = cell.getStringCellValue();
 
                         // java val
                         Field field = fields.get(i);
@@ -88,7 +87,6 @@ public class ExcelImportUtil {
                         if (fieldValue == null) {
                             continue;
                         }
-
                         // fill val
                         field.setAccessible(true);
                         field.set(rowObj, fieldValue);

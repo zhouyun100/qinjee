@@ -58,15 +58,23 @@ public class ExportPreVo implements Serializable {
     /** 试用期限(月) */
     private Integer probation_period;
     /** 应聘岗位*/
-    private String applicationPosition;
+    private String application_position;
     /** 入职部门 */
     private Integer org_id;
+    /**
+     * 入职部门编码
+     */
+    private String org_code;
     /**
      * 部门名称
      */
     private String org_name;
     /** 入职岗位 */
     private Integer post_id;
+    /**
+     * 入职岗位编码
+     */
+    private String post_code;
     /**
      * 岗位名称
      */

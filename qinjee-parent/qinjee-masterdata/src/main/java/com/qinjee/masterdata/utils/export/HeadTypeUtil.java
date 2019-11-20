@@ -27,14 +27,14 @@ public class HeadTypeUtil {
         map.put("个人邮箱", "String");
         map.put("证件类型", "String");
         map.put("证件号码", "String");
-        map.put("年龄", "Short");
+        map.put("年龄", "NUMBER");
         map.put("参加工作时间", "Date");
         map.put("最高学历", "String");
         map.put("毕业院校", "String");
         map.put("毕业专业", "String");
         map.put("最近工作单位", "String");
-        map.put("计划入职日期", "Date");
-        map.put("试用期", "Short");
+        map.put("入职日期", "Date");
+        map.put("试用期限", "NUMBER");
         map.put("应聘岗位", "String");
         map.put("入职部门编码", "String");
         map.put("入职部门名称", "String");

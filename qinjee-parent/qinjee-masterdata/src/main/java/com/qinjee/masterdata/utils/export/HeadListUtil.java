@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.utils.export;
 
+import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import org.apache.poi.ss.formula.functions.T;
 
 import java.lang.reflect.Field;
@@ -27,7 +28,7 @@ public class HeadListUtil {
     }
     //导入思路：对于非内置表的类，建造一个Vo类，并在数据库中建立fieldName与code的联系。通过反射设值得到list集合，然后遍历设置进大字段表中
 
-    public static List<T> getObjectList(List<Map<String,String>> list, Class<T> clazz) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+    public static List<ExportArcVo> getObjectList(List<Map<String,String>> list, Class<ExportArcVo> clazz) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
         List<T> list1=new ArrayList<>();
         T t= getInstance(clazz);
         for (Map<String, String> map : list) {
