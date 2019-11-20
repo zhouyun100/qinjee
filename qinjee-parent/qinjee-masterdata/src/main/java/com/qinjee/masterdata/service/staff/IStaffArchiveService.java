@@ -119,7 +119,7 @@ public interface IStaffArchiveService {
      * @param schemeId
      * @return
      */
-    ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    ExportList selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 显示权限下，对应表的字段

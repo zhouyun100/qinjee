@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Map;
 @Data
 @JsonInclude
-public class ArchiveShowVo implements Serializable {
+public class ExportList implements Serializable {
     private Integer querySchemaId;
     @NotNull
     private Map<Integer,Map<String,Object>> map;

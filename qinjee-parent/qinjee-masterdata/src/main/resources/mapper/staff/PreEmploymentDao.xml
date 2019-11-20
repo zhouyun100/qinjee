@@ -41,6 +41,28 @@
     <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
     <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
   </resultMap>
+    <resultMap id="t_pre_employmentMap" type="com.qinjee.masterdata.model.vo.staff.export.ExportPreVo">
+        <result column="user_name" property="user_name" jdbcType="VARCHAR" />
+        <result column="employment_id" property="employment_id" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="gender" property="gender" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="id_type" property="id_type" jdbcType="VARCHAR" />
+        <result column="id_number" property="id_number" jdbcType="VARCHAR" />
+        <result column="age" property="age" jdbcType="VARCHAR" />
+        <result column="first_work_date" property="first_work_date" jdbcType="VARCHAR" />
+        <result column="highest_degree" property="highest_degree" jdbcType="VARCHAR" />
+        <result column="graduated_school" property="graduated_school" jdbcType="VARCHAR" />
+        <result column="graduated_speciality" property="graduated_speciality" jdbcType="VARCHAR" />
+        <result column="last_work_company" property="last_work_company" jdbcType="VARCHAR" />
+        <result column="probation_period" property="probation_period" jdbcType="VARCHAR" />
+        <result column="hire_date" property="hire_date" jdbcType="VARCHAR" />
+        <result column="org_id" property="org_id" jdbcType="INTEGER" />
+        <result column="post_id" property="post_id" jdbcType="INTEGER" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="org_name" property="org_name" jdbcType="VARCHAR" />
+        <result column="post_name" property="post_name" jdbcType="VARCHAR" />
+    </resultMap>
 
   <!-- 表所有字段 -->
   <sql id="Base_Column_List">
@@ -431,4 +453,17 @@
   </foreach>
     AND  is_delete = 0
   </select>
+    <select id="selectExportPreList" resultType="hashmap">
+        select pre.employment_id,pre.user_name,pre.phone,pre.gender,pre.email,pre.id_type,pre.id_number,pre.age,pre.first_work_date,pre.highest_degree,
+        pre.graduated_school,pre.graduated_speciality,pre.last_work_company,pre.probation_period,pre.hire_date,
+        pre.org_id,pre.post_id,pre.description,org.org_name as org_name,post.post_name as post_name
+        from t_pre_employment pre
+        left join t_organization org on org.org_id = pre.org_id
+        left join t_post post on pre.post_id = post.post_id
+        where  employment_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND pre.is_delete=0 and org.is_enable=1 and post.is_delete=0
+    </select>
 </mapper>

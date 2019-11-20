@@ -149,8 +149,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ArchiveShowVo selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException {
-        ArchiveShowVo archiveShowVo=new ArchiveShowVo();
+    public ExportList selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException {
+        ExportList exportList=new ExportList();
         Map<Integer, Map<String, Object>> userArchiveListCustom;
         if (null != schemeId && 0 != schemeId) {
             StringBuilder stringBuffer = new StringBuilder();
@@ -187,15 +187,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             for (Integer integer : integers) {
                 userArchiveListCustom.remove(integer);
             }
-            archiveShowVo.setQuerySchemaId(schemeId);
-            archiveShowVo.setMap(userArchiveListCustom);
-            return archiveShowVo;
+            exportList.setQuerySchemaId(schemeId);
+            exportList.setMap(userArchiveListCustom);
+            return exportList;
         } else {
             List<ExportArcVo> exportArcVoList;
             exportArcVoList =userArchiveDao.selectDownLoadVoList(archiveIdList);
             userArchiveListCustom= getMap(archiveIdList, exportArcVoList);
-            archiveShowVo.setMap(userArchiveListCustom);
-            return archiveShowVo;
+            exportList.setMap(userArchiveListCustom);
+            return exportList;
         }
     }
 
