@@ -255,7 +255,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws IOException, IllegalAccessException, NoSuchFieldException, InstantiationException {
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        List<ExportArcVo> objectList = HeadListUtil.getObjectList(mapList, ExportArcVo.class);
+
     }
 
 

@@ -29,8 +29,8 @@ public class HeadListUtil {
     //导入思路：对于非内置表的类，建造一个Vo类，并在数据库中建立fieldName与code的联系。通过反射设值得到list集合，然后遍历设置进大字段表中
 
     public static List<ExportArcVo> getObjectList(List<Map<String,String>> list, Class<ExportArcVo> clazz) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
-        List<T> list1=new ArrayList<>();
-        T t= getInstance(clazz);
+        List<ExportArcVo> list1=new ArrayList<>();
+        ExportArcVo t= getInstance(clazz);
         for (Map<String, String> map : list) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Field declaredField = t.getClass().getDeclaredField(entry.getKey());
@@ -42,7 +42,7 @@ public class HeadListUtil {
         return list1;
     }
 
-    private static T getInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException{
+    private static ExportArcVo getInstance(Class<ExportArcVo> clazz) throws InstantiationException, IllegalAccessException{
         return clazz.newInstance();
     }
 }
