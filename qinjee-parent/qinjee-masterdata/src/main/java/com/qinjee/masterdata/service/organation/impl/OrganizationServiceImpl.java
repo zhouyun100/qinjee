@@ -7,17 +7,20 @@ import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVoo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
+import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.ExcelUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -60,13 +63,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     private UserArchiveDao userArchiveDao;
 
     @Override
-    public PageResult<Organization> getOrganizationTree(UserSession userSession, Short isEnable) {
+    public PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable) {
         Integer archiveId = userSession.getArchiveId();
 
-        List<Organization> organizationList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
+        List<OrganizationVO> organizationVOList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
 
         //获取第一级机构
-        List<Organization> organizations = organizationList.stream().filter(organization -> {
+        List<OrganizationVO> organizationVOS = organizationVOList.stream().filter(organization -> {
             if (organization.getOrgParentId() != null && organization.getOrgParentId() == 0) {
                 return true;
             } else {
@@ -75,55 +78,55 @@ public class OrganizationServiceImpl implements OrganizationService {
         }).collect(Collectors.toList());
 
         //递归处理机构,使其以树形结构展示
-        handlerOrganizationToTree(organizationList, organizations);
+        handlerOrganizationToTree(organizationVOList, organizationVOS);
 
-        return new PageResult<>(organizationList);
+        return new PageResult<>(organizationVOList);
     }
 
     /**
      * 获取第一级机构.
      *
-     * @param organizationList
+     * @param organizationVOList
      * @return
      */
-    private List<Organization> getFirstOrganizationList(List<Organization> organizationList) {
-        List<Organization> organizations = Collections.singletonList(organizationList.get(0));
-        organizationList.removeAll(organizations);
-        return organizations;
+    private List<OrganizationVO> getFirstOrganizationList(List<OrganizationVO> organizationVOList) {
+        List<OrganizationVO> organizationVOS = Collections.singletonList(organizationVOList.get(0));
+        organizationVOList.removeAll(organizationVOS);
+        return organizationVOS;
     }
 
     @Override
-    public PageResult<Organization> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession) {
+    public PageResult<OrganizationVO> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
         //根据用户id进行分页查询, 其他条件的使用场景是什么? 可否为空?
         //  Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-        //    String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        //    String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, OrganizationVO.class);
         //  if(organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null){
         //   PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
         //    }
-        List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo, null, archiveId, new Date());
-        PageResult<Organization> pageResult = new PageResult<>(organizationList);
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, null, archiveId, new Date());
+        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
         return pageResult;
     }
 
     @Override
-    public PageResult<Organization> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId) {
+    public PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId) {
         Integer archiveId = userSession.getArchiveId();
-        Organization organization = organizationDao.selectByPrimaryKey(orgId);
-        String orgCode = organization.getOrgCode() + "%";
-        List<Organization> organizationList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode, new Date());
-        PageResult<Organization> pageResult = new PageResult<>(organizationList);
+        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
+        String orgCode = organizationVO.getOrgCode() + "%";
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode, new Date());
+        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
         return pageResult;
     }
 
     @Transactional
     @Override
     @OrganizationSaveAnno
-    public ResponseResult addOrganization(UserSession userSession, OrganizationVo organizationVo) {
+    public ResponseResult addOrganization(UserSession userSession, OrganizationVoo organizationVo) {
         //根据父级机构id查询一些基础信息，构建Organization对象
-        Organization orgBean = initOrganization(organizationVo.getOrgParentId());
+        OrganizationVO orgBean = initOrganization(organizationVo.getOrgParentId());
 
-        //Organization organization = getNewOrgCode(organizationVo.getOrgParentId());
+        //OrganizationVO organization = getNewOrgCode(organizationVo.getOrgParentId());
         String full_name = "";
         if (orgBean.getOrgFullName() != null) {
             full_name = orgBean.getOrgFullName() + "/" + organizationVo.getOrgName();
@@ -153,13 +156,13 @@ public class OrganizationServiceImpl implements OrganizationService {
         return responseResult;
     }
 
-    private Organization initOrganization(Integer orgParentId) {
-        Organization orgBean = new Organization();
+    private OrganizationVO initOrganization(Integer orgParentId) {
+        OrganizationVO orgBean = new OrganizationVO();
         if (orgParentId > 0) {
             //查询父级机构
-            Organization parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
+            OrganizationVO parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
             //查询最新的同级机构
-            List<Organization> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
+            List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
             //如果没有同级机构，则当前机构为parentOrg下第一个子机构
             //计算机构编码与排序id
             /**
@@ -196,35 +199,35 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @return
      */
     @Deprecated
-    private Organization getNewOrgCode(Integer orgParentId) {
-        Organization organization = new Organization();
+    private OrganizationVO getNewOrgCode(Integer orgParentId) {
+        OrganizationVO organizationVO = new OrganizationVO();
         if (orgParentId != 0) {
             //查询父级机构
-            Organization parentOrganization = organizationDao.selectByPrimaryKey(orgParentId);
+            OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(orgParentId);
             //查询父级机构的所有子机构
-            List<Organization> organizationList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
-            String parentOrgCode = parentOrganization.getOrgCode();
+            List<OrganizationVO> organizationVOList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
+            String parentOrgCode = parentOrganizationVO.getOrgCode();
             String newOrgCode;
             Integer sortId;
-            if (CollectionUtils.isEmpty(organizationList)) {
+            if (CollectionUtils.isEmpty(organizationVOList)) {
                 //新增第一个子级
                 newOrgCode = parentOrgCode + "001";
                 sortId = 1000;
             } else {
                 //有子级，获取最新的子机构
-                Organization Lastorganization = organizationList.get(0);
-                String orgCode = Lastorganization.getOrgCode();
+                OrganizationVO lastorganization = organizationVOList.get(0);
+                String orgCode = lastorganization.getOrgCode();
                 newOrgCode = culOrgCode(orgCode);
-                sortId = Lastorganization.getSortId() + 1000;
+                sortId = lastorganization.getSortId() + 1000;
             }
-            organization.setSortId(sortId);
-            organization.setOrgCode(newOrgCode);
-            organization.setOrgFullName(parentOrganization.getOrgFullName());
-            return organization;
+            organizationVO.setSortId(sortId);
+            organizationVO.setOrgCode(newOrgCode);
+            organizationVO.setOrgFullName(parentOrganizationVO.getOrgFullName());
+            return organizationVO;
         } else {
-            organization.setSortId(1);
-            organization.setOrgCode("001");
-            return organization;
+            organizationVO.setSortId(1);
+            organizationVO.setOrgCode("001");
+            return organizationVO;
         }
     }
 
@@ -255,27 +258,27 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationEditAnno
-    public ResponseResult editOrganization(OrganizationVo organizationVo) {
-        Organization organization = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
-        BeanUtils.copyProperties(organizationVo, organization);
-        int result = organizationDao.updateByPrimaryKey(organization);
+    public ResponseResult editOrganization(OrganizationVoo organizationVo) {
+        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
+        BeanUtils.copyProperties(organizationVo, organizationVO);
+        int result = organizationDao.updateByPrimaryKey(organizationVO);
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
 
     /**
      * 递归修改子级机构全名称
      *
-     * @param organization
+     * @param organizationVO
      */
-    private void updateOrganizationfull_name(Organization organization) {
-        List<Organization> organizationList = organizationDao.getOrganizationListByParentOrgId(organization.getOrgId());
-        if (!CollectionUtils.isEmpty(organizationList)) {
-            for (Organization organizati : organizationList) {
+    private void updateOrganizationfull_name(OrganizationVO organizationVO) {
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationListByParentOrgId(organizationVO.getOrgId());
+        if (!CollectionUtils.isEmpty(organizationVOList)) {
+            for (OrganizationVO organizati : organizationVOList) {
                 OrganizationHistory organizationHistory = new OrganizationHistory();
                 BeanUtils.copyProperties(organizati, organizationHistory);
                 //新增机构历史信息
                 organizationHistoryService.addOrganizationHistory(organizationHistory);
-                organizati.setOrgFullName(organization.getOrgFullName() + "/" + organization.getOrgName());
+                organizati.setOrgFullName(organizationVO.getOrgFullName() + "/" + organizationVO.getOrgName());
                 organizationDao.updateByPrimaryKeySelective(organizati);
                 updateOrganizationfull_name(organizati);
             }
@@ -288,13 +291,13 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param orgId
      * @return
      */
-    private Organization addOrganizationHistoryByOrgId(Integer orgId) {
-        Organization organization = organizationDao.selectByPrimaryKey(orgId);
+    private OrganizationVO addOrganizationHistoryByOrgId(Integer orgId) {
+        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
         OrganizationHistory organizationHistory = new OrganizationHistory();
-        BeanUtils.copyProperties(organization, organizationHistory);
+        BeanUtils.copyProperties(organizationVO, organizationHistory);
         //新增机构历史信息
         organizationHistoryService.addOrganizationHistory(organizationHistory);
-        return organization;
+        return organizationVO;
     }
 
     /**
@@ -334,7 +337,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (!isExsit) {
             for (Integer orgId : idList) {
                 //删除前，通过aop进行历史存档
-                Organization orgBean = organizationDao.selectByPrimaryKey(orgId);
+                OrganizationVO orgBean = organizationDao.selectByPrimaryKey(orgId);
                 OrganizationHistory orgHisBean = new OrganizationHistory();
                 if (Objects.nonNull(orgBean)) {
                     BeanUtils.copyProperties(orgBean, orgHisBean);
@@ -359,11 +362,11 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param idSet
      */
     public void recursive(Integer orgId, List idSet) {
-        List<Organization> parentOrgList = organizationDao.getOrganizationListByParentOrgId(orgId);
+        List<OrganizationVO> parentOrgList = organizationDao.getOrganizationListByParentOrgId(orgId);
         if (parentOrgList != null && parentOrgList.size() > 0) {
-            for (Organization Organization : parentOrgList) {
-                idSet.add(Organization.getOrgId());
-                recursive(Organization.getOrgId(), idSet);
+            for (OrganizationVO OrganizationVO : parentOrgList) {
+                idSet.add(OrganizationVO.getOrgId());
+                recursive(OrganizationVO.getOrgId(), idSet);
             }
         }
     }
@@ -380,21 +383,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     public ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId, String orgType, List<Integer> orgIds, UserSession userSession) {
-        List<Organization> organizationList = null;
+        List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
-            organizationList = organizationDao.getOrganizationListByOrgIds(orgIds);
+            organizationVOList = organizationDao.getOrganizationListByOrgIds(orgIds);
         }
         //判断是否是同一个父级下的
-        if (!CollectionUtils.isEmpty(organizationList)) {
-            Set<Integer> OrgParentIds = organizationList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(organizationVOList)) {
+            Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (OrgParentIds.size() != 1) {
                 //不是
                 return new ResponseResult(CommonCode.FAIL);
             }
             //获取新的合并机构
-            Organization newOrganization = getNewOrganization(newOrgName, targetOrgId, orgType, userSession);
-            organizationDao.insertSelective(newOrganization);
-            updateOrganizationfull_nameAndOrgCode(organizationList, newOrganization);
+            OrganizationVO newOrganizationVO = getNewOrganization(newOrgName, targetOrgId, orgType, userSession);
+            organizationDao.insertSelective(newOrganizationVO);
+            updateOrganizationfull_nameAndOrgCode(organizationVOList, newOrganizationVO);
         }
         return new ResponseResult();
     }
@@ -408,18 +411,18 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param userSession
      * @return
      */
-    private Organization getNewOrganization(String newOrgName, Integer targetOrgId, String orgType, UserSession userSession) {
-        Organization newOrganization = new Organization();
-        newOrganization.setOrgParentId(targetOrgId);
-        newOrganization.setOrgName(newOrgName);
-        Organization newOrgCode = initOrganization(targetOrgId);
+    private OrganizationVO getNewOrganization(String newOrgName, Integer targetOrgId, String orgType, UserSession userSession) {
+        OrganizationVO newOrganizationVO = new OrganizationVO();
+        newOrganizationVO.setOrgParentId(targetOrgId);
+        newOrganizationVO.setOrgName(newOrgName);
+        OrganizationVO newOrgCode = initOrganization(targetOrgId);
         String orgfull_name = newOrgCode.getOrgFullName();
-        BeanUtils.copyProperties(newOrgCode, newOrganization);
-        newOrganization.setIsEnable((short) 1);
-        newOrganization.setCompanyId(userSession.getCompanyId());
-        newOrganization.setOrgType(orgType);
-        newOrganization.setOrgFullName(orgfull_name + "/" + newOrganization.getOrgName());
-        return newOrganization;
+        BeanUtils.copyProperties(newOrgCode, newOrganizationVO);
+        newOrganizationVO.setIsEnable((short) 1);
+        newOrganizationVO.setCompanyId(userSession.getCompanyId());
+        newOrganizationVO.setOrgType(orgType);
+        newOrganizationVO.setOrgFullName(orgfull_name + "/" + newOrganizationVO.getOrgName());
+        return newOrganizationVO;
     }
 
     @Override
@@ -429,62 +432,47 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public ResponseResult sortOrganization(Integer preOrgId, Integer midOrgId, Integer nextOrgId) {
-        Organization preOrganization;
-        Organization nextOrganization;
-        Integer midSort = null;
-        if (nextOrgId != null) {
-            //移动
-            nextOrganization = organizationDao.selectByPrimaryKey(nextOrgId);
-            midSort = nextOrganization.getSortId() - 1;
-
-        } else if (nextOrgId == null) {
-            //移动到最后
-            preOrganization = organizationDao.selectByPrimaryKey(preOrgId);
-            midSort = preOrganization.getSortId() + 1;
-        }
-        Organization organization = new Organization();
-        organization.setOrgId(midOrgId);
-        organization.setSortId(midSort);
-        organizationDao.insertSelective(organization);
-        return new ResponseResult();
+    @Transactional
+    public ResponseResult sortOrganization(LinkedList<String> orgIds) {
+        Integer i = organizationDao.updateBatchOrganizationSortid(orgIds);
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
     @Override
     public ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId) {
 
-        List<Organization> organizationList = null;
+        List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
-            organizationList = organizationDao.getOrganizationListByOrgIds(orgIds);
+            organizationVOList = organizationDao.getOrganizationListByOrgIds(orgIds);
         }
 
         //判断是否是同一个父级下的
-        if (!CollectionUtils.isEmpty(organizationList)) {
-            Set<Integer> OrgParentIds = organizationList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(organizationVOList)) {
+            Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (OrgParentIds.size() != 1) {
                 //不是
                 return new ResponseResult(CommonCode.FAIL);
             }
-            Organization parentOrganization = organizationDao.selectByPrimaryKey(targetOrgId);
+            OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(targetOrgId);
 
-            updateOrganizationfull_nameAndOrgCode(organizationList, parentOrganization);
+            updateOrganizationfull_nameAndOrgCode(organizationVOList, parentOrganizationVO);
         }
 
         return new ResponseResult();
     }
 
     @Override
-    public ResponseResult<List<Organization>> getOrganizationPositionTree(UserSession userSession, Short isEnable) {
-        PageResult<Organization> organizationTree = getOrganizationTree(userSession, isEnable);
-        List<Organization> organizationTreeList = organizationTree.getList();
-        if (!CollectionUtils.isEmpty(organizationTreeList)) {
-            for (Organization organization : organizationTreeList) {
-                List<Post> postList = postDao.getPostListByOrgId(organization.getOrgId(), isEnable);
-                organization.setPostList(postList);
-                packOrganizationPosition(organization, isEnable);
+    public ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(UserSession userSession, Short isEnable) {
+        PageResult<OrganizationVO> organizationTree = getOrganizationPageTree(userSession, isEnable);
+        List<OrganizationVO> organizationVOTreeList = organizationTree.getList();
+        if (!CollectionUtils.isEmpty(organizationVOTreeList)) {
+            for (OrganizationVO organizationVO : organizationVOTreeList) {
+                List<Post> postList = postDao.getPostListByOrgId(organizationVO.getOrgId(), isEnable);
+                organizationVO.setPostList(postList);
+                packOrganizationPosition(organizationVO, isEnable);
             }
         }
-        return new ResponseResult<>(organizationTreeList);
+        return new ResponseResult<>(organizationVOTreeList);
     }
 
     @Override
@@ -510,19 +498,19 @@ public class OrganizationServiceImpl implements OrganizationService {
     public ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
         Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
-        List<Organization> organizationList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
+        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, OrganizationVO.class);
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
         //导出Excel
-        exportExcel(response, organizationList);
+        exportExcel(response, organizationVOList);
         return new ResponseResult();
     }
 
     @Override
     public ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession) {
-        List<Organization> organizationList = organizationDao.getOrganizationsByOrgIds(orgIds);
-        //导出Excel
-        exportExcel(response, organizationList);
-        return new ResponseResult();
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIds);
+        System.out.println("organizationVOList:"+organizationVOList);
+        ExcelExportUtil.exportToFile("e:\\aa.xls",organizationVOList);
+        return null;
     }
 
     @Override
@@ -541,17 +529,38 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Organization selectByPrimaryKey(Integer orgId) {
+    public OrganizationVO selectByPrimaryKey(Integer orgId) {
         return organizationDao.selectByPrimaryKey(orgId);
     }
 
     @Override
-    public List<Organization> getOrganizationListByParentOrgId(Integer orgId) {
+    public List<OrganizationVO> getOrganizationListByParentOrgId(Integer orgId) {
         return organizationDao.getOrganizationListByParentOrgId(orgId);
     }
 
-    private List<Organization> parseFile(MultipartFile file) throws Exception {
-        List<Organization> organizationList = new ArrayList<>();
+    @Override
+    public List<OrganizationVO> getAllOrganizationTree(UserSession userSession, Short isEnable) {
+        Integer archiveId = userSession.getArchiveId();
+
+        List<OrganizationVO> organizationVOList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
+
+        //获取第一级机构
+        List<OrganizationVO> organizationVOS = organizationVOList.stream().filter(organization -> {
+            if (organization.getOrgParentId() != null && organization.getOrgParentId() == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        //递归处理机构,使其以树形结构展示
+        handlerOrganizationToTree(organizationVOList, organizationVOS);
+
+        return organizationVOList;
+    }
+
+    private List<OrganizationVO> parseFile(MultipartFile file) throws Exception {
+        List<OrganizationVO> organizationVOList = new ArrayList<>();
         // 检查文件类型
         String fileName = checkFile(file);
         if ("1".equals(fileName) || "2".equals(fileName)) {
@@ -580,17 +589,17 @@ public class OrganizationServiceImpl implements OrganizationService {
 //                        int firstCellNum = row.getFirstCellNum();
 //                        // 获得当前行的列数
 //                        int lastCellNum = row.getLastCellNum();
-                    Organization organization = new Organization();
+                    OrganizationVO organizationVO = new OrganizationVO();
                     String orgCode = getCellValue(row.getCell(0));
                     if (StringUtils.isEmpty(orgCode)) {
                         throw new Exception((firstRowNum + 1) + "行,第" + 1 + "列机构编码不能为空!");
                     }
-                    organization.setOrgCode(orgCode);
+                    organizationVO.setOrgCode(orgCode);
                     String orgName = getCellValue(row.getCell(1));
                     if (StringUtils.isEmpty(orgName)) {
                         throw new Exception((firstRowNum + 1) + "行,第" + 2 + "列机构名称不能为空!");
                     }
-                    organization.setOrgName(orgName);
+                    organizationVO.setOrgName(orgName);
 
                     String orgType = getCellValue(row.getCell(2));
                     if (StringUtils.isEmpty(orgType)) {
@@ -600,34 +609,34 @@ public class OrganizationServiceImpl implements OrganizationService {
                         orgNum++;
                         parentIsMust = false;
                     }
-                    organization.setOrgType(orgType);
+                    organizationVO.setOrgType(orgType);
                     String parentPostCode = getCellValue(row.getCell(3));
                     if (StringUtils.isEmpty(parentPostCode) && !parentIsMust) {
                         throw new Exception((firstRowNum + 1) + "行,第" + 4 + "列上级机构编码不能为空!");
                     }
-                    organization.setOrgParentCode(parentPostCode);
+                    organizationVO.setOrgParentCode(parentPostCode);
                     String parentOrgName = getCellValue(row.getCell(4));
                     if (StringUtils.isEmpty(parentOrgName) && !parentIsMust) {
                         throw new Exception((firstRowNum + 1) + "行,第" + 5 + "列上级机构不能为空!");
                     }
-                    organization.setOrgParentName(parentOrgName);
+                    organizationVO.setOrgParentName(parentOrgName);
                     String managerEmployeeNumber = getCellValue(row.getCell(5));
-                    organization.setManagerEmployeeNumber(managerEmployeeNumber);
+                    organizationVO.setManagerEmployeeNumber(managerEmployeeNumber);
                     String orgManagerName = getCellValue(row.getCell(6));
-                    organization.setOrgManagerName(orgManagerName);
+                    organizationVO.setOrgManagerName(orgManagerName);
 
 
                     //TODO 插入数据库并判断是更新还是新增,数据库是否存在
 
 
-                    organizationList.add(organization);
+                    organizationVOList.add(organizationVO);
                 }
             }
         }
         if (orgNum != 1) {
             throw new Exception("有且只能有一个'集团'类型的机构!");
         }
-        return organizationList;
+        return organizationVOList;
     }
 
     /**
@@ -725,16 +734,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     /**
      * 递归给机构树的机构设置下面的岗位
      *
-     * @param organization
+     * @param organizationVO
      * @param isEnable
      */
-    private void packOrganizationPosition(Organization organization, Short isEnable) {
-        List<Organization> childList = organization.getChildList();
+    private void packOrganizationPosition(OrganizationVO organizationVO, Short isEnable) {
+        List<OrganizationVO> childList = organizationVO.getChildList();
         if (!CollectionUtils.isEmpty(childList)) {
-            for (Organization org : childList) {
+            for (OrganizationVO org : childList) {
                 List<Post> postList = postDao.getPostListByOrgId(org.getOrgId(), isEnable);
                 org.setPostList(postList);
-                packOrganizationPosition(organization, isEnable);
+                packOrganizationPosition(organizationVO, isEnable);
             }
         }
     }
@@ -742,25 +751,25 @@ public class OrganizationServiceImpl implements OrganizationService {
     /**
      * 修改本级的父级id和全名称及子级的全名称
      *
-     * @param organizationList
-     * @param parentOrganization
+     * @param organizationVOList
+     * @param parentOrganizationVO
      */
-    private void updateOrganizationfull_nameAndOrgCode(List<Organization> organizationList, Organization parentOrganization) {
-        String newOrgCode = parentOrganization.getOrgCode() + "000";
-        for (Organization organization : organizationList) {
+    private void updateOrganizationfull_nameAndOrgCode(List<OrganizationVO> organizationVOList, OrganizationVO parentOrganizationVO) {
+        String newOrgCode = parentOrganizationVO.getOrgCode() + "000";
+        for (OrganizationVO organizationVO : organizationVOList) {
             OrganizationHistory organizationHistory = new OrganizationHistory();
-            BeanUtils.copyProperties(organization, organizationHistory);
+            BeanUtils.copyProperties(organizationVO, organizationHistory);
             organizationHistoryService.addOrganizationHistory(organizationHistory);
-            organization.setOrgParentId(parentOrganization.getOrgId());
-            organization.setOrgFullName(parentOrganization.getOrgFullName() + "/" + organization.getOrgName());
+            organizationVO.setOrgParentId(parentOrganizationVO.getOrgId());
+            organizationVO.setOrgFullName(parentOrganizationVO.getOrgFullName() + "/" + organizationVO.getOrgName());
             newOrgCode = culOrgCode(newOrgCode);
-            organization.setOrgCode(newOrgCode);
-            organizationDao.updateByPrimaryKeySelective(organization);
+            organizationVO.setOrgCode(newOrgCode);
+            organizationDao.updateByPrimaryKeySelective(organizationVO);
 
-            List<Organization> organizations = organizationDao.getOrganizationListByParentOrgId(organization.getOrgId());
-            if (!CollectionUtils.isEmpty(organizations)) {
+            List<OrganizationVO> organizationVOS = organizationDao.getOrganizationListByParentOrgId(organizationVO.getOrgId());
+            if (!CollectionUtils.isEmpty(organizationVOS)) {
                 //递归修改本级的父级id和全名称及子级的全名称
-                updateOrganizationfull_nameAndOrgCode(organizations, organization);
+                updateOrganizationfull_nameAndOrgCode(organizationVOS, organizationVO);
             }
 
         }
@@ -769,30 +778,30 @@ public class OrganizationServiceImpl implements OrganizationService {
     /**
      * 处理所有机构以树形结构展示
      *
-     * @param organizationList
-     * @param organizations
+     * @param organizationVOList
+     * @param organizationVOS
      */
-    private void handlerOrganizationToTree(List<Organization> organizationList, List<Organization> organizations) {
-        for (Organization org : organizations) {
+    private void handlerOrganizationToTree(List<OrganizationVO> organizationVOList, List<OrganizationVO> organizationVOS) {
+        for (OrganizationVO org : organizationVOS) {
             Integer orgId = org.getOrgId();
-            List<Organization> childList = organizationList.stream().filter(organization -> {
+            List<OrganizationVO> childList = organizationVOList.stream().filter(organization -> {
                 Integer orgParentId = organization.getOrgParentId();
                 if (orgParentId != null && orgParentId > 0) {
-                    return orgParentId == orgId;
+                    return orgParentId.equals(orgId);
                 }
                 return false;
             }).collect(Collectors.toList());
             //判断是否还有子级
             if (childList != null && childList.size() > 0) {
                 org.setChildList(childList);
-                organizationList.removeAll(childList);
-                handlerOrganizationToTree(organizationList, childList);
+                organizationVOList.removeAll(childList);
+                handlerOrganizationToTree(organizationVOList, childList);
             }
         }
     }
 
 
-    private static void exportExcel(HttpServletResponse response, List<Organization> organizationList) {
+    private static void exportExcel(HttpServletResponse response, List<OrganizationVO> organizationVOList) {
         try {
             //实例化HSSFWorkbook
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -801,10 +810,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             //设置表头
             setTitle(workbook, sheet);
             //设置单元格并赋值
-            setData(sheet, organizationList);
+            setData(sheet, organizationVOList);
             //设置浏览器下载
             setBrowser(response, workbook, "机构信息.xls");
         } catch (Exception e) {
+            e.printStackTrace();
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
         }
     }
@@ -851,13 +861,13 @@ public class OrganizationServiceImpl implements OrganizationService {
      * 修改描述：
      * 修改时间：
      */
-    private static void setData(HSSFSheet sheet, List<Organization> organizationList) {
-        for (int i = 0; i < organizationList.size(); i++) {
-            Organization organization = organizationList.get(i);
+    private static void setData(HSSFSheet sheet, List<OrganizationVO> organizationVOList) {
+        for (int i = 0; i < organizationVOList.size(); i++) {
+            OrganizationVO organizationVO = organizationVOList.get(i);
             HSSFRow row = sheet.createRow(i + 1);
-            row.createCell(0).setCellValue(organization.getOrgCode());
-            row.createCell(1).setCellValue(organization.getOrgName());
-            String orgType = organization.getOrgType();
+            row.createCell(0).setCellValue(organizationVO.getOrgCode());
+            row.createCell(1).setCellValue(organizationVO.getOrgName());
+            String orgType = organizationVO.getOrgType();
             String typeValue = null;
             if (StringUtils.isEmpty(orgType)) {
                 typeValue = "";
@@ -869,10 +879,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 typeValue = "部门";
             }
             row.createCell(2).setCellValue(typeValue);
-            row.createCell(3).setCellValue(organization.getOrgParentCode());
-            row.createCell(4).setCellValue(organization.getOrgParentName());
-            row.createCell(5).setCellValue(organization.getOrgManagerName());
-            row.createCell(6).setCellValue(organization.getManagerEmployeeNumber());
+            row.createCell(3).setCellValue(organizationVO.getOrgParentCode());
+            row.createCell(4).setCellValue(organizationVO.getOrgParentName());
+            row.createCell(5).setCellValue(organizationVO.getOrgManagerName());
+            row.createCell(6).setCellValue(organizationVO.getManagerEmployeeNumber());
         }
     }
 

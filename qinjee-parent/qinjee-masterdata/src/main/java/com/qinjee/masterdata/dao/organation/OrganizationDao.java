@@ -1,28 +1,29 @@
 package com.qinjee.masterdata.dao.organation;
 
 
-import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 @Repository
 public interface OrganizationDao {
     int deleteByPrimaryKey(Integer orgId);
 
-    int insert(Organization record);
+    int insert(OrganizationVO record);
 
-    int insertSelective(Organization record);
+    int insertSelective(OrganizationVO record);
 
-    Organization selectByPrimaryKey(Integer orgId);
+    OrganizationVO selectByPrimaryKey(Integer orgId);
 
-    int updateByPrimaryKeySelective(Organization record);
+    int updateByPrimaryKeySelective(OrganizationVO record);
 
-    int updateByPrimaryKey(Organization record);
+    int updateByPrimaryKey(OrganizationVO record);
 
     /**
      * 根据档案id查询所有角色所拥有的机构
@@ -30,14 +31,14 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<Organization> getAllOrganization(@Param("archiveId") Integer archiveId,
-                                          @Param("isEnable") Short isEnable,
-                                          @Param("roleIds") Set<Integer> roleIds,
-                                          @Param("now") Date now);
+    List<OrganizationVO> getAllOrganization(@Param("archiveId") Integer archiveId,
+                                            @Param("isEnable") Short isEnable,
+                                            @Param("roleIds") Set<Integer> roleIds,
+                                            @Param("now") Date now);
 
-    List<Organization> getAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
-                                          @Param("isEnable") Short isEnable,
-                                          @Param("now") Date now);
+    List<OrganizationVO> getAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
+                                                       @Param("isEnable") Short isEnable,
+                                                       @Param("now") Date now);
 
     /**
      * 根据查询条件查询机构
@@ -47,10 +48,10 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<Organization> getOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
-                                           @Param("sortFieldStr") String sortFieldStr,
-                                           @Param("archiveId") Integer archiveId,
-                                           @Param("now") Date now);
+    List<OrganizationVO> getOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
+                                             @Param("sortFieldStr") String sortFieldStr,
+                                             @Param("archiveId") Integer archiveId,
+                                             @Param("now") Date now);
 
     /**
      * 根据是否封存查询用户下所有的机构,图形化展示
@@ -60,10 +61,10 @@ public interface OrganizationDao {
      * @param orgCode
      * @return
      */
-    List<Organization> getOrganizationGraphics(@Param("archiveId") Integer archiveId,
-                                               @Param("isEnable") Short isEnable,
-                                               @Param("orgCode") String orgCode,
-                                               @Param("now") Date now);
+    List<OrganizationVO> getOrganizationGraphics(@Param("archiveId") Integer archiveId,
+                                                 @Param("isEnable") Short isEnable,
+                                                 @Param("orgCode") String orgCode,
+                                                 @Param("now") Date now);
 
     /**
      * 根据code码封存或解封机构
@@ -80,7 +81,7 @@ public interface OrganizationDao {
      * @param orgParentId
      * @return
      */
-    List<Organization> getOrganizationListByParentOrgId(Integer orgParentId);
+    List<OrganizationVO> getOrganizationListByParentOrgId(Integer orgParentId);
 
     /**
      * 根据机构id查询机构
@@ -88,7 +89,7 @@ public interface OrganizationDao {
      * @param orgIds
      * @return
      */
-    List<Organization> getOrganizationListByOrgIds(List<Integer> orgIds);
+    List<OrganizationVO> getOrganizationListByOrgIds(List<Integer> orgIds);
 
     /**
      * 根据机构编码查询机构
@@ -96,7 +97,7 @@ public interface OrganizationDao {
      * @param companyId
      * @return
      */
-    Organization getOrganizationByOrgCodeAndCompanyId(@Param("orgCode") String orgCode, @Param("companyId") Integer companyId);
+    OrganizationVO getOrganizationByOrgCodeAndCompanyId(@Param("orgCode") String orgCode, @Param("companyId") Integer companyId);
 
     /**
      * 根据id查询机构名
@@ -116,7 +117,8 @@ public interface OrganizationDao {
      * @param orgIds
      * @return
      */
-    List<Organization> getOrganizationsByOrgIds(List<Integer> orgIds);
+    List<OrganizationVO> getOrganizationsByOrgIds(@Param("orgIds")List<Integer> orgIds);
+
 
     List<Integer> getOrgIdByCompanyId(Integer orgId);
 
@@ -130,4 +132,6 @@ public interface OrganizationDao {
                                     @Param("postName") String postName, @Param("positionName") String positionName);
 
 
+
+    Integer updateBatchOrganizationSortid(@Param("orgIds") LinkedList<String> orgIds);
 }

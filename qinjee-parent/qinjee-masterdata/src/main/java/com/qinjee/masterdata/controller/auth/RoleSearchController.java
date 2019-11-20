@@ -11,7 +11,7 @@
 package com.qinjee.masterdata.controller.auth;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
@@ -49,7 +49,7 @@ public class RoleSearchController extends BaseController{
 
     @GetMapping("/getOrganizationTree")
     @ApiOperation(value = "根据是否封存查询当前登录用户下所有的机构树",notes = "根据是否封存查询当前登录用户下所有的机构树")
-    public ResponseResult<PageResult<Organization>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+    public ResponseResult<PageResult<OrganizationVO>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         try{
             userSession = getUserSession();
             if(userSession == null){
@@ -58,7 +58,7 @@ public class RoleSearchController extends BaseController{
                 return responseResult;
             }
             //还需要查托管的机构
-            PageResult<Organization> pageResult = organizationService.getOrganizationTree(userSession,isEnable);
+            PageResult<OrganizationVO> pageResult = organizationService.getOrganizationPageTree(userSession,isEnable);
             logger.info("getOrganizationTree success！isEnable={},archiveId={}",isEnable,userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(pageResult);
