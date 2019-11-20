@@ -14,7 +14,7 @@
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
   </resultMap>
 
-  <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationVO">
+  <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO">
     <id column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
