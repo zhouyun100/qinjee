@@ -29,6 +29,11 @@ import java.util.List;
 @JsonInclude
 public class RequestRoleAuthVO implements Serializable {
 
+    /**
+     * 档案ID
+     */
+    @ApiModelProperty(name = "archiveId", value = "档案ID")
+    private Integer archiveId;
 
     /**
      * 角色ID

@@ -10,13 +10,10 @@
  */
 package com.qinjee.masterdata.dao.auth;
 
+import com.qinjee.masterdata.model.entity.UserOrgAuth;
 import com.qinjee.masterdata.model.entity.UserRole;
-import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO;
-import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
-import org.apache.ibatis.annotations.Param;
+import com.qinjee.masterdata.model.vo.auth.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -63,4 +60,32 @@ public interface ArchiveAuthDao {
      * @return
      */
     List<ArchiveInfoVO> searchArchiveListByCompanyId(Integer companyId);
+
+    /**
+     * 查询人员机构权限树
+     * @param requestRole
+     * @return
+     */
+    List<OrganizationVO> searchOrgAuthTree(RequestRoleVO requestRole);
+
+    /**
+     * 根据档案ID查询已有的机构列表
+     * @param archiveId
+     * @return
+     */
+    List<OrganizationVO> searchArchiveOrgListByRoleId(Integer archiveId);
+
+    /**
+     * 新增档案机构权限
+     * @param userOrgAuth
+     * @return
+     */
+    int addArchiveOrgAuth(UserOrgAuth userOrgAuth);
+
+    /**
+     * 删除档案机构权限
+     * @param roleOrgAuth
+     * @return
+     */
+    int delArchiveOrgAuth(UserOrgAuth roleOrgAuth);
 }
