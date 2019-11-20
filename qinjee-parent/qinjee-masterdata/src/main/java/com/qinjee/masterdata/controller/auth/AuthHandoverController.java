@@ -328,8 +328,8 @@ public class AuthHandoverController extends BaseController{
 
     @ApiOperation(value="根据姓名或工号模糊查询员工列表", notes="姓名或工号至少2位字符")
     @RequestMapping(value = "/searchArchiveListByUserNameOrJobNumber",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(RequestArchivePageVO archivePageVO) {
-        if(archivePageVO == null || (StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2)){
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(@RequestBody RequestArchivePageVO archivePageVO) {
+        if(StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("工号或姓名至少2位字符!");
             return responseResult;
