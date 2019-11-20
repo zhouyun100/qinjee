@@ -273,7 +273,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             list.add(exportArcVo);
         }
         //入库操作
-        HeadListUtil.getObjectList(mapList, ExportArcVo.class)
+        HeadListUtil.getObjectList(mapList, ExportArcVo.class);
     }
 
 
