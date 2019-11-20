@@ -376,7 +376,7 @@ public class AuthHandoverController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<UserRoleVO> userRoleList = roleSearchService.searchRoleListByArchiveId(archiveId,userSession.getCompanyId());
+            List<UserRoleVO> userRoleList = authHandoverService.searchRoleListByArchiveId(archiveId,userSession.getCompanyId());
             logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(userRoleList);

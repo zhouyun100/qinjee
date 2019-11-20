@@ -13,10 +13,7 @@ package com.qinjee.masterdata.controller.auth;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Role;
-import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
-import com.qinjee.masterdata.model.vo.auth.RequestArchiveRoleVO;
-import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.model.response.PageResult;
@@ -110,11 +107,11 @@ public class RoleSearchController extends BaseController{
         return responseResult;
     }
 
-    @ApiOperation(value="根据档案ID查询角色列表", notes="根据档案ID查询角色列表")
+    @ApiOperation(value="根据档案ID查询角色树", notes="根据档案ID查询角色列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchRoleListByArchiveId",method = RequestMethod.POST)
+    @RequestMapping(value = "/searchRoleTreeByArchiveId",method = RequestMethod.POST)
     public ResponseResult<Role> searchRoleListByArchiveId(Integer archiveId) {
         if(null == archiveId){
             responseResult = ResponseResult.FAIL();
@@ -129,7 +126,7 @@ public class RoleSearchController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<UserRoleVO> userRoleList = roleSearchService.searchRoleListByArchiveId(archiveId,userSession.getCompanyId());
+            List<RoleGroupVO> userRoleList = roleSearchService.searchRoleTreeByArchiveId(archiveId,userSession.getCompanyId());
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(userRoleList);
             logger.info("searchRoleListByArchiveId success！archiveId={}", archiveId);

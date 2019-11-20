@@ -15,6 +15,7 @@ import com.qinjee.masterdata.dao.auth.RoleAuthDao;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.auth.RequestRoleVO;
+import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.masterdata.service.auth.AuthHandoverService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,5 +179,14 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
             resultNumber += rowNumber;
         }
         return resultNumber;
+    }
+
+    @Override
+    public List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId) {
+        if(null == archiveId || null == companyId){
+            return null;
+        }
+        List<UserRoleVO> roleList = authHandoverDao.searchRoleListByArchiveId(archiveId,companyId);
+        return roleList;
     }
 }

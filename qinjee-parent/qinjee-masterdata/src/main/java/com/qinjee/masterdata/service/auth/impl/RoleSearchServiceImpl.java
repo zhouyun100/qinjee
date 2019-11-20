@@ -15,7 +15,9 @@ import com.qinjee.masterdata.dao.auth.RoleSearchDao;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
+import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author 周赟
@@ -35,6 +38,9 @@ public class RoleSearchServiceImpl implements RoleSearchService {
 
     @Autowired
     private RoleSearchDao roleSearchDao;
+
+    @Autowired
+    private RoleAuthService roleAuthService;
 
     @Override
     public PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO) {
@@ -51,11 +57,31 @@ public class RoleSearchServiceImpl implements RoleSearchService {
     }
 
     @Override
-    public List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId) {
+    public List<RoleGroupVO> searchRoleTreeByArchiveId(Integer archiveId, Integer companyId) {
         if(null == archiveId || null == companyId){
             return null;
         }
-        List<UserRoleVO> roleList = roleSearchDao.searchRoleListByArchiveId(archiveId,companyId);
+        List<RoleGroupVO> roleList = roleSearchDao.searchRoleListByArchiveId(archiveId,companyId);
+
+        /**
+         * 如果角色列表为空则直接返回null
+         */
+        if(!CollectionUtils.isEmpty(roleList)){
+            /**
+             * 提取当前角色树的一级节点
+             */
+            List<RoleGroupVO> firstRoleList = roleList.stream().filter(roleGroupVO -> {
+                if(roleGroupVO.getParentRoleGroupId() == null || roleGroupVO.getParentRoleGroupId() == 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            }).collect(Collectors.toList());
+
+            roleAuthService.handlerRoleToTree(roleList,firstRoleList);
+        }else{
+            return null;
+        }
         return roleList;
     }
 

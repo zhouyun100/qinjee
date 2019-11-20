@@ -13,6 +13,7 @@ package com.qinjee.masterdata.dao.auth;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -35,12 +36,12 @@ public interface RoleSearchDao {
     List<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO);
 
     /**
-     * 根据档案ID查询角色列表
+     * 根据档案ID查询角色和角色组列表
      * @param archiveId
      * @param companyId
      * @return
      */
-    List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId);
+    List<RoleGroupVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId);
 
     /**
      * 添加档案角色

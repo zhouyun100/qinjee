@@ -2,6 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.auth.AuthHandoverDao">
 
+    <resultMap id="RoleResultMap" type="com.qinjee.masterdata.model.vo.auth.UserRoleVO">
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+        <result column="role_group_id" jdbcType="INTEGER" property="roleGroupId" />
+        <result column="is_system_define" jdbcType="INTEGER" property="isSystemDefine" />
+        <result column="is_trusteeship" jdbcType="TINYINT" property="isTrusteeship" />
+        <result column="trusteeship_begin_time" jdbcType="TIMESTAMP" property="trusteeshipBeginTime" />
+        <result column="trusteeship_end_time" jdbcType="TIMESTAMP" property="trusteeshipEndTime" />
+    </resultMap>
+
     <!-- 用户角色托管 -->
     <insert id="roleTrusteeshipByArchiveId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
         insert into t_user_role (
@@ -89,5 +99,18 @@
         update t_user_org_auth set operator_id = #{operatorId,jdbcType=INTEGER},archive_id = #{acceptArchiveId,jdbcType=INTEGER}
         where archive_id = #{handoverArchiveId,jdbcType=INTEGER} and org_id = #{orgId,jdbcType=INTEGER} and is_delete = 0
     </update>
+
+    <!-- 根据档案ID查询角色列表 -->
+    <select id="searchRoleListByArchiveId" resultMap="RoleResultMap">
+        select t_role.role_id,t_role.role_name,t_role.role_group_id,t_role.is_system_define,
+        t_user_role.is_trusteeship, t_user_role.trusteeship_begin_time, t_user_role.trusteeship_end_time,t_user_role.id user_role_id
+        from t_role,t_user_role
+        where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
+        and t_user_role.role_id = t_role.role_id
+        and t_user_role.is_delete = 0
+        and t_role.company_id = #{companyId,jdbcType=INTEGER}
+        and t_role.is_delete = 0
+        ORDER BY t_user_role.id DESC
+    </select>
 
 </mapper>

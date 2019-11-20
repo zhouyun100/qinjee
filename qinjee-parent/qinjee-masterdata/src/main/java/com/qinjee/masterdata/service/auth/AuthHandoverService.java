@@ -12,6 +12,8 @@ package com.qinjee.masterdata.service.auth;
 
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
+import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 
 import java.util.Date;
 import java.util.List;
@@ -99,4 +101,12 @@ public interface AuthHandoverService {
      * @return
      */
     int orgTrusteeshipByArchiveId(Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> orgIdList, Integer operatorId);
+
+    /**
+     * 根据档案ID查询角色列表
+     * @param archiveId
+     * @param companyId
+     * @return
+     */
+    List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId);
 }
