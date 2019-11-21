@@ -34,11 +34,11 @@ public interface AuthHandoverDao {
     int roleRecoveryByArchiveId(RequestRoleVO userRole);
 
     /**
-     * 机构回收
+     * 用户角色机构回收机构回收
      * @param userRole
      * @return
      */
-    int orgRecoveryByArchiveId(RequestRoleVO userRole);
+    int archiveRoleOrgRecovery(RequestRoleVO userRole);
 
 
     /**
@@ -57,11 +57,11 @@ public interface AuthHandoverDao {
     int roleHandoverByArchiveId(RequestRoleVO userRole);
 
     /**
-     * 机构移交
+     * 用户角色机构移交
      * @param userRole
      * @return
      */
-    int orgHandoverByArchiveId(RequestRoleVO userRole);
+    int archiveRoleOrgHandover(RequestRoleVO userRole);
 
     /**
      * 角色托管
@@ -71,9 +71,9 @@ public interface AuthHandoverDao {
     int roleTrusteeshipByArchiveId(RequestRoleVO userRole);
 
     /**
-     * 机构托管
+     * 用户角色机构托管
      * @param userRole
      * @return
      */
-    int orgTrusteeshipByArchiveId(RequestRoleVO userRole);
+    int archiveRoleOrgTrusteeship(RequestRoleVO userRole);
 }

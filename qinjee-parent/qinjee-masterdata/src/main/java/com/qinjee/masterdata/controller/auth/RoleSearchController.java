@@ -73,7 +73,8 @@ public class RoleSearchController extends BaseController{
 
     @ApiOperation(value="根据机构ID、工号或姓名模糊查询员工列表", notes="根据工号或姓名模糊查询员工列表")
     @RequestMapping(value = "/searchArchiveListByUserName",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(@RequestBody RequestArchivePageVO archivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(
+            @RequestBody @ApiParam(value = "请求参数：\ncurrentPage：当前页数\npageSize：总页数(不传默认查全部)\norgId：机构ID\nuserName：姓名或工号")RequestArchivePageVO archivePageVO) {
         if(archivePageVO == null || archivePageVO.getOrgId() == null){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("机构ID不能为空!");

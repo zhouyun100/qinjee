@@ -69,7 +69,8 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="根据角色ID查询员工列表", notes="根据角色ID查询员工列表")
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(@RequestBody RequestArchivePageVO archivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(
+            @RequestBody @ApiParam(value = "请求参数：\ncurrentPage：当前页数\npageSize：总页数(不传默认查全部)\nroleId：角色ID\nuserName：姓名或工号")RequestArchivePageVO archivePageVO) {
         if(archivePageVO == null || archivePageVO.getRoleId() == null){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID不能为空!");
@@ -164,7 +165,8 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="根据姓名或工号模糊查询员工列表", notes="姓名或工号至少2位字符")
     @RequestMapping(value = "/searchArchiveListByUserNameOrJobNumber",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(@RequestBody RequestArchivePageVO archivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(
+            @RequestBody @ApiParam(value = "请求参数：\ncurrentPage：当前页数\npageSize：总页数(默认查全部)\nuserName：姓名或工号")RequestArchivePageVO archivePageVO) {
         if(StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("工号或姓名至少2位字符!");
