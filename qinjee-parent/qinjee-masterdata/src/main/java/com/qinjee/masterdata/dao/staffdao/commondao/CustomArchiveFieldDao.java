@@ -77,4 +77,6 @@ public interface CustomArchiveFieldDao {
     List<CustomArchiveField> selectCustomArchiveField(@Param("customArchiveGroupId") Integer customArchiveGroupId);
 
     String selectFieldCodeByName(@Param("s") String s);
+
+    List<String> selectFieldCodeByNameList(@Param("list") List<String> keySet);
 }

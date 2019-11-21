@@ -6,7 +6,7 @@ import java.util.Map;
 public class HeadTypeUtil {
     public static Map<String, String> getTypeForArc() {
         Map<String, String> map = new HashMap<>();
-        map.put("档案id", "Short");
+        map.put("档案id", "Number");
         map.put("姓名", "String");
         map.put("工号", "String");
         map.put("单位", "String");

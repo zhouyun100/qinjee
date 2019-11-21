@@ -483,7 +483,7 @@
     select org_id
     from t_organization
     where org_name=#{name}
-    and org.is_enable=1
+    and is_enable=1
   </select>
     <select id="selectManyId" resultType="com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos">
    select org.org_id as orgId ,orga.org_id as businessUnitId, post.post_id as postId ,pos.position_id as positionId
