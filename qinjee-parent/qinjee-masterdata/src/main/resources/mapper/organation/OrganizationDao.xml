@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.organation.OrganizationDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-    <id column="org_id" jdbcType="INTEGER" property="orgId" />
-    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
-    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="org_type" jdbcType="VARCHAR" property="orgType" />
-    <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
-    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
-    <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId" />
-    <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
-    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        <id column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="org_code" jdbcType="VARCHAR" property="orgCode"/>
+        <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="org_type" jdbcType="VARCHAR" property="orgType"/>
+        <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId"/>
+        <result column="org_parent_name" jdbcType="INTEGER" property="orgParentName"/>
+        <result column="org_parent_code" jdbcType="INTEGER" property="orgParentCode"/>
+        <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
+        <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId"/>
+        <result column="company_id" jdbcType="INTEGER" property="companyId"/>
+        <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_enable" jdbcType="SMALLINT" property="isEnable"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     org_id, org_code, org_name, org_type, org_parent_id, org_full_name, org_manager_id,
     company_id, sort_id, operator_id, create_time, is_enable
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_organization
-    where org_id = #{orgId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_organization
+        where org_id = #{orgId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_organization
     where org_id = #{orgId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="org_id" keyProperty="orgId"
+            parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
     insert into t_organization (org_code, org_name, org_type,
       org_parent_id, org_full_name, org_manager_id,
       company_id, sort_id, operator_id,
@@ -39,119 +42,120 @@
       #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT})
   </insert>
-  <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
-    insert into t_organization
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="orgCode != null">
-        org_code,
-      </if>
-      <if test="orgName != null">
-        org_name,
-      </if>
-      <if test="orgType != null">
-        org_type,
-      </if>
-      <if test="orgParentId != null">
-        org_parent_id,
-      </if>
-      <if test="orgFullName != null">
-        org_full_name,
-      </if>
-      <if test="orgManagerId != null">
-        org_manager_id,
-      </if>
-      <if test="companyId != null">
-        company_id,
-      </if>
-      <if test="sortId != null">
-        sort_id,
-      </if>
-      <if test="operatorId != null">
-        operator_id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="isEnable != null">
-        is_enable,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="orgCode != null">
-        #{orgCode,jdbcType=VARCHAR},
-      </if>
-      <if test="orgName != null">
-        #{orgName,jdbcType=VARCHAR},
-      </if>
-      <if test="orgType != null">
-        #{orgType,jdbcType=VARCHAR},
-      </if>
-      <if test="orgParentId != null">
-        #{orgParentId,jdbcType=INTEGER},
-      </if>
-      <if test="orgFullName != null">
-        #{orgFullName,jdbcType=VARCHAR},
-      </if>
-      <if test="orgManagerId != null">
-        #{orgManagerId,jdbcType=INTEGER},
-      </if>
-      <if test="companyId != null">
-        #{companyId,jdbcType=INTEGER},
-      </if>
-      <if test="sortId != null">
-        #{sortId,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isEnable != null">
-        #{isEnable,jdbcType=SMALLINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-    update t_organization
-    <set>
-      <if test="orgCode != null">
-        org_code = #{orgCode,jdbcType=VARCHAR},
-      </if>
-      <if test="orgName != null">
-        org_name = #{orgName,jdbcType=VARCHAR},
-      </if>
-      <if test="orgType != null">
-        org_type = #{orgType,jdbcType=VARCHAR},
-      </if>
-      <if test="orgParentId != null">
-        org_parent_id = #{orgParentId,jdbcType=INTEGER},
-      </if>
-      <if test="orgFullName != null">
-        org_full_name = #{orgFullName,jdbcType=VARCHAR},
-      </if>
-      <if test="orgManagerId != null">
-        org_manager_id = #{orgManagerId,jdbcType=INTEGER},
-      </if>
-      <if test="companyId != null">
-        company_id = #{companyId,jdbcType=INTEGER},
-      </if>
-      <if test="sortId != null">
-        sort_id = #{sortId,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isEnable != null">
-        is_enable = #{isEnable,jdbcType=SMALLINT},
-      </if>
-    </set>
-    where org_id = #{orgId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+    <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId"
+            parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
+        insert into t_organization
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orgCode != null">
+                org_code,
+            </if>
+            <if test="orgName != null">
+                org_name,
+            </if>
+            <if test="orgType != null">
+                org_type,
+            </if>
+            <if test="orgParentId != null">
+                org_parent_id,
+            </if>
+            <if test="orgFullName != null">
+                org_full_name,
+            </if>
+            <if test="orgManagerId != null">
+                org_manager_id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="sortId != null">
+                sort_id,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="isEnable != null">
+                is_enable,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orgCode != null">
+                #{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgType != null">
+                #{orgType,jdbcType=VARCHAR},
+            </if>
+            <if test="orgParentId != null">
+                #{orgParentId,jdbcType=INTEGER},
+            </if>
+            <if test="orgFullName != null">
+                #{orgFullName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgManagerId != null">
+                #{orgManagerId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isEnable != null">
+                #{isEnable,jdbcType=SMALLINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        update t_organization
+        <set>
+            <if test="orgCode != null">
+                org_code = #{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                org_name = #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgType != null">
+                org_type = #{orgType,jdbcType=VARCHAR},
+            </if>
+            <if test="orgParentId != null">
+                org_parent_id = #{orgParentId,jdbcType=INTEGER},
+            </if>
+            <if test="orgFullName != null">
+                org_full_name = #{orgFullName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgManagerId != null">
+                org_manager_id = #{orgManagerId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isEnable != null">
+                is_enable = #{isEnable,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where org_id = #{orgId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
     update t_organization
     set org_code = #{orgCode,jdbcType=VARCHAR},
       org_name = #{orgName,jdbcType=VARCHAR},
@@ -167,193 +171,321 @@
     where org_id = #{orgId,jdbcType=INTEGER}
   </update>
 
-  <select id="getAllOrganization" resultMap="BaseResultMap">
-    select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org
-    left join t_role_org_auth roa on  roa.org_id = org.org_id
-    left join t_user_org_auth tuoa on org.org_id = tuoa.org_id
-    where
-    <if test="roleIds != null and roleIds.size > 0">
-      roa.role_id in
-      <foreach item="roleId" collection="roleIds"
-               open="(" separator="," close=")">
-        #{roleId}
-      </foreach>
-    </if>
-    and roa.is_delete = 0
-    and tuoa.archive_id = #{archiveId}
-    and tuoa.is_delete = 0
-    and tuoa.trusteeship_end_time > #{now}
-    and tuoa.is_trusteeship = 1
-    <if test="isEnable != null and isEnable == 1">
-      and org.is_enable = #{isEnable}
-    </if>
-    ORDER BY org.org_id ASC
-  </select>
+    <select id="getAllOrganization" resultMap="BaseResultMap">
+        select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org
+        left join t_role_org_auth roa on roa.org_id = org.org_id
+        left join t_user_org_auth tuoa on org.org_id = tuoa.org_id
+        where
+        <if test="roleIds != null and roleIds.size > 0">
+            roa.role_id in
+            <foreach item="roleId" collection="roleIds"
+                     open="(" separator="," close=")">
+                #{roleId}
+            </foreach>
+        </if>
+        and roa.is_delete = 0
+        and tuoa.archive_id = #{archiveId}
+        and tuoa.is_delete = 0
+        and tuoa.trusteeship_end_time > #{now}
+        and tuoa.is_trusteeship = 1
+        <if test="isEnable != null and isEnable == 1">
+            and org.is_enable = #{isEnable}
+        </if>
+        ORDER BY org.org_id ASC
+    </select>
 
-  <select id="getAllOrganizationByArchiveId" resultMap="BaseResultMap">
-    select v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable from (
-    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
-    t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
-    from t_organization,t_role_org_auth,t_user_role
-    where t_user_role.archive_id = #{archiveId}
-    and (t_user_role.is_trusteeship = 0
-    or (t_user_role.is_trusteeship = 1
-    and #{now} >= t_user_role.trusteeship_begin_time
-    and t_user_role.trusteeship_end_time >= #{now}
-    ))
-    and t_role_org_auth.role_id = t_user_role.role_id
-    and t_organization.org_id = t_role_org_auth.org_id
-    and t_user_role.is_delete = 0
-    and t_role_org_auth.is_delete = 0
-    <if test="isEnable != null and isEnable == 1">
-      and t_organization.is_enable = #{isEnable}
-    </if>
-    UNION
-    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
-    t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
-    from t_organization,t_user_org_auth
-    where t_user_org_auth.archive_id = #{archiveId}
-    and t_organization.org_id = t_user_org_auth.org_id
-    and t_user_org_auth.is_delete = 0
-    <if test="isEnable != null and isEnable == 1">
-      and t_organization.is_enable = #{isEnable}
-    </if>
-    ) v GROUP BY v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
-    ORDER BY v.org_id ASC
-  </select>
+    <select id="getAllOrganizationByArchiveId" resultMap="BaseResultMap">
+        select
+        v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
+        from (
+        select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
+        from t_organization,t_role_org_auth,t_user_role
+        where t_user_role.archive_id = #{archiveId}
+        and (t_user_role.is_trusteeship = 0
+        or (t_user_role.is_trusteeship = 1
+        and #{now} >= t_user_role.trusteeship_begin_time
+        and t_user_role.trusteeship_end_time >= #{now}
+        ))
+        and t_role_org_auth.role_id = t_user_role.role_id
+        and t_organization.org_id = t_role_org_auth.org_id
+        and t_user_role.is_delete = 0
+        and t_role_org_auth.is_delete = 0
+        <if test="isEnable != null and isEnable == 1">
+            and t_organization.is_enable = #{isEnable}
+        </if>
+        UNION
+        select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
+        from t_organization,t_user_org_auth
+        where t_user_org_auth.archive_id = #{archiveId}
+        and t_organization.org_id = t_user_org_auth.org_id
+        and t_user_org_auth.is_delete = 0
+        <if test="isEnable != null and isEnable == 1">
+            and t_organization.is_enable = #{isEnable}
+        </if>
+        ) v GROUP BY
+        v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
+        ORDER BY v.org_id ASC
+    </select>
 
-  <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-    select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id, parent_org.org_name orgParentName,
-    parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from t_organization org
-    left join t_role_org_auth roa on roa.org_id = org.org_id
-    left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
-    <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
-      and org.is_enable = #{organizationPageVo.isEnable}
-    </if>
-    left join t_organization parent_org on org.org_parent_id = parent_org.org_id
-    left join t_user_archive tua on tua.archive_id = org.org_manager_id
-    where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
-    and tuoa.is_delete = 0
-    and tuoa.archive_id = #{archiveId}
-    and tuoa.trusteeship_end_time > #{now}
-    and tuoa.is_trusteeship = 1
-    <if test="organizationPageVo != null">
-      <if test="organizationPageVo.orgParentId != null">
-        and org.org_parent_id = #{orgParentId}
-      </if>
-      <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
-        <foreach collection="organizationPageVo.querFieldVos" item="querField">
-          <if test="querField.fieldName != null and querField.fieldName != ''">
-                ${querField.condition}
-          </if>
+    <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id,
+        parent_org.org_name orgParentName,
+        parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from
+        t_organization org
+        left join t_role_org_auth roa on roa.org_id = org.org_id
+        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
+        <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
+            and org.is_enable = #{organizationPageVo.isEnable}
+        </if>
+        left join t_organization parent_org on org.org_parent_id = parent_org.org_id
+        left join t_user_archive tua on tua.archive_id = org.org_manager_id
+        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
+        ur.archive_id and ua.archive_id = #{archiveId})
+        and tuoa.is_delete = 0
+        and tuoa.archive_id = #{archiveId}
+        and tuoa.trusteeship_end_time > #{now}
+        and tuoa.is_trusteeship = 1
+        <if test="organizationPageVo != null">
+            <if test="organizationPageVo.orgParentId != null">
+                and org.org_parent_id = #{orgParentId}
+            </if>
+            <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
+                <foreach collection="organizationPageVo.querFieldVos" item="querField">
+                    <if test="querField.fieldName != null and querField.fieldName != ''">
+                        ${querField.condition}
+                    </if>
 
-          <if test="querField.isFilterNull">
-            and ${querField.fieldName} IS NULL
-          </if>
+                    <if test="querField.isFilterNull">
+                        and ${querField.fieldName} IS NULL
+                    </if>
+                </foreach>
+            </if>
+        </if>
+        <if test="sortFieldStr != null and sortFieldStr != ''">
+            ORDER BY ${sortFieldStr}
+        </if>
+    </select>
+
+    <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl
+        from t_organization org
+        left join t_role_org_auth roa on roa.org_id = org.org_id
+        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
+        <if test="isEnable != null and isEnable == 1">
+            and org.is_enable = #{isEnable}
+        </if>
+        left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
+        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
+        ur.archive_id and ua.archive_id = #{archiveId})
+        and tuoa.is_delete = 0
+        and tuoa.archive_id = #{archiveId}
+        and tuoa.trusteeship_end_time > #{now}
+        and tuoa.is_trusteeship = 1
+        <if test="orgId != null and orgId != ''">
+            and org.org_code like #{orgCode}
+        </if>
+        ORDER BY org.org_id ASC
+    </select>
+
+    <update id="UpdateIsEnableByOrgIds">
+        update t_organization
+        set is_enable = #{isEnable,jdbcType=SMALLINT}
+        where org_id in
+        <foreach item="orgId" collection="orgIds"
+                 open="(" separator="," close=")">
+            #{orgId}
         </foreach>
-      </if>
-    </if>
-    <if test="sortFieldStr != null and sortFieldStr != ''">
-        ORDER BY ${sortFieldStr}
-    </if>
-  </select>
+    </update>
 
-  <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-    select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl
-    from t_organization org
-    left join t_role_org_auth roa on roa.org_id = org.org_id
-    left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
-    <if test="isEnable != null and isEnable == 1">
-    and org.is_enable = #{isEnable}
-    </if>
-    left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
-    where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id = ur.archive_id and ua.archive_id = #{archiveId})
-    and tuoa.is_delete = 0
-    and tuoa.archive_id = #{archiveId}
-    and tuoa.trusteeship_end_time > #{now}
-    and tuoa.is_trusteeship = 1
-    <if test="orgId != null and orgId != ''">
-      and org.org_code like #{orgCode}
-    </if>
-    ORDER BY org.org_id ASC
-  </select>
-
-  <update id="UpdateIsEnableByOrgIds">
-    update t_organization
-    set is_enable = #{isEnable,jdbcType=SMALLINT}
-    where org_id in
-    <foreach item="orgId" collection="orgIds"
-             open="(" separator="," close=")">
-      #{orgId}
-    </foreach>
-  </update>
-
-  <select id="getOrganizationListByParentOrgId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_organization
-    where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY org_id DESC
-  </select>
+    <select id="getOrganizationListByParentOrgId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_organization
+        where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY org_id DESC
+    </select>
 
 
-  <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
-      select
-      <include refid="Base_Column_List" />
-      from t_organization
-      where org_id in
-      <foreach item="orgId" collection="orgIds"
-               open="(" separator="," close=")">
-          #{orgId}
-      </foreach>
-  </select>
-  <select id="getOrganizationByOrgCodeAndCompanyId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_organization
-    where company_id = #{companyId} and org_code = #{orgCode}
-  </select>
-  <select id="selectOrgName" resultType="java.lang.String">
+    <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_organization
+        where org_id in
+        <foreach item="orgId" collection="orgIds"
+                 open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </select>
+    <select id="getOrganizationByOrgCodeAndCompanyId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_organization
+        where company_id = #{companyId} and org_code = #{orgCode}
+    </select>
+    <select id="selectOrgName" resultType="java.lang.String">
     select  org_name
     from  t_organization
     where org_id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
+    <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
     select org_id
     from  t_organization
     where  org_parent_id=#{orgId}
     AND  is_enable=1
 </select>
-  <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
+    <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
     select
     org.org_id
     from  t_organization org, t_user_org_auth auth,t_user_archive  arc
     where org.org_id=auth.org_id AND auth.archive_id=arc.archive_id AND org.is_enable=1 and arc.archive_id=#{archiveId}
     AND auth.is_delete=0 and arc.is_delete=0
   </select>
-  <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-   select <include refid="Base_Column_List" />
-    from t_organization org
-     where org.org_id in
-     <foreach collection="orgIds" item="id" separator="," open="(" close=")">
-       #{id}
-     </foreach>
+    <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        t_son.org_id,
+        t_son.org_code,
+        t_son.org_name,
+        t_son.org_type,
+        t_son.org_parent_id,
+        t_son.org_full_name,
+        t_son.org_manager_id,
+        t_son.company_id,
+        t_son.sort_id,
+        t_son.operator_id,
+        t_son.create_time,
+        t_son.is_enable,
+        t_parent.org_name AS org_parent_name ,
+        t_parent.org_code AS org_parent_code
+        FROM
+        (SELECT
+        org_id,
+        org_code,
+        org_name,
+        org_type,
+        org_parent_id,
+        org_full_name,
+        org_manager_id,
+        company_id,
+        sort_id,
+        operator_id,
+        create_time,
+        is_enable
+        FROM
+        t_organization
+        WHERE org_id IN
+        <foreach collection="orgIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>) AS t_son
+        INNER JOIN
+        (SELECT
+        org_id,
+        org_code,
+        org_name,
+        org_type,
+        org_parent_id,
+        org_full_name,
+        org_manager_id,
+        company_id,
+        sort_id,
+        operator_id,
+        create_time,
+        is_enable
+        FROM
+        t_organization
+        WHERE org_id IN
+        (SELECT
+        org_parent_id
+        FROM
+        t_organization
+        WHERE org_id IN
+        <foreach collection="orgIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>)) AS t_parent
+        ON t_son.org_parent_id = t_parent.org_id
+    </select>
 
-  </select>
-  <select id="getCompanyIdByAuth" resultType="java.lang.Integer">
+    <select id="getOrganizationListByUserArchiveId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+       SELECT
+          t_son.org_id,
+          t_son.org_code,
+          t_son.org_name,
+          t_son.org_type,
+          t_son.org_parent_id,
+          t_son.org_full_name,
+          t_son.org_manager_id,
+          t_son.company_id,
+          t_son.sort_id,
+          t_son.operator_id,
+          t_son.create_time,
+          t_son.is_enable,
+          t_parent.org_name AS org_parent_name,
+          t_parent.org_code AS org_parent_code
+        FROM
+          (SELECT
+            t_org.org_id,
+            t_org.org_code,
+            t_org.org_name,
+            t_org.org_type,
+            t_org.org_parent_id,
+            t_org.org_full_name,
+            t_org.org_manager_id,
+            t_org.company_id,
+            t_org.sort_id,
+            t_org.operator_id,
+            t_org.create_time,
+            t_org.is_enable
+          FROM
+            t_organization t_org,
+            t_user_archive t_ua
+          WHERE t_org.org_id = t_ua.org_id
+            AND t_ua.archive_id = #{archiveId}) AS t_son
+          INNER JOIN
+            (SELECT
+              org_id,
+              org_code,
+              org_name,
+              org_type,
+              org_parent_id,
+              org_full_name,
+              org_manager_id,
+              company_id,
+              sort_id,
+              operator_id,
+              create_time,
+              is_enable
+            FROM
+              t_organization
+            WHERE org_id IN
+              (SELECT
+                org_parent_id
+              FROM
+                t_organization
+              WHERE org_id IN
+                (SELECT
+                  t_org.org_id
+                FROM
+                  t_organization t_org,
+                  t_user_archive t_ua
+                WHERE t_org.org_id = t_ua.org_id
+                  AND t_ua.archive_id = #{archiveId}))) AS t_parent
+              ON t_son.org_parent_id = t_parent.org_id
+    </select>
+    <select id="getCompanyIdByAuth" resultType="java.lang.Integer">
     select org.org_id
     from t_organization org,t_role_org_auth auth,t_user_role user_role,t_user_archive user_archive
     where org.org_id=auth.org_id AND auth.role_id=user_role.role_id AND user_role.archive_id=user_archive.archive_id
     AND org.is_enable=1 AND auth.is_delete=0 AND user_role.is_delete=0
     AND user_archive.is_delete=0  AND user_archive.archive_id=#{archiveId}
   </select>
-  <select id="selectOrgIdByName" resultType="java.lang.Integer">
+    <select id="selectOrgIdByName" resultType="java.lang.Integer">
     select org_id
     from t_organization
     where org_name=#{name}
     and org.is_enable=1
   </select>
-  <select id="selectManyId" resultType="com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos" >
+    <select id="selectManyId" resultType="com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos">
    select org.org_id as orgId ,orga.org_id as businessUnitId, post.post_id as postId ,pos.position_id as positionId
    from t_organization org,t_organization orga ,t_post post ,t_position pos
    where org.org_name=#{orgName} and orga.org_name=#{unitName} and post.post_name=#{postName}
@@ -361,17 +493,17 @@
      and pos.is_delete=0
   </select>
 
-<update id="updateBatchOrganizationSortid" parameterType="java.util.LinkedList">
+    <update id="updateBatchOrganizationSortid" parameterType="java.util.LinkedList">
 
-  <foreach collection="orgIds" item="id" index="index" open="" close="" separator=";">
-    UPDATE t_organization
-    <set>
-      sort_id=(#{index}+1)*1000
-    </set>
-    <where>
-      org_id = #{id}
-    </where>
-  </foreach>
-</update>
+        <foreach collection="orgIds" item="id" index="index" open="" close="" separator=";">
+            UPDATE t_organization
+            <set>
+                sort_id=(#{index}+1)*1000
+            </set>
+            <where>
+                org_id = #{id}
+            </where>
+        </foreach>
+    </update>
 
 </mapper>

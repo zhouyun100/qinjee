@@ -10,16 +10,10 @@ import com.qinjee.model.response.ResponseResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月16日 09:11:00
- */
+
 public interface OrganizationService {
 
     /**
@@ -131,14 +125,14 @@ public interface OrganizationService {
      */
     ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession);
 
-    /**
-     * 根据选择的机构id导出Excel
-     * @param orgIds
-     * @param response
-     * @param userSession
-     * @return
-     */
-    ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession);
+   /** 
+   * @Description: 根据选择的机构id导出Excel 
+   * @Param:  
+   * @return:
+   * @Author: penghs 
+   * @Date: 2019/11/20 0020 
+   */
+    ResponseResult downloadOrganizationToExcelByOrgId(String filePath,List<Integer> orgIds, HttpServletResponse response, UserSession userSession);
 
     /**
      * 导入机构Excel
@@ -147,10 +141,39 @@ public interface OrganizationService {
      */
     ResponseResult uploadExcel(MultipartFile file, UserSession userSession);
 
+    /**
+    * @Description:
+    * @Param:
+    * @return:
+    * @Author: penghs
+    * @Date: 2019/11/20 0020
+    */
     OrganizationVO selectByPrimaryKey(Integer orgId);
 
+    /**
+    * @Description:
+    * @Param:
+    * @return:
+    * @Author: penghs
+    * @Date: 2019/11/20 0020
+    */
     List<OrganizationVO> getOrganizationListByParentOrgId(Integer orgId);
 
+    /**
+    * @Description:
+    * @Param:
+    * @return:
+    * @Author: penghs
+    * @Date: 2019/11/20 0020
+    */
     List<OrganizationVO> getAllOrganizationTree(UserSession userSession, Short isEnable);
 
+    /** 
+    * @Description:  导出所有机构到excel
+    * @Param:  
+    * @return:  
+    * @Author: penghs 
+    * @Date: 2019/11/20 0020 
+    */
+    ResponseResult downloadAllOrganizationToExcel(String filePath,HttpServletResponse response, UserSession userSession);
 }
