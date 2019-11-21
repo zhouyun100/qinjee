@@ -1,8 +1,5 @@
 package com.qinjee.masterdata.controller.organization;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
@@ -20,11 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 高雄
@@ -186,10 +180,15 @@ public class OrganizationController extends BaseController {
         return organizationService.downloadExcelByCondition(organizationPageVo, response, getUserSession());
     }
 
-    @ApiOperation(value = "根据选择的机构id导出Excel", notes = "高雄")
-    @GetMapping("/downloadExcelByOrgId")
-    public ResponseResult downloadExcelByOrgCodeId(@RequestParam("orgIds") @ApiParam(value = "所选机构的id",required = true) List<Integer> orgIds, HttpServletResponse response){
-        return organizationService.downloadExcelByOrgCodeId(orgIds, response, getUserSession());
+    @ApiOperation(value = "根据选择的机构id导出Excel", notes = "彭洪思")
+    @GetMapping("/downloadOrganizationToExcelByOrgId")
+    public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径",required = true)@RequestParam("filePath") String filePath,@RequestParam("orgIds") @ApiParam(value = "所选机构的id",required = true) List<Integer> orgIds, HttpServletResponse response){
+        return organizationService.downloadOrganizationToExcelByOrgId(filePath,orgIds, response, getUserSession());
+    }
+    @ApiOperation(value = "导出用户下所有机构到Excel", notes = "彭洪思")
+    @GetMapping("/downloadAllOrganizationToExcel")
+    public ResponseResult downloadAllOrganizationToExcel(@ApiParam(value = "导出路径",required = true)@RequestParam("filePath") String filePath, HttpServletResponse response){
+        return organizationService.downloadAllOrganizationToExcel(filePath,response, getUserSession());
     }
 
     @ApiOperation(value = "导入机构Excel", notes = "高雄")

@@ -23,9 +23,10 @@ public @interface ExcelFieldAnno {
      */
     String name() default "";
 
+
     /**
      * 列宽 (大于0时生效; 如果不指定列宽，将会自适应调整宽度；)
-     *
+     *以一个字符的1/256的宽度作为一个单位
      * @return int
      */
     int width() default 0;

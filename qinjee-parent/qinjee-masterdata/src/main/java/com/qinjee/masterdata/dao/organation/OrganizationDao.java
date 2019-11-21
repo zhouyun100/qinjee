@@ -134,4 +134,6 @@ public interface OrganizationDao {
 
 
     Integer updateBatchOrganizationSortid(@Param("orgIds") LinkedList<String> orgIds);
+
+    List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId);
 }
