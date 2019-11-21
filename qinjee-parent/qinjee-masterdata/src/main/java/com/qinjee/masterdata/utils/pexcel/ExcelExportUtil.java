@@ -4,6 +4,7 @@ package com.qinjee.masterdata.utils.pexcel;
 import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
 import com.qinjee.masterdata.utils.pexcel.annotation.ExcelSheetAnno;
 import com.qinjee.masterdata.utils.pexcel.util.FieldReflectionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
@@ -14,7 +15,9 @@ import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class ExcelExportUtil {
@@ -81,7 +84,7 @@ public class ExcelExportUtil {
         Sheet sheet = workbook.createSheet(sheetName);
 
         // sheet field
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new LinkedList<Field>();
         if (sheetClass.getDeclaredFields()!=null && sheetClass.getDeclaredFields().length>0) {
            //遍历所有字段
             for (Field field: sheetClass.getDeclaredFields()) {
@@ -190,7 +193,15 @@ public class ExcelExportUtil {
 
         FileOutputStream fileOutputStream = null;
         try {
+           /* String fileName;
             // workbook 2 FileOutputStream
+            if(StringUtils.endsWith(filePath,"xsl")||StringUtils.endsWith(filePath,"xslx")){
+                if (Objects.nonNull(sheetDataListArr)&&sheetDataListArr.length>0){
+                    Class<?> sheetClass =sheetDataListArr[0].getClass();
+                    sheetClass.getAnnotation(ExcelSheetAnno.class);
+                }
+
+            }*/
             fileOutputStream = new FileOutputStream(filePath);
             workbook.write(fileOutputStream);
 
