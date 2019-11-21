@@ -2,9 +2,9 @@ package com.qinjee.masterdata.utils.export;
 
 
 import org.apache.poi.ss.formula.functions.T;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -29,7 +29,7 @@ public class HeadListUtil {
     }
     //导入思路：对于非内置表的类，建造一个Vo类，并在数据库中建立fieldName与code的联系。通过反射设值得到list集合，然后遍历设置进大字段表中
 
-    public static <T> List getObjectList(List<Map<String,String>> list,Class<T> tClass) throws NoSuchFieldException, IllegalAccessException, InstantiationException, ParseException {
+    public static <T> List getObjectList(List<Map<String,String>> list,Class<T> tClass) throws Exception {
         List<T> tList=new ArrayList<>();
         T t = tClass.newInstance();
         for (Map<String, String> map : list) {
@@ -38,22 +38,24 @@ public class HeadListUtil {
                 declaredField.setAccessible(true);
                 String typeName = declaredField.getGenericType().getTypeName();
                 int i = typeName.lastIndexOf(".");
-                String substring = typeName.substring(i+1);
-                if("Date".equals(substring)){
-                    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-                    Date parse = simpleDateFormat.parse(entry.getValue());
-                    declaredField.set(t,parse);
-                }
-                if("Integer".equals(substring)){
-                    if(entry.getValue()==null){
-                        declaredField.set(t,0);
+                String substring = typeName.substring(i + 1);
+                if (!StringUtils.isEmpty(entry.getValue())) {
+                    if ("Date".equals(substring)) {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        Date parse = simpleDateFormat.parse(entry.getValue());
+                        declaredField.set(t, parse);
                     }
-                    declaredField.set(t,Integer.parseInt(entry.getValue()));
-                }
-                if("String".equals(substring)){
-                    declaredField.set(t,entry.getValue());
+                    if ("Integer".equals(substring)) {
+                        declaredField.set(t, Integer.parseInt(entry.getValue()));
+                    }
+                    if ("String".equals(substring)) {
+                        declaredField.set(t, entry.getValue());
+                    }
+                }else {
+                    throw new Exception("存在空参数");
                 }
             }
+
             tList.add(t);
         }
         return tList;
