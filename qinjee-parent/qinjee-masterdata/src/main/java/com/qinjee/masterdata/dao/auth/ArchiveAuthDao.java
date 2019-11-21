@@ -70,11 +70,12 @@ public interface ArchiveAuthDao {
     List<OrganizationVO> searchOrgAuthTree(RequestRoleVO requestRole);
 
     /**
-     * 根据档案ID查询已有的机构列表
+     * 根据角色ID和档案ID查询已有的机构列表
+     * @param roleId
      * @param archiveId
      * @return
      */
-    List<OrganizationVO> searchArchiveOrgListByRoleId(Integer archiveId);
+    List<OrganizationVO> searchArchiveOrgListByRoleId(Integer roleId, Integer archiveId);
 
     /**
      * 新增档案机构权限
