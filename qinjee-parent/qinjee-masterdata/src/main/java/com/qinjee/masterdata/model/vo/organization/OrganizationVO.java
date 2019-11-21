@@ -35,7 +35,6 @@ public class OrganizationVO implements Serializable {
      */
     @ApiModelProperty("机构ID")
     @QueryColumn("org_id")
-    @ExcelFieldAnno(name = "机构ID")
     private Integer orgId;
 
     /**
@@ -51,7 +50,7 @@ public class OrganizationVO implements Serializable {
      */
     @ApiModelProperty("机构名称")
     @QueryColumn("org.org_name")
-    @ExcelFieldAnno(name = "机构名称")
+    @ExcelFieldAnno(name = "机构名称",width = 10000)
     private String orgName;
 
     /**
@@ -59,7 +58,7 @@ public class OrganizationVO implements Serializable {
      */
     @ApiModelProperty("机构类型  GROUP 集团、UNIT 单位、DEPT 部门")
     @QueryColumn("org.org_type")
-    @ExcelFieldAnno(name = "机构类型")
+    @ExcelFieldAnno(name = "机构类型",width = 3000)
     private String orgType;
 
     /**
@@ -69,19 +68,36 @@ public class OrganizationVO implements Serializable {
     @QueryColumn("org_parent_id")
     private Integer orgParentId;
 
-    /**
-     * 机构父级名称
-     */
-    @ApiModelProperty("机构父级名称")
-    @QueryColumn("parent_org.org_name")
-    private String orgParentName;
 
     /**
      * 机构父级编码
      */
     @ApiModelProperty("机构父级编码")
+    @ExcelFieldAnno(name = "上级机构编码")
     private String orgParentCode;
 
+    /**
+     * 机构父级名称
+     */
+    @ApiModelProperty("机构父级名称")
+    @QueryColumn("parent_org.org_name")
+    @ExcelFieldAnno(name = "上级机构",width = 10000)
+    private String orgParentName;
+
+    /**
+     * 机构负责人工号
+     */
+    @ApiModelProperty("机构负责人工号")
+    @ExcelFieldAnno(name = "部门负责人编号",width = 4000)
+    private String managerEmployeeNumber;
+
+    /**
+     * 机构负责人姓名
+     */
+    @ApiModelProperty("机构负责人姓名")
+    @QueryColumn("tua.user_name")
+    @ExcelFieldAnno(name = "部门负责人",width = 3000)
+    private String orgManagerName;
     /**
      * 机构全称
      */
@@ -95,18 +111,9 @@ public class OrganizationVO implements Serializable {
     @ApiModelProperty("机构负责人Id")
     private Integer orgManagerId;
 
-    /**
-     * 机构负责人姓名
-     */
-    @ApiModelProperty("机构负责人姓名")
-    @QueryColumn("tua.user_name")
-    private String orgManagerName;
 
-    /**
-     * 机构负责人工号
-     */
-    @ApiModelProperty("机构负责人工号")
-    private String managerEmployeeNumber;
+
+
 
     /**
      * 企业ID

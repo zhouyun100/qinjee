@@ -20,7 +20,6 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.ExcelUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -505,14 +504,32 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new ResponseResult();
     }
 
+
     @Override
-    public ResponseResult downloadExcelByOrgCodeId(List<Integer> orgIds, HttpServletResponse response, UserSession userSession) {
+    public ResponseResult downloadOrganizationToExcelByOrgId(String filePath,List<Integer> orgIds, HttpServletResponse response, UserSession userSession) {
         List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIds);
         System.out.println("organizationVOList:"+organizationVOList);
-        ExcelExportUtil.exportToFile("e:\\aa.xls",organizationVOList);
-        return null;
+        ExcelExportUtil.exportToFile(filePath,organizationVOList);
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
+    /**
+     * @param response
+     * @param userSession
+     * @Description: 导出用户所有机构到excel
+     * @Param:
+     * @return:
+     * @Author: penghs
+     * @Date: 2019/11/20 0020
+     */
+    @Override
+    public ResponseResult downloadAllOrganizationToExcel(String filePath,HttpServletResponse response, UserSession userSession) {
+        Integer archiveId = userSession.getArchiveId();
+        List<OrganizationVO> organizationVOList=organizationDao.getOrganizationListByUserArchiveId(archiveId);
+        System.out.println("organizationVOList:"+organizationVOList);
+        ExcelExportUtil.exportToFile(filePath,organizationVOList);
+        return new ResponseResult(CommonCode.SUCCESS);
+    }
     @Override
     public ResponseResult uploadExcel(MultipartFile file, UserSession userSession) {
         //解析文件
@@ -558,6 +575,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         return organizationVOList;
     }
+
+
 
     private List<OrganizationVO> parseFile(MultipartFile file) throws Exception {
         List<OrganizationVO> organizationVOList = new ArrayList<>();

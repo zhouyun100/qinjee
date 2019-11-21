@@ -60,18 +60,19 @@ public interface ArchiveAuthService {
 
     /**
      * 查询角色机构权限树
+     * @param roleId
      * @param archiveId
-     * @param operatorId
      * @return
      */
-    List<OrganizationVO> searchOrgAuthTree(Integer archiveId, Integer operatorId);
+    List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer archiveId);
 
     /**
      * 修改人员机构权限
+     * @param roleId
      * @param archiveId
      * @param orgIdList
      * @param operatorId
      * @return
      */
-    int updateArchiveOrgAuth(Integer archiveId, List<Integer> orgIdList, Integer operatorId);
+    int updateArchiveOrgAuth(Integer roleId, Integer archiveId, List<Integer> orgIdList, Integer operatorId);
 }
