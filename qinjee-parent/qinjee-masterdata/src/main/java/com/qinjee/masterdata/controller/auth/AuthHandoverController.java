@@ -14,6 +14,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.AuthHandoverService;
+import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -47,6 +48,9 @@ public class AuthHandoverController extends BaseController{
 
     @Autowired
     private AuthHandoverService authHandoverService;
+
+    @Autowired
+    private RoleAuthService roleAuthService;
 
     @ApiOperation(value="查询角色功能权限树", notes="根据角色ID查询菜单功能权限树")
     @ApiImplicitParams({
@@ -284,6 +288,65 @@ public class AuthHandoverController extends BaseController{
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据档案ID查询角色列表异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="查询自定义表列表", notes="根据当前登录用户查询所有档案自定义表列表")
+    @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.POST)
+    public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableList() {
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }else{
+                List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableList(userSession.getCompanyId());
+                logger.info("searchCustomArchiveTableList success！companyId={}", userSession.getCompanyId());
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(customArchiveTableList);
+            }
+
+        }catch (Exception e){
+            logger.info("searchCustomArchiveTableList exception！exception={}", e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据企业ID查询角色自定义表列表异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="根据角色ID和自定义表ID查询自定义字段列表", notes="根据自定义表ID查询自定义字段列表，角色ID确定字段权限类型")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "tableId", value = "自定义表ID", required = true, dataType = "int")
+    })
+    @RequestMapping(value = "/searchCustomArchiveTableFieldListByTableId",method = RequestMethod.POST)
+    public ResponseResult<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByTableId(Integer roleId,Integer tableId) {
+        if(null == roleId || null == tableId){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色ID和表ID不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }else{
+                List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthService.searchCustomArchiveTableFieldListByTableId(roleId,tableId);
+                logger.info("searchCustomArchiveTableFieldListByTableId success！tableId={}", tableId);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(customArchiveTableList);
+            }
+
+        }catch (Exception e){
+            logger.info("searchCustomArchiveTableFieldListByTableId exception！tableId={},exception={}", tableId, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("根据自定义表ID查询自定义字段列表异常！");
         }
         return responseResult;
     }

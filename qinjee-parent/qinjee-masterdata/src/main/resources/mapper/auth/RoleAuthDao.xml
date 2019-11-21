@@ -238,7 +238,7 @@
     <!--根据角色和自定义表ID查询自定义字段列表 -->
     <select id="searchCustomArchiveTableFieldListByTableId" parameterType="com.qinjee.masterdata.model.vo.auth.CustomArchiveTableFieldVO" resultMap="CustomArchiveTableFieldResultMap">
         select t.table_id,t.table_code,t.table_name,t.func_code,f.field_id,f.field_code,f.field_name,
-        CASE WHEN v.read_write_code is NOT NULL THEN v.read_write_code ELSE '' end read_write_code
+        CASE WHEN v.read_write_code is NOT NULL THEN v.read_write_code ELSE null end read_write_code
         from t_custom_archive_table t,t_custom_archive_field f
         LEFT JOIN (
         select f.field_id,a.read_write_code from t_role_custom_field_auth a,t_custom_archive_field f
