@@ -88,24 +88,42 @@
     <select id="searchOrgAuthTree" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" resultMap="OrgResultMap">
         SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_full_name,
         CASE WHEN t.org_id is not NULL THEN 1 ELSE 0 END has_org from (
+        select v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name
+        from (
+                select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name
+                from t_role_org_auth,t_role,t_user_role,t_organization
+                where t_user_role.archive_id = #{operatorId,jdbcType=INTEGER}
+                and (t_user_role.is_trusteeship = 0
+                or (t_user_role.is_trusteeship = 1
+                and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
+                and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+                ))
+                and t_user_role.role_id = t_role.role_id
+                and t_role.role_id = t_role_org_auth.role_id
+                and t_role_org_auth.org_id = t_organization.org_id
+                and t_role.is_delete = 0
+                and t_role_org_auth.is_delete = 0
+                and t_organization.is_enable = 1
+        UNION
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
-        t_organization.org_parent_id,t_organization.org_full_name
-        from t_role_org_auth,t_role,t_user_role,t_organization
-        where t_user_role.archive_id = #{operatorId,jdbcType=INTEGER}
-        and (t_user_role.is_trusteeship = 0
-        or (t_user_role.is_trusteeship = 1
-        and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
-        and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
-        ))
-        and t_user_role.role_id = t_role.role_id
-        and t_role.role_id = t_role_org_auth.role_id
-        and t_role_org_auth.org_id = t_organization.org_id
-        and t_role.is_delete = 0
-        and t_role_org_auth.is_delete = 0
-        and t_organization.is_enable = 1
-        GROUP BY t_organization.org_id,t_organization.org_code,
-        t_organization.org_name,t_organization.org_type,
-        t_organization.org_parent_id,t_organization.org_full_name) v
+                t_organization.org_parent_id,t_organization.org_full_name
+                from t_user_org_auth,t_organization
+                where t_user_org_auth.archive_id = #{operatorId,jdbcType=INTEGER}
+                and (t_user_org_auth.is_trusteeship = 0
+                or (t_user_org_auth.is_trusteeship = 1
+                and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_org_auth.trusteeship_begin_time
+                and t_user_org_auth.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+                ))
+                and t_user_org_auth.org_id = t_organization.org_id
+                and t_user_org_auth.is_delete = 0
+                and t_organization.is_enable = 1
+                GROUP BY t_organization.org_id,t_organization.org_code,
+                t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name
+        ) v1
+        GROUP BY v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name
+        ) v
         LEFT JOIN (
         select t_role_org_auth.org_id from t_role_org_auth,t_role
         where t_role.role_id = #{roleId,jdbcType=INTEGER}
@@ -197,7 +215,7 @@
     </insert>
 
     <!-- 删除角色机构权限 -->
-    <update id="delRoleOrgAuth" parameterType="com.qinjee.masterdata.model.entity.RoleMenuAuth">
+    <update id="delRoleOrgAuth" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth">
         update t_role_org_auth set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
         where role_id = #{roleId,jdbcType=INTEGER} and org_id = #{orgId,jdbcType=INTEGER} and is_delete = 0
     </update>

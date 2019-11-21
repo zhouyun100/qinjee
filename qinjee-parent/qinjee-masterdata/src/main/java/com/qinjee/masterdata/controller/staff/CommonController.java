@@ -543,11 +543,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile(@RequestBody @Valid  ExportFile exportArc, HttpServletResponse response) {
-        Boolean b = checkParam(exportArc,response);
+    public ResponseResult exportArcFile(@RequestBody @Valid ExportFile exportFile, HttpServletResponse response) {
+        Boolean b = checkParam(exportFile,response);
         if(b){
             try {
-                staffCommonService.exportArcFile(exportArc,response);
+                staffCommonService.exportArcFile(exportFile,response);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -560,15 +560,15 @@ public class CommonController extends BaseController {
     /**
      * 模板导入档案
      */
-    @RequestMapping(value = "/importFile", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入", notes = "hkt")
+    @RequestMapping(value = "/importArcFile", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导入档案", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
     public ResponseResult importFile(MultipartFile multipartFile) {
         Boolean b = checkParam(multipartFile,getUserSession());
         if(b){
             try {
-                staffCommonService.importFile(multipartFile,getUserSession());
+                staffCommonService.importArcFile(multipartFile,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导入失败");

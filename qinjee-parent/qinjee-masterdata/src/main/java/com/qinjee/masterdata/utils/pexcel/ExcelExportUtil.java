@@ -70,7 +70,8 @@ public class ExcelExportUtil {
         Sheet existSheet = workbook.getSheet(sheetName);
         if (existSheet != null) {
             for (int i = 2; i <= 1000; i++) {
-                String newSheetName = sheetName.concat(String.valueOf(i));  // avoid sheetName repetition
+                // avoid sheetName repetition
+                String newSheetName = sheetName.concat(String.valueOf(i));
                 existSheet = workbook.getSheet(newSheetName);
                 if (existSheet == null) {
                     sheetName = newSheetName;

@@ -79,6 +79,12 @@ public class OrganizationArchiveVO implements Serializable {
     private Integer sortId;
 
     /**
+     * 是否拥有机构权限(1：是，0：否)
+     */
+    @ApiModelProperty("是否拥有机构权限")
+    private Integer hasOrg;
+
+    /**
      * 子机机构
      */
     private List<OrganizationArchiveVO> childOrgList;

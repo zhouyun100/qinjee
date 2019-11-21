@@ -10,15 +10,12 @@
  */
 package com.qinjee.masterdata.service.auth.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.auth.ArchiveAuthDao;
+import com.qinjee.masterdata.model.entity.UserOrgAuth;
 import com.qinjee.masterdata.model.entity.UserRole;
-import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
-import com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO;
-import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
+import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
-import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -133,5 +130,84 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
                 handlerOrganizationArchiveToTree(archiveInfoList,organizationList, childOrgList);
             }
         }
+    }
+
+    @Override
+    public List<OrganizationVO> searchOrgAuthTree(Integer archiveId, Integer operatorId) {
+        if(archiveId == null || operatorId == null){
+            return null;
+        }
+
+        RequestRoleVO requestRole = new RequestRoleVO();
+        requestRole.setOperatorId(operatorId);
+        requestRole.setArchiveId(archiveId);
+        requestRole.setCurrentDateTime(new Date());
+        List<OrganizationVO> organizationList = archiveAuthDao.searchOrgAuthTree(requestRole);
+        /**
+         * 如果机构列表为空则直接返回null
+         */
+        if(CollectionUtils.isEmpty(organizationList)){
+            return null;
+        }
+
+        /**
+         * 提取当前机构树的一级节点
+         */
+        List<OrganizationVO> firstLevelMenuList = organizationList.stream().filter(organization -> {
+            if(organization.getOrgParentId() == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        /**
+         * 处理所有机构列表以树形结构展示
+         */
+        roleAuthService.handlerOrgToTree(organizationList, firstLevelMenuList);
+        return firstLevelMenuList;
+    }
+
+    @Override
+    public int updateArchiveOrgAuth(Integer archiveId, List<Integer> orgIdList, Integer operatorId) {
+        int resultNumber = 0;
+        List<Integer> tempOrgIdList = new ArrayList<>();
+        List<OrganizationVO> tempOrganizationList = new ArrayList<>();
+
+        UserOrgAuth userOrgAuth = new UserOrgAuth();
+        userOrgAuth.setOperatorId(operatorId);
+        userOrgAuth.setArchiveId(archiveId);
+
+        List<OrganizationVO> organizationList = archiveAuthDao.searchArchiveOrgListByRoleId(archiveId);
+
+        if(!CollectionUtils.isEmpty(orgIdList)){
+            if(!CollectionUtils.isEmpty(organizationList)){
+                for(Integer orgId : orgIdList){
+                    organizationList.stream().filter(organization ->{
+                        if(orgId.equals(organization.getOrgId())){
+                            tempOrgIdList.add(orgId);
+                            tempOrganizationList.add(organization);
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }).collect(Collectors.toList());
+                }
+            }
+            orgIdList.removeAll(tempOrgIdList);
+            for(Integer orgId : orgIdList){
+                userOrgAuth.setOrgId(orgId);
+                resultNumber += archiveAuthDao.addArchiveOrgAuth(userOrgAuth);
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(organizationList)){
+            organizationList.removeAll(tempOrganizationList);
+            for(OrganizationVO organization : organizationList){
+                userOrgAuth.setOrgId(organization.getOrgId());
+                resultNumber += archiveAuthDao.delArchiveOrgAuth(userOrgAuth);
+            }
+        }
+        return resultNumber;
     }
 }
