@@ -14,7 +14,18 @@
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
   </resultMap>
 
-  <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO">
+  <resultMap id="OrgArchiveResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO">
+    <id column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_type" jdbcType="VARCHAR" property="orgType" />
+    <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+    <result column="has_org" jdbcType="INTEGER" property="hasOrg" />
+  </resultMap>
+
+  <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationVO">
     <id column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
@@ -79,7 +90,7 @@
 
 
   <!-- 根据档案ID查询所有机构列表 -->
-  <select id="searchOrganizationListByArchiveId" resultMap="OrgResultMap">
+  <select id="searchOrganizationListByArchiveId" resultMap="OrgArchiveResultMap">
     select v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.sort_id from (
     select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
     t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id

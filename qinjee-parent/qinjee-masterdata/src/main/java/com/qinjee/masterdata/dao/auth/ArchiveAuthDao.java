@@ -50,6 +50,7 @@ public interface ArchiveAuthDao {
     /**
      * 根据档案ID查询机构列表
      * @param archiveId
+     * @param now
      * @return
      */
     List<OrganizationArchiveVO> searchOrganizationListByArchiveId(Integer archiveId,Date now);
