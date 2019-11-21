@@ -4,10 +4,9 @@ package com.qinjee.masterdata.utils.export;
 import org.apache.poi.ss.formula.functions.T;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class HeadListUtil {
 
@@ -30,22 +29,33 @@ public class HeadListUtil {
     }
     //导入思路：对于非内置表的类，建造一个Vo类，并在数据库中建立fieldName与code的联系。通过反射设值得到list集合，然后遍历设置进大字段表中
 
-    public static <T> List getObjectList(List<Map<String,String>> list,Class<T> tClass) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+    public static <T> List getObjectList(List<Map<String,String>> list,Class<T> tClass) throws NoSuchFieldException, IllegalAccessException, InstantiationException, ParseException {
         List<T> tList=new ArrayList<>();
-//        Class<Object> objectClass = Object.class;
         T t = tClass.newInstance();
         for (Map<String, String> map : list) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Field declaredField = t.getClass().getDeclaredField(entry.getKey());
                 declaredField.setAccessible(true);
-                declaredField.set(t.getClass(),entry.getValue());
+                String typeName = declaredField.getGenericType().getTypeName();
+                int i = typeName.lastIndexOf(".");
+                String substring = typeName.substring(i+1);
+                if("Date".equals(substring)){
+                    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+                    Date parse = simpleDateFormat.parse(entry.getValue());
+                    declaredField.set(t,parse);
+                }
+                if("Integer".equals(substring)){
+                    if(entry.getValue()==null){
+                        declaredField.set(t,0);
+                    }
+                    declaredField.set(t,Integer.parseInt(entry.getValue()));
+                }
+                if("String".equals(substring)){
+                    declaredField.set(t,entry.getValue());
+                }
             }
             tList.add(t);
         }
         return tList;
-    }
-
-    private static T getInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException{
-        return clazz.newInstance();
     }
 }

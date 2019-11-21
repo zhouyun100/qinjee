@@ -11,9 +11,9 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
-import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
+import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
@@ -21,7 +21,6 @@ import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -255,25 +254,39 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException, NoSuchFieldException {
+    public void importArcFile(MultipartFile multipartFile,String title,UserSession userSession) throws IOException, IllegalAccessException, InstantiationException, NoSuchFieldException, ParseException {
        //excel方法获得值
         //根据导入文档建立Vo类，然后利用反射设值，此处先用Export代替
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        List<ExportArcVo> list=new ArrayList<>();
-        //获得反射对象
-        Class<ExportArcVo> exportArcVoClass = ExportArcVo.class;
-        ExportArcVo exportArcVo =exportArcVoClass.newInstance();
-        //循环设值
+        List<Map<String, String>> list=new ArrayList<>();
+//        List<String> keyList=customArchiveFieldDao.selectFieldCodeByNameList(new ArrayList<>(mapList.get(0).keySet()));
         for (Map<String, String> map : mapList) {
+            Map<String,String> stringMap=new HashMap<>();
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                Field declaredField =exportArcVoClass.getDeclaredField(entry.getKey());
-                declaredField.setAccessible(true);
-                declaredField.set(exportArcVoClass,entry.getValue());
+                stringMap.put(customArchiveFieldDao.selectFieldCodeByName(entry.getKey()),entry.getValue());
             }
-            list.add(exportArcVo);
+            list.add(stringMap);
         }
+//        List<ExportPreVo> list1=new ArrayList<>();
+        //获得反射对象
+//        Class<ExportPreVo> exportArcVoClass = ExportPreVo.class;
+//        ExportPreVo exportArcVo =exportArcVoClass.newInstance();
+//        //循环设值
+//        for (Map<String, String> map : list) {
+//            for (Map.Entry<String, String> entry : map.entrySet()) {
+//                Field declaredField =exportArcVoClass.getDeclaredField(entry.getKey());
+//                String s = declaredField.getGenericType().toString();
+//                System.out.println(s);
+//                declaredField.setAccessible(true);
+//                declaredField.set(exportArcVo,entry.getValue());
+//            }
+//            list1.add(exportArcVo);
+//        }
         //入库操作
-        HeadListUtil.getObjectList(mapList, ExportArcVo.class);
+        List<ExportPreVo> objectList = (List<ExportPreVo>) HeadListUtil.getObjectList(list, ExportPreVo.class);
+        for (ExportPreVo exportPreVo : objectList) {
+            System.out.println(exportPreVo.getUser_name());
+        }
     }
 
 

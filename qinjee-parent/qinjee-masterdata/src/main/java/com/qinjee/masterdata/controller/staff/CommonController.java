@@ -564,13 +564,14 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "模板导入档案", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importFile(MultipartFile multipartFile) {
+    public ResponseResult importFile(MultipartFile multipartFile,String title) {
         Boolean b = checkParam(multipartFile,getUserSession());
         if(b){
             try {
-                staffCommonService.importArcFile(multipartFile,getUserSession());
+                staffCommonService.importArcFile(multipartFile,title,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace();
                 return failResponseResult("导入失败");
             }
         }

@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -147,10 +148,15 @@ public interface IStaffCommonService {
     /**
      * 模板导入
      * @param multipartFile
+     * @param title
      * @param userSession
-     * @return
+     * @throws IOException
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
      */
-    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, ClassNotFoundException;
+    void importArcFile(MultipartFile multipartFile,String title, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, ClassNotFoundException, ParseException;
 
     /**
      * 模板导出档案

@@ -433,4 +433,13 @@
     where field_name=#{s}
     and is_delete=0
   </select>
+  <select id="selectFieldCodeByNameList" resultType="java.lang.String">
+    select field_code
+    from t_custom_archive_field
+    where field_name in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and is_delete=0
+  </select>
 </mapper>
