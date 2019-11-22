@@ -661,7 +661,7 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportContractList(ExportRequest exportRequest) {
+    public ResponseResult exportContractList(@RequestBody ExportRequest exportRequest) {
         Boolean b = checkParam(exportRequest,getUserSession ());
         if(b){
             try {
@@ -698,6 +698,7 @@ public class CommonController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
+
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
