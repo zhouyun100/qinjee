@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
@@ -200,7 +201,7 @@ public interface IStaffCommonService {
 
     /**
      */
-    void exportPreFile(String title,List<Integer> list, HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    void exportPreFile(ExportRequest exportRequest, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
 
 
@@ -214,4 +215,8 @@ public interface IStaffCommonService {
 
 
     void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+
+    void exportBlackFile(String title, List< Integer> list, HttpServletResponse response,UserSession userSession);
+
+    void exportContractList(String title, List< Integer> list, HttpServletResponse response, UserSession userSession);
 }

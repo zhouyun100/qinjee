@@ -10,13 +10,24 @@
     <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
-    <result column="block_reason" jdbcType="VARCHAR" property="blockReason" />
+      <result column="block_reason" jdbcType="VARCHAR" property="blockReason" />
     <result column="block_time" jdbcType="TIMESTAMP" property="blockTime" />
     <result column="data_source" jdbcType="VARCHAR" property="dataSource" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <resultMap id="blackListVo" type="com.qinjee.masterdata.model.vo.staff.export.BlackList">
+    <id column="blacklist_id" jdbcType="INTEGER" property="blacklist_id" />
+    <result column="user_name" jdbcType="VARCHAR" property="user_name" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="id_number" jdbcType="VARCHAR" property="id_number" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="business_name" jdbcType="VARCHAR" property="business_name" />
+    <result column="org_name" jdbcType="VARCHAR" property="org_name" />
+    <result column="post_name" jdbcType="VARCHAR" property="post_name" />
+    <result column="abandon_reason" jdbcType="VARCHAR" property="abandon_reason" />
   </resultMap>
   <sql id="Base_Column_List">
     blacklist_id, user_name, phone, id_type, id_number, business_unit_id, org_id, post_id, 
@@ -229,4 +240,18 @@
     </foreach>
     AND is_delete=0
   </select>
+    <select id="selectExportBlackList" resultType="java.util.Map" resultMap="blackListVo">
+    select * from  t_blacklist bla
+    left join t_organization org on bla.org_id=org.org_id
+    left join t_organization orga on bla.business_unit_id=orga.org_id
+    left join t_post post on post.post_id=bla.post_id
+    left join t_user_archive arc on bla.company_id=arc.company_id
+    where bla.blacklist_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{list}
+    </foreach>
+    and companyId=#{companyId} and org.is_enable=1 and orga.is_enable=1
+    and bla.is_delete=0 and arc.is_delete=0
+
+    </select>
 </mapper>
