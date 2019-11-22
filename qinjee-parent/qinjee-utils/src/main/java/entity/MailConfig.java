@@ -40,7 +40,7 @@ public class MailConfig {
     /**
      * 发送服务器端口，可以不设置，默认是25
      */
-    private String mailSmtpPort;
+    private Integer mailSmtpPort;
 
     /**
      * 是否使用 SSL 安全连接(QQ邮箱不需要，QQ企业邮箱需要)
