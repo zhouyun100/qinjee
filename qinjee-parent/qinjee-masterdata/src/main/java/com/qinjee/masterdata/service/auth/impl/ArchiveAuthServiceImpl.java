@@ -18,6 +18,7 @@ import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -45,11 +46,26 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
         return roleGroupList;
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addArchiveRole(Integer roleId, List<Integer> archiveIdList,Integer operatorId) {
 
         if(!CollectionUtils.isEmpty(archiveIdList)){
+
             UserRole userRole;
+            List<ArchiveInfoVO> archiveList = archiveAuthDao.searchArchiveListByRoleId(roleId);
+
+            for(ArchiveInfoVO archive : archiveList){
+                archiveIdList = archiveIdList.stream().filter(archiveId -> {
+                    if(archiveId.equals(archive.getArchiveId())){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }).collect(Collectors.toList());
+            }
+
             for(Integer archiveId : archiveIdList){
                 userRole = new UserRole();
                 userRole.setArchiveId(archiveId);
@@ -60,6 +76,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delArchiveRole(Integer roleId, List<Integer> archiveIdList,Integer operatorId) {
         if(!CollectionUtils.isEmpty(archiveIdList)){
