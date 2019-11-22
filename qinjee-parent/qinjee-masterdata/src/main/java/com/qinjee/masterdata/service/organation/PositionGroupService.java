@@ -7,6 +7,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public interface PositionGroupService {
      * 删除职位族
      * @param positionGroupIds
      */
-    void deletePositionGroup(List<Integer> positionGroupIds);
+    int deletePositionGroup(List<Integer> positionGroupIds);
 
     /**
      * 职位族排序
@@ -48,7 +49,7 @@ public interface PositionGroupService {
      * @param nextPositionGroupId
      * @return
      */
-    ResponseResult sortPositionGroup(Integer prePositionGroupId, Integer midPositionGroupId, Integer nextPositionGroupId);
+    ResponseResult sortPositionGroup(LinkedList<String> positionGroupIds);
 
     /**
      * 树形展示职位
@@ -56,4 +57,20 @@ public interface PositionGroupService {
      */
     ResponseResult<List<PositionGroup>> getAllPositionGroupTree(UserSession userSession);
 
+    /**
+     * 导出用户下所有职位族，根据企业id
+     * @param filePath
+     * @param userSession
+     * @return
+     */
+    ResponseResult downloadAllPositionGroupToExcel(String filePath, UserSession userSession);
+
+    /**
+     * 导出选中的职位族
+     * @param filePath
+     * @param positionGroupIds
+     * @param userSession
+     * @return
+     */
+    ResponseResult downloadPositionGroupToExcelByOrgId(String filePath, List<Integer> positionGroupIds, UserSession userSession);
 }

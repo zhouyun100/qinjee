@@ -14,6 +14,7 @@ import com.qinjee.masterdata.dao.email.EmailConfigDao;
 import com.qinjee.masterdata.model.entity.EmailConfig;
 import com.qinjee.masterdata.service.email.EmailConfigService;
 import com.qinjee.utils.AesUtils;
+import entity.MailConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,5 +51,19 @@ public class EmailConfigServiceImpl implements EmailConfigService {
             }
         }
         return emailConfig;
+    }
+
+    @Override
+    public MailConfig handlerEmailtoMail(EmailConfig emailConfig) {
+        MailConfig mc = new MailConfig();
+        mc.setMailTransportProtocol(emailConfig.getTransportProtocol());
+        mc.setMailSmtpHost(emailConfig.getHost());
+        mc.setMailSmtpPort(emailConfig.getPort());
+        mc.setSslEnable(emailConfig.getSslEnable());
+        mc.setMailSmtpAuth(emailConfig.getAuthCode());
+        mc.setUsername(emailConfig.getAccount());
+        mc.setPassword(emailConfig.getPassword());
+        mc.setSendernick(emailConfig.getSenderNick());
+        return mc;
     }
 }

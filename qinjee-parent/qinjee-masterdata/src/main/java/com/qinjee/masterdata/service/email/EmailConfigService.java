@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.email;
 
 import com.qinjee.masterdata.model.entity.EmailConfig;
+import entity.MailConfig;
 
 /**
  * @author 周赟
@@ -25,5 +26,11 @@ public interface EmailConfigService {
      */
     EmailConfig getEmailConfigByCompanyId(Integer companyId);
 
+    /**
+     * 邮件配置bean转换
+     * @param emailConfig
+     * @return
+     */
+    MailConfig handlerEmailtoMail(EmailConfig emailConfig);
 
 }

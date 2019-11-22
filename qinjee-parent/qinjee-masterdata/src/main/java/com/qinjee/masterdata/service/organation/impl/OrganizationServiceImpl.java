@@ -416,7 +416,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional
     public ResponseResult sortOrganization(LinkedList<String> orgIds) {
-        Integer i = organizationDao.updateBatchOrganizationSortid(orgIds);
+        Integer i = organizationDao.sortOrganization(orgIds);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 
@@ -493,7 +493,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 
     @Override
-    public ResponseResult downloadOrganizationToExcelByOrgId(String filePath, List<Integer> orgIds, HttpServletResponse response, UserSession userSession) {
+    public ResponseResult downloadOrganizationToExcelByOrgId(String filePath, List<Integer> orgIds, UserSession userSession) {
         List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIds);
         System.out.println("organizationVOList:" + organizationVOList);
         ExcelExportUtil.exportToFile(filePath, organizationVOList);
@@ -501,7 +501,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     /**
-     * @param response
      * @param userSession
      * @Description: 导出用户所有机构到excel
      * @Param:
@@ -510,7 +509,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @Date: 2019/11/20 0020
      */
     @Override
-    public ResponseResult downloadAllOrganizationToExcel(String filePath, HttpServletResponse response, UserSession userSession) {
+    public ResponseResult downloadAllOrganizationToExcel(String filePath, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
         List<OrganizationVO> organizationVOList = organizationDao.getOrganizationListByUserArchiveId(archiveId, new Date());
         if (Objects.isNull(organizationVOList) || organizationVOList.size() <= 0) {
