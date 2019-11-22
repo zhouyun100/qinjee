@@ -7,16 +7,19 @@ import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
 import com.qinjee.masterdata.service.organation.PositionService;
+import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +43,8 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         PositionGroup positionGroup = new PositionGroup();
         positionGroup.setCompanyId(companyId);
         positionGroup.setIsDelete((short) 0);
-        if(pageVo != null && (pageVo.getCurrentPage() != null && pageVo.getPageSize() != null)){
-            PageHelper.startPage(pageVo.getCurrentPage(),pageVo.getPageSize());
+        if (pageVo != null && (pageVo.getCurrentPage() != null && pageVo.getPageSize() != null)) {
+            PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
         }
         List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
         PageResult<PositionGroup> pageResult = new PageResult<>(positionGroupByPosG);
@@ -58,10 +61,11 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         positionGroup.setIsDelete((short) 0);
         List<PositionGroup> positionGroups = positionGroupDao.getPositionGroupByPosG(positionGroup);
         Integer sortId = null;
-        if(!CollectionUtils.isEmpty(positionGroups)){
-            if (isRepeatPosutionGroupName(positionGroupName, positionGroups))
+        if (!CollectionUtils.isEmpty(positionGroups)) {
+            if (isRepeatPosutionGroupName(positionGroupName, positionGroups)) {
                 //有重名页面提示
                 return new ResponseResult(CommonCode.POSITION_GROUP_NAME_REPEAT);
+            }
             PositionGroup positionGroup_1 = positionGroups.get(positionGroups.size() - 1);
             sortId = positionGroup_1.getSortId() + 1000;
         }
@@ -74,6 +78,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
 
     /**
      * 判断是否有重名的
+     *
      * @param positionGroupName
      * @param positionGroups
      * @return
@@ -86,7 +91,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
             }
             return false;
         }).collect(Collectors.toList());
-        if(!CollectionUtils.isEmpty(positionGroupList)){
+        if (!CollectionUtils.isEmpty(positionGroupList)) {
             return true;
         }
         return false;
@@ -97,53 +102,28 @@ public class PositionGroupServiceImpl implements PositionGroupService {
     public ResponseResult editPositionGroup(UserSession userSession, PositionGroupVo positionGroupVo) {
         PositionGroup positionGroup = new PositionGroup();
         positionGroup.setCompanyId(userSession.getCompanyId());
-        positionGroup.setIsDelete((short) 0);
         List<PositionGroup> positionGroups = positionGroupDao.getPositionGroupByPosG(positionGroup);
-        if(CollectionUtils.isEmpty(positionGroups)){
+        if (!CollectionUtils.isEmpty(positionGroups)) {
             boolean repeatPosutionGroupName = isRepeatPosutionGroupName(positionGroupVo.getPositionGroupName(), positionGroups);
-            if(repeatPosutionGroupName){
+            if (repeatPosutionGroupName) {
                 return new ResponseResult(CommonCode.POSITION_GROUP_NAME_REPEAT);
             }
         }
-        PositionGroup positionGroup_1 = new PositionGroup();
-        positionGroup_1.setPositionGroupName(positionGroupVo.getPositionGroupName());
-        positionGroup_1.setPositionGroupId(positionGroupVo.getPositionGroupId());
-        positionGroup_1.setOperatorId(userSession.getArchiveId());
-        positionGroupDao.insertSelective(positionGroup);
-        return new ResponseResult();
+        PositionGroup oldPositionGroup = positionGroupDao.selectByPrimaryKey(positionGroupVo.getPositionGroupId());
+        BeanUtils.copyProperties(positionGroupVo,oldPositionGroup);
+        positionGroupDao.updateByPrimaryKey(oldPositionGroup);
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
     @Transactional
     @Override
-    public void deletePositionGroup(List<Integer> positionGroupIds) {
-        if(!CollectionUtils.isEmpty(positionGroupIds)){
-            for (Integer positionGroupId : positionGroupIds) {
-                PositionGroup positionGroup = new PositionGroup();
-                positionGroup.setPositionGroupId(positionGroupId);
-                positionGroup.setIsDelete((short) 1);
-                positionGroupDao.updateByPrimaryKeySelective(positionGroup);
-            }
-        }
+    public int deletePositionGroup(List<Integer> positionGroupIds) {
+       return positionGroupDao.batchDeleteByGroupIds(positionGroupIds);
     }
 
     @Override
-    public ResponseResult sortPositionGroup(Integer prePositionGroupId, Integer midPositionGroupId, Integer nextPositionGroupId) {
-        PositionGroup prePositionGroup;
-        PositionGroup nextPositionGroup;
-        Integer midSort = null;
-        if(nextPositionGroupId != null){
-            //移动
-            nextPositionGroup = positionGroupDao.selectByPrimaryKey(nextPositionGroupId);
-            midSort = nextPositionGroup.getSortId() - 1;
-        }else if(prePositionGroupId == null){
-            //移动到最后
-            prePositionGroup = positionGroupDao.selectByPrimaryKey(prePositionGroupId);
-            midSort = prePositionGroup.getSortId() + 1;
-        }
-        PositionGroup positionGroup = new PositionGroup();
-        positionGroup.setPositionGroupId(midPositionGroupId);
-        positionGroup.setSortId(midSort);
-        positionGroupDao.insertSelective(positionGroup);
+    public ResponseResult sortPositionGroup(LinkedList<String> positionGroupIds) {
+        positionGroupDao.sortPositionGroup(positionGroupIds);
         return new ResponseResult();
     }
 
@@ -154,7 +134,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         positionGroup.setIsDelete((short) 0);
         //获取职位族
         List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
-        if(!CollectionUtils.isEmpty(positionGroupByPosG)){
+        if (!CollectionUtils.isEmpty(positionGroupByPosG)) {
             for (PositionGroup group : positionGroupByPosG) {
                 //获取职族下的所有职位
                 List<Position> positionList = positionService.getPositionListByGroupId(group.getPositionGroupId());
@@ -162,6 +142,38 @@ public class PositionGroupServiceImpl implements PositionGroupService {
             }
         }
         return new ResponseResult<>(positionGroupByPosG);
+    }
+
+    /**
+     * 导出用户下所有职位族，根据企业id
+     *
+     * @param filePath
+     * @param userSession
+     * @return
+     */
+    @Override
+    public ResponseResult downloadAllPositionGroupToExcel(String filePath, UserSession userSession) {
+        PositionGroup positionGroup = new PositionGroup();
+        positionGroup.setCompanyId(userSession.getCompanyId());
+        List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
+
+        ExcelExportUtil.exportToFile(filePath, positionGroupByPosG);
+        return new ResponseResult(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 导出选中的职位族
+     *
+     * @param filePath
+     * @param positionGroupIds
+     * @param userSession
+     * @return
+     */
+    @Override
+    public ResponseResult downloadPositionGroupToExcelByOrgId(String filePath, List<Integer> positionGroupIds, UserSession userSession) {
+        List<PositionGroup> positionGroups = positionGroupDao.selectBypositionGroupIds(positionGroupIds);
+        ExcelExportUtil.exportToFile(filePath, positionGroups);
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
 }

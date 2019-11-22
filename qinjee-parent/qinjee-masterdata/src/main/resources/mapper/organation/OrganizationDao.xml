@@ -447,7 +447,7 @@
      and pos.is_delete=0
   </select>
 
-    <update id="updateBatchOrganizationSortid" parameterType="java.util.LinkedList">
+    <update id="sortOrganization" parameterType="java.util.LinkedList">
 
         <foreach collection="orgIds" item="id" index="index" open="" close="" separator=";">
             UPDATE t_organization

@@ -21,6 +21,18 @@
     where position_group_id = #{positionGroupId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectBypositionGroupIds" parameterType="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_position_group
+    where position_group_id
+    in
+    <foreach collection="positionGroupIds" open="(" close=")" separator="," item="groupId">
+      #{groupId}
+    </foreach>
+
+  </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_position_group
     where position_group_id = #{positionGroupId,jdbcType=INTEGER}
@@ -134,4 +146,27 @@
     </if>
     ORDER BY  sort_id ASC
   </select>
+
+  <update id="batchDeleteByGroupIds">
+    update t_position_group
+        set is_delete = 1
+        where position_group_id in
+        <foreach collection="positionGroupIds" open="(" close=")" separator="," item="groupId">
+          #{groupId}
+        </foreach>
+  </update>
+
+  <update id="sortPositionGroup" parameterType="java.util.LinkedList">
+    <foreach collection="positionGroupIds" item="id" index="index" open="" close="" separator=";">
+      UPDATE t_position_group
+      <set>
+        sort_id=(#{index}+1)*1000
+      </set>
+      <where>
+        position_group_id = #{id}
+      </where>
+    </foreach>
+
+  </update>
+
 </mapper>

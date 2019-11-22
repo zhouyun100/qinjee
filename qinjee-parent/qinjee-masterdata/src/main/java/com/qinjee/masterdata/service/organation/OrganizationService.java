@@ -118,14 +118,6 @@ public interface OrganizationService {
     ResponseResult downloadTemplate(HttpServletResponse response);
 
 
-   /** 
-   * @Description: 根据选择的机构id导出Excel 
-   * @Param:  
-   * @return:
-   * @Author: penghs 
-   * @Date: 2019/11/20 0020 
-   */
-    ResponseResult downloadOrganizationToExcelByOrgId(String filePath,List<Integer> orgIds, HttpServletResponse response, UserSession userSession);
 
     /**
      * 导入机构Excel
@@ -168,5 +160,15 @@ public interface OrganizationService {
     * @Author: penghs 
     * @Date: 2019/11/20 0020 
     */
-    ResponseResult downloadAllOrganizationToExcel(String filePath,HttpServletResponse response, UserSession userSession);
+    ResponseResult downloadAllOrganizationToExcel(String filePath, UserSession userSession);
+
+    /**
+     * @Description: 根据选择的机构id导出Excel
+     * @Param:
+     * @return:
+     * @Author: penghs
+     * @Date: 2019/11/20 0020
+     */
+    ResponseResult downloadOrganizationToExcelByOrgId(String filePath,List<Integer> orgIds, UserSession userSession);
+
 }

@@ -13,6 +13,7 @@ import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,18 +106,15 @@ public class OrganizationController extends BaseController {
         return organizationService.sealOrganizationByIds(orgIds, isEnable);
     }
 
-    @ApiOperation(value = "根据选择的机构id导出Excel", notes = "彭洪思")
+    @ApiOperation(value = "导出机构到excel，如果不选中的话导入用户下所有机构", notes = "彭洪思")
     @GetMapping("/downloadOrganizationToExcelByOrgId")
-    public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径",required = true)@RequestParam("filePath") String filePath,@RequestParam("orgIds") @ApiParam(value = "所选机构的id",required = true) List<Integer> orgIds, HttpServletResponse response){
-        return organizationService.downloadOrganizationToExcelByOrgId(filePath,orgIds, response, getUserSession());
-    }
+    public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径",required = true)@RequestParam("filePath") String filePath,@RequestParam(value = "orgIds",required = false) @ApiParam(value = "所选机构的id",required = false) List<Integer> orgIds){
 
-    @ApiOperation(value = "导出用户下所有机构（包含封存）到Excel", notes = "彭洪思")
-    @GetMapping("/downloadAllOrganizationToExcel")
-    public ResponseResult downloadAllOrganizationToExcel(@ApiParam(value = "导出路径",required = true)@RequestParam("filePath") String filePath, HttpServletResponse response){
-        return organizationService.downloadAllOrganizationToExcel(filePath,response, getUserSession());
+        if(CollectionUtils.isEmpty(orgIds)){
+            return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
+        }
+        return organizationService.downloadOrganizationToExcelByOrgId(filePath,orgIds, getUserSession());
     }
-
 
     /**
      * @Description:
@@ -129,7 +127,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/sortOrganization")
     @ApiOperation(value = "机构排序", notes = "彭洪思")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "orgIds", value = "需要排序的机构编码", paramType = "query", dataType = "int", allowMultiple = true, required = true)
+            @ApiImplicitParam(name = "orgIds", value = "需要排序的机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
     })
     public ResponseResult sortOrganizationInOrg(@RequestParam LinkedList<String> orgIds){
         ResponseResult responseResult = organizationService.sortOrganization(orgIds);

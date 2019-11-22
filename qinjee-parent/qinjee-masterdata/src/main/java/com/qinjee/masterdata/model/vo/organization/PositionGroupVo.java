@@ -18,7 +18,6 @@ public class PositionGroupVo implements Serializable {
     /**
      * 职位族ID
      */
-    @ApiModelProperty("职位族ID")
     private Integer positionGroupId;
 
     /**
