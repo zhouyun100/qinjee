@@ -20,7 +20,7 @@ public interface PreEmploymentDao {
 
     PreEmployment selectByPrimaryKey(Integer employmentId);
 
-    int updateByPrimaryKey(@Param("record") PreEmployment record);
+    int updateByPrimaryKey( PreEmployment record);
 
     /**
      * 查询预入职id的最大值
