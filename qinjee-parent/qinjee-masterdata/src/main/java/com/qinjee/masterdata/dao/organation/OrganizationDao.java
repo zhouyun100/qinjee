@@ -25,17 +25,14 @@ public interface OrganizationDao {
 
     int updateByPrimaryKey(OrganizationVO record);
 
+
     /**
-     * 根据档案id查询所有角色所拥有的机构
-     *
+     * 获取用户下所有机构
      * @param archiveId
+     * @param isEnable
+     * @param now
      * @return
      */
-    List<OrganizationVO> getAllOrganization(@Param("archiveId") Integer archiveId,
-                                            @Param("isEnable") Short isEnable,
-                                            @Param("roleIds") Set<Integer> roleIds,
-                                            @Param("now") Date now);
-
     List<OrganizationVO> getAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
                                                        @Param("isEnable") Short isEnable,
                                                        @Param("now") Date now);
@@ -131,9 +128,7 @@ public interface OrganizationDao {
     BusinessOrgPostPos selectManyId(@Param("unitName") String businessUnitName, @Param("orgName") String orgName,
                                     @Param("postName") String postName, @Param("positionName") String positionName);
 
-
-
     Integer updateBatchOrganizationSortid(@Param("orgIds") LinkedList<String> orgIds);
 
-    List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId);
+    List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId,@Param("now") Date now);
 }

@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.aop;
 
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVoo;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.model.response.ResponseResult;
@@ -55,8 +55,8 @@ public class OrganizationHistoryAspect {
     public void beforeEditOrganization(JoinPoint joinPoint) {
         System.out.println("维护历史机构表");
         Object[] args = joinPoint.getArgs();
-        if (args.length > 0 && args[0] instanceof OrganizationVoo) {
-            OrganizationVoo orgVo = (OrganizationVoo) args[0];
+        if (args.length > 0 && args[0] instanceof Organization) {
+            Organization orgVo = (Organization) args[0];
             OrganizationVO orgBean = orgService.selectByPrimaryKey(orgVo.getOrgId());
             OrganizationHistory orgHisBean = new OrganizationHistory();
             if (Objects.nonNull(orgBean)) {

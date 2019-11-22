@@ -7,8 +7,8 @@
         <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
         <result column="org_type" jdbcType="VARCHAR" property="orgType"/>
         <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId"/>
-        <result column="org_parent_name" jdbcType="INTEGER" property="orgParentName"/>
-        <result column="org_parent_code" jdbcType="INTEGER" property="orgParentCode"/>
+        <result column="parent_org_name" jdbcType="VARCHAR" property="orgParentName"/>
+        <result column="parent_org_code" jdbcType="VARCHAR" property="orgParentCode"/>
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
         <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
@@ -155,6 +155,8 @@
         </set>
         where org_id = #{orgId,jdbcType=INTEGER}
     </update>
+
+
     <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
     update t_organization
     set org_code = #{orgCode,jdbcType=VARCHAR},
@@ -171,28 +173,7 @@
     where org_id = #{orgId,jdbcType=INTEGER}
   </update>
 
-    <select id="getAllOrganization" resultMap="BaseResultMap">
-        select org.org_code, org.org_name, org.org_parent_id, org.sort_id from t_organization org
-        left join t_role_org_auth roa on roa.org_id = org.org_id
-        left join t_user_org_auth tuoa on org.org_id = tuoa.org_id
-        where
-        <if test="roleIds != null and roleIds.size > 0">
-            roa.role_id in
-            <foreach item="roleId" collection="roleIds"
-                     open="(" separator="," close=")">
-                #{roleId}
-            </foreach>
-        </if>
-        and roa.is_delete = 0
-        and tuoa.archive_id = #{archiveId}
-        and tuoa.is_delete = 0
-        and tuoa.trusteeship_end_time > #{now}
-        and tuoa.is_trusteeship = 1
-        <if test="isEnable != null and isEnable == 1">
-            and org.is_enable = #{isEnable}
-        </if>
-        ORDER BY org.org_id ASC
-    </select>
+
 
     <select id="getAllOrganizationByArchiveId" resultMap="BaseResultMap">
         select
@@ -406,71 +387,43 @@
         ON t_son.org_parent_id = t_parent.org_id
     </select>
 
-    <select id="getOrganizationListByUserArchiveId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-       SELECT
-          t_son.org_id,
-          t_son.org_code,
-          t_son.org_name,
-          t_son.org_type,
-          t_son.org_parent_id,
-          t_son.org_full_name,
-          t_son.org_manager_id,
-          t_son.company_id,
-          t_son.sort_id,
-          t_son.operator_id,
-          t_son.create_time,
-          t_son.is_enable,
-          t_parent.org_name AS org_parent_name,
-          t_parent.org_code AS org_parent_code
-        FROM
-          (SELECT
-            t_org.org_id,
-            t_org.org_code,
-            t_org.org_name,
-            t_org.org_type,
-            t_org.org_parent_id,
-            t_org.org_full_name,
-            t_org.org_manager_id,
-            t_org.company_id,
-            t_org.sort_id,
-            t_org.operator_id,
-            t_org.create_time,
-            t_org.is_enable
-          FROM
-            t_organization t_org,
-            t_user_archive t_ua
-          WHERE t_org.org_id = t_ua.org_id
-            AND t_ua.archive_id = #{archiveId}) AS t_son
-          INNER JOIN
-            (SELECT
-              org_id,
-              org_code,
-              org_name,
-              org_type,
-              org_parent_id,
-              org_full_name,
-              org_manager_id,
-              company_id,
-              sort_id,
-              operator_id,
-              create_time,
-              is_enable
-            FROM
-              t_organization
-            WHERE org_id IN
-              (SELECT
-                org_parent_id
-              FROM
-                t_organization
-              WHERE org_id IN
-                (SELECT
-                  t_org.org_id
-                FROM
-                  t_organization t_org,
-                  t_user_archive t_ua
-                WHERE t_org.org_id = t_ua.org_id
-                  AND t_ua.archive_id = #{archiveId}))) AS t_parent
-              ON t_son.org_parent_id = t_parent.org_id
+    <select id="getOrganizationListByUserArchiveId"  resultMap="BaseResultMap">
+       SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name parent_org_name
+       FROM (
+             SELECT v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name
+              FROM (
+                SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name
+                FROM t_role_org_auth,t_role,t_user_role,t_organization
+                WHERE t_user_role.archive_id = #{archiveId}
+                AND (t_user_role.is_trusteeship = 0
+                OR (t_user_role.is_trusteeship = 1
+                AND #{now} >= t_user_role.trusteeship_begin_time
+                AND t_user_role.trusteeship_end_time >= #{now}
+                ))
+                AND t_user_role.role_id = t_role.role_id
+                AND t_role.role_id = t_role_org_auth.role_id
+                AND t_role_org_auth.org_id = t_organization.org_id
+                AND t_role.is_delete = 0
+                AND t_role_org_auth.is_delete = 0
+                AND t_organization.is_enable = 1
+      UNION
+             SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name
+                FROM t_user_org_auth,t_organization
+                WHERE t_user_org_auth.archive_id = #{archiveId}
+                AND (t_user_org_auth.is_trusteeship = 0
+                OR (t_user_org_auth.is_trusteeship = 1
+                AND #{now} >= t_user_org_auth.trusteeship_begin_time
+                AND t_user_org_auth.trusteeship_end_time >= #{now}
+                ))
+                AND t_user_org_auth.org_id = t_organization.org_id
+                AND t_user_org_auth.is_delete = 0
+                AND t_organization.is_enable = 1
+        ) v1
+        GROUP BY v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name) v
+        LEFT JOIN t_organization o
+            ON v.org_parent_id = o.org_id
     </select>
     <select id="getCompanyIdByAuth" resultType="java.lang.Integer">
     select org.org_id

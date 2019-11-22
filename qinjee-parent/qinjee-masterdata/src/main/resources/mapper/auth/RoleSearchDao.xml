@@ -43,11 +43,7 @@
         <if test="roleId != null">
             and t_user_role.role_id = #{roleId,jdbcType=INTEGER}
             and t_user_role.archive_id = t_user_archive.archive_id
-            and (t_user_role.is_trusteeship = 0
-            or (t_user_role.is_trusteeship = 1
-            and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_role.trusteeship_begin_time
-            and t_user_role.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
-            ))
+            and t_user_role.is_trusteeship = 0
             and t_user_role.is_delete = 0
         </if>
         <if test="userName != null and userName != ''">

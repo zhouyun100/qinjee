@@ -107,7 +107,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     }
 
     @Override
-    public List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId) {
+    public List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId, Integer archiveId) {
         if(roleId == null || operatorId == null){
             return null;
         }
@@ -115,6 +115,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         RequestRoleVO requestRole = new RequestRoleVO();
         requestRole.setOperatorId(operatorId);
         requestRole.setRoleId(roleId);
+        requestRole.setArchiveId(archiveId);
         requestRole.setCurrentDateTime(new Date());
         List<OrganizationVO> organizationList = roleAuthDao.searchOrgAuthTree(requestRole);
         /**
