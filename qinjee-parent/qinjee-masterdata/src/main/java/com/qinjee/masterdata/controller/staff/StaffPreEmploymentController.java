@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -230,13 +231,11 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
 //    })
-    public ResponseResult sendMail(@RequestBody List<Integer> prelist,List<Integer> conList,
-                                   String content,String subject,
-                                   List<String> filepath) {
-        Boolean b = checkParam(prelist,conList,content,subject,filepath);
+    public ResponseResult sendMail(@RequestBody EmailSendVo emailSendVo) {
+        Boolean b = checkParam(emailSendVo,getUserSession ());
         if(b){
             try {
-                staffPreEmploymentService.sendManyMail(prelist,conList,content,subject,filepath) ;
+                staffPreEmploymentService.sendManyMail(emailSendVo,getUserSession ()) ;
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("发邮件给预入职人员失败");

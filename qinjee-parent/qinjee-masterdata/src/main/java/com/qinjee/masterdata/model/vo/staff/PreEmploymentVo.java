@@ -1,13 +1,13 @@
 package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.qinjee.masterdata.model.entity.PreEmploymentChange;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 @Data
 @JsonInclude
 public class PreEmploymentVo implements Serializable {
@@ -120,10 +120,24 @@ public class PreEmploymentVo implements Serializable {
 
     /** 数据来源 */
     private String dataSource;
+
+
     /**
-     * 数据变更
+     * 延期入职原因
      */
-    private PreEmploymentChange preEmploymentChange;
+    private String delayReson;
+    /**
+     * 拉黑原因
+     */
+    private String blockReson;
 
+    /**
+     * 放弃原因
+     */
+    private String abandonReason;
 
+    /**
+     * 延期入职时间
+     */
+    private Date delayDate;
 }

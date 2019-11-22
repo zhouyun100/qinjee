@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
+import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.model.request.UserSession;
@@ -15,14 +16,11 @@ public interface IStaffPreEmploymentService {
 
     /**
      * 发送邮件
-     * @param prelist
-     * @param conList
-     * @param content
-     * @param subject
-     * @param filepath
-     * @return
+     * @param emailSendVo
+     * @param userSession
+     * @throws Exception
      */
-    void sendManyMail(List<Integer> prelist, List<Integer> conList, String content, String subject, List<String> filepath) throws Exception;
+    void sendManyMail(EmailSendVo emailSendVo,UserSession userSession) throws Exception;
 
     /**
      * 验证手机号

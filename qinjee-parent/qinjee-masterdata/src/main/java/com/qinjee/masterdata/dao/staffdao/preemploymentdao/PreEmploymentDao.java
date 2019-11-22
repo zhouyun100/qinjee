@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.preemploymentdao;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -44,7 +45,7 @@ public interface PreEmploymentDao {
      * @param companyId
      * @return
      */
-    List<PreEmployment> selectPreEmployment(@Param("companyId") Integer companyId);
+    List< PreEmployment> selectPreEmployment(@Param("companyId") Integer companyId);
 
     void deletePreEmploymentList(@Param("list") List<Integer> list);
 
@@ -59,4 +60,6 @@ public interface PreEmploymentDao {
     Map<Integer,Map<String,Object>> selectExportPreList(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
 
     int insertBatch(@Param ( "list" ) List<PreEmployment> list);
+
+    List< PreEmploymentVo> selectPreEmploymentVo(Integer companyId);
 }

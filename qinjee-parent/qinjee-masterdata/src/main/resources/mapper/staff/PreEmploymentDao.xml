@@ -66,6 +66,42 @@
         <result column="post_code" property="post_code" jdbcType="VARCHAR" />
         <result column="application_position" property="application_position" jdbcType="VARCHAR" />
     </resultMap>
+    <resultMap id="PreVo" type="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo">
+        <id column="employment_id" property="employmentId" jdbcType="INTEGER" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="gender" property="gender" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="id_type" property="idType" jdbcType="VARCHAR" />
+        <result column="id_number" property="idNumber" jdbcType="VARCHAR" />
+        <result column="age" property="age" jdbcType="VARCHAR" />
+        <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR" />
+        <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR" />
+        <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR" />
+        <result column="graduated_school" property="graduatedSchool" jdbcType="VARCHAR" />
+        <result column="graduated_speciality" property="graduatedSpeciality" jdbcType="VARCHAR" />
+        <result column="last_work_company" property="lastWorkCompany" jdbcType="VARCHAR" />
+        <result column="is_give_birth" property="isGiveBirth" jdbcType="VARCHAR" />
+        <result column="resident_character" property="residentCharacter" jdbcType="VARCHAR" />
+        <result column="height" property="height" jdbcType="VARCHAR" />
+        <result column="blood_type" property="bloodType" jdbcType="VARCHAR" />
+        <result column="english_name" property="englishName" jdbcType="VARCHAR" />
+        <result column="nationality" property="nationality" jdbcType="INTEGER" />
+        <result column="birth_date" property="birthDate" jdbcType="VARCHAR" />
+        <result column="political_status" property="politicalStatus" jdbcType="INTEGER" />
+        <result column="birthplace" property="birthplace" jdbcType="VARCHAR" />
+        <result column="application_position" property="applicationPosition" jdbcType="VARCHAR" />
+        <result column="probation_period" property="probationPeriod" jdbcType="VARCHAR" />
+        <result column="hire_date" property="hireDate" jdbcType="VARCHAR" />
+        <result column="org_id" property="orgId" jdbcType="INTEGER" />
+        <result column="post_id" property="postId" jdbcType="INTEGER" />
+        <result column="employment_state" property="employmentState" jdbcType="VARCHAR" />
+        <result column="employment_register" property="employmentRegister" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="data_source" property="dataSource" jdbcType="VARCHAR" />
+        <result column="org_name" property="orgName" jdbcType="VARCHAR" />
+        <result column="post_name" property="postName" jdbcType="VARCHAR" />
+    </resultMap>
 
   <!-- 表所有字段 -->
   <sql id="Base_Column_List">
@@ -439,7 +475,7 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
+  <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
     select
     <include refid="Base_Column_List" />
     from t_pre_employment
@@ -498,5 +534,18 @@
             #{item}
         </foreach>
         AND pre.is_delete=0 and org.is_enable=1 and post.is_delete=0 and pre.org_id=#{companyId}
+    </select>
+    <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
+        select
+        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
+        t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
+        t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
+        t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
+        t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
+        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name
+        from t_pre_employment t_pre_employment
+        left join t_organization org on org.org_id=t_pre_employment.org_id
+        left join t_post post on post.post_id = t_pre_employment.post_id
+        and org.is_enable=1 and post.is_enable=1 and t_pre_employment.is_delete=0 and t_pre_employment.company_id=#{companyId}
     </select>
 </mapper>

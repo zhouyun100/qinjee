@@ -26,9 +26,9 @@ public interface PreEmploymentChangeDao {
 
     int insertStatusChange(@Param("statusChangeVo") StatusChangeVo statusChangeVo);
 
-    Integer selectIdByPreId(@Param("preEmploymentId") Integer preEmploymentId);
+    List<Integer> selectIdByPreId(@Param("preEmploymentId") Integer preEmploymentId);
 
     List<PreEmploymentChange> selectByPreIdList(@Param("list") List<Integer> list);
 
-    PreEmploymentChange selectByPreId(@Param("employmentId") Integer employmentId);
+    List<PreEmploymentChange> selectByPreId(@Param("employmentId") Integer employmentId);
 }
