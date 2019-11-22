@@ -14,10 +14,6 @@ import java.util.Date;
 @JsonInclude
 public class StatusChangeVo {
     /**
-     * id
-     */
-    private Integer id;
-    /**
      * 变更状态
      */
     @NotNull

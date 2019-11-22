@@ -29,6 +29,7 @@ public interface BlacklistDao {
     List<Blacklist> selectByPage();
 
     List<Blacklist> selectByPhone(@Param("phoneList") List<String> phoneList);
+
     @MapKey ( "blacklist_id" )
-    Map< Integer, Map< String, Object>> selectExportBlackList(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
+    Map< Integer, Map< String, Object>> selectExportBlackList(@Param("list") List< Integer> list);
 }

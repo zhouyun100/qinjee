@@ -216,7 +216,7 @@ public interface IStaffCommonService {
 
     void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
 
-    void exportBlackFile(String title, List< Integer> list, HttpServletResponse response,UserSession userSession);
+    void exportBlackFile(ExportRequest exportRequest);
 
-    void exportContractList(String title, List< Integer> list, HttpServletResponse response, UserSession userSession);
+    void exportContractList(ExportRequest exportRequest);
 }

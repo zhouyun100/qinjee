@@ -308,6 +308,7 @@
     select  org_name
     from  t_organization
     where org_id = #{id,jdbcType=INTEGER}
+    and is_enable=1
   </select>
 
     <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">

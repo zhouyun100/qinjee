@@ -241,7 +241,8 @@
     AND is_delete=0
   </select>
     <select id="selectExportBlackList" resultType="java.util.Map" resultMap="blackListVo">
-    select * from  t_blacklist bla
+    select arc.user_name,arc.gender,arc.id_number,arc.tel as phone,org.org_name,
+    orga.org_name , post.post_name,bla.block_reason as abandon_reason   from  t_blacklist bla
     left join t_organization org on bla.org_id=org.org_id
     left join t_organization orga on bla.business_unit_id=orga.org_id
     left join t_post post on post.post_id=bla.post_id
@@ -250,7 +251,7 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{list}
     </foreach>
-    and companyId=#{companyId} and org.is_enable=1 and orga.is_enable=1
+    and org.is_enable=1 and orga.is_enable=1
     and bla.is_delete=0 and arc.is_delete=0
 
     </select>

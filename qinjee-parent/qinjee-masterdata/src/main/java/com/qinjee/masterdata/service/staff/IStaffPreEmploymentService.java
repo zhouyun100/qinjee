@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.model.request.UserSession;
@@ -50,12 +49,12 @@ public interface IStaffPreEmploymentService {
 
     /**
      * 根据机构展示预入职表
-     * @param companyId
+     * @param userSession
      * @param currentPage
      * @param pageSize
      * @return
      */
-    PageResult<PreEmployment> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize);
+    PageResult<PreEmploymentVo> selectPreEmployment(UserSession userSession, Integer currentPage, Integer pageSize);
 
     /**
      * 逻辑删除预入职表

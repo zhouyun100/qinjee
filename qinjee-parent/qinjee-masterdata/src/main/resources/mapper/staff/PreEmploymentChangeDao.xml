@@ -131,4 +131,11 @@
     #{item}
   </foreach>
   </select>
+  <select id="selectByPreId" resultType="com.qinjee.masterdata.model.entity.PreEmploymentChange" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_pre_employment_change
+    where employment_id =
+    #{employmentId}
+  </select>
 </mapper>

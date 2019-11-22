@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -10,12 +9,14 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -142,14 +143,14 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<PageResult<PreEmployment>> selectPreEmployment(Integer companyId,
+    public ResponseResult<PageResult<PreEmploymentVo>> selectPreEmployment(
                                                                          Integer currentPage,
                                                                          Integer pageSize){
-        Boolean b = checkParam(companyId,currentPage,pageSize);
+        Boolean b = checkParam(getUserSession (),currentPage,pageSize);
         if(b){
             try {
-                PageResult<PreEmployment> pageResult =
-                        staffPreEmploymentService.selectPreEmployment(companyId, currentPage, pageSize);
+                PageResult<PreEmploymentVo> pageResult =
+                        staffPreEmploymentService.selectPreEmployment(getUserSession (),currentPage, pageSize);
                 if(pageResult.getList().size()>0){
                     return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
                 }
@@ -222,13 +223,13 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @RequestMapping(value = "/sendMail", method = RequestMethod.POST)
     @ApiOperation(value = "邮箱发送入职登记表", notes = "hkt")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "list", value = "预入职收信人id集合", paramType = "query", required = true),
-            @ApiImplicitParam(name = "list", value = "抄送人档案id集合", paramType = "query", required = true),
-            @ApiImplicitParam(name = "String", value = "发送邮件主题", paramType = "query", required = true),
-            @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
-            @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "list", value = "预入职收信人id集合", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "抄送人档案id集合", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "String", value = "发送邮件主题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
+//    })
     public ResponseResult sendMail(@RequestBody List<Integer> prelist,List<Integer> conList,
                                    String content,String subject,
                                    List<String> filepath) {

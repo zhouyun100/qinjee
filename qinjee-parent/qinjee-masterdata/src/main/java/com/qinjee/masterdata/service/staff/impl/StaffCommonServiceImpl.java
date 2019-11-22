@@ -353,29 +353,30 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 getDates(exportFile,HeadMapUtil.getHeadsForPre()),
                 getTypeMap(HeadMapUtil.getHeadsForPre()));
     }
+
     @Override
-    public void exportBlackFile(String title, List < Integer > list, HttpServletResponse response,UserSession userSession) {
-        Map<Integer,Map<String,Object>> map=blacklistDao.selectExportBlackList(list,userSession.getCompanyId ());
+    public void exportBlackFile(ExportRequest exportRequest) {
+        Map<Integer,Map<String,Object>> map=blacklistDao.selectExportBlackList(exportRequest.getList ());
         ExportFile exportFile=new ExportFile();
-        exportFile.setTittle(title);
+        exportFile.setTittle(exportRequest.getTitle ());
         ExportList exportList=new ExportList();
         exportList.setMap(map);
         exportFile.setExportList(exportList);
-        ExcelUtil.download ( response,exportFile.getTittle (),
+        ExcelUtil.download (exportRequest.getResponse (),exportFile.getTittle (),
                 HeadMapUtil.getHeadsForBlackList (),
                 getDates (exportFile, HeadMapUtil.getHeadsForBlackList ()),
                         getTypeMap ( HeadMapUtil.getHeadsForBlackList () ));
     }
 
     @Override
-    public void exportContractList(String title, List < Integer > list, HttpServletResponse response, UserSession userSession) {
-        Map<Integer,Map<String,Object>> map=laborContractDao.selectExportConList(list,userSession.getCompanyId ());
+    public void exportContractList(ExportRequest exportRequest) {
+        Map<Integer,Map<String,Object>> map=laborContractDao.selectExportConList(exportRequest.getList ());
         ExportFile exportFile=new ExportFile();
-        exportFile.setTittle(title);
+        exportFile.setTittle(exportRequest.getTitle ());
         ExportList exportList=new ExportList();
         exportList.setMap(map);
         exportFile.setExportList(exportList);
-        ExcelUtil.download ( response,exportFile.getTittle (),
+        ExcelUtil.download (exportRequest.getResponse (),exportFile.getTittle (),
                 HeadMapUtil.getHeadsForCon (),
                 getDates (exportFile,  HeadMapUtil.getHeadsForCon ()),
                 getTypeMap (  HeadMapUtil.getHeadsForCon () ));
