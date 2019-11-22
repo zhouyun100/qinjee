@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.staff.importVo;
+package com.qinjee.masterdata.model.vo.staff.export;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -7,6 +7,10 @@ import java.io.Serializable;
 @Data
 @JsonInclude
 public class BlackList implements Serializable {
+    /**
+     * 黑名单id
+     */
+    private Integer blacklist_id;
     private String user_name;
     private String gender;
     private String id_number;

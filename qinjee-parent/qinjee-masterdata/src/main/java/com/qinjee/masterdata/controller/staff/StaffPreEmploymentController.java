@@ -115,7 +115,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 查看预入职信息(显示字段的信息)
      */
-    @RequestMapping(value = "/selectPreEmploymentField", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectPreEmploymentField", method = RequestMethod.POST)
     @ApiOperation(value = "查看预入职信息(显示字段的信息)，返回值中map是物理表属性，value是字段名", notes = "hkt")
     public ResponseResult<Map<String,String>> selectPreEmploymentField(){
         Boolean b = checkParam(getUserSession());
@@ -134,7 +134,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 根据机构查看预入职
      */
-    @RequestMapping(value = "/selectPreEmployment", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectPreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "根据机构查看预入职(物理表)", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
@@ -247,7 +247,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 校验手机号码
      */
-    @RequestMapping(value = "/checkPhone", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkPhone", method = RequestMethod.POST)
     @ApiOperation(value = "校验手机号码", notes = "hkt")
 //    @ApiImplicitParam(name = "String", value = "手机号", paramType = "query", required = true)
     public ResponseResult checkPhone(String phoneNumber) {
@@ -270,7 +270,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 校验邮箱
      */
-    @RequestMapping(value = "/checkMail", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkMail", method = RequestMethod.POST)
     @ApiOperation(value = "校验邮箱", notes = "hkt")
 //    @ApiImplicitParam(name = "String", value = "邮箱", paramType = "query", required = true)
     public ResponseResult checkMail(String mail) {
@@ -294,7 +294,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 生成入职登记二维码,返回是二维码图片链接
      */
-    @RequestMapping(value = "/creatQrcodeForPre", method = RequestMethod.GET)
+    @RequestMapping(value = "/creatQrcodeForPre", method = RequestMethod.POST)
     @ApiOperation(value = "生成入职登记二维码", notes = "hkt")
     @ApiImplicitParam(name = "url", value = "链接地址", paramType = "query", required = true)
     public ResponseResult creatQrcodeForPre(String url) {

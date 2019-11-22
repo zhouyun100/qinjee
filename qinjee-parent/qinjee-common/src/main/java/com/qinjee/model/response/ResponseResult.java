@@ -35,10 +35,10 @@ public class ResponseResult<T> implements Serializable {
     T result;
 
     public ResponseResult(ResultCode resultCode){
-        setResuktCode(resultCode);
+        setResultCode(resultCode);
     }
 
-    private void setResuktCode(ResultCode resultCode) {
+    public void setResultCode(ResultCode resultCode) {
         this.success = resultCode.success();
         this.code = resultCode.code();
         this.message = resultCode.message();
@@ -46,16 +46,16 @@ public class ResponseResult<T> implements Serializable {
 
     public ResponseResult(T result, ResultCode resultCode){
         this.result = result;
-        setResuktCode(resultCode);
+        setResultCode(resultCode);
     }
 
     public ResponseResult(T result){
         this.result = result;
-        setResuktCode(CommonCode.SUCCESS);
+        setResultCode(CommonCode.SUCCESS);
     }
 
     public ResponseResult(){
-        setResuktCode(CommonCode.SUCCESS);
+        setResultCode(CommonCode.SUCCESS);
     }
 
     public static ResponseResult SUCCESS(){

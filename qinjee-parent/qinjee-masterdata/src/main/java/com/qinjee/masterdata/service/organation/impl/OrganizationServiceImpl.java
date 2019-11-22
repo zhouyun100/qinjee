@@ -443,11 +443,22 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    @Transactional
     public ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId) {
-
+        ResponseResult responseResult=new ResponseResult(CommonCode.FAIL);
         List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
             organizationVOList = organizationDao.getOrganizationListByOrgIds(orgIds);
+        }else{
+            responseResult.setMessage("划转失败，待划转机构id为空");
+            return  responseResult;
+        }
+        //如果待划转机构已经在目标机构下，不允许重复划转
+        for (OrganizationVO org:organizationVOList){
+            if (org.getOrgParentId().equals(targetOrgId)){
+                responseResult.setMessage("划转失败，待划转机构已经在目标机构下，不允许重复划转");
+                return responseResult;
+            }
         }
 
         //判断是否是同一个父级下的
@@ -455,14 +466,20 @@ public class OrganizationServiceImpl implements OrganizationService {
             Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (OrgParentIds.size() != 1) {
                 //不是
-                return new ResponseResult(CommonCode.FAIL);
+                responseResult.setMessage("划转失败，不是同一个父级下的");
+                return responseResult;
             }
-            OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(targetOrgId);
 
+            OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(targetOrgId);
+            if(Objects.isNull(parentOrganizationVO)){
+                responseResult.setMessage("目标机构为空");
+                return responseResult;
+            }
             updateOrganizationfull_nameAndOrgCode(organizationVOList, parentOrganizationVO);
         }
-
-        return new ResponseResult();
+        responseResult.setResultCode(CommonCode.SUCCESS);
+        responseResult.setMessage("划转成功");
+        return responseResult;
     }
 
     @Override
@@ -766,27 +783,51 @@ public class OrganizationServiceImpl implements OrganizationService {
     /**
      * 修改本级的父级id和全名称及子级的全名称
      *
-     * @param organizationVOList
-     * @param parentOrganizationVO
+     * @param targetOrganizationVO
      */
-    private void updateOrganizationfull_nameAndOrgCode(List<OrganizationVO> organizationVOList, OrganizationVO parentOrganizationVO) {
-        String newOrgCode = parentOrganizationVO.getOrgCode() + "000";
-        for (OrganizationVO organizationVO : organizationVOList) {
-            OrganizationHistory organizationHistory = new OrganizationHistory();
-            BeanUtils.copyProperties(organizationVO, organizationHistory);
-            organizationHistoryService.addOrganizationHistory(organizationHistory);
-            organizationVO.setOrgParentId(parentOrganizationVO.getOrgId());
-            organizationVO.setOrgFullName(parentOrganizationVO.getOrgFullName() + "/" + organizationVO.getOrgName());
-            newOrgCode = culOrgCode(newOrgCode);
-            organizationVO.setOrgCode(newOrgCode);
-            organizationDao.updateByPrimaryKeySelective(organizationVO);
+    private void updateOrganizationfull_nameAndOrgCode(List<OrganizationVO> transOrgList, OrganizationVO targetOrganizationVO) {
+        //判断目标机构是否有子机构，如果有则返回最后一个子机构编码，否则返回自身编码
+        List<OrganizationVO> targetChildOrgList = organizationDao.getOrganizationListByParentOrgId(targetOrganizationVO.getOrgId());
+        String targetOrgCode="";
+        //机构为空或者包含原有子机构，当作初始化处理
+        if(CollectionUtils.isEmpty(targetChildOrgList)||targetChildOrgList.containsAll(transOrgList)){
+            targetOrgCode=targetOrganizationVO.getOrgCode()+"000";
+            System.out.println("目标机构没有子机构，targetOrgCode："+targetOrgCode);
+        }else{
+            String ChildOrgCode = targetChildOrgList.get(0).getOrgCode();
+            targetOrgCode=targetOrganizationVO.getOrgCode()+"000";
+            targetOrgCode=targetOrganizationVO.getOrgCode()+"00"+ChildOrgCode.substring(ChildOrgCode.length()-1,ChildOrgCode.length());
+            System.out.println("目标机构有子机构，targetOrgCode："+targetOrgCode);
+        }
+        //获取目标机构全称
+        String parentFullName=targetOrganizationVO.getOrgFullName();
+        //待划转的机构类型
+        String orgType="";
+        if(targetOrganizationVO.getOrgType().equalsIgnoreCase("GROUP")){
+            orgType="UNIT";
+        } else if(targetOrganizationVO.getOrgType().equalsIgnoreCase("UNIT")){
+            orgType="DEPT";
+        } else{
+            orgType="DEPT";
+        }
+        //截取目标机构编码或其最新子机构编码的最后一位数  加1
+        String prefixParentOrgCode=targetOrgCode.substring(0,targetOrgCode.length()-1);
+        Integer subfixParentorgCode= Integer.parseInt(targetOrgCode.substring(targetOrgCode.length()-1,targetOrgCode.length()));
+        //遍历设置划转机构的编码、机构类型、机构全称、父级机构id
+        for (OrganizationVO transOrg:transOrgList){
+            transOrg.setOrgType(orgType);
+            transOrg.setOrgParentId(targetOrganizationVO.getOrgId());
+            String transOrgCode=prefixParentOrgCode+(++subfixParentorgCode);
+            transOrg.setOrgCode(transOrgCode);
+            transOrg.setOrgFullName(parentFullName+"/"+transOrg.getOrgName());
+            organizationDao.updateByPrimaryKeySelective(transOrg);
+            List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(transOrg.getOrgId());
 
-            List<OrganizationVO> organizationVOS = organizationDao.getOrganizationListByParentOrgId(organizationVO.getOrgId());
-            if (!CollectionUtils.isEmpty(organizationVOS)) {
-                //递归修改本级的父级id和全名称及子级的全名称
-                updateOrganizationfull_nameAndOrgCode(organizationVOS, organizationVO);
+            //递归
+            if(!CollectionUtils.isEmpty(childOrgList)){
+                System.out.println("递归");
+                updateOrganizationfull_nameAndOrgCode(childOrgList,transOrg);
             }
-
         }
     }
 

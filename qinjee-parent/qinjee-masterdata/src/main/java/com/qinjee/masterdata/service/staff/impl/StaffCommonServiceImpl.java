@@ -7,10 +7,12 @@ import com.qinjee.masterdata.dao.CompanyCodeDao;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.*;
+import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
+import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
@@ -62,17 +64,19 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private CustomArchiveFieldCheckDao customArchiveFieldCheckDao;
     @Autowired
+    private PreEmploymentDao preEmploymentDao;
+    @Autowired
     private OrganizationDao organizationDao;
     @Autowired
     private CompanyCodeDao companyCodeDao;
     @Autowired
-    private PostDao postDao;
-    @Autowired
-    private UserArchiveDao userArchiveDao;
-    @Autowired
-    private PreEmploymentDao preEmploymentDao;
+    private LaborContractDao laborContractDao;
     @Autowired
     private CheckTypeDao checkTypeDao;
+    @Autowired
+    private BlacklistDao blacklistDao;
+    @Autowired
+    private PostDao postDao;
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable, UserSession userSession) {
         customArchiveTable.setCompanyId(userSession.getCompanyId());
@@ -294,7 +298,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         preEmploymentDao.insertBatch(preEmploymentList);
     }
-
     @Override
     public void importArcFile(MultipartFile multipartFile,UserSession userSession) throws Exception {
        //excel方法获得值
@@ -338,17 +341,49 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 getTypeMapForArc(exportFile, getHeadsByArc(exportFile)));
     }
     @Override
-    public void exportPreFile(String title,List<Integer> list, HttpServletResponse response){
-        Map<Integer,Map<String,Object>> map=preEmploymentDao.selectExportPreList(list);
+    public void exportPreFile(ExportRequest exportRequest, UserSession userSession){
+        Map<Integer,Map<String,Object>> map=preEmploymentDao.selectExportPreList(exportRequest.getList (),userSession.getCompanyId ());
+        ExportFile exportFile=new ExportFile();
+        exportFile.setTittle(exportRequest.getTitle ());
+        ExportList exportList=new ExportList();
+        exportList.setMap(map);
+        exportFile.setExportList(exportList);
+        ExcelUtil.download(exportRequest.getResponse (),exportFile.getTittle(),
+                HeadMapUtil.getHeadsForPre(),
+                getDates(exportFile,HeadMapUtil.getHeadsForPre()),
+                getTypeMap(HeadMapUtil.getHeadsForPre()));
+    }
+    @Override
+    public void exportBlackFile(String title, List < Integer > list, HttpServletResponse response,UserSession userSession) {
+        Map<Integer,Map<String,Object>> map=blacklistDao.selectExportBlackList(list,userSession.getCompanyId ());
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(title);
         ExportList exportList=new ExportList();
         exportList.setMap(map);
         exportFile.setExportList(exportList);
-        ExcelUtil.download(response,exportFile.getTittle(),
-                HeadMapUtil.getHeadsForPre(),
-                getDates(exportFile,HeadMapUtil.getHeadsForPre()),
-                getTypeMap(HeadMapUtil.getHeadsForPre()));
+        ExcelUtil.download ( response,exportFile.getTittle (),
+                HeadMapUtil.getHeadsForBlackList (),
+                getDates (exportFile, HeadMapUtil.getHeadsForBlackList ()),
+                        getTypeMap ( HeadMapUtil.getHeadsForBlackList () ));
+    }
+
+    @Override
+    public void exportContractList(String title, List < Integer > list, HttpServletResponse response, UserSession userSession) {
+        Map<Integer,Map<String,Object>> map=laborContractDao.selectExportConList(list,userSession.getCompanyId ());
+        ExportFile exportFile=new ExportFile();
+        exportFile.setTittle(title);
+        ExportList exportList=new ExportList();
+        exportList.setMap(map);
+        exportFile.setExportList(exportList);
+        ExcelUtil.download ( response,exportFile.getTittle (),
+                HeadMapUtil.getHeadsForCon (),
+                getDates (exportFile,  HeadMapUtil.getHeadsForCon ()),
+                getTypeMap (  HeadMapUtil.getHeadsForCon () ));
+    }
+
+    @Override
+    public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
+
     }
 
     /**
@@ -426,10 +461,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return map;
     }
-    @Override
-    public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
 
-    }
 
     public static String fieldToProperty(String field) {
         if (null == field) {

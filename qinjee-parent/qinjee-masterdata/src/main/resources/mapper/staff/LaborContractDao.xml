@@ -21,6 +21,10 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+  <resultMap id="ExportCon" type="com.qinjee.masterdata.model.vo.staff.export.Contract">
+
+
+  </resultMap>
   <sql id="Base_Column_List">
     contract_id, archive_id,business_unit_id,org_id,post_id,
     contract_sign_date, contract_begin_date, contract_end_date, contract_period_month, 
@@ -296,4 +300,5 @@
       #{item}
     </foreach>
   </select>
+    <select id="selectExportConList" resultType="java.util.Map"></select>
 </mapper>
