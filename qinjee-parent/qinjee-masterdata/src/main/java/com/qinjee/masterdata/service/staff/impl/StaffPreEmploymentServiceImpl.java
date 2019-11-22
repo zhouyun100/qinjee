@@ -12,6 +12,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import com.qinjee.masterdata.service.email.EmailConfigService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -58,6 +59,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private OrganizationDao organizationDao;
     @Autowired
+    private EmailConfigService emailConfigService;
+    @Autowired
     private PostDao postDao;
 
 
@@ -82,6 +85,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             }
         }
         List<String> mails = userArchiveDao.selectMail(conList);
+//        emailConfigService.getEmailConfigByCompanyId (  )
         MailConfig mailConfig = new MailConfig();
         SendManyMailsUtil.sendMail(mailConfig,tomails, mails, subject, content, filepath);
     }
@@ -241,7 +245,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             preEmploymentVo.setPostName ( postDao.selectPostNameById ( preEmployment.getPostId () ) );
             preEmploymentVos.add ( preEmploymentVo );
         }
-        return new PageResult<>(preEmploymentVos);
+        PageResult < PreEmploymentVo > preEmploymentVoPageResult = new PageResult <> ( preEmploymentVos );
+        preEmploymentVoPageResult.setTotal ( preEmploymentVos.size () );
+        return preEmploymentVoPageResult;
     }
 
     @Override
@@ -263,7 +269,4 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private Integer getPreChangeId(Integer preEmploymentId){
         return preEmploymentChangeDao.selectIdByPreId(preEmploymentId);
     }
-
-
-
 }
