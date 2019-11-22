@@ -284,7 +284,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_organization
-        where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY org_code DESC
+        where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY sort_Id DESC
     </select>
 
 
