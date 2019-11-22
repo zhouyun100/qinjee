@@ -58,7 +58,10 @@ public class LaborContract implements Serializable {
      * 合同期限(月)
      */
     private Integer contractPeriodMonth;
-
+    /**
+     * 合同类别
+     */
+    private String  contractCategory;
     /**
      * 合同期限类型
      */

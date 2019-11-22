@@ -36,6 +36,16 @@
     <result column="has_org" jdbcType="INTEGER" property="hasOrg" />
   </resultMap>
 
+  <resultMap id="UserRoleMap" type="com.qinjee.masterdata.model.entity.UserRole">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="is_trusteeship" jdbcType="TINYINT" property="isTrusteeship" />
+    <result column="trusteeship_begin_time" jdbcType="TIMESTAMP" property="trusteeshipBeginTime" />
+    <result column="trusteeship_end_time" jdbcType="TIMESTAMP" property="trusteeshipEndTime" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+  </resultMap>
+
   <!-- 根据角色ID查询档案列表 -->
   <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
     select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
@@ -88,6 +98,13 @@
       #{operatorId,jdbcType=INTEGER})
   </insert>
 
+  <!--根据档案ID查询已有的机构列表 -->
+  <select id="searchArchiveRoleByArchiveId" parameterType="java.lang.Integer" resultMap="UserRoleMap">
+    select id,role_id,archive_id,is_trusteeship,trusteeship_begin_time,trusteeship_end_time,operator_id
+    from t_user_role
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
 
   <!-- 根据档案ID查询所有机构列表 -->
   <select id="searchOrganizationListByArchiveId" resultMap="OrgArchiveResultMap">

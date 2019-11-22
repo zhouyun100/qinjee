@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.qinjee.masterdata.model.entity.PreEmploymentChange;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -27,10 +28,16 @@ public class PreEmploymentVo implements Serializable {
     /** 性别 */
     @NotNull
     private String gender;
-
+    /** 入职状态 */
+    private String employmentState;
     /** 邮箱 */
     @NotNull
     private String email;
+    /** 应聘岗位 */
+    @NotNull
+    private String applicationPosition;
+    /** 入职部门 */
+    private Integer orgId;
 
     /** 证件类型 */
     private String idType;
@@ -89,25 +96,22 @@ public class PreEmploymentVo implements Serializable {
     /** 藉贯 */
     private String birthplace;
 
-    /** 入职岗位 */
-    @NotNull
-    private String applicationPosition;
-
     /** 试用期限(月) */
     private Integer probationPeriod;
 
     /** 入职日期 */
     private Date hireDate;
 
-    /** 入职部门 */
-    private Integer orgId;
-
     /** 入职岗位 */
     private Integer postId;
-
-    /** 入职状态 */
-    private String employmentState;
-
+    /**
+     * 岗位名称
+     */
+    private String postName;
+    /**
+     * 职位名称
+     */
+    private String orgName;
     /** 入职登记 */
     private String employmentRegister;
 
@@ -116,6 +120,10 @@ public class PreEmploymentVo implements Serializable {
 
     /** 数据来源 */
     private String dataSource;
+    /**
+     * 数据变更
+     */
+    private PreEmploymentChange preEmploymentChange;
 
 
 }

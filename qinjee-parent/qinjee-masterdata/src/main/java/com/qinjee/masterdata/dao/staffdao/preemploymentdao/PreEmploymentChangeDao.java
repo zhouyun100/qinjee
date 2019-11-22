@@ -29,4 +29,6 @@ public interface PreEmploymentChangeDao {
     Integer selectIdByPreId(@Param("preEmploymentId") Integer preEmploymentId);
 
     List<PreEmploymentChange> selectByPreIdList(@Param("list") List<Integer> list);
+
+    PreEmploymentChange selectByPreId(@Param("employmentId") Integer employmentId);
 }

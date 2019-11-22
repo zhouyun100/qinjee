@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +55,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private CustomArchiveFieldDao customArchiveFieldDao;
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
+    @Autowired
+    private OrganizationDao organizationDao;
+    @Autowired
+    private PostDao postDao;
 
 
 
@@ -221,10 +228,20 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    public PageResult<PreEmployment> selectPreEmployment(Integer companyId, Integer currentPage, Integer pageSize) {
+    public PageResult<PreEmploymentVo> selectPreEmployment(UserSession userSession, Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage, pageSize);
-        List<PreEmployment> list = preEmploymentDao.selectPreEmployment(companyId);
-        return new PageResult<>(list);
+        List<PreEmploymentVo> preEmploymentVos=new ArrayList <> ();
+        List<PreEmployment> list = preEmploymentDao.selectPreEmployment(userSession.getCompanyId ());
+        for (PreEmployment preEmployment : list) {
+            PreEmploymentVo preEmploymentVo=new PreEmploymentVo ();
+            BeanUtils.copyProperties ( preEmployment,preEmploymentVo );
+            PreEmploymentChange preEmploymentChange=preEmploymentChangeDao.selectByPreId(preEmployment.getEmploymentId());
+            preEmploymentVo.setPreEmploymentChange ( preEmploymentChange);
+            preEmploymentVo.setOrgName (organizationDao.selectOrgName ( preEmployment.getOrgId () ) );
+            preEmploymentVo.setPostName ( postDao.selectPostNameById ( preEmployment.getPostId () ) );
+            preEmploymentVos.add ( preEmploymentVo );
+        }
+        return new PageResult<>(preEmploymentVos);
     }
 
     @Override

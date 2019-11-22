@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.LaborContract">
-    <id column="contract_id" jdbcType="INTEGER" property="contractId" />
-    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contract_id" jdbcType="INTEGER" property="contractId" />
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
@@ -15,6 +16,7 @@
     <result column="contract_subject" jdbcType="VARCHAR" property="contractSubject" />
     <result column="contract_number" jdbcType="VARCHAR" property="contractNumber" />
     <result column="contract_state" jdbcType="VARCHAR" property="contractState" />
+    <result column="contract_category" jdbcType="VARCHAR" property="contractCategory" />
     <result column="contract_remark" jdbcType="VARCHAR" property="contractRemark" />
     <result column="sign_number" jdbcType="INTEGER" property="signNumber" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
@@ -22,8 +24,20 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <resultMap id="ExportCon" type="com.qinjee.masterdata.model.vo.staff.export.Contract">
-
-
+    <id column="contract_id" jdbcType="INTEGER" property="id" />
+    <result column="id_number" jdbcType="VARCHAR" property="id_number" />
+    <result column="employment_number" jdbcType="VARCHAR" property="employment_number" />
+    <result column="contract_period_type" jdbcType="VARCHAR" property="contract_number" />
+    <result column="contract_sign_date" jdbcType="TIMESTAMP" property="contract_period_type" />
+    <result column="contract_number" jdbcType="VARCHAR" property="contract_sign_date" />
+    <result column="contract_begin_date" jdbcType="TIMESTAMP" property="contract_begin_date" />
+    <result column="TIMESTAMP" jdbcType="TIMESTAMP" property="contract_end_date" />
+    <result column="contract_number" jdbcType="VARCHAR" property="contract_number" />
+    <result column="contract_period_month" jdbcType="INTEGER" property="contract_period_month" />
+    <result column="contract_number" jdbcType="VARCHAR" property="contract_number" />
+    <result column="contract_subject" jdbcType="VARCHAR" property="contract_subject" />
+    <result column="sign_number" jdbcType="INTEGER" property="sign_number" />
+    <result column="contract_remark" jdbcType="VARCHAR" property="contract_remark" />
   </resultMap>
   <sql id="Base_Column_List">
     contract_id, archive_id,business_unit_id,org_id,post_id,
@@ -42,14 +56,14 @@
     where contract_id = #{contractId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
-    insert into t_labor_contract (archive_id,
+    insert into t_labor_contract (id,archive_id,
     business_unit_id,org_id,post_id,
      contract_sign_date, contract_begin_date,
       contract_end_date, contract_period_month, contract_period_type, 
       contract_subject, contract_number, contract_state, 
       contract_remark, sign_number, operator_id, 
       create_time, update_time)
-    values (#{archiveId,jdbcType=INTEGER},
+    values (#{id,jdbcType=INTEGER},#{archiveId,jdbcType=INTEGER},
     #{businessUnitId,jdbcType=INTEGER},#{orgId,jdbcType=INTEGER},#{postId,jdbcType=INTEGER},
       #{contractSignDate,jdbcType=DATE}, #{contractBeginDate,jdbcType=DATE},
       #{contractEndDate,jdbcType=DATE}, #{contractPeriodMonth,jdbcType=INTEGER}, #{contractPeriodType,jdbcType=VARCHAR}, 
@@ -300,5 +314,16 @@
       #{item}
     </foreach>
   </select>
-    <select id="selectExportConList" resultType="java.util.Map"></select>
+    <select id="selectExportConList" resultType="java.util.Map" resultMap="ExportCon">
+      select arc.user_name,arc.id_number,arc.employee_number,con.contract_number,con.contract_period_type,
+      con.contract_begin_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
+      con.contract_subject,con.sign_number,con.contract_remark,con.contract_category
+      from t_labor_contract con
+      left join t_user_archive arc on arc.archive_id = con.archive_id
+      where con.id in
+      <foreach collection="list" open="(" separator="," close=")">
+        #{list}
+      </foreach>
+      and con.is_delete=0 and arc.is_delete=0
+    </select>
 </mapper>

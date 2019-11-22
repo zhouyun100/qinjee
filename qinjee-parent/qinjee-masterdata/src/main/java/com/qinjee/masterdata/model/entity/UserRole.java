@@ -38,7 +38,7 @@ public class UserRole implements Serializable {
      * 是否托管
      */
     @ApiModelProperty("是否托管")
-    private Byte isTrusteeship;
+    private Integer isTrusteeship;
 
     /**
      * 托管开始时间

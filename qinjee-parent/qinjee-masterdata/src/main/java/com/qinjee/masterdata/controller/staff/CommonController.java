@@ -625,6 +625,7 @@ public class CommonController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
+
     /**
      * 模板导出黑名单
      */
@@ -636,11 +637,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreFile(@RequestParam List<Integer> list, String title, HttpServletResponse response) {
-        Boolean b = checkParam(title,list,response,getUserSession ());
+    public ResponseResult exportPreFile(@RequestBody ExportRequest exportRequest) {
+        Boolean b = checkParam(exportRequest,getUserSession ());
         if(b){
             try {
-                staffCommonService.exportBlackFile(title,list,response,getUserSession ());
+                staffCommonService.exportBlackFile(exportRequest);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -660,11 +661,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportContractList(@RequestParam List<Integer> list, String title, HttpServletResponse response) {
-        Boolean b = checkParam(title,list,response,getUserSession ());
+    public ResponseResult exportContractList(@RequestBody ExportRequest exportRequest) {
+        Boolean b = checkParam(exportRequest,getUserSession ());
         if(b){
             try {
-                staffCommonService.exportContractList(title,list,response,getUserSession ());
+                staffCommonService.exportContractList(exportRequest);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -697,9 +698,6 @@ public class CommonController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
-
-
-
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
