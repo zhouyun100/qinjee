@@ -28,18 +28,12 @@ public class  PositionGroupController extends BaseController {
     @Autowired
     private PositionGroupService positionGroupService;
 
-    @ApiOperation(value = "树形展示职位", notes = "高雄")
+    @ApiOperation(value = "获取所有职位族", notes = "高雄")
     @GetMapping("/getAllPositionGroupTree")
     public ResponseResult<List<PositionGroup>> getAllPositionGroupTree(){
         return positionGroupService.getAllPositionGroupTree(getUserSession());
     }
 
-    @ApiOperation(value = "获取所有的职位族", notes = "高雄")
-    @GetMapping("/getAllPositionGroup")
-    public ResponseResult<PageResult<PositionGroup>> getAllPositionGroup(PageVo pageVo){
-        UserSession userSession = getUserSession();
-        return positionGroupService.getAllPositionGroup(userSession, pageVo);
-    }
 
     @ApiOperation(value = "新增职位族", notes = "高雄")
     @GetMapping("/addPositionGroup")
