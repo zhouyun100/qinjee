@@ -41,6 +41,13 @@ public interface ArchiveAuthDao {
     int addArchiveRole(UserRole userRole);
 
     /**
+     * 根据档案ID查询员工角色列表
+     * @param archiveId
+     * @return
+     */
+    List<UserRole> searchArchiveRoleByArchiveId(Integer archiveId);
+
+    /**
      * 角色移除员工
      * @param userRole
      * @return
