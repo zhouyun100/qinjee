@@ -42,8 +42,8 @@ public class  PositionGroupController extends BaseController {
     }
 
     @ApiOperation(value = "新增职位族", notes = "高雄")
-    @PostMapping("/addPositionGroup")
-    public ResponseResult addPositionGroup(@RequestBody @ApiParam(value = "职位族名称", example = "研发族", required = true) String positionGroupName){
+    @GetMapping("/addPositionGroup")
+    public ResponseResult addPositionGroup(@RequestParam @ApiParam(value = "职位族名称", example = "研发族", required = true) String positionGroupName){
         return positionGroupService.addPositionGroup(getUserSession(), positionGroupName);
     }
 
