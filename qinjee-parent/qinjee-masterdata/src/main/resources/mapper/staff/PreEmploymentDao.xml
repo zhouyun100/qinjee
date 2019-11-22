@@ -497,6 +497,6 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND pre.is_delete=0 and org.is_enable=1 and post.is_delete=0
+        AND pre.is_delete=0 and org.is_enable=1 and post.is_delete=0 and pre.org_id=#{companyId}
     </select>
 </mapper>

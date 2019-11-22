@@ -75,7 +75,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
                 userOrgAuth = new UserOrgAuth();
                 userOrgAuth.setArchiveId(archiveId);
                 userOrgAuth.setRoleId(roleId);
-                archiveAuthDao.addArchiveOrgAuth(userOrgAuth);
+                archiveAuthDao.delArchiveOrgAuth(userOrgAuth);
             }
         }
     }

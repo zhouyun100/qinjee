@@ -56,7 +56,7 @@ public interface PreEmploymentDao {
 
     List<PreEmployment> selectByPrimaryKeyList(@Param("list") List<Integer> list);
     @MapKey("employment_id")
-    Map<Integer,Map<String,Object>> selectExportPreList(@Param("list") List<Integer> list);
+    Map<Integer,Map<String,Object>> selectExportPreList(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
 
     int insertBatch(@Param ( "list" ) List<PreEmployment> list);
 }

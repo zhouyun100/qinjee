@@ -1,8 +1,13 @@
-package com.qinjee.masterdata.model.vo.staff.importVo;
+package com.qinjee.masterdata.model.vo.staff.export;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 
 import java.util.Date;
-
+@Data
+@JsonInclude
 public class Contract {
+    private Integer id;
     private String user_name;
     private String id_number;
     private String employment_number;

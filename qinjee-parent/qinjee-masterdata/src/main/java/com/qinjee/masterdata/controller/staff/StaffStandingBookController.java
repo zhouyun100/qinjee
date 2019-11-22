@@ -93,7 +93,7 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 展示黑名单表
      */
-    @RequestMapping(value = "/selectBalckList", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "展示黑名单表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -121,7 +121,7 @@ public class StaffStandingBookController extends BaseController {
      * 删除台账
      */
 
-    @RequestMapping(value = "/deleteStandingBook", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteStandingBook", method = RequestMethod.POST)
     @ApiOperation(value = "删除台账", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult deleteStandingBook(Integer standingBookId) {
@@ -166,7 +166,7 @@ public class StaffStandingBookController extends BaseController {
      * 查询台账
      */
 
-    @RequestMapping(value = "/selectStandingBook", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectStandingBook", method = RequestMethod.POST)
     @ApiOperation(value = "查询台账", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult<StandingBookInfo> selectStandingBook(Integer id) {
@@ -188,7 +188,7 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 查看我的台账，不含共享
      */
-    @RequestMapping(value = "/selectMyStandingBook", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectMyStandingBook", method = RequestMethod.POST)
     @ApiOperation(value = "查看我的台账，不含共享", notes = "hkt")
     public ResponseResult<List<StandingBook>> selectMyStandingBook() {
         Boolean b = checkParam(getUserSession());
@@ -209,7 +209,7 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 查看我的台账，含共享
      */
-    @RequestMapping(value = "/selectMyStandingBookShare", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectMyStandingBookShare", method = RequestMethod.POST)
     @ApiOperation(value = "查看我的台账，含是否共享", notes = "hkt")
     public ResponseResult selectMyStandingBookShare() {
         Boolean b = checkParam(getUserSession());
@@ -235,7 +235,7 @@ public class StaffStandingBookController extends BaseController {
      *     3，操作符中的包含分为字符串与非字符串两种情况
      *     4，连接符分为或者与并且
      */
-    @RequestMapping(value = "/selectStaff", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectStaff", method = RequestMethod.POST)
     @ApiOperation(value = "通过台账查询", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "StandingBookId", value = "员工台账id", paramType = "query", required = true),

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -95,7 +96,7 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义表
      */
-    @RequestMapping(value = "/selectCustomArchiveTable", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectCustomArchiveTable", method = RequestMethod.POST)
     @ApiOperation(value = "展示自定义表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -180,7 +181,7 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义组中的字段
      */
-    @RequestMapping(value = "/selectArchiveFieldFromGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchiveFieldFromGroup", method = RequestMethod.POST)
     @ApiOperation(value = "展示自定义组中的表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -209,7 +210,7 @@ public class CommonController extends BaseController {
     /**
      * 展示企业下自定义表名
      */
-    @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.POST)
     @ApiOperation(value = "展示企业下的自定义表名", notes = "hkt")
     public ResponseResult<List<String>> selectTableFromGroup() {
         Boolean b = checkParam(getUserSession());
@@ -292,7 +293,7 @@ public class CommonController extends BaseController {
      * 分页展示指定自定义表下的自定义字段
      */
 
-    @RequestMapping(value = "/selectCustomArchiveField", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectCustomArchiveField", method = RequestMethod.POST)
     @ApiOperation(value = "分页展示指定自定义表下的自定义字段", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -322,7 +323,7 @@ public class CommonController extends BaseController {
     /**
      * 通过自定义字段id找到对应的自定义字段信息
      */
-    @RequestMapping(value = "/selectCustomArchiveFieldById", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectCustomArchiveFieldById", method = RequestMethod.POST)
     @ApiOperation(value = "通过自定义字段id找到对应的自定义字段信息", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId) {
@@ -346,7 +347,7 @@ public class CommonController extends BaseController {
     /**
      * 通过字段id找到对应的字段值
      */
-    @RequestMapping(value = "/selectFieldValueById", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectFieldValueById", method = RequestMethod.POST)
     @ApiOperation(value = "通过字段id找到对应的字段值", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<List<String>> selectFieldValueById(Integer customArchiveFieldId) {
@@ -411,7 +412,7 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义表内容
      */
-    @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.POST)
     @ApiOperation(value = "展示自定义表数据内容,返回自定义表数据", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -441,7 +442,7 @@ public class CommonController extends BaseController {
      * 获取字段校验类型
      */
 
-    @RequestMapping(value = "/checkField", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkField", method = RequestMethod.POST)
     @ApiOperation(value = "集合存储字段所需要的检验类型，考虑是否直接放在字段表中", notes = "hkt")
 //    @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
     public ResponseResult<List<String>> checkField(Integer fieldId) {
@@ -466,7 +467,7 @@ public class CommonController extends BaseController {
      * 根据档案显示对应权限下的单位
      * swagger参数不允许为空，test是伪造数据
      */
-    @RequestMapping(value = "/getCompany", method = RequestMethod.GET)
+    @RequestMapping(value = "/getCompany", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
     public ResponseResult<List<Integer>> getCompanyId() {
         Boolean b = checkParam(getUserSession());
@@ -488,7 +489,7 @@ public class CommonController extends BaseController {
     /**
      * 根据档案id显示对应权限下的子集部门
      */
-    @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.GET)
+    @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult getOrgIdByCompanyId(Integer orgId) {
@@ -511,7 +512,7 @@ public class CommonController extends BaseController {
     /**
      * 显示部门下的岗位
      */
-    @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.POST)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult<List<Post>> getPostByOrgId(Integer orgId) {
@@ -531,31 +532,6 @@ public class CommonController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
     }
-    /**
-     * 模板导出档案
-     */
-    @RequestMapping(value = "/exportArcFile", method = RequestMethod.POST)
-    @ApiOperation(value = "导出档案模板", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
-//    })
-    //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile(@RequestBody @Valid ExportFile exportFile, HttpServletResponse response) {
-        Boolean b = checkParam(exportFile,response);
-        if(b){
-            try {
-                staffCommonService.exportArcFile(exportFile,response);
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("导出失败");
-            }
-        }
-        return  failResponseResult("参数错误");
-    }
 
     /**
      * 模板导入档案
@@ -565,7 +541,7 @@ public class CommonController extends BaseController {
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
     public ResponseResult importArcFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile,getUserSession());
+        Boolean b = checkParam(multipartFile);
         if(b){
             try {
                 staffCommonService.importArcFile(multipartFile,getUserSession());
@@ -598,6 +574,32 @@ public class CommonController extends BaseController {
         return  failResponseResult("path错误");
     }
 
+    /**
+     * 模板导出档案
+     */
+    @RequestMapping(value = "/exportArcFile", method = RequestMethod.POST)
+    @ApiOperation(value = "导出档案模板", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
+//    })
+    //导出的文件应该是以.xls结尾
+    public ResponseResult exportArcFile(@RequestBody @Valid ExportFile exportFile, HttpServletResponse response) {
+        Boolean b = checkParam(exportFile,response);
+        if(b){
+            try {
+                staffCommonService.exportArcFile(exportFile,response);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+
 
     /**
      * 模板导出预入职
@@ -610,11 +612,59 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreFile(@RequestParam List<Integer> list,String title, HttpServletResponse response) {
-        Boolean b = checkParam(title,list,response);
+    public ResponseResult export(@RequestBody ExportRequest exportRequest) {
+        Boolean b = checkParam(exportRequest,getUserSession ());
         if(b){
             try {
-                staffCommonService.exportPreFile(title,list,response);
+                staffCommonService.exportPreFile(exportRequest,getUserSession () );
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+    /**
+     * 模板导出黑名单
+     */
+    @RequestMapping(value = "/exportBlackFile", method = RequestMethod.POST)
+    @ApiOperation(value = "导出黑名单模板", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
+//    })
+
+    public ResponseResult exportPreFile(@RequestParam List<Integer> list, String title, HttpServletResponse response) {
+        Boolean b = checkParam(title,list,response,getUserSession ());
+        if(b){
+            try {
+                staffCommonService.exportBlackFile(title,list,response,getUserSession ());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+    /**
+     * 模板导出合同表
+     */
+    @RequestMapping(value = "/exportContractList", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导出合同表", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
+//    })
+
+    public ResponseResult exportContractList(@RequestParam List<Integer> list, String title, HttpServletResponse response) {
+        Boolean b = checkParam(title,list,response,getUserSession ());
+        if(b){
+            try {
+                staffCommonService.exportContractList(title,list,response,getUserSession ());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -627,7 +677,7 @@ public class CommonController extends BaseController {
     /**
      * 模板导出业务类
      */
-    @RequestMapping(value = "/exportBusiness", method = RequestMethod.GET)
+    @RequestMapping(value = "/exportBusiness", method = RequestMethod.POST)
     @ApiOperation(value = "模板导出业务类", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),

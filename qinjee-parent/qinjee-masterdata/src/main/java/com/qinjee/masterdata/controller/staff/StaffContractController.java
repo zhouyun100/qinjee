@@ -36,7 +36,7 @@ public class StaffContractController extends BaseController {
     /**
      * 展示未签合同
      */
-    @RequestMapping(value = "/selectNoLaborContractU", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectNoLaborContractU", method = RequestMethod.POST)
     @ApiOperation(value = "展示未签合同", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -182,7 +182,7 @@ public class StaffContractController extends BaseController {
     /**
      * 删除合同
      */
-    @RequestMapping(value = "/deleteLaborContract", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "删除合同", notes = "hkt")
 //    @ApiImplicitParam(name = "LaborContractid", value = "合同id", paramType = "query", required = true)
     public ResponseResult deleteLaborContract(Integer laborContractid) {
@@ -374,7 +374,7 @@ public class StaffContractController extends BaseController {
      * 展示合同的变更记录，对合同的状态进行变更的，都应该有变更记录
      */
 
-    @RequestMapping(value = "/selectLaborContractchange", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectLaborContractchange", method = RequestMethod.POST)
     @ApiOperation(value = "展示合同的变更记录", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "合同id", paramType = "query", required = true)
     public ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id) {
@@ -438,7 +438,7 @@ public class StaffContractController extends BaseController {
     /**
      * 展示我的续签意向
      */
-    @RequestMapping(value = "/selectContractRenewalIntention", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectContractRenewalIntention", method = RequestMethod.POST)
     @ApiOperation(value = "展示我的续签意向", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
     public ResponseResult<List<ContractRenewalIntention>> selectContractRenewalIntention(Integer id) {
@@ -462,7 +462,7 @@ public class StaffContractController extends BaseController {
     /**
      * 同意续签
      */
-    @RequestMapping(value = "/agreeRenew", method = RequestMethod.GET)
+    @RequestMapping(value = "/agreeRenew", method = RequestMethod.POST)
     @ApiOperation(value = "同意续签", notes = "hkt")
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
     public ResponseResult agreeRenew(Integer xuqianId) {
@@ -483,7 +483,7 @@ public class StaffContractController extends BaseController {
     /**
      * 拒绝续签
      */
-    @RequestMapping(value = "/rejectRenew", method = RequestMethod.GET)
+    @RequestMapping(value = "/rejectRenew", method = RequestMethod.POST)
     @ApiOperation(value = "不同意续签", notes = "hkt")
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
     public ResponseResult rejectRenew(Integer xuqianId) {
@@ -503,7 +503,7 @@ public class StaffContractController extends BaseController {
     /**
      * 查询在职员工的人数
      */
-    @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.POST)
     @ApiOperation(value = "查询在职员工的人数", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
     public ResponseResult<Integer> selectArcNumberIn(Integer id) {

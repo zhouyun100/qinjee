@@ -76,7 +76,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 删除恢复
      */
-    @RequestMapping(value = "/resumeDeleteArchiveById", method = RequestMethod.GET)
+    @RequestMapping(value = "/resumeDeleteArchiveById", method = RequestMethod.POST)
     @ApiOperation(value = "恢复删除档案", notes = "hkt")
     @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
     public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
@@ -153,7 +153,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 通过id找到人员姓名与工号
      */
-    @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.POST)
     @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
@@ -172,7 +172,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
     @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
     public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer comanyId) {
@@ -281,7 +281,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 通过id查询到对应机构名称
      */
-    @RequestMapping(value = "/selectOrgName", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectOrgName", method = RequestMethod.POST)
     @ApiOperation(value = "通过id查询到对应机构名称", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
 
@@ -301,7 +301,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 查看权限下的对应表的显示字段
      */
-    @RequestMapping(value = "/selectFieldByTableIdAndAuth", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectFieldByTableIdAndAuth", method = RequestMethod.POST)
     @ApiOperation(value = "查看权限下的对应表的显示字段", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "tableId", paramType = "query", required = true)
 
@@ -324,7 +324,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 查看权限下的档案表的显示字段
      */
-    @RequestMapping(value = "/selectFieldByArcAndAuth", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectFieldByArcAndAuth", method = RequestMethod.POST)
     @ApiOperation(value = "查看权限下的档案表的显示字段", notes = "hkt")
     public ResponseResult<List<String>> selectFieldByArcAndAuth() {
         Boolean b = checkParam(getUserSession());
@@ -389,7 +389,7 @@ public class StaffArchiveController extends BaseController {
      * 展示查询方案
      * 根据排序字段确认顺序，根据查询方案id找到显示字段与排序字段
      */
-    @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
     public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
@@ -460,7 +460,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 展示员工轨迹
      */
-    @RequestMapping(value = "/selectCareerTrack", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectCareerTrack", method = RequestMethod.POST)
     @ApiOperation(value = "展示员工轨迹", notes = "hkt")
     @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<List<ArchiveCareerTrack>> selectCareerTrack(Integer id) {
@@ -501,7 +501,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 删除员工轨迹
      */
-    @RequestMapping(value = "/deleteCareerTrack", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteCareerTrack", method = RequestMethod.POST)
     @ApiOperation(value = "修改员工轨迹", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult deleteCareerTrack(Integer id) {
