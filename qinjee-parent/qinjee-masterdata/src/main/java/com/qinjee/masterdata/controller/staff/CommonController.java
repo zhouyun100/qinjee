@@ -686,11 +686,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportBusiness(@RequestBody @Valid ExportBusiness exportBusiness, HttpServletResponse response) {
-        Boolean b = checkParam(exportBusiness,response,getUserSession());
+    public ResponseResult exportBusiness(@RequestBody ExportRequest exportRequest) {
+        Boolean b = checkParam(exportRequest,getUserSession());
         if(b){
             try {
-                staffCommonService.exportBusiness(exportBusiness,response,getUserSession());
+                staffCommonService.exportBusiness(exportRequest,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导出失败");

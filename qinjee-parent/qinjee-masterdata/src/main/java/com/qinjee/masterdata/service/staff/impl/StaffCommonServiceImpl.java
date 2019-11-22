@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.AssertTrue;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -317,21 +318,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         return list;
     }
-
-
-    private String getBigData(Map<String, List<String>> stringListMap, int i) {
-        StringBuilder bigData = new StringBuilder();
-        Set<Map.Entry<String, List<String>>> entries = stringListMap.entrySet();
-        List<Map.Entry<String, List<String>>> entries1 = new ArrayList<>(entries);
-        for (Map.Entry<String, List<String>> stringListEntry : entries1) {
-            String key = stringListEntry.getKey();
-            String s = stringListEntry.getValue().get(i);
-            bigData.append("@@").append(key).append("@@:").append(s).append(";");
-        }
-        return bigData.toString();
-    }
-
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportArcFile(ExportFile exportFile, HttpServletResponse response) {
@@ -383,7 +369,25 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
+    public void exportBusiness(ExportRequest exportRequest, UserSession userSession) throws Exception {
+       //根据title找到表id
+       //通过表id与业务id集合找到存储数据的字段
+       //将字段进行解析,循环置于List<map>中
+        Map<Integer,Map<String,Object>> map=new HashMap<>();
+        ExportFile exportFile=new ExportFile();
+        exportFile.setTittle(exportRequest.getTitle ());
+        ExportList exportList=new ExportList();
+        exportList.setMap(map);
+        exportFile.setExportList(exportList);
+        List<String> businessHead = HeadMapUtil.getBusinessHead(exportFile.getTittle());
+        if(businessHead!=null) {
+            ExcelUtil.download(exportRequest.getResponse(), exportFile.getTittle(),
+                    businessHead,
+                    getDates(exportFile, businessHead),
+                    getTypeMap(businessHead));
+        }else {
+            throw new Exception("没有获取到对应的自己表头");
+        }
 
     }
 

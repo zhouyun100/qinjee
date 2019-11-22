@@ -203,15 +203,12 @@ public interface IStaffCommonService {
      */
     void exportPreFile(ExportRequest exportRequest, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
-
-
     /**
      * 导出业务类
-     * @param exportBusiness
-     * @param response
+     * @param exportRequest
      * @param userSession
      */
-    void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
+    void exportBusiness(ExportRequest exportRequest, UserSession userSession) throws Exception;
 
 
     void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception;

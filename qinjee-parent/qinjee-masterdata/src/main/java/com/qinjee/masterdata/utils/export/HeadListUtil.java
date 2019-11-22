@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.utils.export;
 
 
+import com.qinjee.masterdata.model.vo.staff.importVo.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.util.StringUtils;
 
@@ -59,5 +60,32 @@ public class HeadListUtil {
             tList.add(t);
         }
         return tList;
+    }
+//    public static List<Map<String,String>> getBusinessMap(List<Integer> list,String tableName){
+//        Class businessClass = getBusinessClass(tableName);
+//        Object o = businessClass.newInstance();
+//
+//
+//    }
+    public static  Class getBusinessClass(String tableName){
+        if("教育经历".equals(tableName)){
+            return EducationLine.class;
+        }
+        if("家庭成员".equals(tableName)){
+            return Familymember.class;
+        }
+        if("职称".equals(tableName)){
+            return Professional.class;
+        }
+        if("资格".equals(tableName)){
+            return Qualification.class;
+        }
+        if("人事异动".equals(tableName)){
+            return StaffTransaction.class;
+        }
+        if("工作经历".equals(tableName)){
+            return WorkLine.class;
+        }
+        return null;
     }
 }

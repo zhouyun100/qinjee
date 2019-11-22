@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.utils.export;
 
 
+import com.qinjee.masterdata.model.vo.staff.importVo.*;
+
 import java.util.*;
 
 public class HeadMapUtil {
@@ -118,5 +120,27 @@ public class HeadMapUtil {
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }
+    public static  List<String> getBusinessHead(String tableName){
+        if("教育经历".equals(tableName)){
+            return getHeadsForEduLine();
+        }
+        if("家庭成员".equals(tableName)){
+            return getHeadsForFamily();
+        }
+        if("职称".equals(tableName)){
+            return getHeadsForStaffSymbol();
+        }
+        if("资格".equals(tableName)){
+            return getHeadsForStaffAuth();
+        }
+        if("人事异动".equals(tableName)){
+            return getHeadsForStaffLine();
+        }
+        if("工作经历".equals(tableName)){
+            return getHeadsForWorkLine();
+        }
+        return null;
+    }
+
 
 }
