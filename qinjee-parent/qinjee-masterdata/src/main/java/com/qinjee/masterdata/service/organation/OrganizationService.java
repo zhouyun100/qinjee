@@ -1,9 +1,9 @@
 package com.qinjee.masterdata.service.organation;
 
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVoo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -48,14 +48,14 @@ public interface OrganizationService {
      * @param organizationVo
      * @return
      */
-    ResponseResult addOrganization(UserSession userSession, OrganizationVoo organizationVo);
+    ResponseResult addOrganization(UserSession userSession, Organization organizationVo);
 
     /**
      * 编辑机构
      * @param organizationVo
      * @return
      */
-    ResponseResult editOrganization(OrganizationVoo organizationVo);
+    ResponseResult editOrganization(Organization organizationVo);
 
     /**
      * 删除机构
@@ -117,13 +117,6 @@ public interface OrganizationService {
      */
     ResponseResult downloadTemplate(HttpServletResponse response);
 
-    /**
-     * 根据查询条件导出Excel
-     * @param organizationPageVo
-     * @param response
-     * @return
-     */
-    ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession);
 
    /** 
    * @Description: 根据选择的机构id导出Excel 

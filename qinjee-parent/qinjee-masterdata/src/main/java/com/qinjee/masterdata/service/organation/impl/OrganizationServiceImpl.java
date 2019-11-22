@@ -9,7 +9,6 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVoo;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
@@ -121,7 +120,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationSaveAnno
-    public ResponseResult addOrganization(UserSession userSession, OrganizationVoo organizationVo) {
+    public ResponseResult addOrganization(UserSession userSession, Organization organizationVo) {
         //根据父级机构id查询一些基础信息，构建Organization对象
         OrganizationVO orgBean = initOrganization(organizationVo.getOrgParentId());
 
@@ -257,10 +256,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationEditAnno
-    public ResponseResult editOrganization(OrganizationVoo organizationVo) {
-        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
-        BeanUtils.copyProperties(organizationVo, organizationVO);
-        int result = organizationDao.updateByPrimaryKey(organizationVO);
+    public ResponseResult editOrganization(Organization organizationVo) {
+        //反查organizationVO
+        OrganizationVO organization = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
+        String orgFullName = organization.getOrgFullName();
+        String prefixOrgFullName = orgFullName.substring(0, orgFullName.lastIndexOf("/")-1);
+        String newOrgFullName=prefixOrgFullName+organizationVo.getOrgName();
+        BeanUtils.copyProperties(organizationVo, organization);
+        organization.setOrgFullName(newOrgFullName);
+        System.out.println("newOrgFullName:"+newOrgFullName);
+        int result = organizationDao.updateByPrimaryKey(organization);
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
 
@@ -493,16 +498,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new ResponseResult();
     }
 
-    @Override
-    public ResponseResult downloadExcelByCondition(OrganizationPageVo organizationPageVo, HttpServletResponse response, UserSession userSession) {
-        Integer archiveId = userSession.getArchiveId();
-        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, OrganizationVO.class);
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
-        //导出Excel
-        exportExcel(response, organizationVOList);
-        return new ResponseResult();
-    }
 
 
     @Override
@@ -525,8 +520,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResponseResult downloadAllOrganizationToExcel(String filePath,HttpServletResponse response, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
-        List<OrganizationVO> organizationVOList=organizationDao.getOrganizationListByUserArchiveId(archiveId);
-        System.out.println("organizationVOList:"+organizationVOList);
+        List<OrganizationVO> organizationVOList=organizationDao.getOrganizationListByUserArchiveId(archiveId,new Date());
+        if (Objects.isNull(organizationVOList)||organizationVOList.size()<=0){
+            return new ResponseResult(CommonCode.FAIL);
+        }
         ExcelExportUtil.exportToFile(filePath,organizationVOList);
         return new ResponseResult(CommonCode.SUCCESS);
     }
@@ -560,7 +557,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         Integer archiveId = userSession.getArchiveId();
 
         List<OrganizationVO> organizationVOList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
-
         //获取第一级机构
         List<OrganizationVO> organizationVOS = organizationVOList.stream().filter(organization -> {
             if (organization.getOrgParentId() != null && organization.getOrgParentId() == 0) {

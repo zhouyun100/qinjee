@@ -40,8 +40,6 @@ public class OrganizationVO implements Serializable {
     /**
      * 机构编码
      */
-    @ApiModelProperty("机构编码")
-    @QueryColumn("org.org_code")
     @ExcelFieldAnno(name = "机构编码")
     private String orgCode;
 
