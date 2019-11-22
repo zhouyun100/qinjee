@@ -8,10 +8,11 @@
     <result column="abandon_reason" jdbcType="VARCHAR" property="abandonReason" />
     <result column="change_remark" jdbcType="VARCHAR" property="changeRemark" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="delay_date" jdbcType="TIMESTAMP" property="delayDate" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    change_id, employment_id, change_state, abandon_reason, change_remark, operator_id,
+    change_id, employment_id, change_state, abandon_reason, change_remark, operator_id,delay_date,
     create_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -26,9 +27,10 @@
   </delete>
   <insert id="insert" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.entity.PreEmploymentChange" useGeneratedKeys="true">
     insert into t_pre_employment_change (employment_id, change_state, abandon_reason,
-      change_remark, operator_id, create_time
+      change_remark, operator_id, create_time,delay_date
       )
     values (#{employmentId,jdbcType=INTEGER}, #{changeState,jdbcType=VARCHAR}, #{abandonReason,jdbcType=VARCHAR},
+     #{delayDate,jdbcType=TIMESTAMP},
       #{changeRemark,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -53,6 +55,9 @@
       <if test="createTime != null">
         create_time,
       </if>
+      <if test="delayDate != null">
+        delay_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="employmentId != null">
@@ -72,6 +77,9 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delayDate != null">
+        #{delayDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -96,6 +104,9 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="delayDate != null">
+        delay_date = #{delayDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where change_id = #{changeId,jdbcType=INTEGER}
   </update>
@@ -106,7 +117,8 @@
       abandon_reason = #{abandonReason,jdbcType=VARCHAR},
       change_remark = #{changeRemark,jdbcType=VARCHAR},
       operator_id = #{operatorId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      delay_date = #{delayDate,jdbcType=TIMESTAMP}
     where change_id = #{changeId,jdbcType=INTEGER}
   </update>
   <insert id="insertStatusChange" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.vo.staff.StatusChangeVo" useGeneratedKeys="true">
