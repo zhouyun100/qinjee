@@ -249,59 +249,89 @@
 <!--      AND t_pre_employment.is_delete = #{is_delete}-->
 <!--    </if>-->
 <!--  </select>-->
-  <!-- 批量插入数据 -->
-<!--  <insert id="insertT_pre_employments" parameterType="list">-->
-<!--    INSERT INTO t_pre_employment (-->
-<!--    employment_id, user_name, phone, gender, email, id_type,-->
-<!--    id_number, age, first_work_date, marital_status, highest_degree, graduated_school,-->
-<!--    graduated_speciality, last_work_company, is_give_birth, resident_character, height, blood_type,-->
-<!--    english_name, nationality, birth_date, political_status, birthplace, application_position,-->
-<!--    probation_period, hire_date, org_id, post_id, employment_state, employment_register,-->
-<!--    description, data_source, company_id, operator_id, create_time, update_time,-->
-<!--    is_delete-->
-<!--    ) VALUES (-->
-<!--    <foreach collection="list" index="index" item="item" separator=",">-->
-<!--      (-->
-<!--      #{item.employment_id},-->
-<!--      #{item.user_name},-->
-<!--      #{item.phone},-->
-<!--      #{item.gender},-->
-<!--      #{item.email},-->
-<!--      #{item.id_type},-->
-<!--      #{item.id_number},-->
-<!--      #{item.age},-->
-<!--      #{item.first_work_date},-->
-<!--      #{item.marital_status},-->
-<!--      #{item.highest_degree},-->
-<!--      #{item.graduated_school},-->
-<!--      #{item.graduated_speciality},-->
-<!--      #{item.last_work_company},-->
-<!--      #{item.is_give_birth},-->
-<!--      #{item.resident_character},-->
-<!--      #{item.height},-->
-<!--      #{item.blood_type},-->
-<!--      #{item.english_name},-->
-<!--      #{item.nationality},-->
-<!--      #{item.birth_date},-->
-<!--      #{item.political_status},-->
-<!--      #{item.birthplace},-->
-<!--      #{item.application_position},-->
-<!--      #{item.probation_period},-->
-<!--      #{item.hire_date},-->
-<!--      #{item.org_id},-->
-<!--      #{item.post_id},-->
-<!--      #{item.employment_state},-->
-<!--      #{item.employment_register},-->
-<!--      #{item.description},-->
-<!--      #{item.data_source},-->
-<!--      #{item.company_id},-->
-<!--      #{item.operator_id},-->
-<!--      #{item.create_time},-->
-<!--      #{item.update_time},-->
-<!--      #{item.is_delete}-->
-<!--      )-->
-<!--    </foreach>-->
-<!--  </insert>-->
+<!--   批量插入数据 -->
+    <insert id="insertBatch" parameterType="list">
+    insert into t_attachment_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="attachmentName != null">
+            employment_id,
+        </if>
+        <if test="attachmentUrl != null">
+            user_name,
+        </if>
+        <if test="businessModule != null">
+            phone,
+        </if>
+        <if test="attachmentType != null">
+            attachment_type,
+        </if>
+        <if test="attachmentSize != null">
+            gender,
+        </if>
+        <if test="businessType != null">
+            email,
+        </if>
+        <if test="businessId != null">
+            business_id,
+        </if>
+        <if test="companyId != null">
+            id_type,
+        </if>
+        <if test="operatorId != null">
+            id_number,
+        </if>
+        <if test="createTime != null">
+            age,
+        </if>
+        <if test="updateTime != null">
+            first_work_date,
+        </if>
+        <if test="isDelete != null">
+            marital_status,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="attachmentName != null">
+            #{attachmentName,jdbcType=VARCHAR},
+        </if>
+        <if test="attachmentUrl != null">
+            #{attachmentUrl,jdbcType=VARCHAR},
+        </if>
+        <if test="businessModule != null">
+            #{businessModule,jdbcType=VARCHAR},
+        </if>
+        <if test="attachmentType != null">
+            #{attachmentType,jdbcType=VARCHAR},
+        </if>
+        <if test="attachmentSize != null">
+            #{attachmentSize,jdbcType=INTEGER},
+        </if>
+        <if test="businessType != null">
+            #{businessType,jdbcType=VARCHAR},
+        </if>
+        <if test="businessId != null">
+            #{businessId,jdbcType=INTEGER},
+        </if>
+        <if test="companyId != null">
+            #{companyId,jdbcType=INTEGER},
+        </if>
+        <if test="operatorId != null">
+            #{operatorId,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="updateTime != null">
+            #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="isDelete != null">
+            #{isDelete,jdbcType=SMALLINT},
+        </if>
+    </trim>
+</insert>
+
+
+
   <!-- 修改数据 -->
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" >
         UPDATE t_pre_employment SET

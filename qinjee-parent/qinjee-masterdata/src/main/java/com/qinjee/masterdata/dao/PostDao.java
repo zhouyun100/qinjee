@@ -90,4 +90,5 @@ public interface PostDao {
      */
     void deleteByOrgId(Integer orgId);
 
+    Integer selectPostIdByName(@Param("postName") String post_name);
 }

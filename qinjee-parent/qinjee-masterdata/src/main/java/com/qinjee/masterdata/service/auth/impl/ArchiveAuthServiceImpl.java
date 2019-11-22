@@ -64,12 +64,18 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     public void delArchiveRole(Integer roleId, List<Integer> archiveIdList,Integer operatorId) {
         if(!CollectionUtils.isEmpty(archiveIdList)){
             UserRole userRole;
+            UserOrgAuth userOrgAuth;
             for(Integer archiveId : archiveIdList){
                 userRole = new UserRole();
                 userRole.setArchiveId(archiveId);
                 userRole.setRoleId(roleId);
                 userRole.setOperatorId(operatorId);
                 archiveAuthDao.delArchiveRole(userRole);
+
+                userOrgAuth = new UserOrgAuth();
+                userOrgAuth.setArchiveId(archiveId);
+                userOrgAuth.setRoleId(roleId);
+                archiveAuthDao.addArchiveOrgAuth(userOrgAuth);
             }
         }
     }
@@ -133,43 +139,45 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     }
 
     @Override
-    public List<OrganizationVO> searchOrgAuthTree(Integer archiveId, Integer operatorId) {
-        if(archiveId == null || operatorId == null){
+    public List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer archiveId) {
+        if(roleId == null || archiveId == null){
             return null;
         }
 
+        List<OrganizationVO> firstLevelMenuList;
         RequestRoleVO requestRole = new RequestRoleVO();
-        requestRole.setOperatorId(operatorId);
+        requestRole.setRoleId(roleId);
         requestRole.setArchiveId(archiveId);
         requestRole.setCurrentDateTime(new Date());
         List<OrganizationVO> organizationList = archiveAuthDao.searchOrgAuthTree(requestRole);
+
         /**
          * 如果机构列表为空则直接返回null
          */
-        if(CollectionUtils.isEmpty(organizationList)){
+        if(!CollectionUtils.isEmpty(organizationList)){
+            /**
+             * 提取当前机构树的一级节点
+             */
+            firstLevelMenuList = organizationList.stream().filter(organization -> {
+                if(organization.getOrgParentId() == 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            }).collect(Collectors.toList());
+
+            /**
+             * 处理所有机构列表以树形结构展示
+             */
+            roleAuthService.handlerOrgToTree(organizationList, firstLevelMenuList);
+        }else{
             return null;
         }
-
-        /**
-         * 提取当前机构树的一级节点
-         */
-        List<OrganizationVO> firstLevelMenuList = organizationList.stream().filter(organization -> {
-            if(organization.getOrgParentId() == 0){
-                return true;
-            }else{
-                return false;
-            }
-        }).collect(Collectors.toList());
-
-        /**
-         * 处理所有机构列表以树形结构展示
-         */
-        roleAuthService.handlerOrgToTree(organizationList, firstLevelMenuList);
         return firstLevelMenuList;
     }
 
     @Override
-    public int updateArchiveOrgAuth(Integer archiveId, List<Integer> orgIdList, Integer operatorId) {
+    public int updateArchiveOrgAuth(Integer roleId, Integer archiveId, List<Integer> orgIdList, Integer operatorId) {
         int resultNumber = 0;
         List<Integer> tempOrgIdList = new ArrayList<>();
         List<OrganizationVO> tempOrganizationList = new ArrayList<>();
@@ -178,7 +186,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
         userOrgAuth.setOperatorId(operatorId);
         userOrgAuth.setArchiveId(archiveId);
 
-        List<OrganizationVO> organizationList = archiveAuthDao.searchArchiveOrgListByRoleId(archiveId);
+        List<OrganizationVO> organizationList = archiveAuthDao.searchArchiveOrgListByRoleId(roleId, archiveId);
 
         if(!CollectionUtils.isEmpty(orgIdList)){
             if(!CollectionUtils.isEmpty(organizationList)){
@@ -197,6 +205,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
             orgIdList.removeAll(tempOrgIdList);
             for(Integer orgId : orgIdList){
                 userOrgAuth.setOrgId(orgId);
+                userOrgAuth.setRoleId(roleId);
                 resultNumber += archiveAuthDao.addArchiveOrgAuth(userOrgAuth);
             }
         }
@@ -205,6 +214,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
             organizationList.removeAll(tempOrganizationList);
             for(OrganizationVO organization : organizationList){
                 userOrgAuth.setOrgId(organization.getOrgId());
+                userOrgAuth.setRoleId(roleId);
                 resultNumber += archiveAuthDao.delArchiveOrgAuth(userOrgAuth);
             }
         }

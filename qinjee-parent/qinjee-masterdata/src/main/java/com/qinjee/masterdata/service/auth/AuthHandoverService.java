@@ -38,9 +38,10 @@ public interface AuthHandoverService {
      * 查询角色机构权限树
      * @param operatorId
      * @param roleId
+     * @param archiveId
      * @return
      */
-    List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId);
+    List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId, Integer archiveId);
 
     /**
      * 角色回收
@@ -51,14 +52,6 @@ public interface AuthHandoverService {
      */
     int roleRecoveryByArchiveId(Integer archiveId, List<Integer> roleIdList, Integer operatorId);
 
-    /**
-     * 机构回收
-     * @param archiveId
-     * @param orgIdList
-     * @param operatorId
-     * @return
-     */
-    int orgRecoveryByArchiveId(Integer archiveId, List<Integer> orgIdList, Integer operatorId);
 
     /**
      * 角色移交
@@ -70,15 +63,6 @@ public interface AuthHandoverService {
      */
     int roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> roleIdList, Integer operatorId);
 
-    /**
-     * 机构移交
-     * @param handoverArchiveId
-     * @param acceptArchiveId
-     * @param orgIdList
-     * @param operatorId
-     * @return
-     */
-    int orgHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> orgIdList, Integer operatorId);
 
     /**
      * 角色托管
@@ -91,16 +75,6 @@ public interface AuthHandoverService {
      */
     int roleTrusteeshipByArchiveId(Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId);
 
-    /**
-     * 机构托管
-     * @param acceptArchiveId
-     * @param trusteeshipBeginTime
-     * @param trusteeshipEndTime
-     * @param orgIdList
-     * @param operatorId
-     * @return
-     */
-    int orgTrusteeshipByArchiveId(Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> orgIdList, Integer operatorId);
 
     /**
      * 根据档案ID查询角色列表

@@ -11,9 +11,9 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
-import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
+import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
@@ -21,7 +21,8 @@ import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.ExcelUtil;
-import org.apache.poi.ss.formula.functions.T;
+import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -253,29 +254,66 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //根据验证code找到验证名称
         return checkTypeDao.selectCheckNameList(stringList);
     }
-
     @Override
-    public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException, NoSuchFieldException {
-       //excel方法获得值
-        //根据导入文档建立Vo类，然后利用反射设值，此处先用Export代替
-        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        List<ExportArcVo> list=new ArrayList<>();
-        //获得反射对象
-        Class<ExportArcVo> exportArcVoClass = ExportArcVo.class;
-        ExportArcVo exportArcVo =exportArcVoClass.newInstance();
-        //循环设值
-        for (Map<String, String> map : mapList) {
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                Field declaredField =exportArcVoClass.getDeclaredField(entry.getKey());
-                declaredField.setAccessible(true);
-                declaredField.set(exportArcVoClass,entry.getValue());
+    public void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception {
+        Integer orgId;
+        Integer postId;
+        List<Map<String,String>> list=getMaps(multipartFile );
+        List<PreEmployment> preEmploymentList=new ArrayList <> ();
+        @SuppressWarnings("unchecked")
+        List< ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class );
+        for (ExportPreVo exportPreVo : objectList) {
+            PreEmployment preEmployment=new PreEmployment();
+            Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
+            Field[] fields = exportPreVo.getClass ().getDeclaredFields ();
+            for (Field field : fields) {
+                field.setAccessible (true);
+                String fieldName = field.getName ();
+                for (Field declaredField : declaredFields) {
+                    declaredField.setAccessible (true);
+                    String name = declaredField.getName ();
+                    if(name.equals (fieldToProperty (fieldName))){
+                        declaredField.set (preEmployment,field.get(exportPreVo) );
+                    }
+                }
             }
-            list.add(exportArcVo);
+            try {
+                 orgId= organizationDao.selectOrgIdByName ( exportPreVo.getOrg_name () );
+            } catch (Exception e) {
+                 orgId=0;
+            }
+            preEmployment.setOrgId(orgId);
+            try {
+                postId=postDao.selectPostIdByName(exportPreVo.getPost_name());
+            } catch (Exception e) {
+                postId=0;
+            }
+            preEmployment.setPostId (postId);
+            preEmployment.setOperatorId ( userSession.getArchiveId () );
+            preEmploymentList.add ( preEmployment );
         }
-        //入库操作
-        HeadListUtil.getObjectList(mapList, ExportArcVo.class);
+        preEmploymentDao.insertBatch(preEmploymentList);
     }
 
+    @Override
+    public void importArcFile(MultipartFile multipartFile,UserSession userSession) throws Exception {
+       //excel方法获得值
+        List<Map<String,String>> list=getMaps ( multipartFile );
+
+    }
+
+    private List < Map < String, String > > getMaps(MultipartFile multipartFile) throws IOException {
+        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
+        List<Map<String, String>> list=new ArrayList <> ();
+        for (Map<String, String> map : mapList) {
+            Map<String,String> stringMap=new HashMap <> ();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                stringMap.put(customArchiveFieldDao.selectFieldCodeByName(entry.getKey()),entry.getValue());
+            }
+            list.add(stringMap);
+        }
+        return list;
+    }
 
 
     private String getBigData(Map<String, List<String>> stringListMap, int i) {
@@ -391,6 +429,27 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession) {
 
+    }
+
+    public static String fieldToProperty(String field) {
+        if (null == field) {
+            return "";
+        }
+        char[] chars = field.toCharArray();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (c == '_') {
+                int j = i + 1;
+                if (j < chars.length) {
+                    sb.append( StringUtils.upperCase( CharUtils.toString(chars[j])));
+                    i++;
+                }
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
 

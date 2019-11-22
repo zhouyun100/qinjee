@@ -43,9 +43,10 @@ public interface RoleAuthService {
      * 查询角色机构权限树
      * @param operatorId
      * @param roleId
+     * @param archiveId
      * @return
      */
-    List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId);
+    List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId, Integer archiveId);
 
     /**
      * 新增角色组

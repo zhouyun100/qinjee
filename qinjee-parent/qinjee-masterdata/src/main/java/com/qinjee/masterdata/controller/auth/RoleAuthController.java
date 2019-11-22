@@ -454,7 +454,7 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(userSession.getArchiveId(), roleId);
+            List<OrganizationVO> organizationList = roleAuthService.searchOrgAuthTree(userSession.getArchiveId(), roleId, null);
             if(CollectionUtils.isEmpty(organizationList)){
                 logger.info("searchOrgAuthTree fail！operatorId={},roleId={},organizationList={}", userSession.getArchiveId(), roleId, organizationList);
                 responseResult = ResponseResult.FAIL();

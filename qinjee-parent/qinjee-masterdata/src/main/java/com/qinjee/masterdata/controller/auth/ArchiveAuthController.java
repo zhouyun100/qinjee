@@ -69,7 +69,8 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="根据角色ID查询员工列表", notes="根据角色ID查询员工列表")
     @RequestMapping(value = "/searchArchiveListByRoleId",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(@RequestBody RequestArchivePageVO archivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByRoleId(
+            @RequestBody @ApiParam(value = "请求参数：\ncurrentPage：当前页数\npageSize：总页数(不传默认查全部)\nroleId：角色ID\nuserName：姓名或工号")RequestArchivePageVO archivePageVO) {
         if(archivePageVO == null || archivePageVO.getRoleId() == null){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色ID不能为空!");
@@ -106,10 +107,6 @@ public class ArchiveAuthController extends BaseController {
     }
 
     @ApiOperation(value="角色新增员工", notes="角色新增员工")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/addArchiveRole",method = RequestMethod.POST)
     public ResponseResult addArchiveRole(@RequestBody RequestRoleArchiveVO requestRoleArchiveVO) {
 
@@ -139,10 +136,6 @@ public class ArchiveAuthController extends BaseController {
     }
 
     @ApiOperation(value="角色移除员工", notes="角色移除员工")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "archiveIdList", value = "档案ID集合", required = true, dataType = "int", allowMultiple = true)
-    })
     @RequestMapping(value = "/delArchiveRole",method = RequestMethod.POST)
     public ResponseResult delArchiveRole(@RequestBody RequestRoleArchiveVO requestRoleArchiveVO) {
         if(null == requestRoleArchiveVO.getRoleId() || CollectionUtils.isEmpty(requestRoleArchiveVO.getArchiveIdList())){
@@ -172,7 +165,8 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="根据姓名或工号模糊查询员工列表", notes="姓名或工号至少2位字符")
     @RequestMapping(value = "/searchArchiveListByUserNameOrJobNumber",method = RequestMethod.POST)
-    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(@RequestBody RequestArchivePageVO archivePageVO) {
+    public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserNameOrJobNumber(
+            @RequestBody @ApiParam(value = "请求参数：\ncurrentPage：当前页数\npageSize：总页数(默认查全部)\nuserName：姓名或工号")RequestArchivePageVO archivePageVO) {
         if(StringUtils.isNoneBlank(archivePageVO.getUserName()) && archivePageVO.getUserName().length() < 2){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("工号或姓名至少2位字符!");
@@ -228,15 +222,16 @@ public class ArchiveAuthController extends BaseController {
     }
 
 
-    @ApiOperation(value="根据档案ID查询机构权限树", notes="根据档案ID查询角色机构权限树")
+    @ApiOperation(value="根据档案ID和角色ID查询机构权限树", notes="根据档案ID和角色ID查询机构权限树")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
-    @RequestMapping(value = "/searchOrgAuthTreeByArchiveId",method = RequestMethod.POST)
-    public ResponseResult<OrganizationVO> searchOrgAuthTree(Integer archiveId) {
-        if(null == archiveId){
+    @RequestMapping(value = "/searchOrgAuthTreeByArchiveIdAndRoleId",method = RequestMethod.POST)
+    public ResponseResult<OrganizationVO> searchOrgAuthTreeByArchiveIdAndRoleId(Integer roleId, Integer archiveId) {
+        if(null == archiveId || null == roleId){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("员工ID不能为空!");
+            responseResult.setMessage("档案ID和角色ID不能为空!");
             return responseResult;
         }
         try{
@@ -246,18 +241,18 @@ public class ArchiveAuthController extends BaseController {
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<OrganizationVO> organizationList = archiveAuthService.searchOrgAuthTree(archiveId, userSession.getArchiveId());
+            List<OrganizationVO> organizationList = archiveAuthService.searchOrgAuthTree(roleId, archiveId);
             if(CollectionUtils.isEmpty(organizationList)){
-                logger.info("searchOrgAuthTreeByArchiveId fail！operatorId={},archiveId={},organizationList={}", userSession.getArchiveId(), archiveId, organizationList);
+                logger.info("searchOrgAuthTreeByArchiveIdAndRoleId fail！roleId={},archiveId={},organizationList={}", roleId, archiveId, organizationList);
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("查询人员机构树结果为空！");
             }else {
-                logger.info("searchOrgAuthTreeByArchiveId success！operatorId={},archiveId={},organizationList={}", userSession.getArchiveId(), archiveId, organizationList);
+                logger.info("searchOrgAuthTreeByArchiveIdAndRoleId success！roleId={},archiveId={},organizationList={}", roleId, archiveId, organizationList);
                 responseResult = ResponseResult.SUCCESS();
                 responseResult.setResult(organizationList);
             }
         }catch (Exception e){
-            logger.info("searchOrgAuthTreeByArchiveId exception！archiveId={},exception={}", archiveId, e.toString());
+            logger.info("searchOrgAuthTreeByArchiveIdAndRoleId exception！roleId={},archiveId={},exception={}", roleId, archiveId, e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("根据人员ID查询机构树异常！");
@@ -268,10 +263,10 @@ public class ArchiveAuthController extends BaseController {
 
     @ApiOperation(value="修改人员机构权限", notes="修改人员机构权限")
     @RequestMapping(value = "/updateArchiveOrgAuth",method = RequestMethod.POST)
-    public ResponseResult updateArchiveOrgAuth(@RequestBody @ApiParam(value = "请求参数：\narchiveId：档案ID\norgIdList：机构ID集合")RequestRoleAuthVO requestRoleAuthVO) {
-        if(null == requestRoleAuthVO.getArchiveId() || CollectionUtils.isEmpty(requestRoleAuthVO.getOrgIdList())){
+    public ResponseResult updateArchiveOrgAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\narchiveId：档案ID\norgIdList：机构ID集合")RequestRoleAuthVO requestRoleAuthVO) {
+        if(null == requestRoleAuthVO.getArchiveId() || null == requestRoleAuthVO.getRoleId() || CollectionUtils.isEmpty(requestRoleAuthVO.getOrgIdList())){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("档案ID或机构ID不能为空!");
+            responseResult.setMessage("角色ID、档案ID、机构ID不能为空!");
             return responseResult;
         }
         try{
@@ -281,12 +276,12 @@ public class ArchiveAuthController extends BaseController {
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            archiveAuthService.updateArchiveOrgAuth(requestRoleAuthVO.getArchiveId(), requestRoleAuthVO.getOrgIdList(), userSession.getArchiveId());
-            logger.info("updateArchiveOrgAuth success！archiveId={},orgIdList={},operatorId={}", requestRoleAuthVO.getArchiveId(), requestRoleAuthVO.getOrgIdList(),userSession.getArchiveId());
+            archiveAuthService.updateArchiveOrgAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getArchiveId(), requestRoleAuthVO.getOrgIdList(), userSession.getArchiveId());
+            logger.info("updateArchiveOrgAuth success！roleId={},archiveId={},orgIdList={},operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getArchiveId(), requestRoleAuthVO.getOrgIdList(),userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
 
         }catch (Exception e){
-            logger.info("updateArchiveOrgAuth exception！archiveId={},orgIdList={},exception={}", requestRoleAuthVO.getArchiveId(), requestRoleAuthVO.getOrgIdList(), e.toString());
+            logger.info("updateArchiveOrgAuth exception！roleId={},archiveId={},orgIdList={},exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getArchiveId(), requestRoleAuthVO.getOrgIdList(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改人员机构权限异常！");

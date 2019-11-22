@@ -280,4 +280,10 @@
     where post_id = #{postId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
+  <select id="selectPostIdByName" resultType="java.lang.Integer">
+    select post_id
+    from t_post
+    where post_name=#{postName}
+     AND is_delete=0
+  </select>
 </mapper>

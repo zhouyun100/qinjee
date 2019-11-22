@@ -44,11 +44,12 @@
             0)
     </insert>
 
-    <!-- 用户机构托管 -->
-    <insert id="orgTrusteeshipByArchiveId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" >
+    <!-- 用户角色机构托管 -->
+    <insert id="archiveRoleOrgTrusteeship" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" >
         insert into t_user_org_auth (
         org_id,
         archive_id,
+        role_id,
         <if test="isTrusteeship != null">
             is_trusteeship,
         </if>
@@ -63,6 +64,7 @@
         values (
         #{orgId,jdbcType=INTEGER},
         #{acceptArchiveId,jdbcType=INTEGER},
+        #{roleId,jdbcType=INTEGER},
         <if test="isTrusteeship != null">
             #{isTrusteeship,jdbcType=TINYINT},
         </if>
@@ -88,16 +90,16 @@
         where archive_id = #{handoverArchiveId,jdbcType=INTEGER} and role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
     </update>
 
-    <!-- 机构回收 -->
-    <update id="orgRecoveryByArchiveId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
+    <!-- 用户角色机构回收 -->
+    <update id="archiveRoleOrgRecovery" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
         update t_user_org_auth set operator_id = #{operatorId,jdbcType=INTEGER},is_delete = 1
-        where archive_id = #{archiveId,jdbcType=INTEGER} and org_id = #{orgId,jdbcType=INTEGER} and is_delete = 0
+        where archive_id = #{archiveId,jdbcType=INTEGER} and role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
     </update>
 
-    <!-- 机构移交 -->
-    <update id="orgHandoverByArchiveId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
+    <!-- 用户角色机构移交 -->
+    <update id="archiveRoleOrgHandover" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
         update t_user_org_auth set operator_id = #{operatorId,jdbcType=INTEGER},archive_id = #{acceptArchiveId,jdbcType=INTEGER}
-        where archive_id = #{handoverArchiveId,jdbcType=INTEGER} and org_id = #{orgId,jdbcType=INTEGER} and is_delete = 0
+        where archive_id = #{handoverArchiveId,jdbcType=INTEGER} and role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
     </update>
 
     <!-- 根据档案ID查询角色列表 -->

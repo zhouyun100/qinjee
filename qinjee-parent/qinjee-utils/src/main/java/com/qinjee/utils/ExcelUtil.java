@@ -86,7 +86,7 @@ public class ExcelUtil {
 
         // 循环将list里面的值取出来放进excel中
         for (int i = 0; i < dates.size(); i++) {
-            HSSFRow  hssfRow1 = hssfSheet.createRow(i + 2);
+            HSSFRow hssfRow1 = hssfSheet.createRow(i + 2);
             int j = 0;
             Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
             while (it.hasNext()) {
@@ -98,7 +98,7 @@ public class ExcelUtil {
         }
 
         FileOutputStream fout = null;
-        String path="d:\\a.xls";
+        String path = "d:\\a.xls";
         try {
             // 用流将其写到指定的url
             fout = new FileOutputStream(path);
@@ -147,9 +147,9 @@ public class ExcelUtil {
      * @param type
      * @return
      */
-    public static CellType getCellType( String type) {
+    public static CellType getCellType(String type) {
 
-        switch (type){
+        switch (type) {
             case INTEGER:
                 return CellType.NUMERIC;
             case STRING:
@@ -162,13 +162,11 @@ public class ExcelUtil {
                 return CellType.NUMERIC;
             case SHORT:
                 return CellType.NUMERIC;
-                default:
+            default:
                 return CellType.STRING;
         }
 
     }
-
-
 
 
     /**
@@ -177,7 +175,7 @@ public class ExcelUtil {
      * @param file
      * @throws IOException
      */
-    public static List<Map<String,String>> readExcel(MultipartFile file)
+    public static List<Map<String, String>> readExcel(MultipartFile file)
             throws IOException {
         // 检查文件
         checkFile(file);
@@ -219,13 +217,13 @@ public class ExcelUtil {
             }
         }
         //heads存的是第一行的字段名
-        List<String> heads=Arrays.asList(list.get(0));
-        List<Map<String,String>> listMap = new ArrayList<>();
-        Map<String,String> mapRow;
+        List<String> heads = Arrays.asList(list.get(0));
+        List<Map<String, String>> listMap = new ArrayList<>();
+        Map<String, String> mapRow;
         for (int i = 1; i < list.size(); i++) {
             mapRow = new HashMap<>();
-            for(int j = 0; j < heads.size(); j++){
-                mapRow.put(heads.get(j),list.get(i)[j]);
+            for (int j = 0; j < heads.size(); j++) {
+                mapRow.put(heads.get(j), list.get(i)[j]);
             }
             listMap.add(mapRow);
         }
@@ -276,7 +274,6 @@ public class ExcelUtil {
         }
         return workbook;
     }
-
     /**
      * @param cell
      * @return 根据excel表格中的数据类型和数据值返回相对应的数据值
@@ -286,15 +283,39 @@ public class ExcelUtil {
         if (cell == null) {
             return cellValue;
         }
-        if(cell.getCellType().equals(CellType.BLANK)){
-            cellValue = "";
-        }else if(cell.getCellType().equals(CellType.ERROR)){
-            cellValue = "非法字符";
-        }else{
-            cellValue = String.valueOf(cell.getStringCellValue());
+        // 判断数据的类型
+        switch (cell.getCellType()) {
+            // 数字
+            case NUMERIC:
+                cellValue = String.valueOf(cell.getNumericCellValue());
+                break;
+            // 字符串
+            case STRING:
+                cellValue = String.valueOf(cell.getStringCellValue());
+                break;
+            // Boolean
+            case BOOLEAN:
+                cellValue = String.valueOf(cell.getBooleanCellValue());
+                break;
+            // 公式
+            case FORMULA:
+                cellValue = String.valueOf(cell.getCellFormula());
+                break;
+            // 空值
+            case BLANK:
+                cellValue = "";
+                break;
+            // 故障
+            case ERROR:
+                cellValue = "非法字符";
+                break;
+            default:
+                cellValue = "未知类型";
+                break;
         }
         return cellValue;
     }
+
 
     public static MultipartFile getMultipartFile(File file) {
         MultipartFile multipartFile = null;
@@ -312,7 +333,7 @@ public class ExcelUtil {
         File file = new File("E:\\import_test.xlsx");
         FileInputStream fileInput = new FileInputStream(file);
         multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
-        List<Map<String,String>> list = null;
+        List<Map<String, String>> list = null;
         try {
             list = ExcelUtil.readExcel(multipartFile);
         } catch (IOException e) {

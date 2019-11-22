@@ -148,9 +148,13 @@ public interface IStaffCommonService {
      * 模板导入
      * @param multipartFile
      * @param userSession
-     * @return
+     * @throws IOException
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
      */
-    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, ClassNotFoundException;
+    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws Exception;
 
     /**
      * 模板导出档案
@@ -209,4 +213,5 @@ public interface IStaffCommonService {
     void exportBusiness(ExportBusiness exportBusiness, HttpServletResponse response, UserSession userSession);
 
 
+    void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
 }
