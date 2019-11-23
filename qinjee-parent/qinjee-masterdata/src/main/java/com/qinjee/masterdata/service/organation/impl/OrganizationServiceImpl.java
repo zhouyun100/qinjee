@@ -1,14 +1,19 @@
 package com.qinjee.masterdata.service.organation.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.aop.OrganizationEditAnno;
 import com.qinjee.masterdata.aop.OrganizationSaveAnno;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.model.entity.Organization;
+import com.qinjee.masterdata.model.entity.OrganizationHistory;
+import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
@@ -98,9 +103,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         //  if(organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null){
         //   PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
         //    }
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, null, archiveId, new Date());
-        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
-        pageResult.setTotal(organizationVOList.size());
+        if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
+            PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
+        }
+        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
+        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
+        PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
+        PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
         return pageResult;
     }
 
@@ -411,6 +422,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     /**
      * 同一级机构自由排序
+     *
      * @param orgIds
      * @return
      */
@@ -788,7 +800,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             originOrg.setOrgParentId(targetOrg.getOrgId());
             originOrg.setOrgFullName(parentFullName + "/" + originOrg.getOrgName());
             //sortId
-            originOrg.setSortId(subfixOrgCode*1000);
+            originOrg.setSortId(subfixOrgCode * 1000);
             organizationDao.updateByPrimaryKeySelective(originOrg);
             List<OrganizationVO> secondOriginOrgList = organizationDao.getOrganizationListByParentOrgId(originOrg.getOrgId());
             //递归
