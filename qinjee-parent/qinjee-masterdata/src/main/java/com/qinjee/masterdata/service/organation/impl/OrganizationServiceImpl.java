@@ -100,6 +100,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         //    }
         List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, null, archiveId, new Date());
         PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
+        pageResult.setTotal(organizationVOList.size());
         return pageResult;
     }
 
