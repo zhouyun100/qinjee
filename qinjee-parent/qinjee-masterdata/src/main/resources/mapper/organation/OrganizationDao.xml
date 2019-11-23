@@ -10,6 +10,7 @@
         <result column="parent_org_name" jdbcType="VARCHAR" property="orgParentName"/>
         <result column="parent_org_code" jdbcType="VARCHAR" property="orgParentCode"/>
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
+        <result column="orgManagerName" jdbcType="VARCHAR" property="orgManagerName"/>
         <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
@@ -210,36 +211,46 @@
         ORDER BY v.org_id ASC
     </select>
 
-    <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-        select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id,
-        parent_org.org_name orgParentName,
-        parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from
+    <select id="getOrganizationList" resultMap="BaseResultMap">
+        SELECT
+            org.org_id,org.is_enable,org.org_code,
+            org.org_name,org.org_type,org.org_full_name,
+            org.org_parent_id,org.sort_id, roa.role_id,
+            parent_org.org_name parent_org_name,
+            parent_org.org_code parent_org_code,
+            tua.user_name orgManagerName
+        FROM
         t_organization org
-        left join t_role_org_auth roa on roa.org_id = org.org_id
-        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
-        <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
-            and org.is_enable = #{organizationPageVo.isEnable}
-        </if>
-        left join t_organization parent_org on org.org_parent_id = parent_org.org_id
-        left join t_user_archive tua on tua.archive_id = org.org_manager_id
-        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
-        ur.archive_id and ua.archive_id = #{archiveId})
-        and tuoa.is_delete = 0
-        and tuoa.archive_id = #{archiveId}
-        and tuoa.trusteeship_end_time > #{now}
-        and tuoa.is_trusteeship = 1
+        LEFT JOIN t_role_org_auth roa
+            ON roa.org_id = org.org_id
+        LEFT JOIN t_user_org_auth tuoa
+            ON tuoa.org_id = org.org_id
+        INNER JOIN t_user_archive tua
+            ON tua.archive_id = org.org_manager_id
+        LEFT JOIN t_organization parent_org
+            ON org.org_parent_id = parent_org.org_id
+        LEFT JOIN t_user_role ur
+            ON ur.archive_id = tua.archive_id
+            AND ur.role_id = roa.role_id
+        WHERE org.is_enable = 1
+            AND parent_org.is_enable = 1
+            AND roa.is_delete = 0
+            AND tuoa.is_delete = 0
+            AND tua.archive_id = #{archiveId}
+            AND ur.is_delete = 0
+            AND ( ur.is_trusteeship = 0 OR ( ur.is_trusteeship = 1 AND ur.trusteeship_end_time > #{now} ))
         <if test="organizationPageVo != null">
             <if test="organizationPageVo.orgParentId != null">
-                and org.org_parent_id = #{orgParentId}
+                and org.org_parent_id = #{organizationPageVo.orgParentId}
             </if>
             <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
                 <foreach collection="organizationPageVo.querFieldVos" item="querField">
-                    <if test="querField.fieldName != null and querField.fieldName != ''">
-                        ${querField.condition}
-                    </if>
-
-                    <if test="querField.isFilterNull">
-                        and ${querField.fieldName} IS NULL
+                    <if test="querField.fieldName != null and querField.fieldName != '' and querField.fieldValues !=null and querField.fieldValues.size > 0">
+                       and
+                        org.${querField.fieldName} in
+                        <foreach collection="querField.fieldValues" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
                     </if>
                 </foreach>
             </if>
