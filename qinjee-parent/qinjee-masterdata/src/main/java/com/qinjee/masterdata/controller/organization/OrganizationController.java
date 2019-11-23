@@ -94,6 +94,8 @@ public class OrganizationController extends BaseController {
     //TODO  人数
     public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody(required = false) OrganizationPageVo organizationPageVo){
         UserSession userSession = getUserSession();
+
+
         PageResult<OrganizationVO> pageResult = organizationService.getOrganizationList(organizationPageVo,userSession);
         return new ResponseResult<>(pageResult);
     }

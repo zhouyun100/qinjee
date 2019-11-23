@@ -52,7 +52,7 @@ public class  PositionGroupController extends BaseController {
 
     @ApiOperation(value = "删除职位族", notes = "高雄")
     @PostMapping("/deletePositionGroup")
-    public ResponseResult deletePositionGroup(@RequestParam("positionGroupIds")  List<Integer> positionGroupIds){
+    public ResponseResult deletePositionGroup(@RequestBody  List<Integer> positionGroupIds){
         System.out.println(positionGroupIds);
         ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
         int i = positionGroupService.deletePositionGroup(positionGroupIds);
