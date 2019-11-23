@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -53,8 +52,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private BlacklistDao blacklistDao;
     @Autowired
     private CustomArchiveFieldDao customArchiveFieldDao;
-    @Autowired
-    private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private EmailConfigService emailConfigService;
 
@@ -161,7 +158,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         preEmploymentDao.updateByPrimaryKey ( preEmployment );
     }
 
-    public PreEmploymentChange isExistPreChange(String status, List < PreEmploymentChange > list) {
+    private PreEmploymentChange isExistPreChange(String status, List < PreEmploymentChange > list) {
         for (PreEmploymentChange preEmploymentChange : list) {
             if (status.equals ( preEmploymentChange.getChangeState () )) {
                 return preEmploymentChange;
@@ -240,14 +237,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         for (PreEmploymentVo preEmploymentVo : preEmploymentList) {
             for (PreEmploymentChange preEmploymentChange : preEmploymentChanges) {
                 if (preEmploymentChange.getEmploymentId ().equals ( preEmploymentVo.getEmploymentId () )) {
-                    if ("已延期".equals ( preEmploymentChange.getChangeState () )) {
+                    if (CHANGSTATUS_DELAY.equals ( preEmploymentChange.getChangeState () )) {
                         preEmploymentVo.setDelayDate ( preEmploymentChange.getDelayDate () );
                         preEmploymentVo.setDelayReson ( preEmploymentChange.getChangeRemark () );
                     }
-                    if ("已放弃".equals ( preEmploymentChange.getChangeState () )) {
+                    if (CHANGSTATUS_GIVEUP.equals ( preEmploymentChange.getChangeState () )) {
                         preEmploymentVo.setAbandonReason ( preEmploymentChange.getAbandonReason () );
                     }
-                    if ("黑名单".equals ( preEmploymentChange.getChangeState () )) {
+                    if (CHANGSTATUS_BLACKLIST.equals ( preEmploymentChange.getChangeState () )) {
                         preEmploymentVo.setBlockReson ( preEmploymentChange.getChangeRemark () );
                     }
                 }
