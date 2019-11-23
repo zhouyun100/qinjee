@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.dao.organation;
 
 
-import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 @Repository
 public interface OrganizationDao {
     int deleteByPrimaryKey(Integer orgId);
@@ -116,13 +115,6 @@ public interface OrganizationDao {
      */
     List<OrganizationVO> getOrganizationsByOrgIds(@Param("orgIds")List<Integer> orgIds);
 
-
-    List<Integer> getOrgIdByCompanyId(Integer orgId);
-
-    List<Integer> getCompanyIdByArchiveId(Integer archiveId);
-
-    List<Integer> getCompanyIdByAuth(@Param("archiveId") Integer archiveId);
-
     Integer selectOrgIdByName(@Param("name") String name);
 
     BusinessOrgPostPos selectManyId(@Param("unitName") String businessUnitName, @Param("orgName") String orgName,
@@ -131,4 +123,6 @@ public interface OrganizationDao {
     Integer sortOrganization(@Param("orgIds") LinkedList<String> orgIds);
 
     List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId,@Param("now") Date now);
+
+    List< Integer> selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
 }

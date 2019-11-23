@@ -16,7 +16,7 @@ import java.util.Map;
 public interface PreEmploymentDao {
     int deleteByPrimaryKey(Integer employmentId);
 
-    int insert(PreEmployment record);
+    int insert(PreEmployment preEmployment);
 
     PreEmployment selectByPrimaryKey(Integer employmentId);
 

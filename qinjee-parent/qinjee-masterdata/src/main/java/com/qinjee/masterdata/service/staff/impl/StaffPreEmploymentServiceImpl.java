@@ -255,9 +255,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                         preEmploymentVo.setBlockReson ( preEmploymentChange.getChangeRemark () );
                     }
                 }
-                list.add ( preEmploymentVo );
             }
-
+            list.add ( preEmploymentVo );
         }
         PageResult < PreEmploymentVo > preEmploymentVoPageResult = new PageResult <> ( list );
         preEmploymentVoPageResult.setTotal ( list.size () );

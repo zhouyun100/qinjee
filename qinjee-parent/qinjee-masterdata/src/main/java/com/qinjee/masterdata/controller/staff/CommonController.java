@@ -3,7 +3,6 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
@@ -15,7 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -469,15 +471,12 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/getCompany", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
-    public ResponseResult<List<Integer>> getCompanyId() {
+    public ResponseResult<Integer> getCompanyId() {
         Boolean b = checkParam(getUserSession());
         if (b) {
             try {
-                List<Integer> companyId = staffCommonService.getCompanyId(getUserSession());
-                if (!CollectionUtils.isEmpty(companyId)) {
-                    return new ResponseResult<>(companyId, CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+                Integer companyId = staffCommonService.getCompanyId ( getUserSession () );
+                return new ResponseResult(companyId, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
@@ -492,11 +491,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult getOrgIdByCompanyId(Integer orgId) {
-        Boolean b = checkParam(orgId);
+    public ResponseResult getOrgIdByCompanyId(Integer companyId) {
+        Boolean b = checkParam(companyId,getUserSession ());
         if (b) {
             try {
-                List<Integer> orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId(orgId);
+                List<Integer> orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId(companyId,getUserSession ());
                 if (!CollectionUtils.isEmpty(orgIdByCompanyId)) {
                     return new ResponseResult<>(orgIdByCompanyId, CommonCode.SUCCESS);
                 }

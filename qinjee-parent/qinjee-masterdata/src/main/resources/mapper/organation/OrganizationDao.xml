@@ -310,20 +310,6 @@
     where org_id = #{id,jdbcType=INTEGER}
     and is_enable=1
   </select>
-
-    <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
-    select org_id
-    from  t_organization
-    where  org_parent_id=#{orgId}
-    AND  is_enable=1
-</select>
-    <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
-    select
-    org.org_id
-    from  t_organization org, t_user_org_auth auth,t_user_archive  arc
-    where org.org_id=auth.org_id AND auth.archive_id=arc.archive_id AND org.is_enable=1 and arc.archive_id=#{archiveId}
-    AND auth.is_delete=0 and arc.is_delete=0
-  </select>
     <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
         t_son.org_id,
@@ -426,13 +412,6 @@
         LEFT JOIN t_organization o
             ON v.org_parent_id = o.org_id
     </select>
-    <select id="getCompanyIdByAuth" resultType="java.lang.Integer">
-    select org.org_id
-    from t_organization org,t_role_org_auth auth,t_user_role user_role,t_user_archive user_archive
-    where org.org_id=auth.org_id AND auth.role_id=user_role.role_id AND user_role.archive_id=user_archive.archive_id
-    AND org.is_enable=1 AND auth.is_delete=0 AND user_role.is_delete=0
-    AND user_archive.is_delete=0  AND user_archive.archive_id=#{archiveId}
-  </select>
     <select id="selectOrgIdByName" resultType="java.lang.Integer">
     select org_id
     from t_organization
@@ -446,7 +425,6 @@
      and pos. position_name=#{positionName} and org.is_enable = 1 and orga.is_enable=1 and post.is_enable=1
      and pos.is_delete=0
   </select>
-
     <update id="sortOrganization" parameterType="java.util.LinkedList">
 
         <foreach collection="orgIds" item="id" index="index" open="" close="" separator=";">
@@ -459,5 +437,41 @@
             </where>
         </foreach>
     </update>
+    <select id="selectorgBycomanyIdAndUserAuth" resultType="java.lang.Integer">
+      SELECT
+	org.org_id
+FROM
+	t_organization org
+LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
+LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
+WHERE
+	org.is_enable = 1
+AND auth.is_delete = 0
+AND arc.is_delete = 0
+AND arc.archive_id = #{archiveId}
+UNION
+	SELECT
+		orga.org_id
+	FROM
+		t_organization orga
+	LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
+	LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
+	LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
+	WHERE
+		orga.is_enable = 1
+	AND roleauth.is_delete = 0
+	AND role.is_delete = 0
+	AND arch.is_delete = 0
+	AND arch.archive_id = 1
+	UNION
+		SELECT
+			organ.org_id
+		FROM
+			t_organization organ
+		LEFT JOIN t_organization organi ON organ.org_id = organi.org_parent_id
+		AND organ.is_enable = 0
+		AND organi.is_enable = 0
+		AND organi.org_parent_id = #{companyId}
+    </select>
 
 </mapper>

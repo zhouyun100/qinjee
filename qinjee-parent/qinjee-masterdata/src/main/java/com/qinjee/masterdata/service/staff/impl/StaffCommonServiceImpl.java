@@ -13,7 +13,6 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -33,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.AssertTrue;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -189,18 +187,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
 
     @Override
-    public List<Integer> getCompanyId(UserSession userSession) {
-        List<Integer> integerList = organizationDao.getCompanyIdByAuth(userSession.getArchiveId());
-        List<Integer> companyIdByArchiveId = organizationDao.getCompanyIdByArchiveId(userSession.getArchiveId());
-        integerList.removeAll(companyIdByArchiveId);
-        integerList.addAll(companyIdByArchiveId);
-        return integerList;
+    public Integer getCompanyId(UserSession userSession) {
+        return userSession.getCompanyId ();
     }
 
     @Override
-    public List<Integer> getOrgIdByCompanyId(Integer orgId) {
-
-        return organizationDao.getOrgIdByCompanyId(orgId);
+    public List<Integer> getOrgIdByCompanyId(Integer companyId,UserSession userSession) {
+        return organizationDao.selectorgBycomanyIdAndUserAuth(companyId,userSession.getArchiveId ());
     }
 
     @Override
