@@ -57,7 +57,7 @@
     LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE'
     AND t_user_archive.gender = t_sys_dict.dict_code
     where t_user_role.role_id = #{roleId,jdbcType=INTEGER}
-    and t_user_archive.archive_status = 'INCUMBENCY'
+    and t_user_archive.archive_status = 'SERVICE'
     and t_user_role.archive_id = t_user_archive.archive_id
     and t_user_role.is_delete = 0
   </select>
@@ -156,7 +156,7 @@
     AND t_user_archive.gender = t_sys_dict.dict_code
     WHERE
         t_user_archive.company_id = #{companyId}
-    AND t_user_archive.archive_status = 'INCUMBENCY'
+    AND t_user_archive.archive_status = 'SERVICE'
   </select>
 
 
