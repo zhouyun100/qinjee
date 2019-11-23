@@ -26,6 +26,7 @@ public interface PreEmploymentDao {
      * 查询预入职id的最大值
      * @return
      */
+    Integer updateBatch(List<PreEmployment> list);
     Integer selectMaxId();
 
     /**

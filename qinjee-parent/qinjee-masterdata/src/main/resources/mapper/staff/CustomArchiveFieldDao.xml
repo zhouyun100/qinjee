@@ -442,4 +442,13 @@
     </foreach>
     and is_delete=0
   </select>
+    <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
+      select
+      <include refid="Base_Column_List"/>
+      from t_custom_archive_field field
+      left join t_custom_archive_table tab on field.table_id=tab.table_id
+      where field.is_delete=0 and tab.is_delete=0
+      and tab.table_name=#{preEmployment} and tab.company_id=#{companyId}
+
+    </select>
 </mapper>

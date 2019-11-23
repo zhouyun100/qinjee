@@ -84,16 +84,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
     }
 
-    @Override
-    public boolean checkPhone(String phoneNumber) {
-        return RegexpUtils.checkPhone ( phoneNumber );
-    }
-
-    @Override
-    public boolean checkMail(String mail) {
-        return RegexpUtils.checkEmail ( mail );
-    }
-
     /**
      * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
      * 梳理：预入职状态分为未入职，已入职，延期入职，放弃入职，黑名单。
@@ -189,8 +179,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) {
+    public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) throws Exception {
         PreEmployment preEmployment = new PreEmployment ();
+        if(RegexpUtils.checkPhone (preEmployment.getPhone ())){
+            throw new Exception ( "电话格式有误！" );
+        }
+        if(RegexpUtils.checkEmail ( preEmployment.getEmail () )){
+            throw new Exception ( "邮箱格式有误！" );
+        }
         BeanUtils.copyProperties ( preEmploymentVo, preEmployment );
         preEmployment.setCompanyId ( userSession.getCompanyId () );
         preEmployment.setOperatorId ( userSession.getArchiveId () );
@@ -266,10 +262,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public Map < String, String > selectPreEmploymentField(UserSession userSession) {
         Map < String, String > map = new HashMap <> ();
-        //先找到对应的表id
-        Integer id = customArchiveTableDao.selectByComIdAndPhyName ( userSession.getCompanyId (), PRE_EMPLOYMENT );
-        //找到table的字段对象
-        List < CustomArchiveField > list = customArchiveFieldDao.selectFieldByTableId ( id );
+        List < CustomArchiveField > list =customArchiveFieldDao.selectFieldNameByTableName(userSession.getCompanyId (), PRE_EMPLOYMENT);
         for (CustomArchiveField customArchiveField : list) {
             map.put ( customArchiveField.getFieldCode (), customArchiveField.getFieldName () );
         }
