@@ -74,11 +74,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 throw new Exception ( "id出错" );
             }
         }
+        try {
         List < String > mails = userArchiveDao.selectMail ( emailSendVo.getConList () );
         EmailConfig emailConfig = emailConfigService.getEmailConfigByCompanyId ( userSession.getCompanyId () );
         MailConfig mailConfig = emailConfigService.handlerEmailtoMail ( emailConfig );
-        SendManyMailsUtil.sendMail ( mailConfig, tomails, mails,
-                emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
+            SendManyMailsUtil.sendMail ( mailConfig, tomails, mails,
+                    emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
+        } catch (Exception e) {
+            throw new Exception ("邮件发送失败");
+        }
     }
 
     /**

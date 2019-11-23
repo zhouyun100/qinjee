@@ -449,40 +449,40 @@
         </foreach>
     </update>
     <select id="selectorgBycomanyIdAndUserAuth" resultType="java.lang.Integer">
-      SELECT
-	org.org_id
-FROM
-	t_organization org
-LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
-LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
-WHERE
-	org.is_enable = 1
-AND auth.is_delete = 0
-AND arc.is_delete = 0
-AND arc.archive_id = #{archiveId}
-UNION
-	SELECT
-		orga.org_id
-	FROM
-		t_organization orga
-	LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
-	LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
-	LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
-	WHERE
-		orga.is_enable = 1
-	AND roleauth.is_delete = 0
-	AND role.is_delete = 0
-	AND arch.is_delete = 0
-	AND arch.archive_id = 1
-	UNION
-		SELECT
-			organ.org_id
-		FROM
-			t_organization organ
-		LEFT JOIN t_organization organi ON organ.org_id = organi.org_parent_id
-		AND organ.is_enable = 0
-		AND organi.is_enable = 0
-		AND organi.org_parent_id = #{companyId}
-    </select>
+            select t1.org_id from (SELECT
+            org.org_id
+            FROM
+            t_organization org
+            LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
+            LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
+            WHERE
+                org.is_enable = 1
+            AND auth.is_delete = 0
+            AND arc.is_delete = 0
+            AND arc.archive_id = #{archiveId}
+            UNION
+            SELECT
+                orga.org_id
+            FROM
+                t_organization orga
+            LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
+            LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
+            LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
+            WHERE
+                orga.is_enable = 1
+            AND roleauth.is_delete = 0
+            AND role.is_delete = 0
+            AND arch.is_delete = 0
+            AND arch.archive_id = #{archiveId})t1
+            inner join
+            (SELECT
+                organ.org_id
+            FROM
+                t_organization organ
+            LEFT JOIN t_organization organi ON organ.org_id = organi.org_parent_id
+            AND organ.is_enable = 0
+            AND organi.is_enable = 0
+            AND organi.org_parent_id = #{companyId})t2 on t1.org_id=t2.org_id
+            </select>
 
 </mapper>

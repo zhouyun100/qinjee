@@ -236,7 +236,7 @@ public class StaffPreEmploymentController extends BaseController {
         if(b){
             try {
                 staffPreEmploymentService.sendManyMail(emailSendVo,getUserSession ()) ;
-                return ResponseResult.SUCCESS();
+                return ResponseResult.SUCCESS ();
             } catch (Exception e) {
                 return failResponseResult("发邮件给预入职人员失败");
             }

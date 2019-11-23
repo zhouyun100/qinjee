@@ -190,4 +190,16 @@
     AND table_id = #{tableId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
+  <select id="selectBigDataByBusinessIdAndTitleListAndCompanyId" resultType="java.util.Map">
+    select  adata.business_id,adata.big_data
+    from t_custom_archive_table_data
+    left join t_custom_archive_table tab on adata.table_id=tab.tab_id
+    where tab.is_delete=1 and tab .is_enable=1
+    and tab.table_name=#{title} and tab.company_id=#{companyId}
+    and  adata.is_delete = 0
+    and adata.business_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

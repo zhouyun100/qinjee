@@ -34,7 +34,7 @@ public interface CustomArchiveTableDao {
 
     String selectTableName(@Param("tableId") Integer tableId);
 
-    Integer selectTableIdByName(@Param("tableName") String tableName);
+    Integer selectTableIdByNameAndCompanyId(@Param("tableName") String tableName, @Param("companyId") Integer companyId);
 
     List<Integer> selectidbycomidandfunccode(@Param("companyId") Integer companyId);
 

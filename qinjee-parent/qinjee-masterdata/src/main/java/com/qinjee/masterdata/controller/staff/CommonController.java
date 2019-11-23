@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -377,11 +378,11 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "将自定义字段信息存储到自定义表中,需要将自定义表中的值封装成jsonObject形式传到后端，然后传给后台拼接", notes = "hkt")
 //    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
-    public ResponseResult insertCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableData customArchiveTableData) {
-        Boolean b = checkParam(customArchiveTableData);
+    public ResponseResult insertCustomArchiveTableData(@RequestBody @Valid BigDataVo bigDataVo) {
+        Boolean b = checkParam(bigDataVo,getUserSession ());
         if (b) {
             try {
-                staffCommonService.insertCustomArchiveTableData(customArchiveTableData, getUserSession());
+                staffCommonService.insertCustomArchiveTableData(bigDataVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();

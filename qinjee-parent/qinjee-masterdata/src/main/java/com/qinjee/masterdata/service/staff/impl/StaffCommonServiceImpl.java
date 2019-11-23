@@ -11,6 +11,7 @@ import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -216,17 +217,21 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession) {
-        //将前端传过来的大字段进行解析
+    public void insertCustomArchiveTableData(BigDataVo bigDataVo, UserSession userSession) {
+        //将前端传过来的json串进行解析
         StringBuilder bigData = new StringBuilder();
-        JSONObject jsono = JSONObject.parseObject(customArchiveTableData.getBigData());
-        List<String> strings = new ArrayList<>(jsono.keySet());
+        JSONObject jsonObject = JSONObject.parseObject (bigDataVo.getJoonString () );
+        List<String> strings = new ArrayList<>(jsonObject.keySet());
         for (String string : strings) {
-            bigData.append("@@").append(string).append("@@:").append(jsono.get(string));
+            bigData.append("@@").append(string).append("@@:").append(jsonObject.get(string));
         }
+        CustomArchiveTableData customArchiveTableData=new CustomArchiveTableData ();
+        customArchiveTableData.setBigData (bigData.toString ());
+        customArchiveTableData.setBusinessId (bigDataVo.getBusinessId ());
+        customArchiveTableData.setTableId
+                (customArchiveTableDao.selectTableIdByNameAndCompanyId(bigDataVo.getTitle (),userSession.getCompanyId()));
         customArchiveTableData.setIsDelete(0);
         customArchiveTableData.setOperatorId(userSession.getArchiveId());
-        customArchiveTableData.setBigData(bigData.toString());
         customArchiveTableDataDao.insertSelective(customArchiveTableData);
     }
 
@@ -363,23 +368,37 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public void exportBusiness(ExportRequest exportRequest, UserSession userSession) throws Exception {
-       //根据title找到表id
-       //通过表id与业务id集合找到存储数据的字段
-       //将字段进行解析,循环置于List<map>中
         Map<Integer,Map<String,Object>> map=new HashMap<>();
+       //根据title找到表id
+        //通过表id与业务id集合找到存储数据的字段
+        List<Map<Integer,String>> list=
+                customArchiveTableDataDao.selectBigDataByBusinessIdAndTitleListAndCompanyId(exportRequest.getList (),
+                        exportRequest.getTitle (),userSession.getCompanyId ());
+        //将字段进行解析，存进listMap中
+        for (Map < Integer, String > integerStringMap : list) {
+            for (Map.Entry < Integer, String > integerStringEntry : integerStringMap.entrySet ()) {
+                String[] split = integerStringEntry.getValue ().split ( "@@" );
+                Map<String,Object> map1=new LinkedHashMap<>();
+                for (int i = 0; i < split.length; i=i+2) {
+                    map1.put(split[i],split[i+1]);
+                }
+                map.put (integerStringEntry.getKey (),map1);
+            }
+        }
+      //TODO 类型还未转换
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(exportRequest.getTitle ());
         ExportList exportList=new ExportList();
         exportList.setMap(map);
         exportFile.setExportList(exportList);
-        List<String> businessHead = HeadMapUtil.getBusinessHead(exportFile.getTittle());
+        List<String> businessHead = HeadMapUtil.getBusinessHead(exportFile.getTittle ());
         if(businessHead!=null) {
-            ExcelUtil.download(exportRequest.getResponse(), exportFile.getTittle(),
+            ExcelUtil.download(exportRequest.getResponse(), exportRequest.getTitle (),
                     businessHead,
                     getDates(exportFile, businessHead),
                     getTypeMap(businessHead));
         }else {
-            throw new Exception("没有获取到对应的自己表头");
+            throw new Exception("没有获取到对应的Excel表头");
         }
 
     }

@@ -214,11 +214,13 @@
     table_id=#{tableId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
-  <select id="selectTableIdByName" resultType="java.lang.Integer">
+  <select id="selectTableIdByNameAndCompanyId" resultType="java.lang.Integer">
     select table_id
     from t_custom_archive_table
     where
     table_name=#{tableName,jdbcType=VARCHAR}
+    and company_id=#{companyId}
+    and is_enable=1 and is_delete=0
   </select>
   <select id="selectFuncCode" resultType="java.lang.String">
     select func_code
