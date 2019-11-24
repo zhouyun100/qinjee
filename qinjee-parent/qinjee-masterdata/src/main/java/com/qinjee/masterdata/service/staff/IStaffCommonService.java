@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.export.ExportBusiness;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -117,10 +117,10 @@ public interface IStaffCommonService {
     CustomArchiveField selectCustomArchiveFieldById(Integer customArchiveFieldId);
     /**
      * 将数据插入自定义数据表
-     * @param customArchiveTableData
+     * @param bigDataVo
      * @return
      */
-    void insertCustomArchiveTableData(CustomArchiveTableData customArchiveTableData, UserSession userSession);
+    void insertCustomArchiveTableData(BigDataVo bigDataVo, UserSession userSession);
 
     /**
      * 修改自定义字段表中的数据
@@ -169,14 +169,14 @@ public interface IStaffCommonService {
      * @param userSession
      * @return
      */
-    List<Integer> getCompanyId(UserSession userSession);
+    Integer getCompanyId(UserSession userSession);
 
     /**
      * 根据档案id显示对应权限下的子集部门
-     * @param orgId
+     * @param companyId
      * @return
      */
-    List<Integer> getOrgIdByCompanyId(Integer orgId);
+    List<Integer> getOrgIdByCompanyId(Integer companyId,UserSession userSession);
 
     /**
      * 显示部门下的岗位

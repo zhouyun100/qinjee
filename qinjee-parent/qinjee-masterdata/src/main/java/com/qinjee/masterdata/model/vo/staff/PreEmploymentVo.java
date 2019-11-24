@@ -63,7 +63,6 @@ public class PreEmploymentVo implements Serializable {
     private String graduatedSchool;
 
     /** 毕业专业 */
-    @NotNull
     private String graduatedSpeciality;
 
     /** 最近工作单位 */
@@ -94,6 +93,7 @@ public class PreEmploymentVo implements Serializable {
     private Integer politicalStatus;
 
     /** 藉贯 */
+    @NotNull
     private String birthplace;
 
     /** 试用期限(月) */

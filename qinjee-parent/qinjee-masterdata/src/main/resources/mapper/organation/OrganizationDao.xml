@@ -10,6 +10,7 @@
         <result column="parent_org_name" jdbcType="VARCHAR" property="orgParentName"/>
         <result column="parent_org_code" jdbcType="VARCHAR" property="orgParentCode"/>
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
+        <result column="orgManagerName" jdbcType="VARCHAR" property="orgManagerName"/>
         <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
@@ -210,40 +211,51 @@
         ORDER BY v.org_id ASC
     </select>
 
-    <select id="getOrganizationList" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-        select org.org_code, org.org_name, org.org_type, org.org_full_name, org.org_parent_id, org.sort_id,
-        parent_org.org_name orgParentName,
-        parent_org.org_code orgParentCode,tua.user_name orgManagerName,tua.employee_number managerEmployeeNumber from
+    <select id="getOrganizationList" resultMap="BaseResultMap">
+        SELECT
+            org.org_id,org.is_enable,org.org_code,
+            org.org_name,org.org_type,org.org_full_name,
+            org.org_parent_id,org.sort_id, roa.role_id,
+            parent_org.org_name parent_org_name,
+            parent_org.org_code parent_org_code,
+            tua.user_name orgManagerName
+        FROM
         t_organization org
-        left join t_role_org_auth roa on roa.org_id = org.org_id
-        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
-        <if test="organizationPageVo != null and (organizationPageVo.isEnable != null and organizationPageVo.isEnable == 1)">
-            and org.is_enable = #{organizationPageVo.isEnable}
-        </if>
-        left join t_organization parent_org on org.org_parent_id = parent_org.org_id
-        left join t_user_archive tua on tua.archive_id = org.org_manager_id
-        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
-        ur.archive_id and ua.archive_id = #{archiveId})
-        and tuoa.is_delete = 0
-        and tuoa.archive_id = #{archiveId}
-        and tuoa.trusteeship_end_time > #{now}
-        and tuoa.is_trusteeship = 1
+        LEFT JOIN t_role_org_auth roa
+            ON roa.org_id = org.org_id
+        LEFT JOIN t_user_org_auth tuoa
+            ON tuoa.org_id = org.org_id
+        INNER JOIN t_user_archive tua
+            ON tua.archive_id = org.org_manager_id
+        LEFT JOIN t_organization parent_org
+            ON org.org_parent_id = parent_org.org_id
+        LEFT JOIN t_user_role ur
+            ON ur.archive_id = tua.archive_id
+            AND ur.role_id = roa.role_id
+        WHERE org.is_enable = 1
+            AND parent_org.is_enable = 1
+            AND roa.is_delete = 0
+            AND tuoa.is_delete = 0
+            AND tua.archive_id = #{archiveId}
+            AND ur.is_delete = 0
+            AND ( ur.is_trusteeship = 0 OR ( ur.is_trusteeship = 1 AND ur.trusteeship_end_time > #{now} ))
         <if test="organizationPageVo != null">
             <if test="organizationPageVo.orgParentId != null">
-                and org.org_parent_id = #{orgParentId}
+                and org.org_parent_id = #{organizationPageVo.orgParentId}
             </if>
+
             <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
                 <foreach collection="organizationPageVo.querFieldVos" item="querField">
                     <if test="querField.fieldName != null and querField.fieldName != ''">
                         ${querField.condition}
                     </if>
-
                     <if test="querField.isFilterNull">
                         and ${querField.fieldName} IS NULL
                     </if>
                 </foreach>
             </if>
         </if>
+
         <if test="sortFieldStr != null and sortFieldStr != ''">
             ORDER BY ${sortFieldStr}
         </if>
@@ -309,20 +321,6 @@
     from  t_organization
     where org_id = #{id,jdbcType=INTEGER}
     and is_enable=1
-  </select>
-
-    <select id="getOrgIdByCompanyId" resultType="java.lang.Integer">
-    select org_id
-    from  t_organization
-    where  org_parent_id=#{orgId}
-    AND  is_enable=1
-</select>
-    <select id="getCompanyIdByArchiveId" resultType="java.lang.Integer">
-    select
-    org.org_id
-    from  t_organization org, t_user_org_auth auth,t_user_archive  arc
-    where org.org_id=auth.org_id AND auth.archive_id=arc.archive_id AND org.is_enable=1 and arc.archive_id=#{archiveId}
-    AND auth.is_delete=0 and arc.is_delete=0
   </select>
     <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
@@ -426,13 +424,6 @@
         LEFT JOIN t_organization o
             ON v.org_parent_id = o.org_id
     </select>
-    <select id="getCompanyIdByAuth" resultType="java.lang.Integer">
-    select org.org_id
-    from t_organization org,t_role_org_auth auth,t_user_role user_role,t_user_archive user_archive
-    where org.org_id=auth.org_id AND auth.role_id=user_role.role_id AND user_role.archive_id=user_archive.archive_id
-    AND org.is_enable=1 AND auth.is_delete=0 AND user_role.is_delete=0
-    AND user_archive.is_delete=0  AND user_archive.archive_id=#{archiveId}
-  </select>
     <select id="selectOrgIdByName" resultType="java.lang.Integer">
     select org_id
     from t_organization
@@ -446,7 +437,6 @@
      and pos. position_name=#{positionName} and org.is_enable = 1 and orga.is_enable=1 and post.is_enable=1
      and pos.is_delete=0
   </select>
-
     <update id="sortOrganization" parameterType="java.util.LinkedList">
 
         <foreach collection="orgIds" item="id" index="index" open="" close="" separator=";">
@@ -459,5 +449,41 @@
             </where>
         </foreach>
     </update>
+    <select id="selectorgBycomanyIdAndUserAuth" resultType="java.lang.Integer">
+            select t1.org_id from (SELECT
+            org.org_id
+            FROM
+            t_organization org
+            LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
+            LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
+            WHERE
+                org.is_enable = 1
+            AND auth.is_delete = 0
+            AND arc.is_delete = 0
+            AND arc.archive_id = #{archiveId}
+            UNION
+            SELECT
+                orga.org_id
+            FROM
+                t_organization orga
+            LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
+            LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
+            LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
+            WHERE
+                orga.is_enable = 1
+            AND roleauth.is_delete = 0
+            AND role.is_delete = 0
+            AND arch.is_delete = 0
+            AND arch.archive_id = #{archiveId})t1
+            inner join
+            (SELECT
+                organ.org_id
+            FROM
+                t_organization organ
+            LEFT JOIN t_organization organi ON organ.org_id = organi.org_parent_id
+            AND organ.is_enable = 0
+            AND organi.is_enable = 0
+            AND organi.org_parent_id = #{companyId})t2 on t1.org_id=t2.org_id
+            </select>
 
 </mapper>

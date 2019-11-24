@@ -62,32 +62,28 @@ public class OrganizationController extends BaseController {
     //TODO 删除机构时，需要回收权限
     @PostMapping("/deleteOrganizationById")
     @ApiOperation(value = "删除机构",notes = "高雄")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "orgIds", value = "要删除的机构id列表", paramType = "query", dataType = "int",allowMultiple = true,required = true)
-    })
-    public ResponseResult deleteOrganizationById(@RequestBody List<Integer> orgIds){
+    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表")@RequestBody List<Integer> orgIds){
         return organizationService.deleteOrganizationById(orgIds);
     }
 
-    /** 
-    * @Description: 查询用户下所有机构及子机构 
-    * @Param:  
-    * @return:  
-    * @Author: penghs 
-    * @Date: 2019/11/20 0020 
+    /**
+    * @Description: 查询用户下所有机构及子机构
+    * @Param:
+    * @return:
+    * @Author: penghs
+    * @Date: 2019/11/20 0020
     */
     @ApiOperation(value = "查询用户下所有的机构及子机构,树形展示",notes = "彭洪思")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
     })
     @GetMapping("/getAllOrganizationTree")
-    public ResponseResult<List<OrganizationVO>> getAllOrganizationTree( @RequestParam(value = "isEnable",required = false) Short isEnable){
-
+    public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree( @RequestParam(value = "isEnable",required = false) Short isEnable){
         UserSession userSession = getUserSession();
         List<OrganizationVO> organizationVOList =organizationService.getAllOrganizationTree(userSession, isEnable);
-         return new ResponseResult(organizationVOList);
+        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
+        return new ResponseResult<>(pageResult);
     }
-
 
     @PostMapping("/getOrganizationPageList")
     @ApiOperation(value = "分页按条件查询用户下所有的机构",notes = "高雄")
@@ -97,8 +93,6 @@ public class OrganizationController extends BaseController {
         PageResult<OrganizationVO> pageResult = organizationService.getOrganizationList(organizationPageVo,userSession);
         return new ResponseResult<>(pageResult);
     }
-
-
     @GetMapping("/sealOrganizationByIds")
     @ApiOperation(value = "封存/封存机构", notes = "高雄")
     public ResponseResult sealOrganizationByIds(@RequestParam("orgIds") @ApiParam(value = "机构Id",example = "1",allowMultiple = true, required = true) List<Integer> orgIds,
@@ -196,6 +190,4 @@ public class OrganizationController extends BaseController {
     public ResponseResult downloadTemplateInOrg(HttpServletResponse response){
         return organizationService.downloadTemplate(response);
     }
-
-
 }

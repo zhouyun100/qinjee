@@ -213,7 +213,7 @@ public class StaffPreEmploymentController extends BaseController {
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
-                return failResponseResult("延期入职以及放弃入职失败");
+                return failResponseResult("确认入职失败");
             }
         }
         return  failResponseResult("参数错误");
@@ -236,60 +236,13 @@ public class StaffPreEmploymentController extends BaseController {
         if(b){
             try {
                 staffPreEmploymentService.sendManyMail(emailSendVo,getUserSession ()) ;
-                return ResponseResult.SUCCESS();
+                return ResponseResult.SUCCESS ();
             } catch (Exception e) {
                 return failResponseResult("发邮件给预入职人员失败");
             }
         }
         return  failResponseResult("参数错误");
     }
-
-    /**
-     * 校验手机号码
-     */
-    @RequestMapping(value = "/checkPhone", method = RequestMethod.POST)
-    @ApiOperation(value = "校验手机号码", notes = "hkt")
-//    @ApiImplicitParam(name = "String", value = "手机号", paramType = "query", required = true)
-    public ResponseResult checkPhone(String phoneNumber) {
-        Boolean b = checkParam(phoneNumber);
-        if(b){
-            try {
-                if(staffPreEmploymentService.checkPhone(phoneNumber)){
-                    return ResponseResult.SUCCESS();
-                }
-                return failResponseResult("手机号验证不通过");
-            } catch (Exception e) {
-                return failResponseResult("手机号验证出现问题");
-            }
-        }
-        return  failResponseResult("参数错误");
-    }
-
-
-
-    /**
-     * 校验邮箱
-     */
-    @RequestMapping(value = "/checkMail", method = RequestMethod.POST)
-    @ApiOperation(value = "校验邮箱", notes = "hkt")
-//    @ApiImplicitParam(name = "String", value = "邮箱", paramType = "query", required = true)
-    public ResponseResult checkMail(String mail) {
-        Boolean b = checkParam(mail);
-        if(b){
-            try {
-                if(staffPreEmploymentService.checkMail(mail)){
-                    return ResponseResult.SUCCESS();
-                }
-                return failResponseResult("邮箱验证不通过");
-            } catch (Exception e) {
-                return failResponseResult("邮箱验证出现问题");
-            }
-        }
-        return  failResponseResult("参数错误");
-
-    }
-
-
 
     /**
      * 生成入职登记二维码,返回是二维码图片链接

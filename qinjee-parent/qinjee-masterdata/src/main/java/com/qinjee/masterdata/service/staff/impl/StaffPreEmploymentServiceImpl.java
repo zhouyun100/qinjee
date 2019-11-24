@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -54,8 +53,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private CustomArchiveFieldDao customArchiveFieldDao;
     @Autowired
-    private CustomArchiveTableDao customArchiveTableDao;
-    @Autowired
     private EmailConfigService emailConfigService;
 
 
@@ -77,21 +74,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 throw new Exception ( "id出错" );
             }
         }
+        try {
         List < String > mails = userArchiveDao.selectMail ( emailSendVo.getConList () );
         EmailConfig emailConfig = emailConfigService.getEmailConfigByCompanyId ( userSession.getCompanyId () );
         MailConfig mailConfig = emailConfigService.handlerEmailtoMail ( emailConfig );
-        SendManyMailsUtil.sendMail ( mailConfig, tomails, mails,
-                emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
-    }
-
-    @Override
-    public boolean checkPhone(String phoneNumber) {
-        return RegexpUtils.checkPhone ( phoneNumber );
-    }
-
-    @Override
-    public boolean checkMail(String mail) {
-        return RegexpUtils.checkEmail ( mail );
+            SendManyMailsUtil.sendMail ( mailConfig, tomails, mails,
+                    emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
+        } catch (Exception e) {
+            throw new Exception ("邮件发送失败");
+        }
     }
 
     /**
@@ -171,7 +162,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         preEmploymentDao.updateByPrimaryKey ( preEmployment );
     }
 
-    public PreEmploymentChange isExistPreChange(String status, List < PreEmploymentChange > list) {
+    private PreEmploymentChange isExistPreChange(String status, List < PreEmploymentChange > list) {
         for (PreEmploymentChange preEmploymentChange : list) {
             if (status.equals ( preEmploymentChange.getChangeState () )) {
                 return preEmploymentChange;
@@ -189,8 +180,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) {
+    public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) throws Exception {
         PreEmployment preEmployment = new PreEmployment ();
+        if(RegexpUtils.checkPhone (preEmployment.getPhone ())){
+            throw new Exception ( "电话格式有误！" );
+        }
+        if(RegexpUtils.checkEmail ( preEmployment.getEmail () )){
+            throw new Exception ( "邮箱格式有误！" );
+        }
         BeanUtils.copyProperties ( preEmploymentVo, preEmployment );
         preEmployment.setCompanyId ( userSession.getCompanyId () );
         preEmployment.setOperatorId ( userSession.getArchiveId () );
@@ -244,20 +241,19 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         for (PreEmploymentVo preEmploymentVo : preEmploymentList) {
             for (PreEmploymentChange preEmploymentChange : preEmploymentChanges) {
                 if (preEmploymentChange.getEmploymentId ().equals ( preEmploymentVo.getEmploymentId () )) {
-                    if ("已延期".equals ( preEmploymentChange.getChangeState () )) {
+                    if (CHANGSTATUS_DELAY.equals ( preEmploymentChange.getChangeState () )) {
                         preEmploymentVo.setDelayDate ( preEmploymentChange.getDelayDate () );
                         preEmploymentVo.setDelayReson ( preEmploymentChange.getChangeRemark () );
                     }
-                    if ("已放弃".equals ( preEmploymentChange.getChangeState () )) {
+                    if (CHANGSTATUS_GIVEUP.equals ( preEmploymentChange.getChangeState () )) {
                         preEmploymentVo.setAbandonReason ( preEmploymentChange.getAbandonReason () );
                     }
-                    if ("黑名单".equals ( preEmploymentChange.getChangeState () )) {
+                    if (CHANGSTATUS_BLACKLIST.equals ( preEmploymentChange.getChangeState () )) {
                         preEmploymentVo.setBlockReson ( preEmploymentChange.getChangeRemark () );
                     }
                 }
-                list.add ( preEmploymentVo );
             }
-
+            list.add ( preEmploymentVo );
         }
         PageResult < PreEmploymentVo > preEmploymentVoPageResult = new PageResult <> ( list );
         preEmploymentVoPageResult.setTotal ( list.size () );
@@ -267,10 +263,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public Map < String, String > selectPreEmploymentField(UserSession userSession) {
         Map < String, String > map = new HashMap <> ();
-        //先找到对应的表id
-        Integer id = customArchiveTableDao.selectByComIdAndPhyName ( userSession.getCompanyId (), PRE_EMPLOYMENT );
-        //找到table的字段对象
-        List < CustomArchiveField > list = customArchiveFieldDao.selectFieldByTableId ( id );
+        List < CustomArchiveField > list =customArchiveFieldDao.selectFieldNameByTableName(userSession.getCompanyId (), PRE_EMPLOYMENT);
         for (CustomArchiveField customArchiveField : list) {
             map.put ( customArchiveField.getFieldCode (), customArchiveField.getFieldName () );
         }

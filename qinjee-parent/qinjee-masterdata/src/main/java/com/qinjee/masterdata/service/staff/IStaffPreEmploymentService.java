@@ -21,21 +21,6 @@ public interface IStaffPreEmploymentService {
      * @throws Exception
      */
     void sendManyMail(EmailSendVo emailSendVo,UserSession userSession) throws Exception;
-
-    /**
-     * 验证手机号
-     * @param phoneNumber
-     * @return
-     */
-    boolean checkPhone(String phoneNumber);
-
-    /**
-     * 验证邮箱
-     * @param mail
-     * @return
-     */
-    boolean checkMail(String mail);
-
     /**
      * 新增预入职变更表
      * @param preEmploymentId,statusChangeVo
@@ -73,7 +58,7 @@ public interface IStaffPreEmploymentService {
      * @param preEmploymentVo
      * @return
      */
-    void insertPreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession);
+    void insertPreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession) throws Exception;
     /**
      * 修改预入职信息(显示字段的信息)
      */

@@ -43,7 +43,6 @@ public interface CustomArchiveFieldDao {
 
     List<String> selectFieldNameListByTableId(@Param("id") Integer id);
 
-
     List<String> selectTypeByNameList(@Param("heads") List<String> heads);
 
     List<String> selectFieldCodeByList(@Param("sortList") List<Integer> sortList);
@@ -79,4 +78,6 @@ public interface CustomArchiveFieldDao {
     String selectFieldCodeByName(@Param("s") String s);
 
     List<String> selectFieldCodeByNameList(@Param("list") List<String> keySet);
+
+    List< CustomArchiveField> selectFieldNameByTableName(@Param("companyId") Integer companyId, @Param("preEmployment") String preEmployment);
 }
