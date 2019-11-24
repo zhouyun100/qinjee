@@ -10,5 +10,4 @@ import java.util.List;
 public class ExportRequest {
     private  List <Integer> list;
     private String title;
-    private HttpServletResponse response;
 }

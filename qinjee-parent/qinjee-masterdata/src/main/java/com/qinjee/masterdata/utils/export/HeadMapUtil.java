@@ -25,8 +25,8 @@ public class HeadMapUtil {
     public static List<String> getHeadsForPre() {
         List<String> keyList=new ArrayList<>();
             String[] strings = {"姓名", "性别", "手机号", "个人邮箱", "证件类型", "证件号码", "年龄","参加工作时间","最高学历","毕业院校",
-                            "毕业专业","最近工作单位","入职日期","试用期限","应聘岗位","入职部门编码","入职部门名称",
-                            "入职岗位编码","入职岗位名称","备注"};
+                            "毕业专业","最近工作单位","入职日期","试用期限","应聘岗位","入职部门编码","部门",
+                            "入职岗位编码","岗位","备注"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }
@@ -48,7 +48,7 @@ public class HeadMapUtil {
      */
     public static List<String> getHeadsForBlackList() {
         List<String> keyList=new ArrayList<>();
-        String[] strings = {"姓名", "性别", "证件号码", "手机号", "所属单位", "部门", "岗位","拉黑原因"};
+        String[] strings = {"姓名","证件号码", "手机号", "所属单位", "部门", "岗位","拉黑原因"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }
@@ -94,7 +94,7 @@ public class HeadMapUtil {
     public static List<String> getHeadsForCon(){
         List<String> keyList=new ArrayList<>();
         String[] strings={"姓名","证件号码","工号","合同类别","合同编号","合同期限类型","合同签订日期","合同起始日期",
-                "合同终止日期","合同期限(月)","合同主体","签订次数","备注"};
+                "合同终止日期","合同期限","合同主体","签订次数","备注"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }
