@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -53,7 +54,6 @@ public class OrganizationHistoryAspect {
      */
     @Before("@annotation(com.qinjee.masterdata.aop.OrganizationEditAnno)")
     public void beforeEditOrganization(JoinPoint joinPoint) {
-        System.out.println("维护历史机构表");
         Object[] args = joinPoint.getArgs();
         if (args.length > 0 && args[0] instanceof Organization) {
             Organization orgVo = (Organization) args[0];
@@ -66,5 +66,46 @@ public class OrganizationHistoryAspect {
             orgHisBean.setCreateTime(orgBean.getCreateTime());
             orgHisService.addOrganizationHistory(orgHisBean);
         }
+    }
+
+    /**
+     *
+     *机构划转前，将待划转机构都进行历史维护
+     * @param joinPoint
+     */
+    @Before("@annotation(com.qinjee.masterdata.aop.OrganizationTransferAnno)")
+    public void beforeTransferOrganization(JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        if (args.length > 0 ) {
+            List<Integer> orgIds = (List<Integer>) args[0];
+            for (Integer orgId:orgIds){
+                addOrganizationHistory(orgId);
+            }
+        }
+    }/**
+     *
+     *机构删除前，将机构都进行历史维护
+     * @param joinPoint
+     */
+    @Before("@annotation(com.qinjee.masterdata.aop.OrganizationDeleteAnno)")
+    public void beforeDeleteOrganization(JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        if (args.length > 0 ) {
+            List<Integer> orgIds = (List<Integer>) args[0];
+            for (Integer orgId:orgIds){
+                addOrganizationHistory(orgId);
+            }
+        }
+    }
+
+    public void addOrganizationHistory(Integer orgId){
+        OrganizationVO orgBean = orgService.selectByPrimaryKey(orgId);
+        OrganizationHistory orgHisBean = new OrganizationHistory();
+        if (Objects.nonNull(orgBean)) {
+            BeanUtils.copyProperties(orgBean, orgHisBean);
+        }
+        orgHisBean.setUpdateTime(new Date());
+        orgHisBean.setCreateTime(orgBean.getCreateTime());
+        orgHisService.addOrganizationHistory(orgHisBean);
     }
 }

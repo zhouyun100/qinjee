@@ -3,8 +3,10 @@ package com.qinjee.masterdata.service.organation.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.aop.OrganizationDeleteAnno;
 import com.qinjee.masterdata.aop.OrganizationEditAnno;
 import com.qinjee.masterdata.aop.OrganizationSaveAnno;
+import com.qinjee.masterdata.aop.OrganizationTransferAnno;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
@@ -329,6 +331,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Transactional
     @Override
+    @OrganizationDeleteAnno
     public ResponseResult deleteOrganizationById(List<Integer> orgIds,UserSession userSession) {
         List<Integer> idList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orgIds)) {
@@ -360,9 +363,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 }
                 orgHisBean.setUpdateTime(new Date());
                 orgHisBean.setCreateTime(orgBean.getCreateTime());
-                //存档
-                organizationHistoryService.addOrganizationHistory(orgHisBean);
-                //删除
+
+
                 organizationDao.deleteByPrimaryKey(orgId);
                 //删除岗位,逻辑删除
                 postDao.deleteByOrgId(orgId);
@@ -456,6 +458,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional
+    @OrganizationTransferAnno
     public ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId,UserSession userSession) {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
         List<OrganizationVO> organizationVOList = null;
