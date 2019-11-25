@@ -105,7 +105,9 @@ public class QueryFieldUtil {
                         queryField.setIsFilterNull(false);
                     }
                 }
-                orderByStrs.delete(orderByStrs.toString().lastIndexOf(", "), orderByStrs.toString().length());
+                if(null!=orderByStrs&&orderByStrs.toString().equals("")&&orderByStrs.toString().endsWith(",")){
+                    orderByStrs.delete(orderByStrs.toString().lastIndexOf(", "), orderByStrs.toString().length());
+                }
                 return orderByStrs.toString();
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
