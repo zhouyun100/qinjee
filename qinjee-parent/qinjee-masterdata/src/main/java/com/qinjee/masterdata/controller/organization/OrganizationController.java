@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
@@ -18,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author 高雄
@@ -40,28 +37,16 @@ public class OrganizationController extends BaseController {
     //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "新增机构", notes = "高雄")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName,@RequestParam("orgType")String orgType,@RequestParam("parentOrgId")String parentOrgId,@RequestParam("orgManagerId")String orgManagerId) {
-        ResponseResult responseResult;
-        try {
-             responseResult=organizationService.addOrganization(orgName,orgType,parentOrgId,orgManagerId,getUserSession());
-            return responseResult;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName,@RequestParam("orgType")String orgType,@RequestParam("orgParentId")String orgParentId,@RequestParam("orgManagerId")String orgManagerId) {
+            return organizationService.addOrganization(orgName,orgType,orgParentId,orgManagerId,getUserSession());
     }
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "编辑机构", notes = "高雄")
-    public ResponseResult editOrganization(@RequestParam("orgId")String orgId,@RequestParam("orgName")String orgName,@RequestParam("orgType")String orgType,@RequestParam("parentOrgId")String parentOrgId,@RequestParam("orgManagerId")String orgManagerId) {
-        ResponseResult responseResult;
-        try {
-            responseResult=organizationService.editOrganization(orgId,orgName,orgType,parentOrgId,orgManagerId,getUserSession());
-            return responseResult;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public ResponseResult editOrganization(@RequestParam("orgId")String orgId,@RequestParam("orgName")String orgName,@RequestParam("orgType")String orgType,@RequestParam("orgParentId")String orgParentId,@RequestParam("orgManagerId")String orgManagerId) {
+
+            return organizationService.editOrganization(orgId,orgName,orgType,orgParentId,orgManagerId,getUserSession());
+
     }
 
     //TODO 删除机构时，需要回收权限（调用权限接口）
@@ -92,7 +77,7 @@ public class OrganizationController extends BaseController {
 
     @PostMapping("/getOrganizationPageList")
     @ApiOperation(value = "分页按条件查询用户下所有的机构", notes = "高雄")
-    public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody(required = false) OrganizationPageVo organizationPageVo) {
+    public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
         UserSession userSession = getUserSession();
         PageResult<OrganizationVO> pageResult = organizationService.getOrganizationList(organizationPageVo, userSession);
         return new ResponseResult<>(pageResult);
@@ -118,14 +103,13 @@ public class OrganizationController extends BaseController {
 
     @PostMapping("/lockOrganizationByIds")
     @ApiOperation(value = "封存机构", notes = "高雄")
-    public ResponseResult lockOrganizationByIds(@RequestParam("orgIds") @ApiParam(value = "机构Id", example = "1", allowMultiple = true, required = true) List<Integer> orgIds) {
+    public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         return organizationService.sealOrganizationByIds(orgIds, Short.parseShort("0"));
     }
 
-
     @PostMapping("/unlockOrganizationByIds")
     @ApiOperation(value = "解封机构", notes = "高雄")
-    public ResponseResult unlockOrganizationByIds(@RequestParam("orgIds") @ApiParam(value = "机构Id", example = "1", allowMultiple = true, required = true) List<Integer> orgIds) {
+    public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         return organizationService.sealOrganizationByIds(orgIds, Short.parseShort("1"));
     }
 
@@ -133,7 +117,7 @@ public class OrganizationController extends BaseController {
 
     @ApiOperation(value = "导出机构到excel，如果不选中的话导入用户下所有机构", notes = "彭洪思")
     @PostMapping("/downloadOrganizationToExcelByOrgId")
-    public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径", required = true) @RequestParam("filePath") String filePath, @RequestParam(value = "orgIds", required = false) @ApiParam(value = "所选机构的id", required = false) List<Integer> orgIds) {
+    public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径", required = true) @RequestParam("filePath") String filePath, @RequestBody List<Integer> orgIds) {
 
         if (CollectionUtils.isEmpty(orgIds)) {
             return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
@@ -150,7 +134,7 @@ public class OrganizationController extends BaseController {
      */
     @PostMapping("/sortOrganization")
     @ApiOperation(value = "机构排序，只能同一级别下机构排序（需要将该级下所有机构的id按顺序传参）", notes = "彭洪思")
-    public ResponseResult sortOrganizationInOrg(@ApiParam(name = "orgIds", value = "需要排序的机构id") @RequestBody LinkedList<Integer> orgIds) {
+    public ResponseResult sortOrganizationInOrg( @RequestBody LinkedList<Integer> orgIds) {
         ResponseResult responseResult = organizationService.sortOrganization(orgIds);
         return responseResult;
     }
@@ -167,7 +151,7 @@ public class OrganizationController extends BaseController {
             @ApiImplicitParam(name = "orgIds", value = "需要合并机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true),
             @ApiImplicitParam(name = "targetOrgId", value = "目标机构Id", paramType = "query", dataType = "int", required = true, example = "1"),
     })
-    @PostMapping("/transferOrganization")
+    @GetMapping("/transferOrganization")
     @ApiOperation(value = "划转机构", notes = "高雄")
     /**
      * 将勾选的机构（至少一个）划转到目标机构下，成为目标机构的子机构
@@ -176,6 +160,16 @@ public class OrganizationController extends BaseController {
      */
     public ResponseResult transferOrganization(@RequestParam("orgIds") List<Integer> orgIds,
                                                @RequestParam("targetOrgId") Integer targetOrgId) {
+        return organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
+    }
+
+    @ApiOperation(value = "划转机构,参数demo  {'orgIds':[1001,1002],'targetOrgId':1003}", notes = "彭洪思")
+    @PostMapping("/transferOrganization2")
+
+    public ResponseResult transferOrganization2(@RequestBody @ApiParam(name = "paramMap",value = "json对象",example ="{'orgIds':[1001,1002],'targetOrgId':1003}" ) Map<String,Object> paramMap) {
+        List<Integer> orgIds =(List<Integer>) paramMap.get("orgIds");
+        Integer targetOrgId = (Integer)paramMap.get("targetOrgId");
+
         return organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
     }
 

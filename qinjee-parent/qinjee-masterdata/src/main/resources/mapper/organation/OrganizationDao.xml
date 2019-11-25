@@ -213,7 +213,7 @@
 
     <select id="getOrganizationList" resultMap="BaseResultMap">
         SELECT
-            org.org_id,org.is_enable,org.org_code,
+            org.org_id,org.is_enable,org.org_code,org.org_manager_id,
             org.org_name,org.org_type,org.org_full_name,
             org.org_parent_id,org.sort_id, roa.role_id,
             parent_org.org_name parent_org_name,
