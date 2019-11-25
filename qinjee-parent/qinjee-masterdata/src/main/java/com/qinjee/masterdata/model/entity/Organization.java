@@ -25,6 +25,7 @@ public class Organization implements Serializable {
     /**
      * 机构ID
      */
+    @QueryColumn("org.org_id")
     private Integer orgId;
 
     /**

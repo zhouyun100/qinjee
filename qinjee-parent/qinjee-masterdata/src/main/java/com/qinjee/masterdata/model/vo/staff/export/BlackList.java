@@ -12,7 +12,7 @@ public class BlackList implements Serializable {
      */
     private Integer blacklist_id;
     private String user_name;
-    private String gender;
+//    private String gender;
     private String id_number;
     private String phone;
     /**
@@ -30,5 +30,5 @@ public class BlackList implements Serializable {
     /**
      * 拉黑原因
      */
-    private String abandon_reason;
+    private String block_reason;
 }

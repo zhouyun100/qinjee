@@ -612,11 +612,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult export(@RequestBody ExportRequest exportRequest) {
-        Boolean b = checkParam(exportRequest,getUserSession ());
+    public ResponseResult export(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+        Boolean b = checkParam(exportRequest,response,getUserSession ());
         if(b){
             try {
-                staffCommonService.exportPreFile(exportRequest,getUserSession () );
+                staffCommonService.exportPreFile(exportRequest,response,getUserSession () );
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -637,11 +637,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreFile(@RequestBody ExportRequest exportRequest) {
-        Boolean b = checkParam(exportRequest,getUserSession ());
+    public ResponseResult exportPreBla(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+        Boolean b = checkParam(exportRequest,response,getUserSession ());
         if(b){
             try {
-                staffCommonService.exportBlackFile(exportRequest);
+                staffCommonService.exportBlackFile(exportRequest,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -661,11 +661,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportContractList(@RequestBody ExportRequest exportRequest) {
-        Boolean b = checkParam(exportRequest,getUserSession ());
+    public ResponseResult exportContractList(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+        Boolean b = checkParam(exportRequest,response,getUserSession ());
         if(b){
             try {
-                staffCommonService.exportContractList(exportRequest);
+                staffCommonService.exportContractList(exportRequest,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -686,11 +686,11 @@ public class CommonController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportBusiness(@RequestBody ExportRequest exportRequest) {
-        Boolean b = checkParam(exportRequest,getUserSession());
+    public ResponseResult exportBusiness(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+        Boolean b = checkParam(exportRequest,response,getUserSession());
         if(b){
             try {
-                staffCommonService.exportBusiness(exportRequest,getUserSession());
+                staffCommonService.exportBusiness(exportRequest,response,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("导出失败");

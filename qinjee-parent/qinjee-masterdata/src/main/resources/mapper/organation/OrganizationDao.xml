@@ -243,18 +243,19 @@
             <if test="organizationPageVo.orgParentId != null">
                 and org.org_parent_id = #{organizationPageVo.orgParentId}
             </if>
+
             <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
                 <foreach collection="organizationPageVo.querFieldVos" item="querField">
-                    <if test="querField.fieldName != null and querField.fieldName != '' and querField.fieldValues !=null and querField.fieldValues.size > 0">
-                       and
-                        org.${querField.fieldName} in
-                        <foreach collection="querField.fieldValues" item="value" open="(" close=")" separator=",">
-                            #{value}
-                        </foreach>
+                    <if test="querField.fieldName != null and querField.fieldName != ''">
+                        ${querField.condition}
+                    </if>
+                    <if test="querField.isFilterNull">
+                        and ${querField.fieldName} IS NULL
                     </if>
                 </foreach>
             </if>
         </if>
+
         <if test="sortFieldStr != null and sortFieldStr != ''">
             ORDER BY ${sortFieldStr}
         </if>

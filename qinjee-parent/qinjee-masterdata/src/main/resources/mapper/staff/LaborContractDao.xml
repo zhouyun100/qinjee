@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.LaborContract">
-    <id column="id" jdbcType="INTEGER" property="id" />
     <result column="contract_id" jdbcType="INTEGER" property="contractId" />
     <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
@@ -314,16 +313,17 @@
       #{item}
     </foreach>
   </select>
-    <select id="selectExportConList" resultType="java.util.Map" resultMap="ExportCon">
+    <select id="selectExportConList" resultType="hashmap" >
       select arc.user_name,arc.id_number,arc.employee_number,con.contract_number,con.contract_period_type,
       con.contract_begin_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
       con.contract_subject,con.sign_number,con.contract_remark,con.contract_category
       from t_labor_contract con
       left join t_user_archive arc on arc.archive_id = con.archive_id
-      where con.id in
-      <foreach collection="list" open="(" separator="," close=")">
-        #{list}
+      where con.contract_id in
+      <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
       </foreach>
-      and con.is_delete=0 and arc.is_delete=0
+      and con.business_unit_id=#{companyId}
+      and arc.is_delete=0
     </select>
 </mapper>

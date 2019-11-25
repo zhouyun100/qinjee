@@ -37,10 +37,21 @@ public class HeadTypeUtil {
         map.put("试用期限", "NUMBER");
         map.put("应聘岗位", "String");
         map.put("入职部门编码", "String");
-        map.put("入职部门名称", "String");
+        map.put("部门", "String");
         map.put("入职岗位编码", "String");
-        map.put("入职岗位名称", "String");
+        map.put("岗位", "String");
         map.put("备注", "String");
+        return map;
+    }
+    public static Map<String, String> getTypeForBla() {
+        Map<String, String> map = new HashMap<>();
+        map.put("姓名", "String");
+        map.put("证件号码", "String");
+        map.put("手机号", "String");
+        map.put("所属单位", "String");
+        map.put("部门", "String");
+        map.put("岗位", "String");
+        map.put("拉黑原因", "String");
         return map;
     }
 
@@ -50,6 +61,23 @@ public class HeadTypeUtil {
         map.put("CODE", "String");
         map.put("NUMBER", "Integer");
         map.put("DATE", "Date");
+        return map;
+    }
+    public static Map<String, String> getTypeForCon() {
+        Map<String, String> map = new HashMap<>();
+        map.put("姓名", "String");
+        map.put("证件号码", "String");
+        map.put("工号", "String");
+        map.put("合同类别", "String");
+        map.put("合同编号", "String");
+        map.put("合同期限类型", "String");
+        map.put("合同签订日期", "Date");
+        map.put("合同起始日期", "Date");
+        map.put("合同终止日期", "Date");
+        map.put("合同期限", "NUMBER");
+        map.put("合同主体", "String");
+        map.put("签订次数", "NUMBER");
+        map.put("备注", "String");
         return map;
     }
 }

@@ -37,12 +37,14 @@ public class QueryFieldUtil {
                         continue;
                     }
                     String queryColumn = annotation.value();
+
                     List<String> fieldValues = queryField.getFieldValues();
                     Boolean isAscSort = queryField.getIsAscSort();
                     Boolean isFilterNull = queryField.getIsFilterNull();
 
                     if(StringUtils.isNotBlank(queryColumn) && !CollectionUtils.isEmpty(fieldValues)){
-                        if (field.getGenericType().toString().equals("class java.util.Date")) {
+                        queryField.setFieldName(queryColumn);
+                        if (field.getType().getName().toString().equals("java.util.Date")) {
                             //判断是否是时间范围查询
                             String condition = queryColumn;
                             String startTime = fieldValues.get(0);
@@ -60,7 +62,7 @@ public class QueryFieldUtil {
                                 condition += joinStr + queryColumn + " <= " + endTime;
                             }
                             queryField.setCondition(" and " + condition);
-                        }else if(field.getGenericType().toString().equals("class java.util.String")){
+                        }else if(field.getType().getName().toString().equals("java.lang.String")){
                             //判断是否是字符串类型
                             if(fieldValues.size() == 1){
                                 String fieldValue = fieldValues.get(0);
@@ -72,7 +74,7 @@ public class QueryFieldUtil {
                                 String conditions = getConditionsString(fieldValues);
                                 queryField.setCondition(" and " + queryColumn + " in (" + conditions + ")");
                             }
-                        }else if(field.getGenericType().toString().equals("class java.util.Integer")){
+                        }else if(field.getType().getName().toString().equals("java.lang.Integer")){
                             //判断是否是Integer类型
                             if(fieldValues.size() == 1){
                                 String fieldValue = fieldValues.get(0);
@@ -81,7 +83,7 @@ public class QueryFieldUtil {
                                 String conditions = getConditionsString(fieldValues);
                                 queryField.setCondition(" and " + queryColumn + " in (" + conditions + ")");
                             }
-                        }else if(field.getGenericType().toString().startsWith("java.util.List<java.lang.")){
+                        }else if(field.getType().getName().toString().startsWith("java.util.List<java.lang.")){
                             //判断是否是一个集合
                             String conditionsString = getConditionsString(fieldValues);
                             //如果是一个Integer或者String集合

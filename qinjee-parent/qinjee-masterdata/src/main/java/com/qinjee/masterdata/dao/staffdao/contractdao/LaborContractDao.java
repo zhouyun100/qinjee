@@ -40,6 +40,6 @@ public interface LaborContractDao {
     List<Integer> selectConByArcId(@Param("list") List<Integer> list);
 
     List<LaborContract> selectContractByarcIdList(@Param("arcList") List<Integer> arcList);
-    @MapKey("id")
-    Map< Integer, Map< String, Object>> selectExportConList(@Param("list") List< Integer> list);
+    @MapKey("contract_id")
+    Map< Integer, Map< String, Object>> selectExportConList(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
 }
