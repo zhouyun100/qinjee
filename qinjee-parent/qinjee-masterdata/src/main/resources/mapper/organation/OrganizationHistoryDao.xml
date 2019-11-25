@@ -31,12 +31,12 @@
     where org_id = #{orgId,jdbcType=INTEGER}
   </delete>
   <insert id="saveOrganizationHistory" keyColumn="org_id" keyProperty="orgId" parameterType="com.qinjee.masterdata.model.entity.OrganizationHistory" useGeneratedKeys="true">
-    insert into t_organization_history (org_code, org_name, org_type,
+    insert into t_organization_history (org_id,org_code, org_name, org_type,
       org_parent_id, org_fullname, org_manager_id,
       company_id, sort_id, operator_id,
       create_time, update_time, is_enable
       )
-    values (#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR},
+    values (#{orgId,jdbcType=INTEGER},#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, #{orgType,jdbcType=VARCHAR},
       #{orgParentId,jdbcType=INTEGER}, #{orgFullName,jdbcType=VARCHAR}, #{orgManagerId,jdbcType=INTEGER},
       #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT}

@@ -28,10 +28,10 @@
         from t_organization
         where org_id = #{orgId,jdbcType=INTEGER}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_organization
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    update  t_organization set is_enable =0
     where org_id = #{orgId,jdbcType=INTEGER}
-  </delete>
+  </update>
     <insert id="insert" keyColumn="org_id" keyProperty="orgId"
             parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
     insert into t_organization (org_code, org_name, org_type,
