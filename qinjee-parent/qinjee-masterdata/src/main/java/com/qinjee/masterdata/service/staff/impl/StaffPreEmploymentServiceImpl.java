@@ -94,8 +94,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession, Integer preEmploymentId, StatusChangeVo statusChangeVo) {
+    public void insertStatusChange(UserSession userSession,StatusChangeVo statusChangeVo) {
         String changeState = statusChangeVo.getChangeState ();
+        Integer preEmploymentId=statusChangeVo.getPreEmploymentId ();
         PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( preEmploymentId );
         List < PreEmploymentChange > preEmploymentChanges = preEmploymentChangeDao.selectByPreId ( preEmploymentId );
         if (CHANGSTATUS_READY.equals ( changeState )) {
@@ -106,7 +107,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 preEmploymentChangeDao.updateByPrimaryKey ( existPreChange );
             } else {
                 //新增变更表
-                getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
+                getPreEmploymentChange ( userSession.getArchiveId (),statusChangeVo );
             }
             //根据预入职id查找预入职对象
             //预入职信息转化为档案信息
@@ -126,7 +127,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 preEmploymentChangeDao.updateByPrimaryKey ( existPreChange1 );
             } else {
                 //新增变更表
-                getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
+                getPreEmploymentChange ( userSession.getArchiveId (), statusChangeVo );
             }
             //将预入职的入职时间重新设置
             preEmployment.setHireDate ( statusChangeVo.getDelayTime () );
@@ -156,7 +157,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             preEmploymentChangeDao.updateByPrimaryKey ( existPreChange );
         } else {
             //新增变更表
-            getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
+            getPreEmploymentChange ( userSession.getArchiveId (), statusChangeVo );
         }
         preEmployment.setEmploymentState ( changstatusBlacklist );
         preEmploymentDao.updateByPrimaryKey ( preEmployment );
@@ -171,10 +172,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         return null;
     }
 
-    private void getPreEmploymentChange(Integer archiveId, Integer preEmploymentId, StatusChangeVo statusChangeVo) {
+    private void getPreEmploymentChange(Integer archiveId, StatusChangeVo statusChangeVo) {
         PreEmploymentChange preEmploymentChange = new PreEmploymentChange ();
         BeanUtils.copyProperties ( statusChangeVo, preEmploymentChange );
-        preEmploymentChange.setEmploymentId ( preEmploymentId );
+        preEmploymentChange.setEmploymentId (statusChangeVo.getPreEmploymentId () );
         preEmploymentChange.setOperatorId ( archiveId );
         preEmploymentChangeDao.insertSelective ( preEmploymentChange );
     }

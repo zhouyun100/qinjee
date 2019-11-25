@@ -449,9 +449,9 @@
             </where>
         </foreach>
     </update>
-    <select id="selectorgBycomanyIdAndUserAuth" resultType="java.lang.Integer">
-            select t1.org_id from (SELECT
-            org.org_id
+    <select id="selectorgBycomanyIdAndUserAuth" resultType="com.qinjee.masterdata.model.vo.staff.OrganzitionVo">
+            select t1.org_id,t1.org_name, from (SELECT
+            org.org_id,org.org_name,org.org_parent_id
             FROM
             t_organization org
             LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
@@ -463,7 +463,7 @@
             AND arc.archive_id = #{archiveId}
             UNION
             SELECT
-                orga.org_id
+                orga.org_id,orga.org_name,orga.org_parent_id
             FROM
                 t_organization orga
             LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
@@ -475,15 +475,6 @@
             AND role.is_delete = 0
             AND arch.is_delete = 0
             AND arch.archive_id = #{archiveId})t1
-            inner join
-            (SELECT
-                organ.org_id
-            FROM
-                t_organization organ
-            LEFT JOIN t_organization organi ON organ.org_id = organi.org_parent_id
-            AND organ.is_enable = 0
-            AND organi.is_enable = 0
-            AND organi.org_parent_id = #{companyId})t2 on t1.org_id=t2.org_id
             </select>
 
 </mapper>

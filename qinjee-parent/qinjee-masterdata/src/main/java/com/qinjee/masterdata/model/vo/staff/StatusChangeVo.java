@@ -14,6 +14,11 @@ import java.util.Date;
 @JsonInclude
 public class StatusChangeVo {
     /**
+     * 预入职id
+     */
+    @NotNull
+    private Integer preEmploymentId;
+    /**
      * 变更状态
      */
     @NotNull

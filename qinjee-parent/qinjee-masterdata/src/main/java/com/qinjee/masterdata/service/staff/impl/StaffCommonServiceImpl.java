@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.CheckTypeDao;
@@ -14,6 +15,7 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
+import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -188,19 +190,48 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
 
     @Override
-    public Integer getCompanyId(UserSession userSession) {
-        return userSession.getCompanyId ();
+    public String getCompanyId(UserSession userSession) {
+        return  organizationDao.selectOrgName (userSession.getCompanyId ());
     }
 
     @Override
-    public List<Integer> getOrgIdByCompanyId(Integer companyId,UserSession userSession) {
-        return organizationDao.selectorgBycomanyIdAndUserAuth(companyId,userSession.getArchiveId ());
+    public OrganzitionVo  getOrgIdByCompanyId(Integer companyId, UserSession userSession) {
+        OrganzitionVo organTree = getOrganTree ( companyId, userSession.getArchiveId () );
+        return organTree;
+    }
+
+    private  OrganzitionVo getOrganTree(Integer companyId, Integer archiveId) {
+        OrganzitionVo organzitionVo=new OrganzitionVo ();
+        organzitionVo.setOrg_id( companyId );
+        organzitionVo.setOrg_name(organizationDao.selectOrgName(companyId));
+        List < OrganzitionVo > list = new ArrayList <> ();
+        //获取该人员下的所有权限机构
+        List < OrganzitionVo > list1 = organizationDao.selectorgBycomanyIdAndUserAuth ( companyId, archiveId );
+        for (OrganzitionVo vo : list1) {
+            vo.setList ( getSonOrg (vo.getOrg_id (),list1));
+            list.add ( vo );
+        }
+        organzitionVo.setList ( list );
+        return organzitionVo;
+    }
+
+    private List<OrganzitionVo> getSonOrg(Integer id,List<OrganzitionVo> list){
+        List<OrganzitionVo> voList=new ArrayList <> ();
+        for (OrganzitionVo organzitionVo : list) {
+           if(organzitionVo.getOrg_parent_id ().equals ( id )){
+               voList.add (organzitionVo);
+           } else {
+               getSonOrg ( organzitionVo.getOrg_id (),list );
+           }
+        }
+        return voList;
     }
 
     @Override
-    public List<Post> getPostByOrgId(Integer orgId) {
+    public String getPostByOrgId(Integer orgId) {
 
-        return postDao.getPostByOrgId(orgId);
+        Map < Integer, String > postByOrgId = postDao.getPostByOrgId ( orgId );
+        return JSON.toJSONString (postByOrgId);
     }
 
     @Override
@@ -416,10 +447,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private List<Map<String, String>> getDates(ExportFile exportFile,List<String> heads ) {
         List<Map<String, String>> mapList = new ArrayList<>();
         List<Map<String, Object>> maps = new ArrayList<>(exportFile.getExportList().getMap().values());
-            for (Map<String, Object> stringObjectMap : maps) {
+        for (Map<String, Object> stringObjectMap : maps) {
                 Map<String, String> stringMap = new LinkedHashMap<>();
-                for (String head : heads) {
-                    stringMap.put(head,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(head))));
+            for (String head : heads) {
+                stringMap.put( head,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(head))));
                 }
                 mapList.add(stringMap);
             }
@@ -492,7 +523,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
 
-    public static String fieldToProperty(String field) {
+    private static String fieldToProperty(String field) {
         if (null == field){
             return "";
         }

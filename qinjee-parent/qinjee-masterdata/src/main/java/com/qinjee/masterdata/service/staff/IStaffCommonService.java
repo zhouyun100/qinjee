@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.staff;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
+import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -169,21 +170,21 @@ public interface IStaffCommonService {
      * @param userSession
      * @return
      */
-    Integer getCompanyId(UserSession userSession);
+    String getCompanyId(UserSession userSession);
 
     /**
      * 根据档案id显示对应权限下的子集部门
      * @param companyId
      * @return
      */
-    List<Integer> getOrgIdByCompanyId(Integer companyId,UserSession userSession);
+     OrganzitionVo getOrgIdByCompanyId(Integer companyId, UserSession userSession);
 
     /**
      * 显示部门下的岗位
      * @param orgId
      * @return
      */
-    List<Post> getPostByOrgId(@Param("orgId") Integer orgId);
+    String getPostByOrgId(@Param("orgId") Integer orgId);
 
     /**
      * 展示部门的自定义表

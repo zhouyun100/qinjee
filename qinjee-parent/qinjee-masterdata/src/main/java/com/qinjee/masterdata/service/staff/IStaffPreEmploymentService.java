@@ -23,12 +23,11 @@ public interface IStaffPreEmploymentService {
     void sendManyMail(EmailSendVo emailSendVo,UserSession userSession) throws Exception;
     /**
      * 新增预入职变更表
-     * @param preEmploymentId,statusChangeVo
+     * @param statusChangeVo
      * @return
      */
 
-    void insertStatusChange(UserSession userSession, Integer preEmploymentId,
-                            StatusChangeVo statusChangeVo);
+    void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo);
 
     /**
      * 根据机构展示预入职表

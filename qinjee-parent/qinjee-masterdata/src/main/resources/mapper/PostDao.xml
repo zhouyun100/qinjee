@@ -268,9 +268,9 @@
             </foreach>
         GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , torg.org_name , tps.position_name
     </select>
-    <select id="getPostByOrgId" resultType="com.qinjee.masterdata.model.entity.Post" resultMap="BaseResultMap">
+    <select id="getPostByOrgId" resultType="java.util.Map">
       select
-      <include refid="Base_Column_List" />
+      post_id,post_name
       from t_post
       where  org_id = #{orgId}  and is_delete = 0 ORDER BY sort_id ASC
     </select>

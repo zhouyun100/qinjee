@@ -4,6 +4,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
+import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -472,12 +474,12 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/getCompany", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
-    public ResponseResult<Integer> getCompanyId() {
+    public ResponseResult<String> getCompanyId() {
         Boolean b = checkParam(getUserSession());
         if (b) {
             try {
-                Integer companyId = staffCommonService.getCompanyId ( getUserSession () );
-                return new ResponseResult(companyId, CommonCode.SUCCESS);
+                String companyName = staffCommonService.getCompanyId ( getUserSession () );
+                return new ResponseResult(companyName, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
@@ -490,15 +492,15 @@ public class CommonController extends BaseController {
      * 根据档案id显示对应权限下的子集部门
      */
     @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.POST)
-    @ApiOperation(value = "根据档案id显示对应权限下的子集部门", notes = "hkt")
+    @ApiOperation(value = "根据档案id显示对应权限下的子集部门与岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult getOrgIdByCompanyId(Integer companyId) {
+    public ResponseResult< OrganzitionVo > getOrgIdByCompanyId(Integer companyId) {
         Boolean b = checkParam(companyId,getUserSession ());
         if (b) {
             try {
-                List<Integer> orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId(companyId,getUserSession ());
-                if (!CollectionUtils.isEmpty(orgIdByCompanyId)) {
-                    return new ResponseResult<>(orgIdByCompanyId, CommonCode.SUCCESS);
+                OrganzitionVo orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId ( companyId, getUserSession () );
+                if (orgIdByCompanyId!=null) {
+                    return new ResponseResult(orgIdByCompanyId, CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
@@ -515,12 +517,12 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.POST)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult<List<Post>> getPostByOrgId(Integer orgId) {
+    public ResponseResult<String> getPostByOrgId(Integer orgId) {
         Boolean b = checkParam(orgId);
         if (b) {
             try {
-                List<Post> postByOrgId = staffCommonService.getPostByOrgId(orgId);
-                if (!CollectionUtils.isEmpty(postByOrgId)) {
+                String postByOrgId = staffCommonService.getPostByOrgId ( orgId );
+                if (!StringUtils.isEmpty(postByOrgId)) {
                     return new ResponseResult<>(postByOrgId, CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);

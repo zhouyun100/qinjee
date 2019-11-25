@@ -4,12 +4,14 @@ package com.qinjee.masterdata.dao.organation;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
+import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
 @Repository
 public interface OrganizationDao {
     int deleteByPrimaryKey(Integer orgId);
@@ -124,5 +126,5 @@ public interface OrganizationDao {
 
     List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId,@Param("now") Date now);
 
-    List< Integer> selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
+    List< OrganzitionVo > selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
 }

@@ -176,12 +176,11 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult updatePreEmploymentChange(Integer preEmploymentId,
-                                                    @RequestBody @Valid StatusChangeVo statusChangeVo) {
-        Boolean b = checkParam(preEmploymentId,statusChangeVo,getUserSession());
+    public ResponseResult updatePreEmploymentChange(@RequestBody @Valid StatusChangeVo statusChangeVo) {
+        Boolean b = checkParam(statusChangeVo,getUserSession());
         if(b){
             try {
-                staffPreEmploymentService.insertStatusChange(getUserSession(),preEmploymentId, statusChangeVo);
+                staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -208,7 +207,8 @@ public class StaffPreEmploymentController extends BaseController {
                 statusChangeVo.setAbandonReason("");
                 statusChangeVo.setChangeState(CHANGSTATUS_READY);
             for (Integer integer : preEmploymentId) {
-                staffPreEmploymentService.insertStatusChange(getUserSession(),integer, statusChangeVo);
+                statusChangeVo.setPreEmploymentId ( integer );
+                staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
             }
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {

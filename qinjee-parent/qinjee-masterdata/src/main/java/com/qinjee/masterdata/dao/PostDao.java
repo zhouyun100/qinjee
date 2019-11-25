@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+
 @Repository
 public interface PostDao {
     int deleteByPrimaryKey(Integer postId);
@@ -76,7 +78,8 @@ public interface PostDao {
      * @param orgId
      * @return
      */
-    List<Post> getPostByOrgId(Integer orgId);
+    Map<Integer,String> getPostByOrgId(@Param("orgId") Integer orgId);
+
 
     /**
      * @param postId
