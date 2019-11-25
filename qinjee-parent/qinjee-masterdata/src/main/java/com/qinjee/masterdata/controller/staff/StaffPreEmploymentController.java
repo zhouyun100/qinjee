@@ -171,7 +171,7 @@ public class StaffPreEmploymentController extends BaseController {
      */
 
     @RequestMapping(value = "/updatePreEmploymentChange", method = RequestMethod.POST)
-    @ApiOperation(value = "延期入职以及放弃入职", notes = "hkt")
+    @ApiOperation(value = "延期入职,放弃入职以及黑名单", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
@@ -206,10 +206,9 @@ public class StaffPreEmploymentController extends BaseController {
                 StatusChangeVo statusChangeVo=new StatusChangeVo();
                 statusChangeVo.setAbandonReason("");
                 statusChangeVo.setChangeState(CHANGSTATUS_READY);
-            for (Integer integer : preEmploymentId) {
-                statusChangeVo.setPreEmploymentId ( integer );
+                statusChangeVo.setPreEmploymentList(preEmploymentId );
                 staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
-            }
+
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();

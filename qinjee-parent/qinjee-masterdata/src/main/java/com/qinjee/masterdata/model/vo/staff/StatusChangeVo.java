@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -17,7 +18,7 @@ public class StatusChangeVo {
      * 预入职id
      */
     @NotNull
-    private Integer preEmploymentId;
+    private List<Integer> preEmploymentList;
     /**
      * 变更状态
      */
