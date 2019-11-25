@@ -120,7 +120,7 @@ public interface OrganizationDao {
     BusinessOrgPostPos selectManyId(@Param("unitName") String businessUnitName, @Param("orgName") String orgName,
                                     @Param("postName") String postName, @Param("positionName") String positionName);
 
-    Integer sortOrganization(@Param("orgIds") LinkedList<String> orgIds);
+    Integer sortOrganization(@Param("orgIds") LinkedList<Integer> orgIds);
 
     List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId,@Param("now") Date now);
 

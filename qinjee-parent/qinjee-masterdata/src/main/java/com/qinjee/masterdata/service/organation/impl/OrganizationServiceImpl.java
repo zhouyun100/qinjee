@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
+import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
@@ -29,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -64,6 +67,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     private PostDao postDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private ApiAuthService apiAuthService;
 
     @Override
     public PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable) {
@@ -97,12 +102,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public PageResult<OrganizationVO> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
-        //根据用户id进行分页查询, 其他条件的使用场景是什么? 可否为空?
-        //  Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-        //    String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, OrganizationVO.class);
-        //  if(organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null){
-        //   PageHelper.startPage(organizationPageVo.getCurrentPage(),organizationPageVo.getPageSize());
-        //    }
         if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
             PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
         }
@@ -128,21 +127,20 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationSaveAnno
-    public ResponseResult addOrganization(UserSession userSession, Organization organizationVo) {
+    public ResponseResult addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //根据父级机构id查询一些基础信息，构建Organization对象
-        OrganizationVO orgBean = initOrganization(organizationVo.getOrgParentId());
+        OrganizationVO orgBean = initOrganization(Integer.parseInt(parentOrgId));
         //OrganizationVO organization = getNewOrgCode(organizationVo.getOrgParentId());
         String full_name = "";
         if (orgBean.getOrgFullName() != null) {
-            full_name = orgBean.getOrgFullName() + "/" + organizationVo.getOrgName();
+            full_name = orgBean.getOrgFullName() + "/" + orgName;
         } else {
-            full_name = organizationVo.getOrgName();
+            full_name = orgName;
         }
-        //BeanUtils.copyProperties(organizationVo, organization);
-        orgBean.setOrgParentId(organizationVo.getOrgParentId());
-        orgBean.setOrgType(organizationVo.getOrgType());
-        orgBean.setOrgName(organizationVo.getOrgName());
-        orgBean.setOrgManagerId(organizationVo.getOrgManagerId());
+        orgBean.setOrgParentId(Integer.parseInt(parentOrgId));
+        orgBean.setOrgType(orgType);
+        orgBean.setOrgName(orgName);
+        orgBean.setOrgManagerId(Integer.parseInt(orgManagerId));
         orgBean.setOrgFullName(full_name);
         orgBean.setCreateTime(new Date());
         orgBean.setOperatorId(userSession.getArchiveId());
@@ -150,6 +148,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         //设置企业id
         orgBean.setCompanyId(userSession.getCompanyId());
         int insert = organizationDao.insertSelective(orgBean);
+
+        //TODO 维护机构与角色、用户的关系
         ResponseResult responseResult;
         if (insert == 1) {
             responseResult = new ResponseResult(CommonCode.SUCCESS);
@@ -159,6 +159,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         responseResult.setResult(orgBean);
         return responseResult;
     }
+
 
     private OrganizationVO initOrganization(Integer orgParentId) {
         OrganizationVO orgBean = new OrganizationVO();
@@ -178,10 +179,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             String orgCode;
             Integer sortId;
             if (CollectionUtils.isEmpty(brotherOrgList)) {
-                orgCode = parentOrg.getOrgCode() + "001";
+                orgCode = parentOrg.getOrgCode() + "01";
                 sortId = 1000;
             } else {
-                sortId = brotherOrgList.get(0).getSortId() + 1000;
+                sortId = brotherOrgList.get(0).getSortId() + 100;
                 orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
             }
             orgBean.setSortId(sortId);
@@ -242,11 +243,11 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @return
      */
     private String culOrgCode(String orgCode) {
-        String number = orgCode.substring(orgCode.length() - 3);
-        String preCode = orgCode.substring(0, orgCode.length() - 3);
+        String number = orgCode.substring(orgCode.length() - 2);
+        String preCode = orgCode.substring(0, orgCode.length() - 2);
         Integer new_OrgCode = Integer.parseInt(number) + 1;
         String code = new_OrgCode.toString();
-        int i = 3 - code.length();
+        int i = 2 - code.length();
         if (i < 0) {
             ExceptionCast.cast(CommonCode.ORGANIZATION_OUT_OF_RANGE);
         }
@@ -258,22 +259,25 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
 
+
+
     @Transactional
     @Override
-    @OrganizationEditAnno
-    public ResponseResult editOrganization(Organization organizationVo) {
+    @OrganizationSaveAnno
+    public ResponseResult editOrganization(String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //反查organizationVO
-        OrganizationVO organization = organizationDao.selectByPrimaryKey(organizationVo.getOrgId());
+        OrganizationVO organization = organizationDao.selectByPrimaryKey(Integer.parseInt(orgId));
         String orgFullName = organization.getOrgFullName();
-        String prefixOrgFullName = orgFullName.substring(0, orgFullName.lastIndexOf("/") - 1);
-        String newOrgFullName = prefixOrgFullName + organizationVo.getOrgName();
-        BeanUtils.copyProperties(organizationVo, organization);
+        String prefixOrgFullName = orgFullName.substring(0, orgFullName.lastIndexOf("/"));
+        String newOrgFullName = prefixOrgFullName + "/"+orgName;
+        organization.setOrgParentId(Integer.parseInt(parentOrgId));
+        organization.setOrgManagerId(Integer.parseInt(orgManagerId));
+        organization.setOrgType(orgType);
+        organization.setOrgName(orgName);
         organization.setOrgFullName(newOrgFullName);
-        System.out.println("newOrgFullName:" + newOrgFullName);
         int result = organizationDao.updateByPrimaryKey(organization);
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
-
     /**
      * 通过机构id新增一条机构历史表
      *
@@ -302,7 +306,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Transactional
     @Override
-    public ResponseResult deleteOrganizationById(List<Integer> orgIds) {
+    public ResponseResult deleteOrganizationById(List<Integer> orgIds,UserSession userSession) {
         List<Integer> idList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orgIds)) {
             for (Integer orgId : orgIds) {
@@ -341,6 +345,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                 postDao.deleteByOrgId(orgId);
             }
         }
+        //回收机构权限
+        apiAuthService.deleteArchiveAuth(orgIds,userSession.getArchiveId());
+
         return new ResponseResult(CommonCode.SUCCESS);
     }
 
@@ -371,7 +378,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
-    public ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId, String orgType, List<Integer> orgIds, UserSession userSession) {
+    public ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId,  List<Integer> orgIds, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
             organizationVOList = organizationDao.getOrganizationListByOrgIds(orgIds);
@@ -384,40 +391,30 @@ public class OrganizationServiceImpl implements OrganizationService {
                 return new ResponseResult(CommonCode.FAIL);
             }
             //获取新的合并机构
-            OrganizationVO newOrganizationVO = getNewOrganization(newOrgName, targetOrgId, orgType, userSession);
-            organizationDao.insertSelective(newOrganizationVO);
-            refactorOrganization(organizationVOList, newOrganizationVO);
+            OrganizationVO newOrgVO=initOrganization(targetOrgId);
+            newOrgVO.setOrgName(newOrgName);
+            newOrgVO.setOrgFullName(newOrgVO.getOrgFullName() + "/" + newOrgVO.getOrgName());
+            organizationDao.insert(newOrgVO);
+
+            //TODO 调用人员接口，将老机构下的人员迁移至新机构
+
+            //TODO 调用角色接口
+            apiAuthService.mergeOrg(orgIds,targetOrgId,userSession.getArchiveId());
+
+
+            //refactorOrganization(organizationVOList, newOrganizationVO);
+        }else{
+            return new ResponseResult(CommonCode.BUSINESS_EXCEPTION);
         }
-        return new ResponseResult();
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
-    /**
-     * 获取新的合并机构
-     *
-     * @param newOrgName
-     * @param targetOrgId
-     * @param orgType
-     * @param userSession
-     * @return
-     */
-    private OrganizationVO getNewOrganization(String newOrgName, Integer targetOrgId, String orgType, UserSession userSession) {
-        OrganizationVO newOrganizationVO = new OrganizationVO();
-        newOrganizationVO.setOrgParentId(targetOrgId);
-        newOrganizationVO.setOrgName(newOrgName);
-        OrganizationVO newOrgCode = initOrganization(targetOrgId);
-        String orgfull_name = newOrgCode.getOrgFullName();
-        BeanUtils.copyProperties(newOrgCode, newOrganizationVO);
-        newOrganizationVO.setIsEnable((short) 1);
-        newOrganizationVO.setCompanyId(userSession.getCompanyId());
-        newOrganizationVO.setOrgType(orgType);
-        newOrganizationVO.setOrgFullName(orgfull_name + "/" + newOrganizationVO.getOrgName());
-        return newOrganizationVO;
-    }
+
 
     @Override
     public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(String userName) {
         //TODO 调用人员的接口
-        //userArchiveDao。
+
         return null;
     }
 
@@ -429,14 +426,14 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     @Transactional
-    public ResponseResult sortOrganization(LinkedList<String> orgIds) {
+    public ResponseResult sortOrganization(LinkedList<Integer> orgIds) {
         Integer i = organizationDao.sortOrganization(orgIds);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 
     @Override
     @Transactional
-    public ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId) {
+    public ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId,UserSession userSession) {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
         List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
@@ -467,6 +464,9 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             refactorOrganization(organizationVOList, parentOrganizationVO);
         }
+
+        apiAuthService.transferOrg(orgIds,targetOrgId,userSession.getArchiveId());
+
         responseResult.setResultCode(CommonCode.SUCCESS);
         responseResult.setMessage("划转成功");
         return responseResult;
@@ -513,6 +513,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         ExcelExportUtil.exportToFile(filePath, organizationVOList);
         return new ResponseResult(CommonCode.SUCCESS);
     }
+
+
 
     /**
      * @param userSession
@@ -947,4 +949,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
 
+    public static String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<String>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
 }
+
+
