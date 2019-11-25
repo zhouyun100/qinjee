@@ -263,21 +263,44 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
-    @OrganizationSaveAnno
     public ResponseResult editOrganization(String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //反查organizationVO
         OrganizationVO organization = organizationDao.selectByPrimaryKey(Integer.parseInt(orgId));
-        String orgFullName = organization.getOrgFullName();
-        String prefixOrgFullName = orgFullName.substring(0, orgFullName.lastIndexOf("/"));
-        String newOrgFullName = prefixOrgFullName + "/"+orgName;
+        OrganizationVO parentOrganization = organizationDao.selectByPrimaryKey(Integer.parseInt(parentOrgId));
+        String newOrgFullName;
+        if (Objects.nonNull(parentOrganization)){
+            newOrgFullName = parentOrganization.getOrgFullName() + "/"+orgName;
+        }else{
+            newOrgFullName=orgName;
+        }
+        //TODO 是否可以修改父机构id，如果修改则 机构 子机构编码 排序id都需要改变
         organization.setOrgParentId(Integer.parseInt(parentOrgId));
         organization.setOrgManagerId(Integer.parseInt(orgManagerId));
         organization.setOrgType(orgType);
         organization.setOrgName(orgName);
         organization.setOrgFullName(newOrgFullName);
         int result = organizationDao.updateByPrimaryKey(organization);
+
+        //递归修改子机构的全称
+        recursiveUpdateOrgNameByParentOrgId(newOrgFullName,orgId);
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
+
+    private void recursiveUpdateOrgNameByParentOrgId(String parentOrgFullName,String orgId) {
+
+        List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(Integer.parseInt(orgId));
+        for (OrganizationVO org : childOrgList) {
+            if (!"".equals(parentOrgFullName)){
+                org.setOrgFullName(parentOrgFullName+"/"+org.getOrgName());
+            }
+            organizationDao.updateByPrimaryKey(org);
+            List<OrganizationVO> childOrgList2 = organizationDao.getOrganizationListByParentOrgId(org.getOrgId());
+            if (!CollectionUtils.isEmpty(childOrgList2)){
+                recursiveUpdateOrgNameByParentOrgId(org.getOrgFullName(),String.valueOf(org.getOrgId()));
+            }
+        }
+    }
+
     /**
      * 通过机构id新增一条机构历史表
      *
