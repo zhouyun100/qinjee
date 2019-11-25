@@ -18,9 +18,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeUtility;
-import javax.validation.constraints.Max;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 

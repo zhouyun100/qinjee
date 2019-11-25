@@ -385,7 +385,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 map.put (integerStringEntry.getKey (),map1);
             }
         }
-      //TODO 类型还未转换
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(exportRequest.getTitle ());
         ExportList exportList=new ExportList();
