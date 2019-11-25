@@ -500,15 +500,15 @@ public class CommonController extends BaseController {
             try {
                 OrganzitionVo orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId ( companyId, getUserSession () );
                 if (orgIdByCompanyId!=null) {
-                    return new ResponseResult(orgIdByCompanyId, CommonCode.SUCCESS);
+                    return new ResponseResult<>(orgIdByCompanyId, CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 e.printStackTrace();
-                return failResponseResult("根据档案id显示对应权限下的子集部门失败");
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return failResponseResult("部门id错误");
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     /**

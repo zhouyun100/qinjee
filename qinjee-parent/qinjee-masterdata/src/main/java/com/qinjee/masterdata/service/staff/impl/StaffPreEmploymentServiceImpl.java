@@ -116,7 +116,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 UserArchive userArchive = new UserArchive ();
                 preEmployment.setEmploymentState ( CHANGSTATUS_READY );
                 BeanUtils.copyProperties ( userArchive, preEmployment );
-                userArchiveDao.insertSelective ( userArchive );
+                userArchiveDao.insertSelective(userArchive);
                 //删除预入职表
                 preEmploymentDao.deletePreEmployment ( preEmploymentId );
             }
