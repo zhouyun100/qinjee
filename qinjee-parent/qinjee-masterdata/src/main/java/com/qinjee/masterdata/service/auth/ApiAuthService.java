@@ -31,12 +31,21 @@ public interface ApiAuthService {
 
     /**
      * 机构划转
-     * @param operatorId 当前机构ID
+     * @param orgIdList 当前机构ID
      * @param parentOrgId 父级机构ID
      * @param operatorId 操作人档案ID
      * @return
      */
     int transferOrg(List<Integer> orgIdList,Integer parentOrgId, Integer operatorId);
+
+    /**
+     * 新增机构
+     * @param orgId 新增的机构ID
+     * @param parentOrgId 父级机构ID
+     * @param operatorId 操作人档案ID
+     * @return
+     */
+    int addOrg(Integer orgId, Integer parentOrgId, Integer operatorId);
 
     /**
      * 删除机构
@@ -48,9 +57,9 @@ public interface ApiAuthService {
 
     /**
      * 员工不在职权限删除(离职、退休)
-     * @param archiveIdList
+     * @param archiveId 档案ID
      * @param operatorId 操作人档案ID
      * @return
      */
-    int deleteArchiveAuth(List<Integer> archiveIdList, Integer operatorId);
+    int deleteArchiveAuth(Integer archiveId, Integer operatorId);
 }
