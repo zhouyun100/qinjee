@@ -368,8 +368,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 postDao.deleteByOrgId(orgId);
             }
         }
-        //回收机构权限
-        apiAuthService.deleteArchiveAuth(orgIds,userSession.getArchiveId());
+        //TODO 回收机构权限
+        //apiAuthService.deleteArchiveAuth(orgIds,userSession.getArchiveId());
 
         return new ResponseResult(CommonCode.SUCCESS);
     }
@@ -422,7 +422,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             //TODO 调用人员接口，将老机构下的人员迁移至新机构
 
             //TODO 调用角色接口
-            apiAuthService.mergeOrg(orgIds,targetOrgId,userSession.getArchiveId());
+           // apiAuthService.mergeOrg(orgIds,targetOrgId,userSession.getArchiveId());
 
 
             //refactorOrganization(organizationVOList, newOrganizationVO);
@@ -487,8 +487,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             refactorOrganization(organizationVOList, parentOrganizationVO);
         }
-
-        apiAuthService.transferOrg(orgIds,targetOrgId,userSession.getArchiveId());
+        //TODO
+        //apiAuthService.transferOrg(orgIds,targetOrgId,userSession.getArchiveId());
 
         responseResult.setResultCode(CommonCode.SUCCESS);
         responseResult.setMessage("划转成功");
