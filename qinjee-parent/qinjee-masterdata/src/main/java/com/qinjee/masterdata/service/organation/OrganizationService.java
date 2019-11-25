@@ -43,26 +43,11 @@ public interface OrganizationService {
 
 
     /**
-     * 新增机构
-     * @param userSession
-     * @param organizationVo
-     * @return
-     */
-    ResponseResult addOrganization(UserSession userSession, Organization organizationVo);
-
-    /**
-     * 编辑机构
-     * @param organizationVo
-     * @return
-     */
-    ResponseResult editOrganization(Organization organizationVo);
-
-    /**
      * 删除机构
      * @param orgIds
      * @return
      */
-    ResponseResult deleteOrganizationById(List<Integer> orgIds);
+    ResponseResult deleteOrganizationById(List<Integer> orgIds,UserSession userSession);
 
     /**
      * 封存/封存机构
@@ -79,7 +64,7 @@ public interface OrganizationService {
      * @param orgIds
      * @return
      */
-    ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId, String orgType, List<Integer> orgIds, UserSession userSession);
+    ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId,  List<Integer> orgIds, UserSession userSession);
 
     /**
      * 机构负责人查询
@@ -93,7 +78,7 @@ public interface OrganizationService {
      *
      * @return
      */
-    ResponseResult sortOrganization(LinkedList<String> linkMap);
+    ResponseResult sortOrganization(LinkedList<Integer> linkMap);
 
     /**
      * 划转机构
@@ -101,7 +86,7 @@ public interface OrganizationService {
      * @param targetOrgId
      * @return
      */
-    ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId);
+    ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId,UserSession userSession);
 
     /**
      * 机构职位树状图展示
@@ -171,4 +156,9 @@ public interface OrganizationService {
      */
     ResponseResult downloadOrganizationToExcelByOrgId(String filePath,List<Integer> orgIds, UserSession userSession);
 
+
+    ResponseResult addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+
+
+    ResponseResult editOrganization(String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 }

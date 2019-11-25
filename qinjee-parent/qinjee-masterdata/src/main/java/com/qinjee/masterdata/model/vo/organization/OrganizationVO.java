@@ -151,6 +151,18 @@ public class OrganizationVO implements Serializable {
     private List<OrganizationVO> childList;
 
     /**
+     * 实有人数
+     */
+
+    private Integer staffNumbers;
+
+
+    /**
+     * 计划编制人数
+     */
+     private Integer planNumbers;
+
+    /**
      * 图片url
      */
     private String attachmentUrl;
