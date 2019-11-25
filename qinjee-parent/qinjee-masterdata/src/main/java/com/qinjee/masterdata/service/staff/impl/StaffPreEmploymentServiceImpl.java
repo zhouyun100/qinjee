@@ -105,7 +105,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 //如果存在就更新
                 if (existPreChange != null) {
                     BeanUtils.copyProperties ( statusChangeVo, existPreChange );
-                    preEmploymentChangeDao.updateByPrimaryKey ( existPreChange );
+                    preEmploymentChangeDao.updateByPrimaryKeySelective ( existPreChange );
                 } else {
                     //新增变更表
                     getPreEmploymentChange ( userSession.getArchiveId (),preEmploymentId, statusChangeVo );
@@ -116,7 +116,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 UserArchive userArchive = new UserArchive ();
                 preEmployment.setEmploymentState ( CHANGSTATUS_READY );
                 BeanUtils.copyProperties ( userArchive, preEmployment );
-                userArchiveDao.insertSelective ( userArchive );
+                userArchiveDao.insertSelective(userArchive);
                 //删除预入职表
                 preEmploymentDao.deletePreEmployment ( preEmploymentId );
             }
@@ -125,16 +125,16 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 PreEmploymentChange existPreChange1 = isExistPreChange ( CHANGSTATUS_DELAY, preEmploymentChanges );
                 if (existPreChange1 != null) {
                     BeanUtils.copyProperties ( statusChangeVo, existPreChange1 );
-                    preEmploymentChangeDao.updateByPrimaryKey ( existPreChange1 );
+                    preEmploymentChangeDao.updateByPrimaryKeySelective( existPreChange1 );
                 } else {
                     //新增变更表
                     getPreEmploymentChange ( userSession.getArchiveId (),preEmploymentId, statusChangeVo );
                 }
                 //将预入职的入职时间重新设置
-                preEmployment.setHireDate ( statusChangeVo.getDelayTime () );
+                preEmployment.setHireDate ( statusChangeVo.getDelayDate() );
                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
                 preEmployment.setEmploymentState ( CHANGSTATUS_DELAY );
-                preEmploymentDao.updateByPrimaryKey ( preEmployment );
+                preEmploymentDao.updateByPrimaryKey(preEmployment );
             }
             if (CHANGSTATUS_GIVEUP.equals ( changeState )) {
                 operatePro ( userSession, statusChangeVo, preEmployment, preEmploymentChanges, preEmploymentId, CHANGSTATUS_GIVEUP );

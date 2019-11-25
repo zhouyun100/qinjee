@@ -450,7 +450,7 @@
         </foreach>
     </update>
     <select id="selectorgBycomanyIdAndUserAuth" resultType="com.qinjee.masterdata.model.vo.staff.OrganzitionVo">
-            select t1.org_id,t1.org_name, from (SELECT
+            select t1.org_id,t1.org_name,t1.org_parent_id from (SELECT
             org.org_id,org.org_name,org.org_parent_id
             FROM
             t_organization org

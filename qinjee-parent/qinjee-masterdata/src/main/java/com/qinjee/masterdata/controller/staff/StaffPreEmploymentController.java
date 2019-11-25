@@ -208,7 +208,6 @@ public class StaffPreEmploymentController extends BaseController {
                 statusChangeVo.setChangeState(CHANGSTATUS_READY);
                 statusChangeVo.setPreEmploymentList(preEmploymentId );
                 staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
-
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();

@@ -220,8 +220,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         for (OrganzitionVo organzitionVo : list) {
            if(organzitionVo.getOrg_parent_id ().equals ( id )){
                voList.add (organzitionVo);
-           } else {
-               getSonOrg ( organzitionVo.getOrg_id (),list );
+               voList.addAll(getSonOrg ( organzitionVo.getOrg_id (),list));
+           }
+           else {
+               return  null;
            }
         }
         return voList;

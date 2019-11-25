@@ -58,8 +58,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
-    user_name, id_type, id_number, gender, birthdate, age, nationality, birthplace, political_status,
-    marital_status, first_work_date, hiredate, serving_age, working_period, probation_due_date,
+    user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
+    marital_status, first_work_date, hire_date, serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, tel, email, address,
     professional_certification, professional_title, professional_level, attrition_date,
     attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete
@@ -78,9 +78,9 @@
     insert into t_user_archive (user_id, employee_number, company_id,
       user_category, business_unit_id, user_name,
       id_type, id_number, gender,
-      birthdate, age, nationality,
+      birth_date, age, nationality,
       birthplace, political_status, marital_status,
-      first_work_date, hiredate, serving_age,
+      first_work_date, hire_date, serving_age,
       working_period, probation_due_date, probation_period,
       converse_date, first_degree, highest_degree,
       tel, email, address,
@@ -91,9 +91,9 @@
     values (#{userId,jdbcType=INTEGER}, #{employeeNumber,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER},
       #{userCategory,jdbcType=VARCHAR}, #{businessUnitId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
       #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR},
-      #{birthdate,jdbcType=DATE}, #{age,jdbcType=SMALLINT}, #{nationality,jdbcType=INTEGER},
+      #{birthDate,jdbcType=DATE}, #{age,jdbcType=SMALLINT}, #{nationality,jdbcType=INTEGER},
       #{birthplace,jdbcType=VARCHAR}, #{politicalStatus,jdbcType=INTEGER}, #{maritalStatus,jdbcType=VARCHAR},
-      #{firstWorkDate,jdbcType=DATE}, #{hiredate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL},
+      #{firstWorkDate,jdbcType=DATE}, #{hireDate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL},
       #{workingPeriod,jdbcType=DECIMAL}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER},
       #{converseDate,jdbcType=DATE}, #{firstDegree,jdbcType=VARCHAR}, #{highestDegree,jdbcType=VARCHAR},
       #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
@@ -103,12 +103,14 @@
       #{isDelete,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId"
+          parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
     insert into t_user_archive
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
+      <if test="archiveId != null">
+        archive_id,
       </if>
+
       <if test="employeeNumber != null">
         employee_number,
       </if>
@@ -133,8 +135,8 @@
       <if test="gender != null">
         gender,
       </if>
-      <if test="birthdate != null">
-        birthdate,
+      <if test="birthDate != null">
+        birth_date,
       </if>
       <if test="age != null">
         age,
@@ -154,8 +156,8 @@
       <if test="firstWorkDate != null">
         first_work_date,
       </if>
-      <if test="hiredate != null">
-        hiredate,
+      <if test="hireDate != null">
+        hire_date,
       </if>
       <if test="servingAge != null">
         serving_age,
@@ -203,12 +205,12 @@
         attrition_type,
       </if>
       <if test="operatorId != null">
-        operator_id,
+        operator_id
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
+      <if test="archiveId != null">
+        #{archiveId,jdbcType=INTEGER},
       </if>
       <if test="employeeNumber != null">
         #{employeeNumber,jdbcType=VARCHAR},
@@ -234,8 +236,8 @@
       <if test="gender != null">
         #{gender,jdbcType=VARCHAR},
       </if>
-      <if test="birthdate != null">
-        #{birthdate,jdbcType=DATE},
+      <if test="birthDate != null">
+        #{birthDate,jdbcType=DATE},
       </if>
       <if test="age != null">
         #{age,jdbcType=SMALLINT},
@@ -255,8 +257,8 @@
       <if test="firstWorkDate != null">
         #{firstWorkDate,jdbcType=DATE},
       </if>
-      <if test="hiredate != null">
-        #{hiredate,jdbcType=DATE},
+      <if test="hireDate != null">
+        #{hireDate,jdbcType=DATE},
       </if>
       <if test="servingAge != null">
         #{servingAge,jdbcType=DECIMAL},
@@ -304,7 +306,7 @@
         #{attritionType,jdbcType=VARCHAR},
       </if>
       <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
+        #{operatorId,jdbcType=INTEGER}
       </if>
     </trim>
   </insert>
@@ -338,8 +340,8 @@
       <if test="gender != null">
         gender = #{gender,jdbcType=VARCHAR},
       </if>
-      <if test="birthdate != null">
-        birthdate = #{birthdate,jdbcType=DATE},
+      <if test="birth_date != null">
+        birth_date = #{birthDate,jdbcType=DATE},
       </if>
       <if test="age != null">
         age = #{age,jdbcType=SMALLINT},
@@ -359,8 +361,8 @@
       <if test="firstWorkDate != null">
         first_work_date = #{firstWorkDate,jdbcType=DATE},
       </if>
-      <if test="hiredate != null">
-        hiredate = #{hiredate,jdbcType=DATE},
+      <if test="hire_date != null">
+        hire_date = #{hireDate,jdbcType=DATE},
       </if>
       <if test="servingAge != null">
         serving_age = #{servingAge,jdbcType=DECIMAL},
@@ -430,14 +432,14 @@
       id_type = #{idType,jdbcType=VARCHAR},
       id_number = #{idNumber,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=VARCHAR},
-      birthdate = #{birthdate,jdbcType=DATE},
+      birth_date = #{birthDate,jdbcType=DATE},
       age = #{age,jdbcType=SMALLINT},
       nationality = #{nationality,jdbcType=INTEGER},
       birthplace = #{birthplace,jdbcType=VARCHAR},
       political_status = #{politicalStatus,jdbcType=INTEGER},
       marital_status = #{maritalStatus,jdbcType=VARCHAR},
       first_work_date = #{firstWorkDate,jdbcType=DATE},
-      hiredate = #{hiredate,jdbcType=DATE},
+      hire_date = #{hireDate,jdbcType=DATE},
       serving_age = #{servingAge,jdbcType=DECIMAL},
       working_period = #{workingPeriod,jdbcType=DECIMAL},
       probation_due_date = #{probationDueDate,jdbcType=DATE},
