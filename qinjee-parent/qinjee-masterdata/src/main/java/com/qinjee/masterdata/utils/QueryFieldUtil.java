@@ -24,12 +24,15 @@ public class QueryFieldUtil {
      * @return
      */
     public static String getSortFieldStr(Optional<List<QueryFieldVo>> querFieldVos, Class _class) {
-        if(querFieldVos.isPresent()){
+        if(querFieldVos.isPresent()&&querFieldVos.get()!=null){
             try {
                 StringBuilder orderByStrs = new StringBuilder();
                 List<QueryFieldVo> queryFields = querFieldVos.get();
                 for (QueryFieldVo queryField : queryFields) {
                     String fieldName = queryField.getFieldName();
+                   if (null==fieldName||"".equals(fieldName)){
+                       continue;
+                   }
                     Field field = _class.getDeclaredField(fieldName);
                     field.setAccessible(true);
                     QueryColumn annotation = field.getAnnotation(QueryColumn.class);

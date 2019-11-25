@@ -1,13 +1,11 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -19,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author 高雄
@@ -164,6 +160,16 @@ public class OrganizationController extends BaseController {
      */
     public ResponseResult transferOrganization(@RequestParam("orgIds") List<Integer> orgIds,
                                                @RequestParam("targetOrgId") Integer targetOrgId) {
+        return organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
+    }
+
+    @ApiOperation(value = "划转机构,参数demo  {'orgIds':[1001,1002],'targetOrgId':1003}", notes = "彭洪思")
+    @PostMapping("/transferOrganization2")
+
+    public ResponseResult transferOrganization2(@RequestBody @ApiParam(name = "paramMap",value = "json对象",example ="{'orgIds':[1001,1002],'targetOrgId':1003}" ) Map<String,Object> paramMap) {
+        List<Integer> orgIds =(List<Integer>) paramMap.get("orgIds");
+        Integer targetOrgId = (Integer)paramMap.get("targetOrgId");
+
         return organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
     }
 
