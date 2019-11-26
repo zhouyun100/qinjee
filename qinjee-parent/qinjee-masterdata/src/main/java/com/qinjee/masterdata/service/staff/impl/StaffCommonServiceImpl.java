@@ -206,11 +206,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         OrganzitionVo organzitionVo=new OrganzitionVo ();
         organzitionVo.setOrg_id( companyId );
         //获取该人员下的所有权限机构
-        List < OrganzitionVo > list1 = organizationDao.selectorgBycomanyIdAndUserAuth ( companyId, archiveId );
+        List < OrganzitionVo > list = organizationDao.selectorgBycomanyIdAndUserAuth ( companyId, archiveId );
 
          //取一级子机构
-        List<OrganzitionVo> organzitionVoList = list1.stream().filter(organzitionVo1 -> {
-            if(organzitionVo1.getOrg_parent_id().equals(companyId)){
+        List<OrganzitionVo> organzitionVoList = list.stream().filter(organzitionVo1 -> {
+            if(organzitionVo1.getOrg_parent_id().equals(0)){
                 organzitionVo.setOrg_name(organzitionVo1.getOrg_name());
                 return true;
             }else{
@@ -218,9 +218,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             }
         }).collect(Collectors.toList());
 
-        list1.removeAll(organzitionVoList);
+        list.removeAll(organzitionVoList);
 
-        handlerAllChildOrganizationTree(organzitionVoList,list1);
+        handlerAllChildOrganizationTree(organzitionVoList,list);
 
         organzitionVo.setList(organzitionVoList);
 

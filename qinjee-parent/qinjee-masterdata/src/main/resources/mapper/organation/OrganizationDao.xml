@@ -495,6 +495,7 @@
             LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
             WHERE
                 org.is_enable = 1
+            AND org.company_id=#{companyId}
             AND auth.is_delete = 0
             AND arc.is_delete = 0
             AND arc.archive_id = #{archiveId}
@@ -508,6 +509,7 @@
             LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
             WHERE
                 orga.is_enable = 1
+            AND orga.company_id=#{companyId}
             AND roleauth.is_delete = 0
             AND role.is_delete = 0
             AND arch.is_delete = 0
