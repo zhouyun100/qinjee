@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
@@ -11,6 +12,7 @@ import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.email.EmailConfigService;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -54,6 +56,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private CustomArchiveFieldDao customArchiveFieldDao;
     @Autowired
     private EmailConfigService emailConfigService;
+    @Autowired
+    private UserInfoDao userInfoDao;
+    @Autowired
+    private IEmployeeNumberRuleService employeeNumberRuleService;
 
 
     @Override
@@ -94,14 +100,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession,StatusChangeVo statusChangeVo) {
+    public void insertStatusChange(UserSession userSession,StatusChangeVo statusChangeVo) throws Exception {
         String changeState = statusChangeVo.getChangeState ();
         List < Integer > preEmploymentList = statusChangeVo.getPreEmploymentList ();
         for (Integer preEmploymentId : preEmploymentList) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( preEmploymentId );
             List < PreEmploymentChange > preEmploymentChanges = preEmploymentChangeDao.selectByPreId ( preEmploymentId );
             if (CHANGSTATUS_READY.equals ( changeState )) {
-                PreEmploymentChange existPreChange = isExistPreChange ( CHANGSTATUS_READY, preEmploymentChanges );
+                PreEmploymentChange existPreChange = isExistPreChange (CHANGSTATUS_READY, preEmploymentChanges );
                 //如果存在就更新
                 if (existPreChange != null) {
                     BeanUtils.copyProperties ( statusChangeVo, existPreChange );
@@ -115,7 +121,25 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 //新增档案表
                 UserArchive userArchive = new UserArchive ();
                 preEmployment.setEmploymentState ( CHANGSTATUS_READY );
-                BeanUtils.copyProperties ( userArchive, preEmployment );
+                BeanUtils.copyProperties ( preEmployment, userArchive );
+                if(preEmployment.getPhone ()!=null){
+                    Integer userId=userInfoDao.selectUserIdByPhone(preEmployment.getPhone ());
+                    if(userId==null || userId==0){
+                        UserInfo userInfo=new UserInfo ();
+                        BeanUtils.copyProperties ( preEmployment,userInfo );
+                        userInfoDao.insertSelective ( userInfo );
+                        userArchive.setUserId ( userInfo.getUserId ());
+                    }else{
+                        userArchive.setUserId ( userId);
+                    }
+                }else{
+                    UserInfo userInfo=new UserInfo ();
+                    BeanUtils.copyProperties ( preEmployment,userInfo );
+                    userInfoDao.insertSelective ( userInfo );
+                    userArchive.setUserId ( userInfo.getUserId ());
+                }
+                String empNumber = employeeNumberRuleService.createEmpNumber ( statusChangeVo.getRuleId (), userSession );
+                userArchive.setEmployeeNumber ( empNumber );
                 userArchiveDao.insertSelective(userArchive);
                 //删除预入职表
                 preEmploymentDao.deletePreEmployment ( preEmploymentId );
@@ -179,7 +203,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         BeanUtils.copyProperties ( statusChangeVo, preEmploymentChange );
         preEmploymentChange.setEmploymentId (preEmploymentId);
         preEmploymentChange.setOperatorId ( archiveId );
-        preEmploymentChangeDao.insertSelective ( preEmploymentChange );
+        preEmploymentChangeDao.insertSelective ( preEmploymentChange);
     }
 
     @Override

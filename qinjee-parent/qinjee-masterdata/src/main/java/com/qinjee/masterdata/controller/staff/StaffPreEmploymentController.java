@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.vo.staff.ConfirmId;
 import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
@@ -199,14 +200,15 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult confirmPreemployment(@RequestBody List<Integer> preEmploymentId) {
-        Boolean b = checkParam(preEmploymentId,getUserSession());
+    public ResponseResult confirmPreemployment(@RequestBody ConfirmId confirmId) {
+        Boolean b = checkParam(confirmId,getUserSession());
         if(b){
             try {
                 StatusChangeVo statusChangeVo=new StatusChangeVo();
                 statusChangeVo.setAbandonReason("");
                 statusChangeVo.setChangeState(CHANGSTATUS_READY);
-                statusChangeVo.setPreEmploymentList(preEmploymentId );
+                statusChangeVo.setPreEmploymentList(confirmId.getList () );
+                statusChangeVo.setRuleId ( confirmId.getRuleId () );
                 staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {

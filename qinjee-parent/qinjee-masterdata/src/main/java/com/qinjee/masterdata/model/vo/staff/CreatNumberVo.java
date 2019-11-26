@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -12,29 +13,45 @@ import java.io.Serializable;
 @JsonInclude
 public class CreatNumberVo implements Serializable {
     /**
-     *规则前缀
+     *合同规则前缀
      */
-    @NotNull
-    private String  RulePrefix;
-    /**
-     *日期规则
-     */
-    @NotNull
-    private String dateRule;
+    private String  contractRulePrefix;
     /**
      *合同规则中缀
      */
-    @NotNull
-    private String  RuleInfix;
-    /**
-     *流水号位数
-     */
-    @NotNull
-    private Short   digitCapacity;
+    private String  contractRuleInfix;
     /**
      *合同规则后缀
      */
     @NotNull
     private String  contractRuleSuffix;
+    /**
+     *规则前缀
+     */
+    @NotNull
+    private String  employeeNumberPrefix;
+    /**
+     *规则中缀
+     */
+    @NotNull
+    private String  employeeNumberInfix;
+    /**
+     * 工号后缀
+     */
+    @ApiModelProperty("工号后缀")
+    private String employeeNumberSuffix;
+
+    /**
+     *日期规则
+     */
+    @NotNull
+    private String dateRule;
+
+    /**
+     *流水号位数
+     */
+    @NotNull
+    private Short   digitCapacity;
+
     private static final long serialVersionUID = 1L;
 }

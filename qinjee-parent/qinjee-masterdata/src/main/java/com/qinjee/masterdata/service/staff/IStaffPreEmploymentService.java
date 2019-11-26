@@ -27,7 +27,7 @@ public interface IStaffPreEmploymentService {
      * @return
      */
 
-    void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo);
+    void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo) throws Exception;
 
     /**
      * 根据机构展示预入职表

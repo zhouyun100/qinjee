@@ -28,7 +28,6 @@ public class UserArchive implements Serializable {
     /**
      * 人员ID
      */
-    @NotNull
     @ApiModelProperty("人员ID")
     private Integer userId;
 

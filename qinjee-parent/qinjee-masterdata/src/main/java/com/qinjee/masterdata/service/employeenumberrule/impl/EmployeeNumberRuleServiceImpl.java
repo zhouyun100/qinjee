@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -50,12 +49,34 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     }
 
     @Override
-    public String createNumber(CreatNumberVo creatNumberVo, UserSession userSession) throws Exception {
-        String employeeNumberPrefix = creatNumberVo.getRulePrefix();
+    public String createEmpNumber(Integer id, UserSession userSession) throws Exception {
+        EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey ( id );
+        CreatNumberVo creatNumberVo=new CreatNumberVo ();
+        BeanUtils.copyProperties (employeeNumberRule,creatNumberVo);
+        String employeeNumberPrefix = creatNumberVo.getEmployeeNumberPrefix ();
         String dateModel = getDateModel(creatNumberVo.getDateRule());
-        String employeeNumberInfix = creatNumberVo.getRulePrefix();
-        String employeeNumberSuffix = creatNumberVo.getRuleInfix();
+        String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
+        String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
         String digtaNumber = getDigtaNumber(creatNumberVo.getDigitCapacity(), userSession.getArchiveId());
+        return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
+    }
+
+    @Override
+    public String createConNumber(Integer id, UserSession userSession) throws Exception {
+        Map <String,Object> map=new HashMap<> ( );
+        map.put ( "contract_param_id",id);
+        List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( map );
+        CreatNumberVo creatNumberVo=new CreatNumberVo ();
+        BeanUtils.copyProperties (contractParamByCondition.get(0),creatNumberVo);
+        return getString ( userSession, creatNumberVo );
+    }
+
+    private String getString(UserSession userSession, CreatNumberVo creatNumberVo) throws Exception {
+        String employeeNumberPrefix = creatNumberVo.getContractRulePrefix ();
+        String dateModel = getDateModel ( creatNumberVo.getDateRule () );
+        String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
+        String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
+        String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (), userSession.getArchiveId () );
         return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
     }
 
