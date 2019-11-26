@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.sys;
 
 import com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO;
+import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
 
 import java.util.List;
 import java.util.Map;
@@ -28,5 +29,5 @@ public interface CheckCustomFieldService {
      * @param mapList 自定义字段数据集列表
      * @return
      */
-    List<Map<Integer, CheckCustomFieldVO>> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer,Object>> mapList);
+    List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer,Object>> mapList);
 }
