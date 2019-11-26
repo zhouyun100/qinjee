@@ -42,7 +42,7 @@
     </select>
 
     <!-- 新增角色机构范围权限 -->
-    <insert id="insertRoleOrg" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth" useGeneratedKeys="true">
+    <insert id="insertRoleOrg">
         insert into t_role_org_auth (org_id,role_id,operator_id)
         values (#{orgId,jdbcType=INTEGER},#{roleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
     </insert>
