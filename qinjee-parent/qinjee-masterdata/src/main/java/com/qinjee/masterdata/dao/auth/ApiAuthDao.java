@@ -36,6 +36,14 @@ public interface ApiAuthDao {
      */
     List<Role> searchAutoAuthChildOrgRoleList(Integer orgId);
 
+
+    /**
+     * 根据机构列表查询子集机构
+     * @param orgIdList
+     * @return
+     */
+    List<Integer> searchChildOrganizationList(List<Integer> orgIdList);
+
     /**
      * 机构新增角色
      * @param orgId 机构ID
@@ -48,21 +56,12 @@ public interface ApiAuthDao {
 
     /**
      * 删除角色机构
-     * @param orgId 机构ID
+     * @param orgIdList 机构ID列表
      * @param roleId 角色ID
      * @param operatorId 操作人档案ID
      * @return
      */
-    int deleteRoleOrgByRoleIdAndOrgId(Integer orgId,Integer roleId, Integer operatorId);
-
-
-    /**
-     * 删除角色机构权限(删除机构)
-     * @param orgId 机构ID
-     * @param operatorId 操作人档案ID
-     * @return
-     */
-    int deleteRoleOrgAuthByOrgId(Integer orgId, Integer operatorId);
+    int deleteRoleOrgAuth(List<Integer> orgIdList,Integer roleId, Integer operatorId);
 
     /**
      * 删除不在职员工角色权限(离职、退休)

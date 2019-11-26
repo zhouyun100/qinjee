@@ -11,12 +11,14 @@
 package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.ApiAuthDao;
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,11 +38,14 @@ public class ApiAuthServiceImpl implements ApiAuthService {
         if(CollectionUtils.isEmpty(oldOrgIdList)){
             return 0;
         }
+
+        //根据新机构ID查询父级机构拥有自动授权子集机构权限的角色列表
         List<Role> roleList = apiAuthDao.searchParentOrgIdAutoAuthChildOrgRoleList(newOrgId);
 
         if(!CollectionUtils.isEmpty(roleList)){
 
-            //TODO 根据旧机构ID获取所有子集机构ID列表
+            //根据旧机构ID列表获取所有子集机构ID列表
+            handlerAllChildOrganization(oldOrgIdList,oldOrgIdList);
 
             List<Integer> delOrgIdList = oldOrgIdList.stream().filter(oldOrgId ->{
                 if(oldOrgId.equals(newOrgId)){
@@ -53,14 +58,10 @@ public class ApiAuthServiceImpl implements ApiAuthService {
             if(CollectionUtils.isEmpty(roleList)){
                 for(Role role : roleList){
                     resultNum += apiAuthDao.insertRoleOrg(newOrgId,role.getRoleId(),operatorId);
-                    for(Integer orgId : delOrgIdList){
-                        resultNum += apiAuthDao.deleteRoleOrgByRoleIdAndOrgId(orgId,role.getRoleId(),operatorId);
-                    }
+                    resultNum += apiAuthDao.deleteRoleOrgAuth(delOrgIdList,role.getRoleId(),operatorId);
                 }
             }
         }
-
-
         return resultNum;
     }
 
@@ -74,7 +75,8 @@ public class ApiAuthServiceImpl implements ApiAuthService {
 
         if(CollectionUtils.isEmpty(roleList)){
 
-            //TODO 根据划转机构列表获取所有子集机构ID列表
+            //根据划转机构列表获取所有子集机构ID列表
+            handlerAllChildOrganization(orgIdList,orgIdList);
 
             for(Role role : roleList){
                 for(Integer orgId : orgIdList){
@@ -101,8 +103,11 @@ public class ApiAuthServiceImpl implements ApiAuthService {
     @Override
     public int deleteOrg(List<Integer> orgIdList, Integer operatorId) {
         int resultNum = 0;
+
+
+        resultNum += apiAuthDao.deleteRoleOrgAuth(orgIdList, null, operatorId);
         for(Integer orgId : orgIdList){
-            resultNum += apiAuthDao.deleteRoleOrgAuthByOrgId(orgId,operatorId);
+
             resultNum += apiAuthDao.deleteArchiveOrgAuth(orgId,operatorId);
         }
         return resultNum;
@@ -114,5 +119,15 @@ public class ApiAuthServiceImpl implements ApiAuthService {
         resultNum += apiAuthDao.deleteArchiveRoleAuth(archiveId, operatorId);
         resultNum += apiAuthDao.deleteArchiveOrgAuth(archiveId, operatorId);
         return resultNum;
+    }
+
+    private void handlerAllChildOrganization(List<Integer> currentOrgIdList, List<Integer> allOrgIdList){
+
+        List<Integer> childOrganizationList = apiAuthDao.searchChildOrganizationList(currentOrgIdList);
+        if(!CollectionUtils.isEmpty(childOrganizationList) && childOrganizationList.size() > 0){
+            allOrgIdList.addAll(childOrganizationList);
+            handlerAllChildOrganization(childOrganizationList,allOrgIdList);
+        }
+
     }
 }
