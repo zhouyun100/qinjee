@@ -355,17 +355,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
         if (!isExsit) {
             for (Integer orgId : idList) {
-                //删除前，通过aop进行历史存档
-                OrganizationVO orgBean = organizationDao.selectByPrimaryKey(orgId);
-                OrganizationHistory orgHisBean = new OrganizationHistory();
-                if (Objects.nonNull(orgBean)) {
-                    BeanUtils.copyProperties(orgBean, orgHisBean);
-                }
-                orgHisBean.setUpdateTime(new Date());
-                orgHisBean.setCreateTime(orgBean.getCreateTime());
-
-
-                organizationDao.deleteByPrimaryKey(orgId);
+                OrganizationVO organizationVO = new OrganizationVO();
+                organizationVO.setOrgId(orgId);
+                organizationVO.setOperatorId(userSession.getArchiveId());
+                organizationVO.setIsEnable(Short.parseShort("0"));
+                organizationDao.updateByPrimaryKey(organizationVO);
                 //删除岗位,逻辑删除
                 postDao.deleteByOrgId(orgId);
             }

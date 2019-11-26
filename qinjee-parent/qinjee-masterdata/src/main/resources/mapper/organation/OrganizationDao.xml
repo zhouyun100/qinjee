@@ -160,17 +160,41 @@
 
     <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
     update t_organization
-    set org_code = #{orgCode,jdbcType=VARCHAR},
-      org_name = #{orgName,jdbcType=VARCHAR},
-      org_type = #{orgType,jdbcType=VARCHAR},
-      org_parent_id = #{orgParentId,jdbcType=INTEGER},
-      org_full_name = #{orgFullName,jdbcType=VARCHAR},
-      org_manager_id = #{orgManagerId,jdbcType=INTEGER},
-      company_id = #{companyId,jdbcType=INTEGER},
-      sort_id = #{sortId,jdbcType=INTEGER},
-      operator_id = #{operatorId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      is_enable = #{isEnable,jdbcType=SMALLINT}
+        set org_id = #{orgId,jdbcType=VARCHAR},
+        <if test="orgCode != null">
+            org_code = #{orgCode,jdbcType=VARCHAR},
+        </if>
+          <if test="orgName != null">
+              org_name = #{orgName,jdbcType=VARCHAR},
+        </if>
+          <if test="orgType != null">
+              org_type = #{orgType,jdbcType=VARCHAR},
+        </if>
+          <if test="orgParentId != null">
+              org_parent_id = #{orgParentId,jdbcType=INTEGER},
+        </if>
+          <if test="orgFullName != null">
+              org_full_name = #{orgFullName,jdbcType=VARCHAR},
+        </if>
+          <if test="orgManagerId != null">
+              org_manager_id = #{orgManagerId,jdbcType=INTEGER},
+        </if>
+          <if test="companyId != null">
+              company_id = #{companyId,jdbcType=INTEGER},
+        </if>
+          <if test="sortId != null">
+              sort_id = #{sortId,jdbcType=INTEGER},
+        </if>
+
+         <if test="createTime != null">
+             create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+         <if test="isEnable != null">
+             is_enable = #{isEnable,jdbcType=SMALLINT},
+        </if>
+        <if test="operatorId != null">
+            operator_id = #{operatorId,jdbcType=INTEGER}
+        </if>
     where org_id = #{orgId,jdbcType=INTEGER}
   </update>
 
@@ -212,34 +236,47 @@
     </select>
 
     <select id="getOrganizationList" resultMap="BaseResultMap">
-        SELECT
-            org.org_id,org.is_enable,org.org_code,org.org_manager_id,
-            org.org_name,org.org_type,org.org_full_name,
-            org.org_parent_id,org.sort_id, roa.role_id,
-            parent_org.org_name parent_org_name,
-            parent_org.org_code parent_org_code,
-            tua.user_name orgManagerName
+        SELECT org.org_id,org.is_enable,org.org_code,org.org_manager_id,
+        org.org_name,org.org_type,org.org_full_name,
+        org.org_parent_id,
+        org.user_name orgManagerName,
+        parent_org.org_name parent_org_name,
+        parent_org.org_code parent_org_code
+        FROM (SELECT
+        o.org_id,
+        o.is_enable,o.org_code,o.org_manager_id,
+        o.org_name,o.org_type,o.org_full_name,
+        o.org_parent_id,arc.user_name
         FROM
-        t_organization org
-        LEFT JOIN t_role_org_auth roa
-            ON roa.org_id = org.org_id
-        LEFT JOIN t_user_org_auth tuoa
-            ON tuoa.org_id = org.org_id
-        INNER JOIN t_user_archive tua
-            ON tua.archive_id = org.org_manager_id
+        t_organization o
+        LEFT JOIN t_user_org_auth auth ON o.org_id = auth.org_id
+        LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
+        WHERE
+        o.is_enable = 1
+        AND auth.is_delete = 0
+        AND arc.is_delete = 0
+        AND arc.archive_id = #{archiveId})
+        UNION
+        SELECT
+        o2.org_id,
+        o2.is_enable,o2.org_code,o2.org_manager_id,
+        o2.org_name,o2.org_type,o2.org_full_name,
+        o2.org_parent_id,arch.user_name
+        FROM
+        t_organization o2
+        LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = o2.org_id
+        LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
+        LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
+        WHERE
+        o2.is_enable = 1
+        AND roleauth.is_delete = 0
+        AND role.is_delete = 0
+        AND arch.is_delete = 0
+        AND arch.archive_id = #{archiveId})org
         LEFT JOIN t_organization parent_org
-            ON org.org_parent_id = parent_org.org_id
-        LEFT JOIN t_user_role ur
-            ON ur.archive_id = tua.archive_id
-            AND ur.role_id = roa.role_id
-        WHERE org.is_enable = 1
-            AND parent_org.is_enable = 1
-            AND roa.is_delete = 0
-            AND tuoa.is_delete = 0
-            AND tua.archive_id = #{archiveId}
-            AND ur.is_delete = 0
-            AND ( ur.is_trusteeship = 0 OR ( ur.is_trusteeship = 1 AND ur.trusteeship_end_time > #{now} ))
+        ON org.org_parent_id = parent_org.org_id
         <if test="organizationPageVo != null">
+            where 1=1
             <if test="organizationPageVo.orgParentId != null">
                 and org.org_parent_id = #{organizationPageVo.orgParentId}
             </if>

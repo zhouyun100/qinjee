@@ -108,7 +108,7 @@ public class QueryFieldUtil {
                         queryField.setIsFilterNull(false);
                     }
                 }
-                if(null!=orderByStrs&&orderByStrs.toString().equals("")&&orderByStrs.toString().endsWith(",")){
+                if(null!=orderByStrs&&!orderByStrs.toString().equals("")&&orderByStrs.toString().endsWith(", ")){
                     orderByStrs.delete(orderByStrs.toString().lastIndexOf(", "), orderByStrs.toString().length());
                 }
                 return orderByStrs.toString();

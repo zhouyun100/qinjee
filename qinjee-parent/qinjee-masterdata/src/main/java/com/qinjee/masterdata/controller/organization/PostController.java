@@ -30,9 +30,9 @@ public class PostController extends BaseController {
     @Autowired
     private PostService postService;
 
-    @GetMapping("/getPostList")
+    @PostMapping("/getPostList")
     @ApiOperation(value = "分页查询岗位列表", notes = "高雄")
-    public ResponseResult<PageResult<Post>> getPostList(PostPageVo postPageVo){
+    public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo){
         return postService.getPostList(getUserSession(), postPageVo);
     }
 
@@ -68,17 +68,21 @@ public class PostController extends BaseController {
     }
 
     @ApiOperation(value = "删除岗位", notes = "高雄")
-    @GetMapping("/deletePost")
-    @ApiImplicitParam(name="postIds", value = "选择的岗位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-    public ResponseResult deletePost(List<Integer> postIds){
+    @PostMapping("/deletePost")
+    public ResponseResult deletePost(@RequestBody  List<Integer> postIds){
         return postService.deletePost(getUserSession(), postIds);
     }
 
-    @GetMapping("/sealPostByIds")
-    @ApiOperation(value = "解封/封存机构", notes = "高雄")
-    public ResponseResult sealPostByIds(@RequestParam("orgCode") @ApiParam(value = "机构编码",example = "1",required = true) List<Integer> postIds,
-                                             @RequestParam("isEnable") @ApiParam(value = "0 封存、1 解封",example = "0") Short isEnable){
-        return postService.sealPostByIds(postIds, isEnable, getUserSession());
+    @PostMapping("/lockPostByIds")
+    @ApiOperation(value = "封存岗位", notes = "高雄")
+    public ResponseResult lockPostByIds( @RequestBody List<Integer> postIds){
+        return postService.sealPostByIds(postIds, Short.parseShort("0"), getUserSession());
+    }
+
+    @PostMapping("/unlockPostByIds")
+    @ApiOperation(value = "解封岗位", notes = "高雄")
+    public ResponseResult unlockPostByIds(@RequestBody List<Integer> postIds){
+        return postService.sealPostByIds(postIds, Short.parseShort("1"), getUserSession());
     }
 
     @ApiImplicitParams({

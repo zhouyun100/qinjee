@@ -5,6 +5,7 @@ import com.qinjee.masterdata.model.vo.organization.PostPageVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public interface PostDao {
      * @param archiveId
      * @return
      */
-    List<Post> getPostList(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId);
+    List<Post> getPostList(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId, @Param("now") Date now);
 
     /**
      * 根据机构id查询机构下的岗位
