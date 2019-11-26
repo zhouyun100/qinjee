@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
+import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -38,6 +39,8 @@ public class CommonController extends BaseController {
 
     @Autowired
     private IStaffCommonService staffCommonService;
+    @Autowired
+    private SmsRecordService smsRecordServiceImpl;
 
     /**
      * 新增自定义表
@@ -466,6 +469,25 @@ public class CommonController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
     }
+    /**
+     * 发送短信
+     */
+
+    @RequestMapping(value = "/sendMessage", method = RequestMethod.POST)
+    @ApiOperation(value = "发送短信", notes = "hkt")
+    public ResponseResult sendMessage(@RequestBody @Valid SendMessageModel sendMessageModel ) {
+        Boolean b = checkParam(sendMessageModel);
+        if (b) {
+                try {
+                    smsRecordServiceImpl.sendMessage ( sendMessageModel );
+                    return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+    }
 
 
     /**
@@ -559,7 +581,7 @@ public class CommonController extends BaseController {
      * 模板导入预入职
      */
     @RequestMapping(value = "/importPreFile", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入档案", notes = "hkt")
+    @ApiOperation(value = "模板导入预入职", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
     public ResponseResult importPreFile(MultipartFile multipartFile) {

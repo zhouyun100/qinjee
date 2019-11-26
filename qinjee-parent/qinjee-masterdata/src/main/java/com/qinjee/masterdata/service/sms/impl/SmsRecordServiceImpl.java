@@ -12,6 +12,7 @@ package com.qinjee.masterdata.service.sms.impl;
 
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
+import com.qinjee.masterdata.model.entity.SendMessageModel;
 import com.qinjee.masterdata.model.entity.SmsConfig;
 import com.qinjee.masterdata.model.entity.SmsRecord;
 import com.qinjee.masterdata.redis.RedisClusterService;
@@ -54,15 +55,15 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     private  PreEmploymentDao preEmploymentDao;
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void sendMessage(List<Integer> list, Integer templateId, List<String> params) throws Exception {
+    public void sendMessage(SendMessageModel sendMessageModel) throws Exception {
         Integer max = preEmploymentDao.selectMaxId();
-        for (Integer integer : list) {
+        for (Integer integer : sendMessageModel.getList ()) {
             if (max < integer) {
                 throw new Exception("id出错");
             }
         }
-        List<String> phoneNumber = preEmploymentDao.getPhoneNumber(list);
-        SendMessage.sendMessageMany(APPID, APPKEY, templateId, "勤杰软件", phoneNumber, params);
+        List<String> phoneNumber = preEmploymentDao.getPhoneNumber(sendMessageModel.getList ());
+        SendMessage.sendMessageMany(APPID, APPKEY, sendMessageModel.getTemplateId (), "勤杰软件", phoneNumber, sendMessageModel.getParams ());
     }
 
     @Override

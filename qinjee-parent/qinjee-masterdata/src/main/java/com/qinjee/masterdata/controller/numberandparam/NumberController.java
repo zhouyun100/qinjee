@@ -2,7 +2,6 @@ package com.qinjee.masterdata.controller.numberandparam;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.staff.ContractParamVo;
-import com.qinjee.masterdata.model.vo.staff.CreatNumberVo;
 import com.qinjee.masterdata.model.vo.staff.EmployeeNumberRuleVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.model.response.CommonCode;
@@ -67,11 +66,11 @@ public class NumberController extends BaseController {
     @RequestMapping(value = "/creatNumber", method = RequestMethod.POST)
     @ApiOperation(value = "生成工号或者合同编号", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult<String> creatNumber(@Valid CreatNumberVo creatNumberVo) {
-        Boolean b = checkParam(creatNumberVo, getUserSession());
+    public ResponseResult<String> creatNumber(@Valid Integer ruleId) {
+        Boolean b = checkParam(ruleId, getUserSession());
         if (b) {
             try {
-                String number = employeeNumberRuleService.createNumber(creatNumberVo, getUserSession());
+                String number = employeeNumberRuleService.createConNumber(ruleId, getUserSession());
                 return new ResponseResult<>(number, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return failResponseResult("生成工号或者合同编号失败");

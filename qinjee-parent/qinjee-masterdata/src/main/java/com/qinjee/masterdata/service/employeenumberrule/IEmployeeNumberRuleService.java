@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.employeenumberrule;
 
 import com.qinjee.masterdata.model.vo.staff.ContractParamVo;
-import com.qinjee.masterdata.model.vo.staff.CreatNumberVo;
 import com.qinjee.masterdata.model.vo.staff.EmployeeNumberRuleVo;
 import com.qinjee.model.request.UserSession;
 
@@ -18,12 +17,21 @@ public interface IEmployeeNumberRuleService {
      */
     void addContractParam(ContractParamVo contractParamVo, UserSession userSession);
     /**
-     * 生成工号与合同编码
-     * @param creatNumberVo
+     * 生成工号编码
+     * @param id
      * @param userSession
      * @return
      * @throws Exception
      */
-    String createNumber(CreatNumberVo creatNumberVo, UserSession userSession) throws Exception;
+    String createEmpNumber(Integer id, UserSession userSession) throws Exception;
+
+    /**
+     *
+     * @param id
+     * @param userSession
+     * @return
+     * @throws Exception
+     */
+    String createConNumber(Integer id, UserSession userSession) throws Exception;
 
 }

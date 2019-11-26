@@ -101,7 +101,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Override
     public List<AttachmentRecord> selectAttach(String businessModule, String businessType, UserSession userSession) {
         List<AttachmentRecord> list=attachmentRecordDao.selectAttach(businessModule,businessType,userSession.getArchiveId(),userSession.getCompanyId());
-        return null;
+        return list;
     }
 
 }

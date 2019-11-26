@@ -906,7 +906,7 @@
     update  t_pre_employment
     set
     is_delete=1
-    where employment_id = #{employmentId,jdbcType=INTEGER}
+    where employment_id = #{integer,jdbcType=INTEGER}
   </update>
 
   <update id="deletePreEmploymentList">
