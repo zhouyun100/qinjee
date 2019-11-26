@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * @author 高雄
+ * @author 勤杰深圳研发部
  * @version 1.0.0
- * @Description TODO
+ * @Description 主数据平台
  * @createTime 2019年09月09日 10:01:00
  */
 @SpringBootApplication
