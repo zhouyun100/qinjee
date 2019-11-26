@@ -110,11 +110,7 @@ public interface OrganizationDao {
      * @return
      */
 
-    /**
-     * 根据选择的机构id导出Excel
-     * @param orgIds
-     * @return
-     */
+
     List<OrganizationVO> getOrganizationsByOrgIds(@Param("orgIds")List<Integer> orgIds);
 
     Integer selectOrgIdByName(@Param("name") String name);
@@ -127,4 +123,7 @@ public interface OrganizationDao {
     List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId,@Param("now") Date now);
 
     List< OrganzitionVo > selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
+
+    List<OrganizationVO> selectsByPrimaryKey(Integer orgParentId);
+
 }

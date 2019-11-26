@@ -109,7 +109,7 @@ public class PostServiceImpl implements PostService {
 
         //根据职级职等插入岗位职等,岗位职级信息
         //新增岗位职级关系表信息
-        addPostLevelAndGradeRelation(postVo, userSession, post);
+       // addPostLevelAndGradeRelation(postVo, userSession, post);
         return new ResponseResult();
     }
 
@@ -120,11 +120,11 @@ public class PostServiceImpl implements PostService {
         post.setOperatorId(userSession.getArchiveId());
         postDao.updateByPrimaryKeySelective(post);
         //删除修改不含有的岗位职级关系信息
-        deletePostLevel(postVo, userSession, post);
+        //deletePostLevel(postVo, userSession, post);
         //删除修改不含有的岗位职等关系信息
-        deletePostGrade(postVo, userSession, post);
+        //deletePostGrade(postVo, userSession, post);
         //新增岗位职级关系表信息
-        addPostLevelAndGradeRelation(postVo, userSession, post);
+        //addPostLevelAndGradeRelation(postVo, userSession, post);
 
         return new ResponseResult();
     }
@@ -278,7 +278,7 @@ public class PostServiceImpl implements PostService {
      * @param userSession
      * @param post
      */
-    private void deletePostGrade(PostVo postVo, UserSession userSession, Post post) {
+    /*private void deletePostGrade(PostVo postVo, UserSession userSession, Post post) {
         List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
         if(!CollectionUtils.isEmpty(postGradeRelationList)){
             List<Integer> positionGrades = postVo.getPositionGrades();
@@ -298,7 +298,7 @@ public class PostServiceImpl implements PostService {
             }
         }
     }
-
+*/
     /**
      * 删除岗位职等关系表信息
      * @param userSession
@@ -316,7 +316,7 @@ public class PostServiceImpl implements PostService {
      * @param userSession
      * @param post
      */
-    private void deletePostLevel(PostVo postVo, UserSession userSession, Post post) {
+   /* private void deletePostLevel(PostVo postVo, UserSession userSession, Post post) {
         List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
         if(!CollectionUtils.isEmpty(postLevelRelationList)){
             List<Integer> positionLevels = postVo.getPositionLevels();
@@ -336,7 +336,7 @@ public class PostServiceImpl implements PostService {
             }
         }
     }
-
+*/
     /**
      * 删除岗位职级关系信息
      * @param userSession
@@ -355,7 +355,7 @@ public class PostServiceImpl implements PostService {
      * @param userSession
      * @param post
      */
-    private void addPostLevelAndGradeRelation(PostVo postVo, UserSession userSession, Post post) {
+   /* private void addPostLevelAndGradeRelation(PostVo postVo, UserSession userSession, Post post) {
         List<Integer> positionLevels = postVo.getPositionLevels();
         if(!CollectionUtils.isEmpty(positionLevels)){
             for (Integer positionLevel : positionLevels) {
@@ -367,9 +367,9 @@ public class PostServiceImpl implements PostService {
                 postLevelRelationDao.insertSelective(postLevelRelation);
             }
         }
+*/
 
-
-        //新增岗位职等关系表信息
+     /*   //新增岗位职等关系表信息
         List<Integer> positionGrades = postVo.getPositionGrades();
         if(!CollectionUtils.isEmpty(positionGrades)){
             for (Integer positionGrade : positionGrades) {
@@ -381,7 +381,7 @@ public class PostServiceImpl implements PostService {
                 postGradeRelationDao.insertSelective(postGradeRelation);
             }
         }
-    }
+    }*/
 
     /**
      * 获取排序sortId

@@ -57,7 +57,7 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "新增岗位", notes = "高雄")
     @PostMapping("/addPost")
-    public ResponseResult addPost(PostVo postVo){
+    public ResponseResult addPost(@RequestBody PostVo postVo){
         return postService.addPost(postVo, getUserSession());
     }
 

@@ -29,7 +29,7 @@ public interface PositionService {
      * @param pageVo
      * @return
      */
-    ResponseResult<PageResult<Position>> getPositionList(UserSession userSession, PageVo pageVo);
+    ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PageVo pageVo);
 
     /**
      * 新增职位
@@ -66,5 +66,5 @@ public interface PositionService {
      * @param positionId
      * @return
      */
-    ResponseResult<Position> getPositionLevelAndGrade(Integer positionId);
+   // ResponseResult<Position> getPositionLevelAndGrade(Integer positionId);
 }
