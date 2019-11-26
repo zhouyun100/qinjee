@@ -156,13 +156,13 @@ public class OrganizationController extends BaseController {
 
     //TODO
     @PostMapping ("/mergeOrganization")
-    @ApiOperation(value = "合并机构,传参demo  {\"newOrgName\":\"新机构名称\",\"orgIds\":[1001,1002],\"targetOrgId\":1003}", notes = "高雄")
+    @ApiOperation(value = "合并机构,传参demo  {\"newOrgName\":\"新机构名称\",\"orgIds\":[1001,1002],\"parentOrgId\":1003}", notes = "高雄")
     public ResponseResult mergeOrganization(@RequestBody  Map<String, Object> paramMap) {
         UserSession userSession = getUserSession();
         List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
-        Integer targetOrgId = (Integer) paramMap.get("targetOrgId");
+        Integer parentOrgId = (Integer) paramMap.get("parentOrgId");
         String newOrgName = (String) paramMap.get("newOrgName");
-        return organizationService.mergeOrganization(newOrgName, targetOrgId, orgIds, userSession);
+        return organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, userSession);
     }
 
 

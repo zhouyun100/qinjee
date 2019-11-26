@@ -149,11 +149,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         orgBean.setIsEnable((short) 1);
         //设置企业id
         orgBean.setCompanyId(userSession.getCompanyId());
-        int insert = organizationDao.insertSelective(orgBean);
+        int i = organizationDao.insertSelective(orgBean);
 
         //TODO 维护机构与角色、用户的关系
+
+
+        apiAuthService.addOrg(orgBean.getOrgId(),Integer.parseInt(parentOrgId),userSession.getArchiveId());
+
         ResponseResult responseResult;
-        if (insert == 1) {
+        if (i != 0) {
             responseResult = new ResponseResult(CommonCode.SUCCESS);
         } else {
             responseResult = new ResponseResult(CommonCode.FAIL);
@@ -171,13 +175,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             //查询最新的同级机构
             List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
             //如果没有同级机构，则当前机构为parentOrg下第一个子机构
-            //计算机构编码与排序id
-            /**
-             * 根据规则计算机构编码
-             * 规则如下：顶级机构默认编码为1
-             * 余下各层级编码规则：上级机构编码+2位数流水号。
-             * 如顶级机构：XX集团，编码为1，下级A单位的编码为：101
-             */
             String orgCode;
             Integer sortId;
             if (CollectionUtils.isEmpty(brotherOrgList)) {
@@ -204,36 +201,32 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param orgParentId
      * @return
      */
-    @Deprecated
     private OrganizationVO getNewOrgCode(Integer orgParentId) {
-        OrganizationVO organizationVO = new OrganizationVO();
-        if (orgParentId != 0) {
+        OrganizationVO orgBean = new OrganizationVO();
+        if (orgParentId > 0) {
             //查询父级机构
-            OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(orgParentId);
-            //查询父级机构的所有子机构
-            List<OrganizationVO> organizationVOList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
-            String parentOrgCode = parentOrganizationVO.getOrgCode();
-            String newOrgCode;
+            OrganizationVO parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
+            //查询最新的同级机构
+            List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
+            //如果没有同级机构，则当前机构为parentOrg下第一个子机构
+            String orgCode;
             Integer sortId;
-            if (CollectionUtils.isEmpty(organizationVOList)) {
-                //新增第一个子级
-                newOrgCode = parentOrgCode + "001";
+            if (CollectionUtils.isEmpty(brotherOrgList)) {
+                orgCode = parentOrg.getOrgCode() + "01";
                 sortId = 1000;
             } else {
-                //有子级，获取最新的子机构
-                OrganizationVO lastorganization = organizationVOList.get(0);
-                String orgCode = lastorganization.getOrgCode();
-                newOrgCode = culOrgCode(orgCode);
-                sortId = lastorganization.getSortId() + 1000;
+                sortId = brotherOrgList.get(0).getSortId() + 100;
+                orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
             }
-            organizationVO.setSortId(sortId);
-            organizationVO.setOrgCode(newOrgCode);
-            organizationVO.setOrgFullName(parentOrganizationVO.getOrgFullName());
-            return organizationVO;
+            BeanUtils.copyProperties(parentOrg,orgBean);
+            orgBean.setOrgParentId(parentOrg.getOrgId());
+            orgBean.setSortId(sortId);
+            orgBean.setOrgCode(orgCode);
+            return orgBean;
         } else {
-            organizationVO.setSortId(1000);
-            organizationVO.setOrgCode("1");
-            return organizationVO;
+            orgBean.setSortId(1000);
+            orgBean.setOrgCode("1");
+            return orgBean;
         }
     }
 
@@ -285,6 +278,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         //递归修改子机构的全称
         recursiveUpdateOrgNameByParentOrgId(newOrgFullName,orgId);
+
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
 
@@ -363,9 +357,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 //删除岗位,逻辑删除
                 postDao.deleteByOrgId(orgId);
             }
+
         }
-        //TODO 回收机构权限
-        //apiAuthService.deleteArchiveAuth(orgIds,userSession.getArchiveId());
+        // 回收机构权限
+        apiAuthService.deleteOrg(idList,userSession.getArchiveId());
 
         return new ResponseResult(CommonCode.SUCCESS);
     }
@@ -397,9 +392,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
-    public ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId,  List<Integer> orgIds, UserSession userSession) {
+    public ResponseResult mergeOrganization(String newOrgName, Integer parentOrgId,  List<Integer> orgIds, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
+            //查询机构列表
             organizationVOList = organizationDao.getOrganizationListByOrgIds(orgIds);
         }
         //判断是否是同一个父级下的
@@ -407,10 +403,12 @@ public class OrganizationServiceImpl implements OrganizationService {
             Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (OrgParentIds.size() != 1) {
                 //不是
-                return new ResponseResult(CommonCode.FAIL);
+                ResponseResult result = new ResponseResult(CommonCode.FAIL);
+                result.setMessage("待合并机构不是同一个父级下的，合并失败");
+                return result;
             }
-            //获取新的合并机构
-            OrganizationVO newOrgVO=initOrganization(targetOrgId);
+            //根据归属机构构建新的机构实体
+            OrganizationVO newOrgVO=getNewOrgCode(parentOrgId);
             newOrgVO.setOrgName(newOrgName);
             newOrgVO.setOrgFullName(newOrgVO.getOrgFullName() + "/" + newOrgVO.getOrgName());
             organizationDao.insert(newOrgVO);
@@ -418,7 +416,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             //TODO 调用人员接口，将老机构下的人员迁移至新机构
 
             //TODO 调用角色接口
-           // apiAuthService.mergeOrg(orgIds,targetOrgId,userSession.getArchiveId());
+            apiAuthService.mergeOrg(orgIds,parentOrgId,userSession.getArchiveId());
 
 
             //refactorOrganization(organizationVOList, newOrganizationVO);
@@ -484,8 +482,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             refactorOrganization(organizationVOList, parentOrganizationVO);
         }
-        //TODO
-        //apiAuthService.transferOrg(orgIds,targetOrgId,userSession.getArchiveId());
+        apiAuthService.transferOrg(orgIds,targetOrgId,userSession.getArchiveId());
 
         responseResult.setResultCode(CommonCode.SUCCESS);
         responseResult.setMessage("划转成功");
