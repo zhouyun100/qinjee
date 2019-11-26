@@ -1,18 +1,15 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
+import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
-import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -138,46 +135,18 @@ public interface IStaffCommonService {
      * @return
      */
    PageResult<CustomArchiveTableData> selectCustomArchiveTableData(Integer currentPage, Integer pageSize, Integer customArchiveTableId);
-
-    /**
-     * 获取字段校验类型
-     * @param fieldId
-     * @return
-     */
-    List<String> checkField(Integer fieldId);
-
-    /**
-     * 模板导入
-     * @param multipartFile
-     * @param userSession
-     * @throws IOException
-     * @throws NoSuchFieldException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws ClassNotFoundException
-     */
-    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws Exception;
-
-    /**
-     * 模板导出档案
-     * @return
-     */
-    void exportArcFile(ExportFile exportFile, HttpServletResponse response) ;
-
-
     /**
      * 据档案显示对应权限下的单位
      * @param userSession
      * @return
      */
     Integer getCompanyId(UserSession userSession);
-
     /**
      * 根据档案id显示对应权限下的子集部门
      * @param companyId
      * @return
      */
-     OrganzitionVo getOrgIdByCompanyId(Integer companyId, UserSession userSession);
+    OrganzitionVo getOrgIdByCompanyId(Integer companyId, UserSession userSession);
 
     /**
      * 显示部门下的岗位
@@ -199,22 +168,12 @@ public interface IStaffCommonService {
      * @return
      */
     List<String> selectFieldValueById(Integer customArchiveFieldId);
-
     /**
+     * 获取字段校验类型
+     * @param fieldId
+     * @return
      */
-    void exportPreFile(ExportRequest exportRequest,HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
-
-    /**
-     * 导出业务类
-     * @param exportRequest
-     * @param userSession
-     */
-    void exportBusiness(ExportRequest exportRequest,HttpServletResponse response, UserSession userSession) throws Exception;
+    List<String> checkField(Integer fieldId);
 
 
-    void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
-
-    void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession);
-
-    void exportContractList(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession);
 }

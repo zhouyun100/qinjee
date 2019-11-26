@@ -37,8 +37,8 @@ public class PostController extends BaseController {
     }
 
     @GetMapping("/getAllPost")
-    @ApiOperation(value = "获取机构下所有的岗位", notes = "高雄 新增用户信息岗位下拉框的生成")
-    public ResponseResult<List<Post>> getAllPost(@ApiParam(value = "机构id", example = "1", required = true) Integer orgId){
+    @ApiOperation(value = "根据机构id获取机构下所有的岗位", notes = "新增用户信息岗位下拉框的生成")
+    public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId")@ApiParam(name = "orgId",value = "机构id", example = "1", required = true) Integer orgId){
         return postService.getAllPost(getUserSession(), orgId);
     }
 
