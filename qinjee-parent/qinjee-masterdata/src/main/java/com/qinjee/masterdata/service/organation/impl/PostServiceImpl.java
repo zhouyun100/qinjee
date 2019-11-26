@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +72,8 @@ public class PostServiceImpl implements PostService {
         if(postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null){
             PageHelper.startPage(postPageVo.getCurrentPage(),postPageVo.getPageSize());
         }
-        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId);
+         Date now=new Date();
+        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId,now);
         PageResult<Post> pageResult = new PageResult<>(postList);
         return new ResponseResult<>(pageResult);
     }
@@ -131,6 +133,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseResult deletePost(UserSession userSession, List<Integer> postIds) {
         //TODO 被删除的岗位下不允许有人员档案
+        //被引用过的岗位 不允许删除
         if(!CollectionUtils.isEmpty(postIds)){
             for (Integer postId : postIds) {
                 Post post = new Post();
@@ -139,21 +142,21 @@ public class PostServiceImpl implements PostService {
                 post.setIsDelete((short) 1);
                 postDao.updateByPrimaryKeySelective(post);
 
-                List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
+              /*  List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
                 //删除岗位职级关系信息
                 if(!CollectionUtils.isEmpty(postLevelRelationList)){
                     for (PostLevelRelation postLevelRelation : postLevelRelationList) {
                         deletePostLevelRelation(userSession,postLevelRelation);
                     }
-                }
+                }*/
 
-                List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
+               /* List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
                 //删除岗位职等关系信息
                 if(!CollectionUtils.isEmpty(postGradeRelationList)){
                     for (PostGradeRelation postGradeRelation : postGradeRelationList) {
                         deletePostGradeRelation(userSession,postGradeRelation);
                     }
-                }
+                }*/
             }
         }
         return new ResponseResult();
@@ -256,7 +259,8 @@ public class PostServiceImpl implements PostService {
         Integer archiveId = userSession.getArchiveId();
         Optional<List<QueryFieldVo>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
         String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
-        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId);
+        Date now = new Date();
+        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId,now);
         exportExcel(response,postList);
         return new ResponseResult();
     }

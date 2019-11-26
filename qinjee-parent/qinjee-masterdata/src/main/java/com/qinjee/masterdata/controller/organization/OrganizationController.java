@@ -37,15 +37,15 @@ public class OrganizationController extends BaseController {
     //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "新增机构", notes = "高雄")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName,@RequestParam("orgType")String orgType,@RequestParam("orgParentId")String orgParentId,@RequestParam("orgManagerId")String orgManagerId) {
-            return organizationService.addOrganization(orgName,orgType,orgParentId,orgManagerId,getUserSession());
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+        return organizationService.addOrganization(orgName, orgType, orgParentId, orgManagerId, getUserSession());
     }
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "编辑机构", notes = "高雄")
-    public ResponseResult editOrganization(@RequestParam("orgId")String orgId,@RequestParam("orgName")String orgName,@RequestParam("orgType")String orgType,@RequestParam("orgParentId")String orgParentId,@RequestParam("orgManagerId")String orgManagerId) {
+    public ResponseResult editOrganization(@RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
 
-            return organizationService.editOrganization(orgId,orgName,orgType,orgParentId,orgManagerId,getUserSession());
+        return organizationService.editOrganization(orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
 
     }
 
@@ -114,7 +114,6 @@ public class OrganizationController extends BaseController {
     }
 
 
-
     @ApiOperation(value = "导出机构到excel，如果不选中的话导入用户下所有机构", notes = "彭洪思")
     @PostMapping("/downloadOrganizationToExcelByOrgId")
     public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径", required = true) @RequestParam("filePath") String filePath, @RequestBody List<Integer> orgIds) {
@@ -134,7 +133,7 @@ public class OrganizationController extends BaseController {
      */
     @PostMapping("/sortOrganization")
     @ApiOperation(value = "机构排序，只能同一级别下机构排序（需要将该级下所有机构的id按顺序传参）", notes = "彭洪思")
-    public ResponseResult sortOrganizationInOrg( @RequestBody LinkedList<Integer> orgIds) {
+    public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> orgIds) {
         ResponseResult responseResult = organizationService.sortOrganization(orgIds);
         return responseResult;
     }
@@ -142,49 +141,27 @@ public class OrganizationController extends BaseController {
     //TODO
     @GetMapping("/getUserArchiveListByUserName")
     @ApiOperation(value = "机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询")
-    public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true)@RequestParam(value = "userName",required = false) String userName) {
+    public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
         return organizationService.getUserArchiveListByUserName(userName);
     }
 
-    //TODO
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "orgIds", value = "需要合并机构id", paramType = "query", dataType = "int", allowMultiple = true, required = true),
-            @ApiImplicitParam(name = "targetOrgId", value = "目标机构Id", paramType = "query", dataType = "int", required = true, example = "1"),
-    })
-    @GetMapping("/transferOrganization")
-    @ApiOperation(value = "划转机构", notes = "高雄")
-    /**
-     * 将勾选的机构（至少一个）划转到目标机构下，成为目标机构的子机构
-     * 机构id不变
-     * 机构编码改变
-     */
-    public ResponseResult transferOrganization(@RequestParam("orgIds") List<Integer> orgIds,
-                                               @RequestParam("targetOrgId") Integer targetOrgId) {
-        return organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
-    }
 
-    @ApiOperation(value = "划转机构,参数demo  {'orgIds':[1001,1002],'targetOrgId':1003}", notes = "彭洪思")
+    @ApiOperation(value = "划转机构,参数demo  {\"orgIds\":[1001,1002],\"targetOrgId\":1003}", notes = "彭洪思")
     @PostMapping("/transferOrganization2")
-
-    public ResponseResult transferOrganization2(@RequestBody @ApiParam(name = "paramMap",value = "json对象",example ="{'orgIds':[1001,1002],'targetOrgId':1003}" ) Map<String,Object> paramMap) {
-        List<Integer> orgIds =(List<Integer>) paramMap.get("orgIds");
-        Integer targetOrgId = (Integer)paramMap.get("targetOrgId");
-
+    public ResponseResult transferOrganization2(@RequestBody Map<String, Object> paramMap) {
+        List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
+        Integer targetOrgId = (Integer) paramMap.get("targetOrgId");
         return organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
     }
 
     //TODO
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "newOrgName", value = "新机构名称", paramType = "query", dataType = "String", required = true, example = "新机构名称"),
-            @ApiImplicitParam(name = "targetOrgId", value = "归属机构Id", paramType = "query", dataType = "int", required = true, example = "01"),
-            @ApiImplicitParam(name = "orgIds", value = "待合并机构Id", paramType = "query", dataType = "int", allowMultiple = true, required = true),
-    })
-    @GetMapping("/mergeOrganization")
-    @ApiOperation(value = "合并机构", notes = "高雄")
-    public ResponseResult mergeOrganization(@RequestParam("newOrgName") String newOrgName,
-                                            @RequestParam("targetOrgId") Integer targetOrgId,
-                                            @RequestParam("orgIds") List<Integer> orgIds) {
+    @PostMapping ("/mergeOrganization")
+    @ApiOperation(value = "合并机构,传参demo  {\"newOrgName\":\"新机构名称\",\"orgIds\":[1001,1002],\"targetOrgId\":1003}", notes = "高雄")
+    public ResponseResult mergeOrganization(@RequestBody  Map<String, Object> paramMap) {
         UserSession userSession = getUserSession();
+        List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
+        Integer targetOrgId = (Integer) paramMap.get("targetOrgId");
+        String newOrgName = (String) paramMap.get("newOrgName");
         return organizationService.mergeOrganization(newOrgName, targetOrgId, orgIds, userSession);
     }
 

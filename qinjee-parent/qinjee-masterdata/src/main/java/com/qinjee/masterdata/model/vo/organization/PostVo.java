@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "岗位表实体类")
-public class PostVo extends PageVo implements Serializable {
+public class PostVo  implements Serializable {
 
     /**
      * 岗位ID
