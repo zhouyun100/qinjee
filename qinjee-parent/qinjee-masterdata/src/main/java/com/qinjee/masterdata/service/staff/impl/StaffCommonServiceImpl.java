@@ -192,8 +192,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
 
     @Override
-    public String getCompanyId(UserSession userSession) {
-        return  organizationDao.selectOrgName (userSession.getCompanyId ());
+    public Integer getCompanyId(UserSession userSession) {
+        return  userSession.getCompanyId ();
     }
 
     @Override

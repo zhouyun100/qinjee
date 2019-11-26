@@ -11,5 +11,5 @@ public class OrganzitionVo implements Serializable {
     private Integer org_id;
     private Integer org_parent_id;
     private String org_name;
-    private List<OrganzitionVo> list;
+    private List<OrganzitionVo> list ;
 }

@@ -496,12 +496,12 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/getCompany", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
-    public ResponseResult<String> getCompanyId() {
+    public ResponseResult<Integer> getCompanyId() {
         Boolean b = checkParam(getUserSession());
         if (b) {
             try {
-                String companyName = staffCommonService.getCompanyId ( getUserSession () );
-                return new ResponseResult(companyName, CommonCode.SUCCESS);
+                Integer companyId= staffCommonService.getCompanyId ( getUserSession());
+                return new ResponseResult(companyId, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
