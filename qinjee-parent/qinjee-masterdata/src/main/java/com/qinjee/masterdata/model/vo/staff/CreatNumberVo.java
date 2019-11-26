@@ -23,17 +23,14 @@ public class CreatNumberVo implements Serializable {
     /**
      *合同规则后缀
      */
-    @NotNull
     private String  contractRuleSuffix;
     /**
      *规则前缀
      */
-    @NotNull
     private String  employeeNumberPrefix;
     /**
      *规则中缀
      */
-    @NotNull
     private String  employeeNumberInfix;
     /**
      * 工号后缀
@@ -44,7 +41,6 @@ public class CreatNumberVo implements Serializable {
     /**
      *日期规则
      */
-    @NotNull
     private String dateRule;
 
     /**

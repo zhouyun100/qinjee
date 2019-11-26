@@ -28,9 +28,9 @@ public class PositionController extends BaseController {
     private PositionService positionService;
 
     @ApiOperation(value = "分页查询职位信息", notes = "高雄")
-    @GetMapping("/getPositionList")
-    public ResponseResult<PageResult<Position>> getPositionList(PageVo pageVo){
-        return positionService.getPositionList(getUserSession(), pageVo);
+    @GetMapping("/getPositionPage")
+    public ResponseResult<PageResult<Position>> getPositionPage(PageVo pageVo){
+        return positionService.getPositionPage(getUserSession(), pageVo);
     }
 
     @ApiOperation(value = "新增职位", notes = "高雄")
@@ -74,30 +74,11 @@ public class PositionController extends BaseController {
         return null;
     }
 
-    @ApiOperation(value = "新增岗位选择职位时带出职级职等", notes = "高雄")
+  /*  @ApiOperation(value = "新增岗位选择职位时带出职级职等", notes = "高雄")
     @GetMapping("/getPositionLevelAndGrade")
     public ResponseResult<Position> getPositionLevelAndGrade(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
         return positionService.getPositionLevelAndGrade(positionId);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }*/
 
 
 

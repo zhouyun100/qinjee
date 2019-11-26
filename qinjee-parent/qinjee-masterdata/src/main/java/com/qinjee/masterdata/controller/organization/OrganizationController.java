@@ -1,23 +1,25 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -43,9 +45,9 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "编辑机构", notes = "高雄")
-    public ResponseResult editOrganization(@RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode,@RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
 
-        return organizationService.editOrganization(orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
+        return organizationService.editOrganization(orgCode,orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
 
     }
 
@@ -79,7 +81,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "分页按条件查询用户下所有的机构", notes = "高雄")
     public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
         UserSession userSession = getUserSession();
-        PageResult<OrganizationVO> pageResult = organizationService.getOrganizationList(organizationPageVo, userSession);
+        PageResult<OrganizationVO> pageResult = organizationService.getOrganizationPageList(organizationPageVo, userSession);
         return new ResponseResult<>(pageResult);
     }
 
@@ -114,12 +116,33 @@ public class OrganizationController extends BaseController {
     }
 
 
-    @ApiOperation(value = "导出机构到excel，如果不选中的话导入用户下所有机构", notes = "彭洪思")
+    @ApiOperation(value = "导出机构到excel，orgIds为空则导入用户下所有机构 参数：{\"filePath\":\"c:\\\\hello.xls\",\"orgIds\":[1,2,3]}", notes = "彭洪思")
+   // String filePath,  List<Integer> orgIds
     @PostMapping("/downloadOrganizationToExcelByOrgId")
-    public ResponseResult downloadOrganizationToExcelByOrgId(@ApiParam(value = "导出路径", required = true) @RequestParam("filePath") String filePath, @RequestBody List<Integer> orgIds) {
-
-        if (CollectionUtils.isEmpty(orgIds)) {
+    public ResponseResult downloadOrganizationToExcelByOrgId( @RequestBody Map<String,Object> paramMap) {
+        ResponseResult responseResult;
+        String filePath;
+        List<Integer> orgIds;
+        if (null==paramMap.get("filePath")){
+            responseResult=  new ResponseResult(CommonCode.FAIL);
+            responseResult.setMessage("路径参数缺少");
+            return responseResult;
+        }
+        if(null==paramMap.get("orgIds")){
+            filePath=(String)paramMap.get("filePath");
             return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
+        }else{
+            filePath=(String)paramMap.get("filePath");
+            if(paramMap.get("orgIds") instanceof  List){
+                orgIds= (List<Integer>) paramMap.get("orgIds");
+                if(orgIds.size()==0){
+                    return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
+                }
+            }else {
+                responseResult=  new ResponseResult(CommonCode.FAIL);
+                responseResult.setMessage("orgIds参数格式必须是int数组");
+                return responseResult;
+            }
         }
         return organizationService.downloadOrganizationToExcelByOrgId(filePath, orgIds, getUserSession());
     }

@@ -1,13 +1,11 @@
 package com.qinjee.masterdata.model.vo.organization;
 
-import com.qinjee.model.request.PageVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 岗位表
@@ -57,20 +55,20 @@ public class PostVo  implements Serializable {
     /**
      * 职级
      */
-    @ApiModelProperty("职级")
-    private List<Integer> positionLevels;
+//    @ApiModelProperty("职级")
+//    private List<Integer> positionLevels;
 
     /**
      * 职等
      */
-    @ApiModelProperty("职等")
-    private List<Integer> positionGrades;
+//    @ApiModelProperty("职等")
+//    private List<Integer> positionGrades;
 
 //    /**
 //     * 是否删除
 //     */
 //    @ApiModelProperty("是否删除")
-//    private Integer isDelete;
+//   private Integer isDelete;
 
     private static final long serialVersionUID = 1L;
 

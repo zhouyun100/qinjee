@@ -1,9 +1,8 @@
 package com.qinjee.masterdata.service.organation;
 
-import com.qinjee.masterdata.model.entity.Organization;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -31,7 +30,7 @@ public interface OrganizationService {
      * @param organizationPageVo
      * @return
      */
-    PageResult<OrganizationVO> getOrganizationList(OrganizationPageVo organizationPageVo, UserSession userSession);
+    PageResult<OrganizationVO> getOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
     /**
      * 根据是否封存查询用户下所有的机构,图形化展示
@@ -160,5 +159,5 @@ public interface OrganizationService {
     ResponseResult addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
 
-    ResponseResult editOrganization(String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+    ResponseResult editOrganization(String orgCode,String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 }

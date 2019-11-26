@@ -9,7 +9,6 @@ import lombok.ToString;
  */
 @ToString
 public enum CommonCode implements ResultCode{
-
     INVALID_PARAM(false,10003,"非法参数！"),
     SUCCESS(true,10000,"操作成功！"),
     FAIL(false,10002,"操作失败！"),
@@ -31,7 +30,8 @@ public enum CommonCode implements ResultCode{
     TIME_FORMAT_ERROR(false,10310, "时间格式错误!"),
     FILE_EXPORT_FAILED(false,10311, "文件导出失败!"),
     FILE_PARSE_FAILED(false,10312, "文件解析失败!"),
-    FAIL_VALUE_NULL(false,10313, "结果不存在，请检查或联系开发!");
+    FAIL_VALUE_NULL(false,10313, "结果不存在，请检查或联系开发!"),
+    FILE_EMPTY(false,10314, "文件为空!");
 
 
     /**

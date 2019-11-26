@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 职位表
@@ -34,12 +33,13 @@ public class PositionVo implements Serializable {
     @ApiModelProperty("职位族ID")
     private Integer positionGroupId;
 
+    private Short isDelete;
 
-    @ApiModelProperty("职位对应的职级")
-    List<Integer> positionLevelIds;
+ /*   @ApiModelProperty("职位对应的职级")
+    List<Integer> positionLevelIds;*/
 
-    @ApiModelProperty("职位对应的职等")
-    List<Integer> positionGradeIds;
+ /*   @ApiModelProperty("职位对应的职等")
+    List<Integer> positionGradeIds;*/
 
     private static final long serialVersionUID = 1L;
 

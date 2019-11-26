@@ -2,7 +2,8 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.*;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -11,7 +12,9 @@ import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
+import com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
+import com.qinjee.masterdata.service.sys.CheckCustomFieldService;
 import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.export.HeadTypeUtil;
@@ -33,12 +36,16 @@ import java.util.*;
  */
 @Service
 public class StaffImportAndExportServiceImpl implements IStaffImportAndExportService {
+    private final static String xls = "xls";
+    private final static String xlsx = "xlsx";
     @Autowired
     private CustomArchiveFieldDao customArchiveFieldDao;
     @Autowired
     private CustomArchiveTableDataDao customArchiveTableDataDao;
     @Autowired
     private PreEmploymentDao preEmploymentDao;
+    @Autowired
+    private CheckCustomFieldService checkCustomFieldService;
     @Autowired
     private OrganizationDao organizationDao;
     @Autowired
@@ -47,7 +54,86 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private BlacklistDao blacklistDao;
     @Autowired
     private PostDao postDao;
+    @Override
+    public  List <Map< String,String>> importFileAndCheckFile(MultipartFile multipartFile) throws Exception {
+        // 获取文件名
+        String fileName = multipartFile.getOriginalFilename();
+        assert fileName != null;
+        if (!fileName.endsWith(xls) && !fileName.endsWith(xlsx)) {
+            throw new IOException (fileName + "不是excel文件");
+        }
+        return getMaps(multipartFile );
+    }
 
+    @Override
+    public List< CheckCustomFieldVO > checkFile(List < Map < String, String > > list, UserSession userSession) {
+        List<Map<Integer,Object>> mapList=new ArrayList <> (  );
+        Map<Integer,Object> objectMap=new LinkedHashMap <> (  );
+        //得到fieldName集合
+        List<String> fieldNames =null;
+        for (Map < String, String > map : list) {
+            fieldNames = new ArrayList <> ( map.keySet () );
+        }
+        //根据filedName与companyId得到fieldId
+        List<Integer> idList=customArchiveFieldDao.selectFieldIdByFieldNameAndCompanyId(fieldNames,userSession.getCompanyId ());
+        for (Map < String, String > map : list) {
+            List < String > strings = new ArrayList <> ( map.values () );
+            for (int i = 0; i < strings.size (); i++) {
+                objectMap.put ( idList.get(i),strings.get(i) );
+            }
+            mapList.add (objectMap);
+        }
+              //请求接口获得返回前端的结果
+        List < Map < Integer, CheckCustomFieldVO > > maps = checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
+        return null;
+    }
+
+    @Override
+    public void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception {
+        Integer orgId;
+        Integer postId;
+        List<Map<String,String>> list=getMaps(multipartFile );
+        List< PreEmployment > preEmploymentList=new ArrayList <> ();
+        @SuppressWarnings("unchecked")
+        List< ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class );
+        for (ExportPreVo exportPreVo : objectList) {
+            PreEmployment preEmployment=new PreEmployment();
+            Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
+            Field[] fields = exportPreVo.getClass ().getDeclaredFields ();
+            for (Field field : fields) {
+                field.setAccessible (true);
+                String fieldName = field.getName ();
+                for (Field declaredField : declaredFields) {
+                    declaredField.setAccessible (true);
+                    String name = declaredField.getName ();
+                    if(name.equals (fieldToProperty (fieldName))){
+                        declaredField.set (preEmployment,field.get(exportPreVo) );
+                    }
+                }
+            }
+            try {
+                orgId= organizationDao.selectOrgIdByName ( exportPreVo.getOrg_name () );
+            } catch (Exception e) {
+                orgId=0;
+            }
+            preEmployment.setOrgId(orgId);
+            try {
+                postId=postDao.selectPostIdByName(exportPreVo.getPost_name());
+            } catch (Exception e) {
+                postId=0;
+            }
+            preEmployment.setPostId (postId);
+            preEmployment.setOperatorId ( userSession.getArchiveId () );
+            preEmploymentList.add ( preEmployment );
+        }
+        preEmploymentDao.insertBatch(preEmploymentList);
+    }
+    @Override
+    public void importArcFile(MultipartFile multipartFile,UserSession userSession) throws Exception {
+        //excel方法获得值
+        List<Map<String,String>> list=getMaps ( multipartFile );
+
+    }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportArcFile(ExportFile exportFile, HttpServletResponse response) {
@@ -101,6 +187,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 getTypeMapForPre(  HeadMapUtil.getHeadsForCon () ));
     }
 
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportBusiness(ExportRequest exportRequest, HttpServletResponse response,UserSession userSession) throws Exception {
@@ -139,56 +227,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
 
     }
-    @Override
-    public void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception {
-        Integer orgId;
-        Integer postId;
-        List<Map<String,String>> list=getMaps(multipartFile );
-        List< PreEmployment > preEmploymentList=new ArrayList <> ();
-        @SuppressWarnings("unchecked")
-        List< ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class );
-        for (ExportPreVo exportPreVo : objectList) {
-            PreEmployment preEmployment=new PreEmployment();
-            Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
-            Field[] fields = exportPreVo.getClass ().getDeclaredFields ();
-            for (Field field : fields) {
-                field.setAccessible (true);
-                String fieldName = field.getName ();
-                for (Field declaredField : declaredFields) {
-                    declaredField.setAccessible (true);
-                    String name = declaredField.getName ();
-                    if(name.equals (fieldToProperty (fieldName))){
-                        declaredField.set (preEmployment,field.get(exportPreVo) );
-                    }
-                }
-            }
-            try {
-                orgId= organizationDao.selectOrgIdByName ( exportPreVo.getOrg_name () );
-            } catch (Exception e) {
-                orgId=0;
-            }
-            preEmployment.setOrgId(orgId);
-            try {
-                postId=postDao.selectPostIdByName(exportPreVo.getPost_name());
-            } catch (Exception e) {
-                postId=0;
-            }
-            preEmployment.setPostId (postId);
-            preEmployment.setOperatorId ( userSession.getArchiveId () );
-            preEmploymentList.add ( preEmployment );
-        }
-        preEmploymentDao.insertBatch(preEmploymentList);
-    }
-    @Override
-    public void importArcFile(MultipartFile multipartFile,UserSession userSession) throws Exception {
-        //excel方法获得值
-        List<Map<String,String>> list=getMaps ( multipartFile );
 
-    } /**
+    /**
      * 档案存储字段类型的集合
      **/
     private Map<String, String> getTypeMapForArc(ExportFile exportFile, List<String> heads) {
         Map<String, String> map = new HashMap<>();
+        //如果没有查询方案
         if(exportFile.getExportList().getQuerySchemaId()==null || exportFile.getExportList().getQuerySchemaId()==0) {
             for (String head : heads) {
                 map.put(head, HeadTypeUtil.getTypeForArc().get(head));
@@ -211,6 +256,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         return map;
     }
+    /**
+     * 黑名单的存储类型
+     */
     private Map<String, String> getTypeMapForBla(List<String> heads) {
         Map<String, String> map = new HashMap<>();
         for (String head : heads) {
@@ -219,7 +267,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         return map;
     }
 
-
+    /**
+     * 表字段名称转化为属性名称
+     * @param field
+     * @return
+     */
     private static String fieldToProperty(String field) {
         if (null == field){
             return "";
@@ -240,7 +292,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         return sb.toString();
     }
-    private List < Map < String, String > > getMaps(MultipartFile multipartFile) throws IOException {
+    /**
+     *
+     将excel文件解析成list集合
+     */
+    private List < Map < String, String > > getMaps(MultipartFile multipartFile) throws Exception {
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         List<Map<String, String>> list=new ArrayList <> ();
         for (Map<String, String> map : mapList) {
@@ -263,6 +319,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List<Map<String, String>> mapList = new ArrayList<>();
         List<Map<String, Object>> maps = new ArrayList<>(exportFile.getExportList().getMap().values());
         for (Map<String, Object> stringObjectMap : maps) {
+            //linkedHashMap保证有序
             Map<String, String> stringMap = new LinkedHashMap<>();
             for (String head : heads) {
                 stringMap.put( head,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(head))));

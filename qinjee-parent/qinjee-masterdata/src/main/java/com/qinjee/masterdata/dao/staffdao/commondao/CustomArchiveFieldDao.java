@@ -80,4 +80,6 @@ public interface CustomArchiveFieldDao {
     List<String> selectFieldCodeByNameList(@Param("list") List<String> keySet);
 
     List< CustomArchiveField> selectFieldNameByTableName(@Param("companyId") Integer companyId, @Param("preEmployment") String preEmployment);
+
+    List< Integer> selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List< String> fieldNames, @Param("companyId") Integer companyId);
 }

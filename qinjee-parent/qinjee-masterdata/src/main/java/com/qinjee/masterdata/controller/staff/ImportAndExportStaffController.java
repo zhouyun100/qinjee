@@ -3,7 +3,10 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
+import com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
+import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -29,6 +35,47 @@ public class ImportAndExportStaffController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(CommonController.class);
     @Autowired
     private IStaffImportAndExportService staffImportAndExportService;
+
+    /**
+     * 文件类型校验以及生成list
+     */
+    @RequestMapping(value = "/importFileAndCheckFile", method = RequestMethod.POST)
+    @ApiOperation(value = "文件类型校验以及生成list", notes = "hkt")
+    public ResponseResult< List< Map< String,String>>> importFileAndCheckFile(MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile);
+        if(b) {
+            try {
+                List < Map < String, String > > list = staffImportAndExportService.importFileAndCheckFile ( multipartFile );
+                return new ResponseResult <> (list, CommonCode.SUCCESS);
+            } catch (IOException e) {
+                return new ResponseResult <> (null, CommonCode. FILE_PARSING_EXCEPTION);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
+            }
+
+        }
+        return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
+    }
+
+    /**
+     * 校验所传的字段
+     */
+    @RequestMapping(value = "/checkField", method = RequestMethod.POST)
+    @ApiOperation(value = "校验所传的字段", notes = "hkt")
+//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+
+    public ResponseResult<List< CheckCustomFieldVO >> checkFile(List< Map< String,String>> list, UserSession userSession) {
+        Boolean b = checkParam(list,userSession);
+        if(b) {
+            try {
+                List < CheckCustomFieldVO > checkReasons = staffImportAndExportService.checkFile ( list,userSession );
+                return new ResponseResult <> (checkReasons, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
 
     /**
      * 模板导入档案
