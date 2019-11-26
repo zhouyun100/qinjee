@@ -208,27 +208,25 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //获取该人员下的所有权限机构
         List < OrganzitionVo > list1 = organizationDao.selectorgBycomanyIdAndUserAuth ( companyId, archiveId );
         for (OrganzitionVo vo : list1) {
-            vo.setList ( getSonOrg (vo,list1));
+            vo.setList ( getSonOrg (vo.getOrg_id (),list1));
             list.add ( vo );
         }
         organzitionVo.setList ( list );
         return organzitionVo;
     }
 
-    private List<OrganzitionVo> getSonOrg(OrganzitionVo vo,List<OrganzitionVo> list) {
+    private List<OrganzitionVo> getSonOrg(Integer orgId,List<OrganzitionVo> list) {
         List<OrganzitionVo> list1=new ArrayList<>();
-
-        for (int i = 0; i < list.size(); i++) {
-            if(list.get(i).getOrg_parent_id().equals(vo.getOrg_id())){
-                list1.add(list.get(i));
-            }else{
-                List<OrganzitionVo> list2=new ArrayList<>(list);
-                list2.remove(list.get(i));
-                if(list2.size()>0) {
-                    getSonOrg(list.get(i), new ArrayList<>(list2));
-                }
+        Integer id=0;
+        for (int i = list.size()-1; i >=0 ; i--) {
+            OrganzitionVo organzitionVo = list.get ( i );
+            if(organzitionVo.getOrg_parent_id().equals(orgId)){
+                id=organzitionVo.getOrg_id ();
+                list1.add( organzitionVo );
+                list.remove (organzitionVo );
             }
         }
+        getSonOrg (id,new ArrayList<> (list));
         return list1;
     }
 
