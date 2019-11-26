@@ -185,28 +185,35 @@
     where post_id = #{postId,jdbcType=INTEGER}
   </update>
   <select id="getPostList" resultType="com.qinjee.masterdata.model.entity.Post">
-    select tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, torg.org_name orgName, tps.position_name positionName
-    , torg.org_name parentOrgName, torg.org_id parentOrgId, torg.org_code parentOrgCode parenttp.post_id parentPostId ,parenttp.post_name parentPostName ,parenttp.post_code parentPostCode, group_concat(tpl.position_level_name) positionLevelNames, group_concat(tpg.position_grade_name) positionGradeNames from t_user_role tur
-    left join t_role tr on tur.role_id = tr.role_id
-    left join t_role_org_auth trra on trra.role_id = tr.role_id
-    left join t_organization torg on torg.org_id = trra.org_id
-    <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
-      and torg.is_enable = #{postPageVo.isEnable}
-    </if>
-    left join t_post tp on tp.org_id = torg.org_id
-    left join t_user_org_auth tuoa on tuoa.org_id = tp.org_id
-    left join t_post parenttp on parenttp.post_id = tp.parent_post_id
-    left join t_position tps on tps.position_id = tp.position_id and tps.is_delete = 0
-    left join t_position_level_relation tplr on tplr.position_id = tps.position_id and tplr.is_delete = 0
-    left join t_position_level tpl on tpl.position_level_id = tplr.position_level_id and tpl.is_delete = 0
-    left join t_position_grade_relation tpgr on tpgr.position_id = tps.position_id and tpgr.is_delete = 0
-    left join t_position_grade tpg on tpg.position_grade_id = tpgr.position_grade_id and tpg.is_delete = 0
-    where tur.is_delete = 0 and tr.is_delete = 0 and trra.is_delete = 0 and tp.is_delete = 0 and tur.archive_id = #{archiveId}
-    and parenttp.is_delete = 0
-    and tuoa.is_delete = 0
-    and tuoa.archive_id = #{archiveId}
-    and tuoa.trusteeship_end_time > #{now}
-    and tuoa.is_trusteeship = 1
+    SELECT t1.org_id orgId,t1.org_name orgName, parent_org.org_id parentOrgId,parent_org.org_name parentOrgName,tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, ptp.post_name parentPostName,ptp.post_id parentPostId FROM t_post  tp INNER JOIN (SELECT
+    org.org_id,org.org_name,org.org_parent_id
+    FROM
+    t_organization org
+    LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
+    LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
+    WHERE
+    org.is_enable = 1
+    AND auth.is_delete = 0
+    AND arc.is_delete = 0
+    AND arc.archive_id = 1
+    UNION
+    SELECT
+    orga.org_id,orga.org_name,orga.org_parent_id
+    FROM
+    t_organization orga
+    LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
+    LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
+    LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
+    WHERE
+    orga.is_enable = 1
+    AND roleauth.is_delete = 0
+    AND role.is_delete = 0
+    AND arch.is_delete = 0
+    AND arch.archive_id = 1)t1
+    ON t1.org_id =tp.org_id
+    LEFT JOIN t_organization parent_org ON parent_org.org_id =t1.org_parent_id
+    LEFT JOIN  t_post ptp ON ptp.parent_post_id=tp.post_id
+    where 1=1
     <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
       and tp.is_enable = #{postPageVo.isEnable}
     </if>
@@ -222,7 +229,7 @@
         </foreach>
       </if>
     </if>
-    GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , torg.org_name , tps.position_name
+    GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , t1.org_name
     <if test="sortFieldStr != null and sortFieldStr != ''">
       ORDER BY ${sortFieldStr}
     </if>
