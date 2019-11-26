@@ -255,7 +255,7 @@
         o.is_enable = 1
         AND auth.is_delete = 0
         AND arc.is_delete = 0
-        AND arc.archive_id = #{archiveId})
+        AND arc.archive_id = #{archiveId}
         UNION
         SELECT
         o2.org_id,
