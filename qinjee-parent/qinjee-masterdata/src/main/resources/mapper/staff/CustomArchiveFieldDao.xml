@@ -449,6 +449,15 @@
       left join t_custom_archive_table tab on field.table_id=tab.table_id
       where field.is_delete=0 and tab.is_delete=0
       and tab.table_name=#{preEmployment} and tab.company_id=#{companyId}
-
     </select>
+  <select id="selectFieldIdByFieldNameAndCompanyId" resultType="java.lang.Integer">
+    select field_id
+    from t_custom_archive_field field
+    inner join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and field.field_name in
+    <foreach collection="fieldNames" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

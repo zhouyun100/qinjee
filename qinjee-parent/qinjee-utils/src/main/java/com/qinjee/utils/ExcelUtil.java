@@ -176,9 +176,7 @@ public class ExcelUtil {
      * @throws IOException
      */
     public static List<Map<String, String>> readExcel(MultipartFile file)
-            throws IOException {
-        // 检查文件
-        checkFile(file);
+            throws Exception {
         // 获得Workbook工作薄对象
         Workbook workbook = getWorkBook(file);
         // 创建返回对象，把每行中的值作为一个数组，所有行作为一个集合返回
@@ -233,27 +231,9 @@ public class ExcelUtil {
 
     /**
      * @param file
-     * @throws IOException 检查传过来的文件是不是excel文件
-     */
-    public static void checkFile(MultipartFile file) throws IOException {
-        // 判断文件是否存在
-        if (null == file) {
-            throw new FileNotFoundException("文件不存在！");
-        }
-        // 获得文件名
-        String fileName = file.getOriginalFilename();
-        // 判断文件是否是excel文件
-        assert fileName != null;
-        if (!fileName.endsWith(xls) && !fileName.endsWith(xlsx)) {
-            throw new IOException(fileName + "不是excel文件");
-        }
-    }
-
-    /**
-     * @param file
      * @return 创建并返回一个workBook（兼容xls和xlsx）
      */
-    public static Workbook getWorkBook(MultipartFile file) {
+    public static Workbook getWorkBook(MultipartFile file) throws Exception {
         // 获得文件名
         String fileName = file.getOriginalFilename();
         // 创建Workbook工作薄对象，表示整个excel
@@ -271,6 +251,7 @@ public class ExcelUtil {
                 workbook = new XSSFWorkbook(is);
             }
         } catch (IOException e) {
+            throw new Exception ( "文件类型不支持！" );
         }
         return workbook;
     }
@@ -336,7 +317,7 @@ public class ExcelUtil {
         List<Map<String, String>> list = null;
         try {
             list = ExcelUtil.readExcel(multipartFile);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
