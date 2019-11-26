@@ -12,6 +12,7 @@ import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
@@ -32,12 +33,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -203,16 +206,54 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private  OrganzitionVo getOrganTree(Integer companyId, Integer archiveId) {
         OrganzitionVo organzitionVo=new OrganzitionVo ();
         organzitionVo.setOrg_id( companyId );
-        organzitionVo.setOrg_name(organizationDao.selectOrgName(companyId));
-        List < OrganzitionVo > list = new ArrayList <> ();
+//        organzitionVo.setOrg_name(organizationDao.selectOrgName(companyId));
+//        List < OrganzitionVo > list = new ArrayList <> ();
         //获取该人员下的所有权限机构
         List < OrganzitionVo > list1 = organizationDao.selectorgBycomanyIdAndUserAuth ( companyId, archiveId );
-        for (OrganzitionVo vo : list1) {
-            vo.setList ( getSonOrg (vo.getOrg_id (),list1));
-            list.add ( vo );
-        }
-        organzitionVo.setList ( list );
+//        for (OrganzitionVo vo : list1) {
+//            vo.setList ( getSonOrg (vo.getOrg_id (),list1));
+//            list.add ( vo );
+//        }
+//        organzitionVo.setList ( list );
+
+        List<OrganzitionVo> organzitionVoList = list1.stream().filter(organzitionVo1 -> {
+            if(organzitionVo1.getOrg_parent_id().equals(companyId)){
+                organzitionVo.setOrg_name(organzitionVo1.getOrg_name());
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        list1.removeAll(organzitionVoList);
+
+        handlerAllChildOrganizationTree(organzitionVoList,list1);
+
+        organzitionVo.setList(organzitionVoList);
+
         return organzitionVo;
+    }
+
+    public void handlerAllChildOrganizationTree(List<OrganzitionVo> organzitionVoList, List<OrganzitionVo> orgList){
+
+        for(OrganzitionVo organzitionVo : organzitionVoList){
+            List<OrganzitionVo> childOrgList = orgList.stream().filter(org ->{
+                if(organzitionVo.getOrg_id().equals(org.getOrg_parent_id())){
+                    return true;
+                }else{
+                    return false;
+                }
+            }).collect(Collectors.toList());
+
+            orgList.removeAll(childOrgList);
+
+            if(!CollectionUtils.isEmpty(childOrgList)){
+                organzitionVo.setList(childOrgList);
+                handlerAllChildOrganizationTree(organzitionVoList, orgList);
+            }
+        }
+
+
     }
 
     private List<OrganzitionVo> getSonOrg(Integer orgId,List<OrganzitionVo> list) {
