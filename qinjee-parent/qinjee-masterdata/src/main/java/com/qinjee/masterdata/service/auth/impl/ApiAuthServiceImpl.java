@@ -11,7 +11,6 @@
 package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.ApiAuthDao;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Role;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,7 +110,7 @@ public class ApiAuthServiceImpl implements ApiAuthService {
         resultNum += apiAuthDao.deleteRoleOrgAuth(orgIdList, null, operatorId);
         for(Integer orgId : orgIdList){
 
-            resultNum += apiAuthDao.deleteArchiveOrgAuth(orgId,operatorId);
+            resultNum += apiAuthDao.deleteArchiveOrgAuth(null, orgId,operatorId);
         }
         return resultNum;
     }
@@ -122,7 +120,7 @@ public class ApiAuthServiceImpl implements ApiAuthService {
     public int deleteArchiveAuth(Integer archiveId, Integer operatorId) {
         int resultNum = 0;
         resultNum += apiAuthDao.deleteArchiveRoleAuth(archiveId, operatorId);
-        resultNum += apiAuthDao.deleteArchiveOrgAuth(archiveId, operatorId);
+        resultNum += apiAuthDao.deleteArchiveOrgAuth(archiveId, null, operatorId);
         return resultNum;
     }
 

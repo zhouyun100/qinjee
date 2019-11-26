@@ -28,14 +28,14 @@
 
 
     <!--查询子集机构列表列表 -->
-    <select id="searchChildOrganizationList" resultType="java.lang.Integer">
+    <select id="searchChildOrganizationList" parameterType="list" resultType="java.lang.Integer">
         SELECT
             org.org_id
         FROM
         t_organization org
         WHERE org.is_enable = 1
         and org.org_parent_id in
-        <foreach item="orgId" collection="orgIdList"
+        <foreach item="orgId" collection="list"
                  open="(" separator="," close=")">
             #{orgId}
         </foreach>

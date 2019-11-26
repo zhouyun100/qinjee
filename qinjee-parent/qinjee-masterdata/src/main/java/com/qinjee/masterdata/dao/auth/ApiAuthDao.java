@@ -74,8 +74,9 @@ public interface ApiAuthDao {
     /**
      * 删除不在职员工机构权限(离职、退休)
      * @param archiveId 档案ID
+     * @param orgId 机构ID
      * @param operatorId 操作人档案ID
      * @return
      */
-    int deleteArchiveOrgAuth(Integer archiveId, Integer operatorId);
+    int deleteArchiveOrgAuth(Integer archiveId, Integer orgId, Integer operatorId);
 }
