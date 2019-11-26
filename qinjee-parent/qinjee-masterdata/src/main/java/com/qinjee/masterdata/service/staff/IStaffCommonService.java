@@ -170,7 +170,7 @@ public interface IStaffCommonService {
      * @param userSession
      * @return
      */
-    String getCompanyId(UserSession userSession);
+    Integer getCompanyId(UserSession userSession);
 
     /**
      * 根据档案id显示对应权限下的子集部门
