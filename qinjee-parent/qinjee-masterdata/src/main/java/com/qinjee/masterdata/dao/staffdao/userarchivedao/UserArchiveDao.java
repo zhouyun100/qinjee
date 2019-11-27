@@ -93,5 +93,5 @@ public interface UserArchiveDao {
 
     Date selectDateByStatus(@Param("string") String string);
 
-    List< UserArchiveVo> selectByAuthOrg(@Param("orgList") List< Integer> orgList);
+    List< UserArchiveVo> selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId);
 }

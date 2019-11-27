@@ -315,7 +315,7 @@
   </select>
     <select id="selectExportConList" resultType="hashmap" >
       select arc.user_name,arc.id_number,arc.employee_number,con.contract_number,con.contract_period_type,
-      con.contract_begin_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
+      con.contract_sign_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
       con.contract_subject,con.sign_number,con.contract_remark,con.contract_category
       from t_labor_contract con
       left join t_user_archive arc on arc.archive_id = con.archive_id

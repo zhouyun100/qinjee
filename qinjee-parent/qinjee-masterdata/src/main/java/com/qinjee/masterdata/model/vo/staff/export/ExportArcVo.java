@@ -62,7 +62,7 @@ public class ExportArcVo implements Serializable {
      */
     @NotNull
     @ApiModelProperty("联系电话")
-    private String tel;
+    private String phone;
 
     /**
      * 上级领导姓名

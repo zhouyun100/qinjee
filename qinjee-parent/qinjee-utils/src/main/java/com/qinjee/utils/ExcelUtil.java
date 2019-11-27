@@ -85,6 +85,7 @@ public class ExcelUtil {
         response.reset();
             // 取得文件名。
             String fileName =title+".xls";
+        fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
             // 设置响应头，控制浏览器下载该文件
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);

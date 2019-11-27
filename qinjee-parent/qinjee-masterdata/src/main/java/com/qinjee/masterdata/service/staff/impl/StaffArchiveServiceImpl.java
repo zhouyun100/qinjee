@@ -109,23 +109,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer orgId) {
-        List<UserArchive> list = new ArrayList<>();
-        //本用户的权限下有哪些机构
-        List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
-        if (orgList != null) {
-            for (Integer integer : orgList) {
-                //如果查看的在权限之内
-                if (orgId.equals(integer)) {
-//                    //展示机构下的人员信息
-//                    List<Integer> achiveList = userOrgAuthDao.selectArchiveIdByOrg(integer);
-//                    list = userArchiveDao.selectByPrimaryKeyList(achiveList);
-                    List<UserArchiveVo> list1=userArchiveDao.selectByAuthOrg(orgList);
-                }
-            }
-            return new PageResult<>(list);
-        } else {
-            return null;
-        }
+
+//        List<UserArchive> list = new ArrayList<>();
+//        //本用户的权限下有哪些机构
+//        List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
+        List<UserArchiveVo> list=userArchiveDao.selectByOrgAndAuth(orgId,userSession.getArchiveId ());
+        return null;
 
     }
     @Override
