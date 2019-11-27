@@ -104,11 +104,6 @@ public interface OrganizationDao {
      */
     String selectOrgName(Integer id);
 
-    /**
-     * 根据档案id查询权限下的机构id
-     * @param archiveId
-     * @return
-     */
 
 
     List<OrganizationVO> getOrganizationsByOrgIds(@Param("orgIds")List<Integer> orgIds);
@@ -124,6 +119,6 @@ public interface OrganizationDao {
 
     List< OrganzitionVo > selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
 
-    List<OrganizationVO> selectsByPrimaryKey(Integer orgParentId);
+
 
 }

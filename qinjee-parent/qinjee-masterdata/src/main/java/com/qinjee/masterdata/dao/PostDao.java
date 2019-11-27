@@ -98,4 +98,6 @@ public interface PostDao {
 
     List<Post> getPostListByPostId(@Param("parentPostId") Integer parentPostId);
 
+    List<Post> getPostPositionListByOrgIds(@Param("orgidList")List<Integer> orgidList);
+
 }
