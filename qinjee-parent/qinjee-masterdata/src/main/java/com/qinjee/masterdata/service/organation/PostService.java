@@ -24,7 +24,7 @@ public interface PostService {
      * @param postPageVo
      * @return
      */
-    ResponseResult<PageResult<Post>> getPostList(UserSession userSession, PostPageVo postPageVo);
+   PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo);
 
     /**
      * 根据岗位id查询员工档案岗位关系表

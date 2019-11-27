@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.aop.OrganizationDeleteAnno;
+import com.qinjee.masterdata.aop.OrganizationEditAnno;
 import com.qinjee.masterdata.aop.OrganizationSaveAnno;
 import com.qinjee.masterdata.aop.OrganizationTransferAnno;
 import com.qinjee.masterdata.dao.PostDao;
@@ -242,6 +243,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
+    @OrganizationEditAnno
     public ResponseResult editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         ResponseResult responseResult;
         //反查organizationVO

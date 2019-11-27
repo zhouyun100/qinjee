@@ -17,6 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostPageVo extends PageQuery {
 
+    @ApiModelProperty(value = "机构ID", example = "1")
+    private Integer orgId;
+
     @ApiModelProperty("是否删除 0未删除、1已删除")
     private Short isDelete;
 

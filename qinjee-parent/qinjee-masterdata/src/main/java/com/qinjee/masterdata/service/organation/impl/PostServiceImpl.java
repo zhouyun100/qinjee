@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.PostGradeRelationDao;
@@ -10,8 +11,8 @@ import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
@@ -62,17 +63,23 @@ public class PostServiceImpl implements PostService {
     private UserArchivePostRelationDao userArchivePostRelationDao;
 
     @Override
-    public ResponseResult<PageResult<Post>> getPostList(UserSession userSession, PostPageVo postPageVo) {
-        Integer archiveId = userSession.getArchiveId();
-        Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
-        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
+    public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
+        String sortFieldStr=null;
+        if(Objects.nonNull(postPageVo.getQuerFieldVos())){
+            Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
+            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
+        }
+        List<Integer> orgidList = new ArrayList<>();
+        //TODO id重复无影响
+        digui2(orgidList, postPageVo.getOrgId());
         if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
             PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
-        Date now = new Date();
-        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId, now);
-        PageResult<Post> pageResult = new PageResult<>(postList);
-        return new ResponseResult<>(pageResult);
+        List<Post> postList = postDao.getPostConditionPage(postPageVo,orgidList, sortFieldStr);
+        PageInfo<Post> pageInfo = new PageInfo<>(postList);
+        PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+        return  pageResult;
     }
 
     @Override
