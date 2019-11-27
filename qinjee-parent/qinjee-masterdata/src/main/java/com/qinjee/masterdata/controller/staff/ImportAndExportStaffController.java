@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/staffarc")
-@Api(tags = "【人员管理】文件导入导出接口")
+@Api(tags = "【导入导出】文件导入导出接口")
 public class ImportAndExportStaffController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(CommonController.class);
     @Autowired

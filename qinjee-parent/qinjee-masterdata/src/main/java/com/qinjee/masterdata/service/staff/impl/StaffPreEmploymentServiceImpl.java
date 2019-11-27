@@ -16,7 +16,6 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendManyMailsUtil;
 import entity.MailConfig;
 import org.slf4j.Logger;
@@ -209,12 +208,12 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) throws Exception {
         PreEmployment preEmployment = new PreEmployment ();
-        if(RegexpUtils.checkPhone (preEmployment.getPhone ())){
-            throw new Exception ( "电话格式有误！" );
-        }
-        if(RegexpUtils.checkEmail ( preEmployment.getEmail () )){
-            throw new Exception ( "邮箱格式有误！" );
-        }
+//        if(RegexpUtils.checkPhone (preEmployment.getPhone ())){
+//            throw new Exception ( "电话格式有误！" );
+//        }
+//        if(RegexpUtils.checkEmail ( preEmployment.getEmail () )){
+//            throw new Exception ( "邮箱格式有误！" );
+//        }
         BeanUtils.copyProperties ( preEmploymentVo, preEmployment );
         preEmployment.setCompanyId ( userSession.getCompanyId () );
         preEmployment.setOperatorId ( userSession.getArchiveId () );

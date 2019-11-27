@@ -17,7 +17,6 @@ import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.service.sys.CheckCustomFieldService;
 import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
-import com.qinjee.masterdata.utils.export.HeadTypeUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.ExcelUtil;
 import org.apache.commons.lang.CharUtils;
@@ -84,7 +83,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             mapList.add (objectMap);
         }
               //请求接口获得返回前端的结果
-        List < Map < Integer, CheckCustomFieldVO > > maps = checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
+//        List < Map < Integer, CheckCustomFieldVO > > maps = checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
         return null;
     }
 
@@ -134,6 +133,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List<Map<String,String>> list=getMaps ( multipartFile );
 
     }
+
+    /**
+     * 导出档案
+     * @param exportFile
+     * @param response
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportArcFile(ExportFile exportFile, HttpServletResponse response) {
@@ -142,6 +147,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 getDates(exportFile,getHeadsByArc(exportFile)),
                 getTypeMapForArc(exportFile, getHeadsByArc(exportFile)));
     }
+
+    /**
+     * 导出预入职
+     * @param exportRequest
+     * @param response
+     * @param userSession
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession){
@@ -157,6 +169,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 getTypeMapForPre(HeadMapUtil.getHeadsForPre()));
     }
 
+    /**
+     * 导出黑名单
+     * @param exportRequest
+     * @param response
+     * @param userSession
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) {
@@ -236,13 +254,16 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //如果没有查询方案
         if(exportFile.getExportList().getQuerySchemaId()==null || exportFile.getExportList().getQuerySchemaId()==0) {
             for (String head : heads) {
-                map.put(head, HeadTypeUtil.getTypeForArc().get(head));
+//                map.put(head, HeadTypeUtil.getTypeForArc().get(head));
+                map.put ( head,"String");
             }
+
             return map;
         }
         List<String> list = customArchiveFieldDao.selectFieldTypeByNameList(heads);
         for (int i = 0; i < list.size(); i++) {
-            map.put(heads.get(i),HeadTypeUtil.transTypeCode().get(list.get(i)));
+//            map.put(heads.get(i),HeadTypeUtil.transTypeCode().get(list.get(i)));
+            map.put ( heads.get(i),"String");
         }
         return map;
     }
@@ -252,7 +273,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private Map<String, String> getTypeMapForPre(List<String> heads) {
         Map<String, String> map = new HashMap<>();
         for (String head : heads) {
-            map.put(head, HeadTypeUtil.getTypeForPre().get(head));
+//            map.put(head, HeadTypeUtil.getTypeForPre().get(head));
+            map.put ( head,"String");
         }
         return map;
     }
@@ -262,9 +284,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private Map<String, String> getTypeMapForBla(List<String> heads) {
         Map<String, String> map = new HashMap<>();
         for (String head : heads) {
-            map.put(head, HeadTypeUtil.getTypeForBla().get(head));
+//            map.put(head, HeadTypeUtil.getTypeForBla().get(head));
+            map.put ( head,"String");
         }
+
         return map;
+
     }
 
     /**

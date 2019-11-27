@@ -442,29 +442,7 @@ public class CommonController extends BaseController {
 
     }
 
-    /**
-     * 获取字段校验类型
-     */
 
-    @RequestMapping(value = "/checkField", method = RequestMethod.POST)
-    @ApiOperation(value = "集合存储字段所需要的检验类型，考虑是否直接放在字段表中", notes = "hkt")
-//    @ApiImplicitParam(name = "fieldId", value = "字段id", paramType = "id", required = true)
-    public ResponseResult<List<String>> checkField(Integer fieldId) {
-        Boolean b = checkParam(fieldId);
-        if (b) {
-            try {
-                List<String> strings = staffCommonService.checkField(fieldId);
-                if (!CollectionUtils.isEmpty(strings)) {
-                    return new ResponseResult<>(strings, CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-    }
     /**
      * 发送短信
      */

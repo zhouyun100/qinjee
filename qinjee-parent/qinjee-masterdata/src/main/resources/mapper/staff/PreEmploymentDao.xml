@@ -948,11 +948,11 @@
         from t_pre_employment pre
         left join t_organization org on org.org_id = pre.org_id
         left join t_post post on pre.post_id = post.post_id
-        where  employment_id in
+        where  pre.employment_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND pre.is_delete=0 and org.is_enable=1 and post.is_delete=0 and pre.org_id=#{companyId}
+        AND pre.is_delete=0 and org.is_enable=1 and post.is_delete=0 and pre.company_id=#{companyId}
     </select>
     <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
         select

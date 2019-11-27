@@ -38,7 +38,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/insertArchive", method = RequestMethod.POST)
     @ApiOperation(value = "新增档案表", notes = "hkt")
-    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
     public ResponseResult insertArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) {
         Boolean b = checkParam(userArchiveVo,getUserSession());
         if(b){
@@ -59,7 +59,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/deleteArchiveById", method = RequestMethod.POST)
     @ApiOperation(value = "删除档案", notes = "hkt")
-    @ApiImplicitParam(name = "list", value = "人员档案id集合", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "list", value = "人员档案id集合", paramType = "query", required = true)
     public ResponseResult deleteArchiveById(@RequestBody List<Integer> archiveid) {
         Boolean b = checkParam(archiveid);
         if(b){
@@ -78,7 +78,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/resumeDeleteArchiveById", method = RequestMethod.POST)
     @ApiOperation(value = "恢复删除档案", notes = "hkt")
-    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
     public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
         Boolean b = checkParam(archiveid);
         if(b){
@@ -155,7 +155,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.POST)
     @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
         Boolean b = checkParam(id);
         if(b){
@@ -174,7 +174,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
-    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
     public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer comanyId) {
         Boolean b = checkParam(getUserSession());
         if(b){
@@ -197,7 +197,7 @@ public class StaffArchiveController extends BaseController {
 
     @RequestMapping(value = "/insertUserArchivePostRelation", method = RequestMethod.POST)
     @ApiOperation(value = "新增人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
-    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
     public ResponseResult insertUserArchivePostRelation(@RequestBody @Valid UserArchivePostRelationVo userArchivePostRelationVo) {
         Boolean b = checkParam(getUserSession());
         if(b){
@@ -216,7 +216,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/deleteUserArchivePostRelation", method = RequestMethod.POST)
     @ApiOperation(value = "删除人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
-    @ApiImplicitParam(name = "list", value = "人员档案关系表id集合", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "list", value = "人员档案关系表id集合", paramType = "query", required = true)
     public ResponseResult deleteUserArchivePostRelation(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
         if(b){
@@ -283,7 +283,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectOrgName", method = RequestMethod.POST)
     @ApiOperation(value = "通过id查询到对应机构名称", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
 
     public ResponseResult selectOrgName(Integer id) {
         Boolean b = checkParam(id);
@@ -391,7 +391,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
     public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
         Boolean b = checkParam(id);
         if(b){
@@ -442,7 +442,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/insertCareerTrack", method = RequestMethod.POST)
     @ApiOperation(value = "新增员工轨迹", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult selectCareerTrack(@RequestBody @Valid ArchiveCareerTrackVo archiveCareerTrackVo) {
         Boolean b = checkParam(archiveCareerTrackVo,getUserSession());
         if(b){
@@ -462,7 +462,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectCareerTrack", method = RequestMethod.POST)
     @ApiOperation(value = "展示员工轨迹", notes = "hkt")
-    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<List<ArchiveCareerTrack>> selectCareerTrack(Integer id) {
         Boolean b = checkParam(id);
         if(b){

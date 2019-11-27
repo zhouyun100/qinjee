@@ -228,7 +228,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public String getPostByOrgId(Integer orgId) {
 
-        Map < Integer, String > postByOrgId = postDao.getPostByOrgId ( orgId );
+       List<Map < Integer, String >> postByOrgId = postDao.getPostByOrgId ( orgId );
         return JSON.toJSONString ( postByOrgId );
     }
 
@@ -274,15 +274,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List < Integer > integerList = customArchiveTableDataDao.selectCustomArchiveTableId ( customArchiveTableId );
         List < CustomArchiveTableData > list = customArchiveTableDataDao.selectByPrimaryKeyList ( integerList );
         return new PageResult <> ( list );
-    }
-
-
-    @Override
-    public List < String > checkField(Integer fieldId) {
-        //通过字段名找到验证code
-        List < String > stringList = customArchiveFieldCheckDao.selectCheckName ( fieldId );
-        //根据验证code找到验证名称
-        return checkTypeDao.selectCheckNameList ( stringList );
     }
 
 }
