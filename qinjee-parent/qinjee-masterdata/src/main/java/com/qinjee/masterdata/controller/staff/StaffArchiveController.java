@@ -175,11 +175,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
 //    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
-    public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer comanyId) {
+    public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer orgId) {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                PageResult<UserArchive> pageResult = staffArchiveService.selectArchivebatch(getUserSession(), comanyId);
+                PageResult<UserArchive> pageResult = staffArchiveService.selectArchivebatch(getUserSession(), orgId);
                 if(pageResult!=null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }

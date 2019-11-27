@@ -29,7 +29,7 @@
     <result column="converse_date" jdbcType="DATE" property="converseDate" />
     <result column="first_degree" jdbcType="VARCHAR" property="firstDegree" />
     <result column="highest_degree" jdbcType="VARCHAR" property="highestDegree" />
-    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="professional_certification" jdbcType="VARCHAR" property="professionalCertification" />
@@ -52,7 +52,7 @@
     <result column="user_name" jdbcType="VARCHAR" property="user_name" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="business_unit_name" />
     <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date" />
-    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisor_user_name" />
     <result column="employment_type" jdbcType="VARCHAR" property="employment_type" />
   </resultMap>
@@ -60,7 +60,7 @@
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
     user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
     marital_status, first_work_date, hire_date, serving_age, working_period, probation_due_date,
-    probation_period, converse_date, first_degree, highest_degree, tel, email, address,
+    probation_period, converse_date, first_degree, highest_degree, phone, email, address,
     professional_certification, professional_title, professional_level, attrition_date,
     attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete
   </sql>
@@ -83,7 +83,7 @@
       first_work_date, hire_date, serving_age,
       working_period, probation_due_date, probation_period,
       converse_date, first_degree, highest_degree,
-      tel, email, address,
+      phone, email, address,
       professional_certification, professional_title,
       professional_level, attrition_date, attrition_type,
       operator_id, create_time, update_time,is_delete
@@ -96,7 +96,7 @@
       #{firstWorkDate,jdbcType=DATE}, #{hireDate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL},
       #{workingPeriod,jdbcType=DECIMAL}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER},
       #{converseDate,jdbcType=DATE}, #{firstDegree,jdbcType=VARCHAR}, #{highestDegree,jdbcType=VARCHAR},
-      #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+      #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
       #{professionalCertification,jdbcType=VARCHAR}, #{professionalTitle,jdbcType=VARCHAR},
       #{professionalLevel,jdbcType=VARCHAR}, #{attritionDate,jdbcType=DATE}, #{attritionType,jdbcType=VARCHAR},
       #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
@@ -179,8 +179,8 @@
       <if test="highestDegree != null">
         highest_degree,
       </if>
-      <if test="tel != null">
-        tel,
+      <if test="phone != null">
+        phone,
       </if>
       <if test="email != null">
         email,
@@ -280,8 +280,8 @@
       <if test="highestDegree != null">
         #{highestDegree,jdbcType=VARCHAR},
       </if>
-      <if test="tel != null">
-        #{tel,jdbcType=VARCHAR},
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
       </if>
       <if test="email != null">
         #{email,jdbcType=VARCHAR},
@@ -384,8 +384,8 @@
       <if test="highestDegree != null">
         highest_degree = #{highestDegree,jdbcType=VARCHAR},
       </if>
-      <if test="tel != null">
-        tel = #{tel,jdbcType=VARCHAR},
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
       </if>
       <if test="email != null">
         email = #{email,jdbcType=VARCHAR},
@@ -446,7 +446,7 @@
       converse_date = #{converseDate,jdbcType=DATE},
       first_degree = #{firstDegree,jdbcType=VARCHAR},
       highest_degree = #{highestDegree,jdbcType=VARCHAR},
-      tel = #{tel,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
       professional_certification = #{professionalCertification,jdbcType=VARCHAR},
@@ -645,5 +645,21 @@
     where archive_status = #{string}
     and arc.is_delete=0
   </select>
+  <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+    select arch.user_name,arch.employee_number,orga.org_name,post.post_name,arch.hire_date,arch.probation_due_date,
+    arch.supervisor_id,arch.phone,arc.attrition_type
+    from t_user_archive arc
+    left join t_user_org_auth auth on auth.archive_id= arc.archive_id
+    left join t_organization org on org.org_id=auth.org_id
+    left join t_user_archive arch on arch.org_id = org.org_id
+    left join t_organization orga on orga.org_id=arch.org_id
+    left join t_post post on post.post_id= arch.post_id
+    where auth.archive_id=#{archiveId}
+    and arc.is_delete=0 and arch.is_delete=0
+    and post.is_delete=0 and org.is_enable=1 and orga.is_enable=1
+    and org.company_id=1
+
+  </select>
+
 </mapper>
 

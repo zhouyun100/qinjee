@@ -214,9 +214,9 @@ public class UserArchiveVo implements Serializable {
      * 联系电话
      */
     @NotNull
-    @QueryColumn("tua.tel")
+    @QueryColumn("tua.phone")
     @ApiModelProperty("联系电话")
-    private String tel;
+    private String phone;
 
     /**
      * 电子邮箱

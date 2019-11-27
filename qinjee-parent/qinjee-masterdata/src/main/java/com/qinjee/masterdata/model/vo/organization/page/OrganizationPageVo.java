@@ -1,5 +1,6 @@
-package com.qinjee.masterdata.model.vo.organization;
+package com.qinjee.masterdata.model.vo.organization.page;
 
+import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "机构实体分页Vo类")
-public class OrganizationPageVo extends PageQueryVo implements Serializable {
+public class OrganizationPageVo extends PageQuery implements Serializable {
 
     @ApiModelProperty(value = "是否含有封存(启用) 0 封存、1 未封存", example = "0")
     private Short isEnable;

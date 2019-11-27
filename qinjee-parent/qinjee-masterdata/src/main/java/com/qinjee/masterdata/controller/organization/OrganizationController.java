@@ -2,7 +2,7 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.model.request.UserSession;
@@ -39,16 +39,14 @@ public class OrganizationController extends BaseController {
     //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "新增机构", notes = "高雄")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
         return organizationService.addOrganization(orgName, orgType, orgParentId, orgManagerId, getUserSession());
     }
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "编辑机构", notes = "高雄")
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode,@RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
-
         return organizationService.editOrganization(orgCode,orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
-
     }
 
     //TODO 删除机构时，需要回收权限（调用权限接口）
@@ -65,12 +63,15 @@ public class OrganizationController extends BaseController {
      * @Author: penghs
      * @Date: 2019/11/20 0020
      */
-    @ApiOperation(value = "查询用户下所有的机构及子机构,树形展示", notes = "彭洪思")
+    @ApiOperation(value = "获取机构树", notes = "彭洪思")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
     })
     @GetMapping("/getAllOrganizationTree")
     public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable", required = false) Short isEnable) {
+        if(isEnable==null){
+            isEnable=Short.parseShort("0");
+        }
         UserSession userSession = getUserSession();
         List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(userSession, isEnable);
         PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
@@ -97,9 +98,13 @@ public class OrganizationController extends BaseController {
     }
 
     //TODO
-    @ApiOperation(value = "岗位维护机构岗位树状图展示", notes = "高雄")
-    @PostMapping("/getOrganizationPositionTree")
-    public ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0") Short isEnable) {
+    @ApiOperation(value = "获取机构岗位树", notes = "彭洪思")
+    @GetMapping("/getOrganizationPostTree")
+    public ResponseResult<List<OrganizationVO>>  getOrganizationPostTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0")@RequestParam("isEnable") Short isEnable) {
+       if(isEnable==null){
+           isEnable=Short.parseShort("0");
+       }
+
         return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
     }
 

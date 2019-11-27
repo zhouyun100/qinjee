@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.Post;
-import com.qinjee.masterdata.model.vo.organization.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -42,12 +42,12 @@ public interface PostDao {
     List<Post> getPostListByOrgId(@Param("orgId") Integer orgId, @Param("isEnable") Short isEnable);
 
     /**
-     * 查询机构的岗位编码
+     * 查询机构的顶级岗位，也就是父级岗位id为0
      *
      * @param orgId
      * @return
      */
-    String getLastPostByOrgId(Integer orgId);
+    List<Post> getLastTopPostByOrgId(Integer orgId);
 
     /**
      * 通过机构id获取岗位列表含有职位名称
@@ -71,7 +71,7 @@ public interface PostDao {
      * @param postIds
      * @return
      */
-    List<Post> getPostListByPostId(List<Integer> postIds);
+    List<Post> getPostListByPostIds(List<Integer> postIds);
 
     /**
      * 根据机构id查询机构下的岗位
@@ -95,4 +95,11 @@ public interface PostDao {
     void deleteByOrgId(Integer orgId);
 
     Integer selectPostIdByName(@Param("postName") String post_name);
+
+    List<Post> getPostListByPostId(@Param("parentPostId") Integer parentPostId);
+
+    List<Post> getPostPositionListByOrgIds(@Param("orgidList")List<Integer> orgidList);
+
+
+    List<Post> getPostConditionPage(@Param("postPageVo") PostPageVo postPageVo,@Param("orgidList") List<Integer> orgidList, @Param("sortFieldStr")String sortFieldStr);
 }

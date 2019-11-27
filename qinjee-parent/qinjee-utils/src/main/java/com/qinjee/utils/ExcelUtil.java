@@ -3,7 +3,6 @@ package com.qinjee.utils;
 
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.mock.web.MockMultipartFile;
@@ -53,30 +52,16 @@ public class ExcelUtil {
      * @param map   以表头信息为key，类型为value的Map集合
      */
     public static void download(HttpServletResponse response,
-                                String title, List<String> heads, List<Map<String, String>> dates, Map<String, String> map) {
+                                String title, List<String> heads, List<Map<String, String>> dates, Map<String, String> map) throws IOException {
         // 新建excel报表
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
         // 添加一个sheet名称
         HSSFSheet hssfSheet = hssfWorkbook.createSheet(title);
-        //设置单元格样式
         HSSFCellStyle style = hssfWorkbook.createCellStyle();
-        //水平居中
         style.setAlignment(HorizontalAlignment.CENTER);
-        // 垂直居中
+        //设置垂直对齐的样式为居中对齐;
         style.setVerticalAlignment(VerticalAlignment.CENTER);
-        /*
-         * 设定合并单元格区域范围 firstRow 0-based lastRow 0-based firstCol 0-based lastCol
-         * 0-based
-         */
-        CellRangeAddress cra = new CellRangeAddress(0, 0, 0, heads.size() - 1);
-        // 在sheet里增加合并单元格
-        hssfSheet.addMergedRegion(cra);
-        HSSFRow row = hssfSheet.createRow(0);
-        HSSFCell cell1 = row.createCell(0);
-        cell1.setCellValue(title);
-        //设置样式
-        cell1.setCellStyle(style);
-        HSSFRow hssfRow = hssfSheet.createRow(1);
+        HSSFRow hssfRow = hssfSheet.createRow(0);
         for (int i = 0; i < heads.size(); i++) {
             HSSFCell hssfCell = hssfRow.createCell(i);
             //先设定类型，再设定值
@@ -86,7 +71,7 @@ public class ExcelUtil {
 
         // 循环将list里面的值取出来放进excel中
         for (int i = 0; i < dates.size(); i++) {
-            HSSFRow hssfRow1 = hssfSheet.createRow(i + 2);
+            HSSFRow hssfRow1 = hssfSheet.createRow(i + 1);
             int j = 0;
             Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
             while (it.hasNext()) {
@@ -96,43 +81,29 @@ public class ExcelUtil {
                 j++;
             }
         }
-
-        FileOutputStream fout = null;
-        String path = "d:\\a.xls";
-        try {
-            // 用流将其写到指定的url
-            fout = new FileOutputStream(path);
-            hssfWorkbook.write(fout);
-            fout.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            // path是指欲下载的文件的路径。
-            File file = new File(path);
+        // 清空response
+        response.reset();
             // 取得文件名。
-            String filename = file.getName();
-            // 以流的形式下载文件。
-            InputStream fis = new BufferedInputStream(new FileInputStream(path));
-            byte[] buffer = new byte[fis.available()];
-            fis.read(buffer);
-            fis.close();
-            // 清空response
-            response.reset();
-            // 设置response的Header
-            response.addHeader("Content-Disposition", "attachment;filename="
-                    + new String(filename.getBytes()));
-            response.addHeader("Content-Length", "" + file.length());
-            OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-            toClient.write(buffer);
-            toClient.flush();
-            toClient.close();
-            File file2 = new File(path);
-            file2.delete();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            String fileName =title+".xls";
+        fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+            // 设置响应头，控制浏览器下载该文件
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+        // application/ms-excel;charset=utf-8 告诉浏览器下载的文件是excel
+        response.setContentType("application/ms-excel");
+        OutputStream out=null;
+        try {
+            out = new BufferedOutputStream ( response.getOutputStream () );
+            hssfWorkbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace ();
+        }finally {
+            if(out!=null) {
+                out.close ();
+            }
         }
     }
+
 
 
     /**

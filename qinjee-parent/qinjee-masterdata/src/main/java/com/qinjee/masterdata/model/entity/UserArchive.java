@@ -222,7 +222,7 @@ public class UserArchive implements Serializable {
     @NotNull
     @QueryColumn("tua.tel")
     @ApiModelProperty("联系电话")
-    private String tel;
+    private String phone;
 
     /**
      * 电子邮箱

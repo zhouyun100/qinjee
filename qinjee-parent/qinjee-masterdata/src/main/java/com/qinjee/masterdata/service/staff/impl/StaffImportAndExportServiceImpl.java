@@ -53,36 +53,37 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private BlacklistDao blacklistDao;
     @Autowired
     private PostDao postDao;
+
     @Override
-    public  List <Map< String,String>> importFileAndCheckFile(MultipartFile multipartFile) throws Exception {
+    public List < Map < String, String > > importFileAndCheckFile(MultipartFile multipartFile) throws Exception {
         // 获取文件名
-        String fileName = multipartFile.getOriginalFilename();
+        String fileName = multipartFile.getOriginalFilename ();
         assert fileName != null;
-        if (!fileName.endsWith(xls) && !fileName.endsWith(xlsx)) {
-            throw new IOException (fileName + "不是excel文件");
+        if (!fileName.endsWith ( xls ) && !fileName.endsWith ( xlsx )) {
+            throw new IOException ( fileName + "不是excel文件" );
         }
-        return getMaps(multipartFile );
+        return getMaps ( multipartFile );
     }
 
     @Override
-    public List< CheckCustomFieldVO > checkFile(List < Map < String, String > > list, UserSession userSession) {
-        List<Map<Integer,Object>> mapList=new ArrayList <> (  );
-        Map<Integer,Object> objectMap=new LinkedHashMap <> (  );
+    public List < CheckCustomFieldVO > checkFile(List < Map < String, String > > list, UserSession userSession) {
+        List < Map < Integer, Object > > mapList = new ArrayList <> ();
+        Map < Integer, Object > objectMap = new LinkedHashMap <> ();
         //得到fieldName集合
-        List<String> fieldNames =null;
+        List < String > fieldNames = null;
         for (Map < String, String > map : list) {
             fieldNames = new ArrayList <> ( map.keySet () );
         }
         //根据filedName与companyId得到fieldId
-        List<Integer> idList=customArchiveFieldDao.selectFieldIdByFieldNameAndCompanyId(fieldNames,userSession.getCompanyId ());
+        List < Integer > idList = customArchiveFieldDao.selectFieldIdByFieldNameAndCompanyId ( fieldNames, userSession.getCompanyId () );
         for (Map < String, String > map : list) {
             List < String > strings = new ArrayList <> ( map.values () );
             for (int i = 0; i < strings.size (); i++) {
-                objectMap.put ( idList.get(i),strings.get(i) );
+                objectMap.put ( idList.get ( i ), strings.get ( i ) );
             }
-            mapList.add (objectMap);
+            mapList.add ( objectMap );
         }
-              //请求接口获得返回前端的结果
+        //请求接口获得返回前端的结果
 //        List < Map < Integer, CheckCustomFieldVO > > maps = checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
         return null;
     }
@@ -91,143 +92,144 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     public void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception {
         Integer orgId;
         Integer postId;
-        List<Map<String,String>> list=getMaps(multipartFile );
-        List< PreEmployment > preEmploymentList=new ArrayList <> ();
+        List < Map < String, String > > list = getMaps ( multipartFile );
+        List < PreEmployment > preEmploymentList = new ArrayList <> ();
         @SuppressWarnings("unchecked")
-        List< ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class );
+        List < ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class );
         for (ExportPreVo exportPreVo : objectList) {
-            PreEmployment preEmployment=new PreEmployment();
+            PreEmployment preEmployment = new PreEmployment ();
             Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
             Field[] fields = exportPreVo.getClass ().getDeclaredFields ();
             for (Field field : fields) {
-                field.setAccessible (true);
+                field.setAccessible ( true );
                 String fieldName = field.getName ();
                 for (Field declaredField : declaredFields) {
-                    declaredField.setAccessible (true);
+                    declaredField.setAccessible ( true );
                     String name = declaredField.getName ();
-                    if(name.equals (fieldToProperty (fieldName))){
-                        declaredField.set (preEmployment,field.get(exportPreVo) );
+                    if (name.equals ( fieldToProperty ( fieldName ) )) {
+                        declaredField.set ( preEmployment, field.get ( exportPreVo ) );
                     }
                 }
             }
             try {
-                orgId= organizationDao.selectOrgIdByName ( exportPreVo.getOrg_name () );
+                orgId = organizationDao.selectOrgIdByName ( exportPreVo.getOrg_name () );
             } catch (Exception e) {
-                orgId=0;
+                orgId = 0;
             }
-            preEmployment.setOrgId(orgId);
+            preEmployment.setOrgId ( orgId );
             try {
-                postId=postDao.selectPostIdByName(exportPreVo.getPost_name());
+                postId = postDao.selectPostIdByName ( exportPreVo.getPost_name () );
             } catch (Exception e) {
-                postId=0;
+                postId = 0;
             }
-            preEmployment.setPostId (postId);
+            preEmployment.setPostId ( postId );
             preEmployment.setOperatorId ( userSession.getArchiveId () );
             preEmploymentList.add ( preEmployment );
         }
-        preEmploymentDao.insertBatch(preEmploymentList);
+        preEmploymentDao.insertBatch ( preEmploymentList );
     }
+
     @Override
-    public void importArcFile(MultipartFile multipartFile,UserSession userSession) throws Exception {
+    public void importArcFile(MultipartFile multipartFile, UserSession userSession) throws Exception {
         //excel方法获得值
-        List<Map<String,String>> list=getMaps ( multipartFile );
+        List < Map < String, String > > list = getMaps ( multipartFile );
 
     }
 
     /**
      * 导出档案
+     *
      * @param exportFile
      * @param response
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportArcFile(ExportFile exportFile, HttpServletResponse response) {
-        ExcelUtil.download( response, exportFile.getTittle(),
-                getHeadsByArc(exportFile),
-                getDates(exportFile,getHeadsByArc(exportFile)),
-                getTypeMapForArc(exportFile, getHeadsByArc(exportFile)));
+    public void exportArcFile(ExportFile exportFile, HttpServletResponse response) throws IOException {
+        ExcelUtil.download ( response, exportFile.getTittle (),
+                getHeadsByArc ( exportFile ),
+                getDates ( exportFile, getHeadsByArc ( exportFile ) ),
+                getTypeMapForArc ( exportFile, getHeadsByArc ( exportFile ) ) );
     }
 
     /**
      * 导出预入职
+     *
      * @param exportRequest
      * @param response
      * @param userSession
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession){
-        Map<Integer, Map <String,Object> > map=preEmploymentDao.selectExportPreList(exportRequest.getList (),userSession.getCompanyId ());
-        ExportFile exportFile=new ExportFile();
-        exportFile.setTittle(exportRequest.getTitle ());
-        ExportList exportList=new ExportList();
-        exportList.setMap(map);
-        exportFile.setExportList(exportList);
-        ExcelUtil.download(response,exportFile.getTittle(),
-                HeadMapUtil.getHeadsForPre(),
-                getDates(exportFile,HeadMapUtil.getHeadsForPre()),
-                getTypeMapForPre(HeadMapUtil.getHeadsForPre()));
+    public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
+        Map < Integer, Map < String, Object > > map = preEmploymentDao.selectExportPreList ( exportRequest.getList (), userSession.getCompanyId () );
+        ExportFile exportFile = new ExportFile ();
+        exportFile.setTittle ( exportRequest.getTitle () );
+        ExportList exportList = new ExportList ();
+        exportList.setMap ( map );
+        exportFile.setExportList ( exportList );
+        ExcelUtil.download ( response, exportFile.getTittle (),
+                HeadMapUtil.getHeadsForPre (),
+                getDates ( exportFile, HeadMapUtil.getHeadsForPre () ),
+                getTypeMap ( HeadMapUtil.getHeadsForPre () ) );
     }
 
     /**
      * 导出黑名单
+     *
      * @param exportRequest
      * @param response
      * @param userSession
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) {
-        Map<Integer,Map<String,Object>> map=blacklistDao.selectExportBlackList(exportRequest.getList (),userSession.getCompanyId());
-        ExportFile exportFile=new ExportFile();
-        exportFile.setTittle(exportRequest.getTitle ());
-        ExportList exportList=new ExportList();
-        exportList.setMap(map);
-        exportFile.setExportList(exportList);
-        ExcelUtil.download (response,exportFile.getTittle (),
+    public void exportBlackFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
+        Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId () );
+        ExportFile exportFile = new ExportFile ();
+        exportFile.setTittle ( exportRequest.getTitle () );
+        ExportList exportList = new ExportList ();
+        exportList.setMap ( map );
+        exportFile.setExportList ( exportList );
+        ExcelUtil.download ( response, exportFile.getTittle (),
                 HeadMapUtil.getHeadsForBlackList (),
-                getDates (exportFile, HeadMapUtil.getHeadsForBlackList ()),
-                getTypeMapForBla( HeadMapUtil.getHeadsForBlackList () ));
+                getDates ( exportFile, HeadMapUtil.getHeadsForBlackList () ),
+                getTypeMap ( HeadMapUtil.getHeadsForBlackList () ) );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportContractList(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) {
-        Map<Integer,Map<String,Object>> map=laborContractDao.selectExportConList(exportRequest.getList (),userSession.getCompanyId());
-        ExportFile exportFile=new ExportFile();
-        exportFile.setTittle(exportRequest.getTitle ());
-        ExportList exportList=new ExportList();
-        exportList.setMap(map);
-        exportFile.setExportList(exportList);
-        ExcelUtil.download (response,exportFile.getTittle (),
+    public void exportContractList(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
+        Map < Integer, Map < String, Object > > map = laborContractDao.selectExportConList ( exportRequest.getList (), userSession.getCompanyId () );
+        ExportFile exportFile = new ExportFile ();
+        exportFile.setTittle ( exportRequest.getTitle () );
+        ExportList exportList = new ExportList ();
+        exportList.setMap ( map );
+        exportFile.setExportList ( exportList );
+        ExcelUtil.download ( response, exportFile.getTittle (),
                 HeadMapUtil.getHeadsForCon (),
-                getDates (exportFile,  HeadMapUtil.getHeadsForCon ()),
-                getTypeMapForPre(  HeadMapUtil.getHeadsForCon () ));
+                getDates ( exportFile, HeadMapUtil.getHeadsForCon () ),
+                getTypeMap ( HeadMapUtil.getHeadsForCon () ) );
     }
-
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportBusiness(ExportRequest exportRequest, HttpServletResponse response,UserSession userSession) throws Exception {
+    public void exportBusiness(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws Exception {
         //根据title找到表id
         //通过表id与业务id集合找到存储数据的字段
         //将字段进行解析,循环置于List<map>中
-        Map<Integer,Map<String,Object>> map=new HashMap <> ();
+        Map < Integer, Map < String, Object > > map = new HashMap <> ();
         //通过表id与业务id集合找到存储数据的字段
-        List <Map<Integer,String>> list=
-                customArchiveTableDataDao.selectBigDataByBusinessIdAndTitleListAndCompanyId(exportRequest.getList (),
-                        exportRequest.getTitle (),userSession.getCompanyId ());
+        Map < Integer, String > map1 =
+                customArchiveTableDataDao.selectBigDataByBusinessIdAndTitleListAndCompanyId ( exportRequest.getList (),
+                        exportRequest.getTitle (), userSession.getCompanyId () );
         //将字段进行解析，存进listMap中
-        for (Map < Integer, String > integerStringMap : list) {
-            for (Map.Entry < Integer, String > integerStringEntry : integerStringMap.entrySet ()) {
-                String[] split = integerStringEntry.getValue ().split ( "@@" );
-                Map<String,Object> map1=new LinkedHashMap <> ();
-                for (int i = 0; i < split.length; i=i+2) {
-                    map1.put(split[i],split[i+1]);
-                }
-                map.put (integerStringEntry.getKey (),map1);
+        for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
+            String[] split = integerStringEntry.getValue ().split ( "@@" );
+            Map < String, Object > map2 = new LinkedHashMap <> ();
+            for (int i = 1; i < split.length; i = i + 2) {
+                map2.put ( split[i], split[i + 1] );
             }
+            map.put ( integerStringEntry.getKey (), map2 );
         }
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(exportRequest.getTitle ());
@@ -239,12 +241,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             ExcelUtil.download(response, exportFile.getTittle(),
                     businessHead,
                     getDates(exportFile, businessHead),
-                    getTypeMapForPre(businessHead));
+                    getTypeMap(businessHead));
         }else {
             throw new Exception("没有获取到对应的自己表头");
         }
 
     }
+
 
     /**
      * 档案存储字段类型的集合
@@ -270,26 +273,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     /**
      * 预入职存储字段类型的集合
      **/
-    private Map<String, String> getTypeMapForPre(List<String> heads) {
+    private Map<String, String> getTypeMap(List<String> heads) {
         Map<String, String> map = new HashMap<>();
         for (String head : heads) {
-//            map.put(head, HeadTypeUtil.getTypeForPre().get(head));
             map.put ( head,"String");
         }
         return map;
-    }
-    /**
-     * 黑名单的存储类型
-     */
-    private Map<String, String> getTypeMapForBla(List<String> heads) {
-        Map<String, String> map = new HashMap<>();
-        for (String head : heads) {
-//            map.put(head, HeadTypeUtil.getTypeForBla().get(head));
-            map.put ( head,"String");
-        }
-
-        return map;
-
     }
 
     /**
@@ -341,14 +330,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      * @return
      */
     private List<Map<String, String>> getDates(ExportFile exportFile,List<String> heads ) {
+        String value=null;
         List<Map<String, String>> mapList = new ArrayList<>();
         List<Map<String, Object>> maps = new ArrayList<>(exportFile.getExportList().getMap().values());
         for (Map<String, Object> stringObjectMap : maps) {
             //linkedHashMap保证有序
-            Map<String, String> stringMap = new LinkedHashMap<>();
-            for (String head : heads) {
-                stringMap.put( head,String.valueOf(stringObjectMap.get(customArchiveFieldDao.selectFieldCodeByName(head))));
-            }
+            List < String > list = customArchiveFieldDao.selectFieldCodeByNameList ( heads );
+            Map < String, String > stringMap = new LinkedHashMap <> ();
+                for (String head : heads) {
+                    stringMap.put ( head, String.valueOf ( stringObjectMap.get ( customArchiveFieldDao.selectFieldCodeByName ( head ) ) ) );
+                }
+
             mapList.add(stringMap);
         }
         return mapList;

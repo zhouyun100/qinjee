@@ -2,7 +2,7 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.organization.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -24,7 +24,7 @@ public interface PostService {
      * @param postPageVo
      * @return
      */
-    ResponseResult<PageResult<Post>> getPostList(UserSession userSession, PostPageVo postPageVo);
+   PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo);
 
     /**
      * 根据岗位id查询员工档案岗位关系表

@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
+import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
 import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -22,7 +22,7 @@ public interface UserArchiveService {
      * @param userSession
      * @return
      */
-    ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQueryVo pageQueryVo, UserSession userSession);
+    ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQuery pageQueryVo, UserSession userSession);
 
     /**
      * 新增人员档案信息

@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.model.entity.UserInfo;
-import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
+import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
 import com.qinjee.model.response.ResponseResult;
 
 /**
@@ -17,7 +17,7 @@ public class UserInfoController {
 
 //    @GetMapping("/getUserInfoList")
 //    @ApiOperation(value = "根据条件分页查询注册用户信息", notes = "高雄")
-    public ResponseResult<UserInfo> getUserInfoList(PageQueryVo pageQueryVo){
+    public ResponseResult<UserInfo> getUserInfoList(PageQuery pageQueryVo){
         return null;
     }
 
