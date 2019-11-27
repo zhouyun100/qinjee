@@ -241,18 +241,29 @@
     AND is_delete=0
   </select>
     <select id="selectExportBlackList" resultType="hashmap" >
-    select bla.blacklist_id,bla.user_name,bla.id_number,bla.phone as phone,org.org_name,
-    orga.org_name as business_name , post.post_name,bla.block_reason
-    from  t_blacklist bla
-    left join t_organization org on bla.org_id=org.org_id
-    left join t_organization orga on bla.business_unit_id=orga.org_id
-    left join t_post post on post.post_id=bla.post_id
-    where bla.blacklist_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    and bla.company_id=#{companyId}
-    and org.is_enable=1 and orga.is_enable=1
-    and bla.is_delete=0
+              SELECT
+              bla.blacklist_id,
+              bla.user_name,
+              bla.id_number,
+              bla.phone AS phone,
+              org.org_name,
+              orga.org_name AS business_name,
+              post.post_name,
+              bla.block_reason
+              FROM
+                  t_blacklist bla
+              LEFT JOIN t_organization org ON bla.org_id = org.org_id
+              left JOIN t_organization orga ON bla.company_id = orga.company_id
+              LEFT JOIN t_post post ON post.post_id = bla.post_id
+              WHERE
+              bla.company_id =#{companyId}
+              AND org.is_enable = 1
+              and orga.org_parent_id=0
+              AND orga.is_enable = 1
+              AND bla.is_delete = 0
+              AND bla.blacklist_id in
+              <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item}
+              </foreach>
     </select>
 </mapper>

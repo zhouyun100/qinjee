@@ -16,25 +16,19 @@ public class PreEmploymentVo implements Serializable {
 
     /** 预入职ID */
     private Integer employmentId;
-
     /** 用户姓名 */
     @NotNull
     private String userName;
-
     /** 电话 */
     @NotNull
     private String phone;
-
     /** 性别 */
-    @NotNull
     private String gender;
     /** 入职状态 */
     private String employmentState;
     /** 邮箱 */
-    @NotNull
     private String email;
     /** 应聘岗位 */
-    @NotNull
     private String applicationPosition;
     /** 入职部门 */
     private Integer orgId;
@@ -52,11 +46,9 @@ public class PreEmploymentVo implements Serializable {
     private Date firstWorkDate;
 
     /** 婚姻状况 */
-    @NotNull
     private String maritalStatus;
 
     /** 最高学历 */
-    @NotNull
     private String highestDegree;
 
     /** 毕业院校 */
@@ -93,13 +85,13 @@ public class PreEmploymentVo implements Serializable {
     private Integer politicalStatus;
 
     /** 藉贯 */
-    @NotNull
     private String birthplace;
 
     /** 试用期限(月) */
     private Integer probationPeriod;
 
     /** 入职日期 */
+    @NotNull
     private Date hireDate;
 
     /** 入职岗位 */
