@@ -29,7 +29,7 @@ public class CheckCustomTableVO {
     /**
      * 校验是否成功(true:是，false:否)
      */
-    private boolean checkResult;
+    private Boolean checkResult;
 
     /**
      * 校验结果信息

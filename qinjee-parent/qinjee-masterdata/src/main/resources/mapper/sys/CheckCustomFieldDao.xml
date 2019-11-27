@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.sys.CheckCustomFieldDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO">
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
+    <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+    <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+    <result column="code_id" jdbcType="INTEGER" property="codeId" />
+    <result column="code_name" jdbcType="VARCHAR" property="codeName" />
+    <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
+    <result column="val_length" jdbcType="INTEGER" property="valLength" />
+    <result column="val_precision" jdbcType="INTEGER" property="valPrecision" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="is_show" jdbcType="SMALLINT" property="isShow" />
+    <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="isNotNull" jdbcType="VARCHAR" property="isNotNull" />
+    <result column="isInteger" jdbcType="VARCHAR" property="isInteger" />
+    <result column="isDate" jdbcType="VARCHAR" property="isDate" />
+    <result column="isEmail" jdbcType="VARCHAR" property="isEmail" />
+    <result column="isIdCard" jdbcType="VARCHAR" property="isIdCard" />
+  </resultMap>
+
+  <!-- 根据字段ID列表查询字段详细信息列表 -->
+  <select id="searchCustomFieldList" parameterType="list" resultMap="BaseResultMap">
+    select f.field_id,f.field_code,f.field_name,f.field_type,f.code_id,f.code_name,
+    f.default_value,f.val_length,f.val_precision,f.table_id,f.group_id,f.is_show,f.is_system_define,f.sort,
+    MAX(CASE WHEN c.check_code = 'NOTNULL' THEN c.check_code END) isNotNull,
+    MAX(CASE WHEN c.check_code = 'INTEGER' THEN c.check_code END) isInteger,
+    MAX(CASE WHEN c.check_code = 'DATE' THEN c.check_code END) isDate,
+    MAX(CASE WHEN c.check_code = 'EMAIL' THEN c.check_code END) isEmail,
+    MAX(CASE WHEN c.check_code = 'ID_CARD' THEN c.check_code END) isIdCard
+    from t_custom_archive_field f
+    LEFT JOIN t_custom_archive_field_check c
+    ON f.field_id = c.field_id
+    WHERE f.field_id in
+    <foreach item="fieldId" collection="list"
+             open="(" separator="," close=")">
+      #{fieldId}
+    </foreach>
+    and f.is_delete = 0
+    GROUP BY f.field_id,f.field_code,f.field_name,f.field_type,f.code_id,f.code_name,
+    f.default_value,f.val_length,f.val_precision,f.table_id,f.group_id,f.is_show,f.is_system_define,f.sort
+  </select>
+</mapper>
