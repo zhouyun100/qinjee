@@ -79,7 +79,7 @@ public interface PostDao {
      * @param orgId
      * @return
      */
-    Map<Integer,String> getPostByOrgId(@Param("orgId") Integer orgId);
+    List<Map<Integer,String>> getPostByOrgId(@Param("orgId") Integer orgId);
 
 
     /**

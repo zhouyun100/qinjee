@@ -228,7 +228,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public String getPostByOrgId(Integer orgId) {
 
-        Map < Integer, String > postByOrgId = postDao.getPostByOrgId ( orgId );
+       List<Map < Integer, String >> postByOrgId = postDao.getPostByOrgId ( orgId );
         return JSON.toJSONString ( postByOrgId );
     }
 

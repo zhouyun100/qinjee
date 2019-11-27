@@ -84,7 +84,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             mapList.add (objectMap);
         }
               //请求接口获得返回前端的结果
-        List < Map < Integer, CheckCustomFieldVO > > maps = checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
+//        List < Map < Integer, CheckCustomFieldVO > > maps = checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
         return null;
     }
 
