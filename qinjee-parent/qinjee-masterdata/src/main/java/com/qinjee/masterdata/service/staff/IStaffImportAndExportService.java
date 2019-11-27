@@ -7,6 +7,7 @@ import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public interface IStaffImportAndExportService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportFile exportFile, HttpServletResponse response) ;
+    void exportArcFile(ExportFile exportFile, HttpServletResponse response) throws IOException;
 
     /**
      * 导出预入职
@@ -45,7 +46,7 @@ public interface IStaffImportAndExportService {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, IOException;
 
     /**
      * 导出业务类
@@ -62,7 +63,7 @@ public interface IStaffImportAndExportService {
      * @param response
      * @param userSession
      */
-    void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession);
+    void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) throws IOException;
 
     /**
      * 导出合同表
@@ -70,7 +71,7 @@ public interface IStaffImportAndExportService {
      * @param response
      * @param userSession
      */
-    void exportContractList(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession);
+    void exportContractList(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) throws IOException;
 
     /**文件检验
      * @param multipartFile

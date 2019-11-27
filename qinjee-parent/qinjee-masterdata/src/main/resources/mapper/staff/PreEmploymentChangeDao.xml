@@ -146,5 +146,6 @@
     from t_pre_employment_change
     where employment_id =
     #{employmentId}
+    and is_delete=0;
   </select>
 </mapper>

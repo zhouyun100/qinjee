@@ -141,7 +141,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportArcFile(ExportFile exportFile, HttpServletResponse response) {
+    public void exportArcFile(ExportFile exportFile, HttpServletResponse response) throws IOException {
         ExcelUtil.download( response, exportFile.getTittle(),
                 getHeadsByArc(exportFile),
                 getDates(exportFile,getHeadsByArc(exportFile)),
@@ -156,7 +156,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession){
+    public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
         Map<Integer, Map <String,Object> > map=preEmploymentDao.selectExportPreList(exportRequest.getList (),userSession.getCompanyId ());
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(exportRequest.getTitle ());
@@ -177,7 +177,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) {
+    public void exportBlackFile(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) throws IOException {
         Map<Integer,Map<String,Object>> map=blacklistDao.selectExportBlackList(exportRequest.getList (),userSession.getCompanyId());
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(exportRequest.getTitle ());
@@ -192,7 +192,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportContractList(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) {
+    public void exportContractList(ExportRequest exportRequest,HttpServletResponse response,UserSession userSession) throws IOException {
         Map<Integer,Map<String,Object>> map=laborContractDao.selectExportConList(exportRequest.getList (),userSession.getCompanyId());
         ExportFile exportFile=new ExportFile();
         exportFile.setTittle(exportRequest.getTitle ());

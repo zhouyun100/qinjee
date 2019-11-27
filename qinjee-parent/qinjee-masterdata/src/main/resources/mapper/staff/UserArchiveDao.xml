@@ -645,5 +645,9 @@
     where archive_status = #{string}
     and arc.is_delete=0
   </select>
+  <select id="selectByAuthOrg" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+
+  </select>
+
 </mapper>
 

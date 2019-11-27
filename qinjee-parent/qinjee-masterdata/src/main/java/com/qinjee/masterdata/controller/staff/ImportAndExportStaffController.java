@@ -135,7 +135,7 @@ public class ImportAndExportStaffController extends BaseController {
         if(b){
             try {
                 staffImportAndExportService.exportArcFile(exportFile,response);
-                return ResponseResult.SUCCESS();
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return failResponseResult("导出失败");
@@ -161,7 +161,7 @@ public class ImportAndExportStaffController extends BaseController {
         if(b){
             try {
                 staffImportAndExportService.exportPreFile(exportRequest,response,getUserSession () );
-                return ResponseResult.SUCCESS();
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return failResponseResult("导出失败");
@@ -186,7 +186,7 @@ public class ImportAndExportStaffController extends BaseController {
         if(b){
             try {
                 staffImportAndExportService.exportBlackFile(exportRequest,response,getUserSession());
-                return ResponseResult.SUCCESS();
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return failResponseResult("导出失败");
@@ -210,7 +210,7 @@ public class ImportAndExportStaffController extends BaseController {
         if(b){
             try {
                 staffImportAndExportService.exportContractList(exportRequest,response,getUserSession());
-                return ResponseResult.SUCCESS();
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return failResponseResult("导出失败");
@@ -235,7 +235,7 @@ public class ImportAndExportStaffController extends BaseController {
         if(b){
             try {
                 staffImportAndExportService.exportBusiness(exportRequest,response,getUserSession());
-                return ResponseResult.SUCCESS();
+                return null;
             } catch (Exception e) {
                 return failResponseResult("导出失败");
             }
