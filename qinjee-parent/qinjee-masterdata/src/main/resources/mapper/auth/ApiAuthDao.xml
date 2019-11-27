@@ -4,7 +4,7 @@
 
 
     <select id="searchParentOrgIdAutoAuthChildOrgRoleList" parameterType="java.lang.Integer" resultType="com.qinjee.masterdata.model.entity.Role">
-        select t_role.role_id,t_role.role_name
+        select t_role.role_id as roleId,t_role.role_name as roleName
         from t_role,t_role_org_auth,t_organization
         where t_organization.org_id = #{orgId,jdbcType=INTEGER}
         and t_organization.org_parent_id = t_role_org_auth.org_id
