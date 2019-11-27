@@ -46,9 +46,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/editOrganization")
     @ApiOperation(value = "编辑机构", notes = "高雄")
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode,@RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
-
         return organizationService.editOrganization(orgCode,orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
-
     }
 
     //TODO 删除机构时，需要回收权限（调用权限接口）
@@ -71,6 +69,9 @@ public class OrganizationController extends BaseController {
     })
     @GetMapping("/getAllOrganizationTree")
     public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable", required = false) Short isEnable) {
+        if(isEnable==null){
+            isEnable=Short.parseShort("0");
+        }
         UserSession userSession = getUserSession();
         List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(userSession, isEnable);
         PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
@@ -100,6 +101,10 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "获取机构岗位树", notes = "彭洪思")
     @GetMapping("/getOrganizationPostTree")
     public ResponseResult<List<OrganizationVO>>  getOrganizationPostTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0")@RequestParam("isEnable") Short isEnable) {
+       if(isEnable==null){
+           isEnable=Short.parseShort("0");
+       }
+
         return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
     }
 

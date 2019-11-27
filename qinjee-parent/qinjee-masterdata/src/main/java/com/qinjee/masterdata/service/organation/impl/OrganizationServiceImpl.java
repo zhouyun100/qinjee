@@ -463,12 +463,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(UserSession userSession, Short isEnable) {
-        //
-        List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession, isEnable);
+        //只显示未封存的机构
+        List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession, Short.parseShort("1"));
         //递归设置机构下的岗位
         //TODO 暂时不设置岗位下的子岗位
         digui(organizationVOTreeList, isEnable);
-
         return new ResponseResult<>(organizationVOTreeList);
     }
 
