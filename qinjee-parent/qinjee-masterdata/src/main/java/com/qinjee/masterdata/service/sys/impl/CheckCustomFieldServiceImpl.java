@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.sys.impl;
 
 import com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO;
+import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
 import com.qinjee.masterdata.service.sys.CheckCustomFieldService;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +28,9 @@ public class CheckCustomFieldServiceImpl implements CheckCustomFieldService {
 
 
     @Override
-    public List<Map<Integer, CheckCustomFieldVO>> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
+    public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
 
-        List<Map<Integer, CheckCustomFieldVO>> customFieldValueList = new ArrayList<>();
+        List<CheckCustomTableVO> customFieldValueList = new ArrayList<>();
 
         for(Map<Integer,Object> map : mapList){
 

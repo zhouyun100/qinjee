@@ -4,7 +4,9 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.PositionDao;
 import com.qinjee.masterdata.dao.PositionGradeRelationDao;
 import com.qinjee.masterdata.dao.PositionLevelRelationDao;
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.Position;
+import com.qinjee.masterdata.model.entity.PositionGradeRelation;
+import com.qinjee.masterdata.model.entity.PositionLevelRelation;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
 import com.qinjee.masterdata.service.organation.PositionGradeService;
 import com.qinjee.masterdata.service.organation.PositionLevelService;
@@ -14,7 +16,6 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -51,16 +51,19 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public ResponseResult<PageResult<Position>> getPositionList(UserSession userSession, PageVo pageVo) {
+    public ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PageVo pageVo) {
 
         Integer companyId = userSession.getCompanyId();
         if (pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)) {
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
         }
 
-        List<Position> positionList = positionDao.getPositionList(companyId);
+        List<Position> positionList = positionDao.getPositionPage(pageVo);
         PageResult<Position> pageResult = new PageResult<>(positionList);
-        if (!CollectionUtils.isEmpty(positionList)) {
+
+        return new ResponseResult<>(pageResult);
+
+        /*if (!CollectionUtils.isEmpty(positionList)) {
             for (Position position : positionList) {
                 List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(position.getPositionId());
                 List<PositionLevel> positionLevelList = positionLevelService.getPositionLevelByPositionId(position.getPositionId());
@@ -87,8 +90,8 @@ public class PositionServiceImpl implements PositionService {
                 position.setPositionGradeNames(positionGradeNames.delete(positionGradeNames.toString().length() - 2, positionGradeNames.toString().length()).toString());
                 position.setPositionLevelNames(positionLevelNames.delete(positionLevelNames.toString().length() - 2, positionLevelNames.toString().length()).toString());
             }
-        }
-        return new ResponseResult<>(pageResult);
+        }*/
+
     }
 
     @Transactional
@@ -101,6 +104,7 @@ public class PositionServiceImpl implements PositionService {
         //设置排序id
         Integer sortId;
         List<Position> positionList = positionDao.getPositionListByGroupId(positionVo.getPositionGroupId());
+        System.out.println("positionList："+positionList);
         if (!CollectionUtils.isEmpty(positionList)) {
             List<Position> positions = positionList.stream().filter(position1 -> {
                 if (positionVo.getPositionName().equals(position1.getPositionName())) {
@@ -120,7 +124,7 @@ public class PositionServiceImpl implements PositionService {
         position.setSortId(sortId);
         positionDao.insertSelective(position);
 
-        List<Integer> positionLevelIds = positionVo.getPositionGradeIds();
+       /* List<Integer> positionLevelIds = positionVo.getPositionGradeIds();
         //职位职等关系表
         if (!CollectionUtils.isEmpty(positionLevelIds)) {
             for (Integer positionLevel : positionLevelIds) {
@@ -136,7 +140,7 @@ public class PositionServiceImpl implements PositionService {
                 //新增职位职级关系表
                 addPositionLevelRelation(userSession, position, positionLevelId);
             }
-        }
+        }*/
         return new ResponseResult();
     }
 
@@ -178,9 +182,9 @@ public class PositionServiceImpl implements PositionService {
         Position position = new Position();
         BeanUtils.copyProperties(positionVo, position);
         position.setOperatorId(userSession.getArchiveId());
-        positionDao.insertSelective(position);
+        positionDao.updateByPrimaryKey(position);
 
-        List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(positionVo.getPositionId());
+       /* List<PositionGrade> positionGradeList = positionGradeService.getPositionGradeListByPositionId(positionVo.getPositionId());
         List<Integer> position_GradeIds = positionVo.getPositionGradeIds();
         //判断职位是否有职等
         if (!CollectionUtils.isEmpty(positionGradeList)) {
@@ -247,7 +251,7 @@ public class PositionServiceImpl implements PositionService {
                     addPositionLevelRelation(userSession, position, position_levelId);
                 }
             }
-        }
+        }*/
         return new ResponseResult();
     }
 
@@ -261,7 +265,7 @@ public class PositionServiceImpl implements PositionService {
                 position.setIsDelete((short) 1);
                 position.setOperatorId(userSession.getArchiveId());
                 positionDao.updateByPrimaryKeySelective(position);
-                //删除对应的职等
+               /* //删除对应的职等
                 PositionGradeRelation positionGradeRelation = new PositionGradeRelation();
                 positionGradeRelation.setOperatorId(userSession.getArchiveId());
                 positionGradeRelation.setIsDelete((short) 1);
@@ -272,7 +276,7 @@ public class PositionServiceImpl implements PositionService {
                 positionLevelRelation.setPositionId(positionId);
                 positionLevelRelation.setIsDelete((short) 1);
                 positionLevelRelation.setOperatorId(userSession.getArchiveId());
-                positionLevelRelationDao.updateIsDeleteByPositionLevelRelation(positionLevelRelation);
+                positionLevelRelationDao.updateIsDeleteByPositionLevelRelation(positionLevelRelation);*/
             }
         }
         return new ResponseResult();
@@ -299,7 +303,7 @@ public class PositionServiceImpl implements PositionService {
 
         return new ResponseResult();
     }
-
+/*
     @Override
     public ResponseResult<Position> getPositionLevelAndGrade(Integer positionId) {
         //根据职职位id查询对应的职级
@@ -310,5 +314,5 @@ public class PositionServiceImpl implements PositionService {
         position.setPositionLevels(positionLevels);
         position.setPositionGrades(positionGrades);
         return new ResponseResult<>(position);
-    }
+    }*/
 }

@@ -1,6 +1,8 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.Position;
+import com.qinjee.model.request.PageVo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,5 +43,11 @@ public interface PositionDao {
      * @return
      */
     List<Position> getPositionListByOrgId(Integer orgId);
+
+    /**
+     * @param pageVo
+     * @return
+     */
+    List<Position> getPositionPage(@Param("pageVo") PageVo pageVo);
 
 }
