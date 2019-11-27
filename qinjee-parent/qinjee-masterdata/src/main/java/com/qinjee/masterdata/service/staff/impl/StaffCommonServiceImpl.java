@@ -276,15 +276,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         return new PageResult <> ( list );
     }
 
-
-    @Override
-    public List < String > checkField(Integer fieldId) {
-        //通过字段名找到验证code
-        List < String > stringList = customArchiveFieldCheckDao.selectCheckName ( fieldId );
-        //根据验证code找到验证名称
-        return checkTypeDao.selectCheckNameList ( stringList );
-    }
-
 }
 
 

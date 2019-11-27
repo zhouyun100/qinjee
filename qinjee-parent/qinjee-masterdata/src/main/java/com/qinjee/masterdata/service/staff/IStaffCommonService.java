@@ -168,12 +168,6 @@ public interface IStaffCommonService {
      * @return
      */
     List<String> selectFieldValueById(Integer customArchiveFieldId);
-    /**
-     * 获取字段校验类型
-     * @param fieldId
-     * @return
-     */
-    List<String> checkField(Integer fieldId);
 
 
 }
