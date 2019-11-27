@@ -31,7 +31,7 @@ public class PostController extends BaseController {
     private PostService postService;
 
     @PostMapping("/getPostList")
-    @ApiOperation(value = "分页查询岗位列表", notes = "高雄")
+    @ApiOperation(value = "分页查询岗位列表,只有orgId字段为必须", notes = "高雄")
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
         PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
         return new ResponseResult<>(pageResult);

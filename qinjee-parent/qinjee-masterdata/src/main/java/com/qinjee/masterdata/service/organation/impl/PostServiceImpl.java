@@ -64,12 +64,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
-        Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
-        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
+        String sortFieldStr=null;
+        if(Objects.nonNull(postPageVo.getQuerFieldVos())){
+            Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
+            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
+        }
         List<Integer> orgidList = new ArrayList<>();
         //TODO id重复无影响
         digui2(orgidList, postPageVo.getOrgId());
-        PageHelper.startPage(postPageVo.getCurrentPage(),postPageVo.getPageSize());
+        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
+            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
+        }
         List<Post> postList = postDao.getPostConditionPage(postPageVo,orgidList, sortFieldStr);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
