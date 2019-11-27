@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;

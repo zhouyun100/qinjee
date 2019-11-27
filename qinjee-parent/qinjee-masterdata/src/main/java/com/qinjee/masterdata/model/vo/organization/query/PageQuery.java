@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.organization;
+package com.qinjee.masterdata.model.vo.organization.query;
 
 import com.qinjee.model.request.PageVo;
 import io.swagger.annotations.ApiModel;
@@ -17,8 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ApiModel( description = "分页查询列表的Vo")
-public class PageQueryVo extends PageVo {
+public class PageQuery extends PageVo {
     @ApiModelProperty(value = "需要查询的字段")
-    private List<QueryFieldVo> querFieldVos;
-
+    private List<QueryField> querFieldVos;
 }

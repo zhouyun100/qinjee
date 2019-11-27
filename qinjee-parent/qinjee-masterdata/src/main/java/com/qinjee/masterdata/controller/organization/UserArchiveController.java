@@ -2,7 +2,7 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.PageQueryVo;
+import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
 import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.response.PageResult;
@@ -34,7 +34,7 @@ public class UserArchiveController extends BaseController {
 
     @GetMapping("/getUserArchiveList")
     @ApiOperation(value = "根据条件分页查询员工信息", notes = "高雄")
-    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQueryVo pageQueryVo){
+    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQuery pageQueryVo){
         return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
     }
 

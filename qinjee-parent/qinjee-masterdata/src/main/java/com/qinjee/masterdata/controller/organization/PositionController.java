@@ -28,8 +28,8 @@ public class PositionController extends BaseController {
     private PositionService positionService;
 
     @ApiOperation(value = "分页查询职位信息", notes = "高雄")
-    @GetMapping("/getPositionPage")
-    public ResponseResult<PageResult<Position>> getPositionPage(PageVo pageVo){
+    @PostMapping("/getPositionPage")
+    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PageVo pageVo){
         return positionService.getPositionPage(getUserSession(), pageVo);
     }
 

@@ -10,9 +10,9 @@ import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
-import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
+import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
@@ -36,10 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author 高雄
@@ -67,20 +64,20 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseResult<PageResult<Post>> getPostList(UserSession userSession, PostPageVo postPageVo) {
         Integer archiveId = userSession.getArchiveId();
-        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
+        Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
         String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
-        if(postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null){
-            PageHelper.startPage(postPageVo.getCurrentPage(),postPageVo.getPageSize());
+        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
+            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
-         Date now=new Date();
-        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId,now);
+        Date now = new Date();
+        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId, now);
         PageResult<Post> pageResult = new PageResult<>(postList);
         return new ResponseResult<>(pageResult);
     }
 
     @Override
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId) {
-        if(pageSize != null && currentPage != null){
+        if (pageSize != null && currentPage != null) {
             PageHelper.startPage(currentPage, pageSize);
         }
         List<UserArchivePostRelation> userArchivePostRelationList = userArchivePostRelationDao.getUserArchivePostRelationList(postId);
@@ -94,23 +91,51 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
-        //查询机构的岗位生成岗位编码
-        String postCode = getPostCode(orgId);
-        //获取排序sortId
-        Integer sortId = getPostSortId(orgId);
-
-        post.setPostCode(postCode);
+        generatePostCodeAndSoitId(post, orgId, postVo.getParentPostId());
         post.setCompanyId(userSession.getCompanyId());
         post.setOperatorId(userSession.getArchiveId());
-        post.setSortId(sortId);
         post.setIsDelete((short) 0);
         post.setIsEnable((short) 1);
         postDao.insertSelective(post);
 
         //根据职级职等插入岗位职等,岗位职级信息
         //新增岗位职级关系表信息
-       // addPostLevelAndGradeRelation(postVo, userSession, post);
+        // addPostLevelAndGradeRelation(postVo, userSession, post);
         return new ResponseResult();
+    }
+
+    private void generatePostCodeAndSoitId(Post post, Integer orgId, Integer parentPostId) {
+        String postCode = "";
+        Integer sortId = 1000;
+        //如果父级岗位存在 则按照父级岗位的编码为基础，否则以归属机构的为准
+        Post parentPost = postDao.selectByPrimaryKey(parentPostId);
+        if (Objects.nonNull(parentPost)) {
+            //查询父级岗位下的子岗位列表
+            List<Post> sonPosts = postDao.getPostListByPostId(parentPostId);
+            if (CollectionUtils.isEmpty(sonPosts)) {
+                String parentPoatCode = parentPost.getPostCode();
+                postCode = parentPoatCode + "01";
+            } else {
+                postCode = sonPosts.get(0).getPostCode();
+                postCode = culPostCode(postCode);
+                sortId = sonPosts.get(0).getSortId() + 1000;
+            }
+        } else {
+            List<Post> posts = postDao.getLastTopPostByOrgId(orgId);
+            if (CollectionUtils.isEmpty(posts)) {
+                //当前机构编码+2位流水
+                OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
+                String orgCode = organizationVO.getOrgCode();
+                postCode = orgCode + "01";
+            } else {
+                postCode = posts.get(0).getPostCode();
+                postCode = culPostCode(postCode);
+                sortId = posts.get(0).getSortId() + 1000;
+            }
+
+        }
+        post.setPostCode(postCode);
+        post.setSortId(sortId);
     }
 
     @Override
@@ -118,6 +143,12 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
+
+        //如果上级机构id或上级岗位id改变，则重新生成岗位编码 和 排序id
+        Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
+        if (!postVo.getOrgId().equals(post1.getOrgId())) {
+            generatePostCodeAndSoitId(post, postVo.getOrgId(), postVo.getParentPostId());
+        }
         postDao.updateByPrimaryKeySelective(post);
         //删除修改不含有的岗位职级关系信息
         //deletePostLevel(postVo, userSession, post);
@@ -134,7 +165,7 @@ public class PostServiceImpl implements PostService {
     public ResponseResult deletePost(UserSession userSession, List<Integer> postIds) {
         //TODO 被删除的岗位下不允许有人员档案
         //被引用过的岗位 不允许删除
-        if(!CollectionUtils.isEmpty(postIds)){
+        if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
                 Post post = new Post();
                 post.setOperatorId(userSession.getArchiveId());
@@ -165,15 +196,15 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public ResponseResult sealPostByIds(List<Integer> postIds, Short isEnable, UserSession userSession) {
-       if(!CollectionUtils.isEmpty(postIds)){
-           for (Integer postId : postIds) {
-               Post post = new Post();
-               post.setPostId(postId);
-               post.setIsEnable(isEnable);
-               post.setOperatorId(userSession.getArchiveId());
-               postDao.updateByPrimaryKeySelective(post);
-           }
-       }
+        if (!CollectionUtils.isEmpty(postIds)) {
+            for (Integer postId : postIds) {
+                Post post = new Post();
+                post.setPostId(postId);
+                post.setIsEnable(isEnable);
+                post.setOperatorId(userSession.getArchiveId());
+                postDao.updateByPrimaryKeySelective(post);
+            }
+        }
         return new ResponseResult();
     }
 
@@ -184,11 +215,11 @@ public class PostServiceImpl implements PostService {
         Post nextPost;
         Integer midSort = null;
 
-        if(nextPostId != null){
+        if (nextPostId != null) {
             //移动
             nextPost = postDao.selectByPrimaryKey(nextPostId);
             midSort = nextPost.getSortId() - 1;
-        }else if(nextPostId == null){
+        } else if (nextPostId == null) {
             //移动到最后
             prePost = postDao.selectByPrimaryKey(prePostId);
             midSort = prePost.getSortId() + 1;
@@ -204,19 +235,13 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public ResponseResult copyPost(List<Integer> postIds, UserSession userSession, Integer orgId) {
-        if(!CollectionUtils.isEmpty(postIds)){
-            String postCode = getPostCode(orgId);
-            Integer postSortId = getPostSortId(orgId);
+        if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
-                postSortId += 1000;
-                Integer integer = Integer.valueOf(postCode);
-                postCode = String.valueOf(integer + 1);
                 Post post = postDao.selectByPrimaryKey(postId);
                 post.setOrgId(orgId);
-                post.setPostCode(postCode);
                 post.setParentPostId(null);
                 post.setOperatorId(userSession.getArchiveId());
-                post.setSortId(postSortId);
+                generatePostCodeAndSoitId(post, orgId, null);
                 postDao.insertSelective(post);
 
                 //岗位说明书
@@ -231,44 +256,61 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId) {
-        List<Post> postList = postDao.getPostPositionListByOrgId(orgId);
+        List<Integer> orgidList = new ArrayList<>();
+        //递归拿到所有子机构id
+        //TODO id重复无影响
+        digui2(orgidList, orgId);
+        List<Post> postList = postDao.getPostPositionListByOrgIds(orgidList);
         return new ResponseResult<>(postList);
+    }
+
+    private void digui2(List<Integer> orgidList, Integer orgId) {
+        orgidList.add(orgId);
+        List<OrganizationVO> childOrgs = organizationDao.getOrganizationListByParentOrgId(orgId);
+        if (!CollectionUtils.isEmpty(childOrgs)) {
+            for (OrganizationVO o : childOrgs) {
+                orgidList.add(o.getOrgId());
+                if (CollectionUtils.isEmpty(organizationDao.getOrganizationListByParentOrgId(o.getOrgId()))) {
+                    digui2(orgidList, o.getOrgId());
+                }
+            }
+        }
     }
 
     @Override
     public ResponseResult downloadTemplate(HttpServletResponse response) {
-        ClassPathResource cpr = new ClassPathResource("/templates/"+"岗位导入模板.xls");
+        ClassPathResource cpr = new ClassPathResource("/templates/" + "岗位导入模板.xls");
         try {
             File file = cpr.getFile();
             String filename = cpr.getFilename();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            FileUtils.copyFile(file,outputStream);
+            FileUtils.copyFile(file, outputStream);
             response.setCharacterEncoding("UTF-8");
             response.setHeader("content-Type", "application/vnd.ms-excel");
             response.setHeader("Content-Disposition",
                     "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
             response.getOutputStream().write(outputStream.toByteArray());
-        }catch (Exception e){
+        } catch (Exception e) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
         }
         return new ResponseResult();
     }
 
     @Override
-    public ResponseResult downloadExcelByCondition(PostPageVo postPageVo, UserSession userSession,HttpServletResponse response) {
+    public ResponseResult downloadExcelByCondition(PostPageVo postPageVo, UserSession userSession, HttpServletResponse response) {
         Integer archiveId = userSession.getArchiveId();
-        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
+        Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
         String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
         Date now = new Date();
-        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId,now);
-        exportExcel(response,postList);
+        List<Post> postList = postDao.getPostList(postPageVo, sortFieldStr, archiveId, now);
+        exportExcel(response, postList);
         return new ResponseResult();
     }
 
     @Override
     public ResponseResult downloadExcelByPostId(List<Integer> postIds, UserSession userSession, HttpServletResponse response) {
-        List<Post> postList = postDao.getPostListByPostId(postIds);
-        exportExcel(response,postList);
+        List<Post> postList = postDao.getPostListByPostIds(postIds);
+        exportExcel(response, postList);
         return new ResponseResult();
     }
 
@@ -299,8 +341,10 @@ public class PostServiceImpl implements PostService {
         }
     }
 */
+
     /**
      * 删除岗位职等关系表信息
+     *
      * @param userSession
      * @param postGradeRelation
      */
@@ -337,8 +381,10 @@ public class PostServiceImpl implements PostService {
         }
     }
 */
+
     /**
      * 删除岗位职级关系信息
+     *
      * @param userSession
      * @param postLevelRelation
      */
@@ -349,12 +395,7 @@ public class PostServiceImpl implements PostService {
     }
 
 
-    /**
-     * 新增岗位职级关系表信息
-     * @param postVo
-     * @param userSession
-     * @param post
-     */
+
    /* private void addPostLevelAndGradeRelation(PostVo postVo, UserSession userSession, Post post) {
         List<Integer> positionLevels = postVo.getPositionLevels();
         if(!CollectionUtils.isEmpty(positionLevels)){
@@ -383,39 +424,21 @@ public class PostServiceImpl implements PostService {
         }
     }*/
 
-    /**
-     * 获取排序sortId
-     * @param orgId
-     * @return
-     */
-    private Integer getPostSortId(Integer orgId) {
-        List<Post> postList = postDao.getPostListByOrgId(orgId, null);
-        Integer sortId;
-        if(CollectionUtils.isEmpty(postList)){
-            Post lastPost = postList.get(postList.size() - 1);
-            sortId = lastPost.getSortId() + 1000;
-        }else {
-            sortId = 1000;
-        }
-        return sortId;
-    }
 
-    /**
-     * 查询机构的岗位生成岗位编码
-     * @param orgId
-     * @return
-     */
-    private String getPostCode(Integer orgId) {
-        String postCode = postDao.getLastPostByOrgId(orgId);
-        if(postCode == null){
-            OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
-            String orgCode = organizationVO.getOrgCode();
-            postCode += orgCode + "001";
-        }else {
-            Integer integer = Integer.valueOf(postCode);
-            postCode = String.valueOf(integer + 1);
+    private String culPostCode(String orgCode) {
+        String number = orgCode.substring(orgCode.length() - 2);
+        String preCode = orgCode.substring(0, orgCode.length() - 2);
+        Integer new_postCode = Integer.parseInt(number) + 1;
+        String code = new_postCode.toString();
+        int i = 2 - code.length();
+        if (i < 0) {
+            ExceptionCast.cast(CommonCode.FAIL);
         }
-        return postCode;
+        for (int k = 0; k < i; k++) {
+            code = "0" + code;
+        }
+        String newPostCode = preCode + code;
+        return newPostCode;
     }
 
     private static void exportExcel(HttpServletResponse response, List<Post> postList) {
@@ -448,7 +471,7 @@ public class PostServiceImpl implements PostService {
     private static void setTitle(HSSFWorkbook workbook, HSSFSheet sheet, List<String> strList) {
         HSSFRow row = sheet.createRow(0);
         //设置列宽，setColumnWidth的第二个参数要乘以256，这个参数的单位set是1/256个字符宽度
-        for(int i = 0; i < strList.size(); i++){
+        for (int i = 0; i < strList.size(); i++) {
             sheet.setColumnWidth(i, 30 * 256);
         }
         //设置为居中加粗,格式化时间格式
@@ -497,6 +520,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * 使用浏览器下载
+     *
      * @param response
      * @param workbook
      * @param fileName
@@ -507,7 +531,7 @@ public class PostServiceImpl implements PostService {
             //清空response
             response.reset();
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.setHeader("Content-Disposition", "attachment;filename="+URLEncoder.encode(fileName, "utf-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
             //将excel写入到输出流中
             workbook.write(os);
             os.flush();
@@ -516,7 +540,6 @@ public class PostServiceImpl implements PostService {
             throw new Exception("文件导出失败!");
         }
     }
-
 
 
 }
