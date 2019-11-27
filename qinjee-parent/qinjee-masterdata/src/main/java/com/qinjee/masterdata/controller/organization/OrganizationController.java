@@ -39,7 +39,7 @@ public class OrganizationController extends BaseController {
     //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "新增机构", notes = "高雄")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId",required = false) String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
         return organizationService.addOrganization(orgName, orgType, orgParentId, orgManagerId, getUserSession());
     }
 
@@ -65,7 +65,7 @@ public class OrganizationController extends BaseController {
      * @Author: penghs
      * @Date: 2019/11/20 0020
      */
-    @ApiOperation(value = "查询用户下所有的机构及子机构,树形展示", notes = "彭洪思")
+    @ApiOperation(value = "获取机构树", notes = "彭洪思")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
     })
@@ -97,9 +97,9 @@ public class OrganizationController extends BaseController {
     }
 
     //TODO
-    @ApiOperation(value = "岗位维护机构岗位树状图展示", notes = "高雄")
-    @PostMapping("/getOrganizationPositionTree")
-    public ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0") Short isEnable) {
+    @ApiOperation(value = "获取机构岗位树", notes = "彭洪思")
+    @GetMapping("/getOrganizationPostTree")
+    public ResponseResult<List<OrganizationVO>>  getOrganizationPostTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0")@RequestParam("isEnable") Short isEnable) {
         return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
     }
 

@@ -36,6 +36,12 @@ public class PostController extends BaseController {
         return postService.getPostList(getUserSession(), postPageVo);
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
+    })
+
+
+
     @GetMapping("/getAllPost")
     @ApiOperation(value = "根据机构id获取机构下所有的岗位", notes = "新增用户信息岗位下拉框的生成")
     public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId") @ApiParam(name = "orgId", value = "机构id", example = "1", required = true) Integer orgId) {

@@ -234,7 +234,7 @@
       ORDER BY ${sortFieldStr}
     </if>
   </select>
-  <select id="getPostListByOrgId" resultType="com.qinjee.masterdata.model.entity.Post">
+  <select id="getPostListByOrgId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_post
