@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.utils;
 
-import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
+import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.utils.QueryColumn;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -23,12 +23,12 @@ public class QueryFieldUtil {
      * @param _class
      * @return
      */
-    public static String getSortFieldStr(Optional<List<QueryFieldVo>> querFieldVos, Class _class) {
+    public static String getSortFieldStr(Optional<List<QueryField>> querFieldVos, Class _class) {
         if(querFieldVos.isPresent()&&querFieldVos.get()!=null){
             try {
                 StringBuilder orderByStrs = new StringBuilder();
-                List<QueryFieldVo> queryFields = querFieldVos.get();
-                for (QueryFieldVo queryField : queryFields) {
+                List<QueryField> queryFields = querFieldVos.get();
+                for (QueryField queryField : queryFields) {
                     String fieldName = queryField.getFieldName();
                    if (null==fieldName||"".equals(fieldName)){
                        continue;

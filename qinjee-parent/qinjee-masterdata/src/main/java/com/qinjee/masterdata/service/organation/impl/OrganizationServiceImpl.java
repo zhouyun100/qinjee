@@ -12,9 +12,9 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.QueryFieldVo;
+import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
@@ -93,7 +93,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
             PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
         }
-        Optional<List<QueryFieldVo>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
+        Optional<List<QueryField>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
         String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
         List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
@@ -392,7 +392,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             //TODO 调用人员接口，将老机构下的人员迁移至新机构
 
             //TODO 调用角色接口
-            apiAuthService.mergeOrg(orgIds,parentOrgId,userSession.getArchiveId());
+            apiAuthService.mergeOrg(orgIds,newOrgVO.getOrgId(),userSession.getArchiveId());
 
 
             //refactorOrganization(organizationVOList, newOrganizationVO);

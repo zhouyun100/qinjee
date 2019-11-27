@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.organization;
+package com.qinjee.masterdata.model.vo.organization.query;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,7 +16,7 @@ import java.util.List;
 @ApiModel(description = "查询字段Vo类")
 @Data
 @NoArgsConstructor
-public class QueryFieldVo {
+public class QueryField {
 
     /**
      * 字段名

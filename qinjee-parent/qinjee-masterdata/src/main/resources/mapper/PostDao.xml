@@ -244,12 +244,12 @@
     </if>
     and is_delete = 0 ORDER BY sort_id ASC
   </select>
-  <select id="getLastPostByOrgId" resultType="java.lang.String">
-    SELECT post_code from t_post where post_id = (select max(post_id) from t_post where is_delete = 0)
+  <select id="getLastTopPostByOrgId" resultMap="BaseResultMap">
+    SELECT post_code,sort_id from t_post where org_id = #{orgId} and parent_post_id =0 order by sort_id desc
   </select>
   <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
     select tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position tps on tps.position_id = tp.position_id
-    where tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
+    where tp.org_id=#{orgId} and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
   </select>
   <select id="getPost" resultType="com.qinjee.masterdata.model.entity.Post">
     select
@@ -257,7 +257,7 @@
     from t_post
     where post_code = #{postCode} and post_name = #{postName}
   </select>
-    <select id="getPostListByPostId" resultType="com.qinjee.masterdata.model.entity.Post">
+    <select id="getPostListByPostIds" resultType="com.qinjee.masterdata.model.entity.Post">
         select tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, torg.org_name orgName, tps.position_name positionName
         , torg.org_name parentOrgName, torg.org_id parentOrgId, torg.org_code parentOrgCode parenttp.post_id parentPostId ,parenttp.post_name parentPostName ,parenttp.post_code parentPostCode, group_concat(tpl.position_level_name) positionLevelNames, group_concat(tpg.position_grade_name) positionGradeNames
         from t_post tp
@@ -292,5 +292,10 @@
     from t_post
     where post_name=#{postName}
      AND is_delete=0
+  </select>
+
+  <select id="getPostListByPostId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include>
+        from t_post where parent_post_id = #{parentPostId} ORDER BY sort_id DESC
   </select>
 </mapper>
