@@ -5,6 +5,10 @@
     <id column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="post_code" jdbcType="VARCHAR" property="postCode" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
+    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
+    <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName" />
     <result column="parent_post_id" jdbcType="INTEGER" property="parentPostId" />
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
@@ -185,7 +189,9 @@
     where post_id = #{postId,jdbcType=INTEGER}
   </update>
   <select id="getPostList" resultType="com.qinjee.masterdata.model.entity.Post">
-    SELECT t1.org_id orgId,t1.org_name orgName, parent_org.org_id parentOrgId,parent_org.org_name parentOrgName,tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, ptp.post_name parentPostName,ptp.post_id parentPostId FROM t_post  tp INNER JOIN (SELECT
+    SELECT t1.org_id orgId,t1.org_name orgName, parent_org.org_id parentOrgId,parent_org.org_name parentOrgName,
+    tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, ptp.post_name parentPostName,
+    ptp.post_id parentPostId FROM t_post  tp INNER JOIN (SELECT
     org.org_id,org.org_name,org.org_parent_id
     FROM
     t_organization org
@@ -307,5 +313,44 @@
      </foreach>
      and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
 
+  </select>
+  <select id="getPostConditionPage" resultMap="BaseResultMap">
+    SELECT
+    tp.org_id,
+    tp.post_id,
+    tp.is_enable,
+    tp.parent_post_id,
+    tp.post_name,
+    tps.position_name position_name,
+    ptp.post_name parent_post_name,
+    torg.org_name
+    FROM
+    t_post tp
+    LEFT JOIN t_position tps
+    ON tps.position_id = tp.position_id
+    LEFT JOIN t_post ptp
+    ON ptp.post_id = tp.parent_post_id
+    LEFT JOIN t_organization torg
+    ON  torg.org_id=tp.org_id
+     where tp.org_id in
+     <foreach collection="orgidList" item="id" separator="," open="(" close=")">
+        #{id}
+     </foreach>
+     and tp.is_delete = 0 and tp.is_enable = 1 and tps.is_delete = 0
+    <if test="postPageVo != null">
+      <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
+        <foreach collection="postPageVo.querFieldVos" item="querField">
+          <if test="querField.fieldName != null and querField.fieldName != ''">
+            ${querField.condition}
+          </if>
+          <if test="querField.isFilterNull">
+            and ${querField.fieldName} IS NULL
+          </if>
+        </foreach>
+      </if>
+    </if>
+    <if test="sortFieldStr != null and sortFieldStr != ''">
+      ORDER BY ${sortFieldStr}
+    </if>
   </select>
 </mapper>

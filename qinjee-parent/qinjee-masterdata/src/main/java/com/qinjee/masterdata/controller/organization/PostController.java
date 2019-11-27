@@ -33,20 +33,20 @@ public class PostController extends BaseController {
     @PostMapping("/getPostList")
     @ApiOperation(value = "分页查询岗位列表", notes = "高雄")
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
-        return postService.getPostList(getUserSession(), postPageVo);
+        PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
+        return new ResponseResult<>(pageResult);
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
     })
-
-
-
     @GetMapping("/getAllPost")
     @ApiOperation(value = "根据机构id获取机构下（包含子机构）所有的岗位")
     public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId") @ApiParam(name = "orgId", value = "机构id", example = "1", required = true) Integer orgId) {
         return postService.getAllPost(getUserSession(), orgId);
     }
+
+
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "pageSize", value = "每页大小", paramType = "query", dataType = "int", required = true, example = "10"),
