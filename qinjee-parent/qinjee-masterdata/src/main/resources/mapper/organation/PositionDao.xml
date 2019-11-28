@@ -141,14 +141,11 @@
     </select>
 
   <select id="getPositionPage" resultMap="BaseResultMap" >
-        select <include refid="Base_Column_List"></include>
-    ,tpg.position_group_name
+        select  tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
+    tp.is_delete,tpg.position_group_name
     from t_position tp  LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
          where 1=1
-
-
     <if test="pageVo != null">
-
       <if test="pageVo.positionGroupId != null">
             and tp.position_group_id = #{pageVo.positionGroupId}
       </if>
