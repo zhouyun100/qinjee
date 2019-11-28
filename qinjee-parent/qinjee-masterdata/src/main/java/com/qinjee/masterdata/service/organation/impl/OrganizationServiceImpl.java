@@ -119,7 +119,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public ResponseResult addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //根据父级机构id查询一些基础信息，构建Organization对象
         OrganizationVO orgBean = initOrganization(Integer.parseInt(parentOrgId));
-        String full_name = "";
+        String full_name;
         if (orgBean.getOrgFullName() != null) {
             full_name = orgBean.getOrgFullName() + "/" + orgName;
         } else {
@@ -418,8 +418,20 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional
     public ResponseResult sortOrganization(LinkedList<Integer> orgIds) {
+        ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
+        List<OrganizationVO> organizationList= organizationDao.getOrganizationListByOrgIds(orgIds);
+        Set<Integer> parentOrgSet=new HashSet<>();
+        for (OrganizationVO organizationVO : organizationList) {
+            parentOrgSet.add(organizationVO.getOrgParentId());
+        }
+        //判断是否在同一级机构下
+        if (parentOrgSet.size()>1){
+            responseResult.setResultCode(CommonCode.FAIL);
+            responseResult.setMessage("机构不在同级下，排序失败");
+            return responseResult;
+        }
         Integer i = organizationDao.sortOrganization(orgIds);
-        return new ResponseResult(CommonCode.SUCCESS);
+        return responseResult;
     }
 
     @Override

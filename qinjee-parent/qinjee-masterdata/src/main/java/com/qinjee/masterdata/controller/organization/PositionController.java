@@ -27,25 +27,25 @@ public class PositionController extends BaseController {
     @Autowired
     private PositionService positionService;
 
-    @ApiOperation(value = "分页查询职位信息", notes = "高雄")
+    @ApiOperation(value = "待调优，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PageVo pageVo){
         return positionService.getPositionPage(getUserSession(), pageVo);
     }
 
-    @ApiOperation(value = "新增职位", notes = "高雄")
+    @ApiOperation(value = "ok，新增职位", notes = "ok")
     @PostMapping("/addPosition")
     public ResponseResult addPosition(PositionVo positionVo){
         return positionService.addPosition(positionVo, getUserSession());
     }
 
-    @ApiOperation(value = "编辑职位", notes = "高雄")
+    @ApiOperation(value = "ok，编辑职位", notes = "ok")
     @PostMapping("/editPosition")
     public ResponseResult editPosition(PositionVo positionVo){
         return positionService.editPosition(positionVo, getUserSession());
     }
 
-    @ApiOperation(value = "删除职位", notes = "高雄")
+    @ApiOperation(value = "ok，删除职位", notes = "ok")
     @GetMapping("/deletePosition")
     @ApiImplicitParam(name="positionIds", value = "职位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
     public ResponseResult deletePosition(List<Integer> positionIds){
@@ -57,7 +57,7 @@ public class PositionController extends BaseController {
             @ApiImplicitParam(name = "midPositionId", value = "需要排序的职位id", paramType = "query", dataType = "int", required = true, example = "1"),
             @ApiImplicitParam(name = "nextPositionId", value = "下一个职位id", paramType = "query", dataType = "int", required = true, example = "2"),
     })
-    @ApiOperation(value = "职位排序", notes = "高雄")
+    @ApiOperation(value = "未验证，职位排序", notes = "未验证")
     @GetMapping("/sortPositionGroup")
     public ResponseResult  sortPosition (Integer prePositionId,
                                          Integer midPositionId,
@@ -67,7 +67,7 @@ public class PositionController extends BaseController {
 
 
     @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
-    @ApiOperation(value = "导出职位excel", notes = "高雄")
+    @ApiOperation(value = "未实现，导出职位excel", notes = "未实现")
     @GetMapping("/downloadExcel")
     public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds){
 

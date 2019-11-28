@@ -263,23 +263,15 @@
     from t_post
     where post_code = #{postCode} and post_name = #{postName}
   </select>
-    <select id="getPostListByPostIds" resultType="com.qinjee.masterdata.model.entity.Post">
-        select tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, torg.org_name orgName, tps.position_name positionName
-        , torg.org_name parentOrgName, torg.org_id parentOrgId, torg.org_code parentOrgCode parenttp.post_id parentPostId ,parenttp.post_name parentPostName ,parenttp.post_code parentPostCode, group_concat(tpl.position_level_name) positionLevelNames, group_concat(tpg.position_grade_name) positionGradeNames
-        from t_post tp
-        left join t_organization torg on torg.org_id = tp.org_id
-        left join t_post parenttp on parenttp.post_id = tp.parent_post_id
-        left join t_position tps on tps.position_id = tp.position_id and tps.is_delete = 0
-        left join t_position_level_relation tplr on tplr.position_id = tps.position_id and tplr.is_delete = 0
-        left join t_position_level tpl on tpl.position_level_id = tplr.position_level_id and tpl.is_delete = 0
-        left join t_position_grade_relation tpgr on tpgr.position_id = tps.position_id and tpgr.is_delete = 0
-        left join t_position_grade tpg on tpg.position_grade_id = tpgr.position_grade_id and tpg.is_delete = 0
+    <select id="getPostListByPostIds" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"></include>
+      from t_post tp
         where tp.post_id in
             <foreach item="postId" collection="postIds"
                      open="(" separator="," close=")">
                 #{postId}
             </foreach>
-        GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , torg.org_name , tps.position_name
+        GROUP BY tp.post_id
     </select>
     <select id="getPostByOrgId" resultType="java.util.Map">
       select
@@ -317,7 +309,7 @@
   <select id="getPostConditionPage" resultMap="BaseResultMap">
     SELECT
     tp.org_id,
-    tp.post_id,
+    tp.post_id,tp.post_code,
     tp.is_enable,
     tp.parent_post_id,
     tp.post_name,
@@ -353,4 +345,15 @@
       ORDER BY ${sortFieldStr}
     </if>
   </select>
+ <update id="sortPorts">
+   <foreach collection="postIds" item="id" index="index" open="" close="" separator=";">
+     UPDATE t_post
+     <set>
+       sort_id=(#{index}+1)*1000
+     </set>
+     <where>
+       post_id = #{id}
+     </where>
+   </foreach>
+ </update>
 </mapper>
