@@ -71,9 +71,12 @@ public class PostServiceImpl implements PostService {
             Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
             sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
         }
-        List<Integer> orgidList = new ArrayList<>();
         //TODO id重复无影响
-       // getOrgIdList(orgidList, postPageVo.getOrgId());
+        List<Integer> orgidList=null;
+        //如果机构id不是0，则进行筛选子机构id，否则默认为全部就行了
+        if(postPageVo.getOrgId()!=0){
+            orgidList=getOrgIdList(userSession,postPageVo.getOrgId());
+        }
         if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
             PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }

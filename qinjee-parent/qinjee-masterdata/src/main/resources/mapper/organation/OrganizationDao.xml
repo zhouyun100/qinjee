@@ -557,6 +557,6 @@
              <foreach collection="orgIdList" item="item" close=")" open="(" separator=",">
                  #{item}
              </foreach>
-         </if>>
+         </if>
     </select>
 </mapper>

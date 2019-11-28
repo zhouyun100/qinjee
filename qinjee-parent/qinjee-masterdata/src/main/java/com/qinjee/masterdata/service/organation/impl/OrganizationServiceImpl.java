@@ -289,9 +289,26 @@ public class OrganizationServiceImpl implements OrganizationService {
     public PageResult<OrganizationVO> getOrganizationGraphics2(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable) {
         List<Integer> orgidList=new ArrayList<>();
         //拿到关联的所有机构id
-        List<Integer> orgIdList = getOrgIdList(userSession, orgId);
-        organizationDao.getOrganizationGraphics2(userSession.getArchiveId(),orgIdList,isEnable,new Date());
-        return null;
+        List<Integer> orgIdList=null;
+        if(orgId!=0){
+            orgIdList= getOrgIdList(userSession, orgId);
+        }
+        //查询所有相关的机构
+        List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics2(userSession.getArchiveId(), orgIdList, isEnable, new Date());
+
+        //拿到根节点
+        List<OrganizationVO> topOrgsList = allOrg.stream().filter(organization -> {
+            if (organization.getOrgId() != null && organization.getOrgId() .equals(orgId) ) {
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        //递归处理机构,使其以树形结构展示
+        handlerOrganizationToTree(allOrg, topOrgsList);
+
+
+        return new PageResult<>(allOrg);
     }
 
     /**

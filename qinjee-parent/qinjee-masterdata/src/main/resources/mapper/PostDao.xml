@@ -324,10 +324,13 @@
     ON ptp.post_id = tp.parent_post_id
     LEFT JOIN t_organization torg
     ON  torg.org_id=tp.org_id
-     where tp.org_id in
-     <foreach collection="orgidList" item="id" separator="," open="(" close=")">
+    where 1=1
+    <if test="orgidList != null and orgidList.size > 0">
+     and  tp.org_id in
+      <foreach collection="orgidList" item="id" separator="," open="(" close=")">
         #{id}
-     </foreach>
+      </foreach>
+    </if>
      and tp.is_delete = 0 and tp.is_enable = 1 and tps.is_delete = 0
     <if test="postPageVo != null">
       <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
