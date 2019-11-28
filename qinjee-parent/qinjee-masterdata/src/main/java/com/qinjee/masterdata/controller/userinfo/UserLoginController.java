@@ -8,14 +8,14 @@
  * Copyright(C) 2019, by zhouyun
  * 原始作者：周赟
  */
-package com.qinjee.masterdata.controller.auth;
+package com.qinjee.masterdata.controller.userinfo;
 
 import com.alibaba.fastjson.JSON;
 import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
-import com.qinjee.masterdata.service.auth.UserLoginService;
+import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;

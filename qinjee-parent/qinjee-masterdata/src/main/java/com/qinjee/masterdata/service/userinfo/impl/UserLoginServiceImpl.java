@@ -8,14 +8,14 @@
  * Copyright(C) 2019, by zhouyun
  * 原始作者：周赟
  */
-package com.qinjee.masterdata.service.auth.impl;
+package com.qinjee.masterdata.service.userinfo.impl;
 
-import com.qinjee.masterdata.dao.auth.UserLoginDao;
+import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
-import com.qinjee.masterdata.service.auth.UserLoginService;
+import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.utils.RegexpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
