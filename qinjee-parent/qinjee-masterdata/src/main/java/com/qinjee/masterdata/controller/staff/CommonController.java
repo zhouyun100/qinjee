@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
+import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
-import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -35,8 +37,6 @@ public class CommonController extends BaseController {
 
     @Autowired
     private IStaffCommonService staffCommonService;
-    @Autowired
-    private SmsRecordService smsRecordServiceImpl;
 
     /**
      * 新增自定义表
@@ -449,12 +449,12 @@ public class CommonController extends BaseController {
 
     @RequestMapping(value = "/sendMessage", method = RequestMethod.POST)
     @ApiOperation(value = "发送短信", notes = "hkt")
-    public ResponseResult sendMessage(@RequestBody @Valid SendMessageModel sendMessageModel ) {
-        Boolean b = checkParam(sendMessageModel);
+    public ResponseResult sendMessage(@RequestBody @Valid List<Integer> list ) {
+        Boolean b = checkParam(list);
         if (b) {
                 try {
-                    smsRecordServiceImpl.sendMessage ( sendMessageModel );
-                    return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+                    staffCommonService.sendMessage ( list );
+                    return new ResponseResult<>(null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);

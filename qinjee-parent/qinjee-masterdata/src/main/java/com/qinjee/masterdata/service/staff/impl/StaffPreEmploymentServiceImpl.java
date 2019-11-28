@@ -141,7 +141,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 userArchive.setEmployeeNumber ( empNumber );
                 userArchiveDao.insertSelective(userArchive);
                 //删除预入职表
-                preEmploymentDao.deletePreEmployment ( preEmploymentId );
+//                preEmploymentDao.deletePreEmployment ( preEmploymentId );
             }
             if (CHANGSTATUS_DELAY.equals ( changeState )) {
 

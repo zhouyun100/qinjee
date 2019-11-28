@@ -190,7 +190,7 @@
     AND is_delete=0
   </select>
   <select id="selectBigDataByBusinessIdAndTitleListAndCompanyId" resultType="hashmap">
-    select  adata.big_data
+    select  adata.business_id,adata.big_data
     from t_custom_archive_table_data adata
     left join t_custom_archive_table tab on adata.table_id=tab.table_id
     where tab.is_delete=0 and tab .is_enable=1

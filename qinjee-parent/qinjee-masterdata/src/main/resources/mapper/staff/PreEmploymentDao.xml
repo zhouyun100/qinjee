@@ -10,7 +10,7 @@
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="id_type" property="idType" jdbcType="VARCHAR" />
     <result column="id_number" property="idNumber" jdbcType="VARCHAR" />
-    <result column="age" property="age" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
     <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR" />
     <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR" />
     <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR" />
@@ -39,7 +39,7 @@
     <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="VARCHAR" />
     <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
-    <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    <result column="is_delete" property="isDelete" jdbcType="TINYINT" />
   </resultMap>
     <resultMap id="t_pre_employmentMap" type="com.qinjee.masterdata.model.vo.staff.export.ExportPreVo">
         <result column="user_name" property="user_name" jdbcType="VARCHAR" />
@@ -49,7 +49,7 @@
         <result column="email" property="email" jdbcType="VARCHAR" />
         <result column="id_type" property="id_type" jdbcType="VARCHAR" />
         <result column="id_number" property="id_number" jdbcType="VARCHAR" />
-        <result column="age" property="age" jdbcType="VARCHAR" />
+        <result column="age" property="age" jdbcType="INTEGER" />
         <result column="first_work_date" property="first_work_date" jdbcType="VARCHAR" />
         <result column="highest_degree" property="highest_degree" jdbcType="VARCHAR" />
         <result column="graduated_school" property="graduated_school" jdbcType="VARCHAR" />
@@ -65,6 +65,7 @@
         <result column="post_name" property="post_name" jdbcType="VARCHAR" />
         <result column="post_code" property="post_code" jdbcType="VARCHAR" />
         <result column="application_position" property="application_position" jdbcType="VARCHAR" />
+
     </resultMap>
     <resultMap id="PreVo" type="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo">
         <id column="employment_id" property="employmentId" jdbcType="INTEGER" />
@@ -74,7 +75,7 @@
         <result column="email" property="email" jdbcType="VARCHAR" />
         <result column="id_type" property="idType" jdbcType="VARCHAR" />
         <result column="id_number" property="idNumber" jdbcType="VARCHAR" />
-        <result column="age" property="age" jdbcType="VARCHAR" />
+        <result column="age" property="age" jdbcType="INTEGER" />
         <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR" />
         <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR" />
         <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR" />
@@ -101,6 +102,9 @@
         <result column="data_source" property="dataSource" jdbcType="VARCHAR" />
         <result column="org_name" property="orgName" jdbcType="VARCHAR" />
         <result column="post_name" property="postName" jdbcType="VARCHAR" />
+        <result column="id_type_name" property="idTypeName" jdbcType="VARCHAR" />
+        <result column="company_id" property="companyId" jdbcType="INTEGER" />
+
     </resultMap>
 
   <!-- 表所有字段 -->
@@ -130,12 +134,16 @@
           <if test="employmentId != null">
               employment_id,
           </if>
+          <if test="maritalStatus != null">
+              marital_status,
+          </if>
           <if test="userName != null">
               user_name,
           </if>
           <if test="phone != null">
               phone,
           </if>
+
           <if test="gender != null">
               gender,
           </if>
@@ -199,6 +207,9 @@
           <if test="postId != null">
               post_id,
           </if>
+          <if test="orgId != null">
+              org_id,
+          </if>
           <if test="employmentState != null">
               employment_state,
           </if>
@@ -226,14 +237,26 @@
           <if test="isDelete != null">
               is_delete,
           </if>
+          <if test="bloodType != null">
+              blood_type,
+          </if>
+          <if test="idType != null">
+              id_type,
+          </if>
 
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
           <if test="employmentId != null">
               #{employmentId},
           </if>
+          <if test="maritalStatus != null">
+              #{maritalStatus},
+          </if>
           <if test="userName != null">
               #{userName},
+          </if>
+          <if test="orgId != null">
+              #{orgId},
           </if>
           <if test="phone != null">
               #{phone},
@@ -328,6 +351,12 @@
           <if test="isDelete != null">
               #{isDelete},
           </if>
+          <if test="bloodType != null">
+              #{bloodType},
+          </if>
+          <if test="idType != null">
+              #{idType},
+          </if>
       </trim>
   </insert>
     <insert id="insertBatch" >
@@ -337,12 +366,16 @@
                 <if test="employmentId != null">
                     employment_id,
                 </if>
+                <if test="maritalStatus != null">
+                    marital_status,
+                </if>
                 <if test="userName != null">
                     user_name,
                 </if>
                 <if test="phone != null">
                     phone,
                 </if>
+
                 <if test="gender != null">
                     gender,
                 </if>
@@ -406,6 +439,9 @@
                 <if test="postId != null">
                     post_id,
                 </if>
+                <if test="orgId != null">
+                    org_id,
+                </if>
                 <if test="employmentState != null">
                     employment_state,
                 </if>
@@ -433,20 +469,33 @@
                 <if test="isDelete != null">
                     is_delete,
                 </if>
+                <if test="bloodType != null">
+                    blood_type,
+                </if>
+                <if test="idType != null">
+                    idType,
+                </if>
 
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
                 <if test="employmentId != null">
                     #{item.employmentId},
                 </if>
+                <if test="maritalStatus != null">
+                    #{item.maritalStatus},
+                </if>
                 <if test="userName != null">
                     #{item.userName},
                 </if>
+                <if test="orgId != null">
+                    #{item.orgId},
+                </if>
+
                 <if test="phone != null">
-                    #{ item.phone},
+                    #{item.phone},
                 </if>
                 <if test="gender != null">
-                    #{ item.gender},
+                    #{item.gender},
                 </if>
                 <if test="email != null">
                     #{item.email},
@@ -461,13 +510,13 @@
                     #{item.firstWorkDate},
                 </if>
                 <if test="highestDegree != null">
-                    #{item. highestDegree},
+                    #{item.highestDegree},
                 </if>
                 <if test="graduatedSchool != null">
                     #{item.graduatedSchool},
                 </if>
                 <if test="graduatedSpeciality != null">
-                    #{item. graduatedSpeciality},
+                    #{item.graduatedSpeciality},
                 </if>
                 <if test="lastWorkCompany != null">
                     #{item.lastWorkCompany},
@@ -479,7 +528,7 @@
                     #{item.residentCharacter},
                 </if>
                 <if test="height != null">
-                    #{item. height},
+                    #{item.height},
                 </if>
                 <if test="englishName != null">
                     #{item.englishName},
@@ -500,7 +549,7 @@
                     #{item.applicationPosition},
                 </if>
                 <if test="probationPeriod != null">
-                    #{item. probationPeriod},
+                    #{item.probationPeriod},
                 </if>
                 <if test="hireDate != null">
                     #{item.hireDate},
@@ -515,7 +564,7 @@
                     #{item.employmentRegister},
                 </if>
                 <if test="description != null">
-                    #{item.item.description},
+                    #{item.description},
                 </if>
                 <if test="dataSource != null">
                     #{item.dataSource},
@@ -534,6 +583,12 @@
                 </if>
                 <if test="isDelete != null">
                     #{item.isDelete},
+                </if>
+                <if test="bloodType != null">
+                    #{item.bloodType},
+                </if>
+                <if test="idType != null">
+                    #{item.idType},
                 </if>
             </trim>
 
@@ -961,10 +1016,11 @@
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name
+        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name
         from t_pre_employment t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id
         left join t_post post on post.post_id = t_pre_employment.post_id
+        left join t_sys_dict dict on dict.dict_code = t_pre_employment.id_type
         and org.is_enable=1 and post.is_enable=1 and t_pre_employment.is_delete=0 and t_pre_employment.company_id=#{companyId}
     </select>
 </mapper>

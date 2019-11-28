@@ -8,10 +8,12 @@ import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGradeRelation;
 import com.qinjee.masterdata.model.entity.PositionLevelRelation;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
+import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
+import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.service.organation.PositionGradeService;
 import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.masterdata.service.organation.PositionService;
-import com.qinjee.model.request.PageVo;
+import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -51,14 +55,18 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PageVo pageVo) {
+    public ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PositionPageVo pageVo) {
 
+        String sortFieldStr=null;
+        if(Objects.nonNull(pageVo.getQuerFieldVos())){
+            Optional<List<QueryField>> querFieldVos = Optional.of(pageVo.getQuerFieldVos());
+            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Position.class);
+        }
         Integer companyId = userSession.getCompanyId();
         if (pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)) {
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
         }
-
-        List<Position> positionList = positionDao.getPositionPage(pageVo);
+        List<Position> positionList = positionDao.getPositionPage(pageVo,sortFieldStr);
         PageResult<Position> pageResult = new PageResult<>(positionList);
 
         return new ResponseResult<>(pageResult);

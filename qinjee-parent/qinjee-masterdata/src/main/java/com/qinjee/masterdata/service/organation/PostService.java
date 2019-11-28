@@ -67,14 +67,8 @@ public interface PostService {
      */
     ResponseResult sealPostByIds(List<Integer> postIds, Short isEnable, UserSession userSession);
 
-    /**
-     * 岗位排序
-     * @param prePostId
-     * @param midPostId
-     * @param nextPostId
-     * @return
-     */
-    ResponseResult sortOrganization(Integer prePostId, Integer midPostId, Integer nextPostId, UserSession userSession);
+
+    ResponseResult sortPorts(List<Integer> postIds, UserSession userSession);
 
     /**
      * 复制岗位

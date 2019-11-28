@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -36,5 +37,6 @@ public interface CustomArchiveTableDataDao {
     Integer selectTableIdByBusinessIdAndTableId(Integer businessId, Integer tableId);
 
     String selectBigDataBybusinessIdAndTableId(@Param("id") Integer id, @Param("integer") Integer integer);
-    Map< Integer, String>selectBigDataByBusinessIdAndTitleListAndCompanyId(@Param("list") List< Integer> list, @Param("title") String title, @Param("companyId") Integer companyId);
+    @MapKey ( "business_id" )
+    Map< Integer, Map<String,String>>selectBigDataByBusinessIdAndTitleListAndCompanyId(@Param("list") List< Integer> list, @Param("title") String title, @Param("companyId") Integer companyId);
 }

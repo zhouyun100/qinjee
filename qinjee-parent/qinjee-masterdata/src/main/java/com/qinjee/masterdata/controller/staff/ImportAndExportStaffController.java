@@ -237,6 +237,7 @@ public class ImportAndExportStaffController extends BaseController {
                 staffImportAndExportService.exportBusiness(exportRequest,response,getUserSession());
                 return null;
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult("导出失败");
             }
         }
