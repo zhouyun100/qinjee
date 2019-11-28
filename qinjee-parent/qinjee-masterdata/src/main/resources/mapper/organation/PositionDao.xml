@@ -139,18 +139,24 @@
       where tp.is_delete = 0 and tps.is_delete = 0 and tp.is_enable = 1
     </select>
 
-  <select id="getPositionPage" resultMap="BaseResultMap" parameterType="com.qinjee.model.request.PageVo">
+  <select id="getPositionPage" resultMap="BaseResultMap" >
         select <include refid="Base_Column_List"></include>
-        from t_position tp
-        <where>
-          <if test="pageVo.positionName != null">
-                and tp.position_name like CONCAT('%',#{pageVo.positionName},'%')
+        from t_position tp where 1=1
+    <if test="pageVo != null">
+      <if test="pageVo.querFieldVos != null and pageVo.querFieldVos.size > 0">
+        <foreach collection="pageVo.querFieldVos" item="querField">
+          <if test="querField.fieldName != null and querField.fieldName != ''">
+            ${querField.condition}
           </if>
-          <if test="pageVo.positionGroupId != null">
-            and tp.position_group_id = #{pageVo.positionGroupId,jdbcType=INTEGER}
+          <if test="querField.isFilterNull">
+            and ${querField.fieldName} IS NULL
           </if>
-        </where>
-
+        </foreach>
+      </if>
+    </if>
+    <if test="sortFieldStr != null and sortFieldStr != ''">
+      ORDER BY ${sortFieldStr}
+    </if>
   </select>
 
 </mapper>

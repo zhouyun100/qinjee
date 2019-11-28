@@ -2,7 +2,7 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
-import com.qinjee.model.request.PageVo;
+import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -29,7 +29,7 @@ public interface PositionService {
      * @param pageVo
      * @return
      */
-    ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PageVo pageVo);
+    ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PositionPageVo pageVo);
 
     /**
      * 新增职位

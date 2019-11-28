@@ -3,11 +3,14 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
+import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
 import com.qinjee.masterdata.service.organation.PositionService;
-import com.qinjee.model.request.PageVo;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +32,8 @@ public class PositionController extends BaseController {
 
     @ApiOperation(value = "待调优，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
-    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PageVo pageVo){
-        return positionService.getPositionPage(getUserSession(), pageVo);
+    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo){
+        return positionService.getPositionPage(getUserSession(), positionPageVo);
     }
 
     @ApiOperation(value = "ok，新增职位", notes = "ok")
