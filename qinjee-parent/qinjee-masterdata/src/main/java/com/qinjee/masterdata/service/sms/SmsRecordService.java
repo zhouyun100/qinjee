@@ -10,7 +10,7 @@
  */
 package com.qinjee.masterdata.service.sms;
 
-import com.qinjee.masterdata.model.entity.SendMessageModel;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -18,9 +18,9 @@ import com.qinjee.masterdata.model.entity.SendMessageModel;
  */
 public interface SmsRecordService {
     /**
-     * 记录批量发送登录短信验证码发送短信验证码
+     * 记录发送登录短信验证码发送短信验证码
      */
-    void sendMessage(SendMessageModel sendMessageModel) throws Exception;
+    void sendMessageSms(List <Integer> list) throws Exception;
 
     /**
      * 发送短信验证码

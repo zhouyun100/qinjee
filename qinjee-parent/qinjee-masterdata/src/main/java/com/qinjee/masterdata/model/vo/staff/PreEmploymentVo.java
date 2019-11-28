@@ -196,8 +196,14 @@ public class PreEmploymentVo implements Serializable {
      * 职位名称
      */
     private String orgName;
-    /** 入职登记 */
-
+    /**
+     * 学历名称
+     */
+    private String highestDegreeName;
+    /**
+     * 婚姻状况名称
+     */
+    private String marryStatusName;
     /**
      * 延期入职原因
      */

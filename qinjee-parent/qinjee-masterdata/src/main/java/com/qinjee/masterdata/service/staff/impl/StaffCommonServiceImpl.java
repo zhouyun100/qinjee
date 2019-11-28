@@ -6,12 +6,11 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.sms.SmsConfigDao;
-import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
@@ -20,6 +19,7 @@ import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -61,11 +61,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private OrganizationDao organizationDao;
     @Autowired
-    private SmsConfigDao smsConfigDao;
+    private SysDictService sysDictService;
     @Autowired
-    private SmsRecordDao recordDao;
+    private SmsRecordService smsRecordService;
     @Autowired
     private CompanyCodeDao companyCodeDao;
+    @Autowired
+    private PreEmploymentDao preEmploymentDao;
     @Autowired
     private PostDao postDao;
     @Override
@@ -250,14 +252,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         return companyCodeDao.selectValue ( id );
     }
 
-    @Override
-    public void sendMessage(List < Integer > list) throws Exception {
-//        SendMessageModel sendMessageModel=new SendMessageModel ();
-//        sendMessageModel.setList ( list );
-//        sendMessageModel.setTemplateId (smsConfigDao.selectByBusinessType ("ENTRY_REGISTRATION")  );
-//        sendMessageModel.setParams (  );
-//        SmsRecordServiceImpl.sendMessage (sendMessageModel);
-    }
+
 
     @Override
     public void insertCustomArchiveTableData(BigDataVo bigDataVo, UserSession userSession) {

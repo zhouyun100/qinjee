@@ -63,4 +63,6 @@ public interface PreEmploymentDao {
     int insertBatch(@Param ( "list" ) List<PreEmployment> list);
 
     List< PreEmploymentVo> selectPreEmploymentVo(Integer companyId);
+    @MapKey ( "employment_id" )
+    Map< Integer,Map< String, String>> selectNameAndOrg(@Param("list") List< Integer> list);
 }

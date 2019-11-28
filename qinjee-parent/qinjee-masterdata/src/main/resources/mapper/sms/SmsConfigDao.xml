@@ -23,4 +23,5 @@
     from t_sms_config
     where business_type = #{businessType,jdbcType=VARCHAR} and is_delete = 0
   </select>
+
 </mapper>
