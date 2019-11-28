@@ -45,8 +45,8 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "ok，编辑机构", notes = "机构编码待验证")
-    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode,@RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
-        return organizationService.editOrganization(orgCode,orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
+    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+        return organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
     }
 
     //TODO 删除机构时，需要回收权限（调用权限接口）
@@ -69,8 +69,8 @@ public class OrganizationController extends BaseController {
     })
     @GetMapping("/getAllOrganizationTree")
     public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable", required = false) Short isEnable) {
-        if(isEnable==null){
-            isEnable=Short.parseShort("0");
+        if (isEnable == null) {
+            isEnable = Short.parseShort("0");
         }
         UserSession userSession = getUserSession();
         List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(userSession, isEnable);
@@ -93,17 +93,24 @@ public class OrganizationController extends BaseController {
      * @return
      */
     //TODO 实有人数、编制人数暂时不考虑
-    public ResponseResult getOrganizationGraphics() {
-        return null;
+    @ApiOperation(value = "ok，获取机构图", notes = "ok")
+    @GetMapping("/getOrganizationGraphics")
+    public PageResult<OrganizationVO> getOrganizationGraphics(@RequestParam("layer") @ApiParam(value = "机构图层数，默认显示2级", example = "2") Integer layer,
+                                                              @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
+                                                              @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
+                                                              @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
+                                                              @RequestParam("isEnable") @ApiParam(value = "是否包含封存", example = "0") Short isEnable) {
+        return organizationService.getOrganizationGraphics2(getUserSession(),layer,isContainsCompiler,isContainsActualMembers,orgId,isEnable);
+
     }
 
     //TODO
     @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
     @GetMapping("/getOrganizationPostTree")
-    public ResponseResult<List<OrganizationVO>>  getOrganizationPostTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0")@RequestParam("isEnable") Short isEnable) {
-       if(isEnable==null){
-           isEnable=Short.parseShort("0");
-       }
+    public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0") @RequestParam("isEnable") Short isEnable) {
+        if (isEnable == null) {
+            isEnable = Short.parseShort("0");
+        }
 
         return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
     }
@@ -122,29 +129,29 @@ public class OrganizationController extends BaseController {
 
 
     @ApiOperation(value = "待重写，导出机构到excel，orgIds为空则导入用户下所有机构 参数：{\"filePath\":\"c:\\\\hello.xls\",\"orgIds\":[1,2,3]}", notes = "彭洪思")
-   // String filePath,  List<Integer> orgIds
+    // String filePath,  List<Integer> orgIds
     @PostMapping("/downloadOrganizationToExcelByOrgId")
-    public ResponseResult downloadOrganizationToExcelByOrgId( @RequestBody Map<String,Object> paramMap) {
+    public ResponseResult downloadOrganizationToExcelByOrgId(@RequestBody Map<String, Object> paramMap) {
         ResponseResult responseResult;
         String filePath;
         List<Integer> orgIds;
-        if (null==paramMap.get("filePath")){
-            responseResult=  new ResponseResult(CommonCode.FAIL);
+        if (null == paramMap.get("filePath")) {
+            responseResult = new ResponseResult(CommonCode.FAIL);
             responseResult.setMessage("路径参数缺少");
             return responseResult;
         }
-        if(null==paramMap.get("orgIds")){
-            filePath=(String)paramMap.get("filePath");
+        if (null == paramMap.get("orgIds")) {
+            filePath = (String) paramMap.get("filePath");
             return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
-        }else{
-            filePath=(String)paramMap.get("filePath");
-            if(paramMap.get("orgIds") instanceof  List){
-                orgIds= (List<Integer>) paramMap.get("orgIds");
-                if(orgIds.size()==0){
+        } else {
+            filePath = (String) paramMap.get("filePath");
+            if (paramMap.get("orgIds") instanceof List) {
+                orgIds = (List<Integer>) paramMap.get("orgIds");
+                if (orgIds.size() == 0) {
                     return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
                 }
-            }else {
-                responseResult=  new ResponseResult(CommonCode.FAIL);
+            } else {
+                responseResult = new ResponseResult(CommonCode.FAIL);
                 responseResult.setMessage("orgIds参数格式必须是int数组");
                 return responseResult;
             }
@@ -168,7 +175,7 @@ public class OrganizationController extends BaseController {
 
     //TODO
     @GetMapping("/getUserArchiveListByUserName")
-    @ApiOperation(value = "未实现，机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询",notes = "需要调用人员接口")
+    @ApiOperation(value = "未实现，机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
     public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
         return organizationService.getUserArchiveListByUserName(userName);
     }
@@ -183,9 +190,9 @@ public class OrganizationController extends BaseController {
     }
 
     //TODO
-    @PostMapping ("/mergeOrganization")
+    @PostMapping("/mergeOrganization")
     @ApiOperation(value = "ok，合并机构,传参demo  {\"newOrgName\":\"新机构名称\",\"orgIds\":[1001,1002],\"parentOrgId\":1003}", notes = "调通，需维护人员")
-    public ResponseResult mergeOrganization(@RequestBody  Map<String, Object> paramMap) {
+    public ResponseResult mergeOrganization(@RequestBody Map<String, Object> paramMap) {
         UserSession userSession = getUserSession();
         List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
         Integer parentOrgId = (Integer) paramMap.get("parentOrgId");

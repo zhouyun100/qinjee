@@ -28,20 +28,22 @@ public class PostInstructionsController extends BaseController {
     private PostInstructionsService postInstructionsService;
 
     @GetMapping("showPostInstructions")
-    @ApiOperation(value = "展示岗位说明书", notes = "高雄")
-    public ResponseResult<PostInstructions> showPostInstructions(@ApiParam(value = "岗位Id", example = "1", required = true) Integer postId){
+    @ApiOperation(value = "展示岗位说明书", notes = "待验证")
+    public ResponseResult<PostInstructions> showPostInstructions
+            (Integer postId){
         return postInstructionsService.showPostInstructions(postId);
     }
 
+
     @PostMapping("uploadInstructions")
-    @ApiOperation(value = "导入岗位说明书", notes = "高雄")
+    @ApiOperation(value = "导入岗位说明书", notes = "待验证")
     public ResponseResult uploadInstructions(@ApiParam(value = "导入的文件", required = true, allowMultiple = true) MultipartFile file){
         return postInstructionsService.uploadInstructions(getUserSession(), file);
     }
 
 
     @GetMapping("downloadInstructions")
-    @ApiOperation(value = "下载岗位说明书", notes = "高雄")
+    @ApiOperation(value = "下载岗位说明书", notes = "待验证")
     public ResponseResult downloadInstructions(@RequestParam("instructionId") @ApiParam(value = "岗位说明书id", required = true, example = "1") Integer instructionId,
                                                HttpServletResponse response){
         return postInstructionsService.downloadInstructions(instructionId, response);

@@ -30,7 +30,7 @@ public class PositionController extends BaseController {
     @Autowired
     private PositionService positionService;
 
-    @ApiOperation(value = "待调优，分页查询职位信息", notes = "高雄")
+    @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo){
         return positionService.getPositionPage(getUserSession(), positionPageVo);

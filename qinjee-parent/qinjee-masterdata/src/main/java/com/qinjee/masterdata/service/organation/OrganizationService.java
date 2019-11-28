@@ -173,4 +173,7 @@ public interface OrganizationService {
      * @return ResponseResult
      */
     ResponseResult editOrganization(String orgCode,String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+
+    PageResult<OrganizationVO> getOrganizationGraphics2(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 }
+

@@ -26,6 +26,8 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -103,15 +105,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         return pageResult;
     }
 
-    @Override
-    public PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId) {
-        Integer archiveId = userSession.getArchiveId();
-        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
-        String orgCode = organizationVO.getOrgCode() + "%";
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode, new Date());
-        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
-        return pageResult;
-    }
+
 
     @Transactional
     @Override
@@ -280,6 +274,68 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
+
+    @Override
+    public PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId) {
+        Integer archiveId = userSession.getArchiveId();
+        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
+        String orgCode = organizationVO.getOrgCode() + "%";
+        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode, new Date());
+        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<OrganizationVO> getOrganizationGraphics2(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable) {
+        List<Integer> orgidList=new ArrayList<>();
+        //拿到关联的所有机构id
+        List<Integer> orgIdList = getOrgIdList(userSession, orgId);
+        organizationDao.getOrganizationGraphics2(userSession.getArchiveId(),orgIdList,isEnable,new Date());
+        return null;
+    }
+
+    /**
+     * 搜集机构下所有子机构的id
+     * @param userSession
+     * @param orgId
+     * @return
+     */
+    private List<Integer> getOrgIdList(UserSession userSession,Integer orgId) {
+        List<Integer> idsList=new ArrayList<>();
+        //先查询到所有机构
+        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), Short.parseShort("1"), new Date());
+        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
+        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
+        for (OrganizationVO org : allOrgs) {
+            multiValuedMap.put(org.getOrgParentId(),org.getOrgId());
+        }
+        for (Map.Entry<Integer, Integer> entry : multiValuedMap.entries()) {
+
+            System.out.println(entry.getKey()+":"+entry.getValue());
+        }
+        //根据机构id递归，取出该机构下的所有子机构
+        collectOrgIds(multiValuedMap,orgId,idsList);
+        return  idsList;
+    }
+
+    /**
+     * 遍历搜集机构下所有子机构的id
+     * @param multiValuedMap
+     * @param orgId
+     * @param idsList
+     */
+    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList) {
+        idsList.add(orgId);
+        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
+        for (Integer sonOrgId : sonOrgIds) {
+            idsList.add(sonOrgId);
+            if(multiValuedMap.get(sonOrgId).size()>0){
+                collectOrgIds(multiValuedMap,sonOrgId,idsList);
+            }
+        }
+    }
+
+
 
     private void recursiveUpdateOrgNameByParentOrgId(String parentOrgFullName, String orgId) {
 

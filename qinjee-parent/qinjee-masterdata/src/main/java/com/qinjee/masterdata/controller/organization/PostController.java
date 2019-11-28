@@ -44,8 +44,9 @@ public class PostController extends BaseController {
     })
     @GetMapping("/getAllPost")
     @ApiOperation(value = "ok，根据机构id获取机构下（包含子机构）所有的岗位", notes = "ok")
-    public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId") @ApiParam(name = "orgId", value = "机构id", example = "1", required = true) Integer orgId) {
-        return postService.getAllPost(getUserSession(), orgId);
+    public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId") @ApiParam(name = "orgId", value = "机构id", example = "1", required = true) Integer orgId,
+                                                 @RequestParam("isEnable") @ApiParam(name = "isEnable", value = "是否包含封存的岗位", example = "1", required = true) Short isEnable) {
+        return postService.getAllPost(getUserSession(), orgId,isEnable);
     }
 
 

@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Position">
     <id column="position_id" jdbcType="INTEGER" property="positionId" />
     <result column="position_name" jdbcType="VARCHAR" property="positionName" />
+    <result column="position_group_name" jdbcType="VARCHAR" property="positionGroupName" />
     <result column="position_group_id" jdbcType="INTEGER" property="positionGroupId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
@@ -141,7 +142,9 @@
 
   <select id="getPositionPage" resultMap="BaseResultMap" >
         select <include refid="Base_Column_List"></include>
-        from t_position tp where 1=1
+    ,tpg.position_group_name
+    from t_position tp  LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
+         where 1=1
 
 
     <if test="pageVo != null">

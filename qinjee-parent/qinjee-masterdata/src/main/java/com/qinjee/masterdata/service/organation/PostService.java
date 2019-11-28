@@ -84,7 +84,7 @@ public interface PostService {
      * @param orgId
      * @return
      */
-    ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId);
+    ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId,Short isEnable);
 
     /**
      * 下载模板
