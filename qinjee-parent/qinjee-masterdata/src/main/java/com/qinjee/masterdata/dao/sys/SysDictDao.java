@@ -24,10 +24,17 @@ import java.util.List;
 public interface SysDictDao {
 
     /**
-     * 查询员工列表
+     * 查询字典列表
      * @param sysDict
      * @return
      */
     List<SysDict> searchSysDictList(SysDict sysDict);
+
+    /**
+     * 查询字典对象
+     * @param sysDict
+     * @return
+     */
+    SysDict searchSysDictByTypeAndCode(SysDict sysDict);
 
 }

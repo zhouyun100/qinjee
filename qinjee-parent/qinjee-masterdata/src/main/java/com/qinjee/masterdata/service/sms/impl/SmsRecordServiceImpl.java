@@ -53,6 +53,8 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     private SmsConfigService smsConfigService;
     @Autowired
     private  PreEmploymentDao preEmploymentDao;
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void sendMessage(SendMessageModel sendMessageModel) throws Exception {
@@ -73,7 +75,6 @@ public class SmsRecordServiceImpl implements SmsRecordService {
          * 查询登录短信验证码的配置信息
          */
         SmsConfig smsConfig = smsConfigService.selectLoginCodeSmsConfig();
-        String templateMsg = smsConfig.getTemplateMsg();
 
         /**
          * 生成6位随机数字验证码
@@ -88,13 +89,18 @@ public class SmsRecordServiceImpl implements SmsRecordService {
         phoneNumbers.add(phone);
         SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,params);
 
+        //添加短信记录
+        insertSmsRecord(smsConfig,phone,params);
+    }
+
+    private void insertSmsRecord(SmsConfig smsConfig,String phone,List<String> params){
         SmsRecord smsRecord = new SmsRecord();
 
         smsRecord.setPhone(phone);
         /**
          * 根据短信模板内容替换相应的参数内容
          */
-        MessageFormat messageFormat = new MessageFormat(templateMsg);
+        MessageFormat messageFormat = new MessageFormat(smsConfig.getTemplateMsg());
         String[] param = new String[params.size()];
         params.toArray(param);
         smsRecord.setSendMsg(messageFormat.format(param));

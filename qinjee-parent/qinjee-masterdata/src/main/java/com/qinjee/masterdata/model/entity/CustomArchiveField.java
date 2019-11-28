@@ -73,6 +73,11 @@ public class CustomArchiveField implements Serializable {
     private Integer groupId;
 
     /**
+     * 是否显示
+     */
+    private Short isShow;
+
+    /**
      * 是否系统定义
      */
     @NotNull

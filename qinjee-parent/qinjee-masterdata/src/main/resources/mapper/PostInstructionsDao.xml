@@ -124,7 +124,7 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where instruction_id = #{instructionId,jdbcType=INTEGER}
   </update>
-  <select id="getPostInstructionsByPostId" resultMap="BaseResultMap">
+  <select id="getPostInstructionsByPostId" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
     ,

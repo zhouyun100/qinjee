@@ -26,6 +26,7 @@ import java.util.List;
 public class SmsConfigServiceImpl implements SmsConfigService {
 
     private static final String BUSINESS_TYPE_LOGIN_CODE = "LOGIN_CODE";
+    private static final String BUSINESS_TYPE_ENTRY_REGISTRATION = "ENTRY_REGISTRATION";
 
     @Autowired
     private SmsConfigDao smsConfigDao;
@@ -33,11 +34,13 @@ public class SmsConfigServiceImpl implements SmsConfigService {
     @Override
     public SmsConfig selectLoginCodeSmsConfig() {
 
-        SmsConfig smsConfig = null;
-        List<SmsConfig> smsConfigList = smsConfigDao.selectByBusinessType(BUSINESS_TYPE_LOGIN_CODE);
-        if(!smsConfigList.isEmpty() && smsConfigList.size() > 0){
-            smsConfig = smsConfigList.get(0);
-        }
+        SmsConfig smsConfig = smsConfigDao.selectByBusinessType(BUSINESS_TYPE_LOGIN_CODE);
+        return smsConfig;
+    }
+
+    @Override
+    public SmsConfig selectEntryRegistrationSmsConfig() {
+        SmsConfig smsConfig = smsConfigDao.selectByBusinessType(BUSINESS_TYPE_ENTRY_REGISTRATION);
         return smsConfig;
     }
 }

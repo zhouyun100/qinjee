@@ -23,4 +23,11 @@ public interface SmsConfigService {
      * @return
      */
     SmsConfig selectLoginCodeSmsConfig();
+
+
+    /**
+     * 查询预入职短信配置信息
+     * @return
+     */
+    SmsConfig selectEntryRegistrationSmsConfig();
 }

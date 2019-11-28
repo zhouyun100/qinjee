@@ -71,7 +71,7 @@ public interface PostDao {
      * @param postIds
      * @return
      */
-    List<Post> getPostListByPostIds(List<Integer> postIds);
+    List<Post> getPostListByPostIds(@Param("postIds")List<Integer> postIds);
 
     /**
      * 根据机构id查询机构下的岗位
@@ -102,4 +102,6 @@ public interface PostDao {
 
 
     List<Post> getPostConditionPage(@Param("postPageVo") PostPageVo postPageVo,@Param("orgidList") List<Integer> orgidList, @Param("sortFieldStr")String sortFieldStr);
+
+    Integer sortPorts(@Param("postIds")List<Integer> postIds);
 }

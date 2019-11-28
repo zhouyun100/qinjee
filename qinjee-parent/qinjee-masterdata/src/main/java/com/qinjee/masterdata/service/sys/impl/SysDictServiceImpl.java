@@ -42,4 +42,12 @@ public class SysDictServiceImpl implements SysDictService {
 
         return sysDictList;
     }
+
+    @Override
+    public SysDict searchSysDictByTypeAndCode(String dictType, String dictCode) {
+        SysDict sysDict = new SysDict();
+        sysDict.setDictType(dictType);
+        sysDict.setDictCode(dictCode);
+        return sysDictDao.searchSysDictByTypeAndCode(sysDict);
+    }
 }

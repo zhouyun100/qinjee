@@ -30,4 +30,11 @@ public interface CheckCustomFieldService {
      * @return
      */
     List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer,Object>> mapList);
+
+    /**
+     * 校验自定义字段值（单个校验）
+     * @param checkCustomFieldVO
+     * @return
+     */
+    void validCustomFieldValue(CheckCustomFieldVO checkCustomFieldVO);
 }

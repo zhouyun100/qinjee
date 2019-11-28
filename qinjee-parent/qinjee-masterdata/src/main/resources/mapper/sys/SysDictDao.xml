@@ -23,4 +23,14 @@
     from t_sys_dict
     where dict_type = #{dictType,jdbcType=VARCHAR} and is_delete = 0
   </select>
+
+  <!-- 根据字典类型查询字典列表 -->
+  <select id="searchSysDictByTypeAndCode" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_sys_dict
+    where dict_type = #{dictType,jdbcType=VARCHAR}
+    and dict_code = #{dictCode,jdbcType=VARCHAR}
+    and is_delete = 0
+  </select>
 </mapper>

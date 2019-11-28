@@ -18,5 +18,5 @@ public interface SmsConfigDao {
      * @param businessType
      * @return
      */
-    List<SmsConfig> selectByBusinessType(String businessType);
+    SmsConfig selectByBusinessType(String businessType);
 }

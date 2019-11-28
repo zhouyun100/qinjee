@@ -163,7 +163,6 @@ public class PostServiceImpl implements PostService {
         //deletePostGrade(postVo, userSession, post);
         //新增岗位职级关系表信息
         //addPostLevelAndGradeRelation(postVo, userSession, post);
-
         return new ResponseResult();
     }
 
@@ -217,26 +216,21 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public ResponseResult sortOrganization(Integer prePostId, Integer midPostId, Integer nextPostId, UserSession userSession) {
-        Post prePost;
-        Post nextPost;
-        Integer midSort = null;
-
-        if (nextPostId != null) {
-            //移动
-            nextPost = postDao.selectByPrimaryKey(nextPostId);
-            midSort = nextPost.getSortId() - 1;
-        } else if (nextPostId == null) {
-            //移动到最后
-            prePost = postDao.selectByPrimaryKey(prePostId);
-            midSort = prePost.getSortId() + 1;
+    public ResponseResult sortPorts(List<Integer> postIds, UserSession userSession) {
+        ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
+        List<Post> postList=postDao.getPostListByPostIds(postIds);
+        Set<Integer> parentPostSet=new HashSet<>();
+        for (Post post : postList) {
+            parentPostSet.add(post.getParentPostId());
         }
-        Post post = new Post();
-        post.setSortId(midSort);
-        post.setOperatorId(userSession.getArchiveId());
-        post.setSortId(midSort);
-        postDao.updateByPrimaryKeySelective(post);
-        return new ResponseResult();
+        //判断是否在同一级机构下
+        if (parentPostSet.size()>1){
+            responseResult.setResultCode(CommonCode.FAIL);
+            responseResult.setMessage("岗位不在同级下，排序失败");
+            return responseResult;
+        }
+        Integer i = postDao.sortPorts(postIds);
+        return new ResponseResult(CommonCode.SUCCESS);
     }
 
     @Transactional
@@ -246,16 +240,17 @@ public class PostServiceImpl implements PostService {
             for (Integer postId : postIds) {
                 Post post = postDao.selectByPrimaryKey(postId);
                 post.setOrgId(orgId);
-                post.setParentPostId(null);
+                post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
                 generatePostCodeAndSoitId(post, orgId, null);
                 postDao.insertSelective(post);
-
                 //岗位说明书
-                PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(post.getPostId());
-                postInstructions.setOperatorId(userSession.getArchiveId());
-                postInstructions.setPostId(post.getPostId());
-                postInstructionsDao.insertSelective(postInstructions);
+                PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
+                if(Objects.nonNull(postInstructions)){
+                    postInstructions.setOperatorId(userSession.getArchiveId());
+                    postInstructions.setPostId(post.getPostId());
+                    postInstructionsDao.insertSelective(postInstructions);
+                }
             }
         }
         return new ResponseResult();

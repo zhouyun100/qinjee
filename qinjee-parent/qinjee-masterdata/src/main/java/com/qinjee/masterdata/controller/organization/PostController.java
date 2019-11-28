@@ -3,8 +3,8 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -31,7 +33,7 @@ public class PostController extends BaseController {
     private PostService postService;
 
     @PostMapping("/getPostList")
-    @ApiOperation(value = "分页查询岗位列表,只有orgId字段为必须", notes = "高雄")
+    @ApiOperation(value = "ok，分页查询岗位列表,只有orgId字段为必须", notes = "ok")
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
         PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
         return new ResponseResult<>(pageResult);
@@ -41,7 +43,7 @@ public class PostController extends BaseController {
             @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
     })
     @GetMapping("/getAllPost")
-    @ApiOperation(value = "根据机构id获取机构下（包含子机构）所有的岗位")
+    @ApiOperation(value = "ok，根据机构id获取机构下（包含子机构）所有的岗位", notes = "ok")
     public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId") @ApiParam(name = "orgId", value = "机构id", example = "1", required = true) Integer orgId) {
         return postService.getAllPost(getUserSession(), orgId);
     }
@@ -53,7 +55,7 @@ public class PostController extends BaseController {
             @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", dataType = "int", required = true, example = "1"),
             @ApiImplicitParam(name = "postId", value = "岗位Id", paramType = "query", dataType = "int", required = true, example = "1")
     })
-    @ApiOperation(value = "根据岗位id查询员工档案岗位关系表", notes = "高雄")
+    @ApiOperation(value = "未验证，根据岗位id查询员工档案岗位关系表", notes = "未验证")
     @GetMapping("/getUserArchivePostRelationList")
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize,
                                                                                               Integer currentPage,
@@ -61,77 +63,74 @@ public class PostController extends BaseController {
         return postService.getUserArchivePostRelationList(pageSize, currentPage, postId);
     }
 
-    @ApiOperation(value = "新增岗位", notes = "高雄")
+    @ApiOperation(value = "ok，新增岗位", notes = "ok")
     @PostMapping("/addPost")
     public ResponseResult addPost(@RequestBody PostVo postVo) {
         return postService.addPost(postVo, getUserSession());
     }
 
-    @ApiOperation(value = "编辑岗位", notes = "高雄")
+    @ApiOperation(value = "ok，编辑岗位", notes = "ok")
     @PostMapping("/editPost")
     public ResponseResult editPost(PostVo postVo) {
         return postService.editPost(postVo, getUserSession());
     }
 
-    @ApiOperation(value = "删除岗位", notes = "高雄")
+    @ApiOperation(value = "ok，删除岗位", notes = "ok，")
     @PostMapping("/deletePost")
     public ResponseResult deletePost(@RequestBody List<Integer> postIds) {
         return postService.deletePost(getUserSession(), postIds);
     }
 
     @PostMapping("/lockPostByIds")
-    @ApiOperation(value = "封存岗位", notes = "高雄")
+    @ApiOperation(value = "ok，封存岗位", notes = "ok")
     public ResponseResult lockPostByIds(@RequestBody List<Integer> postIds) {
         return postService.sealPostByIds(postIds, Short.parseShort("0"), getUserSession());
     }
 
     @PostMapping("/unlockPostByIds")
-    @ApiOperation(value = "解封岗位", notes = "高雄")
+    @ApiOperation(value = "ok，解封岗位", notes = "ok")
     public ResponseResult unlockPostByIds(@RequestBody List<Integer> postIds) {
         return postService.sealPostByIds(postIds, Short.parseShort("1"), getUserSession());
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "prePostId", value = "上个岗位id", paramType = "query", dataType = "int", required = true, example = "0103"),
-            @ApiImplicitParam(name = "midPostId", value = "需要排序岗位id", paramType = "query", dataType = "int", required = true, example = "0101"),
-            @ApiImplicitParam(name = "nextPostId", value = "下一个岗位id", paramType = "query", dataType = "int", required = true, example = "0102"),
-    })
-    @GetMapping("/sortOrganization")
-    @ApiOperation(value = "岗位排序", notes = "高雄")
-    public ResponseResult sortOrganization(@RequestParam("prePostId") Integer prePostId,
-                                           @RequestParam("midPostId") Integer midPostId,
-                                           @RequestParam("nextPostId") Integer nextPostId) {
-        return postService.sortOrganization(prePostId, midPostId, nextPostId, getUserSession());
+
+    @PostMapping("/sortPorts")
+    @ApiOperation(value = "ok，岗位排序,只能同一级别下排序（需要将该级下所有岗位id按顺序传参）", notes = "未验证")
+    public ResponseResult sortPorts(@RequestBody LinkedList<Integer> orgIds) {
+        return postService.sortPorts(orgIds, getUserSession());
     }
 
 
-    @ApiOperation(value = "下载模板", notes = "高雄")
+
+
+    @ApiOperation(value = "未验证，下载模板", notes = "未验证")
     @GetMapping("/downloadTemplate")
     public ResponseResult downloadTemplate(HttpServletResponse response) {
         return postService.downloadTemplate(response);
     }
 
-    @ApiOperation(value = "复制岗位", notes = "高雄")
-    @GetMapping("/copyPost")
-    public ResponseResult copyPost(@ApiParam(value = "岗位id", required = true, allowMultiple = true) List<Integer> postIds,
-                                   @ApiParam(value = "机构id", required = true, example = "1") Integer orgId) {
+    @ApiOperation(value = "ok，复制岗位", notes = "未验证")
+    @PostMapping("/copyPost")
+    public ResponseResult copyPost( @RequestBody Map<String,Object> paramMap) {
+        List<Integer> postIds= (List<Integer>) paramMap.get("postIds");
+        Integer orgId= (Integer) paramMap.get("orgId");
         return postService.copyPost(postIds, getUserSession(), orgId);
     }
 
-    @ApiOperation(value = "根据查询条件导出Excel", notes = "高雄")
+    @ApiOperation(value = "未验证，根据查询条件导出Excel", notes = "未验证")
     @PostMapping("/downloadExcelByCondition")
     public ResponseResult downloadExcelByCondition(@RequestBody PostPageVo postPageVo, HttpServletResponse response) {
         return postService.downloadExcelByCondition(postPageVo, getUserSession(), response);
     }
 
-    @ApiOperation(value = "根据选择的岗位id导出Excel", notes = "高雄")
+    @ApiOperation(value = "未验证，根据选择的岗位id导出Excel", notes = "未验证")
     @GetMapping("/downloadExcelByPostId")
     public ResponseResult downloadExcelByPostId(@RequestParam("postIds") @ApiParam(value = "所选机构的编码", required = true) List<Integer> postIds, HttpServletResponse response) {
         return postService.downloadExcelByPostId(postIds, getUserSession(), response);
     }
 
 
-    @ApiOperation(value = "导入Excel", notes = "高雄")
+    @ApiOperation(value = "未实现，导入Excel", notes = "未实现")
     @PostMapping("/uploadExcel")
     public ResponseResult uploadExcel(@ApiParam(value = "需要导入的Excel文件", required = true) MultipartFile file) {
 
