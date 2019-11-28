@@ -18,11 +18,12 @@ import com.qinjee.masterdata.model.entity.SendMessageModel;
  */
 public interface SmsRecordService {
     /**
-     * 发送短信验证码
+     * 记录批量发送登录短信验证码发送短信验证码
      */
     void sendMessage(SendMessageModel sendMessageModel) throws Exception;
+
     /**
-     * 记录批量发送登录短信验证码
+     * 发送短信验证码
      * @param phone
      */
     void sendSmsLoginCode(String phone);

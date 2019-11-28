@@ -26,4 +26,12 @@ public interface SysDictService {
      * @return
      */
     List<SysDict> searchSysDictListByDictType(String dictType);
+
+    /**
+     * 根据字典类型和字典CODE查询字典对象
+     * @param dictType
+     * @param dictCode
+     * @return
+     */
+    SysDict searchSysDictByTypeAndCode(String dictType, String dictCode);
 }
