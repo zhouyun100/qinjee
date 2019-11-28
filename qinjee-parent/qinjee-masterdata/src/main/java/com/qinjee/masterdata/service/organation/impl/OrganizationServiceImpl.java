@@ -305,9 +305,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
         }).collect(Collectors.toList());
         //递归处理机构,使其以树形结构展示
-        handlerOrganizationToTree(allOrg, topOrgsList);
-
-
+        handlerOrganizationToGraphics(allOrg, topOrgsList);
         return new PageResult<>(allOrg);
     }
 
@@ -907,6 +905,36 @@ public class OrganizationServiceImpl implements OrganizationService {
     private void handlerOrganizationToTree(List<OrganizationVO> organizationVOList, List<OrganizationVO> organizationVOS) {
         for (OrganizationVO org : organizationVOS) {
             Integer orgId = org.getOrgId();
+            List<OrganizationVO> childList = organizationVOList.stream().filter(organization -> {
+                Integer orgParentId = organization.getOrgParentId();
+                if (orgParentId != null && orgParentId > 0) {
+                    return orgParentId.equals(orgId);
+                }
+                return false;
+            }).collect(Collectors.toList());
+            //判断是否还有子级
+            if (childList != null && childList.size() > 0) {
+                org.setChildList(childList);
+                organizationVOList.removeAll(childList);
+                handlerOrganizationToTree(organizationVOList, childList);
+            }
+        }
+    }
+
+    /**
+     * 处理所有机构以图形结构展示
+     *
+     * @param organizationVOList
+     * @param organizationVOS
+     */
+    private void handlerOrganizationToGraphics(List<OrganizationVO> organizationVOList, List<OrganizationVO> organizationVOS) {
+        for (OrganizationVO org : organizationVOS) {
+            Integer orgId = org.getOrgId();
+            //设置实有人数
+            org.setStaffNumbers(userArchiveDao.getUserCountByOrgId(orgId));
+            //TODO 设置编制人数
+            //org.setPlanNumbers();
+
             List<OrganizationVO> childList = organizationVOList.stream().filter(organization -> {
                 Integer orgParentId = organization.getOrgParentId();
                 if (orgParentId != null && orgParentId > 0) {

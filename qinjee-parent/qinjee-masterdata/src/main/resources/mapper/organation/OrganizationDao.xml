@@ -549,7 +549,7 @@
             and t_organization.is_enable = #{isEnable}
         </if>
         ) v
-        LEFT JOIN  t_attachment_record tar  ON tar.business_id = v.org_id AND tar.business_type = 'archive'
+        LEFT JOIN  t_attachment_record tar  ON tar.business_id = v.org_manager_id AND tar.business_type = 'archive'
 
          <if test="orgIdList != null">
              where

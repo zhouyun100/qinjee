@@ -145,10 +145,6 @@ public class OrganizationVO implements Serializable {
     @ApiModelProperty("是否启用 0 封存、1 未封存")
     private Short isEnable;
 
-    /**
-     * 子机机构
-     */
-    private List<OrganizationVO> childList;
 
     /**
      * 实有人数
@@ -160,12 +156,18 @@ public class OrganizationVO implements Serializable {
     /**
      * 计划编制人数
      */
-     private Integer planNumbers;
+    private Integer planNumbers;
 
     /**
      * 图片url
      */
     private String attachmentUrl;
+
+
+    /**
+     * 子机机构
+     */
+    private List<OrganizationVO> childList;
 
     /**
      * 机构下的职位

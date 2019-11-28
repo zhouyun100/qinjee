@@ -661,5 +661,9 @@
 
   </select>
 
+  <select id="getUserCountByOrgId" resultType="java.lang.Integer">
+    SELECT COUNT(org_id) FROM t_user_archive WHERE org_id =#{orgId} AND is_delete =0
+
+  </select>
 </mapper>
 
