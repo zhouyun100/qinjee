@@ -8,7 +8,7 @@
  * Copyright(C) 2019, by zhouyun
  * 原始作者：周赟
  */
-package com.qinjee.masterdata.dao.auth;
+package com.qinjee.masterdata.dao.userinfo;
 
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
