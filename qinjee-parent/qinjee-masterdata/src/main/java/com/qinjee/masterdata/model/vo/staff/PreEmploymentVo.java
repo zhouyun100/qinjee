@@ -11,91 +11,183 @@ import java.util.Date;
 @Data
 @JsonInclude
 public class PreEmploymentVo implements Serializable {
-    /** 版本号 */
-    private static final long serialVersionUID = 1L;
+    /**
+     * 版本号
+     */
+    private static final long serialVersionUID = 8110487415164769562L;
 
-    /** 预入职ID */
+    /**
+     * 预入职ID
+     */
     private Integer employmentId;
-    /** 用户姓名 */
+
+    /**
+     * 用户姓名
+     */
     @NotNull
     private String userName;
-    /** 电话 */
+
+    /**
+     * 电话
+     */
     @NotNull
     private String phone;
-    /** 性别 */
+
+    /**
+     * 性别
+     */
     private String gender;
-    /** 入职状态 */
-    private String employmentState;
-    /** 邮箱 */
+
+    /**
+     * 邮箱
+     */
     private String email;
-    /** 应聘岗位 */
-    private String applicationPosition;
-    /** 入职部门 */
-    private Integer orgId;
 
-    /** 证件类型 */
+    /**
+     * 证件类型
+     */
     private String idType;
-
-    /** 证件号码 */
+    /**
+     * 证件类型名称
+     */
+    private String idTypeName;
+    /**
+     * 证件号码
+     */
     private String idNumber;
 
-    /** 年龄 */
+    /**
+     * 年龄
+     */
     private Integer age;
 
-    /** 参加工作时间 */
+    /**
+     * 参加工作时间
+     */
     private Date firstWorkDate;
 
-    /** 婚姻状况 */
+    /**
+     * 婚姻状况
+     */
     private String maritalStatus;
 
-    /** 最高学历 */
+    /**
+     * 最高学历
+     */
     private String highestDegree;
 
-    /** 毕业院校 */
+    /**
+     * 毕业院校
+     */
     private String graduatedSchool;
 
-    /** 毕业专业 */
+    /**
+     * 毕业专业
+     */
     private String graduatedSpeciality;
 
-    /** 最近工作单位 */
+    /**
+     * 最近工作单位
+     */
     private String lastWorkCompany;
 
-    /** 是否已育 */
+    /**
+     * 是否已育
+     */
     private Integer isGiveBirth;
 
-    /** 户口性质 */
+    /**
+     * 户口性质
+     */
     private String residentCharacter;
 
-    /** 身高 */
+    /**
+     * 身高
+     */
     private BigDecimal height;
 
-    /** 血型 */
+    /**
+     * 血型
+     */
     private String bloodType;
 
-    /** 英文名 */
+    /**
+     * 英文名
+     */
     private String englishName;
 
-    /** 民族 */
+    /**
+     * 民族
+     */
     private Integer nationality;
 
-    /** 出生日期 */
+    /**
+     * 出生日期
+     */
     private Date birthDate;
 
-    /** 政治面貌 */
+    /**
+     * 政治面貌
+     */
     private Integer politicalStatus;
 
-    /** 藉贯 */
+    /**
+     * 藉贯
+     */
     private String birthplace;
 
-    /** 试用期限(月) */
+    /**
+     * 应聘岗位
+     */
+    private String applicationPosition;
+
+    /**
+     * 试用期限(月)
+     */
     private Integer probationPeriod;
 
-    /** 入职日期 */
+    /**
+     * 入职日期
+     */
     @NotNull
     private Date hireDate;
 
-    /** 入职岗位 */
+    /**
+     * 入职部门
+     */
+    private Integer orgId;
+
+    /**
+     * 入职岗位
+     */
     private Integer postId;
+
+    /**
+     * 入职状态
+     */
+    private String employmentState;
+
+    /**
+     * 入职登记
+     */
+    private String employmentRegister;
+
+    /**
+     * 备注
+     */
+    private String description;
+
+    /**
+     * 数据来源
+     */
+    private String dataSource;
+
+    /**
+     * 企业ID
+     */
+    private Integer companyId;
+
+
     /**
      * 岗位名称
      */
@@ -105,14 +197,6 @@ public class PreEmploymentVo implements Serializable {
      */
     private String orgName;
     /** 入职登记 */
-    private String employmentRegister;
-
-    /** 备注 */
-    private String description;
-
-    /** 数据来源 */
-    private String dataSource;
-
 
     /**
      * 延期入职原因

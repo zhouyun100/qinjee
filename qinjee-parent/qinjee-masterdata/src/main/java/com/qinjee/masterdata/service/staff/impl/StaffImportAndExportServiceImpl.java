@@ -218,34 +218,37 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //通过表id与业务id集合找到存储数据的字段
         //将字段进行解析,循环置于List<map>中
         Map < Integer, Map < String, Object > > map = new HashMap <> ();
+
         //通过表id与业务id集合找到存储数据的字段
-        Map < Integer, String > map1 =
+
+        Map < Integer, Map < String, String > > integerMapMap =
                 customArchiveTableDataDao.selectBigDataByBusinessIdAndTitleListAndCompanyId ( exportRequest.getList (),
                         exportRequest.getTitle (), userSession.getCompanyId () );
         //将字段进行解析，存进listMap中
-        for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
-            String[] split = integerStringEntry.getValue ().split ( "@@" );
+        for (Map.Entry < Integer, Map < String, String > > integerMapEntry : integerMapMap.entrySet ()) {
+            Map < String, String > value = integerMapEntry.getValue ();
+            String big_data = value.get ( "big_data" );
             Map < String, Object > map2 = new LinkedHashMap <> ();
-            for (int i = 1; i < split.length; i = i + 2) {
-                map2.put ( split[i], split[i + 1] );
+                String[] split = big_data.split ( "@@" );
+                for (int i = 1; i < split.length; i = i + 2) {
+                    map2.put ( split[i].split ( ";" )[0], split[i + 1].split ( ":" )[1] );
+                }
+                map.put (integerMapEntry.getKey (), map2 );
+        }
+            ExportFile exportFile = new ExportFile ();
+            exportFile.setTittle ( exportRequest.getTitle () );
+            ExportList exportList = new ExportList ();
+            exportList.setMap ( map );
+            exportFile.setExportList ( exportList );
+            List < String > businessHead = HeadMapUtil.getBusinessHead ( exportFile.getTittle () );
+            if (businessHead != null) {
+                ExcelUtil.download ( response, exportFile.getTittle (),
+                        businessHead,
+                        getDates ( exportFile, businessHead ),
+                        getTypeMap ( businessHead) );
+            } else {
+                throw new Exception ( "没有获取到对应的自己表头" );
             }
-            map.put ( integerStringEntry.getKey (), map2 );
-        }
-        ExportFile exportFile=new ExportFile();
-        exportFile.setTittle(exportRequest.getTitle ());
-        ExportList exportList=new ExportList();
-        exportList.setMap(map);
-        exportFile.setExportList(exportList);
-        List<String> businessHead = HeadMapUtil.getBusinessHead(exportFile.getTittle());
-        if(businessHead!=null) {
-            ExcelUtil.download(response, exportFile.getTittle(),
-                    businessHead,
-                    getDates(exportFile, businessHead),
-                    getTypeMap(businessHead));
-        }else {
-            throw new Exception("没有获取到对应的自己表头");
-        }
-
     }
 
 

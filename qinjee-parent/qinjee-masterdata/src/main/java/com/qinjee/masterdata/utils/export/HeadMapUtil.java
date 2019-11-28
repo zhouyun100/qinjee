@@ -138,8 +138,17 @@ public class HeadMapUtil {
         }
         if("工作经历".equals(tableName)){
             return getHeadsForWorkLine();
+        }if("测试".equals ( tableName )){
+            return getHeadForTest(  );
         }
         return null;
+    }
+
+    private static List< String> getHeadForTest() {
+        List<String> keyList=new ArrayList<>();
+        String[] strings={"父亲","母亲"};
+        keyList.addAll(Arrays.asList(strings));
+        return keyList;
     }
 
 

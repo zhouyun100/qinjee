@@ -169,5 +169,9 @@ public interface IStaffCommonService {
      */
     List<String> selectFieldValueById(Integer customArchiveFieldId);
 
-
+    /**
+     * 发送短信
+     * @param list
+     */
+    void sendMessage(List< Integer> list) throws Exception;
 }

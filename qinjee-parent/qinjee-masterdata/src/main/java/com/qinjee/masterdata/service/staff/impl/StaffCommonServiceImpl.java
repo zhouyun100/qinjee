@@ -3,17 +3,22 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.CheckTypeDao;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
 import com.qinjee.masterdata.dao.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.*;
+import com.qinjee.masterdata.dao.sms.SmsConfigDao;
+import com.qinjee.masterdata.dao.sms.SmsRecordDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
+import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -52,13 +57,15 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private CustomArchiveTableDataDao customArchiveTableDataDao;
     @Autowired
-    private CustomArchiveFieldCheckDao customArchiveFieldCheckDao;
+    private SmsRecordService smsRecordServiceImpl;
     @Autowired
     private OrganizationDao organizationDao;
     @Autowired
-    private CompanyCodeDao companyCodeDao;
+    private SmsConfigDao smsConfigDao;
     @Autowired
-    private CheckTypeDao checkTypeDao;
+    private SmsRecordDao recordDao;
+    @Autowired
+    private CompanyCodeDao companyCodeDao;
     @Autowired
     private PostDao postDao;
     @Override
@@ -158,7 +165,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public PageResult < CustomArchiveField > selectCustomArchiveField(Integer currentPage, Integer pageSize,
                                                                       Integer customArchiveTableId) {
-
         PageHelper.startPage ( currentPage, pageSize );
         //根据自定义表找自定义字段id
         List < CustomArchiveField > list = customArchiveFieldDao.selectFieldByTableId ( customArchiveTableId );
@@ -243,6 +249,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         //找到自定义字段的值
         return companyCodeDao.selectValue ( id );
     }
+
+    @Override
+    public void sendMessage(List < Integer > list) throws Exception {
+//        SendMessageModel sendMessageModel=new SendMessageModel ();
+//        sendMessageModel.setList ( list );
+//        sendMessageModel.setTemplateId (smsConfigDao.selectByBusinessType ("ENTRY_REGISTRATION")  );
+//        sendMessageModel.setParams (  );
+//        SmsRecordServiceImpl.sendMessage (sendMessageModel);
+    }
+
     @Override
     public void insertCustomArchiveTableData(BigDataVo bigDataVo, UserSession userSession) {
         //将前端传过来的json串进行解析
