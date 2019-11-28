@@ -23,4 +23,10 @@ public class PositionPageVo extends PageQuery {
     @ApiModelProperty("是否含有封存 0不含有、1含有")
     private Short isEnable;
 
+    /**
+     * 职位族ID
+     */
+    @ApiModelProperty("职位族ID")
+    private Integer positionGroupId;
+
 }
