@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.custom.CustomTableFieldDao">
+
+  <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
+    <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+    <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+    <result column="input_type" jdbcType="VARCHAR" property="inputType" />
+    <result column="text_type" jdbcType="VARCHAR" property="textType" />
+    <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
+    <result column="placeholder" jdbcType="VARCHAR" property="placeholder" />
+    <result column="max_length" jdbcType="INTEGER" property="maxLength" />
+    <result column="min_length" jdbcType="INTEGER" property="minLength" />
+    <result column="max_number" jdbcType="INTEGER" property="maxNumber" />
+    <result column="min_number" jdbcType="INTEGER" property="minNumber" />
+    <result column="float_length" jdbcType="INTEGER" property="floatLength" />
+    <result column="is_time_range" jdbcType="INTEGER" property="isTimeRange" />
+    <result column="min_time" jdbcType="VARCHAR" property="minTime" />
+    <result column="max_time" jdbcType="VARCHAR" property="maxTime" />
+    <result column="format_time" jdbcType="VARCHAR" property="formatTime" />
+    <result column="is_must" jdbcType="INTEGER" property="isMust" />
+    <result column="rule" jdbcType="VARCHAR" property="rule" />
+    <result column="is_only_read" jdbcType="INTEGER" property="isOnlyRead" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="is_show" jdbcType="SMALLINT" property="isShow" />
+    <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+  </resultMap>
+
+
+  <resultMap id="GroupResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomGroupVO">
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+    <result column="table_id" jdbcType="VARCHAR" property="tableId" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+  </resultMap>
+
+
+  <resultMap id="TableResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomTableVO">
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="table_code" jdbcType="VARCHAR" property="tableName" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableCode" />
+    <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="is_system_define" jdbcType="VARCHAR" property="isSystemDefine" />
+    <result column="is_enable" jdbcType="VARCHAR" property="isEnable" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+  </resultMap>
+
+  <!-- 根据字段ID列表查询字段详细信息列表 -->
+  <select id="searchCustomFieldListByFieldIdList" parameterType="list" resultMap="FieldResultMap">
+    select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort
+    from t_custom_archive_field
+    WHERE field_id in
+    <foreach item="fieldId" collection="list"
+             open="(" separator="," close=")">
+      #{fieldId}
+    </foreach>
+    and is_delete = 0
+  </select>
+
+
+  <!-- 根据根据企业ID和功能CODE查询表列表 -->
+  <select id="searchCustomTableListByCompanyIdAndFuncCode" parameterType="com.qinjee.masterdata.model.vo.custom.CustomTableVO" resultMap="TableResultMap">
+    select table_id,table_code,table_name,func_code,company_id,is_system_define,is_enable,sort
+    from t_custom_archive_table
+    where company_id = #{companyId,jdbcType=INTEGER}
+    and func_code = #{funcCode,jdbcType=VARCHAR}
+    and is_enable = #{isEnable,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
+
+
+  <!-- 根据根据企业ID和功能CODE或表ID查询组列表 -->
+  <select id="searchCustomGroupList" resultMap="GroupResultMap">
+    select g.group_id,g.group_name,g.table_id,g.sort
+    where g.group_id in (
+      select group_id from t_custom_archive_field f
+      WHERE f.is_delete = 0
+    <if test="tableId != null">
+        f.tabale_id = #{tableId,jdbcType=VARCHAR}
+    </if>
+    <if test="tableId == null">
+      and f.table_id in (
+      SELECT t.table_id FROM t_custom_archive_table t
+      WHERE t.company_id = #{companyId,jdbcType=INTEGER}
+      AND t.table_code = #{tableCode,jdbcType=VARCHAR}
+      AND t.is_enable = 1
+      AND t.is_delete = 0
+      )
+    </if>
+      GROUP BY f.group_id
+	)
+    and g.is_delete = 0
+  </select>
+
+
+  <!-- 根据根据企业ID和功能CODE或表ID查询字段列表 -->
+  <select id="searchCustomFieldList" resultMap="FieldResultMap">
+    select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort
+    from t_custom_archive_field
+    where is_delete = 0
+    <if test="tableId != null">
+      and table_id = #{tableId,jdbcType=VARCHAR}
+    </if>
+    <if test="tableId == null">
+      and table_id in(
+      select t.table_id from t_custom_archive_table t
+      where t.company_id = #{companyId,jdbcType=INTEGER}
+      and t.table_code = #{tableCode,jdbcType=VARCHAR}
+      and t.is_enable = 1
+      and t.is_delete = 0
+      )
+    </if>
+
+  </select>
+
+</mapper>

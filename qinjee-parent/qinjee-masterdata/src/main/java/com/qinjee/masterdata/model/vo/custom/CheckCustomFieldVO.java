@@ -8,10 +8,9 @@
  * Copyright(C) 2019, by zhouyun
  * 原始作者：周赟
  */
-package com.qinjee.masterdata.model.vo.sys;
+package com.qinjee.masterdata.model.vo.custom;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import lombok.Data;
 
 /**
@@ -19,38 +18,13 @@ import lombok.Data;
  * @date 2019/11/26
  */
 @Data
-//@JsonInclude
-public class CheckCustomFieldVO extends CustomArchiveField {
+@JsonInclude
+public class CheckCustomFieldVO extends CustomFieldVO {
 
     /**
      * 字段值
      */
     private String fieldValue;
-
-    /**
-     * 必填
-     */
-    private String isNotNull;
-
-    /**
-     * 整数
-     */
-    private String isInteger;
-
-    /**
-     * 日期
-     */
-    private String isDate;
-
-    /**
-     * 电子邮件
-     */
-    private String isEmail;
-
-    /**
-     * 身份证
-     */
-    private String isIdCard;
 
     /**
      * 校验是否成功(true:是，false:否)
