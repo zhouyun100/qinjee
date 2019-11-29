@@ -12,7 +12,7 @@ package com.qinjee.masterdata.service.custom;
 
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
-import com.qinjee.masterdata.model.vo.custom.CustomGroupVO;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +23,6 @@ import java.util.Map;
  * @author 周赟
  */
 public interface CustomTableFieldService {
-
-
 
     /**
      * 校验自定义表字段的值
@@ -65,5 +63,13 @@ public interface CustomTableFieldService {
      * @return
      */
     CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId);
+
+    /**
+     * 根据企业ID和功能CODE查询字段集合
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(Integer companyId, String funcCode);
 
 }

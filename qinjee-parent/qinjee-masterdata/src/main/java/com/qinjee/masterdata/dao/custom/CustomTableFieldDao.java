@@ -56,4 +56,12 @@ public interface CustomTableFieldDao {
      * @return
      */
     List<CustomFieldVO> searchCustomFieldList(Integer companyId, String tableCode, Integer tableId);
+
+    /**
+     * 根据企业ID和功能CODE查询字段集合
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(Integer companyId, String funcCode);
 }

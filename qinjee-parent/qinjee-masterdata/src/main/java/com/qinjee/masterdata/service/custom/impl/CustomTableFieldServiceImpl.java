@@ -315,4 +315,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
         return customTable;
     }
+
+    @Override
+    public List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(Integer companyId, String funcCode) {
+        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldListByCompanyIdAndFuncCode(companyId, funcCode);
+        return customFieldList;
+    }
 }
