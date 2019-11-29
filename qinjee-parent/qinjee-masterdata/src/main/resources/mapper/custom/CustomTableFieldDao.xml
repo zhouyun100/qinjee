@@ -134,7 +134,7 @@
         where table_id in(
             select t.table_id from t_custom_archive_table t
             where t.company_id = #{companyId,jdbcType=INTEGER}
-            and t.func_code = #{tableCode,jdbcType=VARCHAR}
+            and t.func_code = #{funcCode,jdbcType=VARCHAR}
             and t.is_enable = 1
             and t.is_delete = 0
             )
