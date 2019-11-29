@@ -405,7 +405,7 @@
  </update>
   <select id="selectPostIdAndOrgId" resultType="java.util.Map">
     select org.org_id,post.post_id
-    from t_organization org ,t_post
+    from t_organization org ,t_post post
     where org.org_code=#{org_code}
     and  post.post_code=#{post_code}
     and org.is_enable=1
@@ -413,7 +413,7 @@
   </select>
   <select id="selectPostIdAndOrgIdAndsupiorId" resultType="java.util.Map">
     select org.org_id,post.post_id,arc.archive_id
-    from t_organization org ,t_post,t_user_archive arch
+    from t_organization org ,t_post post,t_user_archive arch
     left join t_user_archive arc on arch.supervisor_id=arc.archive_id
     where org.org_code=#{org_code}
     and  post.post_code=#{post_code}

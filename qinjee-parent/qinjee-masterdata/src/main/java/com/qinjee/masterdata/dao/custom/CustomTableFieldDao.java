@@ -13,6 +13,7 @@ package com.qinjee.masterdata.dao.custom;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomGroupVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -62,5 +63,5 @@ public interface CustomTableFieldDao {
      * @param funcCode
      * @return
      */
-    List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(Integer companyId, String funcCode);
+    List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 }

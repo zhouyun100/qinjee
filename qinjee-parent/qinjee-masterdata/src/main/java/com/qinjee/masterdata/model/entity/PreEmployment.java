@@ -16,10 +16,6 @@ import java.util.Date;
 @ToString
 @JsonInclude
 public class PreEmployment implements Serializable {
-        /**
-         * 版本号
-         */
-        private static final long serialVersionUID = 8110487415164769562L;
 
         /**
          * 预入职ID

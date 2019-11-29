@@ -362,7 +362,7 @@
           </if>
       </trim>
   </insert>
-    <insert id="insertBatch" >
+    <insert id="insertBatch" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
         <foreach collection="list" item="item" open="(" separator="," close=")">
             INSERT INTO t_pre_employment
             <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -482,116 +482,116 @@
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
                 <if test="employmentId != null">
-                    #{employmentId},
+                    #{item.employmentId},
                 </if>
                 <if test="userName != null">
-                    #{userName},
+                    #{item.userName},
                 </if>
                 <if test="phone != null">
-                    #{phone},
+                    #{item.phone},
                 </if>
 
                 <if test="gender != null">
-                    #{gender},
+                    #{item.gender},
                 </if>
                 <if test="email != null">
-                    #{email},
+                    #{item.email},
                 </if>
                 <if test="idType != null">
-                    #{idType},
+                    #{item.idType},
                 </if>
                 <if test="idNumber != null">
-                    #{idNumber},
+                    #{item.idNumber},
                 </if>
                 <if test="age != null">
-                    #{age},
+                    #{item.age},
                 </if>
                 <if test="firstWorkDate != null">
-                    #{firstWorkDate},
+                    #{item.firstWorkDate},
                 </if>
                 <if test="maritalStatus != null">
-                    #{maritalStatus},
+                    #{item.maritalStatus},
                 </if>
                 <if test="highestDegree != null">
-                    #{highestDegree},
+                    #{item.highestDegree},
                 </if>
                 <if test="graduatedSchool != null">
-                    #{graduatedSchool},
+                    #{item.graduatedSchool},
                 </if>
                 <if test="graduatedSpeciality != null">
-                    #{graduatedSpeciality},
+                    #{item.graduatedSpeciality},
                 </if>
                 <if test="lastWorkCompany != null">
-                    #{lastWorkCompany},
+                    #{item.lastWorkCompany},
                 </if>
                 <if test="isGiveBirth != null">
-                    #{isGiveBirth},
+                    #{item.isGiveBirth},
                 </if>
                 <if test="residentCharacter != null">
-                    #{residentCharacter},
+                    #{item.residentCharacter},
                 </if>
                 <if test="height != null">
-                    #{height},
+                    #{item.height},
                 </if>
                 <if test="bloodType != null">
-                    #{bloodType},
+                    #{item.bloodType},
                 </if>
                 <if test="englishName != null">
-                    #{englishName},
+                    #{item.englishName},
                 </if>
                 <if test="nationality != null">
-                    #{nationality},
+                    #{item.nationality},
                 </if>
                 <if test="birthDate != null">
-                    #{birthDate},
+                    #{item.birthDate},
                 </if>
                 <if test="politicalStatus != null">
-                    #{politicalStatus},
+                    #{item.politicalStatus},
                 </if>
                 <if test="birthplace != null">
-                    #{birthplace},
+                    #{item.birthplace},
                 </if>
                 <if test="applicationPosition != null">
-                    #{applicationPosition},
+                    #{item.applicationPosition},
                 </if>
                 <if test="probationPeriod != null">
-                    #{probationPeriod},
+                    #{item.probationPeriod},
                 </if>
                 <if test="hireDate != null">
-                    #{hireDate},
+                    #{item.hireDate},
                 </if>
                 <if test="orgId != null">
-                    #{orgId},
+                    #{item.orgId},
                 </if>
                 <if test="postId != null">
-                    #{postId},
+                    #{item.postId},
                 </if>
                 <if test="employmentState != null">
-                    #{employmentState},
+                    #{item.employmentState},
                 </if>
                 <if test="employmentRegister != null">
-                    #{employmentRegister},
+                    #{item.employmentRegister},
                 </if>
                 <if test="description != null">
-                    #{description},
+                    #{item.description},
                 </if>
                 <if test="dataSource != null">
-                    #{dataSource},
+                    #{item.dataSource},
                 </if>
                 <if test="companyId != null">
-                    #{companyId},
+                    #{item.companyId},
                 </if>
                 <if test="operatorId != null">
-                    #{operatorId},
+                    #{item.item.operatorId},
                 </if>
                 <if test="createTime != null">
-                    #{createTime},
+                    #{item.item.createTime},
                 </if>
                 <if test="updateTime != null">
-                    #{updateTime},
+                    #{item.item.updateTime},
                 </if>
                 <if test="isDelete != null">
-                    #{isDelete}
+                    #{item.isDelete}
                 </if>
             </trim>
 

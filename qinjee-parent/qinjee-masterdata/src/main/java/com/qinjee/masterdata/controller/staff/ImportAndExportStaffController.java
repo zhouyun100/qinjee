@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Administrator
  */
 @RestController
-@RequestMapping("/staffarc")
+@RequestMapping("/port")
 @Api(tags = "【导入导出】文件导入导出接口")
 public class ImportAndExportStaffController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(CommonController.class);
@@ -68,8 +68,8 @@ public class ImportAndExportStaffController extends BaseController {
         Boolean b = checkParam(list,userSession);
         if(b) {
             try {
-                List < CheckCustomTableVO > checkReasons = staffImportAndExportService.checkFile ( list,userSession );
-                return new ResponseResult <> (checkReasons, CommonCode.SUCCESS);
+                 List<CheckCustomTableVO> list1=staffImportAndExportService.checkFile ( list, userSession );
+                return new ResponseResult <> (list1, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
             }

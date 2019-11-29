@@ -3,7 +3,6 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.qinjee.masterdata.dao.PostDao;
-import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
@@ -11,17 +10,14 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
-import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
-import com.qinjee.masterdata.model.vo.staff.export.ExportPreVo;
-import com.qinjee.masterdata.model.vo.staff.export.ImportArcVo;
-import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
+import com.qinjee.masterdata.model.vo.staff.export.*;
 import com.qinjee.masterdata.redis.RedisClusterService;
+import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
-import com.qinjee.masterdata.service.sys.CheckCustomFieldService;
 import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.model.request.UserSession;
@@ -52,9 +48,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Autowired
     private PreEmploymentDao preEmploymentDao;
     @Autowired
-    private CheckCustomFieldService checkCustomFieldService;
-    @Autowired
-    private OrganizationDao organizationDao;
+    private CustomTableFieldService customTableFieldService;
     @Autowired
     private LaborContractDao laborContractDao;
     @Autowired
@@ -96,7 +90,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             mapList.add ( objectMap );
         }
         //请求接口获得返回前端的结果
-        return checkCustomFieldService.checkCustomFieldValue ( idList, mapList );
+        return customTableFieldService.checkCustomFieldValue ( idList, mapList );
     }
 
     @Override
@@ -161,7 +155,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List < Map < String, String > > list = getMaps ( multipartFile );
         List < UserArchive > userArchives = new ArrayList <> ();
         @SuppressWarnings("unchecked")
-        List < ImportArcVo > objectList = HeadListUtil.getObjectList ( list, ImportArcVo.class );
+        List < ImportArcVo > objectList = HeadListUtil.getObjectList ( list, ImportArcVo.class,getTypeMaps("ARC",userSession.getCompanyId ()));
         for (ImportArcVo importArcVo : objectList) {
             UserArchive userArchive = new UserArchive ();
             setValue ( importArcVo, userArchive );
@@ -186,7 +180,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List < Map < String, String > > list = getMaps ( multipartFile );
         List < PreEmployment > preEmploymentList = new ArrayList <> ();
         @SuppressWarnings("unchecked")
-        List < ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class );
+        List < ExportPreVo > objectList = HeadListUtil.getObjectList ( list, ExportPreVo.class,getTypeMaps("PRE",userSession.getCompanyId ()) );
         for (ExportPreVo exportPreVo : objectList) {
             PreEmployment preEmployment = new PreEmployment ();
             setValue ( exportPreVo, preEmployment );
@@ -209,7 +203,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List < Map < String, String > > list = getMaps ( multipartFile );
         List < Blacklist > blacklistList = new ArrayList <> ();
         @SuppressWarnings("unchecked")
-        List < BlackListVo > objectList = HeadListUtil.getObjectList ( list, BlackListVo.class );
+        List < BlackListVo > objectList = HeadListUtil.getObjectList ( list, BlackListVo.class ,getTypeMaps("BLA",userSession.getCompanyId ()));
         for (BlackListVo blackListVo : objectList) {
             Blacklist blacklist = new Blacklist ();
             setValue ( blackListVo, blacklist );
@@ -234,7 +228,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List < Map < String, String > > list = getMaps ( multipartFile );
         List < LaborContract > laborContractList = new ArrayList <> ();
         @SuppressWarnings("unchecked")
-        List < ContractVo > objectList = HeadListUtil.getObjectList ( list, ContractVo.class );
+        List < ContractVo > objectList = HeadListUtil.getObjectList ( list, ContractVo.class,getTypeMaps("CON",userSession.getCompanyId ()) );
         for (ContractVo contractVo : objectList) {
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );
@@ -253,7 +247,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //excel方法获得值
         List < Map < String, String > > list = getMaps ( multipartFile );
         //获取对象集合
-        List objectList = HeadListUtil.getObjectList ( list, Object.class );
+
+        List objectList = HeadListUtil.getObjectList ( list, HeadListUtil.getBusinessClass ( title ),getTypeMaps ( "ARC ",userSession.getCompanyId () ) );
         for (Object o : objectList) {
             StringBuilder builder = new StringBuilder (  );
             Field idNumber = o.getClass ().getDeclaredField ( "id_number" );
@@ -281,7 +276,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     }
 
     private void setValue(Object voObject, Object object) throws IllegalAccessException {
-        Field[] declaredFields = object.getClass ().getDeclaredFields ();
+        Field[] declaredFields = voObject.getClass ().getDeclaredFields ();
         Field[] fields = object.getClass ().getDeclaredFields ();
         for (Field field : fields) {
             field.setAccessible ( true );
@@ -289,8 +284,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             for (Field declaredField : declaredFields) {
                 declaredField.setAccessible ( true );
                 String name = declaredField.getName ();
-                if (name.equals ( fieldToProperty ( fieldName ) )) {
-                    declaredField.set ( object, field.get ( voObject ) );
+                if (fieldName.equals ( fieldToProperty ( name ) )) {
+                    field.set ( object, declaredField.get ( voObject ) );
                 }
             }
         }
@@ -476,7 +471,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         for (Map < String, String > map : mapList) {
             Map < String, String > stringMap = new HashMap <> ();
             for (Map.Entry < String, String > entry : map.entrySet ()) {
-                stringMap.put ( customArchiveFieldDao.selectFieldCodeByName ( entry.getKey () ), entry.getValue () );
+                stringMap.put ( entry.getKey (), entry.getValue () );
             }
             list.add ( stringMap );
         }
@@ -536,4 +531,15 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         return keyList;
     }
+
+    private Map<String,String> getTypeMaps(String funcCode,Integer companyId){
+        List < CustomFieldVO > customFieldVOS =
+                customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( companyId, funcCode );
+        Map<String,String> typeMap=new HashMap <> (  );
+        for (CustomFieldVO customFieldVO : customFieldVOS) {
+            typeMap.put ( customFieldVO.getFieldName (),customFieldVO.getTextType () );
+        }
+        return  typeMap;
+    }
+
 }
