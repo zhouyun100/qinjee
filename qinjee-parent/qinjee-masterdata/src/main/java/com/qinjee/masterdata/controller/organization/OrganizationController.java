@@ -65,12 +65,14 @@ public class OrganizationController extends BaseController {
    */
   @ApiOperation(value = "ok，获取机构树", notes = "ok")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
+      @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0不包含（默认）、1 包含", paramType = "query", dataType = "short")
   })
   @GetMapping("/getAllOrganizationTree")
   public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable", required = false) Short isEnable) {
-    if (isEnable == null) {
-      isEnable = Short.parseShort("0");
+    if (isEnable == null || isEnable==0) {
+      isEnable = 0;
+    }else{
+      isEnable=null;
     }
     UserSession userSession = getUserSession();
     List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(userSession, isEnable);
@@ -81,6 +83,13 @@ public class OrganizationController extends BaseController {
   @PostMapping("/getOrganizationPageList")
   @ApiOperation(value = "ok，分页按条件查询用户下所有的机构", notes = "ok")
   public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
+    Short isEnable = organizationPageVo.getIsEnable();
+    if (isEnable == null || isEnable==0) {
+      isEnable = 0;
+    }else{
+      isEnable=null;
+    }
+    organizationPageVo.setIsEnable(isEnable);
     UserSession userSession = getUserSession();
     PageResult<OrganizationVO> pageResult = organizationService.getOrganizationPageList(organizationPageVo, userSession);
     return new ResponseResult<>(pageResult);
@@ -100,7 +109,12 @@ public class OrganizationController extends BaseController {
                                                             @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
                                                             @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
                                                             @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
-                                                            @RequestParam("isEnable") @ApiParam(value = "是否包含封存", example = "0") Short isEnable) {
+                                                            @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
+    if (isEnable == null || isEnable==0) {
+      isEnable = 0;
+    }else{
+      isEnable=null;
+    }
     List<OrganizationVO> pageResult = organizationService.getOrganizationGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
     return new ResponseResult(pageResult);
   }
@@ -108,7 +122,7 @@ public class OrganizationController extends BaseController {
   //TODO
   @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
   @GetMapping("/getOrganizationPostTree")
-  public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否含有封存 0不含有、1含有", example = "0") @RequestParam("isEnable") Short isEnable) {
+  public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0包含（默认）、1 不包含", example = "0") @RequestParam("isEnable") Short isEnable) {
     if (isEnable == null) {
       isEnable = Short.parseShort("0");
     }
@@ -117,13 +131,13 @@ public class OrganizationController extends BaseController {
   }
 
   @PostMapping("/lockOrganizationByIds")
-  @ApiOperation(value = "ok，封存机构", notes = "ok")
+  @ApiOperation(value = "ok，封存机构，设为0", notes = "ok")
   public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
     return organizationService.sealOrganizationByIds(orgIds, Short.parseShort("0"));
   }
 
   @PostMapping("/unlockOrganizationByIds")
-  @ApiOperation(value = "ok，解封机构", notes = "ok")
+  @ApiOperation(value = "ok，解封机构，设为1", notes = "ok")
   public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
     return organizationService.sealOrganizationByIds(orgIds, Short.parseShort("1"));
   }
