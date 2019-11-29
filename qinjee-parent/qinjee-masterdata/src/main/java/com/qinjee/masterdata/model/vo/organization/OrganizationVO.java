@@ -153,6 +153,8 @@ public class OrganizationVO implements Serializable {
     private Integer staffNumbers;
 
 
+    private String orgManagerPositionName;
+
     /**
      * 计划编制人数
      */

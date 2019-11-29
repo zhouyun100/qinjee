@@ -96,8 +96,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
             PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
         }
-        Optional<List<QueryField>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        String sortFieldStr="";
+        if(!CollectionUtils.isEmpty(organizationPageVo.getQuerFieldVos())){
+            Optional<List<QueryField>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
+            sortFieldStr= QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        }
+
         List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
         PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
@@ -295,9 +299,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (layer < 1) {
             layer = 2;
         }
-        orgIdList = getOrgIdList(userSession, orgId, (layer - 1));
+        orgIdList = getOrgIdList(userSession, orgId, (layer - 1),isEnable);
         //查询所有相关的机构
-        List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics2(userSession.getArchiveId(), orgIdList, isEnable, new Date());
+        List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics(userSession.getArchiveId(), orgIdList, isEnable, new Date());
 
         //拿到根节点
         List<OrganizationVO> topOrgsList = allOrg.stream().filter(organization -> {
@@ -322,10 +326,10 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param layer       递归层级
      * @return
      */
-    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer) {
+    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer,Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
         //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), Short.parseShort("1"), new Date());
+        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
@@ -944,9 +948,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (isContainsActualMembers) {
                 org.setStaffNumbers(userArchiveDao.getUserCountByOrgId(orgId));
             }
-            //TODO 设置编制人数
-            //org.setPlanNumbers();
-
+            //TODO 设置编制人数,先写死
+            if(isContainsCompiler){
+                org.setPlanNumbers(120);
+            }
             List<OrganizationVO> childList = allOrg.stream().filter(organization -> {
                 Integer orgParentId = organization.getOrgParentId();
                 if (orgParentId != null && orgParentId >=0) {

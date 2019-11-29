@@ -11,6 +11,7 @@
         <result column="parent_org_code" jdbcType="VARCHAR" property="orgParentCode"/>
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
         <result column="orgManagerName" jdbcType="VARCHAR" property="orgManagerName"/>
+        <result column="position_name" jdbcType="VARCHAR" property="orgManagerPositionName"/>
         <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
@@ -217,8 +218,8 @@
         and t_organization.org_id = t_role_org_auth.org_id
         and t_user_role.is_delete = 0
         and t_role_org_auth.is_delete = 0
-        <if test="isEnable != null and isEnable == 1">
-            and t_organization.is_enable = #{isEnable}
+        <if test="isEnable != null ">
+            and t_organization.is_enable = 1
         </if>
         UNION
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
@@ -227,8 +228,8 @@
         where t_user_org_auth.archive_id = #{archiveId}
         and t_organization.org_id = t_user_org_auth.org_id
         and t_user_org_auth.is_delete = 0
-        <if test="isEnable != null and isEnable == 1">
-            and t_organization.is_enable = #{isEnable}
+        <if test="isEnable != null ">
+            and t_organization.is_enable = 1
         </if>
         ) v GROUP BY
         v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
@@ -252,10 +253,12 @@
         LEFT JOIN t_user_org_auth auth ON o.org_id = auth.org_id
         LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
         WHERE
-        o.is_enable = 1
-        AND auth.is_delete = 0
+        auth.is_delete = 0
         AND arc.is_delete = 0
         AND arc.archive_id = #{archiveId}
+        <if test="organizationPageVo.isEnable != null ">
+            and o.is_enable = 1
+        </if>
         UNION
         SELECT
         o2.org_id,
@@ -268,15 +271,22 @@
         LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
         LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
         WHERE
-        o2.is_enable = 1
-        AND roleauth.is_delete = 0
+        roleauth.is_delete = 0
         AND role.is_delete = 0
         AND arch.is_delete = 0
-        AND arch.archive_id = #{archiveId})org
+        AND arch.archive_id = #{archiveId}
+        <if test="organizationPageVo.isEnable != null ">
+            and o2.is_enable = 1
+        </if>
+        )org
+
         LEFT JOIN t_organization parent_org
         ON org.org_parent_id = parent_org.org_id
         <if test="organizationPageVo != null">
             where 1=1
+            <if test="organizationPageVo.orgId != null">
+                and org.org_id = #{organizationPageVo.orgId}
+            </if>
             <if test="organizationPageVo.orgParentId != null">
                 and org.org_parent_id = #{organizationPageVo.orgParentId}
             </if>
@@ -497,35 +507,24 @@
             AND arch.archive_id = #{archiveId})t1
             </select>
 
-    <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-        select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl
-        from t_organization org
-        left join t_role_org_auth roa on roa.org_id = org.org_id
-        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
-        <if test="isEnable != null and isEnable == 1">
-            and org.is_enable = #{isEnable}
-        </if>
-        left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
-        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
-        ur.archive_id and ua.archive_id = #{archiveId})
-        and tuoa.is_delete = 0
-        and tuoa.archive_id = #{archiveId}
-        and tuoa.trusteeship_end_time > #{now}
-        and tuoa.is_trusteeship = 1
-        <if test="orgId != null and orgId != ''">
-            and org.org_code like #{orgCode}
-        </if>
-        ORDER BY org.org_id ASC
-    </select>
 
-    <select id="getOrganizationGraphics2" resultMap="BaseResultMap">
+
+    <select id="getOrganizationGraphics" resultMap="BaseResultMap">
         SELECT
-        v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_manager_id,tar.attachment_url attachmentUrl
+        v.org_id,
+        v.org_code,
+        v.org_name,
+        v.org_type,
+        tua.user_name orgManagerName,
+        tps.position_name,
+        v.org_parent_id,
+        v.org_manager_id,
+        tar.attachment_url attachmentUrl
         FROM (
         SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
         t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
         FROM t_organization,t_role_org_auth,t_user_role
-        WHERE t_user_role.archive_id = 1
+        WHERE t_user_role.archive_id = #{archiveId}
         and (t_user_role.is_trusteeship = 0
         or (t_user_role.is_trusteeship = 1
         and #{now} >= t_user_role.trusteeship_begin_time
@@ -535,22 +534,26 @@
         AND t_organization.org_id = t_role_org_auth.org_id
         AND t_user_role.is_delete = 0
         AND t_role_org_auth.is_delete = 0
-        <if test="isEnable != null and isEnable == 1">
-            and t_organization.is_enable = #{isEnable}
+
+        <if test="isEnable != null ">
+            and t_organization.is_enable = 1
         </if>
         UNION
         SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
         t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
         FROM t_organization,t_user_org_auth
-        WHERE t_user_org_auth.archive_id = 1
+        WHERE t_user_org_auth.archive_id = #{archiveId}
         AND t_organization.org_id = t_user_org_auth.org_id
         AND t_user_org_auth.is_delete = 0
-        <if test="isEnable != null and isEnable == 1">
-            and t_organization.is_enable = #{isEnable}
+        <if test="isEnable != null ">
+            and t_organization.is_enable = 1
         </if>
         ) v
         LEFT JOIN  t_attachment_record tar  ON tar.business_id = v.org_manager_id AND tar.business_type = 'archive'
-
+        LEFT JOIN t_user_archive tua
+        ON tua.archive_id =v.org_manager_id
+        LEFT JOIN t_post tp ON tp.post_id =tua.post_id
+        LEFT JOIN t_position tps ON tps.position_id=tp.position_id
          <if test="orgIdList != null">
              where
              v.org_id in
