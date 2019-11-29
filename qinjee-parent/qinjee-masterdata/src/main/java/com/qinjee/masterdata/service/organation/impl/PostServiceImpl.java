@@ -80,7 +80,7 @@ public class PostServiceImpl implements PostService {
         if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
             PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
-        List<Post> postList = postDao.getPostConditionPage(postPageVo,orgidList, sortFieldStr);
+        List<Post> postList = postDao.getPostConditionPages(postPageVo,orgidList, sortFieldStr);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -284,10 +284,6 @@ public class PostServiceImpl implements PostService {
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
             multiValuedMap.put(org.getOrgParentId(),org.getOrgId());
-        }
-        for (Map.Entry<Integer, Integer> entry : multiValuedMap.entries()) {
-
-            System.out.println(entry.getKey()+":"+entry.getValue());
         }
         //根据机构id递归，取出该机构下的所有子机构
         collectOrgIds(multiValuedMap,orgId,idsList);

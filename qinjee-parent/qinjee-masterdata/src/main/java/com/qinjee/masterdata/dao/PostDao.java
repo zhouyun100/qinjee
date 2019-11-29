@@ -101,7 +101,7 @@ public interface PostDao {
     List<Post> getPostPositionListByOrgIds(@Param("orgidList")List<Integer> orgidList);
 
 
-    List<Post> getPostConditionPage(@Param("postPageVo") PostPageVo postPageVo,@Param("orgidList") List<Integer> orgidList, @Param("sortFieldStr")String sortFieldStr);
+    List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgidList") List<Integer> orgidList, @Param("sortFieldStr")String sortFieldStr);
 
     Integer sortPorts(@Param("postIds")List<Integer> postIds);
 }

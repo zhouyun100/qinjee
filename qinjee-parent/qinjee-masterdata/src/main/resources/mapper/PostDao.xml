@@ -306,7 +306,7 @@
      and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
 
   </select>
-  <select id="getPostConditionPage" resultMap="BaseResultMap">
+  <select id="getPostConditionPages" resultMap="BaseResultMap">
     SELECT
     tp.org_id,
     tp.post_id,tp.post_code,
@@ -325,13 +325,13 @@
     LEFT JOIN t_organization torg
     ON  torg.org_id=tp.org_id
     where 1=1
-    <if test="orgidList != null and orgidList.size > 0">
+    <if test="orgidList != null">
      and  tp.org_id in
-      <foreach collection="orgidList" item="id" separator="," open="(" close=")">
-        #{id}
+      <foreach collection="orgidList" item="item" separator="," open="(" close=")">
+        #{item}
       </foreach>
     </if>
-     and tp.is_delete = 0 and tp.is_enable = 1 and tps.is_delete = 0
+     and tp.is_delete = 0 and tp.is_enable = 1
     <if test="postPageVo != null">
       <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
         <foreach collection="postPageVo.querFieldVos" item="querField">
