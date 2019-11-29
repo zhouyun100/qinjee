@@ -50,11 +50,6 @@ public class PostController extends BaseController {
   }
 
 
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "pageSize", value = "每页大小", paramType = "query", dataType = "int", required = true, example = "10"),
-      @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", dataType = "int", required = true, example = "1"),
-      @ApiImplicitParam(name = "postId", value = "岗位Id", paramType = "query", dataType = "int", required = true, example = "1")
-  })
 
   @ApiOperation(value = "ok，新增岗位", notes = "ok")
   @PostMapping("/addPost")

@@ -7,7 +7,7 @@
         <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
         <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
         <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
-        <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
+        <result column="position_id" jdbcType="INTEGER" property="positionId"/>
         <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
         <result column="parent_post_id" jdbcType="INTEGER" property="parentPostId"/>
         <result column="org_id" jdbcType="INTEGER" property="orgId"/>
@@ -320,6 +320,7 @@
         tp.parent_post_id,
         tp.post_name,
         tps.position_name position_name,
+         tps.position_id position_id,
         ptp.post_name parent_post_name,
         torg.org_name
         FROM

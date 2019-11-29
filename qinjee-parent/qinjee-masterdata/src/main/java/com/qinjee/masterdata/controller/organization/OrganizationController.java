@@ -211,8 +211,7 @@ public class OrganizationController extends BaseController {
   }
 
 
-  //TODO
-  @ApiOperation(value = "未实现，下载模板", notes = "未实现")
+  @ApiOperation(value = "ok，下载模板")
   @PostMapping("/downloadTemplate")
   public ResponseResult downloadTemplateInOrg(HttpServletResponse response) {
     return organizationService.downloadTemplate(response);
