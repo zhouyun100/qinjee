@@ -27,15 +27,7 @@ public interface PostService {
    */
   PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo);
 
-  /**
-   * 根据岗位id查询员工档案岗位关系表
-   *
-   * @param pageSize
-   * @param currentPage
-   * @param postId
-   * @return
-   */
-  ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId);
+  public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId) ;
 
   /**
    * 新增岗位

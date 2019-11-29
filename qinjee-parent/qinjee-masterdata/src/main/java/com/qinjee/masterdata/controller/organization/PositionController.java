@@ -35,6 +35,11 @@ public class PositionController extends BaseController {
   public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
     return positionService.getPositionPage(getUserSession(), positionPageVo);
   }
+  @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
+  @GetMapping("/getAllPositions")
+  public ResponseResult<List<Position>> getAllPositions() {
+    return positionService.getAllPositions(getUserSession());
+  }
 
   @ApiOperation(value = "ok，新增职位", notes = "ok")
   @PostMapping("/addPosition")

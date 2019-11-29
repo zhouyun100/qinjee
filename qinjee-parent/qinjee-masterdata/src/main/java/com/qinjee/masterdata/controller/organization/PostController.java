@@ -55,13 +55,6 @@ public class PostController extends BaseController {
       @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", dataType = "int", required = true, example = "1"),
       @ApiImplicitParam(name = "postId", value = "岗位Id", paramType = "query", dataType = "int", required = true, example = "1")
   })
-  @ApiOperation(value = "未验证，根据岗位id查询员工档案岗位关系表", notes = "未验证")
-  @GetMapping("/getUserArchivePostRelationList")
-  public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize,
-                                                                                            Integer currentPage,
-                                                                                            Integer postId) {
-    return postService.getUserArchivePostRelationList(pageSize, currentPage, postId);
-  }
 
   @ApiOperation(value = "ok，新增岗位", notes = "ok")
   @PostMapping("/addPost")
