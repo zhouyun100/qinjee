@@ -344,6 +344,13 @@ public class PostServiceImpl implements PostService {
         return new ResponseResult();
     }
 
+    @Override
+    public ResponseResult<List<UserArchivePostRelation>> getPostSuccessive( Integer postId) {
+
+       List<UserArchivePostRelation> list= postDao.getPostSuccessive(postId);
+        return new ResponseResult(list);
+    }
+
     /**
      * 删除修改不含有的岗位职等关系信息
      * @param postVo

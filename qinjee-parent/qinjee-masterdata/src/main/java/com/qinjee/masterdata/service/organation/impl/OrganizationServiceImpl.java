@@ -244,13 +244,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         OrganizationVO parentOrganization = organizationDao.selectByPrimaryKey(Integer.parseInt(parentOrgId));
 
         //判断机构编码是否唯一
-        OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
-        if (orgBean != null && !orgId.equals(orgBean.getOrgId())) {
-            //机构编码在同一企业下不唯一
-            responseResult = new ResponseResult(CommonCode.FAIL);
-            responseResult.setMessage("机构编码不唯一，更新失败");
-            return responseResult;
+        if(!organization.getOrgCode().equals(orgCode)){
+            OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
+            if (orgBean != null && !orgId.equals(orgBean.getOrgId())) {
+                //机构编码在同一企业下不唯一
+                responseResult = new ResponseResult(CommonCode.FAIL);
+                responseResult.setMessage("机构编码不唯一，更新失败");
+                return responseResult;
+            }
         }
+
         //修改子机构编码
 
 
@@ -285,7 +288,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @return
      */
     @Override
-    public PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable) {
+    public List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable) {
         List<Integer> orgidList = new ArrayList<>();
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;
@@ -308,7 +311,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }).collect(Collectors.toList());
         //递归处理机构,使其以树形结构展示
         handlerOrganizationToGraphics(allOrg, topOrgsList, isContainsCompiler, isContainsActualMembers);
-        return new PageResult<>(allOrg);
+        return allOrg;
     }
 
     /**

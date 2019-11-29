@@ -99,7 +99,12 @@ public class PostController extends BaseController {
   public ResponseResult sortPorts(@RequestBody LinkedList<Integer> orgIds) {
     return postService.sortPorts(orgIds, getUserSession());
   }
+  @ApiOperation(value = "ok,查看岗位历任")
+  @GetMapping("/getPostSuccessive")
+  public ResponseResult<List<UserArchivePostRelation>> getPostSuccessive(@RequestParam("postId") Integer postId) {
 
+    return postService.getPostSuccessive(postId);
+  }
 
   @ApiOperation(value = "未验证，下载模板", notes = "未验证")
   @GetMapping("/downloadTemplate")

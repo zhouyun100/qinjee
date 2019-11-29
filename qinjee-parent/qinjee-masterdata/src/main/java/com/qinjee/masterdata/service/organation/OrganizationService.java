@@ -166,6 +166,6 @@ public interface OrganizationService {
      */
     ResponseResult editOrganization(String orgCode,String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
-    PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
+    List<OrganizationVO> getOrganizationGraphics(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 }
 

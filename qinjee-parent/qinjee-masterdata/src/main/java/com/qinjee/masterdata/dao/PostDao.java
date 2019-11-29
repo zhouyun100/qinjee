@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -104,4 +105,7 @@ public interface PostDao {
     List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgidList") List<Integer> orgidList, @Param("sortFieldStr")String sortFieldStr);
 
     Integer sortPorts(@Param("postIds")List<Integer> postIds);
+
+  List<UserArchivePostRelation> getPostSuccessive(@Param("postId")Integer postId);
 }
+
