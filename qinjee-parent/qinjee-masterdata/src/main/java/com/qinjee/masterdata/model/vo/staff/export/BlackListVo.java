@@ -6,13 +6,10 @@ import lombok.Data;
 import java.io.Serializable;
 @Data
 @JsonInclude
-public class BlackList implements Serializable {
-    /**
-     * 黑名单id
-     */
-    private Integer blacklist_id;
+public class BlackListVo implements Serializable {
+
     private String user_name;
-//    private String gender;
+    private String gender;
     private String id_number;
     private String phone;
     /**

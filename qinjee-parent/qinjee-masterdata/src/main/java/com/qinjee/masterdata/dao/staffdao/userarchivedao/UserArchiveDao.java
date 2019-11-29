@@ -96,4 +96,8 @@ public interface UserArchiveDao {
     List< UserArchiveVo> selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId);
 
     Integer getUserCountByOrgId(@Param("orgId") Integer orgId);
+
+    Integer selectIdByNumberAndEmploy(@Param("number") String number, @Param("employ") String employ);
+
+    void insertBatch(@Param("userArchives") List< UserArchive> userArchives);
 }

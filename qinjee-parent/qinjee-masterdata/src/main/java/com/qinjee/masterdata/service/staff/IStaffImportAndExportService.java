@@ -2,7 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
-import com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO;
+import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public interface IStaffImportAndExportService {
     /**
-     * 模板导入
+     * 模板导入档案表
      * @param multipartFile
      * @param userSession
      * @throws NoSuchFieldException
@@ -78,5 +78,48 @@ public interface IStaffImportAndExportService {
      */
     List <Map< String,String>> importFileAndCheckFile(MultipartFile multipartFile) throws Exception;
 
-    List< CheckCustomFieldVO > checkFile(List< Map< String, String>> list, UserSession userSession);
+    /**
+     * 字段检验
+     * @param list
+     * @param userSession
+     * @return
+     */
+    List< CheckCustomTableVO > checkFile(List< Map< String, String>> list, UserSession userSession);
+
+    /**
+     * 准备上传
+     * @param list
+     * @param userSession
+     */
+    void readyForImport(List< Map< String, String>> list, UserSession userSession,String title);
+
+    /**
+     * 取消文件导入
+     * @param title
+     * @param userSession
+     */
+    void cancelForImport(String title, UserSession userSession) throws Exception;
+
+
+    /**
+     * 导入黑名单
+     * @param multipartFile
+     * @param userSession
+     * @throws Exception
+     */
+    void importBlaFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+
+    /**
+     * 导入合同
+     * @param multipartFile
+     * @param userSession
+     */
+    void importConFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+
+    /**
+     * 导入业务信息
+     * @param multipartFile
+     * @param userSession
+     */
+    void importBusinessFile(MultipartFile multipartFile,String title, UserSession userSession) throws Exception;
 }

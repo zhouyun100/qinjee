@@ -65,4 +65,6 @@ public interface PreEmploymentDao {
     List< PreEmploymentVo> selectPreEmploymentVo(Integer companyId);
     @MapKey ( "employment_id" )
     Map< Integer,Map< String, String>> selectNameAndOrg(@Param("list") List< Integer> list);
+
+
 }

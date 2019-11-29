@@ -80,19 +80,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteCustomArchiveTable(List < Integer > list) throws Exception {
-        Integer max = customArchiveTableDao.selectMaxPrimaryKey ();
-        for (Integer integer : list) {
-            if (max < integer) {
-                throw new Exception ( "id有误" );
-            }
-        }
+    public void deleteCustomArchiveTable(List < Integer > list)  {
         customArchiveTableDao.deleteCustomTable ( list );
     }
 
     @Override
     public void updateCustomArchiveTable(CustomArchiveTable customArchiveTable) {
-
         customArchiveTableDao.updateByPrimaryKeySelective ( customArchiveTable );
     }
 
@@ -110,19 +103,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void insertCustomArchiveGroup(CustomArchiveGroup customArchiveGroup, UserSession userSession) {
         customArchiveGroup.setCreatorId ( userSession.getArchiveId () );
         customArchiveGroup.setIsDelete ( ( short ) 0 );
-
         customArchiveGroupDao.insertSelective ( customArchiveGroup );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteCustomArchiveGroup(List < Integer > list) throws Exception {
-        Integer max = customArchiveGroupDao.selectMaxPrimaryKey ();
-        for (Integer integer : list) {
-            if (max < integer) {
-                throw new Exception ( "id有误" );
-            }
-        }
+    public void deleteCustomArchiveGroup(List < Integer > list)  {
         customArchiveGroupDao.deleteCustomGroup ( list );
     }
 
@@ -149,13 +135,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteCustomArchiveField(List < Integer > list) throws Exception {
-        Integer max = customArchiveFieldDao.selectMaxPrimaryKey ();
-        for (Integer integer : list) {
-            if (max < integer) {
-                throw new Exception ( "id有误" );
-            }
-        }
+    public void deleteCustomArchiveField(List < Integer > list) {
+
         customArchiveFieldDao.deleteCustomField ( list );
     }
 

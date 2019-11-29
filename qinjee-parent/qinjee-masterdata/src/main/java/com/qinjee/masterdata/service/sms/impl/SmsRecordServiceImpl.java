@@ -69,7 +69,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             Map < String, String > value = integerMapEntry.getValue ();
             String userName = value.get ( "user_name" );
             String applicationPosition = value.get ( "application_position" );
-            String companyId = value.get ( "company_id" );
+            String companyId = String.valueOf (value.get ( "company_id" ));
             String phone = value.get ( "phone" );
             List<String> phoneNumbers = new ArrayList<>();
             phoneNumbers.add(phone);

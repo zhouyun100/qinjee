@@ -106,6 +106,10 @@ public interface PostDao {
 
     Integer sortPorts(@Param("postIds")List<Integer> postIds);
 
+    Map< String, Integer> selectPostIdAndOrgId(@Param("org_code") String org_code, @Param("post_code") String post_code);
+
+    Map< String, Integer> selectPostIdAndOrgIdAndsupiorId(@Param("org_code") String org_code, @Param("post_code") String post_code, @Param("code") String code);
+
   List<UserArchivePostRelation> getPostSuccessive(@Param("postId")Integer postId);
 }
 

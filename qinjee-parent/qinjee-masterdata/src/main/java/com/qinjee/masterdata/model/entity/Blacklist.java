@@ -42,16 +42,27 @@ public class Blacklist implements Serializable {
      * 所属单位ID
      */
     private Integer businessUnitId;
-
+    /**
+     * 所属单位名称
+     */
+    private String businessUnitName;
     /**
      * 部门ID
      */
     private Integer orgId;
+    /**
+     * 部门姓名
+     */
+    private Integer orgName;
 
     /**
      * 岗位ID
      */
     private Integer postId;
+    /**
+     * 岗位名称
+     */
+    private Integer postName;
 
     /**
      * 拉黑原因

@@ -1019,8 +1019,8 @@
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict1.dict_value as highest_degree_name,
-        dict2.dict_value as marry_status_name
+        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
+        dict1.dict_value as marry_status_name
         from t_pre_employment t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id
         left join t_post post on post.post_id = t_pre_employment.post_id
@@ -1036,6 +1036,7 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        where is_delete=0
+        and is_delete=0
     </select>
+
 </mapper>

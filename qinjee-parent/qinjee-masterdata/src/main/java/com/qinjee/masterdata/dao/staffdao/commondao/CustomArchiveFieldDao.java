@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.commondao;
 
 import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -82,4 +83,8 @@ public interface CustomArchiveFieldDao {
     List< CustomArchiveField> selectFieldNameByTableName(@Param("companyId") Integer companyId, @Param("preEmployment") String preEmployment);
 
     List< Integer> selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List< String> fieldNames, @Param("companyId") Integer companyId);
+    @MapKey ( "field_name" )
+    Map< String,Map< String, String>> seleleIsSysAndTableIdAndTableName(@Param("strings") List< String> strings);
+
+    Integer selectTableIdByNameAndCompanyId(@Param("title") String title, @Param("companyId") Integer companyId);
 }

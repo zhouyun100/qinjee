@@ -32,4 +32,6 @@ public interface BlacklistDao {
 
     @MapKey("blacklist_id")
     Map< Integer, Map< String, Object>> selectExportBlackList(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
+
+    void insertBatch(@Param("blacklistList") List< Blacklist> blacklistList);
 }

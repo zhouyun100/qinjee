@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao.organation;
 
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrganizationHistoryDao {
 
     /**

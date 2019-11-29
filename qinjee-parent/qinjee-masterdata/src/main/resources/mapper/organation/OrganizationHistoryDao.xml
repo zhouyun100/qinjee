@@ -7,7 +7,7 @@
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
     <result column="org_type" jdbcType="VARCHAR" property="orgType" />
     <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
-    <result column="org_fullname" jdbcType="VARCHAR" property="orgfull_name" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
     <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />

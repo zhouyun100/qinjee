@@ -31,7 +31,8 @@ public enum CommonCode implements ResultCode{
     FILE_EXPORT_FAILED(false,10311, "文件导出失败!"),
     FILE_PARSE_FAILED(false,10312, "文件解析失败!"),
     FAIL_VALUE_NULL(false,10313, "结果不存在，请检查或联系开发!"),
-    FILE_EMPTY(false,10314, "文件为空!");
+    FILE_EMPTY(false,10314, "文件为空!"),
+    REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!");
 
 
     /**

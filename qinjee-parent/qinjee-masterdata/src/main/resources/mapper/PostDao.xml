@@ -357,17 +357,7 @@
             ORDER BY ${sortFieldStr}
         </if>
     </select>
-    <update id="sortPorts">
-        <foreach collection="postIds" item="id" index="index" open="" close="" separator=";">
-            UPDATE t_post
-            <set>
-                sort_id=(#{index}+1)*1000
-            </set>
-            <where>
-                post_id = #{id}
-            </where>
-        </foreach>
-    </update>
+
 
     <resultMap id="userArchivePostRelationMap" type="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
 
@@ -399,5 +389,38 @@
             ON tp.post_id = tuapr.post_id
         WHERE tuapr.post_id = #{postId}
         ORDER BY employment_begin_date ASC
+  </select>
+
+ <update id="sortPorts">
+   <foreach collection="postIds" item="id" index="index" open="" close="" separator=";">
+     UPDATE t_post
+     <set>
+       sort_id=(#{index}+1)*1000
+     </set>
+     <where>
+       post_id = #{id}
+     </where>
+   </foreach>
+ </update>
+  <select id="selectPostIdAndOrgId" resultType="java.util.Map">
+    select org.org_id,post.post_id
+    from t_organization org ,t_post
+    where org.org_code=#{org_code}
+    and  post.post_code=#{post_code}
+    and org.is_enable=1
+    and post.is_delete=0
+  </select>
+  <select id="selectPostIdAndOrgIdAndsupiorId" resultType="java.util.Map">
+    select org.org_id,post.post_id,arc.archive_id
+    from t_organization org ,t_post,t_user_archive arch
+    left join t_user_archive arc on arch.supervisor_id=arc.archive_id
+    where org.org_code=#{org_code}
+    and  post.post_code=#{post_code}
+    and arch.employee_number=#{code}
+    and org.is_enable=1
+    and post.is_delete=0
+    and arch.is_delete=0
+    and arc.is_delete=0
+
   </select>
 </mapper>
