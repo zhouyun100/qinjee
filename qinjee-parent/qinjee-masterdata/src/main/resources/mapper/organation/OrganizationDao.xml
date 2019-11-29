@@ -298,26 +298,7 @@
         </if>
     </select>
 
-    <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-        select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl
-        from t_organization org
-        left join t_role_org_auth roa on roa.org_id = org.org_id
-        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
-        <if test="isEnable != null and isEnable == 1">
-            and org.is_enable = #{isEnable}
-        </if>
-        left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
-        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
-        ur.archive_id and ua.archive_id = #{archiveId})
-        and tuoa.is_delete = 0
-        and tuoa.archive_id = #{archiveId}
-        and tuoa.trusteeship_end_time > #{now}
-        and tuoa.is_trusteeship = 1
-        <if test="orgId != null and orgId != ''">
-            and org.org_code like #{orgCode}
-        </if>
-        ORDER BY org.org_id ASC
-    </select>
+
 
     <update id="UpdateIsEnableByOrgIds">
         update t_organization
@@ -516,4 +497,66 @@
             AND arch.archive_id = #{archiveId})t1
             </select>
 
+    <select id="getOrganizationGraphics" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        select org.org_code, org.org_name, org.org_parent_id, org.sort_id ,tar.attachment_url attachmentUrl
+        from t_organization org
+        left join t_role_org_auth roa on roa.org_id = org.org_id
+        left join t_user_org_auth tuoa on tuoa.org_id = org.org_id
+        <if test="isEnable != null and isEnable == 1">
+            and org.is_enable = #{isEnable}
+        </if>
+        left join t_attachment_record tar on tar.business_id = org.org_id and tar.business_type = 'archive'
+        where roa.role_id in (select ur.role_id from t_user_archive ua, t_user_role ur where ua.archive_id =
+        ur.archive_id and ua.archive_id = #{archiveId})
+        and tuoa.is_delete = 0
+        and tuoa.archive_id = #{archiveId}
+        and tuoa.trusteeship_end_time > #{now}
+        and tuoa.is_trusteeship = 1
+        <if test="orgId != null and orgId != ''">
+            and org.org_code like #{orgCode}
+        </if>
+        ORDER BY org.org_id ASC
+    </select>
+
+    <select id="getOrganizationGraphics2" resultMap="BaseResultMap">
+        SELECT
+        v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_manager_id,tar.attachment_url attachmentUrl
+        FROM (
+        SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
+        FROM t_organization,t_role_org_auth,t_user_role
+        WHERE t_user_role.archive_id = 1
+        and (t_user_role.is_trusteeship = 0
+        or (t_user_role.is_trusteeship = 1
+        and #{now} >= t_user_role.trusteeship_begin_time
+        and t_user_role.trusteeship_end_time >= #{now}
+        ))
+        AND t_role_org_auth.role_id = t_user_role.role_id
+        AND t_organization.org_id = t_role_org_auth.org_id
+        AND t_user_role.is_delete = 0
+        AND t_role_org_auth.is_delete = 0
+        <if test="isEnable != null and isEnable == 1">
+            and t_organization.is_enable = #{isEnable}
+        </if>
+        UNION
+        SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
+        FROM t_organization,t_user_org_auth
+        WHERE t_user_org_auth.archive_id = 1
+        AND t_organization.org_id = t_user_org_auth.org_id
+        AND t_user_org_auth.is_delete = 0
+        <if test="isEnable != null and isEnable == 1">
+            and t_organization.is_enable = #{isEnable}
+        </if>
+        ) v
+        LEFT JOIN  t_attachment_record tar  ON tar.business_id = v.org_manager_id AND tar.business_type = 'archive'
+
+         <if test="orgIdList != null">
+             where
+             v.org_id in
+             <foreach collection="orgIdList" item="item" close=")" open="(" separator=",">
+                 #{item}
+             </foreach>
+         </if>
+    </select>
 </mapper>

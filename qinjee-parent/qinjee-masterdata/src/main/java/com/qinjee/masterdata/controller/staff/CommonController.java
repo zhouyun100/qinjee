@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
+import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -37,6 +38,8 @@ public class CommonController extends BaseController {
 
     @Autowired
     private IStaffCommonService staffCommonService;
+    @Autowired
+    private SmsRecordService smsRecordService;
 
     /**
      * 新增自定义表
@@ -453,7 +456,7 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(list);
         if (b) {
                 try {
-                    staffCommonService.sendMessage ( list );
+                    smsRecordService.sendMessageSms ( list );
                     return new ResponseResult<>(null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();

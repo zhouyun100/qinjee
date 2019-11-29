@@ -460,4 +460,22 @@
       #{item}
     </foreach>
   </select>
+  <select id="seleleIsSysAndTableIdAndTableName" resultType="java.util.Map">
+        select field.table_id,field.is_system_define,tab.table_name
+        from t_custom_archive_field field
+        left join t_custom_archive_table tab on tab.table_id= field.table_id
+        where field.is_delete=0
+        and tab.is_delete=0
+        and field_name in
+        <foreach collection="strings" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+  </select>
+  <select id="selectTableIdByNameAndCompanyId" resultType="java.lang.Integer">
+        select  table_id
+        from  t_custom_archive_table
+        where table_name=#{title}
+        and company_id=#{companyId}
+        and is_enable=1
+  </select>
 </mapper>

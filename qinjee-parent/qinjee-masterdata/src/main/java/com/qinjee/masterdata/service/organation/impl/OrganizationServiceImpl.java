@@ -26,6 +26,8 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -103,15 +105,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         return pageResult;
     }
 
-    @Override
-    public PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId) {
-        Integer archiveId = userSession.getArchiveId();
-        OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
-        String orgCode = organizationVO.getOrgCode() + "%";
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationGraphics(archiveId, isEnable, orgCode, new Date());
-        PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
-        return pageResult;
-    }
 
     @Transactional
     @Override
@@ -251,13 +244,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         OrganizationVO parentOrganization = organizationDao.selectByPrimaryKey(Integer.parseInt(parentOrgId));
 
         //判断机构编码是否唯一
-        OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
-        if (orgBean != null && !orgId.equals(orgBean.getOrgId())) {
-            //机构编码在同一企业下不唯一
-            responseResult = new ResponseResult(CommonCode.FAIL);
-            responseResult.setMessage("机构编码不唯一，更新失败");
-            return responseResult;
+        if(!organization.getOrgCode().equals(orgCode)){
+            OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
+            if (orgBean != null && !orgId.equals(orgBean.getOrgId())) {
+                //机构编码在同一企业下不唯一
+                responseResult = new ResponseResult(CommonCode.FAIL);
+                responseResult.setMessage("机构编码不唯一，更新失败");
+                return responseResult;
+            }
         }
+
         //修改子机构编码
 
 
@@ -280,6 +276,91 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
+
+
+    /**
+     * @param userSession
+     * @param layer                   查询机构层级数
+     * @param isContainsCompiler
+     * @param isContainsActualMembers
+     * @param orgId
+     * @param isEnable
+     * @return
+     */
+    @Override
+    public List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable) {
+        List<Integer> orgidList = new ArrayList<>();
+        //拿到关联的所有机构id
+        List<Integer> orgIdList = null;
+        if (layer < 1) {
+            layer = 2;
+        }
+        orgIdList = getOrgIdList(userSession, orgId, (layer - 1));
+        //查询所有相关的机构
+        List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics2(userSession.getArchiveId(), orgIdList, isEnable, new Date());
+
+        //拿到根节点
+        List<OrganizationVO> topOrgsList = allOrg.stream().filter(organization -> {
+            if (organization.getOrgId() != null && organization.getOrgId().equals(orgId)) {
+                return true;
+            }else if(orgId==0){//TODO 如果是顶级机构
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        //递归处理机构,使其以树形结构展示
+        handlerOrganizationToGraphics(allOrg, topOrgsList, isContainsCompiler, isContainsActualMembers);
+        return allOrg;
+    }
+
+    /**
+     * 搜集机构下所有子机构的id
+     *
+     * @param userSession
+     * @param orgId
+     * @param layer       递归层级
+     * @return
+     */
+    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer) {
+        List<Integer> idsList = new ArrayList<>();
+        //先查询到所有机构
+        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), Short.parseShort("1"), new Date());
+        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
+        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
+        for (OrganizationVO org : allOrgs) {
+            multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
+        }
+        for (Map.Entry<Integer, Integer> entry : multiValuedMap.entries()) {
+
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
+        //根据机构id递归，取出该机构下的所有子机构
+        collectOrgIds(multiValuedMap, orgId, idsList, layer);
+        return idsList;
+    }
+
+    /**
+     * 遍历搜集机构下所有子机构的id
+     *
+     * @param multiValuedMap
+     * @param orgId
+     * @param idsList
+     */
+    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList, Integer layer) {
+        idsList.add(orgId);
+        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
+        for (Integer sonOrgId : sonOrgIds) {
+            if(layer > 0){
+                idsList.add(sonOrgId);
+            }
+            if (multiValuedMap.get(sonOrgId).size() > 0 && layer > 0) {
+                collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
+                layer--;
+            }
+        }
+    }
+
 
     private void recursiveUpdateOrgNameByParentOrgId(String parentOrgFullName, String orgId) {
 
@@ -419,13 +500,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     public ResponseResult sortOrganization(LinkedList<Integer> orgIds) {
         ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
-        List<OrganizationVO> organizationList= organizationDao.getOrganizationListByOrgIds(orgIds);
-        Set<Integer> parentOrgSet=new HashSet<>();
+        List<OrganizationVO> organizationList = organizationDao.getOrganizationListByOrgIds(orgIds);
+        Set<Integer> parentOrgSet = new HashSet<>();
         for (OrganizationVO organizationVO : organizationList) {
             parentOrgSet.add(organizationVO.getOrgParentId());
         }
         //判断是否在同一级机构下
-        if (parentOrgSet.size()>1){
+        if (parentOrgSet.size() > 1) {
             responseResult.setResultCode(CommonCode.FAIL);
             responseResult.setMessage("机构不在同级下，排序失败");
             return responseResult;
@@ -846,6 +927,38 @@ public class OrganizationServiceImpl implements OrganizationService {
                 org.setChildList(childList);
                 organizationVOList.removeAll(childList);
                 handlerOrganizationToTree(organizationVOList, childList);
+            }
+        }
+    }
+
+    /**
+     * 处理所有机构以图形结构展示
+     *
+     * @param allOrg
+     * @param topOrgsList
+     */
+    private void handlerOrganizationToGraphics(List<OrganizationVO> allOrg, List<OrganizationVO> topOrgsList, boolean isContainsCompiler, boolean isContainsActualMembers) {
+        for (OrganizationVO org : topOrgsList) {
+            Integer orgId = org.getOrgId();
+            //设置实有人数
+            if (isContainsActualMembers) {
+                org.setStaffNumbers(userArchiveDao.getUserCountByOrgId(orgId));
+            }
+            //TODO 设置编制人数
+            //org.setPlanNumbers();
+
+            List<OrganizationVO> childList = allOrg.stream().filter(organization -> {
+                Integer orgParentId = organization.getOrgParentId();
+                if (orgParentId != null && orgParentId >=0) {
+                    return orgParentId.equals(orgId);
+                }
+                return false;
+            }).collect(Collectors.toList());
+            //判断是否还有子级
+            if (childList != null && childList.size() > 0) {
+                org.setChildList(childList);
+                allOrg.removeAll(childList);
+                handlerOrganizationToTree(allOrg, childList);
             }
         }
     }

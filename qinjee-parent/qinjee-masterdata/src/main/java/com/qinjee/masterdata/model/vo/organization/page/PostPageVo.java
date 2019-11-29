@@ -17,13 +17,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostPageVo extends PageQuery {
 
-    @ApiModelProperty(value = "机构ID", example = "1")
-    private Integer orgId;
+  @ApiModelProperty(value = "机构ID", example = "1")
+  private Integer orgId;
+  @ApiModelProperty(value = "岗位ID", example = "1")
+  private Integer postId;
 
-    @ApiModelProperty("是否删除 0未删除、1已删除")
-    private Short isDelete;
+  @ApiModelProperty("是否删除 0未删除、1已删除")
+  private Short isDelete;
 
-    @ApiModelProperty("是否含有封存 0不含有、1含有")
-    private Short isEnable;
+  @ApiModelProperty("是否含有封存 0不含有、1含有")
+  private Short isEnable;
 
 }

@@ -51,18 +51,7 @@ public interface OrganizationDao {
                                              @Param("archiveId") Integer archiveId,
                                              @Param("now") Date now);
 
-    /**
-     * 根据是否封存查询用户下所有的机构,图形化展示
-     *
-     * @param archiveId
-     * @param isEnable
-     * @param orgCode
-     * @return
-     */
-    List<OrganizationVO> getOrganizationGraphics(@Param("archiveId") Integer archiveId,
-                                                 @Param("isEnable") Short isEnable,
-                                                 @Param("orgCode") String orgCode,
-                                                 @Param("now") Date now);
+
 
     /**
      * 根据code码封存或解封机构
@@ -119,6 +108,18 @@ public interface OrganizationDao {
 
     List< OrganzitionVo > selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
 
+    /**
+     * 根据是否封存查询用户下所有的机构,图形化展示
+     *
+     * @param archiveId
+     * @param isEnable
+     * @param orgCode
+     * @return
+     */
+    List<OrganizationVO> getOrganizationGraphics(@Param("archiveId") Integer archiveId,
+                                                 @Param("isEnable") Short isEnable,
+                                                 @Param("orgCode") String orgCode,
+                                                 @Param("now") Date now);
 
-
+    List<OrganizationVO> getOrganizationGraphics2(Integer archiveId, List<Integer> orgIdList, Short isEnable, Date now);
 }

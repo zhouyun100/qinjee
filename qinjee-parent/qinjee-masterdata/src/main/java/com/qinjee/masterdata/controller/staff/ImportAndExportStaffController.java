@@ -3,7 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
-import com.qinjee.masterdata.model.vo.sys.CheckCustomFieldVO;
+import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -64,11 +64,11 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "校验所传的字段", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult<List< CheckCustomFieldVO >> checkFile(List< Map< String,String>> list, UserSession userSession) {
+    public ResponseResult<List< CheckCustomTableVO >> checkFile(@RequestBody  List< Map< String,String>> list, UserSession userSession) {
         Boolean b = checkParam(list,userSession);
         if(b) {
             try {
-                List < CheckCustomFieldVO > checkReasons = staffImportAndExportService.checkFile ( list,userSession );
+                List < CheckCustomTableVO > checkReasons = staffImportAndExportService.checkFile ( list,userSession );
                 return new ResponseResult <> (checkReasons, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
@@ -76,7 +76,42 @@ public class ImportAndExportStaffController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+    /**
+     * 准备导入文件
+     */
+    @RequestMapping(value = "/readyForImport", method = RequestMethod.POST)
+    @ApiOperation(value = "准备导入文件", notes = "hkt")
 
+    public ResponseResult<List< CheckCustomTableVO >> readyForImport(List< Map< String,String>> list, UserSession userSession,String title) {
+        Boolean b = checkParam(list,userSession,title);
+        if(b) {
+            try {
+                 staffImportAndExportService.readyForImport ( list,userSession,title );
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 取消导入文件
+     */
+    @RequestMapping(value = "/cancelForImport", method = RequestMethod.POST)
+    @ApiOperation(value = "取消导入文件", notes = "hkt")
+
+    public ResponseResult readyForImport(String title) {
+        Boolean b = checkParam(title,getUserSession ());
+        if(b) {
+            try {
+                staffImportAndExportService.cancelForImport (title,getUserSession () );
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
     /**
      * 模板导入档案
      */
@@ -95,7 +130,7 @@ public class ImportAndExportStaffController extends BaseController {
                 return failResponseResult("导入失败");
             }
         }
-        return  failResponseResult("path错误");
+        return  failResponseResult("文件内容错误");
     }
     /**
      * 模板导入预入职
@@ -115,8 +150,69 @@ public class ImportAndExportStaffController extends BaseController {
                 return failResponseResult("导入失败");
             }
         }
-        return  failResponseResult("path错误");
+        return  failResponseResult("文件内容错误");
     }
+    /**
+     * 模板导入黑名单
+     */
+    @RequestMapping(value = "/importBlaFile", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导入黑名单", notes = "hkt")
+//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+
+    public ResponseResult importBlaFile(MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile,getUserSession());
+        if(b){
+            try {
+                staffImportAndExportService.importBlaFile(multipartFile,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导入失败");
+            }
+        }
+        return  failResponseResult("文件内容错误");
+    }
+    /**
+     * 模板导入业务类
+     */
+    @RequestMapping(value = "/importBusinessFile", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导入业务类", notes = "hkt")
+//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+
+    public ResponseResult importBusinessFile(MultipartFile multipartFile,String title) {
+        Boolean b = checkParam(multipartFile,getUserSession(),title);
+        if(b){
+            try {
+                staffImportAndExportService.importBusinessFile(multipartFile,title,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导入失败");
+            }
+        }
+        return  failResponseResult("文件内容错误");
+    }
+    /**
+     * 模板导入合同
+     */
+    @RequestMapping(value = "/importConFile", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导入合同", notes = "hkt")
+//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
+
+    public ResponseResult importConFile(MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile,getUserSession());
+        if(b){
+            try {
+                staffImportAndExportService.importConFile(multipartFile,getUserSession());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导入失败");
+            }
+        }
+        return  failResponseResult("文件内容错误");
+    }
+
 
     /**
      * 模板导出档案
@@ -156,7 +252,7 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult export(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+    public ResponseResult exportPreFile(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
         Boolean b = checkParam(exportRequest,response,getUserSession ());
         if(b){
             try {
@@ -181,7 +277,7 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportPreBla(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+    public ResponseResult exportBlackFile(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
         Boolean b = checkParam(exportRequest,response,getUserSession ());
         if(b){
             try {

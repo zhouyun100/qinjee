@@ -32,14 +32,6 @@ public interface OrganizationService {
      */
     PageResult<OrganizationVO> getOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
-    /**
-     * 根据是否封存查询用户下所有的机构,图形化展示
-     * @param userSession
-     * @param isEnable
-     * @return
-     */
-    PageResult<OrganizationVO> getOrganizationGraphics(UserSession userSession, Short isEnable, Integer orgId);
-
 
     /**
      * 删除机构（逻辑删除）
@@ -173,4 +165,7 @@ public interface OrganizationService {
      * @return ResponseResult
      */
     ResponseResult editOrganization(String orgCode,String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+
+    List<OrganizationVO> getOrganizationGraphics(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 }
+

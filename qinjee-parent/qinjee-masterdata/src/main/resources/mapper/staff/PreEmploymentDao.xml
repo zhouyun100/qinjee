@@ -103,6 +103,8 @@
         <result column="org_name" property="orgName" jdbcType="VARCHAR" />
         <result column="post_name" property="postName" jdbcType="VARCHAR" />
         <result column="id_type_name" property="idTypeName" jdbcType="VARCHAR" />
+        <result column="highest_degree_name" property="highestDegreeName" jdbcType="VARCHAR" />
+        <result column="marry_status_name" property="marryStatusName" jdbcType="VARCHAR" />
         <result column="company_id" property="companyId" jdbcType="INTEGER" />
 
     </resultMap>
@@ -134,9 +136,6 @@
           <if test="employmentId != null">
               employment_id,
           </if>
-          <if test="maritalStatus != null">
-              marital_status,
-          </if>
           <if test="userName != null">
               user_name,
           </if>
@@ -150,6 +149,9 @@
           <if test="email != null">
               email,
           </if>
+          <if test="idType != null">
+              id_type,
+          </if>
           <if test="idNumber != null">
               id_number,
           </if>
@@ -158,6 +160,9 @@
           </if>
           <if test="firstWorkDate != null">
               first_work_date,
+          </if>
+          <if test="maritalStatus != null">
+              marital_status,
           </if>
           <if test="highestDegree != null">
               highest_degree,
@@ -179,6 +184,9 @@
           </if>
           <if test="height != null">
               height,
+          </if>
+          <if test="bloodType != null">
+              blood_type,
           </if>
           <if test="englishName != null">
               english_name,
@@ -204,11 +212,11 @@
           <if test="hireDate != null">
               hire_date,
           </if>
-          <if test="postId != null">
-              post_id,
-          </if>
           <if test="orgId != null">
               org_id,
+          </if>
+          <if test="postId != null">
+              post_id,
           </if>
           <if test="employmentState != null">
               employment_state,
@@ -237,35 +245,27 @@
           <if test="isDelete != null">
               is_delete,
           </if>
-          <if test="bloodType != null">
-              blood_type,
-          </if>
-          <if test="idType != null">
-              id_type,
-          </if>
 
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
           <if test="employmentId != null">
               #{employmentId},
           </if>
-          <if test="maritalStatus != null">
-              #{maritalStatus},
-          </if>
           <if test="userName != null">
               #{userName},
-          </if>
-          <if test="orgId != null">
-              #{orgId},
           </if>
           <if test="phone != null">
               #{phone},
           </if>
+
           <if test="gender != null">
               #{gender},
           </if>
           <if test="email != null">
               #{email},
+          </if>
+          <if test="idType != null">
+              #{idType},
           </if>
           <if test="idNumber != null">
               #{idNumber},
@@ -275,6 +275,9 @@
           </if>
           <if test="firstWorkDate != null">
               #{firstWorkDate},
+          </if>
+          <if test="maritalStatus != null">
+              #{maritalStatus},
           </if>
           <if test="highestDegree != null">
               #{highestDegree},
@@ -296,6 +299,9 @@
           </if>
           <if test="height != null">
               #{height},
+          </if>
+          <if test="bloodType != null">
+              #{bloodType},
           </if>
           <if test="englishName != null">
               #{englishName},
@@ -320,6 +326,9 @@
           </if>
           <if test="hireDate != null">
               #{hireDate},
+          </if>
+          <if test="orgId != null">
+              #{orgId},
           </if>
           <if test="postId != null">
               #{postId},
@@ -349,13 +358,7 @@
               #{updateTime},
           </if>
           <if test="isDelete != null">
-              #{isDelete},
-          </if>
-          <if test="bloodType != null">
-              #{bloodType},
-          </if>
-          <if test="idType != null">
-              #{idType},
+              #{isDelete}
           </if>
       </trim>
   </insert>
@@ -365,9 +368,6 @@
             <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="employmentId != null">
                     employment_id,
-                </if>
-                <if test="maritalStatus != null">
-                    marital_status,
                 </if>
                 <if test="userName != null">
                     user_name,
@@ -382,6 +382,9 @@
                 <if test="email != null">
                     email,
                 </if>
+                <if test="idType != null">
+                    id_type,
+                </if>
                 <if test="idNumber != null">
                     id_number,
                 </if>
@@ -390,6 +393,9 @@
                 </if>
                 <if test="firstWorkDate != null">
                     first_work_date,
+                </if>
+                <if test="maritalStatus != null">
+                    marital_status,
                 </if>
                 <if test="highestDegree != null">
                     highest_degree,
@@ -411,6 +417,9 @@
                 </if>
                 <if test="height != null">
                     height,
+                </if>
+                <if test="bloodType != null">
+                    blood_type,
                 </if>
                 <if test="englishName != null">
                     english_name,
@@ -436,11 +445,11 @@
                 <if test="hireDate != null">
                     hire_date,
                 </if>
-                <if test="postId != null">
-                    post_id,
-                </if>
                 <if test="orgId != null">
                     org_id,
+                </if>
+                <if test="postId != null">
+                    post_id,
                 </if>
                 <if test="employmentState != null">
                     employment_state,
@@ -469,126 +478,120 @@
                 <if test="isDelete != null">
                     is_delete,
                 </if>
-                <if test="bloodType != null">
-                    blood_type,
-                </if>
-                <if test="idType != null">
-                    idType,
-                </if>
 
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
                 <if test="employmentId != null">
-                    #{item.employmentId},
-                </if>
-                <if test="maritalStatus != null">
-                    #{item.maritalStatus},
+                    #{employmentId},
                 </if>
                 <if test="userName != null">
-                    #{item.userName},
+                    #{userName},
                 </if>
-                <if test="orgId != null">
-                    #{item.orgId},
+                <if test="phone != null">
+                    #{phone},
                 </if>
 
-                <if test="phone != null">
-                    #{item.phone},
-                </if>
                 <if test="gender != null">
-                    #{item.gender},
+                    #{gender},
                 </if>
                 <if test="email != null">
-                    #{item.email},
-                </if>
-                <if test="idNumber != null">
-                    #{item.idNumber},
-                </if>
-                <if test="age != null">
-                    #{item.age},
-                </if>
-                <if test="firstWorkDate != null">
-                    #{item.firstWorkDate},
-                </if>
-                <if test="highestDegree != null">
-                    #{item.highestDegree},
-                </if>
-                <if test="graduatedSchool != null">
-                    #{item.graduatedSchool},
-                </if>
-                <if test="graduatedSpeciality != null">
-                    #{item.graduatedSpeciality},
-                </if>
-                <if test="lastWorkCompany != null">
-                    #{item.lastWorkCompany},
-                </if>
-                <if test="isGiveBirth != null">
-                    #{item.isGiveBirth},
-                </if>
-                <if test="residentCharacter != null">
-                    #{item.residentCharacter},
-                </if>
-                <if test="height != null">
-                    #{item.height},
-                </if>
-                <if test="englishName != null">
-                    #{item.englishName},
-                </if>
-                <if test="nationality != null">
-                    #{item.nationality},
-                </if>
-                <if test="birthDate != null">
-                    #{item.birthDate},
-                </if>
-                <if test="politicalStatus != null">
-                    #{item.politicalStatus},
-                </if>
-                <if test="birthplace != null">
-                    #{item.birthplace},
-                </if>
-                <if test="applicationPosition != null">
-                    #{item.applicationPosition},
-                </if>
-                <if test="probationPeriod != null">
-                    #{item.probationPeriod},
-                </if>
-                <if test="hireDate != null">
-                    #{item.hireDate},
-                </if>
-                <if test="postId != null">
-                    #{item.postId},
-                </if>
-                <if test="employmentState != null">
-                    #{item.employmentState},
-                </if>
-                <if test="employmentRegister != null">
-                    #{item.employmentRegister},
-                </if>
-                <if test="description != null">
-                    #{item.description},
-                </if>
-                <if test="dataSource != null">
-                    #{item.dataSource},
-                </if>
-                <if test="companyId != null">
-                    #{item.companyId},
-                </if>
-                <if test="operatorId != null">
-                    #{item.operatorId},
-                </if>
-                <if test="createTime != null">
-                    #{item.createTime},
-                </if>
-                <if test="updateTime != null">
-                    #{item.updateTime},
-                </if>
-                <if test="isDelete != null">
-                    #{item.isDelete},
-                </if>
-                <if test="bloodType != null">
-                    #{item.bloodType},
+                    #{email},
                 </if>
                 <if test="idType != null">
-                    #{item.idType},
+                    #{idType},
+                </if>
+                <if test="idNumber != null">
+                    #{idNumber},
+                </if>
+                <if test="age != null">
+                    #{age},
+                </if>
+                <if test="firstWorkDate != null">
+                    #{firstWorkDate},
+                </if>
+                <if test="maritalStatus != null">
+                    #{maritalStatus},
+                </if>
+                <if test="highestDegree != null">
+                    #{highestDegree},
+                </if>
+                <if test="graduatedSchool != null">
+                    #{graduatedSchool},
+                </if>
+                <if test="graduatedSpeciality != null">
+                    #{graduatedSpeciality},
+                </if>
+                <if test="lastWorkCompany != null">
+                    #{lastWorkCompany},
+                </if>
+                <if test="isGiveBirth != null">
+                    #{isGiveBirth},
+                </if>
+                <if test="residentCharacter != null">
+                    #{residentCharacter},
+                </if>
+                <if test="height != null">
+                    #{height},
+                </if>
+                <if test="bloodType != null">
+                    #{bloodType},
+                </if>
+                <if test="englishName != null">
+                    #{englishName},
+                </if>
+                <if test="nationality != null">
+                    #{nationality},
+                </if>
+                <if test="birthDate != null">
+                    #{birthDate},
+                </if>
+                <if test="politicalStatus != null">
+                    #{politicalStatus},
+                </if>
+                <if test="birthplace != null">
+                    #{birthplace},
+                </if>
+                <if test="applicationPosition != null">
+                    #{applicationPosition},
+                </if>
+                <if test="probationPeriod != null">
+                    #{probationPeriod},
+                </if>
+                <if test="hireDate != null">
+                    #{hireDate},
+                </if>
+                <if test="orgId != null">
+                    #{orgId},
+                </if>
+                <if test="postId != null">
+                    #{postId},
+                </if>
+                <if test="employmentState != null">
+                    #{employmentState},
+                </if>
+                <if test="employmentRegister != null">
+                    #{employmentRegister},
+                </if>
+                <if test="description != null">
+                    #{description},
+                </if>
+                <if test="dataSource != null">
+                    #{dataSource},
+                </if>
+                <if test="companyId != null">
+                    #{companyId},
+                </if>
+                <if test="operatorId != null">
+                    #{operatorId},
+                </if>
+                <if test="createTime != null">
+                    #{createTime},
+                </if>
+                <if test="updateTime != null">
+                    #{updateTime},
+                </if>
+                <if test="isDelete != null">
+                    #{isDelete}
                 </if>
             </trim>
 
@@ -1016,11 +1019,24 @@
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name
+        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
+        dict1.dict_value as marry_status_name
         from t_pre_employment t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id
         left join t_post post on post.post_id = t_pre_employment.post_id
         left join t_sys_dict dict on dict.dict_code = t_pre_employment.id_type
+        left join t_sys_dict dict1 on dict1.dict_code = t_pre_employment.marital_status
+        left join t_sys_dict dict2 on dict2.dict_code = t_pre_employment.highest_degree
         and org.is_enable=1 and post.is_enable=1 and t_pre_employment.is_delete=0 and t_pre_employment.company_id=#{companyId}
     </select>
+    <select id="selectNameAndOrg" resultType="java.util.Map">
+        select user_name,application_position,company_id,phone
+        from t_pre_employment
+        where employment_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and is_delete=0
+    </select>
+
 </mapper>

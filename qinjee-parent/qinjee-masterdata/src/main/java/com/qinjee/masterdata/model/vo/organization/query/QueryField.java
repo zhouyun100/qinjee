@@ -50,7 +50,7 @@ public class QueryField {
     @ApiModelProperty(hidden = true)
     private String condition;
 
-    @ApiModelProperty(value = "是否筛选空值", example = "true")
+    @ApiModelProperty(value = "是否筛选空值", example = "false")
     private Boolean isFilterNull;
 
     @ApiModelProperty(value = "是否正向排序、true正序(默认)、false逆序", example = "true")

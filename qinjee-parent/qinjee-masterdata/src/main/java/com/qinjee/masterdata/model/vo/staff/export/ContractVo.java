@@ -3,10 +3,11 @@ package com.qinjee.masterdata.model.vo.staff.export;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 @Data
 @JsonInclude
-public class Contract {
+public class ContractVo implements Serializable {
     private Integer id;
     private String user_name;
     private String id_number;

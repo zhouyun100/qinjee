@@ -27,62 +27,65 @@ import java.util.List;
 @RequestMapping("/position")
 public class PositionController extends BaseController {
 
-    @Autowired
-    private PositionService positionService;
+  @Autowired
+  private PositionService positionService;
 
-    @ApiOperation(value = "待调优，分页查询职位信息", notes = "高雄")
-    @PostMapping("/getPositionPage")
-    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo){
-        return positionService.getPositionPage(getUserSession(), positionPageVo);
-    }
+  @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
+  @PostMapping("/getPositionPage")
+  public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
+    return positionService.getPositionPage(getUserSession(), positionPageVo);
+  }
+  @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
+  @GetMapping("/getAllPositions")
+  public ResponseResult<List<Position>> getAllPositions() {
+    return positionService.getAllPositions(getUserSession());
+  }
 
-    @ApiOperation(value = "ok，新增职位", notes = "ok")
-    @PostMapping("/addPosition")
-    public ResponseResult addPosition(PositionVo positionVo){
-        return positionService.addPosition(positionVo, getUserSession());
-    }
+  @ApiOperation(value = "ok，新增职位", notes = "ok")
+  @PostMapping("/addPosition")
+  public ResponseResult addPosition(PositionVo positionVo) {
+    return positionService.addPosition(positionVo, getUserSession());
+  }
 
-    @ApiOperation(value = "ok，编辑职位", notes = "ok")
-    @PostMapping("/editPosition")
-    public ResponseResult editPosition(PositionVo positionVo){
-        return positionService.editPosition(positionVo, getUserSession());
-    }
+  @ApiOperation(value = "ok，编辑职位", notes = "ok")
+  @PostMapping("/editPosition")
+  public ResponseResult editPosition(PositionVo positionVo) {
+    return positionService.editPosition(positionVo, getUserSession());
+  }
 
-    @ApiOperation(value = "ok，删除职位", notes = "ok")
-    @GetMapping("/deletePosition")
-    @ApiImplicitParam(name="positionIds", value = "职位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-    public ResponseResult deletePosition(List<Integer> positionIds){
-        return positionService.deletePosition(positionIds, getUserSession());
-    }
+  @ApiOperation(value = "ok，删除职位", notes = "ok")
+  @PostMapping("/deletePosition")
+  public ResponseResult deletePosition(@RequestBody List<Integer> positionIds) {
+    return positionService.deletePosition(positionIds, getUserSession());
+  }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "prePositionId", value = "上个职位id", paramType = "query", dataType = "int",  required = true, example = "3"),
-            @ApiImplicitParam(name = "midPositionId", value = "需要排序的职位id", paramType = "query", dataType = "int", required = true, example = "1"),
-            @ApiImplicitParam(name = "nextPositionId", value = "下一个职位id", paramType = "query", dataType = "int", required = true, example = "2"),
-    })
-    @ApiOperation(value = "未验证，职位排序", notes = "未验证")
-    @GetMapping("/sortPositionGroup")
-    public ResponseResult  sortPosition (Integer prePositionId,
-                                         Integer midPositionId,
-                                         Integer nextPositionId){
-        return positionService.sortPosition(prePositionId, midPositionId, nextPositionId);
-    }
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "prePositionId", value = "上个职位id", paramType = "query", dataType = "int", required = true, example = "3"),
+      @ApiImplicitParam(name = "midPositionId", value = "需要排序的职位id", paramType = "query", dataType = "int", required = true, example = "1"),
+      @ApiImplicitParam(name = "nextPositionId", value = "下一个职位id", paramType = "query", dataType = "int", required = true, example = "2"),
+  })
+  @ApiOperation(value = "未验证，职位排序", notes = "未验证")
+  @GetMapping("/sortPositionGroup")
+  public ResponseResult sortPosition(Integer prePositionId,
+                                     Integer midPositionId,
+                                     Integer nextPositionId) {
+    return positionService.sortPosition(prePositionId, midPositionId, nextPositionId);
+  }
 
 
-    @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
-    @ApiOperation(value = "未实现，导出职位excel", notes = "未实现")
-    @GetMapping("/downloadExcel")
-    public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds){
+  @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
+  @ApiOperation(value = "未实现，导出职位excel", notes = "未实现")
+  @GetMapping("/downloadExcel")
+  public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds) {
 
-        return null;
-    }
+    return null;
+  }
 
   /*  @ApiOperation(value = "新增岗位选择职位时带出职级职等", notes = "高雄")
     @GetMapping("/getPositionLevelAndGrade")
     public ResponseResult<Position> getPositionLevelAndGrade(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
         return positionService.getPositionLevelAndGrade(positionId);
     }*/
-
 
 
 }

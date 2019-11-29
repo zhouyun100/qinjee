@@ -20,6 +20,8 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -69,13 +71,16 @@ public class PostServiceImpl implements PostService {
             Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
             sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
         }
-        List<Integer> orgidList = new ArrayList<>();
         //TODO id重复无影响
-        digui2(orgidList, postPageVo.getOrgId());
+        List<Integer> orgidList=null;
+        //如果机构id不是0，则进行筛选子机构id，否则默认为全部就行了
+        if(postPageVo.getOrgId()!=0){
+            orgidList=getOrgIdList(userSession,postPageVo.getOrgId());
+        }
         if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
             PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
-        List<Post> postList = postDao.getPostConditionPage(postPageVo,orgidList, sortFieldStr);
+        List<Post> postList = postDao.getPostConditionPages(postPageVo,orgidList, sortFieldStr);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -257,24 +262,47 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId) {
-        List<Integer> orgidList = new ArrayList<>();
+    public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId,Short isEnable) {
         //递归拿到所有子机构id
         //TODO id重复无影响
-        digui2(orgidList, orgId);
+        List<Integer> orgidList=getOrgIdList(userSession,orgId);
         List<Post> postList = postDao.getPostPositionListByOrgIds(orgidList);
         return new ResponseResult<>(postList);
     }
 
-    private void digui2(List<Integer> orgidList, Integer orgId) {
-        orgidList.add(orgId);
-        List<OrganizationVO> childOrgs = organizationDao.getOrganizationListByParentOrgId(orgId);
-        if (!CollectionUtils.isEmpty(childOrgs)) {
-            for (OrganizationVO o : childOrgs) {
-                orgidList.add(o.getOrgId());
-                if (CollectionUtils.isEmpty(organizationDao.getOrganizationListByParentOrgId(o.getOrgId()))) {
-                    digui2(orgidList, o.getOrgId());
-                }
+    /**
+     * 搜集机构下所有子机构的id
+     * @param userSession
+     * @param orgId
+     * @return
+     */
+    private List<Integer> getOrgIdList(UserSession userSession,Integer orgId) {
+        List<Integer> idsList=new ArrayList<>();
+       //先查询到所有机构
+        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), Short.parseShort("1"), new Date());
+        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
+        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
+        for (OrganizationVO org : allOrgs) {
+            multiValuedMap.put(org.getOrgParentId(),org.getOrgId());
+        }
+        //根据机构id递归，取出该机构下的所有子机构
+        collectOrgIds(multiValuedMap,orgId,idsList);
+        return  idsList;
+    }
+
+    /**
+     * 遍历搜集机构下所有子机构的id
+     * @param multiValuedMap
+     * @param orgId
+     * @param idsList
+     */
+    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList) {
+        idsList.add(orgId);
+        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
+        for (Integer sonOrgId : sonOrgIds) {
+            idsList.add(sonOrgId);
+            if(multiValuedMap.get(sonOrgId).size()>0){
+                collectOrgIds(multiValuedMap,sonOrgId,idsList);
             }
         }
     }
@@ -314,6 +342,13 @@ public class PostServiceImpl implements PostService {
         List<Post> postList = postDao.getPostListByPostIds(postIds);
         exportExcel(response, postList);
         return new ResponseResult();
+    }
+
+    @Override
+    public ResponseResult<List<UserArchivePostRelation>> getPostSuccessive( Integer postId) {
+
+       List<UserArchivePostRelation> list= postDao.getPostSuccessive(postId);
+        return new ResponseResult(list);
     }
 
     /**

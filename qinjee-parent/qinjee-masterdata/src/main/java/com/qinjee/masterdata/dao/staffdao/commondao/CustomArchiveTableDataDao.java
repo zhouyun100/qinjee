@@ -39,4 +39,6 @@ public interface CustomArchiveTableDataDao {
     String selectBigDataBybusinessIdAndTableId(@Param("id") Integer id, @Param("integer") Integer integer);
     @MapKey ( "business_id" )
     Map< Integer, Map<String,String>>selectBigDataByBusinessIdAndTitleListAndCompanyId(@Param("list") List< Integer> list, @Param("title") String title, @Param("companyId") Integer companyId);
+
+
 }

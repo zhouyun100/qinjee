@@ -42,4 +42,6 @@ public interface LaborContractDao {
     List<LaborContract> selectContractByarcIdList(@Param("arcList") List<Integer> arcList);
     @MapKey("contract_id")
     Map< Integer, Map< String, Object>> selectExportConList(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
+
+    void insertBatch(@Param("laborContractList") List< LaborContract> laborContractList);
 }

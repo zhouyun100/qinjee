@@ -61,12 +61,7 @@ public class HeadListUtil {
         }
         return tList;
     }
-//    public static List<Map<String,String>> getBusinessMap(List<Integer> list,String tableName){
-//        Class businessClass = getBusinessClass(tableName);
-//        Object o = businessClass.newInstance();
-//
-//
-//    }
+
     public static  Class getBusinessClass(String tableName){
         if("教育经历".equals(tableName)){
             return EducationLine.class;

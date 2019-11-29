@@ -29,54 +29,26 @@ import java.util.List;
 @RestController
 public class UserArchiveController extends BaseController {
 
-    @Autowired
-    private UserArchiveService userArchiveService;
+  @Autowired
+  private UserArchiveService userArchiveService;
 
-    @GetMapping("/getUserArchiveList")
-    @ApiOperation(value = "根据条件分页查询员工信息", notes = "高雄")
-    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQuery pageQueryVo){
-        return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
-    }
+  @GetMapping("/getUserArchiveList")
+  @ApiOperation(value = "根据条件分页查询员工信息", notes = "高雄")
+  public ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQuery pageQueryVo) {
+    return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
+  }
 
-    @PostMapping("/addUserArchive")
-    @ApiOperation(value = "新增员工档案信息", notes = "高雄")
-    public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo){
-        return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
-    }
+  @PostMapping("/addUserArchive")
+  @ApiOperation(value = "新增员工档案信息", notes = "高雄")
+  public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo) {
+    return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
+  }
 
-    @GetMapping("/deleteUserArchive")
-    @ApiOperation(value = "删除员工档案信息", notes = "高雄")
-    public ResponseResult deleteUserArchive(@ApiParam(value = "员工档案Id", required = true, allowMultiple = true) List<Integer> archiveIds){
-        return userArchiveService.deleteUserArchive(archiveIds);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  @GetMapping("/deleteUserArchive")
+  @ApiOperation(value = "删除员工档案信息", notes = "高雄")
+  public ResponseResult deleteUserArchive(@ApiParam(value = "员工档案Id", required = true, allowMultiple = true) List<Integer> archiveIds) {
+    return userArchiveService.deleteUserArchive(archiveIds);
+  }
 
 
 }

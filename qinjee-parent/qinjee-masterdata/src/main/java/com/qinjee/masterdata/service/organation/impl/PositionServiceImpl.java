@@ -311,6 +311,12 @@ public class PositionServiceImpl implements PositionService {
 
         return new ResponseResult();
     }
+
+    @Override
+    public ResponseResult<List<Position>> getAllPositions(UserSession userSession) {
+        List<Position> positionList = positionDao.getPositionList(userSession.getCompanyId());
+        return new ResponseResult(positionList);
+    }
 /*
     @Override
     public ResponseResult<Position> getPositionLevelAndGrade(Integer positionId) {

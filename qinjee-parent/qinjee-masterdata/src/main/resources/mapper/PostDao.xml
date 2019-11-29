@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.PostDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Post">
-    <id column="post_id" jdbcType="INTEGER" property="postId" />
-    <result column="post_name" jdbcType="VARCHAR" property="postName" />
-    <result column="post_code" jdbcType="VARCHAR" property="postCode" />
-    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
-    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
-    <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName" />
-    <result column="parent_post_id" jdbcType="INTEGER" property="parentPostId" />
-    <result column="org_id" jdbcType="INTEGER" property="orgId" />
-    <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="position_id" jdbcType="INTEGER" property="positionId" />
-    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
-    <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
-    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Post">
+        <id column="post_id" jdbcType="INTEGER" property="postId"/>
+        <result column="post_name" jdbcType="VARCHAR" property="postName"/>
+        <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
+        <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
+        <result column="position_id" jdbcType="INTEGER" property="positionId"/>
+        <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
+        <result column="parent_post_id" jdbcType="INTEGER" property="parentPostId"/>
+        <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="company_id" jdbcType="INTEGER" property="companyId"/>
+        <result column="position_id" jdbcType="INTEGER" property="positionId"/>
+        <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
+        <result column="is_enable" jdbcType="SMALLINT" property="isEnable"/>
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     post_id, post_name, post_code, parent_post_id, org_id, company_id, position_id, sort_id,
     is_enable, operator_id, create_time, update_time, is_delete
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_post
-    where post_id = #{postId,jdbcType=INTEGER}
-  </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_post
+        where post_id = #{postId,jdbcType=INTEGER}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_post
     where post_id = #{postId,jdbcType=INTEGER}
   </delete>
 
-  <update id="deleteByOrgId" parameterType="java.lang.Integer">
+    <update id="deleteByOrgId" parameterType="java.lang.Integer">
     update  t_post set is_delete = 1
     where org_id = #{orgId,jdbcType=INTEGER}
   </update>
-  <insert id="insert" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post"
+            useGeneratedKeys="true">
     insert into t_post (post_name, post_code, parent_post_id,
       org_id, company_id, position_id,
       sort_id, is_enable, operator_id,
@@ -51,128 +52,129 @@
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post" useGeneratedKeys="true">
-    insert into t_post
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="postName != null">
-        post_name,
-      </if>
-      <if test="postCode != null">
-        post_code,
-      </if>
-      <if test="parentPostId != null">
-        parent_post_id,
-      </if>
-      <if test="orgId != null">
-        org_id,
-      </if>
-      <if test="companyId != null">
-        company_id,
-      </if>
-      <if test="positionId != null">
-        position_id,
-      </if>
-      <if test="sortId != null">
-        sort_id,
-      </if>
-      <if test="isEnable != null">
-        is_enable,
-      </if>
-      <if test="operatorId != null">
-        operator_id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="isDelete != null">
-        is_delete,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="postName != null">
-        #{postName,jdbcType=VARCHAR},
-      </if>
-      <if test="postCode != null">
-        #{postCode,jdbcType=VARCHAR},
-      </if>
-      <if test="parentPostId != null">
-        #{parentPostId,jdbcType=INTEGER},
-      </if>
-      <if test="orgId != null">
-        #{orgId,jdbcType=INTEGER},
-      </if>
-      <if test="companyId != null">
-        #{companyId,jdbcType=INTEGER},
-      </if>
-      <if test="positionId != null">
-        #{positionId,jdbcType=INTEGER},
-      </if>
-      <if test="sortId != null">
-        #{sortId,jdbcType=INTEGER},
-      </if>
-      <if test="isEnable != null">
-        #{isEnable,jdbcType=SMALLINT},
-      </if>
-      <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDelete != null">
-        #{isDelete,jdbcType=SMALLINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Post">
-    update t_post
-    <set>
-      <if test="postName != null">
-        post_name = #{postName,jdbcType=VARCHAR},
-      </if>
-      <if test="postCode != null">
-        post_code = #{postCode,jdbcType=VARCHAR},
-      </if>
-      <if test="parentPostId != null">
-        parent_post_id = #{parentPostId,jdbcType=INTEGER},
-      </if>
-      <if test="orgId != null">
-        org_id = #{orgId,jdbcType=INTEGER},
-      </if>
-      <if test="companyId != null">
-        company_id = #{companyId,jdbcType=INTEGER},
-      </if>
-      <if test="positionId != null">
-        position_id = #{positionId,jdbcType=INTEGER},
-      </if>
-      <if test="sortId != null">
-        sort_id = #{sortId,jdbcType=INTEGER},
-      </if>
-      <if test="isEnable != null">
-        is_enable = #{isEnable,jdbcType=SMALLINT},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
-    </set>
-    where post_id = #{postId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.Post">
+    <insert id="insertSelective" keyColumn="post_id" keyProperty="postId"
+            parameterType="com.qinjee.masterdata.model.entity.Post" useGeneratedKeys="true">
+        insert into t_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postName != null">
+                post_name,
+            </if>
+            <if test="postCode != null">
+                post_code,
+            </if>
+            <if test="parentPostId != null">
+                parent_post_id,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="positionId != null">
+                position_id,
+            </if>
+            <if test="sortId != null">
+                sort_id,
+            </if>
+            <if test="isEnable != null">
+                is_enable,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="postName != null">
+                #{postName,jdbcType=VARCHAR},
+            </if>
+            <if test="postCode != null">
+                #{postCode,jdbcType=VARCHAR},
+            </if>
+            <if test="parentPostId != null">
+                #{parentPostId,jdbcType=INTEGER},
+            </if>
+            <if test="orgId != null">
+                #{orgId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="positionId != null">
+                #{positionId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="isEnable != null">
+                #{isEnable,jdbcType=SMALLINT},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=SMALLINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Post">
+        update t_post
+        <set>
+            <if test="postName != null">
+                post_name = #{postName,jdbcType=VARCHAR},
+            </if>
+            <if test="postCode != null">
+                post_code = #{postCode,jdbcType=VARCHAR},
+            </if>
+            <if test="parentPostId != null">
+                parent_post_id = #{parentPostId,jdbcType=INTEGER},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="positionId != null">
+                position_id = #{positionId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="isEnable != null">
+                is_enable = #{isEnable,jdbcType=SMALLINT},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where post_id = #{postId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.Post">
     update t_post
     set post_name = #{postName,jdbcType=VARCHAR},
       post_code = #{postCode,jdbcType=VARCHAR},
@@ -188,89 +190,91 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where post_id = #{postId,jdbcType=INTEGER}
   </update>
-  <select id="getPostList" resultType="com.qinjee.masterdata.model.entity.Post">
-    SELECT t1.org_id orgId,t1.org_name orgName, parent_org.org_id parentOrgId,parent_org.org_name parentOrgName,
-    tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, ptp.post_name parentPostName,
-    ptp.post_id parentPostId FROM t_post  tp INNER JOIN (SELECT
-    org.org_id,org.org_name,org.org_parent_id
-    FROM
-    t_organization org
-    LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
-    LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
-    WHERE
-    org.is_enable = 1
-    AND auth.is_delete = 0
-    AND arc.is_delete = 0
-    AND arc.archive_id = 1
-    UNION
-    SELECT
-    orga.org_id,orga.org_name,orga.org_parent_id
-    FROM
-    t_organization orga
-    LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
-    LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
-    LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
-    WHERE
-    orga.is_enable = 1
-    AND roleauth.is_delete = 0
-    AND role.is_delete = 0
-    AND arch.is_delete = 0
-    AND arch.archive_id = 1)t1
-    ON t1.org_id =tp.org_id
-    LEFT JOIN t_organization parent_org ON parent_org.org_id =t1.org_parent_id
-    LEFT JOIN  t_post ptp ON ptp.parent_post_id=tp.post_id
-    where 1=1
-    <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
-      and tp.is_enable = #{postPageVo.isEnable}
-    </if>
-    <if test="postPageVo != null">
-      <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-        <foreach collection="postPageVo.querFieldVos" item="querField">
-          <if test="querField.fieldName != null and querField.fieldName != ''">
-              ${querField.condition}
-          </if>
-          <if test="querField.isFilterNull">
-            and ${querField.fieldName} IS NULL
-          </if>
-        </foreach>
-      </if>
-    </if>
-    GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , t1.org_name
-    <if test="sortFieldStr != null and sortFieldStr != ''">
-      ORDER BY ${sortFieldStr}
-    </if>
-  </select>
-  <select id="getPostListByOrgId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_post
-    where org_id = #{orgId}
-    <if test="isEnable != null and isEnable == 1">
-      and is_enable = #{isEnable}
-    </if>
-    and is_delete = 0 ORDER BY sort_id ASC
-  </select>
-  <select id="getLastTopPostByOrgId" resultMap="BaseResultMap">
+    <select id="getPostList" resultType="com.qinjee.masterdata.model.entity.Post">
+        SELECT t1.org_id orgId,t1.org_name orgName, parent_org.org_id parentOrgId,parent_org.org_name parentOrgName,
+        tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, ptp.post_name
+        parentPostName,
+        ptp.post_id parentPostId FROM t_post tp INNER JOIN (SELECT
+        org.org_id,org.org_name,org.org_parent_id
+        FROM
+        t_organization org
+        LEFT JOIN t_user_org_auth auth ON org.org_id = auth.org_id
+        LEFT JOIN t_user_archive arc ON arc.archive_id = auth.archive_id
+        WHERE
+        org.is_enable = 1
+        AND auth.is_delete = 0
+        AND arc.is_delete = 0
+        AND arc.archive_id = 1
+        UNION
+        SELECT
+        orga.org_id,orga.org_name,orga.org_parent_id
+        FROM
+        t_organization orga
+        LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = orga.org_id
+        LEFT JOIN t_user_role role ON role.role_id = roleauth.role_id
+        LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
+        WHERE
+        orga.is_enable = 1
+        AND roleauth.is_delete = 0
+        AND role.is_delete = 0
+        AND arch.is_delete = 0
+        AND arch.archive_id = 1)t1
+        ON t1.org_id =tp.org_id
+        LEFT JOIN t_organization parent_org ON parent_org.org_id =t1.org_parent_id
+        LEFT JOIN t_post ptp ON ptp.parent_post_id=tp.post_id
+        where 1=1
+        <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
+            and tp.is_enable = #{postPageVo.isEnable}
+        </if>
+        <if test="postPageVo != null">
+            <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
+                <foreach collection="postPageVo.querFieldVos" item="querField">
+                    <if test="querField.fieldName != null and querField.fieldName != ''">
+                        ${querField.condition}
+                    </if>
+                    <if test="querField.isFilterNull">
+                        and ${querField.fieldName} IS NULL
+                    </if>
+                </foreach>
+            </if>
+        </if>
+        GROUP BY tp.post_id , tp.is_enable , tp.post_code , tp.post_name , t1.org_name
+        <if test="sortFieldStr != null and sortFieldStr != ''">
+            ORDER BY ${sortFieldStr}
+        </if>
+    </select>
+    <select id="getPostListByOrgId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_post
+        where org_id = #{orgId}
+        <if test="isEnable != null and isEnable == 1">
+            and is_enable = #{isEnable}
+        </if>
+        and is_delete = 0 ORDER BY sort_id ASC
+    </select>
+    <select id="getLastTopPostByOrgId" resultMap="BaseResultMap">
     SELECT post_code,sort_id from t_post where org_id = #{orgId} and parent_post_id =0 order by sort_id desc
   </select>
-  <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
+    <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
     select tp.org_id,tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position tps on tps.position_id = tp.position_id
     where tp.org_id=#{orgId} and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
   </select>
-  <select id="getPost" resultType="com.qinjee.masterdata.model.entity.Post">
-    select
-    <include refid="Base_Column_List" />
-    from t_post
-    where post_code = #{postCode} and post_name = #{postName}
-  </select>
+    <select id="getPost" resultType="com.qinjee.masterdata.model.entity.Post">
+        select
+        <include refid="Base_Column_List"/>
+        from t_post
+        where post_code = #{postCode} and post_name = #{postName}
+    </select>
     <select id="getPostListByPostIds" resultMap="BaseResultMap">
-      select <include refid="Base_Column_List"></include>
-      from t_post tp
+        select
+        <include refid="Base_Column_List"></include>
+        from t_post tp
         where tp.post_id in
-            <foreach item="postId" collection="postIds"
-                     open="(" separator="," close=")">
-                #{postId}
-            </foreach>
+        <foreach item="postId" collection="postIds"
+                 open="(" separator="," close=")">
+            #{postId}
+        </foreach>
         GROUP BY tp.post_id
     </select>
     <select id="getPostByOrgId" resultType="java.util.Map">
@@ -279,72 +283,115 @@
       from t_post
       where  org_id = #{orgId}  and is_delete = 0 ORDER BY sort_id ASC
     </select>
-  <select id="selectPostNameById" resultType="java.lang.String">
+    <select id="selectPostNameById" resultType="java.lang.String">
     select  post_name
      from t_post
     where post_id = #{postId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
-  <select id="selectPostIdByName" resultType="java.lang.Integer">
+    <select id="selectPostIdByName" resultType="java.lang.Integer">
     select post_id
     from t_post
     where post_name=#{postName}
      AND is_delete=0
   </select>
 
-  <select id="getPostListByPostId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"></include>
+    <select id="getPostListByPostId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
         from t_post where parent_post_id = #{parentPostId} ORDER BY sort_id DESC
-  </select>
+    </select>
 
-  <select id="getPostPositionListByOrgIds" resultMap="BaseResultMap">
-    select tp.org_id,tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position tps on tps.position_id = tp.position_id
-     where tp.org_id in
-     <foreach collection="orgidList" item="id" separator="," open="(" close=")">
-        #{id}
-     </foreach>
-     and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
-
-  </select>
-  <select id="getPostConditionPage" resultMap="BaseResultMap">
-    SELECT
-    tp.org_id,
-    tp.post_id,tp.post_code,
-    tp.is_enable,
-    tp.parent_post_id,
-    tp.post_name,
-    tps.position_name position_name,
-    ptp.post_name parent_post_name,
-    torg.org_name
-    FROM
-    t_post tp
-    LEFT JOIN t_position tps
-    ON tps.position_id = tp.position_id
-    LEFT JOIN t_post ptp
-    ON ptp.post_id = tp.parent_post_id
-    LEFT JOIN t_organization torg
-    ON  torg.org_id=tp.org_id
-     where tp.org_id in
-     <foreach collection="orgidList" item="id" separator="," open="(" close=")">
-        #{id}
-     </foreach>
-     and tp.is_delete = 0 and tp.is_enable = 1 and tps.is_delete = 0
-    <if test="postPageVo != null">
-      <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-        <foreach collection="postPageVo.querFieldVos" item="querField">
-          <if test="querField.fieldName != null and querField.fieldName != ''">
-            ${querField.condition}
-          </if>
-          <if test="querField.isFilterNull">
-            and ${querField.fieldName} IS NULL
-          </if>
+    <select id="getPostPositionListByOrgIds" resultMap="BaseResultMap">
+        select tp.org_id,tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position
+        tps on tps.position_id = tp.position_id
+        where tp.org_id in
+        <foreach collection="orgidList" item="id" separator="," open="(" close=")">
+            #{id}
         </foreach>
-      </if>
-    </if>
-    <if test="sortFieldStr != null and sortFieldStr != ''">
-      ORDER BY ${sortFieldStr}
-    </if>
+        and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
+
+    </select>
+    <select id="getPostConditionPages" resultMap="BaseResultMap">
+        SELECT
+        tp.org_id,
+        tp.post_id,tp.post_code,
+        tp.is_enable,
+        tp.parent_post_id,
+        tp.post_name,
+        tps.position_name position_name,
+         tps.position_id position_id,
+        ptp.post_name parent_post_name,
+        torg.org_name
+        FROM
+        t_post tp
+        LEFT JOIN t_position tps
+        ON tps.position_id = tp.position_id
+        LEFT JOIN t_post ptp
+        ON ptp.post_id = tp.parent_post_id
+        LEFT JOIN t_organization torg
+        ON torg.org_id=tp.org_id
+        where 1=1
+        <if test="postPageVo.postId != null">
+            and tp.post_id = #{postPageVo.postId}
+        </if>
+        <if test="orgidList != null">
+            and tp.org_id in
+            <foreach collection="orgidList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        and tp.is_delete = 0 and tp.is_enable = 1
+        <if test="postPageVo != null">
+            <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
+                <foreach collection="postPageVo.querFieldVos" item="querField">
+                    <if test="querField.fieldName != null and querField.fieldName != ''">
+                        ${querField.condition}
+                    </if>
+                    <if test="querField.isFilterNull">
+                        and ${querField.fieldName} IS NULL
+                    </if>
+                </foreach>
+            </if>
+        </if>
+        <if test="sortFieldStr != null and sortFieldStr != ''">
+            ORDER BY ${sortFieldStr}
+        </if>
+    </select>
+
+
+    <resultMap id="userArchivePostRelationMap" type="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
+
+        <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"></result>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"></result>
+        <result column="post_id" jdbcType="INTEGER" property="postId"></result>
+        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>
+        <result column="employment_begin_date" jdbcType="TIMESTAMP" property="employmentBeginDate"></result>
+        <result column="employment_end_date" jdbcType="TIMESTAMP" property="employmentEndDate"></result>
+        <result column="employment_type" jdbcType="VARCHAR" property="employmentType"></result>
+        <result column="appoint_dismissal_reason" jdbcType="VARCHAR" property="appointDismissalReason"></result>
+    </resultMap>
+    <select id="getPostSuccessive" resultMap="userArchivePostRelationMap">
+        SELECT
+          tua.employee_number,
+          tua.user_name,
+          tuapr.archive_id,
+          tp.post_name,
+          tuapr.post_id,
+          tuapr.employment_begin_date,
+          tuapr.employment_end_date,
+          tuapr.employment_type,
+          tuapr.appoint_dismissal_reason
+        FROM
+          t_user_archive_post_relation tuapr
+          LEFT JOIN t_user_archive tua
+            ON tua.archive_id = tuapr.archive_id
+          LEFT JOIN t_post tp
+            ON tp.post_id = tuapr.post_id
+        WHERE tuapr.post_id = #{postId}
+        ORDER BY employment_begin_date ASC
   </select>
+
  <update id="sortPorts">
    <foreach collection="postIds" item="id" index="index" open="" close="" separator=";">
      UPDATE t_post
@@ -356,4 +403,25 @@
      </where>
    </foreach>
  </update>
+  <select id="selectPostIdAndOrgId" resultType="java.util.Map">
+    select org.org_id,post.post_id
+    from t_organization org ,t_post
+    where org.org_code=#{org_code}
+    and  post.post_code=#{post_code}
+    and org.is_enable=1
+    and post.is_delete=0
+  </select>
+  <select id="selectPostIdAndOrgIdAndsupiorId" resultType="java.util.Map">
+    select org.org_id,post.post_id,arc.archive_id
+    from t_organization org ,t_post,t_user_archive arch
+    left join t_user_archive arc on arch.supervisor_id=arc.archive_id
+    where org.org_code=#{org_code}
+    and  post.post_code=#{post_code}
+    and arch.employee_number=#{code}
+    and org.is_enable=1
+    and post.is_delete=0
+    and arch.is_delete=0
+    and arc.is_delete=0
+
+  </select>
 </mapper>

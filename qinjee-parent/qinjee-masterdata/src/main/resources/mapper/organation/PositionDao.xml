@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Position">
     <id column="position_id" jdbcType="INTEGER" property="positionId" />
     <result column="position_name" jdbcType="VARCHAR" property="positionName" />
+    <result column="position_group_name" jdbcType="VARCHAR" property="positionGroupName" />
     <result column="position_group_id" jdbcType="INTEGER" property="positionGroupId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
@@ -128,7 +129,7 @@
     from t_position
     where position_group_id = #{positionGroupId,jdbcType=INTEGER} and is_delete = 0 ORDER BY sort_id ASC
   </select>
-    <select id="getPositionList" resultType="com.qinjee.masterdata.model.entity.Position">
+    <select id="getPositionList" resultMap="BaseResultMap">
       select tp.position_id, tp.position_name, tp.position_group_id, tp.sort_id, tp.operator_id, tp.create_time, tp.is_delete, tpg.position_group_name positionGroupName
       from t_position_group tpg left join t_position tp on tpg.position_group_id = tp.position_group_id
       where tpg.company_id = #{companyId} and tpg.is_delete = 0 and tp.is_delete = 0 ORDER BY tpg.sort_id, tp.sort_id ASC
@@ -140,12 +141,13 @@
     </select>
 
   <select id="getPositionPage" resultMap="BaseResultMap" >
-        select <include refid="Base_Column_List"></include>
-        from t_position tp where 1=1
-
-
+        select  tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
+    tp.is_delete,tpg.position_group_name
+    from t_position tp  LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
+        where tpg.company_id = 1
+        and tpg.is_delete=0
+        AND tp.is_delete = 0
     <if test="pageVo != null">
-
       <if test="pageVo.positionGroupId != null">
             and tp.position_group_id = #{pageVo.positionGroupId}
       </if>

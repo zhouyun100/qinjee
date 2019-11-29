@@ -10,14 +10,16 @@
  */
 package com.qinjee.masterdata.service.sms.impl;
 
+import com.qinjee.consts.AesKeyConsts;
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.model.entity.SendMessageModel;
 import com.qinjee.masterdata.model.entity.SmsConfig;
 import com.qinjee.masterdata.model.entity.SmsRecord;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
+import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 周赟
@@ -40,8 +43,6 @@ public class SmsRecordServiceImpl implements SmsRecordService {
      * 短信验证码有效分钟数
      */
     private static final int SMS_CODE_VALID_MINUTE = 5;
-    private static final String APPKEY = "91c94cbe664487bbfb072e717957e08f";
-    private static final Integer APPID = 1400249114;
 
     @Autowired
     private SmsRecordDao smsRecordDao;
@@ -53,19 +54,35 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     private SmsConfigService smsConfigService;
     @Autowired
     private  PreEmploymentDao preEmploymentDao;
+    @Autowired
+    private SysDictService sysDictService;
 
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void sendMessage(SendMessageModel sendMessageModel) throws Exception {
-        Integer max = preEmploymentDao.selectMaxId();
-        for (Integer integer : sendMessageModel.getList ()) {
-            if (max < integer) {
-                throw new Exception("id出错");
-            }
+    public void sendMessageSms(List<Integer> list) throws Exception {
+        SmsConfig smsConfig = smsConfigService.selectEntryRegistrationSmsConfig ();
+        //获取预入职的信息
+        Map < Integer, Map < String, String > > integerMapMap = preEmploymentDao.selectNameAndOrg ( list );
+        String baseShortUrl = sysDictService.searchSysDictByTypeAndCode ( "SHORT_URL", "EMPLOYMENT_REGISTER" ).getDictValue ();
+        for (Map.Entry < Integer, Map < String, String > > integerMapEntry : integerMapMap.entrySet ()) {
+            Map < String, String > value = integerMapEntry.getValue ();
+            String userName = value.get ( "user_name" );
+            String applicationPosition = value.get ( "application_position" );
+            String companyId = String.valueOf (value.get ( "company_id" ));
+            String phone = value.get ( "phone" );
+            List<String> phoneNumbers = new ArrayList<>();
+            phoneNumbers.add(phone);
+            List < String > params = new ArrayList <> ( 3 );
+            //拼接参数
+            params.add ( userName );
+            params.add ( applicationPosition );
+            params.add ( baseShortUrl + "/" + AesUtils.aesEncrypt ( integerMapEntry.getKey () + companyId, AesKeyConsts.PRE_SMS_AES_KEY ) );
+            //发送短信
+            SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
+            //添加短信记录
+            insertSmsRecord(smsConfig,phone,params);
         }
-        List<String> phoneNumber = preEmploymentDao.getPhoneNumber(sendMessageModel.getList ());
-        SendMessage.sendMessageMany(APPID, APPKEY, sendMessageModel.getTemplateId (), "勤杰软件", phoneNumber, sendMessageModel.getParams ());
     }
 
     @Override
