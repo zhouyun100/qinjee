@@ -306,7 +306,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                 return false;
             }
         }).collect(Collectors.toList());
-        System.out.println(topOrgsList);
         //递归处理机构,使其以树形结构展示
         handlerOrganizationToGraphics(allOrg, topOrgsList, isContainsCompiler, isContainsActualMembers);
         return new PageResult<>(allOrg);

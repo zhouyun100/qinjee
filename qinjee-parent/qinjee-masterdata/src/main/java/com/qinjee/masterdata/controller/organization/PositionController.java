@@ -49,9 +49,8 @@ public class PositionController extends BaseController {
     }
 
     @ApiOperation(value = "ok，删除职位", notes = "ok")
-    @GetMapping("/deletePosition")
-    @ApiImplicitParam(name="positionIds", value = "职位id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-    public ResponseResult deletePosition(List<Integer> positionIds){
+    @PostMapping("/deletePosition")
+    public ResponseResult deletePosition(@RequestBody List<Integer> positionIds){
         return positionService.deletePosition(positionIds, getUserSession());
     }
 
