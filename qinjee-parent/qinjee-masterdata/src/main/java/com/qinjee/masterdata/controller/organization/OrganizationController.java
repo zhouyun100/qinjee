@@ -2,11 +2,11 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
+import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 高雄
@@ -147,32 +145,22 @@ public class OrganizationController extends BaseController {
   // String filePath,  List<Integer> orgIds
   @PostMapping("/downloadOrganizationToExcelByOrgId")
   public ResponseResult downloadOrganizationToExcelByOrgId(@RequestBody Map<String, Object> paramMap) {
-    ResponseResult responseResult;
-    String filePath;
-    List<Integer> orgIds;
-    if (null == paramMap.get("filePath")) {
-      responseResult = new ResponseResult(CommonCode.FAIL);
-      responseResult.setMessage("路径参数缺少");
-      return responseResult;
-    }
-    if (null == paramMap.get("orgIds")) {
-      filePath = (String) paramMap.get("filePath");
-      return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
-    } else {
-      filePath = (String) paramMap.get("filePath");
-      if (paramMap.get("orgIds") instanceof List) {
-        orgIds = (List<Integer>) paramMap.get("orgIds");
-        if (orgIds.size() == 0) {
-          return organizationService.downloadAllOrganizationToExcel(filePath, getUserSession());
-        }
-      } else {
-        responseResult = new ResponseResult(CommonCode.FAIL);
-        responseResult.setMessage("orgIds参数格式必须是int数组");
-        return responseResult;
-      }
-    }
-    return organizationService.downloadOrganizationToExcelByOrgId(filePath, orgIds, getUserSession());
+
+    List<OrganizationVO> orgList=new ArrayList<>();
+    OrganizationVO org = new OrganizationVO();
+    org.setCreateTime(new Date());
+    org.setOrgType("DEPT");
+    org.setOrgId(1021);
+    org.setOrgName("会展中心");
+
+    orgList.add(org);
+    byte[] bytes = ExcelExportUtil.exportToBytes(orgList);
+
+    return null;
   }
+
+
+
 
   /**
    * @Description: AorgId:2                                        AorgId：1

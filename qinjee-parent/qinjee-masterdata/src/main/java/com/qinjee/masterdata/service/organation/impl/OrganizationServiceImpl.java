@@ -21,7 +21,6 @@ import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
-import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -613,7 +612,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             responseResult.setMessage("机构列表为空，导出失败");
             return responseResult;
         }
-        ExcelExportUtil.exportToFile(filePath, organizationVOList);
         responseResult = new ResponseResult(CommonCode.SUCCESS);
         responseResult.setMessage("导出成功");
         return responseResult;
@@ -635,7 +633,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (Objects.isNull(organizationVOList) || organizationVOList.size() <= 0) {
             return new ResponseResult(CommonCode.FAIL);
         }
-        ExcelExportUtil.exportToFile(filePath, organizationVOList);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 

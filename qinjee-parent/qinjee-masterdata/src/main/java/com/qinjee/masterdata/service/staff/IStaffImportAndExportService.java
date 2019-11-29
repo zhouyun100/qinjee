@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff;
 
+import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
-import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,7 +84,7 @@ public interface IStaffImportAndExportService {
      * @param userSession
      * @return
      */
-    List< CheckCustomTableVO > checkFile(List< Map< String, String>> list, UserSession userSession);
+    List<CheckCustomTableVO> checkFile(List< Map< String, String>> list, UserSession userSession);
 
     /**
      * 准备上传

@@ -1,9 +1,9 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
-import com.qinjee.masterdata.model.vo.sys.CheckCustomTableVO;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -64,7 +64,7 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "校验所传的字段", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult<List< CheckCustomTableVO >> checkFile(@RequestBody  List< Map< String,String>> list, UserSession userSession) {
+    public ResponseResult<List<CheckCustomTableVO>> checkFile(@RequestBody  List< Map< String,String>> list, UserSession userSession) {
         Boolean b = checkParam(list,userSession);
         if(b) {
             try {
