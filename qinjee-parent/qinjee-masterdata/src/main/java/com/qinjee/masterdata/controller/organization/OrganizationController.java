@@ -93,6 +93,7 @@ public class OrganizationController extends BaseController {
      * @return
      */
     //TODO 实有人数、编制人数暂时不考虑
+    //TODO 递归层数控制
     @ApiOperation(value = "ok，获取机构图", notes = "ok")
     @GetMapping("/getOrganizationGraphics")
     public PageResult<OrganizationVO> getOrganizationGraphics(@RequestParam("layer") @ApiParam(value = "机构图层数，默认显示2级", example = "2") Integer layer,
@@ -100,7 +101,7 @@ public class OrganizationController extends BaseController {
                                                               @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
                                                               @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
                                                               @RequestParam("isEnable") @ApiParam(value = "是否包含封存", example = "0") Short isEnable) {
-        return organizationService.getOrganizationGraphics2(getUserSession(),layer,isContainsCompiler,isContainsActualMembers,orgId,isEnable);
+        return organizationService.getOrganizationGraphics(getUserSession(),layer,isContainsCompiler,isContainsActualMembers,orgId,isEnable);
 
     }
 
