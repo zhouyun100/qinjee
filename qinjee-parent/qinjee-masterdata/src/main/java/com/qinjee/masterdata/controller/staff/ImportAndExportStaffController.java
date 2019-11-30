@@ -41,11 +41,11 @@ public class ImportAndExportStaffController extends BaseController {
      */
     @RequestMapping(value = "/importFileAndCheckFile", method = RequestMethod.POST)
     @ApiOperation(value = "文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< List< Map< String,String>>> importFileAndCheckFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile);
+    public ResponseResult< List< Map< Integer,String>>> importFileAndCheckFile(MultipartFile multipartFile,String funcCode) {
+        Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
             try {
-                List < Map < String, String > > list = staffImportAndExportService.importFileAndCheckFile ( multipartFile );
+                List < Map < Integer, String > > list = staffImportAndExportService.importFileAndCheckFile ( multipartFile,funcCode,getUserSession ());
                 return new ResponseResult <> (list, CommonCode.SUCCESS);
             } catch (IOException e) {
                 return new ResponseResult <> (null, CommonCode. FILE_PARSING_EXCEPTION);
@@ -64,11 +64,11 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "校验所传的字段", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult<List<CheckCustomTableVO>> checkFile(@RequestBody  List< Map< String,String>> list, UserSession userSession) {
-        Boolean b = checkParam(list,userSession);
+    public ResponseResult<List<CheckCustomTableVO>> checkFile(@RequestBody  List< Map< Integer,String>> list,String funcCode) {
+        Boolean b = checkParam(list,funcCode);
         if(b) {
             try {
-                 List<CheckCustomTableVO> list1=staffImportAndExportService.checkFile ( list, userSession );
+                 List<CheckCustomTableVO> list1=staffImportAndExportService.checkFile ( list,funcCode );
                 return new ResponseResult <> (list1, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
@@ -82,7 +82,7 @@ public class ImportAndExportStaffController extends BaseController {
     @RequestMapping(value = "/readyForImport", method = RequestMethod.POST)
     @ApiOperation(value = "准备导入文件", notes = "hkt")
 
-    public ResponseResult<List< CheckCustomTableVO >> readyForImport(List< Map< String,String>> list, UserSession userSession,String title) {
+    public ResponseResult<List< CheckCustomTableVO >> readyForImport(List< Map< Integer,String>> list, UserSession userSession,String title) {
         Boolean b = checkParam(list,userSession,title);
         if(b) {
             try {
@@ -112,46 +112,7 @@ public class ImportAndExportStaffController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
-    /**
-     * 模板导入档案
-     */
-    @RequestMapping(value = "/importArcFile", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入档案", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importArcFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile);
-        if(b){
-            try {
-                staffImportAndExportService.importArcFile(multipartFile,getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("导入失败");
-            }
-        }
-        return  failResponseResult("文件内容错误");
-    }
-    /**
-     * 模板导入预入职
-     */
-    @RequestMapping(value = "/importPreFile", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入预入职", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
-
-    public ResponseResult importPreFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile,getUserSession());
-        if(b){
-            try {
-                staffImportAndExportService.importPreFile(multipartFile,getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("导入失败");
-            }
-        }
-        return  failResponseResult("文件内容错误");
-    }
     /**
      * 模板导入黑名单
      */
@@ -159,31 +120,11 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "模板导入黑名单", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importBlaFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile,getUserSession());
+    public ResponseResult importBlaFile(MultipartFile multipartFile,String funcCode) {
+        Boolean b = checkParam(multipartFile,getUserSession(),funcCode);
         if(b){
             try {
-                staffImportAndExportService.importBlaFile(multipartFile,getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("导入失败");
-            }
-        }
-        return  failResponseResult("文件内容错误");
-    }
-    /**
-     * 模板导入业务类
-     */
-    @RequestMapping(value = "/importBusinessFile", method = RequestMethod.POST)
-    @ApiOperation(value = "模板导入业务类", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
-
-    public ResponseResult importBusinessFile(MultipartFile multipartFile,String title) {
-        Boolean b = checkParam(multipartFile,getUserSession(),title);
-        if(b){
-            try {
-                staffImportAndExportService.importBusinessFile(multipartFile,title,getUserSession());
+                staffImportAndExportService.importBlaFile(multipartFile,getUserSession(),funcCode);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -199,11 +140,11 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "模板导入合同", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importConFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile,getUserSession());
+    public ResponseResult importConFile(MultipartFile multipartFile,String funcCode) {
+        Boolean b = checkParam(multipartFile,funcCode,getUserSession());
         if(b){
             try {
-                staffImportAndExportService.importConFile(multipartFile,getUserSession());
+                staffImportAndExportService.importConFile(multipartFile,funcCode,getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -227,10 +168,10 @@ public class ImportAndExportStaffController extends BaseController {
 //    })
     //导出的文件应该是以.xls结尾
     public ResponseResult exportArcFile(@RequestBody @Valid ExportFile exportFile, HttpServletResponse response) {
-        Boolean b = checkParam(exportFile,response);
+        Boolean b = checkParam(exportFile,response,getUserSession ());
         if(b){
             try {
-                staffImportAndExportService.exportArcFile(exportFile,response);
+                staffImportAndExportService.exportArcFile(exportFile,response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();

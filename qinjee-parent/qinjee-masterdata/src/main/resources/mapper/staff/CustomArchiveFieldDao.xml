@@ -236,49 +236,14 @@
     #{item}
   </foreach>
   </update>
-  <select id="selectFieldId" resultType="java.lang.Integer">
-    select
-    <include refid="Base_Column_List" />
-    from t_custom_archive_field
-    where  table_id = #{tableId,jdbcType=INTEGER}
-    AND  is_delete=0
-  </select>
-  <select id="selectFieldType" resultType="java.lang.String">
-    select  field_type
-    from  t_custom_archive_field
-    where is_delete=0
-  </select>
-  <select id="selectByList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
-    select
-    <include refid="Base_Column_List" />
-    from t_custom_archive_field
-    where  field_id
-    in <foreach collection="list" item="item" open="(" separator="," close=")">
-    #{item}
-    AND is_delete=0
-  </foreach>
-  </select>
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
-    select
-    <include refid="Base_Column_List" />
-    from t_custom_archive_field
-    where is_delete=0 AND field_id
-    in <foreach collection="list" item="item" open="(" separator="," close=")">
-    #{item}
-  </foreach>
-  AND is_delete=0
-  </select>
+
+
   <select id="selectCodeId" resultType="java.lang.Integer">
     select code_id
     from t_custom_archive_field
     where field_id = #{customArchiveFieldId,jdbcType=INTEGER}
   </select>
-  <select id="selectFieldName" resultType="java.lang.String">
-    select field_name
-    from t_custom_archive_field
-    where  field_id = #{fieldId,jdbcType=INTEGER}
-     AND is_delete=0
-  </select>
+
   <update id="updatePreEmploymentField" parameterType="map" >
     <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
       UPDATE t_custom_archive_field
@@ -289,32 +254,14 @@
     </foreach>
   </update>
 
-  <select id="selectTableId" resultType="java.lang.Integer">
-     select table_id
-    from t_custom_archive_field
-    where  field_id = #{fieldId,jdbcType=INTEGER}
-     AND is_delete=0
-  </select>
+
   <select id="selectPhysicName" resultType="java.lang.String">
     select  field_code
      from t_custom_archive_field
     where  field_id = #{fieldId,jdbcType=INTEGER}
      AND is_delete=0
   </select>
-  <select id="selectFieldNameListByTableId" resultType="java.lang.String">
-    select field_name
-    from t_custom_archive_field
-    where  table_id = #{id,jdbcType=INTEGER} AND is_delete=0
-  </select>
-  <select id="selectTypeByNameList" resultType="java.lang.String">
-    select  field_type
-    from t_custom_archive_field
-    where  field_name  in
-    <foreach collection="heads" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    AND is_delete=0
-  </select>
+
   <select id="selectFieldCodeByList" resultType="java.lang.String">
     select field_code
     from t_custom_archive_field
@@ -331,24 +278,8 @@
     where table_id = #{customArchiveTableId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
-  <select id="isSystemField" resultType="java.lang.Short">
-    select is_system_define
-    from t_custom_archive_field
-    where  field_name = #{fieldName,jdbcType=VARCHAR}
-     AND is_delete=0
-  </select>
-  <select id="selectTableIdByFieldName" resultType="java.lang.Integer">
-    SELECT table_id
-    from t_custom_archive_field
-    where  field_name = #{fieldName,jdbcType=INTEGER}
-    AND is_delete=0
-  </select>
-  <select id="selectIsInsideByName" resultType="java.lang.Short">
-    select is_system_define
-    from t_custom_archive_field
-    where  field_name = #{fieldName,jdbcType=VARCHAR}
-    AND is_delete=0
-  </select>
+
+
   <select id="selectFieldNameListByTableIdList" resultType="java.lang.String">
     select  field_code
     from    t_custom_archive_field
@@ -364,15 +295,7 @@
     where  field_id  = #{fieldId,jdbcType=INTEGER}
     AND is_delete=0;
   </select>
-  <select id="selectFieldNameByCodeList" resultType="java.lang.String">
-    select  field_name
-    from  t_custom_archive_field
-    where field_code in
-    <foreach collection="strings" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    AND is_delete=0
-  </select>
+
   <select id="selectFieldTypeByNameList" resultType="java.lang.String">
     select field_type
     from  t_custom_archive_field
@@ -382,24 +305,7 @@
     </foreach>
     AND is_delete=0
   </select>
-  <select id="selectFieldNameByList" resultType="java.lang.String">
-    select  field_name
-    from  t_custom_archive_field
-    where field_code in
-    <foreach collection="strings" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    AND is_delete=0
-  </select>
-  <select id="selectFieldNameByIntList" resultType="java.lang.String">
-    select  field_name
-    from  t_custom_archive_field
-    where field_id in
-    <foreach collection="sortList" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    AND is_delete=0
-  </select>
+
   <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
   select field.field_name from
     t_user_archive arc
@@ -427,21 +333,8 @@
   gro.group_id=#{customArchiveGroupId}
   and field.is_delete=0 and gro.is_delete=0
  </select>
-  <select id="selectFieldCodeByName" resultType="java.lang.String">
-    select field_code
-    from t_custom_archive_field field
-    where field_name=#{s}
-    and is_delete=0
-  </select>
-  <select id="selectFieldCodeByNameList" resultType="java.lang.String">
-    select field_code
-    from t_custom_archive_field
-    where field_name in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    and is_delete=0
-  </select>
+
+
     <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
       select
       <include refid="Base_Column_List"/>
@@ -455,11 +348,16 @@
     from t_custom_archive_field field
     inner join t_custom_archive_table tab on tab.table_id=field.table_id
     where tab.company_id=#{companyId}
+    and tab.func_code=#{funcCode}
     and field.field_name in
     <foreach collection="fieldNames" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
+    and field.is_delete=0
+    and tab.is_delete=0
+    and table.is_enable=1
   </select>
+
   <select id="seleleIsSysAndTableIdAndTableName" resultType="java.util.Map">
         select field.table_id,field.is_system_define,tab.table_name
         from t_custom_archive_field field
@@ -471,11 +369,107 @@
           #{item}
         </foreach>
   </select>
-  <select id="selectTableIdByNameAndCompanyId" resultType="java.lang.Integer">
-        select  table_id
-        from  t_custom_archive_table
-        where table_name=#{title}
-        and company_id=#{companyId}
-        and is_enable=1
+  <select id="selectFieldCodeByName" resultType="java.lang.String">
+   select field_code
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on field.table_id=tab.table_id
+    where field_name=#{head}
+    and tab.company_id=#{companyId}
+    and field.is_delete=0
+  </select>
+  <select id="selectFieldIdByFieldNameAndCompanyIdAndFuncCode" resultType="java.lang.Integer">
+    select field_id
+    from t_custom_archive_field field
+    inner join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code=#{funcCode}
+    and field.field_name =#{key}
+    and tab.is_delete=0
+    and field.is_delete=0
+  </select>
+  <select id="selectFieldCodeByNameAndFuncCodeAndCompanyId" resultType="java.lang.String">
+    select field_code
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where field_name=#{s}
+    and tab.func_code=#{funcCode}
+    and tab.company_id=#{companyId}
+    and field.is_delete=0
+    and tab.is_enable=1
+    and tab.is_delete=0
+  </select>
+  <select id="selectFieldNameByCodeList" resultType="java.lang.String">
+    select  field_name
+    from  t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code="ARC"
+    and tab.is_delete=0
+    and tab.is_enable=1
+    and field_code in
+    <foreach collection="strings" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND field. is_delete=0
+  </select>
+  <select id="selectNameAndIdAndIsSystemDefine" resultType="java.util.Map">
+    select is_system_define,table_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="idList" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and is_delete=0
+  </select>
+
+  <select id="selectSymbolForPreIdNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field_code="id_number"
+  </select>
+  <select id="selectSymbolForPreIdType" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field_code="id_type"
+  </select>
+  <select id="selectSymbolForArcEmploymentNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and  field_code="employment_number"
+  </select>
+  <select id="selectSymbolForArcIdNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and  field_code="id_number"
+  </select>
+  <select id="selectTableIdByFieldId" resultType="java.lang.Integer">
+    select table_id from t_custom_archive_field where field_id=#{integer1} and is_delete=0
+  </select>
+
+  <select id="selectCodeAndTypeById" resultType="java.util.Map">
+    select field_code,text_type from t_custom_archive_field
+    where id=#{integer}
+    and is_delete=0
+
   </select>
 </mapper>

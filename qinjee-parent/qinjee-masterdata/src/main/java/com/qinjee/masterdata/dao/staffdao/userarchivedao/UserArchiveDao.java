@@ -100,4 +100,6 @@ public interface UserArchiveDao {
     Integer selectIdByNumberAndEmploy(@Param("number") String number, @Param("employ") String employ);
 
     void insertBatch(@Param("userArchives") List< UserArchive> userArchives);
+
+
 }

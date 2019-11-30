@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 
 public class ExcelUtil {
@@ -87,7 +88,7 @@ public class ExcelUtil {
             String fileName =title+".xls";
             // 设置响应头，控制浏览器下载该文件
 //        fileName=new String ( fileName.getBytes ("UTF-8"),"gb2312" );
-        response.setHeader("Content-disposition", "attachment; filename="+fileName);
+        response.setHeader("Content-disposition", "attachment; filename=\"" + URLEncoder.encode(fileName, "UTF-8") + "\"");
         // application/ms-excel;charset=utf-8 告诉浏览器下载的文件是excel
         response.setContentType("application/ms-excel");
         OutputStream out=null;
