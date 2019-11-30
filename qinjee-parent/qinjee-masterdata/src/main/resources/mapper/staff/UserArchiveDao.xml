@@ -11,6 +11,8 @@
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="orgName" jdbcType="VARCHAR" property="orgName" />
+    <result column="postName" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
     <result column="gender" jdbcType="VARCHAR" property="gender" />
@@ -42,6 +44,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
+    <result column="supervisorUserName" jdbcType="VARCHAR" property="supervisorUserName" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
@@ -729,21 +732,26 @@
     where tua.is_delete = 0
   </select>
   <select id="getUserArchiveList" resultMap="BaseResultMap">
-    select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id,
-    tua.post_id, tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birthdate, tua.age, tua.nationality, tua.birthplace,
-    tua.political_status, tua.marital_status, tua.first_work_date, tua.hiredate, tua.serving_age, tua.working_period,
-    tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.tel, tua.email,
+    SELECT tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id,
+    tua.post_id, tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birth_date, tua.age, tua.nationality, tua.birthplace,
+    tua.political_status, tua.marital_status, tua.first_work_date, tua.hire_date, tua.serving_age, tua.working_period,
+    tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.phone, tua.email,
     tua.address, tua.professional_certification, tua.professional_title, tua.professional_level, tua.attrition_date, tua.attrition_type,
     tua.increase_type, tua.archive_status, tua.supervisor_id,tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name businessUnitName,
     dept.org_name orgName, tp.post_name postName, tua2.user_name supervisorUserName
-    from t_user_archive tua
-    left join t_post tp on tua.post_id = tp.post_id
-    left join t_user_archive tua2 on tua.supervisor_id = tua2.archive_id
-    left join t_organization torg on torg.org_id = tua.business_unit_id
-    left join t_organization dept on dept.org_id = tua.org_id
-    where tua.is_delete = 0 and tua2.is_delete = 0
+    FROM t_user_archive tua
+    LEFT JOIN t_post tp ON tua.post_id = tp.post_id
+    LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id
+    LEFT JOIN t_organization torg ON torg.org_id = tua.business_unit_id
+    LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
+    WHERE tua.is_delete = 0 AND tua2.is_delete = 0
+
     <if test="pageQueryVo != null">
-      <if test="pageQueryVo.querFieldVos != null and  pageQueryVo.querFieldVos.szie > 0">
+        <if test="pageQueryVo.orgId != null">
+          and tua.org_id =#{pageQueryVo.orgId}
+
+        </if>
+      <if test="pageQueryVo.querFieldVos != null and  pageQueryVo.querFieldVos.size > 0">
         <foreach collection="pageQueryVo.querFieldVos" item="querField">
             ${querField.condition}
         </foreach>

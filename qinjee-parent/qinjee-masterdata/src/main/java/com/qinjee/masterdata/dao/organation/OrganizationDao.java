@@ -76,7 +76,7 @@ public interface OrganizationDao {
      * @param orgIds
      * @return
      */
-    List<OrganizationVO> getOrganizationListByOrgIds(@Param("orgIds")List<Integer> orgIds);
+    List<OrganizationVO> getSingleOrganizationListByOrgIds(@Param("orgIds")List<Integer> orgIds);
 
     /**
      * 根据机构编码查询机构

@@ -5,8 +5,8 @@ import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
-import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -79,7 +80,7 @@ public class OrganizationController extends BaseController {
   }
 
   @PostMapping("/getOrganizationPageList")
-  @ApiOperation(value = "ok，分页按条件查询用户下所有的机构", notes = "ok")
+  @ApiOperation(value = "ok，分页按条件查询用户下所有的机构(包含子孙)", notes = "ok")
   public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
     Short isEnable = organizationPageVo.getIsEnable();
     if (isEnable == null || isEnable==0) {
@@ -89,9 +90,26 @@ public class OrganizationController extends BaseController {
     }
     organizationPageVo.setIsEnable(isEnable);
     UserSession userSession = getUserSession();
-    PageResult<OrganizationVO> pageResult = organizationService.getOrganizationPageList(organizationPageVo, userSession);
+    PageResult<OrganizationVO> pageResult = organizationService.getAllOrganizationPageList(organizationPageVo, userSession);
     return new ResponseResult<>(pageResult);
   }
+
+  @PostMapping("/getDirectOrganizationPageList")
+  @ApiOperation(value = "ok，查询下级直属机构", notes = "ok")
+  public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
+    Short isEnable = organizationPageVo.getIsEnable();
+    if (isEnable == null || isEnable==0) {
+      isEnable = 0;
+    }else{
+      isEnable=null;
+    }
+    organizationPageVo.setIsEnable(isEnable);
+    UserSession userSession = getUserSession();
+    PageResult<OrganizationVO> pageResult = organizationService.getDirectOrganizationPageList(organizationPageVo, userSession);
+    return new ResponseResult<>(pageResult);
+  }
+
+
 
   /**
    * 默认显示所有层级，显示多少级由前端控制，后端只要返回全部结果即可
@@ -143,9 +161,18 @@ public class OrganizationController extends BaseController {
 
   @ApiOperation(value = "待重写，导出机构到excel，orgIds为空则导入用户下所有机构 参数：{\"filePath\":\"c:\\\\hello.xls\",\"orgIds\":[1,2,3]}", notes = "彭洪思")
   // String filePath,  List<Integer> orgIds
-  @PostMapping("/downloadOrganizationToExcelByOrgId")
-  public ResponseResult downloadOrganizationToExcelByOrgId(@RequestBody Map<String, Object> paramMap) {
+  @PostMapping("/exportOrganization")
+  public ResponseResult exportOrganization(@RequestBody List<Integer> orgIds,HttpServletResponse response) {
+    try {
+      return organizationService.exportOrganization(orgIds, getUserSession().getArchiveId(), response);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return new ResponseResult(CommonCode.FAIL);
+  }
+   /* if(CollectionUtils.isEmpty(orgIds)){
 
+    }
     List<OrganizationVO> orgList=new ArrayList<>();
     OrganizationVO org = new OrganizationVO();
     org.setCreateTime(new Date());
@@ -154,10 +181,18 @@ public class OrganizationController extends BaseController {
     org.setOrgName("会展中心");
 
     orgList.add(org);
-    byte[] bytes = ExcelExportUtil.exportToBytes(orgList);
+    try {
+      byte[] bytes = ExcelExportUtil.exportToBytes(orgList);
+      response.setCharacterEncoding("UTF-8");
+      response.setHeader("content-Type", "application/vnd.ms-excel");
+      response.setHeader("Content-Disposition",
+          "attachment;filename=\"" + URLEncoder.encode("机构", "GBK") + "\"");
+      response.getOutputStream().write(bytes);
+    }catch (Exception e){
 
-    return null;
-  }
+    }
+    return null;*/
+
 
 
 

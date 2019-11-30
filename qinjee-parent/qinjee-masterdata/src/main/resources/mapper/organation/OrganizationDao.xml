@@ -328,7 +328,7 @@
     </select>
 
 
-    <select id="getOrganizationListByOrgIds" resultMap="BaseResultMap">
+    <select id="getSingleOrganizationListByOrgIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_organization

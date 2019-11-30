@@ -9,6 +9,7 @@ import com.qinjee.model.response.ResponseResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,12 +26,12 @@ public interface OrganizationService {
 
 
     /**
-     * 按条件分页查询机构
+     * 按条件分页查询机构（直属下级）
      * @param organizationPageVo
      * @param userSession
      * @return
      */
-    PageResult<OrganizationVO> getOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
+    PageResult<OrganizationVO> getDirectOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
 
     /**
@@ -167,5 +168,10 @@ public interface OrganizationService {
     ResponseResult editOrganization(String orgCode,String orgId,String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
     List<OrganizationVO> getOrganizationGraphics(UserSession userSession,Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
+
+    ResponseResult exportOrganization(List<Integer> orgIds,Integer archiveId, HttpServletResponse response) throws IOException;
+
+  PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 }
+
 
