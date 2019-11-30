@@ -236,7 +236,7 @@
         ORDER BY v.org_id ASC
     </select>
 
-    <select id="getOrganizationList" resultMap="BaseResultMap">
+    <select id="getDirectOrganizationList" resultMap="BaseResultMap">
         SELECT org.org_id,org.is_enable,org.org_code,org.org_manager_id,
         org.org_name,org.org_type,org.org_full_name,
         org.org_parent_id,

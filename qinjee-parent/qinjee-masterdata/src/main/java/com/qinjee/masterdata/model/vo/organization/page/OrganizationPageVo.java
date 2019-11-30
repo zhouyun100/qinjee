@@ -22,6 +22,8 @@ public class OrganizationPageVo extends PageQuery implements Serializable {
 
     @ApiModelProperty(value = "机构父级ID", example = "1")
     private Integer orgParentId;
+    @ApiModelProperty(value = "机构ID", example = "1")
+    private Integer orgId;
 
     private static final long serialVersionUID = 1L;
 

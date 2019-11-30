@@ -33,8 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -72,7 +70,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   private UserArchiveDao userArchiveDao;
   @Autowired
   private ApiAuthService apiAuthService;
-
+  //=====================================================================
   @Override
   public PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable) {
     Integer archiveId = userSession.getArchiveId();
@@ -89,7 +87,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     handlerOrganizationToTree(allOrgsList, topOrgsList);
     return new PageResult<>(allOrgsList);
   }
-
+  //=====================================================================
   @Override
   public PageResult<OrganizationVO> getDirectOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession) {
     Integer archiveId = userSession.getArchiveId();
@@ -102,14 +100,14 @@ public class OrganizationServiceImpl implements OrganizationService {
       sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
     }
 
-    List<OrganizationVO> organizationVOList = organizationDao.getOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
+    List<OrganizationVO> organizationVOList = organizationDao.getDirectOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
     PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
     PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
     pageResult.setTotal(pageInfo.getTotal());
     return pageResult;
   }
 
-
+  //=====================================================================
   @Transactional
   @Override
   @OrganizationSaveAnno
@@ -148,7 +146,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return responseResult;
   }
 
-
+  //=====================================================================
   private OrganizationVO initOrganization(Integer orgParentId) {
     OrganizationVO orgBean = new OrganizationVO();
     if (orgParentId > 0) {
@@ -178,7 +176,7 @@ public class OrganizationServiceImpl implements OrganizationService {
       return orgBean;
     }
   }
-
+//=====================================================================
   /**
    * 获取新编码和sortId的机构
    *
@@ -214,7 +212,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
   }
 
-
+//=====================================================================
   /**
    * 获取新orgCode
    *
@@ -237,7 +235,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return newOrgCode;
   }
 
-
+  //=====================================================================
   @Transactional
   @Override
   @OrganizationEditAnno
@@ -282,6 +280,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
 
+//=====================================================================
   /**
    * @param userSession
    * @param layer                   查询机构层级数
@@ -318,6 +317,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return allOrg;
   }
 
+  //=====================================================================
   /**
    * 导出机构
    *
@@ -343,6 +343,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     responseResult.setMessage("成功，点击下载");
     return  responseResult;
   }
+
+
 //==========================================================
   /**
    * 分页查询用户下所有机构包含子孙
@@ -352,12 +354,26 @@ public class OrganizationServiceImpl implements OrganizationService {
    */
   @Override
   public PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession) {
-    return null;
+    List<Integer> orgidList = new ArrayList<>();
+    //拿到关联的所有机构id
+    List<Integer> orgIdList = null;
+    Short isEnable = organizationPageVo.getIsEnable();
+    Integer orgId=organizationPageVo.getOrgParentId();
+    orgIdList = getOrgIdList(userSession, orgId, null, isEnable);
+    if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
+      PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
+    }
+    List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIdList);
+    PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
+    PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
+    pageResult.setTotal(pageInfo.getTotal());
+    return pageResult;
   }
 
 
 
 
+  //=====================================================================
   /**
    * 搜集机构下所有子机构的id
    *
@@ -384,6 +400,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return idsList;
   }
 
+  //=====================================================================
   /**
    * 遍历搜集机构下所有子机构的id
    *
@@ -395,17 +412,25 @@ public class OrganizationServiceImpl implements OrganizationService {
     idsList.add(orgId);
     Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
     for (Integer sonOrgId : sonOrgIds) {
-      if (layer > 0) {
+
+      if (layer != null&&layer > 0) {
         idsList.add(sonOrgId);
-      }
-      if (multiValuedMap.get(sonOrgId).size() > 0 && layer > 0) {
-        collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
-        layer--;
+        if (multiValuedMap.get(sonOrgId).size() > 0 && layer > 0) {
+          collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
+          layer--;
+        }
+      } else {
+        idsList.add(sonOrgId);
+        if (multiValuedMap.get(sonOrgId).size() > 0 ) {
+          collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
+        }
       }
     }
+
   }
 
 
+  //=====================================================================
   private void recursiveUpdateOrgNameByParentOrgId(String parentOrgFullName, String orgId) {
 
     List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(Integer.parseInt(orgId));
@@ -422,6 +447,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
 
+  //=====================================================================
   @Transactional
   @Override
   @OrganizationDeleteAnno
@@ -464,6 +490,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return new ResponseResult(CommonCode.SUCCESS);
   }
 
+  //=====================================================================
   /**
    * 递归查找机构id
    *
@@ -480,6 +507,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
   }
 
+  //=====================================================================
   @Transactional
   @Override
   public ResponseResult sealOrganizationByIds(List<Integer> orgIds, Short isEnable) {
@@ -489,6 +517,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     return new ResponseResult();
   }
 
+
+  //=====================================================================
   @Transactional
   @Override
   public ResponseResult mergeOrganization(String newOrgName, Integer parentOrgId, List<Integer> orgIds, UserSession userSession) {
@@ -526,7 +556,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return new ResponseResult(CommonCode.SUCCESS);
   }
 
-
+  //=====================================================================
   @Override
   public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(String userName) {
     //TODO 调用人员的接口
@@ -534,6 +564,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return null;
   }
 
+  //=====================================================================
   /**
    * 同一级机构自由排序
    *
@@ -559,6 +590,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return responseResult;
   }
 
+  //=====================================================================
   @Override
   @Transactional
   @OrganizationTransferAnno
@@ -600,28 +632,30 @@ public class OrganizationServiceImpl implements OrganizationService {
     return responseResult;
   }
 
+  //=====================================================================
   @Override
-  public ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(UserSession userSession, Short isEnable) {
-    //只显示未封存的机构
+  public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(UserSession userSession, Short isEnable) {
+    //TODO 只显示未封存的机构
     List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession, Short.parseShort("1"));
     //递归设置机构下的岗位
     //TODO 暂时不设置岗位下的子岗位
-    digui(organizationVOTreeList, isEnable);
+    handlerOrganizationPost(organizationVOTreeList, isEnable);
     return new ResponseResult<>(organizationVOTreeList);
   }
 
-  public void digui(List<OrganizationVO> orgList, Short isEnable) {
+  //=====================================================================
+  public void handlerOrganizationPost(List<OrganizationVO> orgList, Short isEnable) {
     for (OrganizationVO organizationVO : orgList) {
       if (organizationVO.getOrgType().equals("DEPT")) {
         List<Post> postList = postDao.getPostListByOrgId(organizationVO.getOrgId(), isEnable);
         organizationVO.setPostList(postList);
       }
       if (organizationVO.getChildList() != null && organizationVO.getChildList().size() > 0) {
-        digui(organizationVO.getChildList(), isEnable);
+        handlerOrganizationPost(organizationVO.getChildList(), isEnable);
       }
     }
   }
-
+  //=====================================================================
   @Override
   public ResponseResult downloadTemplate(HttpServletResponse response) {
     ClassPathResource cpr = new ClassPathResource("/templates/" + "机构导入模板.xls");
@@ -641,7 +675,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return new ResponseResult();
   }
 
-
+  //=====================================================================
   @Override
   public ResponseResult downloadOrganizationToExcelByOrgId(String filePath, List<Integer> orgIds, UserSession userSession) {
     ResponseResult responseResult;
@@ -659,6 +693,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
 
+  //=====================================================================
   /**
    * @param userSession
    * @Description: 导出用户所有机构到excel
@@ -677,6 +712,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return new ResponseResult(CommonCode.SUCCESS);
   }
 
+  //=====================================================================
   @Override
   public ResponseResult uploadExcel(MultipartFile file, UserSession userSession) {
     //解析文件
@@ -701,7 +737,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return organizationDao.getOrganizationListByParentOrgId(orgId);
   }
 
-
+//=====================================================================
   /**
    * 获取所有的机构树
    *
@@ -728,7 +764,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return organizationVOList;
   }
 
-
+  //=====================================================================
   private List<OrganizationVO> parseFile(MultipartFile file) throws Exception {
     List<OrganizationVO> organizationVOList = new ArrayList<>();
     // 检查文件类型
@@ -806,6 +842,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return organizationVOList;
   }
 
+  //=====================================================================
   /**
    * 根据不同类型获取值
    *
@@ -844,6 +881,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return cellValue;
   }
 
+  //=====================================================================
   /**
    * 时间格式转换
    *
@@ -882,23 +920,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     return result;
   }
 
-  public static String checkFile(MultipartFile file) throws IOException {
-    // 判断文件是否存在
-    if (null == file) {
-      //throw new GunsException(BizExceptionEnum.FILE_NOT_FOUND);
-      return "1";//文件不存在
-    }
-    // 获得文件名
-    String fileName = file.getOriginalFilename();
-    // 判断文件是否是excel文件
-    if (!fileName.endsWith("xls") && !fileName.endsWith("xlsx")) {
-      //throw new GunsException(BizExceptionEnum.UPLOAD_NOT_EXCEL_ERROR);
-      return "2";//上传的不是excel文件
-    }
-    return fileName;
-  }
 
-
+//=====================================================================
   /**
    * 重构并更新机构：编码、机构全称、排序id、机构类型、机构父id
    *
@@ -942,11 +965,12 @@ public class OrganizationServiceImpl implements OrganizationService {
       List<OrganizationVO> secondOriginOrgList = organizationDao.getOrganizationListByParentOrgId(originOrg.getOrgId());
       //递归
       if (!CollectionUtils.isEmpty(secondOriginOrgList)) {
-        System.out.println("递归");
         refactorOrganization(secondOriginOrgList, originOrg);
       }
     }
   }
+
+  //=====================================================================
 
   /**
    * 处理所有机构以树形结构展示
@@ -973,6 +997,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
   }
 
+
+//=====================================================================
   /**
    * 处理所有机构以图形结构展示
    *
@@ -1005,9 +1031,25 @@ public class OrganizationServiceImpl implements OrganizationService {
       }
     }
   }
+  //=====================================================================
+  public static String checkFile(MultipartFile file) throws IOException {
+    // 判断文件是否存在
+    if (null == file) {
+      //throw new GunsException(BizExceptionEnum.FILE_NOT_FOUND);
+      return "1";//文件不存在
+    }
+    // 获得文件名
+    String fileName = file.getOriginalFilename();
+    // 判断文件是否是excel文件
+    if (!fileName.endsWith("xls") && !fileName.endsWith("xlsx")) {
+      //throw new GunsException(BizExceptionEnum.UPLOAD_NOT_EXCEL_ERROR);
+      return "2";//上传的不是excel文件
+    }
+    return fileName;
+  }
 
 
-
+//=====================================================================
 
   /**
    * 使用浏览器下载

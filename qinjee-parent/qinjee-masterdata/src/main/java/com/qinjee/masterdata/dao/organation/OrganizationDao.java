@@ -46,10 +46,10 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<OrganizationVO> getOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
-                                             @Param("sortFieldStr") String sortFieldStr,
-                                             @Param("archiveId") Integer archiveId,
-                                             @Param("now") Date now);
+    List<OrganizationVO> getDirectOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
+                                                   @Param("sortFieldStr") String sortFieldStr,
+                                                   @Param("archiveId") Integer archiveId,
+                                                   @Param("now") Date now);
 
 
 

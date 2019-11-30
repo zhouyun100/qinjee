@@ -95,7 +95,7 @@ public class OrganizationController extends BaseController {
   }
 
   @PostMapping("/getDirectOrganizationPageList")
-  @ApiOperation(value = "ok，查询下级直属机构", notes = "ok")
+  @ApiOperation(value = "ok，分页查询下级直属机构", notes = "ok")
   public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
     Short isEnable = organizationPageVo.getIsEnable();
     if (isEnable == null || isEnable==0) {
@@ -143,7 +143,7 @@ public class OrganizationController extends BaseController {
       isEnable = Short.parseShort("0");
     }
 
-    return organizationService.getOrganizationPositionTree(getUserSession(), isEnable);
+    return organizationService.getOrganizationPostTree(getUserSession(), isEnable);
   }
 
   @PostMapping("/lockOrganizationByIds")

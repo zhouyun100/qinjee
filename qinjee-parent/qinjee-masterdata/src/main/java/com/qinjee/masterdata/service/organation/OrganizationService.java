@@ -94,7 +94,7 @@ public interface OrganizationService {
      * @param isEnable 1表示只显示未封存的岗位，0 表示显示封存+未封存的岗位
      * @return
      */
-    ResponseResult<List<OrganizationVO>> getOrganizationPositionTree(UserSession userSession, Short isEnable);
+    ResponseResult<List<OrganizationVO>> getOrganizationPostTree(UserSession userSession, Short isEnable);
 
     /**
      * 下载模板
