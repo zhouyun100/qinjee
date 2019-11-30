@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
+import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -12,12 +14,14 @@ import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -159,16 +163,21 @@ public class OrganizationController extends BaseController {
   }
 
 
-  @ApiOperation(value = "待重写，导出机构到excel，orgIds为空则导入用户下所有机构 参数：{\"filePath\":\"c:\\\\hello.xls\",\"orgIds\":[1,2,3]}", notes = "彭洪思")
   // String filePath,  List<Integer> orgIds
   @PostMapping("/exportOrganization")
-  public ResponseResult exportOrganization(@RequestBody List<Integer> orgIds,HttpServletResponse response) {
+  public ResponseResult exportOrganization(@RequestBody  List<Integer> orgIds,HttpServletResponse response) {
+    List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgIds, getUserSession().getArchiveId());
     try {
-      return organizationService.exportOrganization(orgIds, getUserSession().getArchiveId(), response);
-    } catch (IOException e) {
-      e.printStackTrace();
+      byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
+      response.setCharacterEncoding("UTF-8");
+      response.setHeader("content-Type", "application/vnd.ms-excel");
+      response.setHeader("Content-Disposition",
+          "attachment;filename=\"" + URLEncoder.encode("机构", "UTF-8") + "\"");
+      response.getOutputStream().write(bytes);
+    }catch (Exception e){
+
     }
-    return new ResponseResult(CommonCode.FAIL);
+    return null;
   }
    /* if(CollectionUtils.isEmpty(orgIds)){
 

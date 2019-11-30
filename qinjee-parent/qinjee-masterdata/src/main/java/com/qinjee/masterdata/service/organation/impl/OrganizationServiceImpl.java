@@ -26,6 +26,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
@@ -326,22 +327,15 @@ public class OrganizationServiceImpl implements OrganizationService {
    * @return
    */
   @Override
-  public ResponseResult exportOrganization(List<Integer> orgIds, Integer archiveId, HttpServletResponse response) throws IOException {
+  public List<OrganizationVO> exportOrganization(List<Integer> orgIds, Integer archiveId)  {
     List<OrganizationVO> orgList = null;
-    if (CollectionUtils.isEmpty(orgIds)) {
+    if (CollectionUtils.isEmpty(orgIds)||(orgIds.size()==1&&orgIds.get(0)<=0)) {
       orgList = organizationDao.getAllOrganizationByArchiveId(archiveId, Short.parseShort("0"), new Date());
     } else {
       orgList = organizationDao.getOrganizationsByOrgIds(orgIds);
     }
-    byte[] bytes = ExcelExportUtil.exportToBytes(orgList);
-    response.setCharacterEncoding("UTF-8");
-    response.setHeader("content-Type", "application/vnd.ms-excel");
-    response.setHeader("Content-Disposition",
-        "attachment;filename=\"" + URLEncoder.encode("机构", "GBK") + "\"");
-    response.getOutputStream().write(bytes);
-    ResponseResult responseResult = new ResponseResult();
-    responseResult.setMessage("成功，点击下载");
-    return  responseResult;
+
+    return orgList;
   }
 
 
