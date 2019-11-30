@@ -7,11 +7,13 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
+import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.apache.http.HttpException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -37,6 +42,9 @@ public class OrganizationController extends BaseController {
   private static Logger logger = LogManager.getLogger(OrganizationController.class);
   @Autowired
   private OrganizationService organizationService;
+
+  private final static String xls = "xls";
+  private final static String xlsx = "xlsx";
 
   //TODO 新增子机构时需要维护 子机构与角色之间的联系
   //TODO 新增没有父机构的机构时  机构编码递增
@@ -72,10 +80,10 @@ public class OrganizationController extends BaseController {
   })
   @GetMapping("/getAllOrganizationTree")
   public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable", required = false) Short isEnable) {
-    if (isEnable == null || isEnable==0) {
+    if (isEnable == null || isEnable == 0) {
       isEnable = 0;
-    }else{
-      isEnable=null;
+    } else {
+      isEnable = null;
     }
     UserSession userSession = getUserSession();
     List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(userSession, isEnable);
@@ -87,10 +95,10 @@ public class OrganizationController extends BaseController {
   @ApiOperation(value = "ok，分页按条件查询用户下所有的机构(包含子孙)", notes = "ok")
   public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
     Short isEnable = organizationPageVo.getIsEnable();
-    if (isEnable == null || isEnable==0) {
+    if (isEnable == null || isEnable == 0) {
       isEnable = 0;
-    }else{
-      isEnable=null;
+    } else {
+      isEnable = null;
     }
     organizationPageVo.setIsEnable(isEnable);
     UserSession userSession = getUserSession();
@@ -102,17 +110,16 @@ public class OrganizationController extends BaseController {
   @ApiOperation(value = "ok，分页查询下级直属机构", notes = "ok")
   public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
     Short isEnable = organizationPageVo.getIsEnable();
-    if (isEnable == null || isEnable==0) {
+    if (isEnable == null || isEnable == 0) {
       isEnable = 0;
-    }else{
-      isEnable=null;
+    } else {
+      isEnable = null;
     }
     organizationPageVo.setIsEnable(isEnable);
     UserSession userSession = getUserSession();
     PageResult<OrganizationVO> pageResult = organizationService.getDirectOrganizationPageList(organizationPageVo, userSession);
     return new ResponseResult<>(pageResult);
   }
-
 
 
   /**
@@ -125,15 +132,15 @@ public class OrganizationController extends BaseController {
   //TODO 递归层数控制
   @ApiOperation(value = "ok，获取机构图", notes = "ok")
   @GetMapping("/getOrganizationGraphics")
-  public ResponseResult< List<OrganizationVO>> getOrganizationGraphics(@RequestParam("layer") @ApiParam(value = "机构图层数，默认显示2级", example = "2") Integer layer,
-                                                            @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
-                                                            @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
-                                                            @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
-                                                            @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
-    if (isEnable == null || isEnable==0) {
+  public ResponseResult<List<OrganizationVO>> getOrganizationGraphics(@RequestParam("layer") @ApiParam(value = "机构图层数，默认显示2级", example = "2") Integer layer,
+                                                                      @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
+                                                                      @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
+                                                                      @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
+                                                                      @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
+    if (isEnable == null || isEnable == 0) {
       isEnable = 0;
-    }else{
-      isEnable=null;
+    } else {
+      isEnable = null;
     }
     List<OrganizationVO> pageResult = organizationService.getOrganizationGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
     return new ResponseResult(pageResult);
@@ -165,8 +172,16 @@ public class OrganizationController extends BaseController {
 
   // String filePath,  List<Integer> orgIds
   @PostMapping("/exportOrganization")
-  public ResponseResult exportOrganization(@RequestBody  List<Integer> orgIds,HttpServletResponse response) {
-    List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgIds, getUserSession().getArchiveId());
+  public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) {
+    List<Integer> orgIds=null;
+    Integer orgId=null;
+    if (paramMap.get("orgIds")!=null&&paramMap.get("orgIds") instanceof List){
+      orgIds = (List<Integer>) paramMap.get("orgIds");
+    }
+    if (paramMap.get("orgId")!=null && paramMap.get("orgId") instanceof Integer ){
+      orgId = (Integer) paramMap.get("orgId");
+    }
+    List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId,orgIds, getUserSession());
     try {
       byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
       response.setCharacterEncoding("UTF-8");
@@ -174,36 +189,53 @@ public class OrganizationController extends BaseController {
       response.setHeader("Content-Disposition",
           "attachment;filename=\"" + URLEncoder.encode("机构", "UTF-8") + "\"");
       response.getOutputStream().write(bytes);
-    }catch (Exception e){
+    } catch (Exception e) {
 
     }
     return null;
   }
-   /* if(CollectionUtils.isEmpty(orgIds)){
 
-    }
-    List<OrganizationVO> orgList=new ArrayList<>();
-    OrganizationVO org = new OrganizationVO();
-    org.setCreateTime(new Date());
-    org.setOrgType("DEPT");
-    org.setOrgId(1021);
-    org.setOrgName("会展中心");
-
-    orgList.add(org);
+  @PostMapping("/importOrganization")
+  public ResponseResult importOrganization(MultipartFile multipartFile) {
+    ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+    Boolean b = checkParam(multipartFile);
     try {
-      byte[] bytes = ExcelExportUtil.exportToBytes(orgList);
-      response.setCharacterEncoding("UTF-8");
-      response.setHeader("content-Type", "application/vnd.ms-excel");
-      response.setHeader("Content-Disposition",
-          "attachment;filename=\"" + URLEncoder.encode("机构", "GBK") + "\"");
-      response.getOutputStream().write(bytes);
-    }catch (Exception e){
+      if (b) {
+        String fileName = multipartFile.getOriginalFilename();
+        if (!fileName.endsWith(xls) && !fileName.endsWith(xlsx)) {
+          responseResult.setMessage("只能导入xls、xlsx类文件");
+          return responseResult;
+        } else {
+
+          File file = null;
+
+
+          file = File.createTempFile("tmp", null);
+
+          multipartFile.transferTo(file);
+
+          //导入文件并校验
+          List<Object> objects = ExcelImportUtil.importExcel(file, Object.class);
+          System.out.println("objects:" + objects);
+          file.deleteOnExit();
+        }
+      } else {
+        responseResult.setMessage("参数错误");
+      }
+    } catch (Exception e) {
 
     }
-    return null;*/
+    return responseResult;
+  }
 
-
-
+  private Boolean checkParam(Object... params) {
+    for (Object param : params) {
+      if (null == param || "".equals(param)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
 
   /**

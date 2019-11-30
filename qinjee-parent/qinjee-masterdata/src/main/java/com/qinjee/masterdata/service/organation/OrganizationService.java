@@ -184,7 +184,7 @@ public interface OrganizationService {
 
   List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 
-  List<OrganizationVO> exportOrganization(List<Integer> orgIds, Integer archiveId);
+  List<OrganizationVO> exportOrganization(Integer orgId,List<Integer> orgIds,UserSession userSession);
 
   PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 }

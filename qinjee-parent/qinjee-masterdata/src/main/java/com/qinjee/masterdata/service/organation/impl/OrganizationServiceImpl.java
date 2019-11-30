@@ -323,18 +323,17 @@ public class OrganizationServiceImpl implements OrganizationService {
    * 导出机构
    *
    * @param orgIds
-   * @param response
    * @return
    */
   @Override
-  public List<OrganizationVO> exportOrganization(List<Integer> orgIds, Integer archiveId)  {
+  public List<OrganizationVO> exportOrganization(Integer orgId,List<Integer> orgIds, UserSession userSession)  {
     List<OrganizationVO> orgList = null;
-    if (CollectionUtils.isEmpty(orgIds)||(orgIds.size()==1&&orgIds.get(0)<=0)) {
-      orgList = organizationDao.getAllOrganizationByArchiveId(archiveId, Short.parseShort("0"), new Date());
+    if (CollectionUtils.isEmpty(orgIds)) {
+      List<Integer> orgIdList = getOrgIdList(userSession, orgId, null, Short.parseShort("1"));
+      orgList = organizationDao.getAllOrganizationByArchiveIdAndOrgId(orgIdList,userSession.getArchiveId(), Short.parseShort("0"), new Date());
     } else {
       orgList = organizationDao.getOrganizationsByOrgIds(orgIds);
     }
-
     return orgList;
   }
 

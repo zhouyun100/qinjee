@@ -532,4 +532,53 @@
              </foreach>
          </if>
     </select>
+
+    <select id="getAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
+        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name parent_org_name,
+        v.org_manager_id,
+        tua.employee_number,
+        tua.user_name orgManagerName
+       FROM (
+             SELECT v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name,v1.org_manager_id
+              FROM (
+                SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
+                FROM t_role_org_auth,t_role,t_user_role,t_organization
+                WHERE t_user_role.archive_id = #{archiveId}
+                AND (t_user_role.is_trusteeship = 0
+                OR (t_user_role.is_trusteeship = 1
+                AND #{now} >= t_user_role.trusteeship_begin_time
+                AND t_user_role.trusteeship_end_time >= #{now}
+                ))
+                AND t_user_role.role_id = t_role.role_id
+                AND t_role.role_id = t_role_org_auth.role_id
+                AND t_role_org_auth.org_id = t_organization.org_id
+                AND t_role.is_delete = 0
+                AND t_role_org_auth.is_delete = 0
+                AND t_organization.is_enable = 1
+      UNION
+             SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
+                FROM t_user_org_auth,t_organization
+                WHERE t_user_org_auth.archive_id = #{archiveId}
+                AND (t_user_org_auth.is_trusteeship = 0
+                OR (t_user_org_auth.is_trusteeship = 1
+                AND #{now} >= t_user_org_auth.trusteeship_begin_time
+                AND t_user_org_auth.trusteeship_end_time >= #{now}
+                ))
+                AND t_user_org_auth.org_id = t_organization.org_id
+                AND t_user_org_auth.is_delete = 0
+                AND t_organization.is_enable = 1
+        ) v1
+        GROUP BY v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name) v
+        LEFT JOIN t_organization o
+            ON v.org_parent_id = o.org_id
+        LEFT JOIN t_user_archive tua ON tua.archive_id = v.org_manager_id
+        <if test="orgIdList != null and orgIdList.size > 0">
+            where  v.org_id in
+            <foreach collection="orgIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>
