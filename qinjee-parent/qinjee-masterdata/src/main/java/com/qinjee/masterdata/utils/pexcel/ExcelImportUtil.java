@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.utils.pexcel;
 
 import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
+import com.qinjee.masterdata.utils.pexcel.annotation.ExcelSheetAnno;
 import com.qinjee.masterdata.utils.pexcel.util.FieldReflectionUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class ExcelImportUtil {
     public static List<Object> importSheet(Workbook workbook, Class<?> sheetClass) {
         try {
             // sheet
-            ExcelFieldAnno excelSheet = sheetClass.getAnnotation(ExcelFieldAnno.class);
+            ExcelSheetAnno excelSheet = sheetClass.getAnnotation(ExcelSheetAnno.class);
             String sheetName = (excelSheet!=null && excelSheet.name()!=null && excelSheet.name().trim().length()>0)?excelSheet.name().trim():sheetClass.getSimpleName();
 
             // sheet field
@@ -48,7 +49,10 @@ public class ExcelImportUtil {
                     if (Modifier.isStatic(field.getModifiers())) {
                         continue;
                     }
-                    fields.add(field);
+                    if(field.getAnnotation(ExcelFieldAnno.class)!=null){
+                        fields.add(field);
+                    }
+
                 }
             }
 
