@@ -1,10 +1,13 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
+import com.qinjee.masterdata.utils.pexcel.annotation.ExcelSheetAnno;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.poi.hssf.util.HSSFColor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +20,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "岗位表实体类")
+@ExcelSheetAnno(name = "岗位信息", headColor = HSSFColor.HSSFColorPredefined.LIGHT_GREEN)
 public class Post implements Serializable {
     /**
      * 岗位ID
@@ -30,6 +34,7 @@ public class Post implements Serializable {
      */
     @QueryColumn("tp.post_name")
     @ApiModelProperty("岗位名称")
+    @ExcelFieldAnno(name = "岗位名称",width = 10000)
     private String postName;
 
     /**
@@ -37,6 +42,7 @@ public class Post implements Serializable {
      */
     @QueryColumn("tp.post_code")
     @ApiModelProperty("岗位编码")
+    @ExcelFieldAnno(name = "岗位编码")
     private String postCode;
 
     /**
@@ -50,12 +56,14 @@ public class Post implements Serializable {
      * 父级岗位名称
      */
     @ApiModelProperty("父级岗位名称")
+    @ExcelFieldAnno(name = "父级岗位名称")
     private String parentPostName;
 
     /**
      * 父级岗位编码
      */
     @ApiModelProperty("父级岗位编码")
+    @ExcelFieldAnno(name = "父级岗位编码")
     private String parentPostCode;
 
 
@@ -120,18 +128,21 @@ public class Post implements Serializable {
      */
     @QueryColumn("tps.position_name")
     @ApiModelProperty("职位名称")
+    @ExcelFieldAnno(name = "职位名称")
     private String positionName;
 
     /**
      * 机构名称
      */
     @ApiModelProperty("机构名称")
+    @ExcelFieldAnno(name = "机构名称")
     private String orgName;
 
     /**
      * 父级机构名称
      */
     @ApiModelProperty("父级机构名称")
+    @ExcelFieldAnno(name = "父级机构名称")
     private String parentOrgName;
 
     /**
@@ -144,6 +155,7 @@ public class Post implements Serializable {
      * 父级机构编码
      */
     @ApiModelProperty("父级机构编码")
+    @ExcelFieldAnno(name = "父级机构编码")
     private String parentOrgCode;
 
 

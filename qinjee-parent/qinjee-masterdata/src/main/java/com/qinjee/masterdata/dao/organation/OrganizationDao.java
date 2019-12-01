@@ -5,6 +5,7 @@ import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
+import com.qinjee.model.request.UserSession;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -112,4 +113,5 @@ public interface OrganizationDao {
     List<OrganizationVO> getOrganizationGraphics(Integer archiveId, List<Integer> orgIdList, Short isEnable, Date now);
 
   List<OrganizationVO> getAllOrganizationByArchiveIdAndOrgId( List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
+
 }

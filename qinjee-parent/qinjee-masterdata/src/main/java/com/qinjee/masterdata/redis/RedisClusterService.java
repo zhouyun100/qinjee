@@ -133,9 +133,25 @@ public class RedisClusterService {
 	public void hmset(String key, Map map) {
 		try {
 			jedisCluster.hmset(key, map);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+/**
+	 * 获取整个map
+ * @param key
+ * @return
+ */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Map<String, String> hgetAll(String key) {
+		try {
+			return jedisCluster.hgetAll(key);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

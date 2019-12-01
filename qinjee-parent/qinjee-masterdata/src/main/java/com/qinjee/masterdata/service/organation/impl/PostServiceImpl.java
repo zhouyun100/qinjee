@@ -32,6 +32,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
@@ -349,6 +350,26 @@ public class PostServiceImpl implements PostService {
 
        List<UserArchivePostRelation> list= postDao.getPostSuccessive(postId);
         return new ResponseResult(list);
+    }
+
+    @Override
+    public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
+        if (CollectionUtils.isEmpty(postIds)) {
+            List<Integer> orgIdList = getOrgIdList(userSession, orgId);
+           return postDao.getPostPositionListByOrgIds(orgIdList);
+        } else {
+           return postDao.getPostListByPostIds(postIds);
+        }
+    }
+
+    @Override
+    public ResponseResult importAndCheckPostExcel(MultipartFile multfile, UserSession userSession) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult importPostExcelToDatabase(String redisKey, UserSession userSession) {
+        return null;
     }
 
     /**

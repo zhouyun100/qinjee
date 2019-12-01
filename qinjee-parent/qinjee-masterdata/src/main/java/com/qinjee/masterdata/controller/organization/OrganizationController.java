@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.organization;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Organization;
@@ -47,8 +48,7 @@ public class OrganizationController extends BaseController {
   private static Logger logger = LogManager.getLogger(OrganizationController.class);
   @Autowired
   private OrganizationService organizationService;
-  @Autowired
-  private RedisClusterService redisService;
+
 
   private final static String xls = "xls";
   private final static String xlsx = "xlsx";
@@ -193,6 +193,7 @@ public class OrganizationController extends BaseController {
       byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
       response.setCharacterEncoding("UTF-8");
       response.setHeader("content-Type", "application/vnd.ms-excel");
+      response.setHeader("fileName", URLEncoder.encode("机构", "UTF-8"));
       response.setHeader("Content-Disposition",
           "attachment;filename=\"" + URLEncoder.encode("机构", "UTF-8") + "\"");
       response.getOutputStream().write(bytes);
@@ -202,114 +203,21 @@ public class OrganizationController extends BaseController {
     return null;
   }
 
-  @PostMapping("/importOrganization")
-  public ResponseResult importOrganization(MultipartFile multfile) throws Exception {
-    ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
-    // 获取文件名
-    String fileName = multfile.getOriginalFilename();
-    List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
-    List<OrganizationVO> voList = new ArrayList<>();
-    for (Object object : objects) {
-      OrganizationVO vo = (OrganizationVO) object;
-      voList.add(vo);
-    }
-    //校验
-    List<OrganizationCheckVo> checkVos = checkExcel(voList);
-    //拿到错误校验列表
-    List<OrganizationCheckVo> failCheckList = checkVos.stream().filter(check -> {
-      if (!check.getCheckResult()) {
-        return true;
-      } else {
-        return false;
-      }
-    }).collect(Collectors.toList());
-    //如果为空则校验成功
-    if(CollectionUtils.isEmpty(failCheckList)){
-      responseResult.setMessage("文件校验成功");
-      responseResult.setResultCode(CommonCode.SUCCESS);
-      //TODO 将voList结果写到redis
-    }else{
-      responseResult.setMessage("文件校验失败");
-    }
-    responseResult.setResult(failCheckList);
-    return responseResult;
+  @PostMapping("/importAndCheckOrganizationExcel")
+  @ApiOperation(value = "待验证，导入机构excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
+  public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile) throws Exception {
+
+   return organizationService.importAndCheckOrganizationExcel(multfile,getUserSession());
+
   }
 
-  public List<OrganizationCheckVo> checkExcel(List<OrganizationVO> voList) {
-    List<OrganizationCheckVo> checkVos = new ArrayList<>();
-    int line = 0;
-    int groupCount = 0;
-    for (OrganizationVO organizationVO : voList) {
-      line++;
-      OrganizationCheckVo checkVo = new OrganizationCheckVo();
-      checkVo.setCheckResult(true);
-      BeanUtils.copyProperties(organizationVO,checkVo);
-      StringBuilder resultMsg = new StringBuilder();
-      resultMsg.append("第" + line + "行：");
-      //验空
-      if (Objects.isNull(organizationVO.getOrgCode())) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("机构编码不能为空|");
-      }
-      if (Objects.isNull(organizationVO.getOrgName())) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("机构名称不能为空|");
-      }
-      if (Objects.isNull(organizationVO.getOrgType())) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("机构类型不能为空|");
-      }
-      if (Objects.isNull(organizationVO.getOrgParentCode()) && !organizationVO.getOrgType().equals("GROUP")) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("非集团类型机构的上级机构编码不能为空|");
-      }
-      if (Objects.isNull(organizationVO.getOrgParentName()) && !organizationVO.getOrgType().equals("GROUP")) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("非集团类型机构的上级机构名称不能为空|");
-      }
-      if (!(organizationVO.getOrgType().equals("GROUP") || organizationVO.getOrgType().equals("UNIT") || organizationVO.getOrgType().equals("DEPT"))) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在|");
-      }
 
-      if (organizationVO.getOrgType().equals("GROUP")) {
-        groupCount++;
-      }
-      if (groupCount > 1) {
-        checkVo.setCheckResult(false);
-        resultMsg.append("集团类型机构只能存在一个|");
-      }
+  @GetMapping("/importOrganizationExcelToDatabase")
+  @ApiOperation(value = "导入机构入库）")
+  public ResponseResult importOrganizationExcelToDatabase(@RequestParam("redisKey") String redisKey){
 
-      if (organizationVO.getOrgManagerId() != null) {
-        //查询部门负责人是否存在,
-        //TODO
-        if (0 > 1) {
-          checkVo.setCheckResult(false);
-          resultMsg.append("id为" + organizationVO.getOrgManagerId() + "的部门负责人不存在|");
-        } else {
-          //如果存在则判断部门负责人名字是否一致
-          if (0 > 1) {
-            checkVo.setCheckResult(false);
-            resultMsg.append("部门负责人名字不一致|");
-          }
-        }
-      }
-      //根据上级机构编码查询数据库 判断上级机构是否存在
-      //TODO
-      if (0 > 1) {
-        resultMsg.append("编码为" + organizationVO.getOrgParentCode() + "的上级机构不存在|");
-      } else {
-        if (0 > 1) {
-          resultMsg.append("上级机构名称不一致|");
-        }
-      }
-      checkVo.setResultMsg(resultMsg);
-      checkVos.add(checkVo);
-    }
-
-    return checkVos;
+    return organizationService.importOrganizationExcelToDatabase(redisKey,getUserSession());
   }
-
 
   /**
    * @Description: AorgId:2                                        AorgId：1

@@ -187,6 +187,10 @@ public interface OrganizationService {
   List<OrganizationVO> exportOrganization(Integer orgId,List<Integer> orgIds,UserSession userSession);
 
   PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
+
+    ResponseResult importOrganizationExcelToDatabase(String redisKey, UserSession userSession);
+
+  ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession) throws Exception;
 }
 
 
