@@ -280,7 +280,7 @@
   </select>
 
 
-  <select id="selectFieldNameListByTableIdList" resultType="java.lang.String">
+  <select id="selectFieldCodeListByTableIdList" resultType="java.lang.String">
     select  field_code
     from    t_custom_archive_field
     where   table_id

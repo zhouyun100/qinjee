@@ -101,4 +101,5 @@ public interface IStaffImportAndExportService {
     void importConFile(MultipartFile multipartFile,String funcCode, UserSession userSession) throws Exception;
 
 
+    void importFile(String title, UserSession userSession, String funcCode) throws Exception;
 }

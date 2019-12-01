@@ -77,7 +77,7 @@ public interface CustomArchiveFieldDao {
      * @param tableIdList
      * @return
      */
-    List<String> selectFieldNameListByTableIdList(@Param("tableIdList") List<Integer> tableIdList);
+    List<String> selectFieldCodeListByTableIdList(@Param("tableIdList") List<Integer> tableIdList);
 
     /**
      * selectFieldNameListByTableIdList

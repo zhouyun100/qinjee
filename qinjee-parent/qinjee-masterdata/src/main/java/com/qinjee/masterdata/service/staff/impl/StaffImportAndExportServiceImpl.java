@@ -127,7 +127,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //将list存进缓存，并且设置过期时间
         String s = JSON.toJSONString ( list );
         //定义唯一的key
-        String s1 = userSession.getCompanyId () + userSession.getArchiveId () + title;
+        String s1 = userSession.getCompanyId ()+title + userSession.getArchiveId ();
         //过期时间为2小时
         //存储的值
         redisClusterService.setex ( s1, 2 * 60 * 60, s );
@@ -137,7 +137,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Transactional(rollbackFor = Exception.class)
     public void cancelForImport(String title, UserSession userSession) throws Exception {
         //拼接key
-        String s1 = userSession.getCompanyId () + userSession.getArchiveId () + title;
+        String s1 = userSession.getCompanyId ()+title + userSession.getArchiveId () ;
         if (redisClusterService.exists ( s1 )) {
             redisClusterService.del ( s1 );
         } else {
@@ -201,7 +201,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                                 declaredField.set ( userArchive, selectValueById ( list, integer ) );
                             }
                             if (map1.get ( "text_type" ).equals ( "number" )) {
-                                declaredField.setInt ( userArchive, Integer.parseInt ( selectValueById ( list, integer ) ) );
+                                declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( list, integer ) ) );
                             }
                             if (map1.get ( "text_type" ).equals ( "date" )) {
                                 SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
@@ -438,7 +438,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         ExcelUtil.download ( response, exportFile.getTittle (),
                 getHeadsByArc ( exportFile, userSession.getCompanyId () ),
                 getDates ( exportFile, getHeadsByArc ( exportFile, userSession.getCompanyId () ), "ARC", userSession.getCompanyId () ),
-                getTypeMapForArc ( exportFile, getHeadsByArc ( exportFile, userSession.getCompanyId () ) ) );
+//                getTypeMapForArc ( exportFile, getHeadsByArc ( exportFile, userSession.getCompanyId () ) ) );
+                getTypeMap ( getHeadsByArc(exportFile,userSession.getCompanyId ()) ) );
     }
 
     /**

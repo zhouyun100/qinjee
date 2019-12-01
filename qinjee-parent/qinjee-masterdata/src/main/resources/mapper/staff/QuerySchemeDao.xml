@@ -121,4 +121,11 @@
           #{item}
         </foreach>
     </update>
+  <select id="selectIdByArchiveId" resultType="java.lang.Integer">
+    select query_scheme_id
+    from t_query_scheme
+    where  archive_id = #{id,jdbcType=INTEGER}
+    and is_delete=0
+
+  </select>
 </mapper>

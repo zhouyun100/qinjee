@@ -270,7 +270,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         stringBuffer.append("select t.archive_id ,");
 
         for (String string : strings) {
-            stringBuffer.append("t.").append(string).append(",");
+            if(string!=null && !"".equals(string)) {
+                stringBuffer.append("t.").append(string).append(",");
+            }
         }
         int i1 = stringBuffer.toString().lastIndexOf(",");
         String a=stringBuffer.toString().substring(0,i1);
@@ -287,7 +289,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //找到企业下的人员表
         List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(companyId,ARCHIVE);
         //根据id找到物理字段名
-        return customArchiveFieldDao.selectFieldNameListByTableIdList(tableIdList);
+        return   customArchiveFieldDao.selectFieldCodeListByTableIdList(tableIdList);
+
+
     }
     private String getSort(String sort) {
         if (sort != null) {
@@ -344,15 +348,21 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
 
     @Override
-    public QuerySchemeList selectQueryScheme(Integer id) {
-        QuerySchemeList querySchemeList = new QuerySchemeList();
-        //通过查询方案id找到显示字段
-        List<QuerySchemeField> querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId(id);
-        //通过查询方案id找到排序字段
-        List<QuerySchemeSort> querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId(id);
-        querySchemeList.setQuerySchemeFieldList(querySchemeFields);
-        querySchemeList.setQuerySchemeSortList(querySchemeSorts);
-        return querySchemeList;
+    @Transactional(rollbackFor = Exception.class)
+    public List<QuerySchemeList> selectQueryScheme(Integer id) {
+        List<QuerySchemeList> lists=new ArrayList<>();
+        List<Integer> list=querySchemeDao.selectIdByArchiveId(id);
+        for (Integer integer : list) {
+            QuerySchemeList querySchemeList = new QuerySchemeList();
+            //通过查询方案id找到显示字段
+            List<QuerySchemeField> querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId(id);
+            //通过查询方案id找到排序字段
+            List<QuerySchemeSort> querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId(id);
+            querySchemeList.setQuerySchemeFieldList(querySchemeFields);
+            querySchemeList.setQuerySchemeSortList(querySchemeSorts);
+            lists.add(querySchemeList);
+        }
+        return lists;
     }
 
     @Override

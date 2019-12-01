@@ -112,6 +112,24 @@ public class ImportAndExportStaffController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+    /**
+     * 导入文件
+     */
+    @RequestMapping(value = "/importFile", method = RequestMethod.POST)
+    @ApiOperation(value = "导入文件", notes = "hkt")
+
+    public ResponseResult ImportFile(String title,  String funcCode) {
+        Boolean b = checkParam(title,getUserSession (),funcCode);
+        if(b) {
+            try {
+                staffImportAndExportService.importFile (title,getUserSession (),funcCode );
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
 
     /**
      * 模板导入黑名单
