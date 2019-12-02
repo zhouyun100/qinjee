@@ -16,6 +16,7 @@ public class OrganizationCheckVo extends OrganizationVO {
    * 校验是否成功(true:是，false:否)
    */
   private Boolean checkResult;
+  private Integer lineNumer;
 
   /**
    * 校验结果信息

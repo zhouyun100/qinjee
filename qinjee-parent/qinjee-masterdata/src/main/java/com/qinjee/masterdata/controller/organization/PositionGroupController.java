@@ -65,15 +65,4 @@ public class PositionGroupController extends BaseController {
   public ResponseResult sortPositionGroup(@RequestParam LinkedList<String> positionGroupIds) {
     return positionGroupService.sortPositionGroup(positionGroupIds);
   }
-
-  @ApiImplicitParam(name = "positionGroupIds", value = "选择的职位族id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
-  @ApiOperation(value = "导出excel", notes = "高雄")
-  @GetMapping("/downloadExcel")
-  public ResponseResult downloadExcel(@ApiParam(value = "导出路径", required = true) @RequestParam("filePath") String filePath, @RequestParam(value = "positionGroupIds", required = false) @ApiParam(value = "所选机构的id", required = false) List<Integer> positionGroupIds) {
-    //TODO
-    if (CollectionUtils.isEmpty(positionGroupIds)) {
-      return positionGroupService.downloadAllPositionGroupToExcel(filePath, getUserSession());
-    }
-    return positionGroupService.downloadPositionGroupToExcelByOrgId(filePath, positionGroupIds, getUserSession());
-  }
 }

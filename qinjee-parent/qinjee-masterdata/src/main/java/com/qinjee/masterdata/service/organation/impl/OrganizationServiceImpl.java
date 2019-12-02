@@ -379,9 +379,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         return pageResult;
     }
 
+    /**
+     * 入库
+     * @param redisKey
+     * @param userSession
+     * @return
+     */
     @Override
-    public ResponseResult importOrganizationExcelToDatabase(String redisKey, UserSession userSession) {
-       String data = redisService.get(redisKey);
+    public ResponseResult importOrganizationExcelToDatabase(String orgExcelRedisKey, UserSession userSession) {
+       String data = redisService.get(orgExcelRedisKey);
        //将其转为对象集合
         List<OrganizationVO> list= JSONArray.parseArray(data,OrganizationVO.class);
 
@@ -437,18 +443,35 @@ public class OrganizationServiceImpl implements OrganizationService {
         return new ResponseResult();
     }
 
+
+    /**
+     * 导入并校验
+    * @param multfile
+     * @param userSession
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @Override
-    public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession) throws Exception {
+    public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
-        // 获取文件名
-        String fileName = multfile.getOriginalFilename();
+        //判断文件名
+        String filename = multfile.getOriginalFilename();
+        if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
+            responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
+            return responseResult;
+        }
         List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
-        List<OrganizationVO> voList = new ArrayList<>();
+        List<OrganizationVO> orgList = new ArrayList<>();
+        //记录行号
+        Map<String,Integer> lineNumber=new HashMap<>();
+        Integer number=1;
         for (Object object : objects) {
             OrganizationVO vo = (OrganizationVO) object;
-            voList.add(vo);
+            lineNumber.put(vo.getOrgCode(),number++);
+            orgList.add(vo);
         }
-        voList.sort(new Comparator() {
+        orgList.sort(new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
                 OrganizationVO org1 = (OrganizationVO) o1;
@@ -456,11 +479,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
             }
         });
-
         //校验
-        List<OrganizationCheckVo> checkVos = checkExcel(voList);
+        List<OrganizationCheckVo> checkResultList = checkExcel(lineNumber,orgList);
         //拿到错误校验列表
-        List<OrganizationCheckVo> failCheckList = checkVos.stream().filter(check -> {
+        List<OrganizationCheckVo> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
                 return true;
             } else {
@@ -471,20 +493,33 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (CollectionUtils.isEmpty(failCheckList)) {
             responseResult.setMessage("文件校验成功");
             responseResult.setResultCode(CommonCode.SUCCESS);
-            //TODO 将voList结果写到redis,最好序列化后再存，直接存map会乱序
-
-            String redisKey = "voList" + userSession.getArchiveId();
-            redisService.del(redisKey);
-
-            redisService.setex(redisKey,60*60*2, JSON.toJSONString(voList));
-            //将redisKey 返回
-            Map<String, String> redisKeyMap = new HashMap<>();
-            redisKeyMap.put("redisKey", redisKey);
-            responseResult.setResult(redisKeyMap);
         } else {
-            responseResult.setMessage("文件校验失败");
-            responseResult.setResult(failCheckList);
+            responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
         }
+        //将orgList存入redis
+        String orgExcelRedisKey = "orgExcel" + userSession.getArchiveId();
+        redisService.del(orgExcelRedisKey);
+        String json = JSON.toJSONString(orgList);
+        redisService.setex(orgExcelRedisKey,60*60*2, json);
+        //将校验结果与原表格信息返回
+        HashMap<Object, Object> resultMap = new HashMap<>();
+        //TODO
+        List<String> headerList=new ArrayList<>();
+        headerList.add("机构编码");
+        headerList.add("机构名称");
+        headerList.add("机构类型");
+        headerList.add("上级机构编码");
+        headerList.add("上级机构");
+        headerList.add("部门复杂人编号");
+        headerList.add("部门复杂人");
+        resultMap.put("failCheckList",failCheckList);
+        resultMap.put("excelList",orgList);
+        resultMap.put("excelHeaderList",headerList);
+        responseResult.setResult(resultMap);
+        //将redis的key返回
+        response.setCharacterEncoding("UTF-8");
+        //TODO  加密
+        response.setHeader("orgExcelRedisKey", orgExcelRedisKey);
         return responseResult;
     }
 
@@ -517,6 +552,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         collectOrgIds(multiValuedMap, orgId, idsList, layer);
         return idsList;
     }
+
 
     //=====================================================================
 
@@ -1203,17 +1239,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    public List<OrganizationCheckVo> checkExcel(List<OrganizationVO> voList) {
+    public List<OrganizationCheckVo> checkExcel(Map<String,Integer>lineNumber,List<OrganizationVO> voList) {
         List<OrganizationCheckVo> checkVos = new ArrayList<>();
         int line = 0;
         int groupCount = 0;
         for (OrganizationVO organizationVO : voList) {
-            line++;
             OrganizationCheckVo checkVo = new OrganizationCheckVo();
             checkVo.setCheckResult(true);
+            checkVo.setLineNumer(lineNumber.get(organizationVO.getOrgCode()));
             BeanUtils.copyProperties(organizationVO, checkVo);
             StringBuilder resultMsg = new StringBuilder();
-            resultMsg.append("第" + line + "行：");
             //验空
             if (Objects.isNull(organizationVO.getOrgCode())) {
                 checkVo.setCheckResult(false);
@@ -1253,7 +1288,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 //TODO
                 if (0 > 1) {
                     checkVo.setCheckResult(false);
-                    resultMsg.append("id为" + organizationVO.getOrgManagerId() + "的部门负责人不存在|");
+                    resultMsg.append("部门负责人不存在|");
                 } else {
                     //如果存在则判断部门负责人名字是否一致
                     if (0 > 1) {
@@ -1274,7 +1309,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }
-
         return checkVos;
     }
 

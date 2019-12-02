@@ -205,18 +205,20 @@ public class OrganizationController extends BaseController {
 
   @PostMapping("/importAndCheckOrganizationExcel")
   @ApiOperation(value = "待验证，导入机构excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
-  public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile) throws Exception {
+  public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile,HttpServletResponse response) throws Exception {
 
-   return organizationService.importAndCheckOrganizationExcel(multfile,getUserSession());
+   return organizationService.importAndCheckOrganizationExcel(multfile,getUserSession(),response);
 
   }
 
 
+
+
   @GetMapping("/importOrganizationExcelToDatabase")
   @ApiOperation(value = "导入机构入库）")
-  public ResponseResult importOrganizationExcelToDatabase(@RequestParam("redisKey") String redisKey){
+  public ResponseResult importOrganizationExcelToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey){
 
-    return organizationService.importOrganizationExcelToDatabase(redisKey,getUserSession());
+    return organizationService.importOrganizationExcelToDatabase(orgExcelRedisKey,getUserSession());
   }
 
   /**
@@ -260,15 +262,6 @@ public class OrganizationController extends BaseController {
     String newOrgName = (String) paramMap.get("newOrgName");
     return organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, userSession);
   }
-
-
-  //TODO
-  @ApiOperation(value = "未实现，导入机构Excel", notes = "未实现")
-  @PostMapping("/uploadExcel")
-  public ResponseResult uploadExcelInOrg(@ApiParam(value = "需要导入的Excel文件", required = true) MultipartFile file) {
-    return organizationService.uploadExcel(file, getUserSession());
-  }
-
 
   @ApiOperation(value = "ok，下载模板")
   @PostMapping("/downloadTemplate")

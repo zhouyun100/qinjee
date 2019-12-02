@@ -106,7 +106,7 @@ public class PostController extends BaseController {
     return postService.downloadTemplate(response);
   }
 
-  @ApiOperation(value = "ok，复制岗位", notes = "未验证")
+  @ApiOperation(value = "ok，复制岗位,将岗位复制到机构下  参数demo {\"orgId\":1,\"postIds\":[41,11]}", notes = "未验证")
   @PostMapping("/copyPost")
   public ResponseResult copyPost(@RequestBody Map<String, Object> paramMap) {
     List<Integer> postIds = (List<Integer>) paramMap.get("postIds");
