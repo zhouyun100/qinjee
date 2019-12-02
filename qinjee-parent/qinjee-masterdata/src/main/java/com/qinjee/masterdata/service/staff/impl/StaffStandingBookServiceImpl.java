@@ -36,10 +36,9 @@ import java.util.List;
 public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookServiceImpl.class);
     private static final String ARCHIVE="ARC";
-    private static final String TYPEDATE="DATE";
-    private static final String TYPENUMBER="NUMBER";
-    private static final String TYPETEXT="TEXT";
-    private static final String TYPECODE="CODE";
+    private static final String TYPEDATE="date";
+    private static final String TYPENUMBER="number";
+    private static final String TYPETEXT="text";
     private static final String DENGYU="等于";
     private static final String BUDENGYU="不等于";
     private static final String BAOHAN="包含";
@@ -204,9 +203,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     private String getBaseSql(UserSession userSession){
-        List<String> fieldNameNotInside = getFieldNameNotInside(userSession);
+
+        List<Integer> list = customArchiveTableDao.selectFieldIdNotInside(userSession.getCompanyId());
         String a="select t.archive_id from( select t0.* , ";
-        return a+SqlUtil.getsql(userSession.getCompanyId(),fieldNameNotInside);
+        return a+SqlUtil.getsql(userSession.getCompanyId(),list);
     }
 
     /**
@@ -215,39 +215,29 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
      * 日期 DATE，数字 NUMBER，代码 CODE，文本 TEXT
      */
     private String getWhereSql(StandingBookFilter filter){
-        String physicName = getPhysicName(filter.getFieldId());
+        Integer fieldId = filter.getFieldId();
         String condition=null;
         //根据id获得字段类型
-        String type=customTableFieldDao.selectTypeByFieldId(filter.getFieldId());
+        String type=customTableFieldDao.selectTypeByFieldId(fieldId);
         if(type!=null) {
             if (TYPEDATE.equals(type) || TYPENUMBER.equals(type)) {
-                condition = physicName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                condition = fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
             }
             if (TYPETEXT.equals(type)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " = " + filter.getFieldValue();
+                    condition = fieldId + " = " + filter.getFieldValue();
                 }
                 if (BUDENGYU.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " != " + filter.getFieldValue();
+                    condition = fieldId + " != " + filter.getFieldValue();
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = fieldId + " like "+"'%" + filter.getFieldValue() + "%' ";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " not like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = fieldId + " not like "+"'%" + filter.getFieldValue() + "%' ";
                 }
             }
-            if (TYPECODE.equals(type)) {
-                if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName +" = " + filter.getFieldValue();
-                }
-
-                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " != " + filter.getFieldValue() ;
-                }
-            }
-
         }
             if (filter.getIsLeftBrackets()==1 ) {
                return "("+condition+getLinkSymbol(filter);
@@ -257,21 +247,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
         return condition+getLinkSymbol(filter)+"\t";
     }
-    /**
-     * 找到非内置字段的物理字段名
-     */
-    private List<String> getFieldNameNotInside(UserSession userSession){
-        //找到企业下的人员表
-        List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(userSession.getCompanyId(),ARCHIVE);
-        //根据id找到物理字段名
-        return customTableFieldDao.selectFieldCodeListByTableIdList(tableIdList);
-    }
-    /**
-     *  通过字段id找到物理字段名
-     */
-    private String getPhysicName(Integer fieldId){
-        return customTableFieldDao.selectPhysicName(fieldId);
-    }
+
     private String getLinkSymbol(StandingBookFilter filter){
         if(AND.equals(filter.getLinkSymbol())){
             return " AND ";
