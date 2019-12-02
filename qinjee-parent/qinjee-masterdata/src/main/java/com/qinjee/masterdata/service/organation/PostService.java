@@ -124,4 +124,6 @@ public interface PostService {
   ResponseResult importAndCheckPostExcel(MultipartFile multfile, UserSession userSession);
 
   ResponseResult importPostExcelToDatabase(String redisKey, UserSession userSession);
+
+    List<Post> getPostGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 }

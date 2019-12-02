@@ -25,13 +25,11 @@ import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
-import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
@@ -501,7 +499,8 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param layer       递归层级
      * @return
      */
-    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable) {
+    @Override
+    public List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
         //先查询到所有机构
         List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), isEnable, new Date());
@@ -1139,7 +1138,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             Integer orgId = org.getOrgId();
             //设置实有人数
             if (isContainsActualMembers) {
-                org.setStaffNumbers(userArchiveDao.getUserCountByOrgId(orgId));
+                org.setStaffNumbers(userArchiveDao.countUserArchiveByOrgId(orgId));
             }
             //TODO 设置编制人数,先写死
             if (isContainsCompiler) {
@@ -1156,7 +1155,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (childList != null && childList.size() > 0) {
                 org.setChildList(childList);
                 allOrg.removeAll(childList);
-                handlerOrganizationToTree(allOrg, childList);
+                handlerOrganizationToGraphics(allOrg, childList,isContainsCompiler,isContainsActualMembers);
             }
         }
     }

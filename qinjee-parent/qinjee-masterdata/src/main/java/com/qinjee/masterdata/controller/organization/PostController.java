@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
+import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.response.PageResult;
@@ -34,6 +35,8 @@ public class PostController extends BaseController {
 
   @Autowired
   private PostService postService;
+  @Autowired
+  private OrganizationService organizationService;
 
   @PostMapping("/getPostList")
   @ApiOperation(value = "ok，分页查询岗位列表,只有orgId字段为必须", notes = "ok")
@@ -151,6 +154,24 @@ public class PostController extends BaseController {
   public ResponseResult importPostExcelToDatabase(@RequestParam("redisKey") String redisKey){
 
     return postService.importPostExcelToDatabase(redisKey,getUserSession());
+  }
+
+  //TODO 实有人数、编制人数暂时不考虑
+  //TODO 递归层数控制
+  @ApiOperation(value = "ok，获取岗位图", notes = "ok")
+  @GetMapping("/getPostGraphics")
+  public ResponseResult<List<Post>> getPostGraphics(@RequestParam("layer") @ApiParam(value = "岗位图层数，默认显示2级", example = "2") Integer layer,
+                                                                      @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
+                                                                      @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
+                                                                      @RequestParam("postId") @ApiParam(value = "postId", example = "1") Integer postId,
+                                                                      @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
+    if (isEnable == null || isEnable == 0) {
+      isEnable = 0;
+    } else {
+      isEnable = null;
+    }
+    List<Post> pageResult = postService.getPostGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, postId, isEnable);
+    return new ResponseResult(pageResult);
   }
 
 }

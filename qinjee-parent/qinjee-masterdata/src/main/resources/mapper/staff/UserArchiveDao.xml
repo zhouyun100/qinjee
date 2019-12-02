@@ -879,8 +879,12 @@
 
   </select>
 
-  <select id="getUserCountByOrgId" resultType="java.lang.Integer">
+  <select id="countUserArchiveByOrgId" resultType="java.lang.Integer">
     SELECT COUNT(org_id) FROM t_user_archive WHERE org_id =#{orgId} AND is_delete =0
+
+  </select>
+  <select id="countUserArchiveByPostId" resultType="java.lang.Integer">
+    SELECT COUNT(post_id) FROM t_user_archive WHERE post_id =#{postId} AND is_delete =0
 
   </select>
 

@@ -29,6 +29,9 @@ public class Post implements Serializable {
     @QueryColumn("tp.post_id")
     private Integer postId;
 
+    private Integer staffNumbers;
+    private Integer planNumbers;
+
     /**
      * 岗位名称
      */
@@ -184,6 +187,7 @@ public class Post implements Serializable {
      */
     @ApiModelProperty("职等名称 逗号拼接")
     private String positionGradeNames;
+    private List<Post> childList;
 
     private static final long serialVersionUID = 1L;
 }

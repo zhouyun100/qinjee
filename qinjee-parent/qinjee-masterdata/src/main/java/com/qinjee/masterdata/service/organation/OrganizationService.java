@@ -191,6 +191,7 @@ public interface OrganizationService {
     ResponseResult importOrganizationExcelToDatabase(String redisKey, UserSession userSession);
 
   ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession) throws Exception;
+ List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable);
 }
 
 

@@ -8,12 +8,14 @@ import com.qinjee.masterdata.dao.PostGradeRelationDao;
 import com.qinjee.masterdata.dao.PostInstructionsDao;
 import com.qinjee.masterdata.dao.PostLevelRelationDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
+import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
@@ -41,6 +43,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 高雄
@@ -63,7 +66,11 @@ public class PostServiceImpl implements PostService {
     private PostInstructionsDao postInstructionsDao;
 
     @Autowired
+    private OrganizationService organizationService;
+    @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
+    @Autowired
+    private UserArchiveDao userArchiveDao;
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
@@ -370,6 +377,100 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseResult importPostExcelToDatabase(String redisKey, UserSession userSession) {
         return null;
+    }
+
+    @Override
+    public List<Post> getPostGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer postId, Short isEnable) {
+        List<Integer> orgidList = new ArrayList<>();
+        //拿到关联的所有机构id
+        List<Integer> postIdList = null;
+        if (layer < 1) {
+            layer = 2;
+        }
+        postIdList = getPostIdList(userSession, postId, (layer - 1), isEnable);
+        //查询所有相关的岗位
+        List<Post> allPost = postDao.getPostGraphics( postIdList, isEnable);
+        //拿到根节点
+        List<Post> topPostList = allPost.stream().filter(post -> {
+            if (post.getPostId() != null && post.getPostId().equals(postId)) {
+                return true;
+            } else if (postId == 0) {//TODO 如果是顶级岗位
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        //递归处理机构,使其以树形结构展示
+        
+        handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
+        return allPost;
+    }
+
+    private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {
+        for (Post post : topPostList) {
+            Integer postId = post.getPostId();
+            //设置实有人数
+            if (isContainsActualMembers) {
+                post.setStaffNumbers(userArchiveDao.countUserArchiveByPostId(postId));
+            }
+            //TODO 设置编制人数,先写死
+            if (isContainsCompiler) {
+                post.setPlanNumbers(120);
+            }
+            List<Post> childList = allPost.stream().filter(pt -> {
+                Integer postParentId = pt.getParentPostId();
+                if (postParentId != null && postParentId >= 0) {
+                    return postParentId.equals(postId);
+                }
+                return false;
+            }).collect(Collectors.toList());
+            //判断是否还有子级
+            if (childList != null && childList.size() > 0) {
+                post.setChildList(childList);
+                allPost.removeAll(childList);
+                handlerPostToGraphics(allPost, childList,isContainsCompiler,isContainsActualMembers);
+            }
+        }
+
+
+    }
+
+    private List<Integer> getPostIdList(UserSession userSession, Integer postId, int layer, Short isEnable) {
+        List<Integer> idsList = new ArrayList<>();
+        //先查询到岗位
+        List<Post> listPost= postDao.listPostByCompanyId(userSession.getCompanyId(),isEnable);
+        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
+        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
+        for (Post post : listPost) {
+            multiValuedMap.put(post.getParentPostId(), post.getPostId());
+        }
+        for (Map.Entry<Integer, Integer> entry : multiValuedMap.entries()) {
+
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
+        //根据机构id递归，取出该机构下的所有子机构
+        collectOrgIds(multiValuedMap, postId, idsList, layer);
+        return idsList;
+
+    }
+
+    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer postId, List<Integer> idsList, Integer layer) {
+        idsList.add(postId);
+        Collection<Integer> sonPostIds = multiValuedMap.get(postId);
+        for (Integer sonPostId : sonPostIds) {
+
+            if (layer != null && layer > 0) {
+                idsList.add(sonPostId);
+                if (multiValuedMap.get(sonPostId).size() > 0 && layer > 0) {
+                    layer--;
+                    collectOrgIds(multiValuedMap, sonPostId, idsList, layer);
+
+                }
+            } else {
+                idsList.add(sonPostId);
+
+            }
+        }
     }
 
     /**

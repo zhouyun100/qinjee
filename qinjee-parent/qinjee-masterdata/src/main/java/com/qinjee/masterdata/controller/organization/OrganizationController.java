@@ -135,7 +135,7 @@ public class OrganizationController extends BaseController {
    *
    * @return
    */
-  //TODO 实有人数、编制人数暂时不考虑
+  //TODO 编制人数暂时不考虑
   //TODO 递归层数控制
   @ApiOperation(value = "ok，获取机构图", notes = "ok")
   @GetMapping("/getOrganizationGraphics")

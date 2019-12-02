@@ -111,5 +111,9 @@ public interface PostDao {
     Map< String, Integer> selectPostIdAndOrgIdAndsupiorId(@Param("org_code") String org_code, @Param("post_code") String post_code, @Param("code") String code);
 
   List<UserArchivePostRelation> getPostSuccessive(@Param("postId")Integer postId);
+
+    List<Post> getPostGraphics( List<Integer> postIdList, Short isEnable);
+
+    List<Post> listPostByCompanyId(Integer companyId, Short isEnable);
 }
 
