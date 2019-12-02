@@ -10,13 +10,16 @@
  */
 package com.qinjee.masterdata.dao.custom;
 
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomGroupVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 周赟
@@ -64,4 +67,194 @@ public interface CustomTableFieldDao {
      * @return
      */
     List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+
+
+
+
+    /**
+     *批量逻辑删除自定义字段
+     * @param list
+     * @return
+     */
+    Integer deleteCustomField(@Param("list") List<Integer> list);
+
+
+
+    /**逻辑删除自定义字段
+     * customArchiveFieldId
+     * @param customArchiveFieldId
+     * @return
+     */
+    Integer selectCodeId(@Param("customArchiveFieldId") Integer customArchiveFieldId);
+
+
+
+    /**
+     * updatePreEmploymentField
+     * @param map
+     * @return
+     */
+    Integer updatePreEmploymentField(@Param("map") Map <Integer, String> map);
+
+
+
+
+    /**
+     * companyId
+     * @param strings
+     * @param companyId
+     * @return
+     */
+    List<String> selectFieldNameByCodeList(@Param("strings") List<String> strings,@Param ( "companyId" ) Integer companyId);
+
+
+
+    /**
+     * tableId
+     * @param tableId
+     * @param archiveId
+     * @return
+     */
+    List<String> selectFieldByTableIdAndAuth(@Param("tableId") Integer tableId, @Param("archiveId") Integer archiveId);
+
+    /**
+     * achiveId
+     * @param achiveId
+     * @param companyId
+     * @return
+     */
+    List<String> selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
+
+
+    /**
+     * companyId
+     * @param s
+     * @param funcCode
+     * @param companyId
+     * @return
+     */
+    String selectFieldCodeByNameAndFuncCodeAndCompanyId(@Param("s") String s, @Param ( "funcCode" ) String funcCode, @Param("companyId") Integer companyId);
+
+
+
+    /**
+     * fieldNames
+     * @param fieldNames
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    List< Integer> selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List< String> fieldNames, @Param("companyId") Integer companyId,
+                                                        @Param ( "funcCode" )String funcCode);
+
+    /**
+     * strings
+     * @param strings
+     * @return
+     */
+    @MapKey( "field_name" )
+    Map< String,Map< String, String>> seleleIsSysAndTableIdAndTableName(@Param("strings") List< String> strings);
+
+
+    /**
+     * head
+     * @param head
+     * @param companyId
+     * @return
+     */
+    String selectFieldCodeByName(@Param("head") String head, @Param("companyId") Integer companyId);
+
+    /**
+     * key
+     * @param key
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    Integer selectFieldIdByFieldNameAndCompanyIdAndFuncCode(@Param("key") String key, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+
+    /**
+     * 根据id找到一系列属性
+     * @param idList
+     * @return
+     */
+    @MapKey ( "field_id" )
+    Map<Integer,Map<String,String>> selectNameAndIdAndIsSystemDefine(@Param("idList") List< Integer> idList);
+
+    /**
+     * 预入职唯一标识证件号对应的fieldId
+     * @param list
+     * @return
+     */
+    Integer selectSymbolForPreIdNumber(@Param("list") List< Integer> list);
+
+    /**
+     * 预入职唯一标识证件类型对应的fieldId
+     * @param list
+     * @return
+     */
+    Integer selectSymbolForPreIdType(@Param("list") List< Integer> list);
+
+    /**
+     * 档案唯一标识工号类型对应的fieldId
+     * @param list
+     * @return
+     */
+    Integer selectSymbolForArcEmploymentNumber(@Param("list") List< Integer> list);
+
+    /**
+     * 预入职唯一标识证件类型对应的fieldId
+     * @param list
+     * @return
+     */
+    Integer selectSymbolForArcIdNumber(@Param("list") List< Integer> list);
+
+    /**
+     * 通过字段id找到tableId
+     * @param integer1
+     * @return
+     */
+    Integer selectTableIdByFieldId(@Param("integer1") Integer integer1);
+
+    /**
+     * 找到字段id对应的物理code与类型
+     * @param integer
+     * @return
+     */
+
+    Map< String, String> selectCodeAndTypeById(@Param("integer") Integer integer);
+
+    /**
+     * 根据tableId集合找到对应的物理code
+     * @param tableIdList
+     * @return
+     */
+    List< String> selectFieldCodeListByTableIdList(@Param("tableIdList") List< Integer> tableIdList);
+
+
+
+    List< CustomArchiveField> selectCustomArchiveField(Integer customArchiveGroupId);
+
+    void insertSelective(CustomArchiveField customArchiveField);
+
+    void updateByPrimaryKeySelective(CustomArchiveField customArchiveField);
+
+    List< CustomArchiveField> selectFieldByTableId(Integer customArchiveTableId);
+
+    CustomArchiveField selectByPrimaryKey(Integer customArchiveFieldId);
+
+    List< String> selectFieldTypeByNameList(List< String> heads);
+
+    List< CustomArchiveField> selectFieldNameByTableName(Integer companyId, String preEmployment);
+
+    String selectTypeByFieldId(Integer fieldId);
+
+    String selectPhysicName(Integer fieldId);
+
+    List< String> selectFieldCodeByList(List< Integer> integerList);
+
+
+    Map< String, String> selectCodAndIdByTableId(@Param("tableId") Integer tableId);
 }
+
+

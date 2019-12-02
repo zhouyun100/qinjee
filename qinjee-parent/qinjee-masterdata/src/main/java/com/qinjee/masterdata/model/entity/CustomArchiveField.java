@@ -37,14 +37,14 @@ public class CustomArchiveField implements Serializable {
     private String fieldType;
 
     /**
-     * 企业代码ID
+     * 字段值类型(text/number/date/code)，默认text
      */
-    private Integer codeId;
+    private String textType;
 
     /**
-     * 企业代码名称
+     * 前端录入校验类型(text/number/password)
      */
-    private String codeName;
+    private String inputType;
 
     /**
      * 默认值
@@ -52,14 +52,74 @@ public class CustomArchiveField implements Serializable {
     private String defaultValue;
 
     /**
-     * 长度
+     * 输入框提示信息
      */
-    private Integer valLength;
+    private String placeholder;
 
     /**
-     * 精度
+     * 文本最大长度
      */
-    private Integer valPrecision;
+    private Integer maxLength;
+
+    /**
+     * 文本最小长度
+     */
+    private Integer minLength;
+
+    /**
+     * 数字最大值
+     */
+    private Integer maxNumber;
+
+    /**
+     * 数字最小值
+     */
+    private Integer minNumber;
+
+    /**
+     * 浮点长度(精度)
+     */
+    private Integer floatLength;
+
+    /**
+     * 是否时间范围选择
+     */
+    private Short isTimeRange;
+
+    /**
+     * 最小时间
+     */
+    private String minTime;
+
+    /**
+     * 最大时间
+     */
+    private String maxTime;
+
+    /**
+     * 时间格式化规则(yyyy-MM-dd)
+     */
+    private String formatTime;
+
+    /**
+     * 代码型CODE
+     */
+    private String code;
+
+    /**
+     * 校验是否必填
+     */
+    private Short isMust;
+
+    /**
+     * 校验规则(email,idcard,phone)
+     */
+    private String rule;
+
+    /**
+     * 是否只读
+     */
+    private Short isOnlyRead;
 
     /**
      * 表ID
@@ -108,8 +168,6 @@ public class CustomArchiveField implements Serializable {
      * 是否删除
      */
     private Short isDelete;
-
-    private static final long serialVersionUID = 1L;
 
 
 }

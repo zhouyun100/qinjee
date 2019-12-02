@@ -36,9 +36,10 @@ public interface CustomArchiveTableDataDao {
 
     Integer selectTableIdByBusinessIdAndTableId(Integer businessId, Integer tableId);
 
-    String selectBigDataBybusinessIdAndTableId(@Param("id") Integer id, @Param("integer") Integer integer);
+    String selectBigDataBybusinessIdAndTableId(@Param("businessId") Integer businessId, @Param("tableId") Integer tableId);
     @MapKey ( "business_id" )
     Map< Integer, Map<String,String>>selectBigDataByBusinessIdAndTitleListAndCompanyId(@Param("list") List< Integer> list, @Param("title") String title, @Param("companyId") Integer companyId);
 
 
+    void deleteByBusinessIdAndFuncode(@Param("id") Integer id, @Param("pre") String pre);
 }

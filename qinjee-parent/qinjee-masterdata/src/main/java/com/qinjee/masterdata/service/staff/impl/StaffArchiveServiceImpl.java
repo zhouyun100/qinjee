@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
@@ -51,7 +51,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
-    private CustomArchiveFieldDao customArchiveFieldDao;
+    private CustomTableFieldDao customTableFieldDao;
     @Autowired
     private ArchiveCareerTrackDao archiveCareerTrackdao;
 
@@ -64,7 +64,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 throw new Exception("id不合理");
             }
         }
-        userArchiveDao.deleteArchiveById(archiveid);
+        userArchiveDao.deleteArchiveByIdList (archiveid);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateArchiveField(Map<Integer, String> map) {
-        customArchiveFieldDao.updatePreEmploymentField(map);
+        customTableFieldDao.updatePreEmploymentField(map);
     }
 
     @Override
@@ -146,23 +146,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         if (null != schemeId && 0 != schemeId) {
             StringBuilder stringBuffer = new StringBuilder();
             String order = null;
-            //根据查询方案id，找到对应的字段id与顺序
-            //查询字段排序sort
-            List<String> stringList=querySchemeFieldDao.selectFieldCode(schemeId);
+           //根据查询方案id找到需要展示字段的id以及按顺序排序
+            List < Integer > integers1 = querySchemeFieldDao.selectFieldCode ( schemeId );
 
-            //根据查询方案id，找到排序id与升降序
-            //查询查询档案下的排序字段id
-            List<Integer> integerList = querySchemeSortDao.selectSortId(schemeId);
-            //根据id查询字段名
-            List<String> strings = customArchiveFieldDao.selectFieldCodeByList(integerList);
-            //查询升降序
-            List<String> list = querySchemeSortDao.selectSortByIdList(integerList);
-            Map<String, String> map = new HashMap<>();
-            for (int j = 0; j < strings.size(); j++) {
-                map.put(strings.get(j), list.get(j));
-            }
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                stringBuffer.append(entry.getKey() + "\t");
+            //查询查询档案下的排序字段的Id以及升降序规则
+            Map < String, String > map1 = customArchiveTableDao.selectFieldIdBySortList ( schemeId );
+
+
+            for (Map.Entry<String, String> entry : map1.entrySet()) {
+                stringBuffer.append(entry.getKey () + "\t");
                 stringBuffer.append(getSort(entry.getValue()));
                 stringBuffer.append(",");
                 order = stringBuffer.toString();
@@ -172,7 +164,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             order = order.substring(0, i);
             //调用接口查询机构权限范围内的档案集合
             //进行sql查询，返回数据，档案在机构范围内
-             userArchiveListCustom= userArchiveDao.getUserArchiveListCustom(getBaseSql(stringList, userSession.getCompanyId()), order);
+             userArchiveListCustom= userArchiveDao.getUserArchiveListCustom(getBaseSql(integers1, userSession.getCompanyId()), order);
             List<Integer> integers = new ArrayList<>(userArchiveListCustom.keySet());
             integers.removeAll(archiveIdList);
             for (Integer integer : integers) {
@@ -192,12 +184,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public List<String> selectFieldByTableIdAndAuth(Integer tableId, UserSession userSession) {
-        return  customArchiveFieldDao.selectFieldByTableIdAndAuth(tableId,userSession.getArchiveId());
+        return  customTableFieldDao.selectFieldByTableIdAndAuth(tableId,userSession.getArchiveId());
     }
 
     @Override
     public List<String> selectFieldByArcAndAuth(UserSession userSession) {
-        return  customArchiveFieldDao.selectFieldByArcAndAuth(userSession.getArchiveId(),userSession.getCompanyId());
+        return  customTableFieldDao.selectFieldByArcAndAuth(userSession.getArchiveId(),userSession.getCompanyId());
     }
 
     @Override
@@ -264,20 +256,21 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
      *
      list是所查询项的集合
      */
-    private String getBaseSql(List<String> strings,Integer companyId){
-        List<String> fieldNameNotInside = getFieldNameNotInside(companyId);
+    private String getBaseSql(List<Integer> integers,Integer companyId){
+        List < Integer > fieldIdNotInside = getFieldIdNotInside ( companyId );
         StringBuilder stringBuffer=new StringBuilder();
         stringBuffer.append("select t.archive_id ,");
 
-        for (String string : strings) {
-            if(string!=null && !"".equals(string)) {
-                stringBuffer.append("t.").append(string).append(",");
+        for (Integer integer : integers) {
+            if (integer != null && !integer.equals ( 0 )) {
+                stringBuffer.append ( "t." ).append ( integer ).append ( "," );
             }
         }
+
         int i1 = stringBuffer.toString().lastIndexOf(",");
         String a=stringBuffer.toString().substring(0,i1);
         a=a+" from( select t0.* ,";
-        return a+SqlUtil.getsql(companyId, fieldNameNotInside);
+        return a+SqlUtil.getsql(companyId, fieldIdNotInside);
     }
 
 
@@ -285,13 +278,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
      *
      找到非内置字段的物理字段名
      */
-    private List<String> getFieldNameNotInside(Integer companyId){
-        //找到企业下的人员表
-        List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(companyId,ARCHIVE);
-        //根据id找到物理字段名
-        return   customArchiveFieldDao.selectFieldCodeListByTableIdList(tableIdList);
-
-
+    private List<Integer> getFieldIdNotInside(Integer companyId){
+        return customArchiveTableDao.selectFieldIdNotInside(companyId);
     }
     private String getSort(String sort) {
         if (sort != null) {

@@ -36,5 +36,5 @@ public interface QuerySchemeFieldDao {
 
     Integer selectIdBySort(@Param("sort") Integer integer);
 
-    List<String> selectFieldCode(@Param("schemeId") Integer schemeId);
+    List<Integer> selectFieldCode(@Param("schemeId") Integer schemeId);
 }

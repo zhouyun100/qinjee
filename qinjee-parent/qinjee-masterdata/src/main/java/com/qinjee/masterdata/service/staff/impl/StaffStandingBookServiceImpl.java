@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
@@ -60,7 +60,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
-    private CustomArchiveFieldDao customArchiveFieldDao;
+    private CustomTableFieldDao customTableFieldDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -179,6 +179,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) {
         StringBuffer stringBuffer=new StringBuffer();
         stringBuffer.append(" where ");
+        //在查询台账之前被筛选的数据
         List<Integer> oneList = userArchiveDao.selectStaffNoStandingBook(archiveType, orgId);
         //存储大数据表字段解析出的档案id
         //key是用来存是第几个筛选条件，value存档案id(可能多个)
@@ -195,6 +196,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String sql=baseSql+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
         List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
+        //取交集
         userArchives.retainAll(list);
         return userArchives;
     }
@@ -216,7 +218,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String physicName = getPhysicName(filter.getFieldId());
         String condition=null;
         //根据id获得字段类型
-        String type=customArchiveFieldDao.selectTypeByFieldId(filter.getFieldId());
+        String type=customTableFieldDao.selectTypeByFieldId(filter.getFieldId());
         if(type!=null) {
             if (TYPEDATE.equals(type) || TYPENUMBER.equals(type)) {
                 condition = physicName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
@@ -262,13 +264,13 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         //找到企业下的人员表
         List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(userSession.getCompanyId(),ARCHIVE);
         //根据id找到物理字段名
-        return customArchiveFieldDao.selectFieldCodeListByTableIdList(tableIdList);
+        return customTableFieldDao.selectFieldCodeListByTableIdList(tableIdList);
     }
     /**
      *  通过字段id找到物理字段名
      */
     private String getPhysicName(Integer fieldId){
-        return customArchiveFieldDao.selectPhysicName(fieldId);
+        return customTableFieldDao.selectPhysicName(fieldId);
     }
     private String getLinkSymbol(StandingBookFilter filter){
         if(AND.equals(filter.getLinkSymbol())){

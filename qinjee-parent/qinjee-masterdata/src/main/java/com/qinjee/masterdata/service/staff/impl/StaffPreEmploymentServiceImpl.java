@@ -2,7 +2,7 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.UserInfoDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -52,7 +52,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private BlacklistDao blacklistDao;
     @Autowired
-    private CustomArchiveFieldDao customArchiveFieldDao;
+    private CustomTableFieldDao customTableFieldDao;
     @Autowired
     private EmailConfigService emailConfigService;
     @Autowired
@@ -247,7 +247,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePreEmploymentField(Map < Integer, String > map) {
-        customArchiveFieldDao.updatePreEmploymentField ( map );
+        customTableFieldDao.updatePreEmploymentField ( map );
     }
 
     @Override
@@ -289,7 +289,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public Map < String, String > selectPreEmploymentField(UserSession userSession) {
         Map < String, String > map = new HashMap <> ();
-        List < CustomArchiveField > list =customArchiveFieldDao.selectFieldNameByTableName(userSession.getCompanyId (), PRE_EMPLOYMENT);
+        List < CustomArchiveField > list =customTableFieldDao.selectFieldNameByTableName(userSession.getCompanyId (), PRE_EMPLOYMENT);
         for (CustomArchiveField customArchiveField : list) {
             map.put ( customArchiveField.getFieldCode (), customArchiveField.getFieldName () );
         }

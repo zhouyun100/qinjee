@@ -5,12 +5,14 @@ import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
+import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -122,10 +124,10 @@ public interface IStaffCommonService {
 
     /**
      * 修改自定义字段表中的数据
-     * @param  customArchiveTableData
+     * @param  customArchiveTableDataVo
      * @return
      */
-    void updateCustomArchiveTableData(CustomArchiveTableData customArchiveTableData);
+    void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo,UserSession userSession);
 
     /**
      * 展示自定义表数据内容,返回自定义表数据
@@ -169,4 +171,11 @@ public interface IStaffCommonService {
      */
     List<String> selectFieldValueById(Integer customArchiveFieldId);
 
+    void saveFieldAndValue(List< Map< Integer, String>> list, UserSession userSession, String funcCode) throws Exception;
+
+    Map< Integer, String> selectValue(Integer tableId, Integer businessId) throws IllegalAccessException;
+
+    void deletePreValue(Integer id);
+
+    void deleteArcValue(Integer businessId);
 }

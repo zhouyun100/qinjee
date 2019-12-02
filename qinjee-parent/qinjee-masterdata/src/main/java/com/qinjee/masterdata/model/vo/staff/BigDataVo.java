@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 public class BigDataVo implements Serializable {
     @NotNull
-    private String joonString;
+    private String jsonString;
     @NotNull
     private String title;
     @NotNull

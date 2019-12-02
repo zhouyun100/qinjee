@@ -72,6 +72,7 @@ public class StaffStandingBookController extends BaseController {
 
     /**
      * 修改黑名单表
+     * //TODO 需要session
      */
     @RequestMapping(value = "/updateBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "修改黑名单表", notes = "hkt")
@@ -92,6 +93,7 @@ public class StaffStandingBookController extends BaseController {
 
     /**
      * 展示黑名单表
+     * //TODO 需要session
      */
     @RequestMapping(value = "/selectBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "展示黑名单表", notes = "hkt")

@@ -251,4 +251,32 @@
     where is_delete=0
     AND  company_id=#{companyId,jdbcType=INTEGER}
   </select>
+
+  <select id="selectIsSysAndFuncCode" resultType="java.util.Map">
+    select is_system_define,func_code
+    form t_custom_archive_table
+    where table_id=#{tableId}
+    and is_delete=0
+    and is_enable=1
+  </select>
+
+  <select id="selectFieldIdBySortList" resultType="java.util.Map">
+    select field.field_id,sort.sort from
+    t_custom_archive_field field
+    left  join t_query_scheme_sort sort on sort.field_id=field.field_id
+    left join t_query_scheme sche on sche.query_scheme_id=sort.query_scheme_id
+    where sche.query_scheme_id=#{schemeId}
+    and field.is_delete=0
+    and sche.is_delete=0
+  </select>
+  <select id="selectFieldIdNotInside">
+    select field_id
+    from  t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.field_id
+    where tab.is_enable=1
+    and tab.is_delete=0
+    and tab.func_code="ARC"
+    AND tab.company_id=#{companyId}
+    and tab.is_system_define=0
+  </select>
 </mapper>

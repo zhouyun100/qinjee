@@ -5,8 +5,11 @@ import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
 import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
-import com.qinjee.masterdata.model.vo.staff.BigDataVo;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
+import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
+import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -41,11 +45,14 @@ public class CommonController extends BaseController {
     @Autowired
     private SmsRecordService smsRecordService;
 
+    @Autowired
+    private CustomTableFieldService customTableFieldService;
+
     /**
      * 新增自定义表
      */
-    @RequestMapping(value = "/insertArchiveCustomTable", method = RequestMethod.POST)
-    @ApiOperation(value = "新增自定义表", notes = "hkt")
+//    @RequestMapping(value = "/insertArchiveCustomTable", method = RequestMethod.POST)
+//    @ApiOperation(value = "新增自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
     public ResponseResult insertCustomTable( @RequestBody @Valid CustomArchiveTable customArchiveTable) {
         Boolean b = checkParam(customArchiveTable);
@@ -60,12 +67,11 @@ public class CommonController extends BaseController {
         }
         return failResponseResult("自定义表参数错误或者session错误");
     }
-
     /**
      * 删除自定义表
      */
-    @RequestMapping(value = "/deleteCustomArchiveTable", method = RequestMethod.POST)
-    @ApiOperation(value = "删除自定义表", notes = "hkt")
+//    @RequestMapping(value = "/deleteCustomArchiveTable", method = RequestMethod.POST)
+//    @ApiOperation(value = "删除自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "自定义表id组成集合", paramType = "query", example = "{1,2}" ,allowMultiple = true)
     public ResponseResult deleteCustomArchiveTable(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
@@ -83,8 +89,8 @@ public class CommonController extends BaseController {
     /**
      * 自定义表修改
      */
-    @RequestMapping(value = "/updateCustomArchiveTable", method = RequestMethod.POST)
-    @ApiOperation(value = "修改自定义表", notes = "hkt")
+//    @RequestMapping(value = "/updateCustomArchiveTable", method = RequestMethod.POST)
+//    @ApiOperation(value = "修改自定义表", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义字段表", paramType = "form" )
     public ResponseResult updateCustomArchiveTable(@RequestBody @Valid CustomArchiveTable customArchiveTable) {
         Boolean b = checkParam(customArchiveTable);
@@ -103,13 +109,13 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义表
      */
-    @RequestMapping(value = "/selectCustomArchiveTable", method = RequestMethod.POST)
-    @ApiOperation(value = "展示自定义表", notes = "hkt")
+//    @RequestMapping(value = "/selectCustomArchiveTable", method = RequestMethod.POST)
+//    @ApiOperation(value = "展示自定义表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
 //    })
-    public ResponseResult<PageResult<CustomArchiveTable>> selectCustomTable(Integer currentPage, Integer pageSize) {
+    public ResponseResult<PageResult<CustomArchiveTable>> selectCustomArchiveTable(Integer currentPage, Integer pageSize) {
         Boolean b = checkParam(currentPage, pageSize, getUserSession());
         if (b) {
             try {
@@ -125,12 +131,84 @@ public class CommonController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
     }
+    /**
+     * 根据企业ID和功能CODE查询自定义表
+     */
+    @RequestMapping(value = "/selectCustomTable", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和功能CODE查询自定义表", notes = "hkt")
+    public ResponseResult<List < CustomTableVO >> selectCustomTable(@RequestBody CustomTableVO customTableVO) {
+        Boolean b = checkParam(customTableVO);
+        if (b) {
+            try {
+                List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
+                return new ResponseResult <> ( customTableVOS, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return failResponseResult("逻辑删除自定义表失败");
+            }
+        }
+        return failResponseResult("自定义表id集合参数错误");
+    }
+    /**
+     * 根据企业ID和物理表名查询自定义组字段
+     */
+    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableCode", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和物理表名查询自定义组字段", notes = "hkt")
+    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableCode(@RequestBody Integer companyId, String tableCode) {
+        Boolean b = checkParam(companyId,tableCode);
+        if (b) {
+            try {
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( companyId, tableCode );
+                return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return failResponseResult("逻辑删除自定义表失败");
+            }
+        }
+        return failResponseResult("自定义表id集合参数错误");
+    }
+    /**
+     * 根据表ID查询自定义组字段
+     */
+    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableId", method = RequestMethod.POST)
+    @ApiOperation(value = "根据表ID查询自定义组字段", notes = "hkt")
+    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableId(@RequestBody Integer tableId) {
+        Boolean b = checkParam(tableId);
+        if (b) {
+            try {
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId );
+                return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return failResponseResult("逻辑删除自定义表失败");
+            }
+        }
+        return failResponseResult("自定义表id集合参数错误");
+    }
+    /**
+     * 根据企业ID和功能CODE查询字段集合
+     */
+    @RequestMapping(value = "/selectFieldByFunc", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和功能CODE查询字段集合", notes = "hkt")
+    public ResponseResult< List< CustomFieldVO >> selectFieldByFunc(@RequestBody Integer companyId, String funcCode) {
+        Boolean b = checkParam(companyId,funcCode);
+        if (b) {
+            try {
+                List < CustomFieldVO > customFieldVOS = customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( companyId, funcCode );
+                return new ResponseResult<>  ( customFieldVOS, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return failResponseResult("逻辑删除自定义表失败");
+            }
+        }
+        return failResponseResult("自定义表id集合参数错误");
+    }
+
+
+
+
 
     /**
      * 新增自定义组
      */
-    @RequestMapping(value = "/insertCustomArchiveGroup", method = RequestMethod.POST)
-    @ApiOperation(value = "新增自定义组", notes = "hkt")
+//    @RequestMapping(value = "/insertCustomArchiveGroup", method = RequestMethod.POST)
+//    @ApiOperation(value = "新增自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult insertCustomGroup(@RequestBody @Valid CustomArchiveGroup customArchiveGroup) {
         Boolean b = checkParam(customArchiveGroup);
@@ -148,8 +226,8 @@ public class CommonController extends BaseController {
     /**
      * 删除自定义组
      */
-    @RequestMapping(value = "/deleteCustomArchiveGroup", method = RequestMethod.POST)
-    @ApiOperation(value = "删除自定义组", notes = "hkt")
+//    @RequestMapping(value = "/deleteCustomArchiveGroup", method = RequestMethod.POST)
+//    @ApiOperation(value = "删除自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "自定义组id组成的集合", paramType = "form", allowMultiple = true,example = "{1,2}")
     public ResponseResult deleteCustomArchiveGroup(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
@@ -167,8 +245,8 @@ public class CommonController extends BaseController {
     /**
      * 自定义组修改
      */
-    @RequestMapping(value = "/updateCustomArchiveGroup", method = RequestMethod.POST)
-    @ApiOperation(value = "修改自定义组", notes = "hkt")
+//    @RequestMapping(value = "/updateCustomArchiveGroup", method = RequestMethod.POST)
+//    @ApiOperation(value = "修改自定义组", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveGroup", value = "自定义组", paramType = "form", required = true)
     public ResponseResult updateCustomGroup(@RequestBody @Valid CustomArchiveGroup customArchiveGroup) {
         Boolean b = checkParam(customArchiveGroup);
@@ -186,61 +264,11 @@ public class CommonController extends BaseController {
     }
 
     /**
-     * 展示自定义组中的字段
-     */
-    @RequestMapping(value = "/selectArchiveFieldFromGroup", method = RequestMethod.POST)
-    @ApiOperation(value = "展示自定义组中的表", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "customArchiveGroupId", value = "当前自定义组的id", paramType = "query", required = true),
-//    })
-    public ResponseResult<PageResult<CustomArchiveField>> selectArchiveFieldFromGroup(Integer currentPage,
-                                                                                      Integer pageSize,
-                                                                                      Integer customArchiveGroupId) {
-        Boolean b = checkParam(currentPage, pageSize, customArchiveGroupId);
-        if (b) {
-            try {
-                PageResult<CustomArchiveField> pageResult =
-                        staffCommonService.selectArchiveFieldFromGroup(currentPage, pageSize, customArchiveGroupId);
-                if (!CollectionUtils.isEmpty(pageResult.getList())) {
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
-
-    /**
-     * 展示企业下自定义表名
-     */
-    @RequestMapping(value = "/selectTableFromOrg", method = RequestMethod.POST)
-    @ApiOperation(value = "展示企业下的自定义表名", notes = "hkt")
-    public ResponseResult<List<String>> selectTableFromGroup() {
-        Boolean b = checkParam(getUserSession());
-        if (b) {
-            try {
-                List<String> list = staffCommonService.selectTableFromOrg(getUserSession());
-                if (CollectionUtils.isEmpty(list)) {
-                    return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-                }
-                return new ResponseResult<>(list, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
-
-    /**
-     * 新增自定义字段类型
+     * 新增自定义字段
      */
 
-    @RequestMapping(value = "/insertCustomArchiveField", method = RequestMethod.POST)
-    @ApiOperation(value = "新增自定义字段", notes = "hkt")
+//    @RequestMapping(value = "/insertCustomArchiveField", method = RequestMethod.POST)
+//    @ApiOperation(value = "新增自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveField", value = "自定义字段对象", paramType = "form", required = true)
     public ResponseResult insertCustomField(@RequestBody @Valid CustomArchiveField customArchiveField) {
         Boolean b = checkParam(customArchiveField);
@@ -258,9 +286,9 @@ public class CommonController extends BaseController {
     /**
      * 删除自定义字段
      */
-
-    @RequestMapping(value = "/deleteCustomArchiveField", method = RequestMethod.POST)
-    @ApiOperation(value = "删除自定义字段", notes = "hkt")
+     //TODO 自定义字段表有更新，curd需要重新编写
+//    @RequestMapping(value = "/deleteCustomArchiveField", method = RequestMethod.POST)
+//    @ApiOperation(value = "删除自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "自定义字段id", paramType = "query", required = true, example = "{1,2}")
     public ResponseResult deleteCustomArchiveField(@RequestBody List<Integer> list) {
         Boolean b = checkParam(list);
@@ -279,8 +307,8 @@ public class CommonController extends BaseController {
      * 修改自定义字段类型
      */
 
-    @RequestMapping(value = "/updateCustomArchiveField", method = RequestMethod.POST)
-    @ApiOperation(value = "修改自定义字段", notes = "hkt")
+//    @RequestMapping(value = "/updateCustomArchiveField", method = RequestMethod.POST)
+//    @ApiOperation(value = "修改自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveField", value = "自定义字段表", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveField(@RequestBody @Valid CustomArchiveField customArchiveField) {
         Boolean b = checkParam(customArchiveField);
@@ -296,42 +324,13 @@ public class CommonController extends BaseController {
         return failResponseResult("自定义字段参数错误");
     }
 
-    /**
-     * 分页展示指定自定义表下的自定义字段
-     */
 
-    @RequestMapping(value = "/selectCustomArchiveField", method = RequestMethod.POST)
-    @ApiOperation(value = "分页展示指定自定义表下的自定义字段", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "customArchivetableId", value = "自定义表id", paramType = "query", required = true)
-//    })
-    public ResponseResult<PageResult<CustomArchiveField>> selectCustomArchiveField(Integer currentPage, Integer pageSize,
-                                                                                   Integer customArchiveTableId) {
-        Boolean b = checkParam(currentPage, pageSize, customArchiveTableId);
-        if (b) {
-            try {
-
-                PageResult<CustomArchiveField> pageResult =
-                        staffCommonService.selectCustomArchiveField(currentPage, pageSize, customArchiveTableId);
-                if (!CollectionUtils.isEmpty(pageResult.getList())) {
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
-    }
 
     /**
      * 通过自定义字段id找到对应的自定义字段信息
      */
-    @RequestMapping(value = "/selectCustomArchiveFieldById", method = RequestMethod.POST)
-    @ApiOperation(value = "通过自定义字段id找到对应的自定义字段信息", notes = "hkt")
+//    @RequestMapping(value = "/selectCustomArchiveFieldById", method = RequestMethod.POST)
+//    @ApiOperation(value = "通过自定义字段id找到对应的自定义字段信息", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<CustomArchiveField> selectCustomArchiveFieldById(Integer customArchiveFieldId) {
 
@@ -352,10 +351,10 @@ public class CommonController extends BaseController {
     }
 
     /**
-     * 通过字段id找到对应的字段值
+     * 通过字段id找到对应的字段值(代码型)
      */
-    @RequestMapping(value = "/selectFieldValueById", method = RequestMethod.POST)
-    @ApiOperation(value = "通过字段id找到对应的字段值", notes = "hkt")
+//    @RequestMapping(value = "/selectFieldValueById", method = RequestMethod.POST)
+//    @ApiOperation(value = "通过字段id找到对应的字段值", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveFieldId", value = "自定义字段id", paramType = "query", required = true)
     public ResponseResult<List<String>> selectFieldValueById(Integer customArchiveFieldId) {
 
@@ -378,22 +377,81 @@ public class CommonController extends BaseController {
      * 将自定义字段信息存储到自定义表中
      * 这里还是需要参照数据库中自定义表数据里的字段内容
      */
-    @RequestMapping(value = "/insertCustomArchiveTableData", method = RequestMethod.POST)
-    @ApiOperation(value = "将自定义字段信息存储到自定义表中,需要将自定义表中的值封装成jsonObject形式传到后端，然后传给后台拼接", notes = "hkt")
+//    @RequestMapping(value = "/insertCustomArchiveTableData", method = RequestMethod.POST)
+//    @ApiOperation(value = "将自定义字段信息存储到自定义表中,需要将自定义表中的值封装成jsonObject形式传到后端，然后传给后台拼接", notes = "hkt")
 //    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
-    public ResponseResult insertCustomArchiveTableData(@RequestBody @Valid BigDataVo bigDataVo) {
-        Boolean b = checkParam(bigDataVo,getUserSession ());
-        if (b) {
+    /**
+     * 将传过来的字段id与值进行入库操作
+     */
+    @RequestMapping(value = "/SaveFieldAndValue", method = RequestMethod.POST)
+    @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
+
+    public ResponseResult saveFieldAndValue(List < Map < Integer, String > > list, String funcCode) {
+        Boolean b = checkParam(list,getUserSession (),funcCode);
+        if(b) {
             try {
-                staffCommonService.insertCustomArchiveTableData(bigDataVo, getUserSession());
-                return ResponseResult.SUCCESS();
+                staffCommonService.saveFieldAndValue (list,getUserSession (),funcCode );
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("将数据存储到数据表失败");
+                return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
             }
         }
-        return failResponseResult("自定义数据参数错误");
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 在进行修改操作时，根据businessId与对应的表id找到值，进行回显
+     */
+    @RequestMapping(value = "/selecValue", method = RequestMethod.POST)
+    @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
+
+    public ResponseResult<Map<Integer,String>> selectValue(Integer tableId,Integer businessId) {
+        Boolean b = checkParam(tableId,businessId);
+        if(b) {
+            try {
+                Map<Integer,String> map=staffCommonService.selectValue (tableId, businessId );
+                return new ResponseResult <> (map, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 删除预入职(根据业务id与funccode进行逻辑删除)
+     */
+    @RequestMapping(value = "/deletePreValue", method = RequestMethod.POST)
+    @ApiOperation(value = "删除预入职(根据业务id与funccode进行逻辑删除)", notes = "hkt")
+
+    public ResponseResult deletePreValue(Integer id) {
+        Boolean b = checkParam(id);
+        if(b) {
+            try {
+                staffCommonService.deletePreValue (id );
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 删除档案(根据业务id与funccode进行逻辑删除)
+     */
+    @RequestMapping(value = "/deleteArcValue", method = RequestMethod.POST)
+    @ApiOperation(value = "删除档案(根据业务id与funccode进行逻辑删除)", notes = "hkt")
+
+    public ResponseResult deleteArcValue(Integer businessId) {
+        Boolean b = checkParam(businessId);
+        if(b) {
+            try {
+                staffCommonService.deleteArcValue (businessId);
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -402,11 +460,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.POST)
     @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
-    public ResponseResult updateCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableData customArchiveTableData) {
-        Boolean b = checkParam(customArchiveTableData);
+    public ResponseResult updateCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableDataVo customArchiveTableDataVo) {
+        Boolean b = checkParam(customArchiveTableDataVo,getUserSession ());
         if (b) {
             try {
-                staffCommonService.updateCustomArchiveTableData(customArchiveTableData);
+                staffCommonService.updateCustomArchiveTableData(customArchiveTableDataVo,getUserSession ());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();

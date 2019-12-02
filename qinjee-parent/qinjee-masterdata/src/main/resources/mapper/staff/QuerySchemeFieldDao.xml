@@ -122,11 +122,10 @@
     from  t_query_scheme_field
     where sort = #{sort,jdbcType=INTEGER}
   </select>
-  <select id="selectFieldCode" resultType="java.lang.String">
-   select cus.field_code  from
-    t_query_scheme_field sch
-    left join t_custom_archive_field cus  on sch.field_id =cus.field_id
-    and sch.query_scheme_id=#{schemeId}
+  <select id="selectFieldCode" resultType="java.lang.Integer">
+   select cus.field_id  from
+    t_query_scheme_field
+    where  query_scheme_id=#{schemeId}
     order by cus.sort asc
   </select>
 </mapper>
