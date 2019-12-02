@@ -64,6 +64,15 @@ public interface CustomTableFieldService {
      */
     CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId);
 
+
+    /**
+     * 处理自定义组字段数据回填
+     * @param customTable 表单自定义表字段
+     * @param mapValue 表单各字段数据值列表
+     * @return
+     */
+    CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable,Map<Integer,String> mapValue);
+
     /**
      * 根据企业ID和功能CODE查询字段集合
      * @param companyId

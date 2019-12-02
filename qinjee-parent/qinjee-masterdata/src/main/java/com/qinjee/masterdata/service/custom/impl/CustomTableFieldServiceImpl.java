@@ -333,4 +333,28 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldListByCompanyIdAndFuncCode(companyId, funcCode);
         return customFieldList;
     }
+
+    @Override
+    public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue) {
+
+        if(customTable != null && !CollectionUtils.isEmpty(mapValue)){
+            List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
+
+            if(!CollectionUtils.isEmpty(groupList)){
+                for(CustomGroupVO groupVO : groupList){
+                    List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
+
+                    if(!CollectionUtils.isEmpty(fieldList)){
+                        for(CustomFieldVO fieldVO : fieldList){
+                            if(fieldVO.getFieldId() != null){
+                                fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
 }
