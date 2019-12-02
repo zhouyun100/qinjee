@@ -61,12 +61,11 @@ public class PostController extends BaseController {
     public ResponseResult<PageResult<Post>> getDirectPostPageList(@RequestBody PostPageVo postPageVo) {
         Short isEnable = postPageVo.getIsEnable();
         if (isEnable == null || isEnable == 0) {
-            isEnable = 0;
+            isEnable = 1;
         } else {
             isEnable = null;
         }
         postPageVo.setIsEnable(isEnable);
-        UserSession userSession = getUserSession();
         PageResult<Post> pageResult = postService.listDirectPostPage(postPageVo);
         return new ResponseResult<>(pageResult);
     }
