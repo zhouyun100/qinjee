@@ -408,13 +408,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResult<Post> listDirectPostPage(PostPageVo postPageVo) {
-        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
-            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
-        }
+
         String sortFieldStr = "";
         if (!CollectionUtils.isEmpty(postPageVo.getQuerFieldVos())) {
             Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
             sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        }
+        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
+            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
         List<Post> postList = postDao.listDirectPostPage(postPageVo, sortFieldStr);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
@@ -460,10 +461,6 @@ public class PostServiceImpl implements PostService {
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (Post post : listPost) {
             multiValuedMap.put(post.getParentPostId(), post.getPostId());
-        }
-        for (Map.Entry<Integer, Integer> entry : multiValuedMap.entries()) {
-
-            System.out.println(entry.getKey() + ":" + entry.getValue());
         }
         //根据机构id递归，取出该机构下的所有子机构
         collectOrgIds(multiValuedMap, postId, idsList, layer);
