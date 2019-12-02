@@ -100,10 +100,13 @@ public class PostController extends BaseController {
     return postService.getPostSuccessive(postId);
   }
 
-  @ApiOperation(value = "未验证，下载模板", notes = "未验证")
+  @ApiOperation(value = "ok,下载模板")
   @GetMapping("/downloadTemplate")
   public ResponseResult downloadTemplate(HttpServletResponse response) {
-    return postService.downloadTemplate(response);
+    String fileUrl="http://193.112.188.180/file/importTemplate/organization/岗位导入模板.xls";
+    ResponseResult responseResult=new ResponseResult();
+    responseResult.setResult(fileUrl);
+    return responseResult;
   }
 
   @ApiOperation(value = "ok，复制岗位,将岗位复制到机构下  参数demo {\"orgId\":1,\"postIds\":[41,11]}", notes = "未验证")

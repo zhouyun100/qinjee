@@ -386,7 +386,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @return
      */
     @Override
-    public ResponseResult importOrganizationExcelToDatabase(String orgExcelRedisKey, UserSession userSession) {
+    public ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession) {
        String data = redisService.get(orgExcelRedisKey);
        //将其转为对象集合
         List<OrganizationVO> list= JSONArray.parseArray(data,OrganizationVO.class);
@@ -453,7 +453,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @throws Exception
      */
     @Override
-    public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception {
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
         //判断文件名
         String filename = multfile.getOriginalFilename();

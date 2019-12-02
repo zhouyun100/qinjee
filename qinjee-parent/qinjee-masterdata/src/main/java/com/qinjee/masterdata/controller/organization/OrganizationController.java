@@ -1,39 +1,24 @@
 package com.qinjee.masterdata.controller.organization;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.check.OrganizationCheckVo;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
-import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
-import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
-import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
-import org.apache.http.HttpException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author 高雄
@@ -203,22 +188,17 @@ public class OrganizationController extends BaseController {
     return null;
   }
 
-  @PostMapping("/importAndCheckOrganizationExcel")
-  @ApiOperation(value = "待验证，导入机构excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
-  public ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile,HttpServletResponse response) throws Exception {
-
-   return organizationService.importAndCheckOrganizationExcel(multfile,getUserSession(),response);
+  @PostMapping("/uploadAndCheck")
+  @ApiOperation(value = "ok,导入机构excel并校验", notes = "ok")
+  public ResponseResult uploadAndCheck(MultipartFile multfile,HttpServletResponse response) throws Exception {
+   return organizationService.uploadAndCheck(multfile,getUserSession(),response);
 
   }
 
-
-
-
-  @GetMapping("/importOrganizationExcelToDatabase")
-  @ApiOperation(value = "导入机构入库）")
-  public ResponseResult importOrganizationExcelToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey){
-
-    return organizationService.importOrganizationExcelToDatabase(orgExcelRedisKey,getUserSession());
+  @GetMapping("/importToDatabase")
+  @ApiOperation(value = "导入机构入库")
+  public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey){
+    return organizationService.importToDatabase(orgExcelRedisKey,getUserSession());
   }
 
   /**
@@ -266,6 +246,9 @@ public class OrganizationController extends BaseController {
   @ApiOperation(value = "ok，下载模板")
   @PostMapping("/downloadTemplate")
   public ResponseResult downloadTemplateInOrg(HttpServletResponse response) {
-    return organizationService.downloadTemplate(response);
+    String fileUrl="http://193.112.188.180/file/importTemplate/organization/机构导入模板.xls";
+    ResponseResult responseResult=new ResponseResult();
+    responseResult.setResult(fileUrl);
+    return responseResult;
   }
 }

@@ -188,9 +188,9 @@ public interface OrganizationService {
 
   PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
-  ResponseResult importOrganizationExcelToDatabase(String orgExcelRedisKey, UserSession userSession);
+  ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession);
 
-  ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
 
   List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable);
 
