@@ -62,7 +62,7 @@ public class UserArchive implements Serializable {
      * 单位名称
      */
     @ApiModelProperty("单位名称")
-    private Integer businessUnitName;
+    private String businessUnitName;
 
     /**
      * 部门ID

@@ -31,15 +31,6 @@ public class Post implements Serializable {
 
     private Integer staffNumbers;
     private Integer planNumbers;
-
-    /**
-     * 岗位名称
-     */
-    @QueryColumn("tp.post_name")
-    @ApiModelProperty("岗位名称")
-    @ExcelFieldAnno(name = "岗位名称",width = 10000)
-    private String postName;
-
     /**
      * 岗位编码
      */
@@ -47,6 +38,49 @@ public class Post implements Serializable {
     @ApiModelProperty("岗位编码")
     @ExcelFieldAnno(name = "岗位编码")
     private String postCode;
+    /**
+     * 岗位名称
+     */
+    @QueryColumn("tp.post_name")
+    @ApiModelProperty("岗位名称")
+    @ExcelFieldAnno(name = "岗位名称",width = 10000)
+    private String postName;
+    /**
+     * 父级机构编码
+     */
+    @ApiModelProperty("所属部门编码")
+    @ExcelFieldAnno(name = "所属部门编码")
+    private String parentOrgCode;
+
+    /**
+     * 机构名称
+     */
+    @ApiModelProperty("所属部门")
+    @ExcelFieldAnno(name = "所属部门")
+    private String orgName;
+
+    /**
+     * 父级岗位编码
+     */
+    @ApiModelProperty("上级岗位编码")
+    @ExcelFieldAnno(name = "上级岗位编码")
+    private String parentPostCode;
+
+    /**
+     * 父级岗位名称
+     */
+    @ApiModelProperty("上级岗位")
+    @ExcelFieldAnno(name = "上级岗位")
+    private String parentPostName;
+
+    /**
+     * 职位名称
+     */
+    @QueryColumn("tps.position_name")
+    @ApiModelProperty("职位")
+    @ExcelFieldAnno(name = "职位")
+    private String positionName;
+
 
     /**
      * 父级岗位Id
@@ -55,19 +89,8 @@ public class Post implements Serializable {
     @QueryColumn("tparentorg.org_id")
     private Integer parentPostId;
 
-    /**
-     * 父级岗位名称
-     */
-    @ApiModelProperty("父级岗位名称")
-    @ExcelFieldAnno(name = "父级岗位名称")
-    private String parentPostName;
 
-    /**
-     * 父级岗位编码
-     */
-    @ApiModelProperty("父级岗位编码")
-    @ExcelFieldAnno(name = "父级岗位编码")
-    private String parentPostCode;
+
 
 
 
@@ -126,26 +149,12 @@ public class Post implements Serializable {
     @ApiModelProperty("是否删除")
     private Short isDelete;
 
-    /**
-     * 职位名称
-     */
-    @QueryColumn("tps.position_name")
-    @ApiModelProperty("职位名称")
-    @ExcelFieldAnno(name = "职位名称")
-    private String positionName;
 
-    /**
-     * 机构名称
-     */
-    @ApiModelProperty("机构名称")
-    @ExcelFieldAnno(name = "机构名称")
-    private String orgName;
 
     /**
      * 父级机构名称
      */
     @ApiModelProperty("父级机构名称")
-    @ExcelFieldAnno(name = "父级机构名称")
     private String parentOrgName;
 
     /**
@@ -154,12 +163,6 @@ public class Post implements Serializable {
     @ApiModelProperty("父级机构Id")
     private String parentOrgId;
 
-    /**
-     * 父级机构编码
-     */
-    @ApiModelProperty("父级机构编码")
-    @ExcelFieldAnno(name = "父级机构编码")
-    private String parentOrgCode;
 
 
     /**
