@@ -452,4 +452,37 @@
             and tp.is_enable = 1
         </if>
     </select>
+
+    <select id="listDirectPostPage" resultMap="BaseResultMap">
+         SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code parent_post_code,ptp.post_name parent_post_name
+        FROM t_post tp
+        LEFT JOIN t_organization org ON tp.org_id=org.org_id
+        LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
+        <where>
+            1=1
+            <if test="postPageVo !=null">
+                <if test="postPageVo.isEnable !=null">
+                    and tp.is_enable = 1
+                </if>
+                <if test="postPageVo.parentPostId ==null or postPageVo.parentPostId ==0">
+                    and tp.org_id =#{postPageVo.orgId} and tp.parent_post_id =0
+                </if>
+                <if test="postPageVo.parentPostId !=null and postPageVo.parentPostId !=0">
+                     and tp.parent_post_id =#{postPageVo.parentPostId}
+                </if>
+
+                <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
+                    <foreach collection="postPageVo.querFieldVos" item="querField">
+                        <if test="querField.fieldName != null and querField.fieldName != ''">
+                            ${querField.condition}
+                        </if>
+                        <if test="querField.isFilterNull">
+                            and ${querField.fieldName} IS NULL
+                        </if>
+                    </foreach>
+                </if>
+            </if>
+        </where>
+
+    </select>
 </mapper>
