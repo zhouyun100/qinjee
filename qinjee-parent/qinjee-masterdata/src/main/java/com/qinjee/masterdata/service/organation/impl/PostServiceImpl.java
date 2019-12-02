@@ -370,12 +370,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseResult importAndCheckPostExcel(MultipartFile multfile, UserSession userSession) {
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) {
         return null;
     }
 
     @Override
-    public ResponseResult importPostExcelToDatabase(String redisKey, UserSession userSession) {
+    public ResponseResult importToDatabase(String redisKey, UserSession userSession) {
         return null;
     }
 
@@ -404,6 +404,23 @@ public class PostServiceImpl implements PostService {
         
         handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
         return allPost;
+    }
+
+    @Override
+    public PageResult<Post> listDirectPostPage(PostPageVo postPageVo) {
+        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
+            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
+        }
+        String sortFieldStr = "";
+        if (!CollectionUtils.isEmpty(postPageVo.getQuerFieldVos())) {
+            Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
+            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
+        }
+        List<Post> postList = postDao.listDirectPostPage(postPageVo, sortFieldStr);
+        PageInfo<Post> pageInfo = new PageInfo<>(postList);
+        PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+        return pageResult;
     }
 
     private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {

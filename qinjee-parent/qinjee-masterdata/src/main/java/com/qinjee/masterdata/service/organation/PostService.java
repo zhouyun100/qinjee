@@ -121,9 +121,16 @@ public interface PostService {
 
     List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession);
 
-  ResponseResult importAndCheckPostExcel(MultipartFile multfile, UserSession userSession);
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession);
 
-  ResponseResult importPostExcelToDatabase(String redisKey, UserSession userSession);
+  ResponseResult importToDatabase(String redisKey, UserSession userSession);
 
     List<Post> getPostGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
+
+  /**
+   * 分页查询岗位直属下级
+   * @param postPageVo
+   * @return
+   */
+  PageResult<Post> listDirectPostPage(PostPageVo postPageVo);
 }
