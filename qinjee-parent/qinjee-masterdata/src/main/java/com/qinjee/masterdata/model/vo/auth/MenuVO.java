@@ -28,7 +28,7 @@ import java.util.List;
 @ApiModel(description = "菜单树")
 @Data
 @NoArgsConstructor
-@JsonInclude
+//@JsonInclude
 public class MenuVO implements Serializable {
 
     /**
@@ -60,6 +60,12 @@ public class MenuVO implements Serializable {
      */
     @ApiModelProperty("功能地址")
     private String funcUrl;
+
+    /**
+     * 按钮CODE
+     */
+    @ApiModelProperty("按钮CODE")
+    private String buttonCode;
 
     /**
      * 父级菜单ID

@@ -288,4 +288,41 @@ public class ArchiveAuthController extends BaseController {
         }
         return responseResult;
     }
+
+    @ApiOperation(value="根据菜单ID查询按钮列表", notes="根据菜单ID查询按钮列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "menuId", value = "菜单ID", required = true, dataType = "int")
+    })
+    @RequestMapping(value = "/searchMenuButtonList",method = RequestMethod.POST)
+    public ResponseResult<MenuVO> searchMenuButtonList(Integer menuId) {
+        if(null == menuId){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("菜单ID不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            List<MenuVO> menuList = archiveAuthService.searchMenuButtonList(userSession.getArchiveId(), menuId);
+            if(CollectionUtils.isEmpty(menuList)){
+                logger.info("searchMenuButtonList fail！menuId={},menuList={}", menuId,menuList);
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("查询菜单按钮列表结果为空！");
+            }else {
+                logger.info("searchMenuButtonList success！menuId={},menuList={}", menuId,menuList);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(menuList);
+            }
+        }catch (Exception e){
+            logger.info("searchMenuButtonList exception！menuId={},exception={}", menuId, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("查询菜单按钮列表异常！");
+        }
+        return responseResult;
+    }
 }

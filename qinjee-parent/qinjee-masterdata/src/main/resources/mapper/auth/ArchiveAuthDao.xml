@@ -46,6 +46,17 @@
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
   </resultMap>
 
+  <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
+    <id column="menu_id" jdbcType="INTEGER" property="menuId" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+    <result column="func_type" jdbcType="VARCHAR" property="funcType" />
+    <result column="func_url" jdbcType="VARCHAR" property="funcUrl" />
+    <result column="button_code" jdbcType="VARCHAR" property="buttonCode" />
+    <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
+    <result column="has_menu" jdbcType="INTEGER" property="hasMenu" />
+  </resultMap>
+
   <!-- 根据角色ID查询档案列表 -->
   <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
     select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
@@ -214,4 +225,27 @@
         </if>
         and is_delete = 0
     </update>
+
+
+    <!-- 根据档案ID和菜单ID查询菜单按钮列表 -->
+    <select id="searchMenuButtonList" resultMap="MenuResultMap">
+        select t_menu.menu_id,t_menu.button_code,t_menu.menu_name,t_menu.func_type
+        from t_menu
+        where t_menu.parent_menu_id = #{menuId,jdbcType=INTEGER}
+        and t_menu.menu_id in(
+        select a.menu_id
+        from t_user_role r,t_role_menu_auth a
+        WHERE r.archive_id = #{archiveId,jdbcType=INTEGER}
+        and (r.is_trusteeship = 0
+            or (r.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= r.trusteeship_begin_time
+            and r.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+        ))
+        and r.role_id = a.role_id
+        and r.is_delete = 0
+        and a.is_delete = 0
+        GROUP BY a.menu_id
+        )
+        and t_menu.func_type = 'BUTTON'
+      </select>
 </mapper>

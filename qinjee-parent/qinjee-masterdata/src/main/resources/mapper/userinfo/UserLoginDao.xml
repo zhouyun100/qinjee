@@ -18,6 +18,8 @@
     <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
     <result column="func_type" jdbcType="VARCHAR" property="funcType" />
     <result column="func_url" jdbcType="VARCHAR" property="funcUrl" />
+    <result column="func_url" jdbcType="VARCHAR" property="funcUrl" />
+    <result column="button_code" jdbcType="VARCHAR" property="buttonCode" />
     <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
   </resultMap>
 
@@ -69,7 +71,7 @@
 
   <!-- 各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入 -->
   <select id="searchUserMenuListByArchiveIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="MenuResultMap">
-    select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
+    select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id,t_menu.button_code
     from t_menu,t_company_menu,t_role_menu_auth,t_role,t_user_role
     where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
     and (t_user_role.is_trusteeship = 0
@@ -87,7 +89,7 @@
     and t_role_menu_auth.is_delete = 0
     and t_menu.is_delete = 0
     and t_company_menu.is_delete = 0
-    GROUP BY t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id
+    GROUP BY t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id,t_menu.button_code
   </select>
 
 </mapper>

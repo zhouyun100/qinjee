@@ -237,4 +237,10 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
         }
         return resultNumber;
     }
+
+    @Override
+    public List<MenuVO> searchMenuButtonList(Integer archiveId, Integer menuId) {
+        List<MenuVO> menuList = archiveAuthDao.searchMenuButtonList(archiveId,menuId,new Date());
+        return menuList;
+    }
 }

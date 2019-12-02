@@ -1,5 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +9,7 @@ import java.util.Date;
  * t_menu
  * @author
  */
+@Data
 public class Menu implements Serializable {
     /**
      * 菜单ID
@@ -32,6 +35,11 @@ public class Menu implements Serializable {
      * 功能地址
      */
     private String funcUrl;
+
+    /**
+     * 按钮CODE
+     */
+    private String buttonCode;
 
     /**
      * 父级菜单ID
@@ -60,83 +68,4 @@ public class Menu implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getMenuId() {
-        return menuId;
-    }
-
-    public void setMenuId(Integer menuId) {
-        this.menuId = menuId;
-    }
-
-    public String getMenuName() {
-        return menuName;
-    }
-
-    public void setMenuName(String menuName) {
-        this.menuName = menuName;
-    }
-
-    public String getIconUrl() {
-        return iconUrl;
-    }
-
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
-    public String getFuncType() {
-        return funcType;
-    }
-
-    public void setFuncType(String funcType) {
-        this.funcType = funcType;
-    }
-
-    public String getFuncUrl() {
-        return funcUrl;
-    }
-
-    public void setFuncUrl(String funcUrl) {
-        this.funcUrl = funcUrl;
-    }
-
-    public Integer getParentMenuId() {
-        return parentMenuId;
-    }
-
-    public void setParentMenuId(Integer parentMenuId) {
-        this.parentMenuId = parentMenuId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

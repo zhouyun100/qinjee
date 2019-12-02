@@ -17,6 +17,7 @@ import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.utils.RegexpUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -96,10 +97,10 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
 
         /**
-         * 过滤菜单功能节点，只提取枝节点和叶节点
+         * 过滤菜单功能节点，只加载菜单目录和菜单
          */
         List<MenuVO> allMenuVOList = menuVOList.stream().filter(menu -> {
-            if(menu.getFuncType().equals("CATEGORY") || menu.getFuncType().equals("NODE")){
+            if(StringUtils.isNoneBlank(menu.getFuncType()) && (menu.getFuncType().equals("CATEGORY") || menu.getFuncType().equals("NODE"))){
                 return true;
             }else{
                 return false;
