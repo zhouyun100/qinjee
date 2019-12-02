@@ -62,6 +62,12 @@ public class MenuVO implements Serializable {
     private String funcUrl;
 
     /**
+     * 按钮CODE
+     */
+    @ApiModelProperty("按钮CODE")
+    private String buttonCode;
+
+    /**
      * 父级菜单ID
      */
     @ApiModelProperty("父级菜单ID")
