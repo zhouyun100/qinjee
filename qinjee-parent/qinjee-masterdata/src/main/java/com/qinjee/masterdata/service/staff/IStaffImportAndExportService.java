@@ -13,29 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface IStaffImportAndExportService {
-    /**
-     * 模板导入档案表
-     * @param multipartFile
-     * @param userSession
-     * @throws NoSuchFieldException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws ClassNotFoundException
-     */
-    void importArcFile(MultipartFile multipartFile, UserSession userSession ) throws Exception;
-    /**
-     * 导入预入职
-     * @param multipartFile
-     * @param userSession
-     * @throws Exception
-     */
-    void importPreFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+
 
     /**
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportFile exportFile, HttpServletResponse response) throws IOException;
+    void exportArcFile(ExportFile exportFile, HttpServletResponse response,UserSession userSession) throws IOException;
 
     /**
      * 导出预入职
@@ -76,22 +60,22 @@ public interface IStaffImportAndExportService {
     /**文件检验
      * @param multipartFile
      */
-    List <Map< String,String>> importFileAndCheckFile(MultipartFile multipartFile) throws Exception;
+    List <Map< Integer,String>> importFileAndCheckFile(MultipartFile multipartFile,String funcCode,UserSession userSession) throws Exception;
 
     /**
      * 字段检验
      * @param list
-     * @param userSession
+     * @param
      * @return
      */
-    List<CheckCustomTableVO> checkFile(List< Map< String, String>> list, UserSession userSession);
+    List<CheckCustomTableVO> checkFile(List< Map< Integer, String>> list,String funcCode);
 
     /**
      * 准备上传
      * @param list
      * @param userSession
      */
-    void readyForImport(List< Map< String, String>> list, UserSession userSession,String title);
+    void readyForImport(List< Map< Integer, String>> list, UserSession userSession,String title);
 
     /**
      * 取消文件导入
@@ -107,19 +91,15 @@ public interface IStaffImportAndExportService {
      * @param userSession
      * @throws Exception
      */
-    void importBlaFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+    void importBlaFile(MultipartFile multipartFile, UserSession userSession,String funcCode) throws Exception;
 
     /**
      * 导入合同
      * @param multipartFile
      * @param userSession
      */
-    void importConFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+    void importConFile(MultipartFile multipartFile,String funcCode, UserSession userSession) throws Exception;
 
-    /**
-     * 导入业务信息
-     * @param multipartFile
-     * @param userSession
-     */
-    void importBusinessFile(MultipartFile multipartFile,String title, UserSession userSession) throws Exception;
+
+    void importFile(String title, UserSession userSession, String funcCode) throws Exception;
 }

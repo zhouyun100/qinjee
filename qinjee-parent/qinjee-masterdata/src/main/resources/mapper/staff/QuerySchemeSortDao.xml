@@ -95,10 +95,11 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where query_scheme_sort_id = #{querySchemeSortId,jdbcType=INTEGER}
   </update>
-  <select id="selectByQuerySchemeId" resultType="com.qinjee.masterdata.model.entity.QuerySchemeSort">
+  <select id="selectByQuerySchemeId" resultType="com.qinjee.masterdata.model.entity.QuerySchemeSort" resultMap="BaseResultMap">
+select
     <include refid="Base_Column_List" />
     from t_query_scheme_sort
-    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}
+    where query_scheme_id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteBySchemeId">
      delete from t_query_scheme_sort

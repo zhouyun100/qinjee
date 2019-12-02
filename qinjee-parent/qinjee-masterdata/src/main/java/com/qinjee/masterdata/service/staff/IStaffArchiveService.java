@@ -59,7 +59,7 @@ public interface IStaffArchiveService {
      * @param id
      * @return
      */
-    QuerySchemeList selectQueryScheme(Integer id);
+    List<QuerySchemeList> selectQueryScheme(Integer id);
 
 
     void saveQueryScheme(QueryArcVo queryArcVo);

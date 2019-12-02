@@ -3,9 +3,12 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
+import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
+import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,8 @@ public class PostController extends BaseController {
 
   @Autowired
   private PostService postService;
+  @Autowired
+  private OrganizationService organizationService;
 
   @PostMapping("/getPostList")
   @ApiOperation(value = "ok，分页查询岗位列表,只有orgId字段为必须", notes = "ok")
@@ -108,25 +114,64 @@ public class PostController extends BaseController {
     return postService.copyPost(postIds, getUserSession(), orgId);
   }
 
-  @ApiOperation(value = "未验证，根据查询条件导出Excel", notes = "未验证")
-  @PostMapping("/downloadExcelByCondition")
-  public ResponseResult downloadExcelByCondition(@RequestBody PostPageVo postPageVo, HttpServletResponse response) {
-    return postService.downloadExcelByCondition(postPageVo, getUserSession(), response);
-  }
+  // String filePath,  List<Integer> orgIds
+  @PostMapping("/exportPost")
+  public ResponseResult exportPost(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) {
+    List<Integer> postIds = null;
+    Integer orgId = null;
+    if (paramMap.get("postIds") != null && paramMap.get("postIds") instanceof List) {
+      postIds = (List<Integer>) paramMap.get("postIds");
+    }
+    if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
+      orgId = (Integer) paramMap.get("orgId");
+    }
+    List<Post> postOList = postService.exportPost(orgId, postIds, getUserSession());
+    try {
+      byte[] bytes = ExcelExportUtil.exportToBytes(postOList);
+      response.setCharacterEncoding("UTF-8");
+      response.setHeader("content-Type", "application/vnd.ms-excel");
+      response.setHeader("fileName", URLEncoder.encode("岗位", "UTF-8"));
+      response.setHeader("Content-Disposition",
+              "attachment;filename=\"" + URLEncoder.encode("岗位", "UTF-8") + "\"");
+      response.getOutputStream().write(bytes);
+    } catch (Exception e) {
 
-  @ApiOperation(value = "未验证，根据选择的岗位id导出Excel", notes = "未验证")
-  @GetMapping("/downloadExcelByPostId")
-  public ResponseResult downloadExcelByPostId(@RequestParam("postIds") @ApiParam(value = "所选机构的编码", required = true) List<Integer> postIds, HttpServletResponse response) {
-    return postService.downloadExcelByPostId(postIds, getUserSession(), response);
-  }
-
-
-  @ApiOperation(value = "未实现，导入Excel", notes = "未实现")
-  @PostMapping("/uploadExcel")
-  public ResponseResult uploadExcel(@ApiParam(value = "需要导入的Excel文件", required = true) MultipartFile file) {
-
+    }
     return null;
   }
 
+  @PostMapping("/importAndCheckPostExcel")
+  @ApiOperation(value = "待验证，导入岗位excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
+  public ResponseResult importAndCheckPostExcel(MultipartFile multfile) throws Exception {
+
+    return postService.importAndCheckPostExcel(multfile,getUserSession());
+
+  }
+
+
+  @GetMapping("/importPostExcelToDatabase")
+  @ApiOperation(value = "导入岗位入库")
+  public ResponseResult importPostExcelToDatabase(@RequestParam("redisKey") String redisKey){
+
+    return postService.importPostExcelToDatabase(redisKey,getUserSession());
+  }
+
+  //TODO 实有人数、编制人数暂时不考虑
+  //TODO 递归层数控制
+  @ApiOperation(value = "ok，获取岗位图", notes = "ok")
+  @GetMapping("/getPostGraphics")
+  public ResponseResult<List<Post>> getPostGraphics(@RequestParam("layer") @ApiParam(value = "岗位图层数，默认显示2级", example = "2") Integer layer,
+                                                                      @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
+                                                                      @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
+                                                                      @RequestParam("postId") @ApiParam(value = "postId", example = "1") Integer postId,
+                                                                      @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
+    if (isEnable == null || isEnable == 0) {
+      isEnable = 0;
+    } else {
+      isEnable = null;
+    }
+    List<Post> pageResult = postService.getPostGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, postId, isEnable);
+    return new ResponseResult(pageResult);
+  }
 
 }

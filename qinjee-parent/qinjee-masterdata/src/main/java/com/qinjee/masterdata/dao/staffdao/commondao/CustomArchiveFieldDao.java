@@ -24,67 +24,186 @@ public interface CustomArchiveFieldDao {
 
     Integer selectMaxPrimaryKey();
 
-    List<Integer> selectFieldId(@Param("customArchiveTableId") Integer customArchiveTableId);
 
-    List<String> selectFieldType(@Param("customArchiveTableId") Integer customArchiveTableId);
-
+    /**
+     *
+     * @param list
+     * @return
+     */
     Integer deleteCustomField(@Param("list") List<Integer> list);
 
-    List<CustomArchiveField> selectByList(@Param("integerList") List<Integer> integerList);
 
-    List<CustomArchiveField> selectByPrimaryKeyList(@Param("integerList") List<Integer> list);
 
+    /**
+     * customArchiveFieldId
+     * @param customArchiveFieldId
+     * @return
+     */
     Integer selectCodeId(@Param("customArchiveFieldId") Integer customArchiveFieldId);
 
-    String selectFieldName(@Param("fieldId") Integer fieldId);
 
-    Integer selectTableId(@Param("fieldId") Integer fieldId);
 
+
+    /**
+     * fieldId
+     * @param fieldId
+     * @return
+     */
     String selectPhysicName(@Param("fieldId") Integer fieldId);
 
-    List<String> selectFieldNameListByTableId(@Param("id") Integer id);
 
-    List<String> selectTypeByNameList(@Param("heads") List<String> heads);
 
+
+    /**
+     * selectFieldCodeByList
+     * @param sortList
+     * @return
+     */
     List<String> selectFieldCodeByList(@Param("sortList") List<Integer> sortList);
 
+    /**
+     * updatePreEmploymentField
+     * @param map
+     * @return
+     */
     Integer updatePreEmploymentField(@Param("map") Map<Integer, String> map);
 
-    Short isSystemField(@Param("head") String head);
 
-    Integer selectTableIdByFieldName(@Param("head") String head);
 
-    Short selectIsInsideByName(@Param("filedName") String filedName);
 
-    List<String> selectFieldNameListByTableIdList(@Param("tableIdList") List<Integer> tableIdList);
 
+    /**
+     * selectFieldNameListByTableIdList
+     * @param tableIdList
+     * @return
+     */
+    List<String> selectFieldCodeListByTableIdList(@Param("tableIdList") List<Integer> tableIdList);
+
+    /**
+     * selectFieldNameListByTableIdList
+     * @param fieldId
+     * @return
+     */
     String selectTypeByFieldId(@Param("fieldId") Integer fieldId);
 
+    /**
+     * customArchiveTableId
+     * @param customArchiveTableId
+     * @return
+     */
     List<CustomArchiveField> selectFieldByTableId(@Param("customArchiveTableId") Integer customArchiveTableId);
 
-    List<String> selectFieldNameByCodeList(@Param("strings") List<String> strings);
+    /**
+     * companyId
+     * @param strings
+     * @param companyId
+     * @return
+     */
+    List<String> selectFieldNameByCodeList(@Param("strings") List<String> strings,@Param ( "companyId" ) Integer companyId);
 
+    /**
+     * heads
+     * @param heads
+     * @return
+     */
     List<String> selectFieldTypeByNameList(@Param("heads") List<String> heads);
 
-    List<String> selectFieldNameByList(@Param("strings") List<String> stringList);
 
-    List<String> selectFieldNameByIntList(@Param("sortList") List<Integer> sortList);
 
+    /**
+     * tableId
+     * @param tableId
+     * @param archiveId
+     * @return
+     */
     List<String> selectFieldByTableIdAndAuth(@Param("tableId") Integer tableId, @Param("archiveId") Integer archiveId);
 
+    /**
+     * achiveId
+     * @param achiveId
+     * @param companyId
+     * @return
+     */
     List<String> selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
 
+    /**
+     * customArchiveGroupId
+     * @param customArchiveGroupId
+     * @return
+     */
     List<CustomArchiveField> selectCustomArchiveField(@Param("customArchiveGroupId") Integer customArchiveGroupId);
 
-    String selectFieldCodeByName(@Param("s") String s);
+    /**
+     * companyId
+     * @param s
+     * @param funcCode
+     * @param companyId
+     * @return
+     */
+    String selectFieldCodeByNameAndFuncCodeAndCompanyId(@Param("s") String s, @Param ( "funcCode" ) String funcCode, @Param("companyId") Integer companyId);
 
-    List<String> selectFieldCodeByNameList(@Param("list") List<String> keySet);
 
+
+    /**
+     * companyId
+     * @param companyId
+     * @param preEmployment
+     * @return
+     */
     List< CustomArchiveField> selectFieldNameByTableName(@Param("companyId") Integer companyId, @Param("preEmployment") String preEmployment);
 
-    List< Integer> selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List< String> fieldNames, @Param("companyId") Integer companyId);
+    /**
+     * fieldNames
+     * @param fieldNames
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    List< Integer> selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List< String> fieldNames, @Param("companyId") Integer companyId,
+                                                        @Param ( "funcCode" )String funcCode);
+
+    /**
+     * strings
+     * @param strings
+     * @return
+     */
     @MapKey ( "field_name" )
     Map< String,Map< String, String>> seleleIsSysAndTableIdAndTableName(@Param("strings") List< String> strings);
 
-    Integer selectTableIdByNameAndCompanyId(@Param("title") String title, @Param("companyId") Integer companyId);
+
+    /**
+     * head
+     * @param head
+     * @param companyId
+     * @return
+     */
+    String selectFieldCodeByName(@Param("head") String head, @Param("companyId") Integer companyId);
+
+    /**
+     * key
+     * @param key
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    Integer selectFieldIdByFieldNameAndCompanyIdAndFuncCode(@Param("key") String key, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+
+    /**
+     * 根据id找到一系列属性
+     * @param idList
+     * @return
+     */
+    @MapKey ( "field_id" )
+    Map<Integer,Map<String,String>> selectNameAndIdAndIsSystemDefine(@Param("idList") List< Integer> idList);
+
+     Integer selectSymbolForPreIdNumber(@Param("list") List< Integer> list);
+     Integer selectSymbolForPreIdType(@Param("list") List< Integer> list);
+     Integer selectSymbolForArcEmploymentNumber(@Param("list") List< Integer> list);
+     Integer selectSymbolForArcIdNumber(@Param("list") List< Integer> list);
+
+    Integer selectTableIdByFieldId(@Param("integer1") Integer integer1);
+
+
+
+    Map< String, String> selectCodeAndTypeById(@Param("integer") Integer integer);
 }

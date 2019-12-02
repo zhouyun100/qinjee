@@ -832,19 +832,21 @@
   <select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo" resultMap="downloadVo">
       select arc.archive_id,arc.user_name,arc.employee_number,orga.org_name as business_unit_name,
       org.org_name,post.post_name ,arc.hire_date,arc.probation_due_date, arch.user_name as supervisor_user_name ,
-      arc.tel,relation.employment_type
+      arc.phone,relation.employment_type
       from
       t_user_archive arc
       left join t_organization org on  org.org_id = arc.org_id
       left join t_organization orga on orga.org_id = arc.business_unit_id
-      left join t_post post on (arc.post_id = post.post_id and post.is_delete=0)
-      left join t_user_archive_post_relation relation on (arc.archive_id=relation.archive_id and relation.is_delete=0)
-      left join t_user_archive arch on (arc.supervisor_id = arch.archive_id and arch.is_delete=0)
-      where  arc.is_delete=0 and org.is_enable=1 and orga.is_enable=1
+      left join t_post post on arc.post_id = post.post_id
+      left join t_user_archive_post_relation relation on arc.archive_id=relation.archive_id
+      left join t_user_archive arch on arc.supervisor_id = arch.archive_id
+      where  arc.is_delete=0 and org.is_enable=1 and orga.is_enable=1 and post.is_delete=0
+      and relation.is_delete=0 and arch.is_delete=0 and post.is_delete=0
+      and post.is_enable=1
       and arc.archive_id in
        <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
        #{item}
-       and arc.is_delete=0
+
  </foreach>
 </select>
   <select id="selectEmployNumber" resultType="java.lang.String">
@@ -877,8 +879,12 @@
 
   </select>
 
-  <select id="getUserCountByOrgId" resultType="java.lang.Integer">
+  <select id="countUserArchiveByOrgId" resultType="java.lang.Integer">
     SELECT COUNT(org_id) FROM t_user_archive WHERE org_id =#{orgId} AND is_delete =0
+
+  </select>
+  <select id="countUserArchiveByPostId" resultType="java.lang.Integer">
+    SELECT COUNT(post_id) FROM t_user_archive WHERE post_id =#{postId} AND is_delete =0
 
   </select>
 
@@ -889,6 +895,7 @@
     and id_number=#{number}
     and is_delete=0
   </select>
+
 
 </mapper>
 

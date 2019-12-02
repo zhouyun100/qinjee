@@ -357,7 +357,7 @@ public class StaffArchiveController extends BaseController {
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
-                return failResponseResult("通过id查询到对应机构名称失败");
+                return failResponseResult("保存查询方案");
             }
         }
         return  failResponseResult("参数错误");
@@ -392,13 +392,13 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
-    public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
+    public ResponseResult<List<QuerySchemeList>> selectUserArchivePostRelation(Integer id) {
         Boolean b = checkParam(id);
         if(b){
             try {
-                QuerySchemeList querySchemeList = staffArchiveService.selectQueryScheme(id);
-                if(null!=querySchemeList){
-                    return new ResponseResult<>(querySchemeList,CommonCode.SUCCESS);
+                List<QuerySchemeList> lists = staffArchiveService.selectQueryScheme(id);
+                if(null!=lists){
+                    return new ResponseResult<>(lists,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

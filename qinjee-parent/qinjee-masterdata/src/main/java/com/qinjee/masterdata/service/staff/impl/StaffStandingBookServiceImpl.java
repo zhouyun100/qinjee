@@ -262,7 +262,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         //找到企业下的人员表
         List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(userSession.getCompanyId(),ARCHIVE);
         //根据id找到物理字段名
-        return customArchiveFieldDao.selectFieldNameListByTableIdList(tableIdList);
+        return customArchiveFieldDao.selectFieldCodeListByTableIdList(tableIdList);
     }
     /**
      *  通过字段id找到物理字段名

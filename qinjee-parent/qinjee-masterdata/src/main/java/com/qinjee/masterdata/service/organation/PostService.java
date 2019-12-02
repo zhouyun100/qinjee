@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -114,10 +115,15 @@ public interface PostService {
 
   /**
    * 查看岗位历任
-   * @param userSession
-   * @param orgId
    * @return
    */
   ResponseResult<List<UserArchivePostRelation>> getPostSuccessive(Integer postId);
 
+    List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession);
+
+  ResponseResult importAndCheckPostExcel(MultipartFile multfile, UserSession userSession);
+
+  ResponseResult importPostExcelToDatabase(String redisKey, UserSession userSession);
+
+    List<Post> getPostGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 }

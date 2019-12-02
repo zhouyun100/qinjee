@@ -9,6 +9,7 @@
         <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId"/>
         <result column="parent_org_name" jdbcType="VARCHAR" property="orgParentName"/>
         <result column="parent_org_code" jdbcType="VARCHAR" property="orgParentCode"/>
+        <result column="employee_number" jdbcType="INTEGER" property="managerEmployeeNumber"/>
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
         <result column="orgManagerName" jdbcType="VARCHAR" property="orgManagerName"/>
         <result column="position_name" jdbcType="VARCHAR" property="orgManagerPositionName"/>
@@ -203,7 +204,9 @@
 
     <select id="getAllOrganizationByArchiveId" resultMap="BaseResultMap">
         select
-        v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
+        v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,tua.user_name orgManagerName, tua.employee_number,
+        parentOrg.org_code parent_org_code,
+        parentOrg.org_name parent_org_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
         from (
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
         t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
@@ -231,7 +234,10 @@
         <if test="isEnable != null ">
             and t_organization.is_enable = 1
         </if>
-        ) v GROUP BY
+        ) v  LEFT JOIN t_organization parentOrg
+        ON parentOrg.org_id = v.org_parent_id
+        LEFT JOIN t_user_archive tua
+        ON v.org_manager_id = tua.archive_id GROUP BY
         v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
         ORDER BY v.org_id ASC
     </select>
@@ -352,66 +358,30 @@
   </select>
     <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
-        t_son.org_id,
-        t_son.org_code,
-        t_son.org_name,
-        t_son.org_type,
-        t_son.org_parent_id,
-        t_son.org_full_name,
-        t_son.org_manager_id,
-        t_son.company_id,
-        t_son.sort_id,
-        t_son.operator_id,
-        t_son.create_time,
-        t_son.is_enable,
-        t_parent.org_name AS org_parent_name ,
-        t_parent.org_code AS org_parent_code
-        FROM
-        (SELECT
-        org_id,
-        org_code,
-        org_name,
-        org_type,
-        org_parent_id,
-        org_full_name,
-        org_manager_id,
-        company_id,
-        sort_id,
-        operator_id,
-        create_time,
-        is_enable
-        FROM
-        t_organization
-        WHERE org_id IN
+        t_org.org_id,
+        t_org.org_code,
+        t_org.org_name,
+        t_org.org_type,
+        t_org.org_parent_id,
+        t_org.org_full_name,
+        t_org.org_manager_id,
+        tua.user_name orgManagerName,
+        tua.employee_number employee_number,
+        t_org.company_id,
+        t_org.sort_id,
+        t_org.operator_id,
+        t_org.create_time,
+        t_org.is_enable,
+        t_parent.org_name AS parent_org_name,
+        t_parent.org_code AS parent_org_code
+        FROM t_organization t_org
+        LEFT JOIN    t_organization t_parent
+        ON t_org.org_parent_id = t_parent.org_id
+        LEFT JOIN t_user_archive tua ON tua.archive_id= t_org.org_manager_id
+        WHERE t_org.org_id IN
         <foreach collection="orgIds" item="id" separator="," open="(" close=")">
             #{id}
-        </foreach>) AS t_son
-        INNER JOIN
-        (SELECT
-        org_id,
-        org_code,
-        org_name,
-        org_type,
-        org_parent_id,
-        org_full_name,
-        org_manager_id,
-        company_id,
-        sort_id,
-        operator_id,
-        create_time,
-        is_enable
-        FROM
-        t_organization
-        WHERE org_id IN
-        (SELECT
-        org_parent_id
-        FROM
-        t_organization
-        WHERE org_id IN
-        <foreach collection="orgIds" item="id" separator="," open="(" close=")">
-            #{id}
-        </foreach>)) AS t_parent
-        ON t_son.org_parent_id = t_parent.org_id
+        </foreach>
     </select>
 
     <select id="getOrganizationListByUserArchiveId"  resultMap="BaseResultMap">
@@ -561,5 +531,54 @@
                  #{item}
              </foreach>
          </if>
+    </select>
+
+    <select id="getAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
+        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name parent_org_name,
+        v.org_manager_id,
+        tua.employee_number,
+        tua.user_name orgManagerName
+       FROM (
+             SELECT v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name,v1.org_manager_id
+              FROM (
+                SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
+                FROM t_role_org_auth,t_role,t_user_role,t_organization
+                WHERE t_user_role.archive_id = #{archiveId}
+                AND (t_user_role.is_trusteeship = 0
+                OR (t_user_role.is_trusteeship = 1
+                AND #{now} >= t_user_role.trusteeship_begin_time
+                AND t_user_role.trusteeship_end_time >= #{now}
+                ))
+                AND t_user_role.role_id = t_role.role_id
+                AND t_role.role_id = t_role_org_auth.role_id
+                AND t_role_org_auth.org_id = t_organization.org_id
+                AND t_role.is_delete = 0
+                AND t_role_org_auth.is_delete = 0
+                AND t_organization.is_enable = 1
+      UNION
+             SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+                t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
+                FROM t_user_org_auth,t_organization
+                WHERE t_user_org_auth.archive_id = #{archiveId}
+                AND (t_user_org_auth.is_trusteeship = 0
+                OR (t_user_org_auth.is_trusteeship = 1
+                AND #{now} >= t_user_org_auth.trusteeship_begin_time
+                AND t_user_org_auth.trusteeship_end_time >= #{now}
+                ))
+                AND t_user_org_auth.org_id = t_organization.org_id
+                AND t_user_org_auth.is_delete = 0
+                AND t_organization.is_enable = 1
+        ) v1
+        GROUP BY v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name) v
+        LEFT JOIN t_organization o
+            ON v.org_parent_id = o.org_id
+        LEFT JOIN t_user_archive tua ON tua.archive_id = v.org_manager_id
+        <if test="orgIdList != null and orgIdList.size > 0">
+            where  v.org_id in
+            <foreach collection="orgIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>

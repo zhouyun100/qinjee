@@ -23,7 +23,7 @@ public interface QuerySchemeFieldDao {
 
     int updateByPrimaryKey(QuerySchemeField record);
 
-    List<QuerySchemeField> selectByQuerySchemeId(Integer id);
+    List<QuerySchemeField> selectByQuerySchemeId(@Param("id") Integer id);
 
     void deleteBySchemeId(Integer querySchemeId);
 

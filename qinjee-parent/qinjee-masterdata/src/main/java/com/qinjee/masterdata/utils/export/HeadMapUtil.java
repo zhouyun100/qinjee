@@ -12,7 +12,7 @@ public class HeadMapUtil {
      * @return
      */
     public static List<String> getHeadForArc(List<String> keyList) {
-        String[] strings={"姓名","单位","部门","联系电话","任职类型","工号","档案id","直接上级","岗位","试用期到期时间","入职日期"};
+        String[] strings={"姓名","单位","部门","联系电话","任职类型","工号","直接上级","岗位","试用期到期时间","入职时间"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }

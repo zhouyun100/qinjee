@@ -1039,4 +1039,11 @@
         and is_delete=0
     </select>
 
+    <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
+        select employment_id from t_pre_employment
+        where id_type=#{idtype}
+        and id_number=#{idnumber}
+        and is_delete=0
+    </select>
+
 </mapper>

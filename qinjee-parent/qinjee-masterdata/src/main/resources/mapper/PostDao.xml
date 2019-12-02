@@ -3,13 +3,14 @@
 <mapper namespace="com.qinjee.masterdata.dao.PostDao">
     <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Post">
         <id column="post_id" jdbcType="INTEGER" property="postId"/>
+        <id column="parent_post_id" jdbcType="INTEGER" property="parentPostId"/>
         <result column="post_name" jdbcType="VARCHAR" property="postName"/>
         <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
         <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
         <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
         <result column="position_id" jdbcType="INTEGER" property="positionId"/>
-        <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
-        <result column="parent_post_id" jdbcType="INTEGER" property="parentPostId"/>
+        <result column="parent_post_code" jdbcType="INTEGER" property="parentPostCode"/>
         <result column="org_id" jdbcType="INTEGER" property="orgId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="position_id" jdbcType="INTEGER" property="positionId"/>
@@ -424,4 +425,31 @@
     and arc.is_delete=0
 
   </select>
+
+    <select id="listPostByCompanyId" resultMap="BaseResultMap">
+        select post_id,parent_post_id,org_id,position_id
+        from t_post where company_id =#{companyId}
+        <if test="isEnable != null ">
+            and is_enable = 1
+        </if>
+    </select>
+
+    <select id="getPostGraphics" resultMap="BaseResultMap">
+        SELECT tp.post_code,tp.post_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code parent_post_code,ptp.post_name parent_post_name
+        FROM t_post tp
+        LEFT JOIN t_organization org ON tp.org_id=org.org_id
+        LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
+        <where>
+             1=1
+            <if test="postIdList != null">
+                and tp.post_id in
+                <foreach collection="postIdList" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        <if test="isEnable != null ">
+            and tp.is_enable = 1
+        </if>
+    </select>
 </mapper>

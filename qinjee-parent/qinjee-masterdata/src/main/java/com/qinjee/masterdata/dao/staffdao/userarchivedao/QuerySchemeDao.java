@@ -26,4 +26,6 @@ public interface QuerySchemeDao {
     Integer selectMaxPrimaryKey();
 
     void deleteQuerySchemeList(@Param("list") List<Integer> list);
+
+    List<Integer> selectIdByArchiveId(@Param("id") Integer id);
 }

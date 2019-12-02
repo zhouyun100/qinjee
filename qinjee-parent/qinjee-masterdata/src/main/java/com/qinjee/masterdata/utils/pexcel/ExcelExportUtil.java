@@ -239,10 +239,8 @@ public class ExcelExportUtil {
             // workbook 2 ByteArrayOutputStream
             byteArrayOutputStream = new ByteArrayOutputStream();
             workbook.write(byteArrayOutputStream);
-
             // flush
             byteArrayOutputStream.flush();
-
             result = byteArrayOutputStream.toByteArray();
             return result;
         } catch (Exception e) {
