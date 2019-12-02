@@ -10,10 +10,12 @@
  */
 package com.qinjee.masterdata.model.vo.custom;
 
+import com.qinjee.masterdata.model.entity.SysDict;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -42,7 +44,7 @@ public class CustomFieldVO {
     private String fieldType;
 
     /**
-     * 字段值类型(text/number/date)，默认text
+     * 字段值类型(text/number/date/code)，默认text
      */
     private String textType;
 
@@ -107,6 +109,11 @@ public class CustomFieldVO {
     private String formatTime;
 
     /**
+     * 代码型CODE
+     */
+    private String code;
+
+    /**
      * 校验是否必填
      */
     private Short isMust;
@@ -168,4 +175,9 @@ public class CustomFieldVO {
      * 是否删除
      */
     private Short isDelete;
+
+    /**
+     * 代码型集合
+     */
+    private List<SysDict> dictList;
 }

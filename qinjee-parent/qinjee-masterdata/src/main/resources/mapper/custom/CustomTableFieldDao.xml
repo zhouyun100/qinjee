@@ -20,6 +20,7 @@
     <result column="min_time" jdbcType="VARCHAR" property="minTime" />
     <result column="max_time" jdbcType="VARCHAR" property="maxTime" />
     <result column="format_time" jdbcType="VARCHAR" property="formatTime" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="is_must" jdbcType="INTEGER" property="isMust" />
     <result column="rule" jdbcType="VARCHAR" property="rule" />
     <result column="is_only_read" jdbcType="INTEGER" property="isOnlyRead" />
@@ -80,11 +81,12 @@
   <!-- 根据根据企业ID和功能CODE或表ID查询组列表 -->
   <select id="searchCustomGroupList" resultMap="GroupResultMap">
     select g.group_id,g.group_name,g.table_id,g.sort
+    from t_custom_archive_group g
     where g.group_id in (
       select group_id from t_custom_archive_field f
       WHERE f.is_delete = 0
     <if test="tableId != null">
-        f.tabale_id = #{tableId,jdbcType=VARCHAR}
+       and f.table_id = #{tableId,jdbcType=INTEGER}
     </if>
     <if test="tableId == null">
       and f.table_id in (
@@ -105,12 +107,12 @@
   <select id="searchCustomFieldList" resultMap="FieldResultMap">
     select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
     placeholder,max_length,min_length,max_number,min_number,float_length,
-    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    is_time_range,min_time,max_time,format_time,code,is_must,rule,is_only_read,
     table_id,group_id,is_show,is_system_define,sort
     from t_custom_archive_field
     where is_delete = 0
     <if test="tableId != null">
-      and table_id = #{tableId,jdbcType=VARCHAR}
+      and table_id = #{tableId,jdbcType=INTEGER}
     </if>
     <if test="tableId == null">
       and table_id in(

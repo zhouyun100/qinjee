@@ -11,8 +11,10 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.utils.RegexpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +48,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
+
+    @Autowired
+    private SysDictService sysDictService;
 
     @Override
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
@@ -300,6 +305,13 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
                 List<CustomFieldVO> fieldList = customFieldList.stream().filter(customFieldVO -> {
                     if(customFieldVO.getGroupId().equals(groupVO.getGroupId())){
+                        String textType = customFieldVO.getTextType();
+                        String code = customFieldVO.getCode();
+                        if(StringUtils.isNoneBlank(textType) && textType.equals("code") && StringUtils.isNoneBlank(code)){
+
+                            List<SysDict> dictList = sysDictService.searchSysDictListByDictType(code);
+                            customFieldVO.setDictList(dictList);
+                        }
                         return true;
                     }else{
                         return false;
