@@ -184,14 +184,16 @@ public interface OrganizationService {
 
   List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 
-  List<OrganizationVO> exportOrganization(Integer orgId,List<Integer> orgIds,UserSession userSession);
+  List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, UserSession userSession);
 
   PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
-    ResponseResult importOrganizationExcelToDatabase(String redisKey, UserSession userSession);
+  ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession);
 
-  ResponseResult importAndCheckOrganizationExcel(MultipartFile multfile, UserSession userSession) throws Exception;
- List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable);
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
+
+  List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable);
+
 }
 
 

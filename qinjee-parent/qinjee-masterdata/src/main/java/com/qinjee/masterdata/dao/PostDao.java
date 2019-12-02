@@ -115,5 +115,7 @@ public interface PostDao {
     List<Post> getPostGraphics( List<Integer> postIdList, Short isEnable);
 
     List<Post> listPostByCompanyId(Integer companyId, Short isEnable);
+
+    List<Post> listDirectPostPage(PostPageVo postPageVo, String sortFieldStr);
 }
 

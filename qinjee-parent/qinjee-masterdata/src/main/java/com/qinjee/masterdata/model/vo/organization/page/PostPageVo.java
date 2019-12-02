@@ -21,6 +21,8 @@ public class PostPageVo extends PageQuery {
   private Integer orgId;
   @ApiModelProperty(value = "岗位ID", example = "1")
   private Integer postId;
+  @ApiModelProperty(value = "父级岗位ID", example = "1")
+  private Integer parentPostId;
 
   @ApiModelProperty("是否删除 0未删除、1已删除")
   private Short isDelete;
