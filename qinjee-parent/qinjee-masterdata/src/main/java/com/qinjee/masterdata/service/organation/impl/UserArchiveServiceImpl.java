@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,8 +36,12 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         if(pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null){
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        Optional<List<QueryField>> querFieldVos = Optional.of(pageQueryVo.getQuerFieldVos());
-        String sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, UserArchive.class);
+        String sortFieldStr="";
+        if(Objects.nonNull(pageQueryVo.getQuerFieldVos())){
+            Optional<List<QueryField>> querFieldVos = Optional.of(pageQueryVo.getQuerFieldVos());
+            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, UserArchive.class);
+        }
+
         List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveList(pageQueryVo, sortFieldStr);
         PageResult<UserArchive> pageResult = new PageResult<>(userArchiveList);
         return new ResponseResult<>(pageResult);

@@ -12,6 +12,8 @@
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="orgName" jdbcType="VARCHAR" property="orgName" />
+    <result column="businessUnitName" jdbcType="VARCHAR" property="businessUnitName" />
+
     <result column="postName" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
