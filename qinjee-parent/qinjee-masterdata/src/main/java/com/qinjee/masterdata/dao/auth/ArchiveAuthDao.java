@@ -97,4 +97,12 @@ public interface ArchiveAuthDao {
      * @return
      */
     int delArchiveOrgAuth(UserOrgAuth roleOrgAuth);
+
+    /**
+     * 根据档案ID和菜单ID查询菜单按钮列表
+     * @param archiveId
+     * @param menuId
+     * @return
+     */
+    List<MenuVO> searchMenuButtonList(Integer archiveId, Integer menuId,Date currentDateTime);
 }

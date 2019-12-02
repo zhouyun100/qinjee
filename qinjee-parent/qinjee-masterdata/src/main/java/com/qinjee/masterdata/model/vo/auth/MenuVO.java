@@ -28,7 +28,7 @@ import java.util.List;
 @ApiModel(description = "菜单树")
 @Data
 @NoArgsConstructor
-@JsonInclude
+//@JsonInclude
 public class MenuVO implements Serializable {
 
     /**

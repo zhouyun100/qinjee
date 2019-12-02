@@ -97,10 +97,10 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
 
         /**
-         * 过滤菜单功能节点，去除模块节点
+         * 过滤菜单功能节点，只加载菜单目录和菜单
          */
         List<MenuVO> allMenuVOList = menuVOList.stream().filter(menu -> {
-            if(StringUtils.isNoneBlank(menu.getFuncType()) && !menu.getFuncType().equals("MODULE")){
+            if(StringUtils.isNoneBlank(menu.getFuncType()) && (menu.getFuncType().equals("CATEGORY") || menu.getFuncType().equals("NODE"))){
                 return true;
             }else{
                 return false;

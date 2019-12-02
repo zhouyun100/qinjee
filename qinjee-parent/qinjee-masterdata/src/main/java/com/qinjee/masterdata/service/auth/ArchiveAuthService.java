@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.auth;
 
+import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
@@ -75,4 +76,12 @@ public interface ArchiveAuthService {
      * @return
      */
     int updateArchiveOrgAuth(Integer roleId, Integer archiveId, List<Integer> orgIdList, Integer operatorId);
+
+    /**
+     * 根据档案ID和菜单ID查询菜单按钮列表
+     * @param archiveId
+     * @param menuId
+     * @return
+     */
+    List<MenuVO> searchMenuButtonList(Integer archiveId,Integer menuId);
 }
