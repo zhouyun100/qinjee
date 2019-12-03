@@ -312,7 +312,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (layer < 1) {
             layer = 2;
         }
-        orgIdList = getOrgIdList(userSession, orgId, (layer - 1), isEnable);
+        orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, (layer - 1), isEnable);
         //查询所有相关的机构
         List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics(userSession.getArchiveId(), orgIdList, isEnable, new Date());
 
@@ -340,11 +340,11 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @return
      */
     @Override
-    public List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, UserSession userSession) {
+    public List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, Integer archiveId) {
         List<OrganizationVO> orgList = null;
         if (CollectionUtils.isEmpty(orgIds)) {
-            List<Integer> orgIdList = getOrgIdList(userSession, orgId, null, Short.parseShort("1"));
-            orgList = organizationDao.getAllOrganizationByArchiveIdAndOrgId(orgIdList, userSession.getArchiveId(), Short.parseShort("0"), new Date());
+            List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, Short.parseShort("1"));
+            orgList = organizationDao.getAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, Short.parseShort("0"), new Date());
         } else {
             orgList = organizationDao.getOrganizationsByOrgIds(orgIds);
         }
@@ -368,7 +368,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<Integer> orgIdList = null;
         Short isEnable = organizationPageVo.getIsEnable();
         Integer orgId = organizationPageVo.getOrgParentId();
-        orgIdList = getOrgIdList(userSession, orgId, null, isEnable);
+        orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, null, isEnable);
         if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
             PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
         }
@@ -381,7 +381,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     /**
      * 入库
-     * @param redisKey
      * @param userSession
      * @return
      */
@@ -455,90 +454,73 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
-        //判断文件名
-        String filename = multfile.getOriginalFilename();
-        if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
-            responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
-            return responseResult;
-        }
-        List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
-        List<OrganizationVO> orgList = new ArrayList<>();
-        //记录行号
-        Map<String,Integer> lineNumber=new HashMap<>();
-        Integer number=1;
-        for (Object object : objects) {
-            OrganizationVO vo = (OrganizationVO) object;
-            lineNumber.put(vo.getOrgCode(),number++);
-            orgList.add(vo);
-        }
-        orgList.sort(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                OrganizationVO org1 = (OrganizationVO) o1;
-                OrganizationVO org2 = (OrganizationVO) o2;
-                return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+        try {
+            //判断文件名
+            String filename = multfile.getOriginalFilename();
+            if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
+                responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
+                return responseResult;
             }
-        });
-        //校验
-        List<OrganizationCheckVo> checkResultList = checkExcel(lineNumber,orgList);
-        //拿到错误校验列表
-        List<OrganizationCheckVo> failCheckList = checkResultList.stream().filter(check -> {
-            if (!check.getCheckResult()) {
-                return true;
+            List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
+            List<OrganizationVO> orgList = new ArrayList<>();
+            //记录行号
+            Map<String,Integer> lineNumber=new HashMap<>();
+            Integer number=1;
+            for (Object object : objects) {
+                OrganizationVO vo = (OrganizationVO) object;
+                lineNumber.put(vo.getOrgCode(),number++);
+                orgList.add(vo);
+            }
+            orgList.sort(new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    OrganizationVO org1 = (OrganizationVO) o1;
+                    OrganizationVO org2 = (OrganizationVO) o2;
+                    return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+                }
+            });
+            //校验
+            List<OrganizationCheckVo> checkResultList = checkExcel(lineNumber,orgList);
+            //拿到错误校验列表
+            List<OrganizationCheckVo> failCheckList = checkResultList.stream().filter(check -> {
+                if (!check.getCheckResult()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).collect(Collectors.toList());
+            //如果为空则校验成功
+            if (CollectionUtils.isEmpty(failCheckList)) {
+                responseResult.setMessage("文件校验成功");
+                responseResult.setResultCode(CommonCode.SUCCESS);
             } else {
-                return false;
+                responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
             }
-        }).collect(Collectors.toList());
-        //如果为空则校验成功
-        if (CollectionUtils.isEmpty(failCheckList)) {
-            responseResult.setMessage("文件校验成功");
-            responseResult.setResultCode(CommonCode.SUCCESS);
-        } else {
-            responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
+            //将orgList存入redis
+            String redisKey ="tempOrgData"+String.valueOf(filename.hashCode());
+            redisService.del(redisKey);
+            String json = JSON.toJSONString(orgList);
+            redisService.setex(redisKey,60*60*2, json);
+            //将校验结果与原表格信息返回
+            HashMap<Object, Object> resultMap = new HashMap<>();
+            resultMap.put("failCheckList",failCheckList);
+            resultMap.put("excelList",orgList);
+            resultMap.put("redisKey",redisKey);
+            responseResult.setResult(resultMap);
+        }catch (Exception e){
+            e.printStackTrace();
+            responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
         }
-        //将orgList存入redis
-        String orgExcelRedisKey = "orgExcel" + userSession.getArchiveId();
-        redisService.del(orgExcelRedisKey);
-        String json = JSON.toJSONString(orgList);
-        redisService.setex(orgExcelRedisKey,60*60*2, json);
-        //将校验结果与原表格信息返回
-        HashMap<Object, Object> resultMap = new HashMap<>();
-        //TODO
-        List<String> headerList=new ArrayList<>();
-        headerList.add("机构编码");
-        headerList.add("机构名称");
-        headerList.add("机构类型");
-        headerList.add("上级机构编码");
-        headerList.add("上级机构");
-        headerList.add("部门复杂人编号");
-        headerList.add("部门复杂人");
-        resultMap.put("failCheckList",failCheckList);
-        resultMap.put("excelList",orgList);
-        resultMap.put("excelHeaderList",headerList);
-        responseResult.setResult(resultMap);
-        //将redis的key返回
-        response.setCharacterEncoding("UTF-8");
-        //TODO  加密
-        response.setHeader("orgExcelRedisKey", orgExcelRedisKey);
         return responseResult;
     }
 
-
     //=====================================================================
 
-    /**
-     * 搜集机构下所有子机构的id
-     *
-     * @param userSession
-     * @param orgId
-     * @param layer       递归层级
-     * @return
-     */
-    @Override
-    public List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable) {
+
+    private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
         //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), isEnable, new Date());
+        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
@@ -872,19 +854,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     //=====================================================================
-    @Override
-    public ResponseResult uploadExcel(MultipartFile file, UserSession userSession) {
-        //解析文件
-        try {
-            parseFile(file);
-        } catch (Exception e) {
-            String message = e.getMessage();
-            ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
-            responseResult.setMessage(message);
-            return responseResult;
-        }
-        return new ResponseResult();
-    }
+
 
     @Override
     public OrganizationVO selectByPrimaryKey(Integer orgId) {
@@ -924,163 +894,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationVOList;
     }
 
-    //=====================================================================
-    private List<OrganizationVO> parseFile(MultipartFile file) throws Exception {
-        List<OrganizationVO> organizationVOList = new ArrayList<>();
-        // 检查文件类型
-        String fileName = checkFile(file);
-        if ("1".equals(fileName) || "2".equals(fileName)) {
-            ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
-        }
-        Workbook workbook = null;
-        InputStream inputStream = file.getInputStream();
-        workbook = WorkbookFactory.create(inputStream);
-        int numberOfSheets = workbook.getNumberOfSheets();
-        int orgNum = 0;
-        if (numberOfSheets > 0) {
-            Sheet sheet = workbook.getSheetAt(0);
-            if (null != sheet) {
-                // 获得当前sheet的开始行
-                int firstRowNum = sheet.getFirstRowNum();
-                // 获得当前sheet的结束行
-                int lastRowNum = sheet.getLastRowNum();
-                for (int rowNum = firstRowNum; rowNum <= lastRowNum; rowNum++) {
-                    Boolean parentIsMust = true;
-                    // 获得当前行
-                    Row row = sheet.getRow(rowNum);
-                    if (row == null) {
-                        continue;
-                    }
-//                        // 获得当前行的开始列
-//                        int firstCellNum = row.getFirstCellNum();
-//                        // 获得当前行的列数
-//                        int lastCellNum = row.getLastCellNum();
-                    OrganizationVO organizationVO = new OrganizationVO();
-                    String orgCode = getCellValue(row.getCell(0));
-                    if (StringUtils.isEmpty(orgCode)) {
-                        throw new Exception((firstRowNum + 1) + "行,第" + 1 + "列机构编码不能为空!");
-                    }
-                    organizationVO.setOrgCode(orgCode);
-                    String orgName = getCellValue(row.getCell(1));
-                    if (StringUtils.isEmpty(orgName)) {
-                        throw new Exception((firstRowNum + 1) + "行,第" + 2 + "列机构名称不能为空!");
-                    }
-                    organizationVO.setOrgName(orgName);
 
-                    String orgType = getCellValue(row.getCell(2));
-                    if (StringUtils.isEmpty(orgType)) {
-                        throw new Exception((firstRowNum + 1) + "行,第" + 3 + "列机构类型不能为空!");
-                    }
-                    if ("集团".equals(orgType)) {
-                        orgNum++;
-                        parentIsMust = false;
-                    }
-                    organizationVO.setOrgType(orgType);
-                    String parentPostCode = getCellValue(row.getCell(3));
-                    if (StringUtils.isEmpty(parentPostCode) && !parentIsMust) {
-                        throw new Exception((firstRowNum + 1) + "行,第" + 4 + "列上级机构编码不能为空!");
-                    }
-                    organizationVO.setOrgParentCode(parentPostCode);
-                    String parentOrgName = getCellValue(row.getCell(4));
-                    if (StringUtils.isEmpty(parentOrgName) && !parentIsMust) {
-                        throw new Exception((firstRowNum + 1) + "行,第" + 5 + "列上级机构不能为空!");
-                    }
-                    organizationVO.setOrgParentName(parentOrgName);
-                    String managerEmployeeNumber = getCellValue(row.getCell(5));
-                    organizationVO.setManagerEmployeeNumber(managerEmployeeNumber);
-                    String orgManagerName = getCellValue(row.getCell(6));
-                    organizationVO.setOrgManagerName(orgManagerName);
-
-                    //TODO 插入数据库并判断是更新还是新增,数据库是否存在
-                    organizationVOList.add(organizationVO);
-                }
-            }
-        }
-        if (orgNum != 1) {
-            throw new Exception("有且只能有一个'集团'类型的机构!");
-        }
-        return organizationVOList;
-    }
-
-    //=====================================================================
-
-    /**
-     * 根据不同类型获取值
-     *
-     * @param cell
-     * @return
-     */
-    public static String getCellValue(Cell cell) {
-        String cellValue = null;
-        if (cell == null) {
-            return cellValue;
-        }
-        // 判断数据的类型
-        switch (cell.getCellTypeEnum()) {
-            case NUMERIC: // 数字
-                cellValue = stringDateProcess(cell);
-                break;
-            case STRING: // 字符串
-                cellValue = String.valueOf(cell.getStringCellValue());
-                break;
-            case BOOLEAN: // Boolean
-                cellValue = String.valueOf(cell.getBooleanCellValue());
-                break;
-            case FORMULA: // 公式
-                cellValue = String.valueOf(cell.getCellFormula());
-                break;
-            case BLANK: // 空值
-                cellValue = "";
-                break;
-            case ERROR: // 故障
-                cellValue = "非法字符";
-                break;
-            default:
-                cellValue = "未知类型";
-                break;
-        }
-        return cellValue;
-    }
-
-    //=====================================================================
-
-    /**
-     * 时间格式转换
-     *
-     * @param cell
-     * @return
-     */
-    public static String stringDateProcess(Cell cell) {
-        String result = "";
-        if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
-            SimpleDateFormat sdf = null;
-            if (cell.getCellStyle().getDataFormat() == HSSFDataFormat.getBuiltinFormat("h:mm")) {
-                sdf = new SimpleDateFormat("HH:mm ");
-            } else {// 日期
-                sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            }
-            Date date = cell.getDateCellValue();
-            result = sdf.format(date);
-        } else if (cell.getCellStyle().getDataFormat() == 58) {
-            // 处理自定义日期格式：m月d日(通过判断单元格的格式id解决，id的值是58)
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            double value = cell.getNumericCellValue();
-            Date date = DateUtil.getJavaDate(value);
-            result = sdf.format(date);
-        } else {
-            double value = cell.getNumericCellValue();
-            CellStyle style = cell.getCellStyle();
-            DecimalFormat format = new DecimalFormat();
-            String temp = style.getDataFormatString();
-            // 单元格设置成常规
-            if (temp.equals("General")) {
-                format.applyPattern("#");
-            }
-            result = format.format(value);
-        }
-
-        return result;
-    }
 
 
 //=====================================================================
@@ -1196,48 +1010,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    //=====================================================================
-    public static String checkFile(MultipartFile file) throws IOException {
-        // 判断文件是否存在
-        if (null == file) {
-            //throw new GunsException(BizExceptionEnum.FILE_NOT_FOUND);
-            return "1";//文件不存在
-        }
-        // 获得文件名
-        String fileName = file.getOriginalFilename();
-        // 判断文件是否是excel文件
-        if (!fileName.endsWith("xls") && !fileName.endsWith("xlsx")) {
-            //throw new GunsException(BizExceptionEnum.UPLOAD_NOT_EXCEL_ERROR);
-            return "2";//上传的不是excel文件
-        }
-        return fileName;
-    }
 
-
-//=====================================================================
-
-    /**
-     * 使用浏览器下载
-     *
-     * @param response
-     * @param workbook
-     * @param fileName
-     */
-    private static void setBrowser(HttpServletResponse response, HSSFWorkbook workbook, String fileName) throws Exception {
-        try {
-            OutputStream os = new BufferedOutputStream(response.getOutputStream());
-            //清空response
-            response.reset();
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            //将excel写入到输出流中
-            workbook.write(os);
-            os.flush();
-            os.close();
-        } catch (Exception e) {
-            throw new Exception("文件导出失败!");
-        }
-    }
 
     public List<OrganizationCheckVo> checkExcel(Map<String,Integer>lineNumber,List<OrganizationVO> voList) {
         List<OrganizationCheckVo> checkVos = new ArrayList<>();
@@ -1245,9 +1018,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         int groupCount = 0;
         for (OrganizationVO organizationVO : voList) {
             OrganizationCheckVo checkVo = new OrganizationCheckVo();
-            checkVo.setCheckResult(true);
             checkVo.setLineNumer(lineNumber.get(organizationVO.getOrgCode()));
             BeanUtils.copyProperties(organizationVO, checkVo);
+            checkVo.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder();
             //验空
             if (Objects.isNull(organizationVO.getOrgCode())) {
@@ -1311,8 +1084,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         return checkVos;
     }
-
-
 }
 
 

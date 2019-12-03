@@ -88,32 +88,6 @@ public interface PostService {
   ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId, Short isEnable);
 
   /**
-   * 下载模板
-   *
-   * @return
-   */
-  ResponseResult downloadTemplate(HttpServletResponse response);
-
-  /**
-   * 根据查询条件导出Excel
-   *
-   * @param postPageVo
-   * @param userSession
-   * @return
-   */
-  ResponseResult downloadExcelByCondition(PostPageVo postPageVo, UserSession userSession, HttpServletResponse response);
-
-  /**
-   * 根据选择的岗位id导出Excel
-   *
-   * @param postIds
-   * @param userSession
-   * @param response
-   * @return
-   */
-  ResponseResult downloadExcelByPostId(List<Integer> postIds, UserSession userSession, HttpServletResponse response);
-
-  /**
    * 查看岗位历任
    * @return
    */
@@ -121,7 +95,7 @@ public interface PostService {
 
     List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession);
 
-  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession);
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception;
 
   ResponseResult importToDatabase(String redisKey, UserSession userSession);
 

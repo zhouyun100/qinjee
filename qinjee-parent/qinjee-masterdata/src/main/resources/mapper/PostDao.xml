@@ -7,6 +7,7 @@
         <result column="post_name" jdbcType="VARCHAR" property="postName"/>
         <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
         <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="org_code" jdbcType="VARCHAR" property="orgCode"/>
         <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
         <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
         <result column="position_id" jdbcType="INTEGER" property="positionId"/>
@@ -258,7 +259,7 @@
     SELECT post_code,sort_id from t_post where org_id = #{orgId} and parent_post_id =0 order by sort_id desc
   </select>
     <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
-    select tp.org_id,tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position tps on tps.position_id = tp.position_id
+    select tp.org_id,tp.post_id, tp.post_name, tps.position_name position_name from t_post tp left join t_position tps on tps.position_id = tp.position_id
     where tp.org_id=#{orgId} and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
   </select>
     <select id="getPost" resultType="com.qinjee.masterdata.model.entity.Post">
@@ -268,15 +269,28 @@
         where post_code = #{postCode} and post_name = #{postName}
     </select>
     <select id="getPostListByPostIds" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"></include>
-        from t_post tp
+        SELECT
+        tp.org_id org_id,
+        org.org_code,
+        org.org_name org_name,
+        tp.post_code post_code,
+        tp.post_name post_name,
+        tp.post_id post_id ,
+        tps.position_name position_name,
+        ptp.post_code parent_post_code,
+        ptp.post_name parent_post_name
+        FROM
+        t_post tp
+        LEFT JOIN t_organization org ON tp.org_id =org.org_id
+        LEFT JOIN t_position tps
+        ON tps.position_id = tp.position_id
+        LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
         where tp.post_id in
-        <foreach item="postId" collection="postIds"
-                 open="(" separator="," close=")">
-            #{postId}
+        <foreach collection="postIds" item="id" separator="," open="(" close=")">
+            #{id}
         </foreach>
-        GROUP BY tp.post_id
+        and tp.is_delete = 0 and tp.is_enable = 1
+        order by tp.sort_id
     </select>
     <select id="getPostByOrgId" resultType="java.util.Map">
       select
@@ -304,13 +318,27 @@
     </select>
 
     <select id="getPostPositionListByOrgIds" resultMap="BaseResultMap">
-        select tp.org_id,tp.post_id, tp.post_name, tps.position_name positionName from t_post tp left join t_position
-        tps on tps.position_id = tp.position_id
+        SELECT
+        tp.org_id org_id,
+        org.org_code,
+        org.org_name org_name,
+        tp.post_code post_code,
+        tp.post_name post_name,
+        tp.post_id post_id ,
+        tps.position_name position_name,
+        ptp.post_code parent_post_code,
+        ptp.post_name parent_post_name
+        FROM
+        t_post tp
+        LEFT JOIN t_organization org ON tp.org_id =org.org_id
+        LEFT JOIN t_position tps
+        ON tps.position_id = tp.position_id
+        LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
         where tp.org_id in
         <foreach collection="orgidList" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
-        and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
+        and tp.is_delete = 0 and tp.is_enable = 1
 
     </select>
     <select id="getPostConditionPages" resultMap="BaseResultMap">

@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.organation;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -12,9 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
-public interface OrganizationService {
+public interface OrganizationService  {
 
   /**
    * 根据是否封存查询用户下所有的机构,树形结构展示
@@ -113,14 +115,6 @@ public interface OrganizationService {
   ResponseResult downloadTemplate(HttpServletResponse response);
 
 
-  /**
-   * 导入
-   *
-   * @param file
-   * @param userSession
-   * @return
-   */
-  ResponseResult uploadExcel(MultipartFile file, UserSession userSession);
 
   /**
    * 根据机构id查询机构
@@ -184,7 +178,7 @@ public interface OrganizationService {
 
   List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 
-  List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, UserSession userSession);
+  List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, Integer archiveId);
 
   PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
@@ -192,7 +186,8 @@ public interface OrganizationService {
 
   ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
 
-  List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Integer layer, Short isEnable);
+
+
 
 }
 
