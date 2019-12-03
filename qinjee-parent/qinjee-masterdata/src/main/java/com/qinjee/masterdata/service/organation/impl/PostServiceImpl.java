@@ -1,21 +1,17 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.dao.PostDao;
-import com.qinjee.masterdata.dao.PostGradeRelationDao;
-import com.qinjee.masterdata.dao.PostInstructionsDao;
-import com.qinjee.masterdata.dao.PostLevelRelationDao;
+import com.qinjee.masterdata.dao.*;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
-import com.qinjee.masterdata.model.vo.organization.check.OrganizationCheckVo;
-import com.qinjee.masterdata.model.vo.organization.check.PostCheckVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.redis.RedisClusterService;
@@ -29,24 +25,15 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
-import org.apache.commons.io.FileUtils;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,6 +64,8 @@ public class PostServiceImpl implements PostService {
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private PositionDao positionDao;
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
@@ -342,6 +331,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception{
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+        //将校验结果与原表格信息返回
+        HashMap<Object, Object> resultMap = new HashMap<>();
         //判断文件名
         String filename = multfile.getOriginalFilename();
         if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
@@ -355,7 +346,7 @@ public class PostServiceImpl implements PostService {
         Integer number=1;
         for (Object object : objects) {
             Post vo = (Post) object;
-            lineNumber.put(vo.getOrgCode(),number++);
+            lineNumber.put(vo.getPostCode(),number++);
             orgList.add(vo);
         }
         orgList.sort(new Comparator() {
@@ -363,14 +354,18 @@ public class PostServiceImpl implements PostService {
             public int compare(Object o1, Object o2) {
                 Post post1 = (Post) o1;
                 Post post2 = (Post) o2;
+                if(post1.getPostCode().length()>post1.getPostCode().length()){
+                    return 1;
+                }else if(post1.getPostCode().length()<post1.getPostCode().length()){
+                    return -1;
+                }
                 return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
             }
         });
         //校验
-        //TODO List<PostCheckVo> checkResultList = checkExcel(lineNumber,orgList);
-        List<PostCheckVo> checkResultList=null;
+         List<Post> checkResultList = checkExcel(lineNumber,orgList);
         //拿到错误校验列表
-        List<PostCheckVo> failCheckList = checkResultList.stream().filter(check -> {
+        List<Post> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
                 return true;
             } else {
@@ -382,38 +377,87 @@ public class PostServiceImpl implements PostService {
             responseResult.setMessage("文件校验成功");
             responseResult.setResultCode(CommonCode.SUCCESS);
         } else {
+            StringBuilder errorSb=new StringBuilder();
+            for (Post error : failCheckList) {
+                errorSb.append(error.getLineNumber()+","+error.getResultMsg()+"\n");
+            }
+            String errorInfoKey ="errorPostData"+String.valueOf(filename.hashCode());
+            redisService.del(errorInfoKey);
+            redisService.setex(errorInfoKey,60*60*2, errorSb.toString());
+            resultMap.put("errorInfoKey",errorInfoKey);
             responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
+            response.setHeader("errorInfoKey", errorInfoKey);
         }
         //将orgList存入redis
-        String postExcelRedisKey = "postExcel" + userSession.getArchiveId();
-        redisService.del(postExcelRedisKey);
+        String redisKey ="tempPostData"+String.valueOf(filename.hashCode());
+        redisService.del(redisKey);
         String json = JSON.toJSONString(orgList);
-        redisService.setex(postExcelRedisKey,60*60*2, json);
-        //将校验结果与原表格信息返回
-        HashMap<Object, Object> resultMap = new HashMap<>();
-        //TODO
-        List<String> headerList=new ArrayList<>();
-        headerList.add("机构编码");
-        headerList.add("机构名称");
-        headerList.add("机构类型");
-        headerList.add("上级机构编码");
-        headerList.add("上级机构");
-        headerList.add("部门复杂人编号");
-        headerList.add("部门复杂人");
+        redisService.setex(redisKey,60*60*2, json);
+
         resultMap.put("failCheckList",failCheckList);
         resultMap.put("excelList",orgList);
-        resultMap.put("excelHeaderList",headerList);
+        resultMap.put("redisKey",redisKey);
         responseResult.setResult(resultMap);
-        //将redis的key返回
-        response.setCharacterEncoding("UTF-8");
-        //TODO  加密
-        response.setHeader("orgExcelRedisKey", postExcelRedisKey);
+        response.setHeader("redisKey", redisKey);
         return responseResult;
     }
 
     @Override
-    public ResponseResult importToDatabase(String redisKey, UserSession userSession) {
-        return null;
+    public ResponseResult importToDatabase(String redisKey, UserSession userSession){
+        String data = redisService.get(redisKey.trim());
+        //将其转为对象集合
+        List<Post> list= JSONArray.parseArray(data,Post.class);
+        LinkedMultiValueMap<String, Post> multiValuedMap = new LinkedMultiValueMap<>();
+        for (Post post : list) {
+            if (null == post.getParentPostCode() || "".equals(post.getParentPostCode())) {
+                multiValuedMap.add(post.getPostCode(), post);
+            } else {
+                multiValuedMap.add(post.getParentPostCode(), post);
+            }
+        }
+        for (Map.Entry<String, List<Post>> entry : multiValuedMap.entrySet()) {
+            List<Post> orgLost = entry.getValue();
+            orgLost.sort(new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Post post1 = (Post) o1;
+                    Post post2 = (Post) o2;
+                    if(post1.getPostCode().length()>post1.getPostCode().length()){
+                        return 1;
+                    }else if(post1.getPostCode().length()<post1.getPostCode().length()){
+                        return -1;
+                    }
+                    return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
+                }
+            });
+            //TODO
+            int sortId = 1000;
+            for (Post vo : orgLost) {
+                Post ifExistVo=postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
+                Post parentPost=postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
+                OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
+                Position position=positionDao.getPositionByName(vo.getPositionName());
+                vo.setOrgId(orgVo.getOrgId());
+                vo.setPositionId(position.getPositionId());
+
+                if(Objects.nonNull(parentPost)){
+                    vo.setParentPostId(parentPost.getPostId());
+                }else{
+                    vo.setParentPostId(0);
+                }
+                //已存在 则更新
+                if (Objects.nonNull(ifExistVo)) {
+                    postDao.updateByPrimaryKeySelective(vo);
+                } else {
+                    vo.setOperatorId(userSession.getArchiveId());
+                    vo.setCompanyId(userSession.getCompanyId());
+                    vo.setSortId(sortId);
+                    sortId += 1000;
+                    int i = postDao.insertSelective(vo);
+                }
+            }
+        }
+        return new ResponseResult();
     }
 
     @Override
@@ -649,6 +693,49 @@ public class PostServiceImpl implements PostService {
         }
         String newPostCode = preCode + code;
         return newPostCode;
+    }
+
+
+
+    public List<Post> checkExcel(Map<String,Integer>lineNumber,List<Post> voList) {
+        List<Post> checkVos = new ArrayList<>();
+        int line=1;
+        int groupCount = 0;
+        for (Post post : voList) {
+            Post checkVo = new Post();
+            BeanUtils.copyProperties(post, checkVo);
+            checkVo.setLineNumber(line++);
+            checkVo.setCheckResult(true);
+            StringBuilder resultMsg = new StringBuilder();
+            //验空
+            if (Objects.isNull(post.getPostCode())) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("岗位编码不能为空|");
+            }
+            if (Objects.isNull(post.getPostName())) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("岗位名称不能为空|");
+            }
+            if (Objects.isNull(post.getOrgCode())) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("所属部门编码不能为空|");
+            }
+            if (Objects.isNull(post.getOrgName())) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("所属部门名称不能为空|");
+            }
+            if (Objects.isNull(post.getPositionName())) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("职位名称不能为空|");
+            }
+
+          //TODO 校验部门编码是否存在，部门编码与部门名称是否对应
+          //TODO 校验上级岗位编码是否存在，与岗位名称是否对应
+          //TODO 校验职位是否存在
+            checkVo.setResultMsg(resultMsg);
+            checkVos.add(checkVo);
+        }
+        return checkVos;
     }
 
 

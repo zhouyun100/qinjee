@@ -16,7 +16,6 @@ import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.check.OrganizationCheckVo;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.redis.RedisClusterService;
@@ -33,9 +32,6 @@ import com.qinjee.model.response.ResponseResult;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -48,8 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -386,7 +380,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession) {
-       String data = redisService.get(orgExcelRedisKey);
+       String data = redisService.get(orgExcelRedisKey.trim());
        //将其转为对象集合
         List<OrganizationVO> list= JSONArray.parseArray(data,OrganizationVO.class);
 
@@ -454,6 +448,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+        //将校验结果与原表格信息返回
+        HashMap<Object, Object> resultMap = new HashMap<>();
         try {
             //判断文件名
             String filename = multfile.getOriginalFilename();
@@ -480,9 +476,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                 }
             });
             //校验
-            List<OrganizationCheckVo> checkResultList = checkExcel(lineNumber,orgList);
+            List<OrganizationVO> checkResultList = checkExcel(lineNumber,orgList);
             //拿到错误校验列表
-            List<OrganizationCheckVo> failCheckList = checkResultList.stream().filter(check -> {
+            List<OrganizationVO> failCheckList = checkResultList.stream().filter(check -> {
                 if (!check.getCheckResult()) {
                     return true;
                 } else {
@@ -494,19 +490,29 @@ public class OrganizationServiceImpl implements OrganizationService {
                 responseResult.setMessage("文件校验成功");
                 responseResult.setResultCode(CommonCode.SUCCESS);
             } else {
+                StringBuilder errorSb=new StringBuilder();
+                for (OrganizationVO error : failCheckList) {
+                    errorSb.append(error.getLineNumber()+","+error.getResultMsg()+"\n");
+                }
+                String errorInfoKey ="errorOrgData"+String.valueOf(filename.hashCode());
+                redisService.del(errorInfoKey);
+                redisService.setex(errorInfoKey,60*60*2, errorSb.toString());
+                resultMap.put("errorInfoKey",errorInfoKey);
                 responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
+                response.setHeader("errorInfoKey", errorInfoKey);
             }
             //将orgList存入redis
             String redisKey ="tempOrgData"+String.valueOf(filename.hashCode());
             redisService.del(redisKey);
             String json = JSON.toJSONString(orgList);
             redisService.setex(redisKey,60*60*2, json);
-            //将校验结果与原表格信息返回
-            HashMap<Object, Object> resultMap = new HashMap<>();
+
             resultMap.put("failCheckList",failCheckList);
             resultMap.put("excelList",orgList);
             resultMap.put("redisKey",redisKey);
             responseResult.setResult(resultMap);
+            response.setHeader("redisKey", redisKey);
+
         }catch (Exception e){
             e.printStackTrace();
             responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
@@ -1012,14 +1018,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 
 
-    public List<OrganizationCheckVo> checkExcel(Map<String,Integer>lineNumber,List<OrganizationVO> voList) {
-        List<OrganizationCheckVo> checkVos = new ArrayList<>();
-        int line = 0;
+    public List<OrganizationVO> checkExcel(Map<String,Integer>lineNumber,List<OrganizationVO> voList) {
+        List<OrganizationVO> checkVos = new ArrayList<>();
+        int line = 1;
         int groupCount = 0;
         for (OrganizationVO organizationVO : voList) {
-            OrganizationCheckVo checkVo = new OrganizationCheckVo();
-            checkVo.setLineNumer(lineNumber.get(organizationVO.getOrgCode()));
+            OrganizationVO checkVo = new OrganizationVO();
             BeanUtils.copyProperties(organizationVO, checkVo);
+            checkVo.setLineNumber(line++);
             checkVo.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder();
             //验空

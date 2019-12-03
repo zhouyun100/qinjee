@@ -50,4 +50,5 @@ public interface PositionDao {
      */
     List<Position> getPositionPage(@Param("pageVo") PositionPageVo pageVo,@Param("sortFieldStr")String sortFieldStr);
 
+    Position getPositionByName(String positionName);
 }

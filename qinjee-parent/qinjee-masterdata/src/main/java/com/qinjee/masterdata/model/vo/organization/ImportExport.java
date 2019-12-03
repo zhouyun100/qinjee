@@ -2,6 +2,8 @@ package com.qinjee.masterdata.model.vo.organization;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @program: eTalent
  * @description:
@@ -9,8 +11,7 @@ import lombok.Data;
  * @create: 2019-12-03 10:58
  **/
 @Data
-public class ImportExport {
+public class ImportExport implements Serializable {
 
-    private Boolean checkResult;
-    private StringBuilder resultMsg;
+
 }
