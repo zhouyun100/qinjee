@@ -117,5 +117,7 @@ public interface PostDao {
     List<Post> listPostByCompanyId(Integer companyId, Short isEnable);
 
     List<Post> listDirectPostPage(PostPageVo postPageVo, String sortFieldStr);
+
+    Post getPostByPostCode(String postCode, Integer companyId);
 }
 

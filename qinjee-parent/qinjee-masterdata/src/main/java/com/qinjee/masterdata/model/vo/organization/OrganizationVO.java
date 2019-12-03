@@ -28,9 +28,11 @@ import java.util.List;
 @ApiModel(description = "机构实体VO类")
 @ToString
 @ExcelSheetAnno(name = "机构信息", headColor = HSSFColor.HSSFColorPredefined.LIGHT_GREEN)
-public class OrganizationVO extends ImportExport implements Serializable {
+public class OrganizationVO  implements Serializable {
 
-
+    private Boolean checkResult;
+    private Integer lineNumber;
+    private StringBuilder resultMsg;
 
     /**
      * 机构ID

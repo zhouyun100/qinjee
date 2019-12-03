@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.organization;
 
+import com.alibaba.fastjson.JSONArray;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
@@ -7,18 +8,21 @@ import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 高雄
@@ -160,11 +164,10 @@ public class OrganizationController extends BaseController {
   public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
     return organizationService.sealOrganizationByIds(orgIds, Short.parseShort("1"));
   }
-
-
   // String filePath,  List<Integer> orgIds
   @PostMapping("/exportOrganization")
   public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) {
+    ResponseResult responseResult = new ResponseResult();
     List<Integer> orgIds = null;
     Integer orgId = null;
     if (paramMap.get("orgIds") != null && paramMap.get("orgIds") instanceof List) {
@@ -173,19 +176,25 @@ public class OrganizationController extends BaseController {
     if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
       orgId = (Integer) paramMap.get("orgId");
     }
-    List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
     try {
-      byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
-      response.setCharacterEncoding("UTF-8");
-      response.setHeader("content-Type", "application/vnd.ms-excel");
-      response.setHeader("fileName", URLEncoder.encode("defualt.xls", "UTF-8"));
-      response.setHeader("Content-Disposition",
-          "attachment;filename=\"" + URLEncoder.encode("defualt", "UTF-8") + "\"");
-      response.getOutputStream().write(bytes);
-    } catch (Exception e) {
+      List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
+      if (!CollectionUtils.isEmpty(organizationVOList)){
+        byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
+        response.setHeader("Content-Disposition",
+            "attachment;filename=\"" + URLEncoder.encode("defualt", "UTF-8") + "\"");
+        response.getOutputStream().write(bytes);
+        return null;
+      }else{
+        responseResult.setMessage("机构为空");
+      }
 
+    } catch (Exception e) {
+      responseResult.setResultCode(CommonCode.FILE_EXPORT_FAILED);
     }
-    return null;
+    return responseResult;
   }
 
 
@@ -195,7 +204,17 @@ public class OrganizationController extends BaseController {
    return organizationService.uploadAndCheck(multfile,getUserSession(),response);
 
   }
-
+  @PostMapping("/exportError2Txt")
+  @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
+  public ResponseResult exportError2Txt(String redisKey,HttpServletResponse response) throws Exception {
+    String errorData = redisClusterService.get(redisKey);
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("application/x-msdownload;charset=UTF-8");
+    response.setHeader("Content-Disposition",
+        "attachment;filename=\"" + URLEncoder.encode("errorInfo", "UTF-8") + "\"");
+    response.getOutputStream().write(errorData.getBytes());
+    return null;
+  }
 
   @GetMapping("/importToDatabase")
   @ApiOperation(value = "导入机构入库")

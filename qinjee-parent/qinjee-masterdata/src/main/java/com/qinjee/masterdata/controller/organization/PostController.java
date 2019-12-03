@@ -9,6 +9,7 @@ import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
@@ -138,6 +139,7 @@ public class PostController extends BaseController {
     @PostMapping("/exportPost")
     @ApiOperation(value = "ok，导出岗位  参数demo {\"orgId\":28,\"postIds\":[1,47]}")
     public ResponseResult exportPost(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
+        ResponseResult responseResult = new ResponseResult();
         List<Integer> postIds = null;
         Integer orgId = null;
         if (paramMap.get("postIds") != null && paramMap.get("postIds") instanceof List) {
@@ -146,19 +148,24 @@ public class PostController extends BaseController {
         if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
             orgId = (Integer) paramMap.get("orgId");
         }
-        List<Post> postOList = postService.exportPost(orgId, postIds, getUserSession());
-        if(!CollectionUtils.isEmpty(postOList)){
-            byte[] bytes = ExcelExportUtil.exportToBytes(postOList);
-            response.setCharacterEncoding("UTF-8");
-            response.setHeader("content-Type", "application/vnd.ms-excel");
-            response.setHeader("fileName", URLEncoder.encode("岗位", "UTF-8"));
-            response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode("岗位", "UTF-8") + "\"");
-            response.getOutputStream().write(bytes);
-            return null;
+        try {
+            List<Post> postOList = postService.exportPost(orgId, postIds, getUserSession());
+            if(!CollectionUtils.isEmpty(postOList)){
+                byte[] bytes = ExcelExportUtil.exportToBytes(postOList);
+                response.setCharacterEncoding("UTF-8");
+                response.setHeader("content-Type", "application/vnd.ms-excel");
+                response.setHeader("fileName", URLEncoder.encode("postDefualt.xls", "UTF-8"));
+                response.setHeader("Content-Disposition",
+                    "attachment;filename=\"" + URLEncoder.encode("postDefualt", "UTF-8") + "\"");
+                response.getOutputStream().write(bytes);
+                return null;
+            }else{
+                responseResult.setMessage("岗位为空");
+            }
+        }catch (Exception e){
+            responseResult.setResultCode(CommonCode.FILE_EXPORT_FAILED);
         }
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setMessage("岗位为空");
+
         return  responseResult;
     }
 

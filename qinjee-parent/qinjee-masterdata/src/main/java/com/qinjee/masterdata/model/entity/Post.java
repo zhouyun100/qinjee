@@ -22,9 +22,11 @@ import java.util.List;
 @NoArgsConstructor
 @ApiModel(description = "岗位表实体类")
 @ExcelSheetAnno(name = "岗位信息", headColor = HSSFColor.HSSFColorPredefined.LIGHT_GREEN)
-public class Post extends ImportExport implements Serializable {
+public class Post  implements Serializable {
 
-
+    private Boolean checkResult;
+    private Integer lineNumber;
+    private StringBuilder resultMsg;
     /**
      * 岗位ID
      */
