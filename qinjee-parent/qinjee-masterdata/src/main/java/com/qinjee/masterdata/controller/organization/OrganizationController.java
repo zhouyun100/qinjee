@@ -204,14 +204,14 @@ public class OrganizationController extends BaseController {
    return organizationService.uploadAndCheck(multfile,getUserSession(),response);
 
   }
-  @PostMapping("/exportError2Txt")
+  @GetMapping("/exportError2Txt")
   @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
   public ResponseResult exportError2Txt(String redisKey,HttpServletResponse response) throws Exception {
     String errorData = redisClusterService.get(redisKey);
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/x-msdownload;charset=UTF-8");
     response.setHeader("Content-Disposition",
-        "attachment;filename=\"" + URLEncoder.encode("errorInfo", "UTF-8") + "\"");
+        "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
     response.getOutputStream().write(errorData.getBytes());
     return null;
   }
