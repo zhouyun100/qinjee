@@ -168,6 +168,6 @@
   </select>
 
   <select id="getPositionByName" resultMap="BaseResultMap">
-    select position_id from t_position where position_name =#{positionName}
+    select position_id from t_position where position_name =#{positionName} and is_delete =0  limit 1
   </select>
 </mapper>

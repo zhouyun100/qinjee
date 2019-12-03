@@ -69,25 +69,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
-        String sortFieldStr=null;
-        if(Objects.nonNull(postPageVo.getQuerFieldVos())){
+        String sortFieldStr = null;
+        if (Objects.nonNull(postPageVo.getQuerFieldVos())) {
             Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
             sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
         }
         //TODO id重复无影响
-        List<Integer> orgidList=null;
+        List<Integer> orgidList = null;
         //如果机构id不是0，则进行筛选子机构id，否则默认为全部就行了
-        if(postPageVo.getOrgId()!=0){
-            orgidList=getOrgIdList(userSession,postPageVo.getOrgId());
+        if (postPageVo.getOrgId() != 0) {
+            orgidList = getOrgIdList(userSession, postPageVo.getOrgId());
         }
         if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
             PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
-        List<Post> postList = postDao.getPostConditionPages(postPageVo,orgidList, sortFieldStr);
+        List<Post> postList = postDao.getPostConditionPages(postPageVo, orgidList, sortFieldStr);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
-        return  pageResult;
+        return pageResult;
     }
 
     @Override
@@ -226,13 +226,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseResult sortPorts(List<Integer> postIds, UserSession userSession) {
         ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
-        List<Post> postList=postDao.getPostListByPostIds(postIds);
-        Set<Integer> parentPostSet=new HashSet<>();
+        List<Post> postList = postDao.getPostListByPostIds(postIds);
+        Set<Integer> parentPostSet = new HashSet<>();
         for (Post post : postList) {
             parentPostSet.add(post.getParentPostId());
         }
         //判断是否在同一级机构下
-        if (parentPostSet.size()>1){
+        if (parentPostSet.size() > 1) {
             responseResult.setResultCode(CommonCode.FAIL);
             responseResult.setMessage("岗位不在同级下，排序失败");
             return responseResult;
@@ -254,7 +254,7 @@ public class PostServiceImpl implements PostService {
                 postDao.insertSelective(post);
                 //岗位说明书
                 PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
-                if(Objects.nonNull(postInstructions)){
+                if (Objects.nonNull(postInstructions)) {
                     postInstructions.setOperatorId(userSession.getArchiveId());
                     postInstructions.setPostId(post.getPostId());
                     postInstructionsDao.insertSelective(postInstructions);
@@ -265,36 +265,38 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId,Short isEnable) {
+    public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId, Short isEnable) {
         //递归拿到所有子机构id
         //TODO id重复无影响
-        List<Integer> orgidList=getOrgIdList(userSession,orgId);
+        List<Integer> orgidList = getOrgIdList(userSession, orgId);
         List<Post> postList = postDao.getPostPositionListByOrgIds(orgidList);
         return new ResponseResult<>(postList);
     }
 
     /**
      * 搜集机构下所有子机构的id
+     *
      * @param userSession
      * @param orgId
      * @return
      */
-    private List<Integer> getOrgIdList(UserSession userSession,Integer orgId) {
-        List<Integer> idsList=new ArrayList<>();
-       //先查询到所有机构
+    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId) {
+        List<Integer> idsList = new ArrayList<>();
+        //先查询到所有机构
         List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), Short.parseShort("1"), new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
-            multiValuedMap.put(org.getOrgParentId(),org.getOrgId());
+            multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
         }
         //根据机构id递归，取出该机构下的所有子机构
-        collectOrgIds(multiValuedMap,orgId,idsList);
-        return  idsList;
+        collectOrgIds(multiValuedMap, orgId, idsList);
+        return idsList;
     }
 
     /**
      * 遍历搜集机构下所有子机构的id
+     *
      * @param multiValuedMap
      * @param orgId
      * @param idsList
@@ -304,17 +306,17 @@ public class PostServiceImpl implements PostService {
         Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
         for (Integer sonOrgId : sonOrgIds) {
             idsList.add(sonOrgId);
-            if(multiValuedMap.get(sonOrgId).size()>0){
-                collectOrgIds(multiValuedMap,sonOrgId,idsList);
+            if (multiValuedMap.get(sonOrgId).size() > 0) {
+                collectOrgIds(multiValuedMap, sonOrgId, idsList);
             }
         }
     }
 
 
     @Override
-    public ResponseResult<List<UserArchivePostRelation>> getPostSuccessive( Integer postId) {
+    public ResponseResult<List<UserArchivePostRelation>> getPostSuccessive(Integer postId) {
 
-       List<UserArchivePostRelation> list= postDao.getPostSuccessive(postId);
+        List<UserArchivePostRelation> list = postDao.getPostSuccessive(postId);
         return new ResponseResult(list);
     }
 
@@ -322,31 +324,31 @@ public class PostServiceImpl implements PostService {
     public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
         if (CollectionUtils.isEmpty(postIds)) {
             List<Integer> orgIdList = getOrgIdList(userSession, orgId);
-           return postDao.getPostPositionListByOrgIds(orgIdList);
+            return postDao.getPostPositionListByOrgIds(orgIdList);
         } else {
-           return postDao.getPostListByPostIds(postIds);
+            return postDao.getPostListByPostIds(postIds);
         }
     }
 
     @Override
-    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception{
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
         //将校验结果与原表格信息返回
         HashMap<Object, Object> resultMap = new HashMap<>();
         //判断文件名
         String filename = multfile.getOriginalFilename();
-        if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
+        if (!(filename.endsWith(".xls") || filename.endsWith(".xlsx"))) {
             responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
             return responseResult;
         }
         List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), Post.class);
         List<Post> orgList = new ArrayList<>();
         //记录行号
-        Map<String,Integer> lineNumber=new HashMap<>();
-        Integer number=1;
+        Map<String, Integer> lineNumber = new HashMap<>();
+        Integer number = 1;
         for (Object object : objects) {
             Post vo = (Post) object;
-            lineNumber.put(vo.getPostCode(),number++);
+            lineNumber.put(vo.getPostCode(), number++);
             orgList.add(vo);
         }
         orgList.sort(new Comparator() {
@@ -354,16 +356,16 @@ public class PostServiceImpl implements PostService {
             public int compare(Object o1, Object o2) {
                 Post post1 = (Post) o1;
                 Post post2 = (Post) o2;
-                if(post1.getPostCode().length()>post1.getPostCode().length()){
+                if (post1.getPostCode().length() > post1.getPostCode().length()) {
                     return 1;
-                }else if(post1.getPostCode().length()<post1.getPostCode().length()){
+                } else if (post1.getPostCode().length() < post1.getPostCode().length()) {
                     return -1;
                 }
                 return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
             }
         });
         //校验
-         List<Post> checkResultList = checkExcel(lineNumber,orgList);
+        List<Post> checkResultList = checkExcel(lineNumber, orgList, userSession);
         //拿到错误校验列表
         List<Post> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
@@ -377,36 +379,36 @@ public class PostServiceImpl implements PostService {
             responseResult.setMessage("文件校验成功");
             responseResult.setResultCode(CommonCode.SUCCESS);
         } else {
-            StringBuilder errorSb=new StringBuilder();
+            StringBuilder errorSb = new StringBuilder();
             for (Post error : failCheckList) {
-                errorSb.append(error.getLineNumber()+","+error.getResultMsg()+"\n");
+                errorSb.append(error.getLineNumber() + "," + error.getResultMsg() + "\n");
             }
-            String errorInfoKey ="errorPostData"+String.valueOf(filename.hashCode());
+            String errorInfoKey = "errorPostData" + String.valueOf(filename.hashCode());
             redisService.del(errorInfoKey);
-            redisService.setex(errorInfoKey,60*60*2, errorSb.toString());
-            resultMap.put("errorInfoKey",errorInfoKey);
-            responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
+            redisService.setex(errorInfoKey, 60 * 60 * 2, errorSb.toString());
+            resultMap.put("errorInfoKey", errorInfoKey);
+            responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
             response.setHeader("errorInfoKey", errorInfoKey);
         }
         //将orgList存入redis
-        String redisKey ="tempPostData"+String.valueOf(filename.hashCode());
+        String redisKey = "tempPostData" + String.valueOf(filename.hashCode());
         redisService.del(redisKey);
         String json = JSON.toJSONString(orgList);
-        redisService.setex(redisKey,60*60*2, json);
+        redisService.setex(redisKey, 60 * 60 * 2, json);
 
-        resultMap.put("failCheckList",failCheckList);
-        resultMap.put("excelList",orgList);
-        resultMap.put("redisKey",redisKey);
+        resultMap.put("failCheckList", failCheckList);
+        resultMap.put("excelList", orgList);
+        resultMap.put("redisKey", redisKey);
         responseResult.setResult(resultMap);
         response.setHeader("redisKey", redisKey);
         return responseResult;
     }
 
     @Override
-    public ResponseResult importToDatabase(String redisKey, UserSession userSession){
+    public ResponseResult importToDatabase(String redisKey, UserSession userSession) {
         String data = redisService.get(redisKey.trim());
         //将其转为对象集合
-        List<Post> list= JSONArray.parseArray(data,Post.class);
+        List<Post> list = JSONArray.parseArray(data, Post.class);
         LinkedMultiValueMap<String, Post> multiValuedMap = new LinkedMultiValueMap<>();
         for (Post post : list) {
             if (null == post.getParentPostCode() || "".equals(post.getParentPostCode())) {
@@ -422,9 +424,9 @@ public class PostServiceImpl implements PostService {
                 public int compare(Object o1, Object o2) {
                     Post post1 = (Post) o1;
                     Post post2 = (Post) o2;
-                    if(post1.getPostCode().length()>post1.getPostCode().length()){
+                    if (post1.getPostCode().length() > post1.getPostCode().length()) {
                         return 1;
-                    }else if(post1.getPostCode().length()<post1.getPostCode().length()){
+                    } else if (post1.getPostCode().length() < post1.getPostCode().length()) {
                         return -1;
                     }
                     return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
@@ -433,16 +435,16 @@ public class PostServiceImpl implements PostService {
             //TODO
             int sortId = 1000;
             for (Post vo : orgLost) {
-                Post ifExistVo=postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
-                Post parentPost=postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
+                Post ifExistVo = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
+                Post parentPost = postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
                 OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
-                Position position=positionDao.getPositionByName(vo.getPositionName());
+                Position position = positionDao.getPositionByName(vo.getPositionName());
                 vo.setOrgId(orgVo.getOrgId());
                 vo.setPositionId(position.getPositionId());
 
-                if(Objects.nonNull(parentPost)){
+                if (Objects.nonNull(parentPost)) {
                     vo.setParentPostId(parentPost.getPostId());
-                }else{
+                } else {
                     vo.setParentPostId(0);
                 }
                 //已存在 则更新
@@ -470,7 +472,7 @@ public class PostServiceImpl implements PostService {
         }
         postIdList = getPostIdList(userSession, postId, (layer - 1), isEnable);
         //查询所有相关的岗位
-        List<Post> allPost = postDao.getPostGraphics( postIdList, isEnable);
+        List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
         //拿到根节点
         List<Post> topPostList = allPost.stream().filter(post -> {
             if (post.getPostId() != null && post.getPostId().equals(postId)) {
@@ -482,7 +484,7 @@ public class PostServiceImpl implements PostService {
             }
         }).collect(Collectors.toList());
         //递归处理机构,使其以树形结构展示
-        
+
         handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
         return allPost;
     }
@@ -527,7 +529,7 @@ public class PostServiceImpl implements PostService {
             if (childList != null && childList.size() > 0) {
                 post.setChildList(childList);
                 allPost.removeAll(childList);
-                handlerPostToGraphics(allPost, childList,isContainsCompiler,isContainsActualMembers);
+                handlerPostToGraphics(allPost, childList, isContainsCompiler, isContainsActualMembers);
             }
         }
 
@@ -537,7 +539,7 @@ public class PostServiceImpl implements PostService {
     private List<Integer> getPostIdList(UserSession userSession, Integer postId, int layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
         //先查询到岗位
-        List<Post> listPost= postDao.listPostByCompanyId(userSession.getCompanyId(),isEnable);
+        List<Post> listPost = postDao.listPostByCompanyId(userSession.getCompanyId(), isEnable);
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (Post post : listPost) {
@@ -696,10 +698,9 @@ public class PostServiceImpl implements PostService {
     }
 
 
-
-    public List<Post> checkExcel(Map<String,Integer>lineNumber,List<Post> voList) {
+    public List<Post> checkExcel(Map<String, Integer> lineNumber, List<Post> voList, UserSession userSession) {
         List<Post> checkVos = new ArrayList<>();
-        int line=1;
+        int line = 1;
         int groupCount = 0;
         for (Post post : voList) {
             Post checkVo = new Post();
@@ -729,9 +730,35 @@ public class PostServiceImpl implements PostService {
                 resultMsg.append("职位名称不能为空|");
             }
 
-          //TODO 校验部门编码是否存在，部门编码与部门名称是否对应
-          //TODO 校验上级岗位编码是否存在，与岗位名称是否对应
-          //TODO 校验职位是否存在
+            // 校验部门编码是否存在，部门编码与部门名称是否对应
+            OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(post.getOrgCode(), userSession.getCompanyId());
+            if (Objects.isNull(org)) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("部门编码" + org.getOrgCode() + "不存在|");
+            } else {
+                if (!post.getOrgName().equals(org.getOrgName())) {
+                    checkVo.setCheckResult(false);
+                    resultMsg.append("部门名称不匹配|");
+                }
+            }
+
+            if (null != post.getParentPostCode() && "".equals(post.getParentPostCode())) {
+                // 校验上级岗位编码是否存在，与岗位名称是否对应
+                Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
+                if (Objects.nonNull(parentPost)) {
+                    if (!post.getParentPostName().equals(parentPost.getPostName())) {
+                        checkVo.setCheckResult(false);
+                        resultMsg.append("上级岗位名称不匹配|");
+                    }
+                }
+            }
+
+            //校验职位是否存在
+            Position position = positionDao.getPositionByName(post.getPositionName());
+            if (Objects.isNull(position)) {
+                checkVo.setCheckResult(false);
+                resultMsg.append("职位" + post.getPositionName() + "不存在|");
+            }
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }
