@@ -380,7 +380,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession) {
-       String data = redisService.get(orgExcelRedisKey);
+       String data = redisService.get(orgExcelRedisKey.trim());
        //将其转为对象集合
         List<OrganizationVO> list= JSONArray.parseArray(data,OrganizationVO.class);
 
@@ -499,6 +499,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 redisService.setex(errorInfoKey,60*60*2, errorSb.toString());
                 resultMap.put("errorInfoKey",errorInfoKey);
                 responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
+                response.setHeader("errorInfoKey", errorInfoKey);
             }
             //将orgList存入redis
             String redisKey ="tempOrgData"+String.valueOf(filename.hashCode());
@@ -510,6 +511,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             resultMap.put("excelList",orgList);
             resultMap.put("redisKey",redisKey);
             responseResult.setResult(resultMap);
+            response.setHeader("redisKey", redisKey);
+
         }catch (Exception e){
             e.printStackTrace();
             responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);

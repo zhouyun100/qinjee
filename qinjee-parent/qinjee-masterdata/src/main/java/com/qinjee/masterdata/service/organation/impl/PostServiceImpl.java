@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.dao.PostDao;
-import com.qinjee.masterdata.dao.PostGradeRelationDao;
-import com.qinjee.masterdata.dao.PostInstructionsDao;
-import com.qinjee.masterdata.dao.PostLevelRelationDao;
+import com.qinjee.masterdata.dao.*;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
@@ -67,6 +64,8 @@ public class PostServiceImpl implements PostService {
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private PositionDao positionDao;
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
@@ -332,6 +331,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception{
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+        //将校验结果与原表格信息返回
+        HashMap<Object, Object> resultMap = new HashMap<>();
         //判断文件名
         String filename = multfile.getOriginalFilename();
         if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
@@ -353,6 +354,11 @@ public class PostServiceImpl implements PostService {
             public int compare(Object o1, Object o2) {
                 Post post1 = (Post) o1;
                 Post post2 = (Post) o2;
+                if(post1.getPostCode().length()>post1.getPostCode().length()){
+                    return 1;
+                }else if(post1.getPostCode().length()<post1.getPostCode().length()){
+                    return -1;
+                }
                 return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
             }
         });
@@ -371,19 +377,26 @@ public class PostServiceImpl implements PostService {
             responseResult.setMessage("文件校验成功");
             responseResult.setResultCode(CommonCode.SUCCESS);
         } else {
-
-
+            StringBuilder errorSb=new StringBuilder();
+            for (Post error : failCheckList) {
+                errorSb.append(error.getLineNumber()+","+error.getResultMsg()+"\n");
+            }
+            String errorInfoKey ="errorPostData"+String.valueOf(filename.hashCode());
+            redisService.del(errorInfoKey);
+            redisService.setex(errorInfoKey,60*60*2, errorSb.toString());
+            resultMap.put("errorInfoKey",errorInfoKey);
             responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
+            response.setHeader("errorInfoKey", errorInfoKey);
         }
         //将orgList存入redis
         String redisKey ="tempPostData"+String.valueOf(filename.hashCode());
         redisService.del(redisKey);
         String json = JSON.toJSONString(orgList);
         redisService.setex(redisKey,60*60*2, json);
-        //将校验结果与原表格信息返回
-        HashMap<Object, Object> resultMap = new HashMap<>();
+
         resultMap.put("failCheckList",failCheckList);
         resultMap.put("excelList",orgList);
+        resultMap.put("redisKey",redisKey);
         responseResult.setResult(resultMap);
         response.setHeader("redisKey", redisKey);
         return responseResult;
@@ -391,7 +404,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public ResponseResult importToDatabase(String redisKey, UserSession userSession){
-        String data = redisService.get(redisKey);
+        String data = redisService.get(redisKey.trim());
         //将其转为对象集合
         List<Post> list= JSONArray.parseArray(data,Post.class);
         LinkedMultiValueMap<String, Post> multiValuedMap = new LinkedMultiValueMap<>();
@@ -409,6 +422,11 @@ public class PostServiceImpl implements PostService {
                 public int compare(Object o1, Object o2) {
                     Post post1 = (Post) o1;
                     Post post2 = (Post) o2;
+                    if(post1.getPostCode().length()>post1.getPostCode().length()){
+                        return 1;
+                    }else if(post1.getPostCode().length()<post1.getPostCode().length()){
+                        return -1;
+                    }
                     return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
                 }
             });
@@ -417,8 +435,15 @@ public class PostServiceImpl implements PostService {
             for (Post vo : orgLost) {
                 Post ifExistVo=postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
                 Post parentPost=postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
+                OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
+                Position position=positionDao.getPositionByName(vo.getPositionName());
+                vo.setOrgId(orgVo.getOrgId());
+                vo.setPositionId(position.getPositionId());
+
                 if(Objects.nonNull(parentPost)){
                     vo.setParentPostId(parentPost.getPostId());
+                }else{
+                    vo.setParentPostId(0);
                 }
                 //已存在 则更新
                 if (Objects.nonNull(ifExistVo)) {
@@ -674,10 +699,12 @@ public class PostServiceImpl implements PostService {
 
     public List<Post> checkExcel(Map<String,Integer>lineNumber,List<Post> voList) {
         List<Post> checkVos = new ArrayList<>();
+        int line=1;
         int groupCount = 0;
         for (Post post : voList) {
             Post checkVo = new Post();
             BeanUtils.copyProperties(post, checkVo);
+            checkVo.setLineNumber(line++);
             checkVo.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder();
             //验空

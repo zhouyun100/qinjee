@@ -145,7 +145,7 @@ public class OrganizationController extends BaseController {
   //TODO
   @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
   @GetMapping("/getOrganizationPostTree")
-  public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0包含（默认）、1 不包含", example = "0") @RequestParam("isEnable") Short isEnable) {
+  public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0包含（默认）、1 不包含", example = "0") @RequestParam(value = "isEnable",required = false) Short isEnable) {
     if (isEnable == null) {
       isEnable = Short.parseShort("0");
     }

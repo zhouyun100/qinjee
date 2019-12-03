@@ -163,6 +163,7 @@ public class PostController extends BaseController {
                 responseResult.setMessage("岗位为空");
             }
         }catch (Exception e){
+            e.printStackTrace();
             responseResult.setResultCode(CommonCode.FILE_EXPORT_FAILED);
         }
 

@@ -515,7 +515,7 @@
     </select>
 
     <select id="getPostByPostCode" resultMap="BaseResultMap">
-         SELECT post_code
+         SELECT post_code,post_id
          from t_post
          where post_code =#{postCode}
          and company_id =#{companyId}
