@@ -179,7 +179,7 @@ public interface CustomTableFieldDao {
      * @return
      */
     @MapKey ( "field_id" )
-    Map<Integer,Map<String,String>> selectNameAndIdAndIsSystemDefine(@Param("idList") List< Integer> idList);
+    Map<Integer,Map<String,Integer>> selectNameAndIdAndIsSystemDefine(@Param("idList") List< Integer> idList);
 
     /**
      * 预入职唯一标识证件号对应的fieldId
@@ -254,7 +254,7 @@ public interface CustomTableFieldDao {
     List< String> selectFieldCodeByList(List< Integer> integerList);
 
 
-    Map< String, String> selectCodAndIdByTableId(@Param("tableId") Integer tableId);
+    List<Map< String, String>> selectCodAndIdByTableId(@Param("tableId") Integer tableId);
 }
 
 

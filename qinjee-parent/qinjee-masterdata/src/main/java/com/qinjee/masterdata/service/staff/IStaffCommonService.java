@@ -158,13 +158,6 @@ public interface IStaffCommonService {
     String getPostByOrgId(@Param("orgId") Integer orgId);
 
     /**
-     * 展示部门的自定义表
-     * @param userSession
-     * @return
-     */
-    List<String> selectTableFromOrg(UserSession userSession);
-
-    /**
      * 展示自定义字段的值
      * @param customArchiveFieldId
      * @return
@@ -173,9 +166,16 @@ public interface IStaffCommonService {
 
     void saveFieldAndValue(List< Map< Integer, String>> list, UserSession userSession, String funcCode) throws Exception;
 
+    /**
+     *
+     * @param tableId
+     * @param businessId
+     * @return
+     * @throws IllegalAccessException
+     */
     Map< Integer, String> selectValue(Integer tableId, Integer businessId) throws IllegalAccessException;
 
-    void deletePreValue(Integer id);
+    void deletePreValue(Integer id,UserSession userSession);
 
-    void deleteArcValue(Integer businessId);
+    void deleteArcValue(Integer businessId,UserSession userSession);
 }

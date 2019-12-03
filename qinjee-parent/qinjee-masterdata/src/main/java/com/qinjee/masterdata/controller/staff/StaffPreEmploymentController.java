@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.ConfirmId;
 import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
@@ -133,7 +134,24 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
+    /**
+     * 查看单个预入职信息
+     */
+    @RequestMapping(value = "/selectPreEmploymentSingle", method = RequestMethod.POST)
+    @ApiOperation(value = "查看单个预入职信息", notes = "hkt")
+    public ResponseResult< PreEmployment > selectPreEmploymentSingle(Integer employeeId){
+        Boolean b = checkParam(employeeId);
+        if(b){
+            try {
+                PreEmployment preEmployment=staffPreEmploymentService.selectPreEmploymentSingle((employeeId));
+                return new ResponseResult<>(preEmployment,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
     /**
      * 根据机构查看预入职
      */

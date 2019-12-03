@@ -132,7 +132,7 @@ public class UserArchive implements Serializable {
      */
     @NotNull
     @ApiModelProperty("年龄")
-    private Short age;
+    private Integer age;
 
     /**
      * 民族

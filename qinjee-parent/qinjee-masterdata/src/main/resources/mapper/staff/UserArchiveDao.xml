@@ -902,5 +902,10 @@
    set is_delete=1
    where archive_id=#{businessId}
  </update>
+  <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+    select <include refid="Base_Column_List"/>
+    from t_user_archive arc
+
+  </select>
 </mapper>
 

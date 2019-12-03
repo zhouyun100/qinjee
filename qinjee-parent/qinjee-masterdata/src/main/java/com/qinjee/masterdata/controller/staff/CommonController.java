@@ -1,10 +1,7 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
-import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
-import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
@@ -132,38 +129,82 @@ public class CommonController extends BaseController {
 
     }
     /**
-     * 根据企业ID和功能CODE查询自定义表
+     * 根据企业ID和功能CODE查询自定义档案表
      */
-    @RequestMapping(value = "/selectCustomTable", method = RequestMethod.POST)
-    @ApiOperation(value = "根据企业ID和功能CODE查询自定义表", notes = "hkt")
-    public ResponseResult<List < CustomTableVO >> selectCustomTable(@RequestBody CustomTableVO customTableVO) {
-        Boolean b = checkParam(customTableVO);
+    @RequestMapping(value = "/selectCustomTableForArc", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和功能CODE查询自定义档案表", notes = "hkt")
+    public ResponseResult<List < CustomTableVO >> selectCustomTableForArc() {
+        //companyId, funcCode
+        Boolean b = checkParam(getUserSession ());
         if (b) {
             try {
+                CustomTableVO customTableVO=new CustomTableVO ();
+                customTableVO.setCompanyId ( getUserSession ().getCompanyId () );
+                customTableVO.setFuncCode ( "ARC" );
                 List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
                 return new ResponseResult <> ( customTableVOS, CommonCode.SUCCESS );
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义表失败");
+               return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
             }
         }
-        return failResponseResult("自定义表id集合参数错误");
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
+    }
+    /**
+     * 根据企业ID和功能CODE查询自定义预入职表
+     */
+    @RequestMapping(value = "/selectCustomTableForPre", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和功能CODE查询自定义预入职表", notes = "hkt")
+    public ResponseResult<List < CustomTableVO >> selectCustomTableForPre() {
+        //companyId, funcCode
+        Boolean b = checkParam(getUserSession ());
+        if (b) {
+            try {
+                CustomTableVO customTableVO=new CustomTableVO ();
+                customTableVO.setCompanyId ( getUserSession ().getCompanyId () );
+                customTableVO.setFuncCode ( "PRE" );
+                List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
+                return new ResponseResult <> ( customTableVOS, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
+            }
+        }
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
     /**
      * 根据企业ID和物理表名查询自定义组字段
      */
-    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableCode", method = RequestMethod.POST)
-    @ApiOperation(value = "根据企业ID和物理表名查询自定义组字段", notes = "hkt")
-    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableCode(@RequestBody Integer companyId, String tableCode) {
-        Boolean b = checkParam(companyId,tableCode);
+    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableCodeArc", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和物理表名查询自定义档案组字段", notes = "hkt")
+    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableCodeArc() {
+        Boolean b = checkParam(getUserSession ());
         if (b) {
             try {
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( companyId, tableCode );
+                String tableCode="t_user_archive";
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession ().getCompanyId (), tableCode );
                 return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义表失败");
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
             }
         }
-        return failResponseResult("自定义表id集合参数错误");
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
+    }
+    /**
+     * 根据企业ID和物理表名查询自定义组字段
+     */
+    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableCodePre", method = RequestMethod.POST)
+    @ApiOperation(value = "根据企业ID和物理表名查询自定义预入职组字段", notes = "hkt")
+    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableCode() {
+        Boolean b = checkParam(getUserSession ());
+        if (b) {
+            try {
+                String tableCode="t_pre_employment";
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession ().getCompanyId (), tableCode );
+                return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
+            }
+        }
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
     /**
      * 根据表ID查询自定义组字段
@@ -177,10 +218,10 @@ public class CommonController extends BaseController {
                 CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId );
                 return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义表失败");
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
             }
         }
-        return failResponseResult("自定义表id集合参数错误");
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
     /**
      * 根据企业ID和功能CODE查询字段集合
@@ -194,10 +235,10 @@ public class CommonController extends BaseController {
                 List < CustomFieldVO > customFieldVOS = customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( companyId, funcCode );
                 return new ResponseResult<>  ( customFieldVOS, CommonCode.SUCCESS );
             } catch (Exception e) {
-                return failResponseResult("逻辑删除自定义表失败");
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
             }
         }
-        return failResponseResult("自定义表id集合参数错误");
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
 
 
@@ -382,28 +423,31 @@ public class CommonController extends BaseController {
 //    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
     /**
-     * 将传过来的字段id与值进行入库操作
+     * 将传过来的字段id与值进行入库操作zhang
      */
     @RequestMapping(value = "/SaveFieldAndValue", method = RequestMethod.POST)
     @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
 
-    public ResponseResult saveFieldAndValue(List < Map < Integer, String > > list, String funcCode) {
+    public ResponseResult saveFieldAndValue(@RequestBody List < Map < Integer, String > > list, String funcCode) {
         Boolean b = checkParam(list,getUserSession (),funcCode);
         if(b) {
             try {
                 staffCommonService.saveFieldAndValue (list,getUserSession (),funcCode );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
+                e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
             }
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 在进行修改操作时，根据businessId与对应的表id找到值，进行回显
      */
-    @RequestMapping(value = "/selecValue", method = RequestMethod.POST)
-    @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
+    @RequestMapping(value = "/selectValue", method = RequestMethod.POST)
+    @ApiOperation(value = "在进行修改操作时，根据businessId与对应的表id找到值，进行回显", notes = "hkt")
 
     public ResponseResult<Map<Integer,String>> selectValue(Integer tableId,Integer businessId) {
         Boolean b = checkParam(tableId,businessId);
@@ -412,6 +456,7 @@ public class CommonController extends BaseController {
                 Map<Integer,String> map=staffCommonService.selectValue (tableId, businessId );
                 return new ResponseResult <> (map, CommonCode.SUCCESS);
             } catch (Exception e) {
+                e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
             }
         }
@@ -424,10 +469,10 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "删除预入职(根据业务id与funccode进行逻辑删除)", notes = "hkt")
 
     public ResponseResult deletePreValue(Integer id) {
-        Boolean b = checkParam(id);
+        Boolean b = checkParam(id,getUserSession ());
         if(b) {
             try {
-                staffCommonService.deletePreValue (id );
+                staffCommonService.deletePreValue (id ,getUserSession ());
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
@@ -442,10 +487,10 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "删除档案(根据业务id与funccode进行逻辑删除)", notes = "hkt")
 
     public ResponseResult deleteArcValue(Integer businessId) {
-        Boolean b = checkParam(businessId);
+        Boolean b = checkParam(businessId,getUserSession ());
         if(b) {
             try {
-                staffCommonService.deleteArcValue (businessId);
+                staffCommonService.deleteArcValue (businessId,getUserSession ());
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
@@ -527,7 +572,6 @@ public class CommonController extends BaseController {
 
     /**
      * 根据档案显示对应权限下的单位
-     * swagger参数不允许为空，test是伪造数据
      */
     @RequestMapping(value = "/getCompany", method = RequestMethod.POST)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
@@ -593,7 +637,6 @@ public class CommonController extends BaseController {
     }
 
 
-
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {
@@ -609,4 +652,6 @@ public class CommonController extends BaseController {
         logger.error(message);
         return fail;
     }
+
+
 }

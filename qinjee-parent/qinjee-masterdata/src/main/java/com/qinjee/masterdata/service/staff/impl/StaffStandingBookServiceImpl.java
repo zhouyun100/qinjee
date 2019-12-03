@@ -76,12 +76,6 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteBlackList(List<Integer> list) throws Exception {
-        Integer max = blacklistDao.selectMaxId();
-        for (Integer integer : list) {
-            if (max < integer) {
-                throw new Exception("ID失败");
-            }
-        }
         blacklistDao.deleteBlackList(list);
     }
 
@@ -186,6 +180,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         List<Integer> twoList = userArchivePostRelationDao.selectByType(type, oneList);
         //通过id查询档案
         List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(twoList);
+//        List<UserArchive> list=userArchiveDao.selectBeforeFilter(archiveType,orgId,type);
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
         List<StandingBookFilter> filters = standingBookFilterDao.selectByStandingBookId(stangdingBookId);
         for (StandingBookFilter filter : filters) {

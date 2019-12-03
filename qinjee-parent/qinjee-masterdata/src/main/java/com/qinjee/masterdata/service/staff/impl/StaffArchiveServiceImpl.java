@@ -57,22 +57,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteArchiveById(List<Integer> archiveid) throws Exception {
-        Integer max = userArchiveDao.selectMaxId();
-        for (Integer integer : archiveid) {
-            if (integer > max) {
-                throw new Exception("id不合理");
-            }
-        }
+    public void deleteArchiveById(List<Integer> archiveid)  {
         userArchiveDao.deleteArchiveByIdList (archiveid);
     }
 
     @Override
-    public void resumeDeleteArchiveById(Integer archiveid) throws Exception {
-        Integer max = userArchiveDao.selectMaxId();
-        if (archiveid > max) {
-            throw new Exception("id不合理");
-        }
+    public void resumeDeleteArchiveById(Integer archiveid)  {
         userArchiveDao.resumeDeleteArchiveById(archiveid);
     }
 
@@ -108,13 +98,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer orgId) {
+    public PageResult<UserArchiveVo> selectArchivebatch(UserSession userSession, Integer orgId,Integer pageSize,Integer currentPage) {
+        PageHelper.startPage ( currentPage,pageSize );
 
-//        List<UserArchive> list = new ArrayList<>();
-//        //本用户的权限下有哪些机构
-//        List<Integer> orgList = userOrgAuthDao.selectCompanyIdByArchive(userSession.getArchiveId());
-        List<UserArchiveVo> list=userArchiveDao.selectByOrgAndAuth(orgId,userSession.getArchiveId ());
-        return null;
+        List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId () );
+
+        return new PageResult <> ( list );
 
     }
     @Override
@@ -214,6 +203,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         archiveCareerTrackdao.deleteCareerTrack(id);
     }
 
+    @Override
+    public UserArchive selectArchiveSingle(Integer id) {
+
+        return userArchiveDao.selectByPrimaryKey ( id );
+    }
+
     private Map<String, Object> getParamMap(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
         ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack();
         BeanUtils.copyProperties(archiveCareerTrackVo,archiveCareerTrack);
@@ -295,13 +290,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteUserArchivePostRelation(List<Integer> list) throws Exception {
-        Integer max = userArchivePostRelationDao.selectMaxPrimaryKey();
-        for (Integer integer : list) {
-            if(max<integer) {
-                throw new Exception("id有误");
-            }
-        }
+    public void deleteUserArchivePostRelation(List<Integer> list)  {
         userArchivePostRelationDao.deleteUserArchivePostRelation(list);
     }
 
@@ -320,13 +309,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteQueryScheme(List<Integer> list) throws Exception {
-        Integer max = querySchemeDao.selectMaxPrimaryKey();
-        for (Integer integer : list) {
-            if(max<integer) {
-                throw new Exception("id有误");
-            }
-        }
+    public void deleteQueryScheme(List<Integer> list)  {
         querySchemeDao.deleteQuerySchemeList(list);
         //删除查询字段
         querySchemeFieldDao.deleteBySchemeIdList(list);
@@ -389,6 +372,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             querySchemeSortDao.updateByPrimaryKey(querySchemeSort);
         }
     }
+
 
 }
 
