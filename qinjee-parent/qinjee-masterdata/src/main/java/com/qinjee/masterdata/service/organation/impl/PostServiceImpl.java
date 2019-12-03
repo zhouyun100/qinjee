@@ -331,6 +331,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
         //将校验结果与原表格信息返回
@@ -405,6 +406,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public ResponseResult importToDatabase(String redisKey, UserSession userSession) {
         String data = redisService.get(redisKey.trim());
         //将其转为对象集合
@@ -505,6 +507,14 @@ public class PostServiceImpl implements PostService {
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
         return pageResult;
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult cancelImport(String redisKey, String errorInfoKey) {
+        redisService.del(redisKey);
+        redisService.del(errorInfoKey);
+        return new ResponseResult();
     }
 
     private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {

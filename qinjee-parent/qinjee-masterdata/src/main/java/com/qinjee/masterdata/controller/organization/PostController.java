@@ -178,8 +178,8 @@ public class PostController extends BaseController {
     }
     @GetMapping("/exportError2Txt")
     @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
-    public ResponseResult exportError2Txt(String redisKey,HttpServletResponse response) throws Exception {
-        String errorData = redisClusterService.get(redisKey.trim());
+    public ResponseResult exportError2Txt(String errorInfoKey,HttpServletResponse response) throws Exception {
+        String errorData = redisClusterService.get(errorInfoKey.trim());
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/x-msdownload;charset=UTF-8");
         response.setHeader("Content-Disposition",
@@ -194,6 +194,15 @@ public class PostController extends BaseController {
     public ResponseResult importToDatabase(@RequestParam("redisKey") String redisKey) {
         return postService.importToDatabase(redisKey, getUserSession());
     }
+
+    @GetMapping("/cancelImport")
+    @ApiOperation(value = "ok,取消导入(将数据从redis中删除)")
+    public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey,@RequestParam("errorInfoKey") String errorInfoKey) {
+        return postService.cancelImport(redisKey.trim(),errorInfoKey.trim());
+    }
+
+
+
 
     //TODO 实有人数、编制人数暂时不考虑
     //TODO 递归层数控制

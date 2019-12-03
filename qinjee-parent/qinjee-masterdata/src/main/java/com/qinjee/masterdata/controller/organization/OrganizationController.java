@@ -216,6 +216,13 @@ public class OrganizationController extends BaseController {
     return null;
   }
 
+  @GetMapping("/cancelImport")
+  @ApiOperation(value = "ok,取消导入(将数据从redis中删除)")
+  public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey,@RequestParam("errorInfoKey") String errorInfoKey) {
+    return organizationService.cancelImport(redisKey.trim(),errorInfoKey.trim());
+  }
+
+
   @GetMapping("/importToDatabase")
   @ApiOperation(value = "导入机构入库")
   public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey){

@@ -107,4 +107,6 @@ public interface PostService {
    * @return
    */
   PageResult<Post> listDirectPostPage(PostPageVo postPageVo);
+
+  ResponseResult cancelImport(String redisKey, String errorInfoKey);
 }

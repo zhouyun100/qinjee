@@ -187,8 +187,7 @@ public interface OrganizationService  {
   ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
 
 
-
-
+  ResponseResult cancelImport(String redisKey, String errorInfoKey);
 }
 
 
