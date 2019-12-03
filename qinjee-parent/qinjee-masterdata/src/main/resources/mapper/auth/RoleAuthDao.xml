@@ -249,6 +249,7 @@
         and f.is_delete = 0
         ) v ON f.field_id = v.field_id
         where t.table_id = #{tableId,jdbcType=INTEGER}
+		and t.table_id = f.table_id
         and t.is_delete = 0
         and f.is_delete = 0
     </select>

@@ -78,26 +78,12 @@ public interface CustomTableFieldDao {
      */
     Integer deleteCustomField(@Param("list") List<Integer> list);
 
-
-
-    /**逻辑删除自定义字段
-     * customArchiveFieldId
-     * @param customArchiveFieldId
-     * @return
-     */
-    Integer selectCodeId(@Param("customArchiveFieldId") Integer customArchiveFieldId);
-
-
-
     /**
      * updatePreEmploymentField
      * @param map
      * @return
      */
     Integer updatePreEmploymentField(@Param("map") Map <Integer, String> map);
-
-
-
 
     /**
      * companyId
@@ -106,8 +92,6 @@ public interface CustomTableFieldDao {
      * @return
      */
     List<String> selectFieldNameByCodeList(@Param("strings") List<String> strings,@Param ( "companyId" ) Integer companyId);
-
-
 
     /**
      * tableId
@@ -125,7 +109,6 @@ public interface CustomTableFieldDao {
      */
     List<String> selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
 
-
     /**
      * companyId
      * @param s
@@ -134,8 +117,6 @@ public interface CustomTableFieldDao {
      * @return
      */
     String selectFieldCodeByNameAndFuncCodeAndCompanyId(@Param("s") String s, @Param ( "funcCode" ) String funcCode, @Param("companyId") Integer companyId);
-
-
 
     /**
      * fieldNames
@@ -234,10 +215,6 @@ public interface CustomTableFieldDao {
 
 
     List< CustomArchiveField> selectCustomArchiveField(Integer customArchiveGroupId);
-
-    void insertSelective(CustomArchiveField customArchiveField);
-
-    void updateByPrimaryKeySelective(CustomArchiveField customArchiveField);
 
     List< CustomArchiveField> selectFieldByTableId(Integer customArchiveTableId);
 

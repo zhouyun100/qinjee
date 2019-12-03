@@ -3,7 +3,6 @@
 <mapper namespace="com.qinjee.masterdata.dao.custom.CustomTableFieldDao">
 
   <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
-
     <result column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
@@ -32,14 +31,12 @@
     <result column="sort" jdbcType="INTEGER" property="sort" />
   </resultMap>
 
-
   <resultMap id="GroupResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomGroupVO">
     <result column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
     <result column="table_id" jdbcType="VARCHAR" property="tableId" />
     <result column="sort" jdbcType="VARCHAR" property="sort" />
   </resultMap>
-
 
   <resultMap id="TableResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomTableVO">
     <result column="table_id" jdbcType="INTEGER" property="tableId" />
@@ -51,7 +48,6 @@
     <result column="is_enable" jdbcType="VARCHAR" property="isEnable" />
     <result column="sort" jdbcType="VARCHAR" property="sort" />
   </resultMap>
-  <insert id="insertSelective"></insert>
 
   <!-- 根据字段ID列表查询字段详细信息列表 -->
   <select id="searchCustomFieldListByFieldIdList" parameterType="list" resultMap="FieldResultMap">
@@ -156,11 +152,6 @@
   </update>
 
 
-  <select id="selectCodeId" resultType="java.lang.Integer">
-    select code_id
-    from t_custom_archive_field
-    where field_id = #{customArchiveFieldId,jdbcType=INTEGER}
-  </select>
 
   <update id="updatePreEmploymentField" parameterType="map" >
     <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
@@ -171,7 +162,6 @@
       WHERE field_id= #{key} AND is_delete=0
     </foreach>
   </update>
-  <update id="updateByPrimaryKeySelective"></update>
 
 
   <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
