@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveFieldDao;
+import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
@@ -36,10 +36,9 @@ import java.util.List;
 public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookServiceImpl.class);
     private static final String ARCHIVE="ARC";
-    private static final String TYPEDATE="DATE";
-    private static final String TYPENUMBER="NUMBER";
-    private static final String TYPETEXT="TEXT";
-    private static final String TYPECODE="CODE";
+    private static final String TYPEDATE="date";
+    private static final String TYPENUMBER="number";
+    private static final String TYPETEXT="text";
     private static final String DENGYU="等于";
     private static final String BUDENGYU="不等于";
     private static final String BAOHAN="包含";
@@ -60,7 +59,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
-    private CustomArchiveFieldDao customArchiveFieldDao;
+    private CustomTableFieldDao customTableFieldDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -179,6 +178,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) {
         StringBuffer stringBuffer=new StringBuffer();
         stringBuffer.append(" where ");
+        //在查询台账之前被筛选的数据
         List<Integer> oneList = userArchiveDao.selectStaffNoStandingBook(archiveType, orgId);
         //存储大数据表字段解析出的档案id
         //key是用来存是第几个筛选条件，value存档案id(可能多个)
@@ -195,6 +195,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String sql=baseSql+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
         List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
+        //取交集
         userArchives.retainAll(list);
         return userArchives;
     }
@@ -202,9 +203,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     private String getBaseSql(UserSession userSession){
-        List<String> fieldNameNotInside = getFieldNameNotInside(userSession);
+
+        List<Integer> list = customArchiveTableDao.selectFieldIdNotInside(userSession.getCompanyId());
         String a="select t.archive_id from( select t0.* , ";
-        return a+SqlUtil.getsql(userSession.getCompanyId(),fieldNameNotInside);
+        return a+SqlUtil.getsql(userSession.getCompanyId(),list);
     }
 
     /**
@@ -213,39 +215,29 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
      * 日期 DATE，数字 NUMBER，代码 CODE，文本 TEXT
      */
     private String getWhereSql(StandingBookFilter filter){
-        String physicName = getPhysicName(filter.getFieldId());
+        Integer fieldId = filter.getFieldId();
         String condition=null;
         //根据id获得字段类型
-        String type=customArchiveFieldDao.selectTypeByFieldId(filter.getFieldId());
+        String type=customTableFieldDao.selectTypeByFieldId(fieldId);
         if(type!=null) {
             if (TYPEDATE.equals(type) || TYPENUMBER.equals(type)) {
-                condition = physicName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                condition = fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
             }
             if (TYPETEXT.equals(type)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " = " + filter.getFieldValue();
+                    condition = fieldId + " = " + filter.getFieldValue();
                 }
                 if (BUDENGYU.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " != " + filter.getFieldValue();
+                    condition = fieldId + " != " + filter.getFieldValue();
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = fieldId + " like "+"'%" + filter.getFieldValue() + "%' ";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " not like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = fieldId + " not like "+"'%" + filter.getFieldValue() + "%' ";
                 }
             }
-            if (TYPECODE.equals(type)) {
-                if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName +" = " + filter.getFieldValue();
-                }
-
-                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = physicName + " != " + filter.getFieldValue() ;
-                }
-            }
-
         }
             if (filter.getIsLeftBrackets()==1 ) {
                return "("+condition+getLinkSymbol(filter);
@@ -255,21 +247,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
         return condition+getLinkSymbol(filter)+"\t";
     }
-    /**
-     * 找到非内置字段的物理字段名
-     */
-    private List<String> getFieldNameNotInside(UserSession userSession){
-        //找到企业下的人员表
-        List<Integer> tableIdList=customArchiveTableDao.selectNotInsideTableId(userSession.getCompanyId(),ARCHIVE);
-        //根据id找到物理字段名
-        return customArchiveFieldDao.selectFieldCodeListByTableIdList(tableIdList);
-    }
-    /**
-     *  通过字段id找到物理字段名
-     */
-    private String getPhysicName(Integer fieldId){
-        return customArchiveFieldDao.selectPhysicName(fieldId);
-    }
+
     private String getLinkSymbol(StandingBookFilter filter){
         if(AND.equals(filter.getLinkSymbol())){
             return " AND ";

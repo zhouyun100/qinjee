@@ -36,7 +36,7 @@ public interface UserArchiveDao {
 
     List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
 
-   Integer deleteArchiveById(@Param("archiveid") List<Integer> archiveid);
+   Integer deleteArchiveByIdList(@Param("archiveid") List<Integer> archiveid);
 
 
 
@@ -103,4 +103,6 @@ public interface UserArchiveDao {
 
 
     Integer countUserArchiveByPostId(Integer postId);
+
+    void deleteArchiveById(Integer businessId);
 }

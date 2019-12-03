@@ -3,6 +3,7 @@
 <mapper namespace="com.qinjee.masterdata.dao.custom.CustomTableFieldDao">
 
   <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
+
     <result column="field_id" jdbcType="INTEGER" property="fieldId" />
     <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
@@ -50,6 +51,7 @@
     <result column="is_enable" jdbcType="VARCHAR" property="isEnable" />
     <result column="sort" jdbcType="VARCHAR" property="sort" />
   </resultMap>
+  <insert id="insertSelective"></insert>
 
   <!-- 根据字段ID列表查询字段详细信息列表 -->
   <select id="searchCustomFieldListByFieldIdList" parameterType="list" resultMap="FieldResultMap">
@@ -143,5 +145,205 @@
         and is_delete = 0
     </select>
 
+  <update id="deleteCustomField">
+    update  t_custom_archive_field
+    set
+    is_delete=1
+    where field_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
+  </update>
+
+
+  <select id="selectCodeId" resultType="java.lang.Integer">
+    select code_id
+    from t_custom_archive_field
+    where field_id = #{customArchiveFieldId,jdbcType=INTEGER}
+  </select>
+
+  <update id="updatePreEmploymentField" parameterType="map" >
+    <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
+      UPDATE t_custom_archive_field
+      <set>
+        field_name= $(#{value})
+      </set>
+      WHERE field_id= #{key} AND is_delete=0
+    </foreach>
+  </update>
+  <update id="updateByPrimaryKeySelective"></update>
+
+
+  <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
+  select field.field_name from
+    t_user_archive arc
+    right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{archiveId})
+    right join t_role_custom_field_auth auth on role.role_id=auth.role_id
+    right join t_custom_archive_field field on field.field_id=auth.field_id
+    where field.table_id=#{tableId}
+    and arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0
+  </select>
+
+  <select id="selectFieldByArcAndAuth" resultType="java.lang.String">
+ select DISTINCT(field.field_name) from
+    t_user_archive arc
+    right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{achiveId})
+    right join t_role_custom_field_auth auth on role.role_id=auth.role_id
+    right join t_custom_archive_table arctable on (arctable.func_code="ARCHIVE" and arctable.company_id=#{companyId})
+    right join t_custom_archive_field field on arctable.table_id=field.table_id
+    where  arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0 and arctable.is_delete=0
+  </select>
+
+
+  <select id="selectFieldIdByFieldNameAndCompanyId" resultType="java.lang.Integer">
+    select field_id
+    from t_custom_archive_field field
+    inner join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code=#{funcCode}
+    and field.field_name in
+    <foreach collection="fieldNames" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field.is_delete=0
+    and tab.is_delete=0
+    and table.is_enable=1
+  </select>
+
+  <select id="seleleIsSysAndTableIdAndTableName" resultType="java.util.Map">
+    select field.table_id,field.is_system_define,tab.table_name
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id= field.table_id
+    where field.is_delete=0
+    and tab.is_delete=0
+    and field_name in
+    <foreach collection="strings" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectFieldCodeByName" resultType="java.lang.String">
+   select field_code
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on field.table_id=tab.table_id
+    where field_name=#{head}
+    and tab.company_id=#{companyId}
+    and field.is_delete=0
+  </select>
+  <select id="selectFieldIdByFieldNameAndCompanyIdAndFuncCode" resultType="java.lang.Integer">
+    select field_id
+    from t_custom_archive_field field
+    inner join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code=#{funcCode}
+    and field.field_name =#{key}
+    and tab.is_delete=0
+    and field.is_delete=0
+  </select>
+  <select id="selectFieldCodeByNameAndFuncCodeAndCompanyId" resultType="java.lang.String">
+    select field_code
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where field_name=#{s}
+    and tab.func_code=#{funcCode}
+    and tab.company_id=#{companyId}
+    and field.is_delete=0
+    and tab.is_enable=1
+    and tab.is_delete=0
+  </select>
+  <select id="selectFieldNameByCodeList" resultType="java.lang.String">
+    select  field_name
+    from  t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code="ARC"
+    and tab.is_delete=0
+    and tab.is_enable=1
+    and field_code in
+    <foreach collection="strings" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    AND field. is_delete=0
+  </select>
+  <select id="selectNameAndIdAndIsSystemDefine" resultType="java.util.Map">
+    select is_system_define,table_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="idList" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and is_delete=0
+  </select>
+
+  <select id="selectSymbolForPreIdNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field_code="id_number"
+  </select>
+  <select id="selectSymbolForPreIdType" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field_code="id_type"
+  </select>
+  <select id="selectSymbolForArcEmploymentNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and  field_code="employment_number"
+  </select>
+  <select id="selectSymbolForArcIdNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and  field_code="id_number"
+  </select>
+  <select id="selectTableIdByFieldId" resultType="java.lang.Integer">
+    select table_id from t_custom_archive_field where field_id=#{integer1} and is_delete=0
+  </select>
+
+  <select id="selectCodeAndTypeById" resultType="java.util.Map">
+    select field_id,text_type,field_code
+    from t_custom_archive_field
+    where id=#{integer}
+    and is_delete=0
+  </select>
+    <select id="selectCodAndIdByTableId" resultType="java.util.Map">
+        select field_id,field_code
+        from t_custom_archive_field
+        where table_id=#{tableId}
+        and is_delete=0
+    </select>
+
+
+  <select id="selectFieldCodeListByTableIdList" resultType="java.lang.String">
+
+  </select>
+  <select id="selectCustomArchiveField" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
+
+  </select>
+  <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+  <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+  <select id="selectFieldTypeByNameList" resultType="java.lang.String"></select>
+  <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+  <select id="selectTypeByFieldId" resultType="java.lang.String"></select>
+  <select id="selectPhysicName" resultType="java.lang.String"></select>
+  <select id="selectFieldCodeByList" resultType="java.lang.String"></select>
 
 </mapper>

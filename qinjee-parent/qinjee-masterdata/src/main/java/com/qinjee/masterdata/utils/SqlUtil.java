@@ -8,12 +8,12 @@ public class SqlUtil {
     //fieldNameNotInside 所有有关档案表的字段名称集合
     //临时集合，用来拼接非自定义表对的字段名
     //
-    public static String getsql(Integer companyId, List<String> fieldNameNotInside) {
+    public static String getsql(Integer companyId, List<Integer> fieldNameNotInside) {
         List<String> custom=new ArrayList<>();
         StringBuffer stringBuffer=new StringBuffer();
-        for (String s1 : fieldNameNotInside) {
-            if(s1!=null && !"".equals(s1)) {
-                custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,'@@" + s1 + "@@')+LENGTH('@@" + s1 + "@@')+1),';@@',1)as " + s1 + "\t" + ",");
+        for (Integer integer : fieldNameNotInside) {
+            if(integer!=null && !integer.equals ( 0 )) {
+                custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,'@@" + integer + "@@')+LENGTH('@@" + integer + "@@')+1),';@@',1)as " + integer + "\t" + ",");
             }
         }
         for (String s : custom) {

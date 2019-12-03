@@ -12,6 +12,8 @@
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="orgName" jdbcType="VARCHAR" property="orgName" />
+    <result column="businessUnitName" jdbcType="VARCHAR" property="businessUnitName" />
+
     <result column="postName" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
@@ -696,7 +698,7 @@
     </foreach>
     AND is_delete=0
   </select>
-  <update id="deleteArchiveById">
+  <update id="deleteArchiveByIdList">
     update t_user_archive
     set
     is_delete=1
@@ -895,7 +897,10 @@
     and id_number=#{number}
     and is_delete=0
   </select>
-
-
+ <update id="deleteArchiveById">
+   update t_user_archive
+   set is_delete=1
+   where archive_id=#{businessId}
+ </update>
 </mapper>
 

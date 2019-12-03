@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface CustomArchiveTableDao {
@@ -46,4 +47,10 @@ public interface CustomArchiveTableDao {
     List<Integer> selectNotInsideTableId(@Param("companyId") Integer companyId, @Param("archive") String archive);
 
     List<String> selectNameBycomId(@Param("companyId") Integer companyId);
+
+    Map< String, String> selectIsSysAndFuncCode(@Param("tableId") Integer tableId);
+
+    Map<String,String> selectFieldIdBySortList(@Param("schemeId") Integer schemeId);
+
+    List< Integer> selectFieldIdNotInside(Integer companyId);
 }

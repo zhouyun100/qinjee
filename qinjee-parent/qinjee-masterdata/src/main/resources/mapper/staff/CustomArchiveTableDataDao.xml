@@ -201,5 +201,12 @@
       #{item}
     </foreach>
   </select>
+  <select id="deleteByBusinessIdAndFuncode">
+    UPDATE t_custom_archive_table_data
+    SET
+     is_delete=1
+     and business_id=#{id}
+     and func_code=#{pre}
+  </select>
 
 </mapper>

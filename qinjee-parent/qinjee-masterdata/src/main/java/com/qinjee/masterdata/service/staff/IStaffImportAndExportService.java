@@ -100,6 +100,12 @@ public interface IStaffImportAndExportService {
      */
     void importConFile(MultipartFile multipartFile,String funcCode, UserSession userSession) throws Exception;
 
-
+    /**
+     * 导入文件
+     * @param title
+     * @param userSession
+     * @param funcCode
+     * @throws Exception
+     */
     void importFile(String title, UserSession userSession, String funcCode) throws Exception;
 }
