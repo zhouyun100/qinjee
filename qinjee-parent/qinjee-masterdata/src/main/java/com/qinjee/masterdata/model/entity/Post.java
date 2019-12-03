@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.qinjee.masterdata.model.vo.organization.ImportExport;
 import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
 import com.qinjee.masterdata.utils.pexcel.annotation.ExcelSheetAnno;
 import com.qinjee.utils.QueryColumn;
@@ -21,7 +22,9 @@ import java.util.List;
 @NoArgsConstructor
 @ApiModel(description = "岗位表实体类")
 @ExcelSheetAnno(name = "岗位信息", headColor = HSSFColor.HSSFColorPredefined.LIGHT_GREEN)
-public class Post implements Serializable {
+public class Post extends ImportExport implements Serializable {
+
+
     /**
      * 岗位ID
      */
@@ -50,7 +53,7 @@ public class Post implements Serializable {
      */
     @ApiModelProperty("所属部门编码")
     @ExcelFieldAnno(name = "所属部门编码")
-    private String parentOrgCode;
+    private String orgCode;
 
     /**
      * 机构名称

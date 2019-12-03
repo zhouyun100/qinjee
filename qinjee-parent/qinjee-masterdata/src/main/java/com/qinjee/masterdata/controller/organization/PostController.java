@@ -13,6 +13,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -135,7 +136,7 @@ public class PostController extends BaseController {
 
     // String filePath,  List<Integer> orgIds
     @PostMapping("/exportPost")
-    @ApiOperation(value = "ok，导出岗位  参数demo {\"orgId\":1,\"postIds\":[41,11]}", notes = "未验证")
+    @ApiOperation(value = "ok，导出岗位  参数demo {\"orgId\":28,\"postIds\":[1,47]}")
     public ResponseResult exportPost(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
         List<Integer> postIds = null;
         Integer orgId = null;
@@ -146,22 +147,25 @@ public class PostController extends BaseController {
             orgId = (Integer) paramMap.get("orgId");
         }
         List<Post> postOList = postService.exportPost(orgId, postIds, getUserSession());
-        byte[] bytes = ExcelExportUtil.exportToBytes(postOList);
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("content-Type", "application/vnd.ms-excel");
-        response.setHeader("fileName", URLEncoder.encode("岗位", "UTF-8"));
-        response.setHeader("Content-Disposition",
-            "attachment;filename=\"" + URLEncoder.encode("岗位", "UTF-8") + "\"");
-        response.getOutputStream().write(bytes);
-
-        return null;
+        if(!CollectionUtils.isEmpty(postOList)){
+            byte[] bytes = ExcelExportUtil.exportToBytes(postOList);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("fileName", URLEncoder.encode("岗位", "UTF-8"));
+            response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode("岗位", "UTF-8") + "\"");
+            response.getOutputStream().write(bytes);
+            return null;
+        }
+        ResponseResult responseResult = new ResponseResult();
+        responseResult.setMessage("岗位为空");
+        return  responseResult;
     }
 
     @PostMapping("/uploadAndCheck")
     @ApiOperation(value = "待验证，导入岗位excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
-    public ResponseResult uploadAndCheck(MultipartFile multfile) throws Exception {
-
-        return postService.uploadAndCheck(multfile, getUserSession());
+    public ResponseResult uploadAndCheck(MultipartFile multfile,HttpServletResponse response) throws Exception {
+        return postService.uploadAndCheck(multfile, getUserSession(),response);
 
     }
 

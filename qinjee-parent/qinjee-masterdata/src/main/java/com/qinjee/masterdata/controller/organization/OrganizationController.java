@@ -173,14 +173,14 @@ public class OrganizationController extends BaseController {
     if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
       orgId = (Integer) paramMap.get("orgId");
     }
-    List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession());
+    List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
     try {
       byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
       response.setCharacterEncoding("UTF-8");
       response.setHeader("content-Type", "application/vnd.ms-excel");
-      response.setHeader("fileName", URLEncoder.encode("机构", "UTF-8"));
+      response.setHeader("fileName", URLEncoder.encode("defualt.xls", "UTF-8"));
       response.setHeader("Content-Disposition",
-          "attachment;filename=\"" + URLEncoder.encode("机构", "UTF-8") + "\"");
+          "attachment;filename=\"" + URLEncoder.encode("defualt", "UTF-8") + "\"");
       response.getOutputStream().write(bytes);
     } catch (Exception e) {
 
@@ -188,12 +188,14 @@ public class OrganizationController extends BaseController {
     return null;
   }
 
+
   @PostMapping("/uploadAndCheck")
   @ApiOperation(value = "ok,导入机构excel并校验", notes = "ok")
   public ResponseResult uploadAndCheck(MultipartFile multfile,HttpServletResponse response) throws Exception {
    return organizationService.uploadAndCheck(multfile,getUserSession(),response);
 
   }
+
 
   @GetMapping("/importToDatabase")
   @ApiOperation(value = "导入机构入库")
