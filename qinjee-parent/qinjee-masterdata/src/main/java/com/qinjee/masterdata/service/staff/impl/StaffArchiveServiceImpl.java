@@ -143,7 +143,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //根据查询方案id找到需要展示字段的id以及按顺序排序
             List < Integer > integers1 = querySchemeFieldDao.selectFieldIdWithSort ( schemeId );
             List < Integer > integers2 = querySchemeSortDao.selectSortId ( schemeId );
-            integers1.addAll ( integers2 );
+//            integers1.addAll ( integers2 );
             CustomTableVO customTableVO=new CustomTableVO ();
             customTableVO.setCompanyId ( userSession.getCompanyId () );
             customTableVO.setFuncCode ( "ARC" );
@@ -270,40 +270,37 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
      * list是所查询项的集合
      */
     private String getBaseSql(List < Integer > integers, Integer companyId, List<CustomTableVO> customTableVOS) {
-        List < CustomFieldVO > fieldIdNotInside = getFieldIdNotInside ( companyId, integers );
+        List<CustomFieldVO> inList=new ArrayList<>();
+        List<CustomFieldVO> outList=new ArrayList<>();
+        List<CustomFieldVO> list = customTableFieldDao.selectFieldByIdList(integers);
+        for (CustomFieldVO customFieldVO : list) {
+            if(customFieldVO.getIsSystemDefine()==0){
+                outList.add(customFieldVO);
+            }else{
+                inList.add(customFieldVO);
+            }
+        }
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
         String b = "select t.archive_id, ";
         String c = null;
         String d = "FROM ( select t0.*";
-        for (Integer integer : integers) {
-            String s = customTableFieldDao.selectFieldCodeById ( integer );
-            stringBuffer.append ( "t." ).append ( s ).append ( "," );
+        for (CustomFieldVO customFieldVO : inList) {
+            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode() ).append ( "," );
         }
-        if (!CollectionUtils.isEmpty ( fieldIdNotInside )) {
-            for (CustomFieldVO customFieldVO : fieldIdNotInside) {
+        if (!CollectionUtils.isEmpty ( outList )) {
+            for (CustomFieldVO customFieldVO : outList) {
                 stringBuffer.append ( "t.t" ).append ( customFieldVO.getFieldId () ).append ( "," );
             }
         }
         int i1 = stringBuffer.toString ().lastIndexOf ( "," );
         a = stringBuffer.toString ().substring ( 0, i1 );
-        if (CollectionUtils.isEmpty ( fieldIdNotInside )) {
+        if (CollectionUtils.isEmpty ( outList )) {
             c = b + a + "\t" + d;
         } else {
             c = b + a + "\t" + d + ",";
         }
-        return c + SqlUtil.getsql ( companyId, fieldIdNotInside, customTableVOS );
-    }
-
-
-    /**
-     * 找到非内置字段的物理id
-     */
-    private List < CustomFieldVO > getFieldIdNotInside(Integer companyId, List < Integer > integers) {
-        List < Integer > integers1 = customArchiveTableDao.selectFieldIdNotInside ( companyId );
-        integers1.retainAll ( integers );
-        return customTableFieldDao.selectFieldByIdList ( integers );
-
+        return c + SqlUtil.getsql ( companyId, outList, customTableVOS );
     }
 
     private String getSort(String sort) {
