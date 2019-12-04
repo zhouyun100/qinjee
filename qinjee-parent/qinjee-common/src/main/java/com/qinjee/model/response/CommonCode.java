@@ -33,6 +33,13 @@ public enum CommonCode implements ResultCode{
     FAIL_VALUE_NULL(false,10313, "结果不存在，请检查或联系开发!"),
     FILE_EMPTY(false,10314, "文件为空!"),
     REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!"),
+    TARGET_NOT_EXIST(false,10316, "目标对象不存在!"),
+    ORIGIN_NOT_EXIST(false,10317, "源对象不存在!"),
+    NOT_SAVE_LEVEL_EXCEPTION(false,10318,"不在同级下的异常！"),
+    CODE_USED(false,10319,"编码已被别处使用！"),
+    POST_NOT_EXSIT_EXCEPTION(false,10320,"不存在相关岗位！"),
+    TRANSFER_REPET_OPERATION(false,10321,"已在目标对象中存在，请勿重复划转！");
+    REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!"),
     SET_DEADLINE_EXCEPTION(false,10316, "一种类型只能设置一种临近天数!"),
     SEND_MAIL_FAIL(false,10317, "发送邮件失败!");
 

@@ -29,6 +29,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.model.response.ResultCode;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
@@ -72,6 +73,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private ApiAuthService apiAuthService;
 
+    private final static String xls = "xls";
+    private final static String xlsx = "xlsx";
+
     //=====================================================================
     @Override
     public PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable) {
@@ -111,10 +115,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     //=====================================================================
+
+    /**
+     * 不要service处理异常，否则事务可能会失效
+     *
+     * @param orgName
+     * @param orgType
+     * @param parentOrgId
+     * @param orgManagerId
+     * @param userSession
+     * @return
+     */
     @Transactional
     @Override
     @OrganizationSaveAnno
-    public ResponseResult addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
+    public OrganizationVO addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //根据父级机构id查询一些基础信息，构建Organization对象
         OrganizationVO orgBean = initOrganization(Integer.parseInt(parentOrgId));
         String full_name;
@@ -135,20 +150,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         orgBean.setIsEnable((short) 1);
         //设置企业id
         orgBean.setCompanyId(userSession.getCompanyId());
-        int i = organizationDao.insertSelective(orgBean);
-
+        organizationDao.insertSelective(orgBean);
         //维护机构与角色
         apiAuthService.addOrg(orgBean.getOrgId(), Integer.parseInt(parentOrgId), userSession.getArchiveId());
-        //TODO 是否需要 维护机构与用户的关系
-
-        ResponseResult responseResult;
-        if (i != 0) {
-            responseResult = new ResponseResult(CommonCode.SUCCESS);
-        } else {
-            responseResult = new ResponseResult(CommonCode.FAIL);
-        }
-        responseResult.setResult(orgBean);
-        return responseResult;
+        return orgBean;
     }
 
     //=====================================================================
@@ -173,7 +178,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             orgBean.setOrgCode(orgCode);
             orgBean.setOrgFullName(parentOrg.getOrgFullName());
             return orgBean;
-
             //如果是0，就是顶级机构
         } else {
             orgBean.setSortId(1000);
@@ -246,8 +250,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationEditAnno
-    public ResponseResult editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
-        ResponseResult responseResult;
+    public void editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //反查organizationVO
         OrganizationVO organization = organizationDao.selectByPrimaryKey(Integer.parseInt(orgId));
         OrganizationVO parentOrganization = organizationDao.selectByPrimaryKey(Integer.parseInt(parentOrgId));
@@ -257,15 +260,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
             if (orgBean != null && !orgId.equals(orgBean.getOrgId())) {
                 //机构编码在同一企业下不唯一
-                responseResult = new ResponseResult(CommonCode.FAIL);
-                responseResult.setMessage("机构编码不唯一，更新失败");
-                return responseResult;
+                ExceptionCast.cast(CommonCode.CODE_USED);
             }
         }
 
         //修改子机构编码
-
-
         String newOrgFullName;
         if (Objects.nonNull(parentOrganization)) {
             newOrgFullName = parentOrganization.getOrgFullName() + "/" + orgName;
@@ -282,8 +281,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         //递归修改子机构的全称
         recursiveUpdateOrgNameByParentOrgId(newOrgFullName, orgId);
-
-        return result == 1 ? new ResponseResult() : new ResponseResult(CommonCode.FAIL);
     }
 
 
@@ -342,6 +339,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         } else {
             orgList = organizationDao.getOrganizationsByOrgIds(orgIds);
         }
+        if(CollectionUtils.isEmpty(orgList)){
+            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
+        }
         return orgList;
     }
 
@@ -375,14 +375,15 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     /**
      * 入库
+     *
      * @param userSession
      * @return
      */
     @Override
-    public ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession) {
-       String data = redisService.get(orgExcelRedisKey.trim());
-       //将其转为对象集合
-        List<OrganizationVO> list= JSONArray.parseArray(data,OrganizationVO.class);
+    public void importToDatabase(String orgExcelRedisKey, UserSession userSession) {
+        String data = redisService.get(orgExcelRedisKey.trim());
+        //将其转为对象集合
+        List<OrganizationVO> list = JSONArray.parseArray(data, OrganizationVO.class);
 
         LinkedMultiValueMap<String, OrganizationVO> multiValuedMap = new LinkedMultiValueMap<String, OrganizationVO>();
         for (OrganizationVO organizationVO : list) {
@@ -391,7 +392,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                 multiValuedMap.add("topOrg", organizationVO);
             } else {
                 multiValuedMap.add(organizationVO.getOrgParentCode(), organizationVO);
-
             }
         }
         for (Map.Entry<String, List<OrganizationVO>> entry : multiValuedMap.entrySet()) {
@@ -410,7 +410,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 OrganizationVO parentOrg = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgParentCode(), userSession.getCompanyId());
                 //已存在 则更新
                 if (Objects.nonNull(ifExistVo)) {
-                    organizationDao.updateByPrimaryKeySelective(vo);
+                    //根据机构编码进行更新
+                    organizationDao.updateByOrgCode(vo);
                 } else {
                     vo.setOperatorId(userSession.getArchiveId());
                     vo.setCompanyId(userSession.getCompanyId());
@@ -426,20 +427,20 @@ public class OrganizationServiceImpl implements OrganizationService {
                         vo.setOrgParentId(0);
                         vo.setOrgFullName(vo.getOrgName());
                     }
-                    int i = organizationDao.insertSelective(vo);
+                    organizationDao.insertSelective(vo);
                     //维护机构与角色
                     //TODO
                     apiAuthService.addOrg(vo.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
                 }
             }
         }
-        return new ResponseResult();
     }
 
 
     /**
      * 导入并校验
-    * @param multfile
+     *
+     * @param multfile
      * @param userSession
      * @param response
      * @return
@@ -447,90 +448,105 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+        ResponseResult responseResult=new ResponseResult();
         //将校验结果与原表格信息返回
         HashMap<Object, Object> resultMap = new HashMap<>();
-        try {
-            //判断文件名
-            String filename = multfile.getOriginalFilename();
-            if(!(filename.endsWith(".xls")||filename.endsWith(".xlsx"))){
-                responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
-                return responseResult;
-            }
-            List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
-            List<OrganizationVO> orgList = new ArrayList<>();
-            //记录行号
-            Map<String,Integer> lineNumber=new HashMap<>();
-            Integer number=1;
-            for (Object object : objects) {
-                OrganizationVO vo = (OrganizationVO) object;
-                lineNumber.put(vo.getOrgCode(),number++);
-                orgList.add(vo);
-            }
-            orgList.sort(new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    OrganizationVO org1 = (OrganizationVO) o1;
-                    OrganizationVO org2 = (OrganizationVO) o2;
-                    if (org1.getOrgCode().length() > org2.getOrgCode().length()) {
-                        return 1;
-                    } else if (org1.getOrgCode().length() < org2.getOrgCode().length()) {
-                        return -1;
-                    }
-                    return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
-                }
-            });
-            //校验
-            List<OrganizationVO> checkResultList = checkExcel(lineNumber,orgList);
-            //拿到错误校验列表
-            List<OrganizationVO> failCheckList = checkResultList.stream().filter(check -> {
-                if (!check.getCheckResult()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).collect(Collectors.toList());
-            //如果为空则校验成功
-            if (CollectionUtils.isEmpty(failCheckList)) {
-                responseResult.setMessage("文件校验成功");
-                responseResult.setResultCode(CommonCode.SUCCESS);
-            } else {
-                StringBuilder errorSb=new StringBuilder();
-                for (OrganizationVO error : failCheckList) {
-                    errorSb.append(error.getLineNumber()+","+error.getResultMsg()+"\n");
-                }
-                String errorInfoKey ="errorOrgData"+String.valueOf(filename.hashCode());
-                redisService.del(errorInfoKey);
-                redisService.setex(errorInfoKey,60*60*2, errorSb.toString());
-                resultMap.put("errorInfoKey",errorInfoKey);
-                responseResult.setResultCode( CommonCode.FILE_PARSING_EXCEPTION);
-                response.setHeader("errorInfoKey", errorInfoKey);
-            }
-            //将orgList存入redis
-            String redisKey ="tempOrgData"+String.valueOf(filename.hashCode());
-            redisService.del(redisKey);
-            String json = JSON.toJSONString(orgList);
-            redisService.setex(redisKey,60*60*2, json);
-
-            resultMap.put("failCheckList",failCheckList);
-            resultMap.put("excelList",orgList);
-            resultMap.put("redisKey",redisKey);
-            responseResult.setResult(resultMap);
-            response.setHeader("redisKey", redisKey);
-
-        }catch (Exception e){
-            e.printStackTrace();
-            responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
+        //判断文件名
+        String filename = multfile.getOriginalFilename();
+        if (!(filename.endsWith(xls) || filename.endsWith(xlsx))) {
+            //文件格式不对
+            ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
         }
+        //导入excel
+        List<Object> excelDataList = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
+        if (CollectionUtils.isEmpty(excelDataList)) {
+            //excel为空
+            ExceptionCast.cast(CommonCode.FILE_EMPTY);
+        }
+        List<OrganizationVO> orgList = new ArrayList<>();
+        //记录行号
+        Map<String, Integer> lineNumber = new HashMap<>();
+        Integer number = 1;
+        for (Object row : excelDataList) {
+            OrganizationVO org = (OrganizationVO) row;
+            //转换机构类型
+            if ("集团".equalsIgnoreCase(org.getOrgType())) {
+                org.setOrgType("GROUP");
+            } else if ("单位".equalsIgnoreCase(org.getOrgType())) {
+                org.setOrgType("UNIT");
+            } else if ("部门".equalsIgnoreCase(org.getOrgType())) {
+                org.setOrgType("DEPT");
+            }
+
+            //排序前记录行号
+            lineNumber.put(org.getOrgCode(), number++);
+            orgList.add(org);
+        }
+        //进行排序
+        orgList.sort(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                OrganizationVO org1 = (OrganizationVO) o1;
+                OrganizationVO org2 = (OrganizationVO) o2;
+                if (org1.getOrgCode().length() > org2.getOrgCode().length()) {
+                    return 1;
+                } else if (org1.getOrgCode().length() < org2.getOrgCode().length()) {
+                    return -1;
+                }
+                return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+            }
+        });
+        //将排序后的orgList存入redis
+        //将orgList存入redis
+        String redisKey = "tempOrgData" + String.valueOf(filename.hashCode());
+        redisService.del(redisKey);
+        String json = JSON.toJSONString(orgList);
+        redisService.setex(redisKey, 60 * 60 * 2, json);
+        //将原表信息及redis key置入返回对象
+        resultMap.put("excelList", orgList);
+        resultMap.put("redisKey", redisKey);
+
+        //校验
+        List<OrganizationVO> checkResultList = checkExcel(lineNumber, orgList);
+
+        //过滤出错误校验列表
+        List<OrganizationVO> failCheckList = checkResultList.stream().filter(check -> {
+            if (!check.getCheckResult()) {
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        //如果不为空则校验成功,将错误信息、原表数据存储到redis后抛出异常
+        if (!CollectionUtils.isEmpty(failCheckList)) {
+            StringBuilder errorSb = new StringBuilder();
+            for (OrganizationVO error : failCheckList) {
+                errorSb.append(error.getLineNumber() + "," + error.getResultMsg() + "\n");
+            }
+            String errorInfoKey = "errorOrgData" + String.valueOf(filename.hashCode());
+            redisService.del(errorInfoKey);
+            redisService.setex(errorInfoKey, 60 * 60 * 2, errorSb.toString());
+            //将错误信息置入返回对象
+            resultMap.put("failCheckList", failCheckList);
+            resultMap.put("errorInfoKey", errorInfoKey);
+            //
+            response.setHeader("errorInfoKey", errorInfoKey);
+            //文件解析失败
+            responseResult.setResultCode(CommonCode.FILE_PARSE_FAILED);
+        }else{
+            responseResult.setResultCode(CommonCode.SUCCESS);
+            responseResult.setMessage("文件校验成功");
+        }
+        //TODO 将redisKey置入表头，是否多余
+        response.setHeader("redisKey", redisKey);
+        responseResult.setResult(resultMap);
         return responseResult;
     }
 
     @Override
-    public ResponseResult cancelImport(String redisKey, String errorInfoKey) {
-
+    public void cancelImport(String redisKey, String errorInfoKey) {
         redisService.del(redisKey);
         redisService.del(errorInfoKey);
-        return new ResponseResult();
     }
 
     //=====================================================================
@@ -665,33 +681,24 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     //=====================================================================
-    @Transactional
     @Override
-    public ResponseResult sealOrganizationByIds(List<Integer> orgIds, Short isEnable) {
-        if (!CollectionUtils.isEmpty(orgIds)) {
-            organizationDao.UpdateIsEnableByOrgIds(orgIds, isEnable);
-        }
-        return new ResponseResult();
+    public void sealOrganizationByIds(List<Integer> orgIds, Short isEnable) {
+        organizationDao.UpdateIsEnableByOrgIds(orgIds, isEnable);
     }
 
 
     //=====================================================================
     @Transactional
     @Override
-    public ResponseResult mergeOrganization(String newOrgName, Integer parentOrgId, List<Integer> orgIds, UserSession userSession) {
+    public void mergeOrganization(String newOrgName, Integer parentOrgId, List<Integer> orgIds, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
-        if (!CollectionUtils.isEmpty(orgIds)) {
-            //查询机构列表
-            organizationVOList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
-        }
+        //查询机构列表
+        organizationVOList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
         //判断是否是同一个父级下的
         if (!CollectionUtils.isEmpty(organizationVOList)) {
             Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (OrgParentIds.size() != 1) {
-                //不是
-                ResponseResult result = new ResponseResult(CommonCode.FAIL);
-                result.setMessage("待合并机构不是同一个父级下的，合并失败");
-                return result;
+                ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
             }
             //根据归属机构构建新的机构实体
             OrganizationVO newOrgVO = getNewOrgCode(parentOrgId);
@@ -702,20 +709,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             //TODO 调用人员接口，将老机构下的人员迁移至新机构
 
-            //TODO 调用角色接口
             apiAuthService.mergeOrg(orgIds, newOrgVO.getOrgId(), userSession.getArchiveId());
-
-
             //refactorOrganization(organizationVOList, newOrganizationVO);
-        } else {
-            return new ResponseResult(CommonCode.BUSINESS_EXCEPTION);
         }
-        return new ResponseResult(CommonCode.SUCCESS);
     }
 
     //=====================================================================
     @Override
-    public ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(String userName) {
+    public List<UserArchive> getUserArchiveListByUserName(String userName) {
         //TODO 调用人员的接口
 
         return null;
@@ -731,74 +732,64 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     @Transactional
-    public ResponseResult sortOrganization(LinkedList<Integer> orgIds) {
-        ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
+    public void sortOrganization(LinkedList<Integer> orgIds) {
+        //查询出机构列表
         List<OrganizationVO> organizationList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
         Set<Integer> parentOrgSet = new HashSet<>();
         for (OrganizationVO organizationVO : organizationList) {
+            //将父机构id存储在set中
             parentOrgSet.add(organizationVO.getOrgParentId());
         }
         //判断是否在同一级机构下
         if (parentOrgSet.size() > 1) {
-            responseResult.setResultCode(CommonCode.FAIL);
-            responseResult.setMessage("机构不在同级下，排序失败");
-            return responseResult;
+            ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
         }
-        Integer i = organizationDao.sortOrganization(orgIds);
-        return responseResult;
+        organizationDao.sortOrganization(orgIds);
     }
 
     //=====================================================================
     @Override
     @Transactional
     @OrganizationTransferAnno
-    public ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession) {
-        ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
+    public void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
             organizationVOList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
         } else {
-            responseResult.setMessage("划转失败，待划转机构id为空");
-            return responseResult;
+            //源对象不存在，带划转机构不存在
+            ExceptionCast.cast(CommonCode.ORIGIN_NOT_EXIST);
         }
         //如果待划转机构已经在目标机构下，不允许重复划转
         for (OrganizationVO org : organizationVOList) {
             if (org.getOrgParentId().equals(targetOrgId)) {
-                responseResult.setMessage("划转失败，待划转机构已经在目标机构下，不允许重复划转");
-                return responseResult;
+                //请勿重复操作
+                ExceptionCast.cast(CommonCode.TRANSFER_REPET_OPERATION);
             }
         }
         //判断是否是同一个父级下的
         if (!CollectionUtils.isEmpty(organizationVOList)) {
             Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (OrgParentIds.size() != 1) {
-                //不是
-                responseResult.setMessage("划转失败，不是同一个父级下的");
-                return responseResult;
+                ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
             }
             OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(targetOrgId);
             if (Objects.isNull(parentOrganizationVO)) {
-                responseResult.setMessage("目标机构为空");
-                return responseResult;
+                ExceptionCast.cast(CommonCode.TARGET_NOT_EXIST);
             }
             refactorOrganization(organizationVOList, parentOrganizationVO);
         }
         apiAuthService.transferOrg(orgIds, targetOrgId, userSession.getArchiveId());
-
-        responseResult.setResultCode(CommonCode.SUCCESS);
-        responseResult.setMessage("划转成功");
-        return responseResult;
     }
 
     //=====================================================================
     @Override
-    public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(UserSession userSession, Short isEnable) {
+    public List<OrganizationVO> getOrganizationPostTree(UserSession userSession, Short isEnable) {
         //TODO 只显示未封存的机构
         List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession, Short.parseShort("1"));
         //递归设置机构下的岗位
         //TODO 暂时不设置岗位下的子岗位
         handlerOrganizationPost(organizationVOTreeList, isEnable);
-        return new ResponseResult<>(organizationVOTreeList);
+        return organizationVOTreeList;
     }
 
     //=====================================================================
@@ -814,25 +805,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    //=====================================================================
-    @Override
-    public ResponseResult downloadTemplate(HttpServletResponse response) {
-        ClassPathResource cpr = new ClassPathResource("/templates/" + "机构导入模板.xls");
-        try {
-            File file = cpr.getFile();
-            String filename = cpr.getFilename();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            FileUtils.copyFile(file, outputStream);
-            response.setCharacterEncoding("UTF-8");
-            response.setHeader("content-Type", "application/vnd.ms-excel");
-            response.setHeader("Content-Disposition",
-                    "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
-            response.getOutputStream().write(outputStream.toByteArray());
-        } catch (Exception e) {
-            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
-        }
-        return new ResponseResult();
-    }
 
     //=====================================================================
     @Override
@@ -912,8 +884,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         handlerOrganizationToTree(organizationVOList, organizationVOS);
         return organizationVOList;
     }
-
-
 
 
 //=====================================================================
@@ -1024,14 +994,13 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (childList != null && childList.size() > 0) {
                 org.setChildList(childList);
                 allOrg.removeAll(childList);
-                handlerOrganizationToGraphics(allOrg, childList,isContainsCompiler,isContainsActualMembers);
+                handlerOrganizationToGraphics(allOrg, childList, isContainsCompiler, isContainsActualMembers);
             }
         }
     }
 
 
-
-    public List<OrganizationVO> checkExcel(Map<String,Integer>lineNumber,List<OrganizationVO> voList) {
+    public List<OrganizationVO> checkExcel(Map<String, Integer> lineNumber, List<OrganizationVO> voList) {
         List<OrganizationVO> checkVos = new ArrayList<>();
         int line = 1;
         int groupCount = 0;
@@ -1073,6 +1042,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (groupCount > 1) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("集团类型机构只能存在一个|");
+            }
+
+            //TODO
+            if (null != organizationVO.getOrgManagerId() && "".equals(organizationVO.getOrgManagerId())){
+
             }
 
             if (organizationVO.getOrgManagerId() != null) {

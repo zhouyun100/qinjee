@@ -102,24 +102,22 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public ResponseResult addPost(PostVo postVo, UserSession userSession) {
+    public void addPost(PostVo postVo, UserSession userSession) {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
-        generatePostCodeAndSoitId(post, orgId, postVo.getParentPostId());
+        generatePostCodeAndSortId(post, orgId, postVo.getParentPostId());
         post.setCompanyId(userSession.getCompanyId());
         post.setOperatorId(userSession.getArchiveId());
         post.setIsDelete((short) 0);
         post.setIsEnable((short) 1);
         postDao.insertSelective(post);
-
         //根据职级职等插入岗位职等,岗位职级信息
         //新增岗位职级关系表信息
         // addPostLevelAndGradeRelation(postVo, userSession, post);
-        return new ResponseResult();
     }
 
-    private void generatePostCodeAndSoitId(Post post, Integer orgId, Integer parentPostId) {
+    private void generatePostCodeAndSortId(Post post, Integer orgId, Integer parentPostId) {
         String postCode = "";
         Integer sortId = 1000;
         //如果父级岗位存在 则按照父级岗位的编码为基础，否则以归属机构的为准
@@ -154,7 +152,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseResult editPost(PostVo postVo, UserSession userSession) {
+    @Transactional
+    public void editPost(PostVo postVo, UserSession userSession) {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
@@ -162,7 +161,7 @@ public class PostServiceImpl implements PostService {
         //如果上级机构id或上级岗位id改变，则重新生成岗位编码 和 排序id
         Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
         if (!postVo.getOrgId().equals(post1.getOrgId())) {
-            generatePostCodeAndSoitId(post, postVo.getOrgId(), postVo.getParentPostId());
+            generatePostCodeAndSortId(post, postVo.getOrgId(), postVo.getParentPostId());
         }
         postDao.updateByPrimaryKeySelective(post);
         //删除修改不含有的岗位职级关系信息
@@ -171,12 +170,11 @@ public class PostServiceImpl implements PostService {
         //deletePostGrade(postVo, userSession, post);
         //新增岗位职级关系表信息
         //addPostLevelAndGradeRelation(postVo, userSession, post);
-        return new ResponseResult();
     }
 
     @Transactional
     @Override
-    public ResponseResult deletePost(UserSession userSession, List<Integer> postIds) {
+    public void deletePost(UserSession userSession, List<Integer> postIds) {
         //TODO 被删除的岗位下不允许有人员档案
         //被引用过的岗位 不允许删除
         if (!CollectionUtils.isEmpty(postIds)) {
@@ -204,12 +202,11 @@ public class PostServiceImpl implements PostService {
                 }*/
             }
         }
-        return new ResponseResult();
     }
 
     @Transactional
     @Override
-    public ResponseResult sealPostByIds(List<Integer> postIds, Short isEnable, UserSession userSession) {
+    public void sealPostByIds(List<Integer> postIds, Short isEnable, UserSession userSession) {
         if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
                 Post post = new Post();
@@ -219,13 +216,11 @@ public class PostServiceImpl implements PostService {
                 postDao.updateByPrimaryKeySelective(post);
             }
         }
-        return new ResponseResult();
     }
 
     @Transactional
     @Override
-    public ResponseResult sortPorts(List<Integer> postIds, UserSession userSession) {
-        ResponseResult responseResult = new ResponseResult(CommonCode.SUCCESS);
+    public void sortPorts(List<Integer> postIds, UserSession userSession) {
         List<Post> postList = postDao.getPostListByPostIds(postIds);
         Set<Integer> parentPostSet = new HashSet<>();
         for (Post post : postList) {
@@ -233,24 +228,21 @@ public class PostServiceImpl implements PostService {
         }
         //判断是否在同一级机构下
         if (parentPostSet.size() > 1) {
-            responseResult.setResultCode(CommonCode.FAIL);
-            responseResult.setMessage("岗位不在同级下，排序失败");
-            return responseResult;
+            ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
         }
-        Integer i = postDao.sortPorts(postIds);
-        return new ResponseResult(CommonCode.SUCCESS);
+        postDao.sortPorts(postIds);
     }
 
     @Transactional
     @Override
-    public ResponseResult copyPost(List<Integer> postIds, UserSession userSession, Integer orgId) {
+    public void copyPost(List<Integer> postIds, UserSession userSession, Integer orgId) {
         if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
                 Post post = postDao.selectByPrimaryKey(postId);
                 post.setOrgId(orgId);
                 post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
-                generatePostCodeAndSoitId(post, orgId, null);
+                generatePostCodeAndSortId(post, orgId, null);
                 postDao.insertSelective(post);
                 //岗位说明书
                 PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
@@ -261,16 +253,15 @@ public class PostServiceImpl implements PostService {
                 }
             }
         }
-        return new ResponseResult();
     }
 
     @Override
-    public ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId, Short isEnable) {
+    public List<Post> getAllPost(UserSession userSession, Integer orgId, Short isEnable) {
         //递归拿到所有子机构id
         //TODO id重复无影响
         List<Integer> orgidList = getOrgIdList(userSession, orgId);
         List<Post> postList = postDao.getPostPositionListByOrgIds(orgidList);
-        return new ResponseResult<>(postList);
+        return postList;
     }
 
     /**
@@ -314,10 +305,9 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseResult<List<UserArchivePostRelation>> getPostSuccessive(Integer postId) {
+    public List<UserArchivePostRelation> getPostSuccessive(Integer postId) {
 
-        List<UserArchivePostRelation> list = postDao.getPostSuccessive(postId);
-        return new ResponseResult(list);
+        return postDao.getPostSuccessive(postId);
     }
 
     @Override
@@ -407,7 +397,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public ResponseResult importToDatabase(String redisKey, UserSession userSession) {
+    public void importToDatabase(String redisKey, UserSession userSession) {
         String data = redisService.get(redisKey.trim());
         //将其转为对象集合
         List<Post> list = JSONArray.parseArray(data, Post.class);
@@ -461,7 +451,6 @@ public class PostServiceImpl implements PostService {
                 }
             }
         }
-        return new ResponseResult();
     }
 
     @Override
@@ -475,7 +464,12 @@ public class PostServiceImpl implements PostService {
         postIdList = getPostIdList(userSession, postId, (layer - 1), isEnable);
         //查询所有相关的岗位
         List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
-        //拿到根节点
+        if(CollectionUtils.isEmpty(allPost)){
+            //不存在相关岗位异常
+            ExceptionCast.cast(CommonCode.POST_NOT_EXSIT_EXCEPTION);
+        }
+
+        //拿到根节点，以及两位上级节点
         List<Post> topPostList = allPost.stream().filter(post -> {
             if (post.getPostId() != null && post.getPostId().equals(postId)) {
                 return true;
@@ -486,8 +480,24 @@ public class PostServiceImpl implements PostService {
             }
         }).collect(Collectors.toList());
         //递归处理机构,使其以树形结构展示
-
+        //allPost最后只会有一个元素
         handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
+        //TODO 拿出根节点，设置上两级父级岗位
+        Post parentPost = postDao.selectByPrimaryKey(allPost.get(0).getParentPostId());
+
+        if(Objects.nonNull(parentPost)){
+            parentPost.setChildList(allPost);
+            List<Post> pList=new ArrayList<>();
+            pList.add(parentPost);
+            Post parentPost2 = postDao.selectByPrimaryKey(parentPost.getParentPostId());
+            if(Objects.nonNull(parentPost2)){
+                parentPost2.setChildList(pList);
+                List<Post> pList2=new ArrayList<>();
+                pList2.add(parentPost2);
+                return pList2;
+            }
+            return pList;
+        }
         return allPost;
     }
 
@@ -511,11 +521,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public ResponseResult cancelImport(String redisKey, String errorInfoKey) {
+    public void cancelImport(String redisKey, String errorInfoKey) {
         redisService.del(redisKey);
         redisService.del(errorInfoKey);
-        return new ResponseResult();
     }
+
 
     private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {
         for (Post post : topPostList) {

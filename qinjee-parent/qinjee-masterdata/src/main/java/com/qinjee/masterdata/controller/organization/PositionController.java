@@ -1,10 +1,14 @@
 package com.qinjee.masterdata.controller.organization;
 
+import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Position;
+import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
 import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
+import com.qinjee.masterdata.service.organation.PositionGroupService;
 import com.qinjee.masterdata.service.organation.PositionService;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -13,8 +17,12 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -28,7 +36,18 @@ import java.util.List;
 public class PositionController extends BaseController {
 
   @Autowired
-  private PositionService positionService;
+  private PositionService positionService;@Autowired
+  private PositionGroupService positionGroupService;
+
+  private Boolean checkParam(Object... params) {
+    for (Object param : params) {
+      if (null == param || "".equals(param)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
   @PostMapping("/getPositionPage")
@@ -86,6 +105,41 @@ public class PositionController extends BaseController {
     public ResponseResult<Position> getPositionLevelAndGrade(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
         return positionService.getPositionLevelAndGrade(positionId);
     }*/
+
+
+  @PostMapping("/getPositionSystem")
+  @ApiOperation(value = "ok,获取职位体系分页显示", notes = "ok")
+  /**
+   * 初始化(如果什么都不传)显示职位族树以及职位体系表所有内容
+   */
+  public ResponseResult getPositionSystem(PositionPageVo positionPageVo) throws Exception {
+    Map<String,Object> resultMap=new HashMap<>();
+    //如果都不传，返回所有
+    if((positionPageVo.getPositionGroupId()==null||"".equals(positionPageVo.getPositionGroupId()))
+        &&(positionPageVo.getPositionId()==null||"".equals(positionPageVo.getPositionId()))){
+      //获取职位族
+      ResponseResult<List<PositionGroup>> positionGroupTree = positionGroupService.getAllPositionGroupTree(getUserSession());
+      //获取所有职位
+      ResponseResult<PageResult<Position>> positionPage=positionService.getAllPositionPage(getUserSession());
+
+      resultMap.put("positionGroupTree",positionGroupTree);
+      resultMap.put("positionPage",positionPage);
+
+    }
+    //如果传了positionGroupId但没传positionId，则查询该positionGroupId下所有职位
+    if((positionPageVo.getPositionGroupId()!=null&&!"".equals(positionPageVo.getPositionGroupId()))
+        &&(positionPageVo.getPositionId()==null||"".equals(positionPageVo.getPositionId()))){
+      ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(getUserSession(), positionPageVo);
+      resultMap.put("positionPage",positionPage);
+    }
+    if(positionPageVo.getPositionId()!=null&&!"".equals(positionPageVo.getPositionId())){
+      PageResult<Position> positionPage=positionService.getPositionByPositionId(positionPageVo.getPositionId());
+      resultMap.put("positionPage",positionPage);
+    }
+
+    //如果传了positionId，则只返回该职位
+    return new ResponseResult<>(resultMap);
+  }
 
 
 }
