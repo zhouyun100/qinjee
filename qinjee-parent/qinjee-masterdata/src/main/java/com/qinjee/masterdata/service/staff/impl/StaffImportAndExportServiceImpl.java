@@ -28,6 +28,8 @@ import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.ExcelUtil;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,7 @@ import java.util.*;
  */
 @Service
 public class StaffImportAndExportServiceImpl implements IStaffImportAndExportService {
+    private static final Logger logger = LoggerFactory.getLogger( StaffImportAndExportServiceImpl.class);
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
     @Autowired
@@ -70,7 +73,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         String fileName = multipartFile.getOriginalFilename ();
         assert fileName != null;
         if (!fileName.endsWith ( xls ) && !fileName.endsWith ( xlsx )) {
-            throw new IOException ( fileName + "不是excel文件" );
+            logger.info ("文件类型错误" );
         }
         return getMaps ( multipartFile, funcCode, userSession );
     }
@@ -144,7 +147,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         if (redisClusterService.exists ( s1 )) {
             redisClusterService.del ( s1 );
         } else {
-            throw new Exception ( "移除缓存失败！" );
+           logger.error ( "移除缓存失败" );
         }
     }
 
@@ -154,12 +157,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //从redis中取得文件
         //拼接key
         String s1 = userSession.getCompanyId () + userSession.getArchiveId () + title;
-        String s;
+        String s=null;
         //缓存中获取内容
         if (redisClusterService.exists ( s1 )) {
             s = redisClusterService.get ( s1 );
         } else {
-            throw new Exception ( "获取缓存失败！" );
+            logger.error ( "获取缓存失败" );
         }
         //还原成list
         List < Map < Integer, String > > list = ( List < Map < Integer, String > > ) JSONArray.parse ( s );
@@ -338,7 +341,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     getDates ( exportFile, businessHead, "ARC", userSession.getCompanyId () ),
                     getTypeMap ( businessHead ) );
         } else {
-            throw new Exception ( "没有获取到对应的自己表头" );
+            logger.error ( "没有找到对应的表头" );
         }
     }
 

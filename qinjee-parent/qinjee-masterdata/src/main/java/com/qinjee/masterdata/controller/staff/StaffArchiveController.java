@@ -134,15 +134,32 @@ public class StaffArchiveController extends BaseController {
     }
 
     /**
-     * 查看档案(查询单个)
+     * 查看档案(查询当前登陆人的档案)
      */
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
-    @ApiOperation(value = "查看档案", notes = "hkt")
-    public ResponseResult<UserArchive> selectArchive() {
+    @ApiOperation(value = "查看档案(查询当前登陆人的档案)", notes = "hkt")
+    public ResponseResult<UserArchive> selectArchiveAtOnce() {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
                 UserArchive userArchive = staffArchiveService.selectArchive(getUserSession());
+                return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
+            } catch (Exception e) {
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 查看档案(查询单个)
+     */
+    @RequestMapping(value = "/selectArchiveSingle", method = RequestMethod.POST)
+    @ApiOperation(value = "查看档案", notes = "hkt")
+    public ResponseResult<UserArchive> selectArchiveSingle(Integer id ) {
+        Boolean b = checkParam(id);
+        if(b){
+            try {
+                UserArchive userArchive = staffArchiveService.selectArchiveSingle(id);
                 return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -175,11 +192,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
 //    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
-    public ResponseResult<PageResult<UserArchive>> selectArchivebatch(Integer orgId) {
-        Boolean b = checkParam(getUserSession());
+    public ResponseResult<PageResult<UserArchiveVo>> selectArchivebatch(Integer orgId,Integer pageSize,Integer currentPage) {
+        Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage);
         if(b){
             try {
-                PageResult<UserArchive> pageResult = staffArchiveService.selectArchivebatch(getUserSession(), orgId);
+                PageResult<UserArchiveVo> pageResult = staffArchiveService.selectArchivebatch(getUserSession(), orgId,pageSize,currentPage);
                 if(pageResult!=null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }

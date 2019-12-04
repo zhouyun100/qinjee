@@ -253,8 +253,8 @@
   </select>
 
   <select id="selectIsSysAndFuncCode" resultType="java.util.Map">
-    select is_system_define,func_code
-    form t_custom_archive_table
+    select  is_system_define,func_code
+    from  t_custom_archive_table
     where table_id=#{tableId}
     and is_delete=0
     and is_enable=1
@@ -269,7 +269,7 @@
     and field.is_delete=0
     and sche.is_delete=0
   </select>
-  <select id="selectFieldIdNotInside">
+  <select id="selectFieldIdNotInside" resultType="java.lang.Integer">
     select field_id
     from  t_custom_archive_field field
     left join t_custom_archive_table tab on tab.table_id=field.field_id

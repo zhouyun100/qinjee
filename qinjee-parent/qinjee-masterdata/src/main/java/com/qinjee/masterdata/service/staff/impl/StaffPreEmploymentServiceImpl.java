@@ -296,4 +296,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         return map;
     }
 
+    @Override
+    public PreEmployment selectPreEmploymentSingle(Integer employeeId) {
+       return preEmploymentDao.selectByPrimaryKey ( employeeId );
+    }
+
 }

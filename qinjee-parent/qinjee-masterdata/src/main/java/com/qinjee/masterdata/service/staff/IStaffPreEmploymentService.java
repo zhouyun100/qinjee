@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
+import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
@@ -66,4 +67,6 @@ public interface IStaffPreEmploymentService {
      * 查看预入职信息(显示字段的信息)
      */
     Map<String,String> selectPreEmploymentField(UserSession userSession);
+
+    PreEmployment selectPreEmploymentSingle(Integer employeeId);
 }

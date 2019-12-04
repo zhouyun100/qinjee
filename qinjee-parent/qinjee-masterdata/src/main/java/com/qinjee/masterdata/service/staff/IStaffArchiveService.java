@@ -104,7 +104,7 @@ public interface IStaffArchiveService {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    PageResult<UserArchive> selectArchivebatch(UserSession userSession, Integer companyId);
+    PageResult<UserArchiveVo> selectArchivebatch(UserSession userSession, Integer companyId, Integer pageSize, Integer currentPage);
     /**
      * 通过id找到人员姓名与工号
      */
@@ -160,4 +160,6 @@ public interface IStaffArchiveService {
      * @param id
      */
     void deleteCareerTrack(Integer id);
+
+    UserArchive selectArchiveSingle(Integer id);
 }

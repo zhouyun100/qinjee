@@ -255,7 +255,7 @@
     AND field. is_delete=0
   </select>
   <select id="selectNameAndIdAndIsSystemDefine" resultType="java.util.Map">
-    select is_system_define,table_id
+    select field_id,is_system_define,table_id
     from t_custom_archive_field
     where field_id in
     <foreach collection="idList" item="item" open="(" separator="," close=")">
@@ -292,7 +292,7 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
-    and  field_code="employment_number"
+    and  field_code="employee_number"
   </select>
   <select id="selectSymbolForArcIdNumber" resultType="java.lang.Integer">
     select
@@ -302,7 +302,7 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
-    and  field_code="id_number"
+    and  field_code = "id_number"
   </select>
   <select id="selectTableIdByFieldId" resultType="java.lang.Integer">
     select table_id from t_custom_archive_field where field_id=#{integer1} and is_delete=0
@@ -311,7 +311,7 @@
   <select id="selectCodeAndTypeById" resultType="java.util.Map">
     select field_id,text_type,field_code
     from t_custom_archive_field
-    where id=#{integer}
+    where field_id=#{integer}
     and is_delete=0
   </select>
     <select id="selectCodAndIdByTableId" resultType="java.util.Map">

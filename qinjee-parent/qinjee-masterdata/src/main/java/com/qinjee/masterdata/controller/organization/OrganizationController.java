@@ -184,7 +184,7 @@ public class OrganizationController extends BaseController {
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
         response.setHeader("Content-Disposition",
-            "attachment;filename=\"" + URLEncoder.encode("defualt", "UTF-8") + "\"");
+            "attachment;filename=\"" + URLEncoder.encode("orgDefualt.xls", "UTF-8") + "\"");
         response.getOutputStream().write(bytes);
         return null;
       }else{
@@ -207,14 +207,22 @@ public class OrganizationController extends BaseController {
   @GetMapping("/exportError2Txt")
   @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
   public ResponseResult exportError2Txt(String redisKey,HttpServletResponse response) throws Exception {
-    String errorData = redisClusterService.get(redisKey);
+    String errorData = redisClusterService.get(redisKey.trim());
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/x-msdownload;charset=UTF-8");
     response.setHeader("Content-Disposition",
         "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
+    response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
     response.getOutputStream().write(errorData.getBytes());
     return null;
   }
+
+  @GetMapping("/cancelImport")
+  @ApiOperation(value = "ok,取消导入(将数据从redis中删除)")
+  public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey,@RequestParam("errorInfoKey") String errorInfoKey) {
+    return organizationService.cancelImport(redisKey.trim(),errorInfoKey.trim());
+  }
+
 
   @GetMapping("/importToDatabase")
   @ApiOperation(value = "导入机构入库")

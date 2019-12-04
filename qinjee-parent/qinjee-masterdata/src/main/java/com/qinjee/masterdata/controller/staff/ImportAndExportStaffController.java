@@ -32,7 +32,7 @@ import java.util.Map;
 @RequestMapping("/port")
 @Api(tags = "【导入导出】文件导入导出接口")
 public class ImportAndExportStaffController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(CommonController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImportAndExportStaffController.class);
     @Autowired
     private IStaffImportAndExportService staffImportAndExportService;
 

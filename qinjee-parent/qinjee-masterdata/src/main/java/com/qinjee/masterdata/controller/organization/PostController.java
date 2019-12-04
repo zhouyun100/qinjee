@@ -171,22 +171,41 @@ public class PostController extends BaseController {
     }
 
     @PostMapping("/uploadAndCheck")
-    @ApiOperation(value = "待验证，导入岗位excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
+    @ApiOperation(value = "ok，导入岗位excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
     public ResponseResult uploadAndCheck(MultipartFile multfile,HttpServletResponse response) throws Exception {
         return postService.uploadAndCheck(multfile, getUserSession(),response);
 
     }
+    @GetMapping("/exportError2Txt")
+    @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
+    public ResponseResult exportError2Txt(String errorInfoKey,HttpServletResponse response) throws Exception {
+        String errorData = redisClusterService.get(errorInfoKey.trim());
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/x-msdownload;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+            "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
+        response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
+        response.getOutputStream().write(errorData.getBytes());
+        return null;
+    }
 
 
     @GetMapping("/importToDatabase")
-    @ApiOperation(value = "导入岗位入库")
+    @ApiOperation(value = "ok,导入岗位入库")
     public ResponseResult importToDatabase(@RequestParam("redisKey") String redisKey) {
         return postService.importToDatabase(redisKey, getUserSession());
     }
 
+    @GetMapping("/cancelImport")
+    @ApiOperation(value = "ok,取消导入(将数据从redis中删除)")
+    public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey,@RequestParam("errorInfoKey") String errorInfoKey) {
+        return postService.cancelImport(redisKey.trim(),errorInfoKey.trim());
+    }
+
+
     //TODO 实有人数、编制人数暂时不考虑
     //TODO 递归层数控制
-    @ApiOperation(value = "ok，获取岗位图", notes = "ok")
+    @ApiOperation(value = "待重写，获取岗位图", notes = "ok")
     @GetMapping("/getPostGraphics")
     public ResponseResult<List<Post>> getPostGraphics(@RequestParam("layer") @ApiParam(value = "岗位图层数，默认显示2级", example = "2") Integer layer,
                                                       @RequestParam("isContainsCompiler") @ApiParam(value = "是否显示编制人数", example = "false") boolean isContainsCompiler,
@@ -201,5 +220,4 @@ public class PostController extends BaseController {
         List<Post> pageResult = postService.getPostGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, postId, isEnable);
         return new ResponseResult(pageResult);
     }
-
 }

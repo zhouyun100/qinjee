@@ -28,6 +28,7 @@
     delete from t_custom_archive_table_data
     where id = #{id,jdbcType=INTEGER}
   </delete>
+
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" useGeneratedKeys="true">
     insert into t_custom_archive_table_data (table_id, business_id, operator_id,
       create_time, update_time, big_data,is_delete
@@ -201,12 +202,25 @@
       #{item}
     </foreach>
   </select>
-  <select id="deleteByBusinessIdAndFuncode">
-    UPDATE t_custom_archive_table_data
-    SET
-     is_delete=1
-     and business_id=#{id}
-     and func_code=#{pre}
-  </select>
+
+
+  <update id="deleteByBusinessIdAndFuncode">
+        UPDATE t_custom_archive_table_data
+    SET is_delete = 1
+    WHERE
+        business_id = #{id}
+    AND table_id IN (
+        SELECT
+            table_id
+        FROM
+            t_custom_archive_table
+        WHERE
+    company_id=#{CompanyId}
+        and func_code = #{funcCode}
+      and is_delete=0
+      and is_enable=1
+)
+
+  </update>
 
 </mapper>

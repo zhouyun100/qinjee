@@ -93,7 +93,7 @@ public interface UserArchiveDao {
 
     Date selectDateByStatus(@Param("string") String string);
 
-    List< UserArchiveVo> selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId);
+    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId);
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
@@ -105,4 +105,6 @@ public interface UserArchiveDao {
     Integer countUserArchiveByPostId(Integer postId);
 
     void deleteArchiveById(Integer businessId);
+
+    List< UserArchive> selectBeforeFilter(@Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
 }

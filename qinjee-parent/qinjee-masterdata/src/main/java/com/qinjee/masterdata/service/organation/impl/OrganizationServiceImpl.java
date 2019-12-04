@@ -472,6 +472,11 @@ public class OrganizationServiceImpl implements OrganizationService {
                 public int compare(Object o1, Object o2) {
                     OrganizationVO org1 = (OrganizationVO) o1;
                     OrganizationVO org2 = (OrganizationVO) o2;
+                    if (org1.getOrgCode().length() > org2.getOrgCode().length()) {
+                        return 1;
+                    } else if (org1.getOrgCode().length() < org2.getOrgCode().length()) {
+                        return -1;
+                    }
                     return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
                 }
             });
@@ -518,6 +523,14 @@ public class OrganizationServiceImpl implements OrganizationService {
             responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
         }
         return responseResult;
+    }
+
+    @Override
+    public ResponseResult cancelImport(String redisKey, String errorInfoKey) {
+
+        redisService.del(redisKey);
+        redisService.del(errorInfoKey);
+        return new ResponseResult();
     }
 
     //=====================================================================
