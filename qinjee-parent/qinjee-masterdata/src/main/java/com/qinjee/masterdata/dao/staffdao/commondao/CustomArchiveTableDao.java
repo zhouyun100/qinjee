@@ -50,7 +50,6 @@ public interface CustomArchiveTableDao {
 
     Map< String, String> selectIsSysAndFuncCode(@Param("tableId") Integer tableId);
 
-    Map<String,String> selectFieldIdBySortList(@Param("schemeId") Integer schemeId);
 
     List< Integer> selectFieldIdNotInside(Integer companyId);
 }

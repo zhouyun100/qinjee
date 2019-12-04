@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
@@ -12,6 +13,7 @@ import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -370,7 +372,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
             }
         }
         if(list.size()>0){
-            throw new Exception("同类型只能设置一种临近天数");
+            ExceptionCast.cast ( CommonCode.SET_DEADLINE_EXCEPTION );
         }
             return Integer.parseInt(list.get(0).getDateRule());
     }

@@ -32,7 +32,9 @@ public enum CommonCode implements ResultCode{
     FILE_PARSE_FAILED(false,10312, "文件解析失败!"),
     FAIL_VALUE_NULL(false,10313, "结果不存在，请检查或联系开发!"),
     FILE_EMPTY(false,10314, "文件为空!"),
-    REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!");
+    REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!"),
+    SET_DEADLINE_EXCEPTION(false,10316, "一种类型只能设置一种临近天数!"),
+    SEND_MAIL_FAIL(false,10317, "发送邮件失败!");
 
 
     /**

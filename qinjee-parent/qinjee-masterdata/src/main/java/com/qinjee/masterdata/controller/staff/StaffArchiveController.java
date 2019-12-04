@@ -536,6 +536,27 @@ public class StaffArchiveController extends BaseController {
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
+    /**
+     * 根据姓名返回UserArchive
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/selectUserArchiveByName", method = RequestMethod.POST)
+    @ApiOperation(value = "根据姓名返回UserArchive", notes = "hkt")
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult<List<UserArchive>> selectUserArchiveByName(String name) {
+        Boolean b = checkParam(name);
+        if(b){
+            try {
+                List<UserArchive> userArchiveList=staffArchiveService. selectUserArchiveByName(name);
+               return new ResponseResult <> ( userArchiveList,CommonCode.SUCCESS );
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
 
 
 

@@ -17,7 +17,6 @@ import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
-import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -75,7 +74,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBlackList(List<Integer> list) throws Exception {
+    public void deleteBlackList(List<Integer> list)  {
         blacklistDao.deleteBlackList(list);
     }
 
@@ -201,7 +200,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
         List<Integer> list = customArchiveTableDao.selectFieldIdNotInside(userSession.getCompanyId());
         String a="select t.archive_id from( select t0.* , ";
-        return a+SqlUtil.getsql(userSession.getCompanyId(),list);
+        return null;
+//        return a+SqlUtil.getsql(userSession.getCompanyId(),list,new ArrayList <> (  ) );
     }
 
     /**

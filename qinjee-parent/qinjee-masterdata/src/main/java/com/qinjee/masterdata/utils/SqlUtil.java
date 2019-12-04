@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.utils;
 
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
+import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,20 +11,40 @@ public class SqlUtil {
     //fieldNameNotInside 所有有关档案表的字段名称集合
     //临时集合，用来拼接非自定义表对的字段名
     //
-    public static String getsql(Integer companyId, List<Integer> fieldNameNotInside) {
+    public static String getsql(Integer companyId, List < CustomFieldVO > fieldIdNotInside, List< CustomTableVO > customTableVOS) {
         List<String> custom=new ArrayList<>();
-        StringBuffer stringBuffer=new StringBuffer();
-        for (Integer integer : fieldNameNotInside) {
-            if(integer!=null && !integer.equals ( 0 )) {
-                custom.add("substring_index(SUBSTRING(t2.big_data,instr(t2.big_data,'@@" + integer + "@@')+LENGTH('@@" + integer + "@@')+1),';@@',1)as " + integer + "\t" + ",");
+        String substring="";
+        StringBuilder stringBuffer=new StringBuilder ();
+        StringBuilder stringBuffer1=new StringBuilder ();
+        for (CustomTableVO customTableVO : customTableVOS) {
+            if (customTableVO.getIsSystemDefine ()==0) {
+                Integer tableId = customTableVO.getTableId ();
+                for (CustomFieldVO customFieldVO : fieldIdNotInside) {
+                    if (customFieldVO.getTableId ().equals ( tableId )) {
+                        Integer fieldId = customFieldVO.getFieldId ();
+                        custom.add ( "substring_index(SUBSTRING(t" + tableId + ".big_data,instr(t" + tableId + ".big_data,'@@" + fieldId + "@@')+LENGTH('@@" + fieldId + "@@')+1),';@@',1)as  t" + fieldId + "\t" + "," );
+                    }
+                }
             }
         }
         for (String s : custom) {
-            stringBuffer.append(s);
+            if(custom!=null && !custom.equals ( "" )) {
+                stringBuffer.append ( s );
+            }
         }
-        int i = stringBuffer.toString().lastIndexOf(",");
-        String substring = stringBuffer.toString().substring(0, i);
-        String c="from t_user_archive t0,t_custom_archive_table t1,t_custom_archive_table_data t2 where t0.company_id = " + companyId +"\t"+"and t1.func_code = 'ARC'"+"\t"+"and t0.company_id = t1.company_id and t2.table_id=t1.table_id"+"\t"+" and t0.archive_id = t2.business_id )t"+"\t";
-        return substring+c;
+        if(stringBuffer!=null && !stringBuffer.toString ().equals ( "" )) {
+            int i = stringBuffer.toString ().lastIndexOf ( "," );
+            substring = stringBuffer.toString ().substring ( 0, i );
+        }
+        stringBuffer1.append (" FROM\n" +"t_user_archive t0 ");
+        for (CustomTableVO customTableVO : customTableVOS) {
+            if (customTableVO.getIsSystemDefine ()==0) {
+                Integer tableId = customTableVO.getTableId ();
+                String d = " LEFT JOIN t_custom_archive_table_data " + "t" + tableId + " ON t0.archive_id = t" + tableId + ".business_id and t" + tableId + ".table_id=" + tableId;
+                stringBuffer1.append ( d );
+            }
+        }
+        stringBuffer1.append (	" WHERE t0.company_id ="+companyId +" ) t");
+        return substring+stringBuffer1.toString ();
     }
 }

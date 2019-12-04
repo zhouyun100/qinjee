@@ -226,13 +226,13 @@ public class CommonController extends BaseController {
     /**
      * 根据企业ID和功能CODE查询字段集合
      */
-    @RequestMapping(value = "/selectFieldByFunc", method = RequestMethod.POST)
-    @ApiOperation(value = "根据企业ID和功能CODE查询字段集合", notes = "hkt")
-    public ResponseResult< List< CustomFieldVO >> selectFieldByFunc(@RequestBody Integer companyId, String funcCode) {
-        Boolean b = checkParam(companyId,funcCode);
+//    @RequestMapping(value = "/selectFieldByFunc", method = RequestMethod.POST)
+//    @ApiOperation(value = "根据企业ID和功能CODE查询字段集合", notes = "hkt")
+    public ResponseResult< List< CustomFieldVO >> selectFieldByFunc( String funcCode) {
+        Boolean b = checkParam(getUserSession (),funcCode);
         if (b) {
             try {
-                List < CustomFieldVO > customFieldVOS = customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( companyId, funcCode );
+                List < CustomFieldVO > customFieldVOS = customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( getUserSession ().getCompanyId (), funcCode );
                 return new ResponseResult<>  ( customFieldVOS, CommonCode.SUCCESS );
             } catch (Exception e) {
                 return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );

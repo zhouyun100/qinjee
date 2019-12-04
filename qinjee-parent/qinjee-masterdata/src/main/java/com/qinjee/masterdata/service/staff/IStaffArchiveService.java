@@ -162,4 +162,6 @@ public interface IStaffArchiveService {
     void deleteCareerTrack(Integer id);
 
     UserArchive selectArchiveSingle(Integer id);
+
+    List<UserArchive> selectUserArchiveByName(String name);
 }

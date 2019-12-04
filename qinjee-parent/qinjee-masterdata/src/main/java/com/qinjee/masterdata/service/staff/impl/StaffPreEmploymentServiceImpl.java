@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -15,6 +16,7 @@ import com.qinjee.masterdata.service.email.EmailConfigService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.SendManyMailsUtil;
 import entity.MailConfig;
@@ -86,7 +88,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             SendManyMailsUtil.sendMail ( mailConfig, tomails, mails,
                     emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
         } catch (Exception e) {
-            throw new Exception ("邮件发送失败");
+            ExceptionCast.cast ( CommonCode.SEND_MAIL_FAIL );
         }
     }
 
@@ -224,12 +226,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deletePreEmployment(List < Integer > list) throws Exception {
-        Integer max = preEmploymentDao.selectMaxId ();
-        for (Integer integer : list) {
-            if (integer > max) {
-                throw new Exception ( "id不合法" );
-            }
-        }
         preEmploymentDao.deletePreEmploymentList ( list );
     }
 

@@ -331,7 +331,88 @@
         and is_delete=0
     </select>
 
+    <select id="transOrgId" resultType="java.util.Map">
+        select t.field_id,t.org_id from(
+        SELECT
+            field.field_id,
+          field.table_id,
+            org.org_id
+        FROM
+            t_custom_archive_field field,
+            t_organization org
+        WHERE
+            org.org_code =#{value}
+        AND field.field_code = 'org_id'
+        AND org.is_enable = 1
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id
+        where  tab.company_id =#{companyId}
+         AND tab.is_delete = 0
+         AND tab.is_enable = 1
+         AND tab.func_code =#{funcCode}
 
+    </select>
+    <select id="transSupiorId" resultType="java.util.Map">
+       select t.field_id,t.archive_id from(
+        SELECT
+            field.field_id,
+            field.table_id,
+            arc.archive_id
+        FROM
+            t_custom_archive_field field,
+            t_user_archive arc
+        WHERE
+           arc.employee_number =#{value}
+        AND field.field_code = 'supervisor_id'
+        AND arc.is_delete = 0
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id
+        where  tab.company_id =#{companyId}
+         AND tab.is_delete = 0
+         AND tab.is_enable = 1
+         AND tab.func_code =#{funcCode}
+    </select>
+
+    <select id="transPostId" resultType="java.util.Map">
+                SELECT t.field_id,t.post_id FROM(
+                SELECT
+                    field.field_id,
+                    field.table_id,
+                    post.post_id
+                FROM
+                    t_custom_archive_field field,
+                    t_post post
+                WHERE
+                    post.post_code=#{value}
+                AND field.field_code = 'post_id'
+                AND post.is_delete = 0
+                AND field.is_delete = 0
+                ) t
+                LEFT JOIN t_custom_archive_table tab ON t.table_id = tab.table_id
+                WHERE
+                    tab.company_id =#{companyId}
+                AND tab.is_delete = 0
+                AND tab.is_enable = 1
+                AND tab.func_code = #{funcCode}
+                    </select>
+    <select id="selectFieldCodeById" resultType="java.lang.String">
+        select field_code
+        from t_custom_archive_field
+        where field_id =#{integer}
+        and is_delete=0
+    </select>
+
+    <select id="selectFieldByIdList" resultMap="FieldResultMap">
+        select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+        table_id,group_id,is_show,is_system_define,sort
+         from t_custom_archive_field
+        where field_id in
+        <foreach collection="integers2" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
   <select id="selectFieldCodeListByTableIdList" resultType="java.lang.String">
 
   </select>
