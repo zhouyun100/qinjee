@@ -317,6 +317,16 @@ public class PositionServiceImpl implements PositionService {
         List<Position> positionList = positionDao.getPositionList(userSession.getCompanyId());
         return new ResponseResult(positionList);
     }
+
+    @Override
+    public PageResult<Position> getPositionByPositionId(Integer positionId) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<PageResult<Position>> getAllPositionPage(UserSession userSession) {
+        return null;
+    }
 /*
     @Override
     public ResponseResult<Position> getPositionLevelAndGrade(Integer positionId) {

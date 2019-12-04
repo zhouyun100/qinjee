@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
-        generatePostCodeAndSoitId(post, orgId, postVo.getParentPostId());
+        generatePostCodeAndSortId(post, orgId, postVo.getParentPostId());
         post.setCompanyId(userSession.getCompanyId());
         post.setOperatorId(userSession.getArchiveId());
         post.setIsDelete((short) 0);
@@ -117,7 +117,7 @@ public class PostServiceImpl implements PostService {
         // addPostLevelAndGradeRelation(postVo, userSession, post);
     }
 
-    private void generatePostCodeAndSoitId(Post post, Integer orgId, Integer parentPostId) {
+    private void generatePostCodeAndSortId(Post post, Integer orgId, Integer parentPostId) {
         String postCode = "";
         Integer sortId = 1000;
         //如果父级岗位存在 则按照父级岗位的编码为基础，否则以归属机构的为准
@@ -152,6 +152,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void editPost(PostVo postVo, UserSession userSession) {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
@@ -160,7 +161,7 @@ public class PostServiceImpl implements PostService {
         //如果上级机构id或上级岗位id改变，则重新生成岗位编码 和 排序id
         Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
         if (!postVo.getOrgId().equals(post1.getOrgId())) {
-            generatePostCodeAndSoitId(post, postVo.getOrgId(), postVo.getParentPostId());
+            generatePostCodeAndSortId(post, postVo.getOrgId(), postVo.getParentPostId());
         }
         postDao.updateByPrimaryKeySelective(post);
         //删除修改不含有的岗位职级关系信息
@@ -241,7 +242,7 @@ public class PostServiceImpl implements PostService {
                 post.setOrgId(orgId);
                 post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
-                generatePostCodeAndSoitId(post, orgId, null);
+                generatePostCodeAndSortId(post, orgId, null);
                 postDao.insertSelective(post);
                 //岗位说明书
                 PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);

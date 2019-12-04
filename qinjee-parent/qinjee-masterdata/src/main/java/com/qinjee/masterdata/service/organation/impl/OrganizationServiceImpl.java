@@ -469,6 +469,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         Integer number = 1;
         for (Object row : excelDataList) {
             OrganizationVO org = (OrganizationVO) row;
+            //转换机构类型
+            if ("集团".equalsIgnoreCase(org.getOrgType())) {
+                org.setOrgType("GROUP");
+            } else if ("单位".equalsIgnoreCase(org.getOrgType())) {
+                org.setOrgType("UNIT");
+            } else if ("部门".equalsIgnoreCase(org.getOrgType())) {
+                org.setOrgType("DEPT");
+            }
+
             //排序前记录行号
             lineNumber.put(org.getOrgCode(), number++);
             orgList.add(org);
@@ -496,8 +505,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         //将原表信息及redis key置入返回对象
         resultMap.put("excelList", orgList);
         resultMap.put("redisKey", redisKey);
+
         //校验
         List<OrganizationVO> checkResultList = checkExcel(lineNumber, orgList);
+
         //过滤出错误校验列表
         List<OrganizationVO> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
@@ -794,25 +805,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    //=====================================================================
-    @Override
-    public ResponseResult downloadTemplate(HttpServletResponse response) {
-        ClassPathResource cpr = new ClassPathResource("/templates/" + "机构导入模板.xls");
-        try {
-            File file = cpr.getFile();
-            String filename = cpr.getFilename();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            FileUtils.copyFile(file, outputStream);
-            response.setCharacterEncoding("UTF-8");
-            response.setHeader("content-Type", "application/vnd.ms-excel");
-            response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode(filename, "UTF-8") + "\"");
-            response.getOutputStream().write(outputStream.toByteArray());
-        } catch (Exception e) {
-            ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
-        }
-        return new ResponseResult();
-    }
 
     //=====================================================================
     @Override
@@ -1050,6 +1042,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (groupCount > 1) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("集团类型机构只能存在一个|");
+            }
+
+            //TODO
+            if (null != organizationVO.getOrgManagerId() && "".equals(organizationVO.getOrgManagerId())){
+
             }
 
             if (organizationVO.getOrgManagerId() != null) {

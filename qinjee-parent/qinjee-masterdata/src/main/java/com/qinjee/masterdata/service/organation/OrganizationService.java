@@ -20,11 +20,12 @@ public interface OrganizationService  {
 
   /**
    * 根据是否封存查询用户下所有的机构,树形结构展示
-   *
+   *接口已过时，新接口getAllOrganizationTree(UserSession userSession, Short isEnable);
    * @param userSession
    * @param isEnable
    * @return
    */
+  @Deprecated
   PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable);
 
 
@@ -105,14 +106,6 @@ public interface OrganizationService  {
    * @return
    */
   List<OrganizationVO> getOrganizationPostTree(UserSession userSession, Short isEnable);
-
-  /**
-   * 下载模板
-   *
-   * @param response
-   * @return
-   */
-  ResponseResult downloadTemplate(HttpServletResponse response);
 
 
 

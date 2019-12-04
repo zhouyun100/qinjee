@@ -315,6 +315,7 @@ public class OrganizationController extends BaseController {
 
     // String filePath,  List<Integer> orgIds
     @PostMapping("/exportOrganization")
+    @ApiOperation("机构导出，demo {\"orgId\":28,\"orgIds\":[14,25]}")
     public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) {
         if (checkParam(paramMap)) {
             try {
@@ -327,8 +328,21 @@ public class OrganizationController extends BaseController {
                     orgId = (Integer) paramMap.get("orgId");
                 }
                 List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
-                //service层已经做了判空organizationVOList
-                byte[] bytes = ExcelExportUtil.exportToBytes(organizationVOList);
+                List<OrganizationVO> dataList = new ArrayList<>();
+                //将部门类型转变为中文
+                for (OrganizationVO org : organizationVOList) {
+                    if ("GROUP".equalsIgnoreCase(org.getOrgType())) {
+                        org.setOrgType("集团");
+                    } else if ("UNIT".equalsIgnoreCase(org.getOrgType())) {
+                        org.setOrgType("单位");
+                    } else if ("DEPT".equalsIgnoreCase(org.getOrgType())) {
+                        org.setOrgType("部门");
+                    }
+                    dataList.add(org);
+                }
+                //将list转为字节流数组
+                byte[] bytes = ExcelExportUtil.exportToBytes(dataList);
+                //输出字节流到浏览器
                 response.setCharacterEncoding("UTF-8");
                 response.setHeader("content-Type", "application/vnd.ms-excel");
                 response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));

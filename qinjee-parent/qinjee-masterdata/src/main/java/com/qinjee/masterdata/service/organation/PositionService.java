@@ -62,7 +62,11 @@ public interface PositionService {
     ResponseResult sortPosition(Integer prePositionId, Integer midPositionId, Integer nextPositionId);
     ResponseResult<List<Position>> getAllPositions(UserSession userSession);
 
-  /**
+    PageResult<Position> getPositionByPositionId(Integer positionId);
+
+    ResponseResult<PageResult<Position>> getAllPositionPage(UserSession userSession);
+
+    /**
      * 新增岗位选择职位时带出职级职等
      * @param positionId
      * @return

@@ -28,5 +28,7 @@ public class PositionPageVo extends PageQuery {
      */
     @ApiModelProperty("职位族ID")
     private Integer positionGroupId;
+    @ApiModelProperty("职位ID")
+    private Integer positionId;
 
 }
