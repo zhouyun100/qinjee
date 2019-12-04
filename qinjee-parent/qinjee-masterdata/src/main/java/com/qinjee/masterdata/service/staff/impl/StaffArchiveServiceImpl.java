@@ -134,8 +134,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public ExportList selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List < Integer > archiveIdList) throws IllegalAccessException {
         ExportList exportList = new ExportList ();
-        List < Integer > integerList = new ArrayList <> ();
-//        Set < CustomArchiveTable > set = new HashSet <> ();
+        List<CustomFieldVO> orderNotIn=new ArrayList<>();
         Map < Integer, Map < String, Object > > userArchiveListCustom;
         if (null != schemeId && 0 != schemeId) {
             StringBuilder stringBuffer = new StringBuilder ();
@@ -143,7 +142,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //根据查询方案id找到需要展示字段的id以及按顺序排序
             List < Integer > integers1 = querySchemeFieldDao.selectFieldIdWithSort ( schemeId );
             List < Integer > integers2 = querySchemeSortDao.selectSortId ( schemeId );
-//            integers1.addAll ( integers2 );
+
             CustomTableVO customTableVO=new CustomTableVO ();
             customTableVO.setCompanyId ( userSession.getCompanyId () );
             customTableVO.setFuncCode ( "ARC" );
@@ -154,9 +153,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             List < CustomFieldVO > customFields = customTableFieldDao.selectFieldByIdList ( integers2 );
             for (CustomFieldVO customFieldVO : customFields) {
                 if (customFieldVO.getIsSystemDefine () == 1) {
-                    stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () ) ).append ( "," );
+                    stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () )+"\t" )
+                            .append(getSort(querySchemeSortDao.selectSortById(customFieldVO.getFieldId()))).append ( "," );
                 } else {
-                    stringBuffer.append ( "t." ).append ("t"+ customFieldVO.getFieldId () ).append ( "," );
+                    orderNotIn.add(customFieldVO);
+                    stringBuffer.append ( "t." ).append ("t"+ customFieldVO.getFieldId ()+"\t" ).
+                            append(getSort(querySchemeSortDao.selectSortById(customFieldVO.getFieldId()))).append ( "," );
                 }
             }
             assert order != null;
@@ -165,7 +167,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //调用接口查询机构权限范围内的档案集合
             //进行sql查询，返回数据，档案在机构范围内
 
-            userArchiveListCustom = userArchiveDao.getUserArchiveListCustom ( getBaseSql ( integers1, userSession.getCompanyId (), customTableVOS), order );
+            userArchiveListCustom = userArchiveDao.getUserArchiveListCustom ( getBaseSql ( orderNotIn,integers1, userSession.getCompanyId (), customTableVOS), order );
 
             List < Integer > integers = new ArrayList <> ( userArchiveListCustom.keySet () );
             integers.removeAll ( archiveIdList );
@@ -269,7 +271,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     /**
      * list是所查询项的集合
      */
-    private String getBaseSql(List < Integer > integers, Integer companyId, List<CustomTableVO> customTableVOS) {
+    private String getBaseSql(List<CustomFieldVO> notIn,List < Integer > integers, Integer companyId, List<CustomTableVO> customTableVOS) {
         List<CustomFieldVO> inList=new ArrayList<>();
         List<CustomFieldVO> outList=new ArrayList<>();
         List<CustomFieldVO> list = customTableFieldDao.selectFieldByIdList(integers);
@@ -280,6 +282,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 inList.add(customFieldVO);
             }
         }
+        outList.addAll(notIn);
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
         String b = "select t.archive_id, ";
