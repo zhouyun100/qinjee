@@ -486,8 +486,24 @@ public class PostServiceImpl implements PostService {
             }
         }).collect(Collectors.toList());
         //递归处理机构,使其以树形结构展示
-
+        //allPost最后只会有一个元素
         handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
+        //TODO 拿出根节点，设置上两级父级岗位
+        Post parentPost = postDao.selectByPrimaryKey(allPost.get(0).getParentPostId());
+
+        if(Objects.nonNull(parentPost)){
+            parentPost.setChildList(allPost);
+            List<Post> pList=new ArrayList<>();
+            pList.add(parentPost);
+            Post parentPost2 = postDao.selectByPrimaryKey(parentPost.getParentPostId());
+            if(Objects.nonNull(parentPost2)){
+                parentPost2.setChildList(pList);
+                List<Post> pList2=new ArrayList<>();
+                pList2.add(parentPost2);
+                return pList2;
+            }
+            return pList;
+        }
         return allPost;
     }
 
