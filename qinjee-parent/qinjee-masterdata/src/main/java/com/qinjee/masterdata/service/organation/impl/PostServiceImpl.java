@@ -475,7 +475,7 @@ public class PostServiceImpl implements PostService {
         postIdList = getPostIdList(userSession, postId, (layer - 1), isEnable);
         //查询所有相关的岗位
         List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
-        //拿到根节点
+        //拿到根节点，以及两位上级节点
         List<Post> topPostList = allPost.stream().filter(post -> {
             if (post.getPostId() != null && post.getPostId().equals(postId)) {
                 return true;
@@ -516,6 +516,7 @@ public class PostServiceImpl implements PostService {
         redisService.del(errorInfoKey);
         return new ResponseResult();
     }
+
 
     private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {
         for (Post post : topPostList) {

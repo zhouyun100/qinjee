@@ -184,7 +184,7 @@ public class OrganizationController extends BaseController {
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
         response.setHeader("Content-Disposition",
-            "attachment;filename=\"" + URLEncoder.encode("defualt", "UTF-8") + "\"");
+            "attachment;filename=\"" + URLEncoder.encode("orgDefualt.xls", "UTF-8") + "\"");
         response.getOutputStream().write(bytes);
         return null;
       }else{
@@ -212,6 +212,7 @@ public class OrganizationController extends BaseController {
     response.setContentType("application/x-msdownload;charset=UTF-8");
     response.setHeader("Content-Disposition",
         "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
+    response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
     response.getOutputStream().write(errorData.getBytes());
     return null;
   }

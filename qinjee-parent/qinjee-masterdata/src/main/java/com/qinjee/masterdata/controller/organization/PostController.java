@@ -184,6 +184,7 @@ public class PostController extends BaseController {
         response.setContentType("application/x-msdownload;charset=UTF-8");
         response.setHeader("Content-Disposition",
             "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
+        response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
         response.getOutputStream().write(errorData.getBytes());
         return null;
     }
@@ -200,8 +201,6 @@ public class PostController extends BaseController {
     public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey,@RequestParam("errorInfoKey") String errorInfoKey) {
         return postService.cancelImport(redisKey.trim(),errorInfoKey.trim());
     }
-
-
 
 
     //TODO 实有人数、编制人数暂时不考虑
@@ -221,5 +220,4 @@ public class PostController extends BaseController {
         List<Post> pageResult = postService.getPostGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, postId, isEnable);
         return new ResponseResult(pageResult);
     }
-
 }
