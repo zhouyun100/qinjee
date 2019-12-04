@@ -581,4 +581,45 @@
             </foreach>
         </if>
     </select>
+
+    <update id="updateByOrgCode" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        update t_organization
+        <set>
+            <if test="orgCode != null">
+                org_code = #{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                org_name = #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgType != null">
+                org_type = #{orgType,jdbcType=VARCHAR},
+            </if>
+            <if test="orgParentId != null">
+                org_parent_id = #{orgParentId,jdbcType=INTEGER},
+            </if>
+            <if test="orgFullName != null">
+                org_full_name = #{orgFullName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgManagerId != null">
+                org_manager_id = #{orgManagerId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isEnable != null">
+                is_enable = #{isEnable,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where org_code = #{orgCode,jdbcType=VARCHAR}
+
+    </update>
 </mapper>

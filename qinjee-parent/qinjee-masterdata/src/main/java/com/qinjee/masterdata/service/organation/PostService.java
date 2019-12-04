@@ -36,7 +36,7 @@ public interface PostService {
    * @param postVo
    * @return
    */
-  ResponseResult addPost(PostVo postVo, UserSession userSession);
+  void addPost(PostVo postVo, UserSession userSession);
 
   /**
    * 编辑岗位
@@ -45,7 +45,7 @@ public interface PostService {
    * @param userSession
    * @return
    */
-  ResponseResult editPost(PostVo postVo, UserSession userSession);
+  void editPost(PostVo postVo, UserSession userSession);
 
   /**
    * 删除岗位
@@ -54,7 +54,7 @@ public interface PostService {
    * @param postIds
    * @return
    */
-  ResponseResult deletePost(UserSession userSession, List<Integer> postIds);
+  void deletePost(UserSession userSession, List<Integer> postIds);
 
   /**
    * 解封/封存机构
@@ -64,10 +64,10 @@ public interface PostService {
    * @param userSession
    * @return
    */
-  ResponseResult sealPostByIds(List<Integer> postIds, Short isEnable, UserSession userSession);
+  void sealPostByIds(List<Integer> postIds, Short isEnable, UserSession userSession);
 
 
-  ResponseResult sortPorts(List<Integer> postIds, UserSession userSession);
+  void sortPorts(List<Integer> postIds, UserSession userSession);
 
   /**
    * 复制岗位
@@ -76,7 +76,7 @@ public interface PostService {
    * @param userSession
    * @return
    */
-  ResponseResult copyPost(List<Integer> postIds, UserSession userSession, Integer orgId);
+  void copyPost(List<Integer> postIds, UserSession userSession, Integer orgId);
 
   /**
    * 获取公司所有的岗位
@@ -85,19 +85,19 @@ public interface PostService {
    * @param orgId
    * @return
    */
-  ResponseResult<List<Post>> getAllPost(UserSession userSession, Integer orgId, Short isEnable);
+  List<Post> getAllPost(UserSession userSession, Integer orgId, Short isEnable);
 
   /**
    * 查看岗位历任
    * @return
    */
-  ResponseResult<List<UserArchivePostRelation>> getPostSuccessive(Integer postId);
+  List<UserArchivePostRelation> getPostSuccessive(Integer postId);
 
     List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession);
 
   ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception;
 
-  ResponseResult importToDatabase(String redisKey, UserSession userSession);
+  void importToDatabase(String redisKey, UserSession userSession);
 
     List<Post> getPostGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 
@@ -108,5 +108,5 @@ public interface PostService {
    */
   PageResult<Post> listDirectPostPage(PostPageVo postPageVo);
 
-  ResponseResult cancelImport(String redisKey, String errorInfoKey);
+  void cancelImport(String redisKey, String errorInfoKey);
 }

@@ -54,7 +54,7 @@ public class ExceptionCatch {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseResult exception(Exception exception){
-//        exception.printStackTrace();
+       exception.printStackTrace();
         //记录日志
         LOGGER.error("catch exception:{}",exception.getMessage());
         if(EXCEPTIONS == null){
