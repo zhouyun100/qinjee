@@ -165,11 +165,13 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 入职状态
      */
+    @NotNull
     private String employmentState;
 
     /**
      * 入职登记
      */
+    @NotNull
     private String employmentRegister;
 
     /**
@@ -180,6 +182,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 数据来源
      */
+    @NotNull
     private String dataSource;
 
     /**

@@ -619,10 +619,10 @@ public class CommonController extends BaseController {
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult<String> getPostByOrgId(Integer orgId) {
-        Boolean b = checkParam(orgId);
+        Boolean b = checkParam(orgId,getUserSession ());
         if (b) {
             try {
-                String postByOrgId = staffCommonService.getPostByOrgId ( orgId );
+                String postByOrgId = staffCommonService.getPostByOrgId ( orgId,getUserSession () );
                 if (!StringUtils.isEmpty(postByOrgId)) {
                     return new ResponseResult<>(postByOrgId, CommonCode.SUCCESS);
                 }

@@ -35,12 +35,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -265,7 +265,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
-        Map < Integer, Map < String, Object > > map = preEmploymentDao.selectExportPreList ( exportRequest.getList (), userSession.getCompanyId () );
+        Map < Integer, Map < String, Object > > map;
+        if(CollectionUtils.isEmpty ( exportRequest.getList () )){
+            List < Integer > list = preEmploymentDao.selectIdByComId ( userSession.getCompanyId () );
+             map = preEmploymentDao.selectExportPreList ( list, userSession.getCompanyId () );
+        }else{
+             map = preEmploymentDao.selectExportPreList ( exportRequest.getList (), userSession.getCompanyId () );
+        }
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
         ExportList exportList = new ExportList ();
@@ -287,6 +293,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportBlackFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
+
         Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId () );
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
@@ -439,15 +446,10 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getExportList ().getMap ().values () );
         for (Map < String, Object > stringObjectMap : maps) {
             //linkedHashMap保证有序
-            SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );
             Map < String, String > stringMap = new LinkedHashMap <> ();
             for (String head : heads) {
-                Object o = stringObjectMap.get ( customTableFieldDao.selectFieldCodeByNameAndFuncCodeAndCompanyId ( head, funcCode, companyId ) );
-                if(isDate ( String.valueOf ( o ))){
-                    Date date=new Date ( String.valueOf ( o ) );
-                    o=sdf.format ( date );
-                }
-                stringMap.put ( head, String.valueOf (o) );
+                String s = customTableFieldDao.selectFieldCodeByNameAndFuncCodeAndCompanyId ( head, funcCode, companyId );
+                TransValue ( stringObjectMap, stringMap, head, s );
             }
             mapList.add ( stringMap );
         }
@@ -466,18 +468,42 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         for (Map < String, Object > stringObjectMap : maps) {
             //linkedHashMap保证有序
             Map < String, String > stringMap = new LinkedHashMap <> ();
-            SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );
             for (String head : heads) {
-                Object o = stringObjectMap.get ( stringObjectMap.get ( customTableFieldDao.selectFieldCodeByName ( head, companyId ) )  );
-                if(isDate ( String.valueOf ( o ) )){
-                    Date date=new Date ( String.valueOf ( o ) );
-                    o=sdf.format ( date );
-                }
-                stringMap.put ( head, String.valueOf (o) );
+                String s = customTableFieldDao.selectFieldCodeByName ( head, companyId );
+                TransValue ( stringObjectMap, stringMap, head, s );
             }
             mapList.add ( stringMap );
         }
         return mapList;
+    }
+
+    private void TransValue(Map < String, Object > stringObjectMap, Map < String, String > stringMap, String head, String s) {
+        if (head.equals ( "部门" )) {
+            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "org_name" ) ) );
+            return;
+        }
+        if (head.equals ( "单位" )) {
+            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "business_unit_name" ) ) );
+            return;
+        }
+        if (head.equals ( "直接上级" )) {
+            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "supervisor_user_name" ) ) );
+            return;
+        }
+        if (head.equals ( "岗位" )) {
+            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "post_name" ) ) );
+            return;
+        }
+        if (head.equals ( "任职类型" )) {
+            stringMap.put ( head, "在职" );
+            return;
+        }
+        Object o = stringObjectMap.get ( s );
+        String date = isDate ( String.valueOf ( o ) );
+        if (date != null) {
+            o = date;
+        }
+        stringMap.put ( head, String.valueOf ( o ) );
     }
 
     /**
@@ -522,13 +548,12 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         return typeMap;
     }
 
-    private Boolean isDate(String date){
+    private String isDate(String date){
         SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );
         try {
-            sdf.parse ( date );
-            return true;
-        } catch (ParseException e) {
-            return false;
+            return sdf.format ( new Date ( date ) );
+        } catch (Exception e) {
+            return null;
         }
     }
 

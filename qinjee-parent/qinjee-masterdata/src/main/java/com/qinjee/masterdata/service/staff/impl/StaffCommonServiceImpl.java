@@ -212,10 +212,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public String getPostByOrgId(Integer orgId) {
-
-       List<Map < Integer, String >> postByOrgId = postDao.getPostByOrgId ( orgId );
-        return JSON.toJSONString ( postByOrgId );
+    public String getPostByOrgId(Integer orgId,UserSession userSession) {
+        if(orgId==null || orgId==0){
+            JSON.toJSONString (postDao.getPostByOrgId ( userSession.getCompanyId () ));
+        }else{
+          return  JSON.toJSONString (postDao.getPostByOrgId ( orgId ));
+        }
+        return null;
     }
 
     @Override
@@ -316,6 +319,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         for (Integer integer : integerListEntry.getValue ()) {
                             Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
                             PreEmployment preEmployment = new PreEmployment ();
+                            preEmployment.setEmploymentState ( "未入职" );
+                            preEmployment.setResidentCharacter ( "未发送" );
+                            preEmployment.setDataSource ( "手工录入" );
+                            preEmployment.setHireDate ( new Date (  ) );
+                            preEmployment.setCompanyId ( userSession.getCompanyId () );
+                            preEmployment.setOperatorId ( userSession.getArchiveId () );
                             Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
                             for (Field declaredField : declaredFields) {
                                 declaredField.setAccessible ( true );

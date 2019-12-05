@@ -9,7 +9,6 @@ import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -155,7 +154,7 @@ public interface IStaffCommonService {
      * @param orgId
      * @return
      */
-    String getPostByOrgId(@Param("orgId") Integer orgId);
+    String getPostByOrgId (Integer orgId,UserSession userSession);
 
     /**
      * 展示自定义字段的值
