@@ -90,6 +90,7 @@
     and t_menu.is_delete = 0
     and t_company_menu.is_delete = 0
     GROUP BY t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id,t_menu.button_code
+    ORDER BY t_menu.create_time
   </select>
 
 </mapper>
