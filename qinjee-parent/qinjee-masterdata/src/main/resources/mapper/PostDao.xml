@@ -357,8 +357,10 @@
             </foreach>
             and tp.org_id =#{postPageVo.orgId}
         </if>
-        and tp.is_delete = 0 and tp.is_enable = 1
-
+        and tp.is_delete = 0
+        <if test="postPageVo.isEnable != null">
+            and tp.is_enable = 1
+        </if>
         <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
             <foreach collection="postPageVo.querFieldVos" item="querField">
                 <if test="querField.fieldName != null and querField.fieldName != ''">

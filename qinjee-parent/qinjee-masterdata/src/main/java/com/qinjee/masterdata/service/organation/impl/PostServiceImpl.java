@@ -108,9 +108,6 @@ public class PostServiceImpl implements PostService {
 
     private List<Integer> getPostIdList(Integer postId,Integer companyId,Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
-        if(isEnable!=0){
-            isEnable =null;
-        }
         List<Post> postList = postDao.listPostByCompanyId(companyId, isEnable);
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (Post post : postList) {

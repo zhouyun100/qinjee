@@ -55,7 +55,9 @@ public class PostController extends BaseController {
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
         if (checkParam(postPageVo)) {
             try {
-
+                if(postPageVo.getIsEnable() !=0){
+                    postPageVo.setIsEnable(null);
+                }
                 PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
                 return new ResponseResult<>(pageResult);
             } catch (Exception e) {
