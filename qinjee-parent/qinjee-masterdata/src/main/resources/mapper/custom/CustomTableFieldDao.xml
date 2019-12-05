@@ -166,10 +166,10 @@
       WHERE field_id= #{key} AND is_delete=0
     </foreach>
   </update>
+    <update id="updateByPrimaryKeySelective"></update>
 
 
-
-  <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
+    <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
   select field.field_name from
     t_user_archive arc
     right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{archiveId})
@@ -434,6 +434,6 @@
 
   <select id="selectPhysicName" resultType="java.lang.String"></select>
   <select id="selectFieldCodeByList" resultType="java.lang.String"></select>
-
+    <select id="selectCodeId" resultType="java.lang.Integer"></select>
 
 </mapper>
