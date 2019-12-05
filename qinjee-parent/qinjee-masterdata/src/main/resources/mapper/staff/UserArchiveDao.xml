@@ -936,7 +936,7 @@
    where archive_id=#{businessId}
  </update>
   <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"/>
+    select arc.*
     from t_user_archive arc
     left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id
     and relation.is_delete=0 and employment_type = #{type,jdbcType=VARCHAR}
