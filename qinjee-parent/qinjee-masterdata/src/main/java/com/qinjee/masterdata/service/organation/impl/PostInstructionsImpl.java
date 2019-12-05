@@ -257,7 +257,7 @@ public class PostInstructionsImpl implements PostInstructionsService {
      * @param postName
      */
     private Post isExistPost(String postCode, String postName) {
-        Post post = postDao.getPost(postCode, postName);
+        Post post = postDao.getPostByPostCodeAndName(postCode, postName);
         if (post == null) {
             ExceptionCast.cast(CommonCode.POST_DOES_NOT_EXIST);
         }

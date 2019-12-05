@@ -6,10 +6,8 @@ import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
-import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -53,10 +51,11 @@ public class PostController extends BaseController {
     }
 
     @PostMapping("/getPostList")
-    @ApiOperation(value = "ok，分页查询岗位列表,只有orgId字段为必须", notes = "ok")
+    @ApiOperation(value = "ok，分页查询岗位列表,orgId（必填）、postId（选填）", notes = "ok")
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
         if (checkParam(postPageVo)) {
             try {
+
                 PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
                 return new ResponseResult<>(pageResult);
             } catch (Exception e) {
@@ -80,7 +79,7 @@ public class PostController extends BaseController {
                                                  @RequestParam("isEnable") @ApiParam(name = "isEnable", value = "是否包含封存的岗位", example = "1", required = true) Short isEnable) {
         if (checkParam(orgId, isEnable)) {
             try {
-                List<Post> posts = postService.getAllPost(getUserSession(), orgId, isEnable);
+                List<Post> posts = postService.getAllPostByOrgId(getUserSession(), orgId, isEnable);
                 return new ResponseResult<>(posts);
             } catch (Exception e) {
                 e.printStackTrace();

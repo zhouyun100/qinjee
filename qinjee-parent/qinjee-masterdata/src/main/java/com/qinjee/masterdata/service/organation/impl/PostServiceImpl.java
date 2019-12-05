@@ -70,24 +70,55 @@ public class PostServiceImpl implements PostService {
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
         String sortFieldStr = null;
+
         if (Objects.nonNull(postPageVo.getQuerFieldVos())) {
             Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
             sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
         }
         //TODO id重复无影响
-        List<Integer> orgidList = null;
-        //如果机构id不是0，则进行筛选子机构id，否则默认为全部就行了
-        if (postPageVo.getOrgId() != 0) {
-            orgidList = getOrgIdList(userSession, postPageVo.getOrgId());
+        List<Integer> orgIdList = null;
+        List<Integer> postIdList = null;
+        //如果postId>0,则根据postId+orgId查询岗位
+        if (null!=postPageVo.getPostId()&&postPageVo.getPostId() != 0){
+            //找出岗位id及子岗位id集合
+            postIdList= getPostIdList(postPageVo.getPostId(),userSession.getCompanyId(),postPageVo.getIsEnable());
+            if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
+                PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
+            }
+            List<Post> postList  = postDao.getPostConditionPages(postPageVo, orgIdList,postIdList, sortFieldStr);
+            PageInfo<Post> pageInfo = new PageInfo<>(postList);
+            PageResult<Post>  pageResult = new PageResult<>(pageInfo.getList());
+            pageResult.setTotal(pageInfo.getTotal());
+            return pageResult;
+        }else{//否则只根据机构id查询 机构及子机构下所有岗位
+            //如果机构id>0，则进行筛选子机构id，否则默认为全部就行了
+            if (null!=postPageVo.getOrgId()&&postPageVo.getOrgId() > 0) {
+                orgIdList = getOrgIdList(userSession, postPageVo.getOrgId(),postPageVo.getIsEnable());
+            }
+            if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
+                PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
+            }
+            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList,postIdList, sortFieldStr);
+            PageInfo<Post> pageInfo = new PageInfo<>(postList);
+            PageResult<Post>  pageResult = new PageResult<>(pageInfo.getList());
+            pageResult.setTotal(pageInfo.getTotal());
+            return pageResult;
         }
-        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
-            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
+    }
+
+    private List<Integer> getPostIdList(Integer postId,Integer companyId,Short isEnable) {
+        List<Integer> idsList = new ArrayList<>();
+        if(isEnable!=0){
+            isEnable =null;
         }
-        List<Post> postList = postDao.getPostConditionPages(postPageVo, orgidList, sortFieldStr);
-        PageInfo<Post> pageInfo = new PageInfo<>(postList);
-        PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
-        pageResult.setTotal(pageInfo.getTotal());
-        return pageResult;
+        List<Post> postList = postDao.listPostByCompanyId(companyId, isEnable);
+        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
+        for (Post post : postList) {
+            multiValuedMap.put(post.getParentPostId(),post.getPostId());
+        }
+        //根据机构id递归，取出该机构下的所有子机构
+         collectIds(multiValuedMap, postId, idsList);
+        return idsList;
     }
 
     @Override
@@ -124,7 +155,7 @@ public class PostServiceImpl implements PostService {
         Post parentPost = postDao.selectByPrimaryKey(parentPostId);
         if (Objects.nonNull(parentPost)) {
             //查询父级岗位下的子岗位列表
-            List<Post> sonPosts = postDao.getPostListByPostId(parentPostId);
+            List<Post> sonPosts = postDao.listPostByPostId(parentPostId);
             if (CollectionUtils.isEmpty(sonPosts)) {
                 String parentPoatCode = parentPost.getPostCode();
                 postCode = parentPoatCode + "01";
@@ -256,11 +287,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getAllPost(UserSession userSession, Integer orgId, Short isEnable) {
-        //递归拿到所有子机构id
-        //TODO id重复无影响
-        List<Integer> orgidList = getOrgIdList(userSession, orgId);
-        List<Post> postList = postDao.getPostPositionListByOrgIds(orgidList);
+    public List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable) {
+        //递归拿到机构及所有子机构id
+        List<Integer> orgidList = getOrgIdList(userSession, orgId,isEnable);
+        List<Post> postList = postDao.ListPostByOrgIds(orgidList);
         return postList;
     }
 
@@ -271,17 +301,20 @@ public class PostServiceImpl implements PostService {
      * @param orgId
      * @return
      */
-    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId) {
+    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId,Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
+        if(isEnable!=0){
+            isEnable =null;
+        }
         //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(), Short.parseShort("1"), new Date());
+        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(),isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
             multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
         }
         //根据机构id递归，取出该机构下的所有子机构
-        collectOrgIds(multiValuedMap, orgId, idsList);
+        collectIds(multiValuedMap, orgId, idsList);
         return idsList;
     }
 
@@ -292,13 +325,13 @@ public class PostServiceImpl implements PostService {
      * @param orgId
      * @param idsList
      */
-    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList) {
+    private void collectIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList) {
         idsList.add(orgId);
         Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
         for (Integer sonOrgId : sonOrgIds) {
             idsList.add(sonOrgId);
             if (multiValuedMap.get(sonOrgId).size() > 0) {
-                collectOrgIds(multiValuedMap, sonOrgId, idsList);
+                collectIds(multiValuedMap, sonOrgId, idsList);
             }
         }
     }
@@ -313,8 +346,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
         if (CollectionUtils.isEmpty(postIds)) {
-            List<Integer> orgIdList = getOrgIdList(userSession, orgId);
-            return postDao.getPostPositionListByOrgIds(orgIdList);
+            List<Integer> orgIdList = getOrgIdList(userSession, orgId,null);
+            return postDao.ListPostByOrgIds(orgIdList);
         } else {
             return postDao.getPostListByPostIds(postIds);
         }
@@ -566,12 +599,12 @@ public class PostServiceImpl implements PostService {
             multiValuedMap.put(post.getParentPostId(), post.getPostId());
         }
         //根据机构id递归，取出该机构下的所有子机构
-        collectOrgIds(multiValuedMap, postId, idsList, layer);
+        collectIds(multiValuedMap, postId, idsList, layer);
         return idsList;
 
     }
 
-    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer postId, List<Integer> idsList, Integer layer) {
+    private void collectIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer postId, List<Integer> idsList, Integer layer) {
         idsList.add(postId);
         Collection<Integer> sonPostIds = multiValuedMap.get(postId);
         for (Integer sonPostId : sonPostIds) {
@@ -580,7 +613,7 @@ public class PostServiceImpl implements PostService {
                 idsList.add(sonPostId);
                 if (multiValuedMap.get(sonPostId).size() > 0 && layer > 0) {
                     layer--;
-                    collectOrgIds(multiValuedMap, sonPostId, idsList, layer);
+                    collectIds(multiValuedMap, sonPostId, idsList, layer);
 
                 }
             } else {

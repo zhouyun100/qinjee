@@ -37,7 +37,7 @@
     where post_id = #{postId,jdbcType=INTEGER}
   </delete>
 
-   
+
     <insert id="insert" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post"
             useGeneratedKeys="true">
     insert into t_post (post_name, post_code, parent_post_id,
@@ -247,19 +247,15 @@
         <include refid="Base_Column_List"/>
         from t_post
         where org_id = #{orgId}
-        <if test="isEnable != null and isEnable == 1">
-            and is_enable = #{isEnable}
+        <if test="isEnable != null">
+            and is_enable = 1
         </if>
         and is_delete = 0 ORDER BY sort_id ASC
     </select>
     <select id="getLastTopPostByOrgId" resultMap="BaseResultMap">
     SELECT post_code,sort_id from t_post where org_id = #{orgId} and parent_post_id =0 order by sort_id desc
   </select>
-    <select id="getPostPositionListByOrgId" resultMap="BaseResultMap">
-    select tp.org_id,tp.post_id, tp.post_name, tps.position_name position_name from t_post tp left join t_position tps on tps.position_id = tp.position_id
-    where tp.org_id=#{orgId} and tp.is_delete = 0 and is_enable = 1 and tps.is_delete = 0
-  </select>
-    <select id="getPost" resultType="com.qinjee.masterdata.model.entity.Post">
+    <select id="getPostByPostCodeAndName" resultType="com.qinjee.masterdata.model.entity.Post">
         select
         <include refid="Base_Column_List"/>
         from t_post
@@ -295,26 +291,15 @@
       from t_post
       where  org_id = #{orgId}  and is_delete = 0 ORDER BY sort_id ASC
     </select>
-    <select id="selectPostNameById" resultType="java.lang.String">
-    select  post_name
-     from t_post
-    where post_id = #{postId,jdbcType=INTEGER}
-    AND is_delete=0
-  </select>
-    <select id="selectPostIdByName" resultType="java.lang.Integer">
-    select post_id
-    from t_post
-    where post_name=#{postName}
-     AND is_delete=0
-  </select>
 
-    <select id="getPostListByPostId" resultMap="BaseResultMap">
+
+    <select id="listPostByPostId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
         from t_post where parent_post_id = #{parentPostId} ORDER BY sort_id DESC
     </select>
 
-    <select id="getPostPositionListByOrgIds" resultMap="BaseResultMap">
+    <select id="ListPostByOrgIds" resultMap="BaseResultMap">
         SELECT
         tp.org_id org_id,
         org.org_code,
@@ -346,7 +331,7 @@
         tp.parent_post_id,
         tp.post_name,
         tps.position_name position_name,
-         tps.position_id position_id,
+        tps.position_id position_id,
         ptp.post_name parent_post_name,
         torg.org_name
         FROM
@@ -358,28 +343,33 @@
         LEFT JOIN t_organization torg
         ON torg.org_id=tp.org_id
         where 1=1
-        <if test="postPageVo.postId != null">
-            and tp.post_id = #{postPageVo.postId}
-        </if>
-        <if test="orgidList != null">
+
+        <if test="orgIdList != null">
             and tp.org_id in
-            <foreach collection="orgidList" item="item" separator="," open="(" close=")">
+            <foreach collection="orgIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
-        and tp.is_delete = 0 and tp.is_enable = 1
-        <if test="postPageVo != null">
-            <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-                <foreach collection="postPageVo.querFieldVos" item="querField">
-                    <if test="querField.fieldName != null and querField.fieldName != ''">
-                        ${querField.condition}
-                    </if>
-                    <if test="querField.isFilterNull">
-                        and ${querField.fieldName} IS NULL
-                    </if>
-                </foreach>
-            </if>
+        <if test="postIdList != null">
+            and tp.post_id in
+            <foreach collection="postIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+            and tp.org_id =#{postPageVo.orgId}
         </if>
+        and tp.is_delete = 0 and tp.is_enable = 1
+
+        <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
+            <foreach collection="postPageVo.querFieldVos" item="querField">
+                <if test="querField.fieldName != null and querField.fieldName != ''">
+                    ${querField.condition}
+                </if>
+                <if test="querField.isFilterNull">
+                    and ${querField.fieldName} IS NULL
+                </if>
+            </foreach>
+        </if>
+
         <if test="sortFieldStr != null and sortFieldStr != ''">
             ORDER BY ${sortFieldStr}
         </if>
@@ -418,18 +408,18 @@
         ORDER BY employment_begin_date ASC
   </select>
 
- <update id="sortPorts">
-   <foreach collection="postIds" item="id" index="index" open="" close="" separator=";">
-     UPDATE t_post
-     <set>
-       sort_id=(#{index}+1)*1000
-     </set>
-     <where>
-       post_id = #{id}
-     </where>
-   </foreach>
- </update>
-  <select id="selectPostIdAndOrgId" resultType="java.util.Map">
+    <update id="sortPorts">
+        <foreach collection="postIds" item="id" index="index" open="" close="" separator=";">
+            UPDATE t_post
+            <set>
+                sort_id=(#{index}+1)*1000
+            </set>
+            <where>
+                post_id = #{id}
+            </where>
+        </foreach>
+    </update>
+    <select id="selectPostIdAndOrgId" resultType="java.util.Map">
     select org.org_id,post.post_id
     from t_organization org ,t_post post
     where org.org_code=#{org_code}
@@ -437,7 +427,7 @@
     and org.is_enable=1
     and post.is_delete=0
   </select>
-  <select id="selectPostIdAndOrgIdAndsupiorId" resultType="java.util.Map">
+    <select id="selectPostIdAndOrgIdAndsupiorId" resultType="java.util.Map">
     select org.org_id,post.post_id,arc.archive_id
     from t_organization org ,t_post post,t_user_archive arch
     left join t_user_archive arc on arch.supervisor_id=arc.archive_id
@@ -460,12 +450,13 @@
     </select>
 
     <select id="getPostGraphics" resultMap="BaseResultMap">
-        SELECT tp.post_code,tp.post_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code parent_post_code,ptp.post_name parent_post_name
+        SELECT tp.post_code,tp.post_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code
+        parent_post_code,ptp.post_name parent_post_name
         FROM t_post tp
         LEFT JOIN t_organization org ON tp.org_id=org.org_id
         LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
         <where>
-             1=1
+            1=1
             <if test="postIdList != null">
                 and tp.post_id in
                 <foreach collection="postIdList" item="item" open="(" close=")" separator=",">
@@ -479,7 +470,8 @@
     </select>
 
     <select id="listDirectPostPage" resultMap="BaseResultMap">
-         SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code parent_post_code,ptp.post_name parent_post_name
+        SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code
+        parent_post_code,ptp.post_name parent_post_name
         FROM t_post tp
         LEFT JOIN t_organization org ON tp.org_id=org.org_id
         LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
@@ -493,7 +485,7 @@
                     and tp.org_id =#{postPageVo.orgId} and tp.parent_post_id =0
                 </if>
                 <if test="postPageVo.parentPostId !=null and postPageVo.parentPostId !=0">
-                     and tp.parent_post_id =#{postPageVo.parentPostId}
+                    and tp.parent_post_id =#{postPageVo.parentPostId}
                 </if>
 
                 <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
@@ -521,7 +513,7 @@
 
 
     <update id="batchDelete">
-        update  t_post set is_delete = 1
+        update t_post set is_delete = 1
         where org_id in
         <foreach collection="idList" item="item" close=")" open="(" separator=",">
             #{item}

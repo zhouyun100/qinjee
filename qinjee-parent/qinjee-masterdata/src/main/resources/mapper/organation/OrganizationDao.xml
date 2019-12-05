@@ -28,7 +28,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_organization
-        where org_id = #{orgId,jdbcType=INTEGER}
+        where org_id = #{orgId,jdbcType=INTEGER} and is_enable =1
     </select>
     <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     update  t_organization set is_enable =0
@@ -623,7 +623,7 @@
 
     </update>
     <update id="batchDelete">
-        update t_organization set is_enable =0
+        delete from t_organization
         where org_id in
         <foreach collection="idList" separator="," open="(" close=")" item="item">
             #{item}

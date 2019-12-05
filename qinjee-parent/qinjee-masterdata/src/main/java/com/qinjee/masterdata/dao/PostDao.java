@@ -50,13 +50,7 @@ public interface PostDao {
      */
     List<Post> getLastTopPostByOrgId(Integer orgId);
 
-    /**
-     * 通过机构id获取岗位列表含有职位名称
-     *
-     * @param orgId
-     * @return
-     */
-    List<Post> getPostPositionListByOrgId(Integer orgId);
+
 
     /**
      * 查找对应的岗位
@@ -65,7 +59,7 @@ public interface PostDao {
      * @param postName
      * @return
      */
-    Post getPost(@Param("postCode") String postCode, @Param("postName") String postName);
+    Post getPostByPostCodeAndName(@Param("postCode") String postCode, @Param("postName") String postName);
 
     /**
      * 根据岗位id查询岗位
@@ -83,22 +77,14 @@ public interface PostDao {
     List<Map<Integer,String>> getPostByOrgId(@Param("orgId") Integer orgId);
 
 
-    /**
-     * @param postId
-     * @return
-     */
-    String selectPostNameById(@Param("postId") Integer postId);
 
 
+    List<Post> listPostByPostId(@Param("parentPostId") Integer parentPostId);
 
-    Integer selectPostIdByName(@Param("postName") String post_name);
-
-    List<Post> getPostListByPostId(@Param("parentPostId") Integer parentPostId);
-
-    List<Post> getPostPositionListByOrgIds(@Param("orgidList")List<Integer> orgidList);
+    List<Post> ListPostByOrgIds(@Param("orgidList")List<Integer> orgidList);
 
 
-    List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgidList") List<Integer> orgidList, @Param("sortFieldStr")String sortFieldStr);
+    List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList, @Param("sortFieldStr")String sortFieldStr);
 
     Integer sortPorts(@Param("postIds")List<Integer> postIds);
 
