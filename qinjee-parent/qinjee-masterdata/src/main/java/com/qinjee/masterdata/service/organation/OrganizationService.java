@@ -20,11 +20,12 @@ public interface OrganizationService  {
 
   /**
    * 根据是否封存查询用户下所有的机构,树形结构展示
-   *
+   *接口已过时，新接口getAllOrganizationTree(UserSession userSession, Short isEnable);
    * @param userSession
    * @param isEnable
    * @return
    */
+  @Deprecated
   PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable);
 
 
@@ -46,7 +47,7 @@ public interface OrganizationService  {
    * @param orgIds
    * @return
    */
-  ResponseResult deleteOrganizationById(List<Integer> orgIds, UserSession userSession);
+  void deleteOrganizationById(List<Integer> orgIds, UserSession userSession);
 
   /**
    * 封存/封存机构
@@ -55,7 +56,7 @@ public interface OrganizationService  {
    * @param isEnable
    * @return
    */
-  ResponseResult sealOrganizationByIds(List<Integer> orgIds, Short isEnable);
+  void sealOrganizationByIds(List<Integer> orgIds, Short isEnable);
 
   /**
    * 合并机构（将多个老机构划转到一个新生成的机构，老机构逻辑删除）
@@ -67,7 +68,7 @@ public interface OrganizationService  {
    * @param orgIds
    * @return
    */
-  ResponseResult mergeOrganization(String newOrgName, Integer targetOrgId, List<Integer> orgIds, UserSession userSession);
+  void mergeOrganization(String newOrgName, Integer targetOrgId, List<Integer> orgIds, UserSession userSession);
 
   /**
    * 机构负责人查询
@@ -75,7 +76,7 @@ public interface OrganizationService  {
    * @param userName
    * @return
    */
-  ResponseResult<PageResult<UserArchive>> getUserArchiveListByUserName(String userName);
+  List<UserArchive> getUserArchiveListByUserName(String userName);
 
   /**
    * 机构排序
@@ -83,7 +84,7 @@ public interface OrganizationService  {
    * @param linkMap 顺序机构id数组
    * @return
    */
-  ResponseResult sortOrganization(LinkedList<Integer> linkMap);
+  void sortOrganization(LinkedList<Integer> linkMap);
 
   /**
    * 划转机构（将多个机构（只能同级）划转到目标机构）
@@ -95,7 +96,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return
    */
-  ResponseResult transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession);
+  void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession);
 
   /**
    * 获取机构岗位树，默认查询未封存的机构
@@ -104,15 +105,7 @@ public interface OrganizationService  {
    * @param isEnable    1表示只显示未封存的岗位，0 表示显示封存+未封存的岗位
    * @return
    */
-  ResponseResult<List<OrganizationVO>> getOrganizationPostTree(UserSession userSession, Short isEnable);
-
-  /**
-   * 下载模板
-   *
-   * @param response
-   * @return
-   */
-  ResponseResult downloadTemplate(HttpServletResponse response);
+  List<OrganizationVO> getOrganizationPostTree(UserSession userSession, Short isEnable);
 
 
 
@@ -158,7 +151,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return
    */
-  ResponseResult addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+  OrganizationVO addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
 
   /**
@@ -174,7 +167,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return ResponseResult
    */
-  ResponseResult editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+  void editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
   List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 
@@ -182,12 +175,12 @@ public interface OrganizationService  {
 
   PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
 
-  ResponseResult importToDatabase(String orgExcelRedisKey, UserSession userSession);
+  void importToDatabase(String orgExcelRedisKey, UserSession userSession);
 
   ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
 
 
-  ResponseResult cancelImport(String redisKey, String errorInfoKey);
+  void cancelImport(String redisKey, String errorInfoKey);
 }
 
 

@@ -71,7 +71,7 @@ public interface UserArchiveDao {
 
     List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 
-    List<Integer> selectStaffNoStandingBook(@Param("archiveType") String archiveType, @Param("id") Integer id);
+
 
     Integer selectArchiveIdByTel(@Param("phoneNumber") String phoneNumber);
 
@@ -93,7 +93,7 @@ public interface UserArchiveDao {
 
     Date selectDateByStatus(@Param("string") String string);
 
-    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId);
+    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
@@ -107,4 +107,8 @@ public interface UserArchiveDao {
     void deleteArchiveById(Integer businessId);
 
     List< UserArchive> selectBeforeFilter(@Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
+
+    List< UserArchive> selectUserArchiveByName(@Param("name") String name);
+
+    List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 }

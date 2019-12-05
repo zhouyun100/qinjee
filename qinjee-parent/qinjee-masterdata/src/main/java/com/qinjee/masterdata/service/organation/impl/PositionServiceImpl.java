@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.PositionDao;
 import com.qinjee.masterdata.dao.PositionGradeRelationDao;
 import com.qinjee.masterdata.dao.PositionLevelRelationDao;
@@ -112,7 +113,7 @@ public class PositionServiceImpl implements PositionService {
         //设置排序id
         Integer sortId;
         List<Position> positionList = positionDao.getPositionListByGroupId(positionVo.getPositionGroupId());
-        System.out.println("positionList："+positionList);
+
         if (!CollectionUtils.isEmpty(positionList)) {
             List<Position> positions = positionList.stream().filter(position1 -> {
                 if (positionVo.getPositionName().equals(position1.getPositionName())) {
@@ -317,6 +318,16 @@ public class PositionServiceImpl implements PositionService {
         List<Position> positionList = positionDao.getPositionList(userSession.getCompanyId());
         return new ResponseResult(positionList);
     }
+
+    @Override
+    public void determinePositionNameIsOnly(String positionName, UserSession userSession) {
+        Position position = positionDao.getPositionByNameAndCompanyId(positionName, userSession.getCompanyId());
+        if (Objects.nonNull(position)){
+            ExceptionCast.cast(CommonCode.POSITION_NAME_REPEAT);
+        }
+    }
+
+
 /*
     @Override
     public ResponseResult<Position> getPositionLevelAndGrade(Integer positionId) {

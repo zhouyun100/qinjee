@@ -787,13 +787,6 @@
     </foreach>
   </select>
 
-  <select id="selectStaffNoStandingBook" resultType="java.lang.Integer">
-    select  archive_id
-    from t_user_archive
-    where user_category =#{archiveType,jdbcType=VARCHAR}
-    AND org_id =#{id,jdbcType=INTEGER} AND is_delete=0
-  </select>
-
   <select id="selectArchiveIdByTel" resultType="java.lang.Integer">
     select archive_id
     from t_user_archive
@@ -824,6 +817,7 @@
         <if test="order != null">
         order by ${order}
         </if>
+
   </select>
 <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
   select archive_id
@@ -832,22 +826,30 @@
   AND is_delete=0
 </select>
   <select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo" resultMap="downloadVo">
-      select arc.archive_id,arc.user_name,arc.employee_number,orga.org_name as business_unit_name,
-      org.org_name,post.post_name ,arc.hire_date,arc.probation_due_date, arch.user_name as supervisor_user_name ,
-      arc.phone,relation.employment_type
-      from
-      t_user_archive arc
-      left join t_organization org on  org.org_id = arc.org_id
-      left join t_organization orga on orga.org_id = arc.business_unit_id
-      left join t_post post on arc.post_id = post.post_id
-      left join t_user_archive_post_relation relation on arc.archive_id=relation.archive_id
-      left join t_user_archive arch on arc.supervisor_id = arch.archive_id
-      where  arc.is_delete=0 and org.is_enable=1 and orga.is_enable=1 and post.is_delete=0
-      and relation.is_delete=0 and arch.is_delete=0 and post.is_delete=0
-      and post.is_enable=1
-      and arc.archive_id in
-       <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
-       #{item}
+    SELECT
+    arc.archive_id,
+    arc.user_name,
+    arc.employee_number,
+    orga.org_name AS business_unit_name,
+    org.org_name,
+    post.post_name,
+    arc.hire_date,
+    arc.probation_due_date,
+    arch.user_name AS supervisor_user_name,
+    arc.phone,
+    relation.employment_type
+    FROM
+    t_user_archive arc
+    LEFT JOIN t_organization org ON org.org_id = arc.org_id AND org.is_enable = 1
+    LEFT JOIN t_organization orga ON orga.org_id = arc.business_unit_id AND orga.is_enable = 1
+    LEFT JOIN t_post post ON arc.post_id = post.post_id AND post.is_delete = 0 AND post.is_enable = 1
+    LEFT JOIN t_user_archive_post_relation relation ON arc.archive_id = relation.archive_id AND relation.is_delete = 0
+    LEFT JOIN t_user_archive arch ON arc.supervisor_id = arch.archive_id AND arch.is_delete = 0
+    WHERE
+    arc.is_delete = 0
+    and arc.archive_id in
+    <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
+    #{item}
 
  </foreach>
 </select>
@@ -867,18 +869,49 @@
   </select>
   <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
     select arch.user_name,arch.employee_number,orga.org_name,post.post_name,arch.hire_date,arch.probation_due_date,
-    arch.supervisor_id,arch.phone,arc.attrition_type
+    arch.supervisor_id,arch.phone,arch.attrition_type
     from t_user_archive arc
-    left join t_user_org_auth auth on auth.archive_id= arc.archive_id
-    left join t_organization org on org.org_id=auth.org_id
-    left join t_user_archive arch on arch.org_id = org.org_id
-    left join t_organization orga on orga.org_id=arch.org_id
-    left join t_post post on post.post_id= arch.post_id
+    right join t_user_org_auth auth on auth.archive_id= arc.archive_id
+    right join t_organization org on org.org_id=auth.org_id
+    right join t_user_archive arch on arch.org_id = org.org_id
+    right join t_organization orga on orga.org_id=arch.org_id
+    right join t_post post on post.post_id= arch.post_id
     where auth.archive_id=#{archiveId}
     and arc.is_delete=0 and arch.is_delete=0
     and post.is_delete=0 and org.is_enable=1 and orga.is_enable=1
-    and org.company_id=1
+    and org.company_id=#{companyId}
+    and org.org_id=#{orgId}
 
+  </select>
+  <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+    SELECT
+    arc.user_name,
+    arc.employee_number,
+    org.org_name,
+    post.post_name,
+    arc.hire_date,
+    arc.probation_due_date,
+    arc.supervisor_id,
+    arc.phone,
+    arc.attrition_type
+    FROM
+    t_user_archive arc
+    LEFT JOIN t_user_org_auth auth
+    ON auth.archive_id = arc.archive_id
+    LEFT JOIN t_organization org
+    ON org.org_id = auth.org_id
+    LEFT JOIN t_post post
+    ON post.post_id = arc.post_id
+    WHERE auth.archive_id = #{archiveId}
+    AND auth.is_delete=0
+    AND arc.is_delete = 0
+    AND post.is_delete = 0
+    AND org.is_enable = 1
+    AND org.company_id = #{companyId}
+    AND org.org_id IN
+    <foreach collection="orgList" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
 
   <select id="countUserArchiveByOrgId" resultType="java.lang.Integer">
@@ -902,10 +935,21 @@
    set is_delete=1
    where archive_id=#{businessId}
  </update>
-  <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+  <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from t_user_archive arc
+    left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id
+    and relation.is_delete=0 and employment_type = #{type,jdbcType=VARCHAR}
+    where arc.user_category=#{archiveType}
+    and arc.is_delete=0
 
+
+  </select>
+  <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+    select  <include refid="Base_Column_List"/>
+    from t_user_archive
+    where user_name=#{name}
+    and is_delete=0
   </select>
 </mapper>
 

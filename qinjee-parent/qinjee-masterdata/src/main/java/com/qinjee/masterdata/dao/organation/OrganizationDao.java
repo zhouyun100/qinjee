@@ -61,7 +61,7 @@ public interface OrganizationDao {
      * @param isEnable
      * @return
      */
-    int UpdateIsEnableByOrgIds(@Param("orgIds") List<Integer> orgIds, @Param("isEnable") Short isEnable);
+    Integer UpdateIsEnableByOrgIds(@Param("orgIds") List<Integer> orgIds, @Param("isEnable") Short isEnable);
 
     /**
      * 根据机构父级id查询所有的子级
@@ -114,4 +114,7 @@ public interface OrganizationDao {
 
   List<OrganizationVO> getAllOrganizationByArchiveIdAndOrgId( List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
 
+    void updateByOrgCode(OrganizationVO vo);
+
+    void batchDelete(@Param("idList") List<Integer> idList);
 }

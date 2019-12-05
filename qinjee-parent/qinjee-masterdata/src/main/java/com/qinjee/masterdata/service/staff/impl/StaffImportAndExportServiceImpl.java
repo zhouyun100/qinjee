@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
@@ -26,6 +27,7 @@ import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.ExcelUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -48,6 +50,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private static final Logger logger = LoggerFactory.getLogger( StaffImportAndExportServiceImpl.class);
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
+    private final static String ORGCODE = "部门编码";
+    private final static String POSTCODE = "岗位编码";
+    private final static String SUPORCODE = "直接上级编码";
+    private final static String BUSINESSUNITCODE = "机构编码编码";
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
@@ -73,7 +79,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         String fileName = multipartFile.getOriginalFilename ();
         assert fileName != null;
         if (!fileName.endsWith ( xls ) && !fileName.endsWith ( xlsx )) {
-            logger.info ("文件类型错误" );
+            ExceptionCast.cast (CommonCode.FILE_FORMAT_ERROR );
         }
         return getMaps ( multipartFile, funcCode, userSession );
     }
@@ -141,7 +147,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void cancelForImport(String title, UserSession userSession) throws Exception {
+    public void cancelForImport(String title, UserSession userSession)  {
         //拼接key
         String s1 = userSession.getCompanyId ()+title + userSession.getArchiveId () ;
         if (redisClusterService.exists ( s1 )) {
@@ -341,7 +347,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     getDates ( exportFile, businessHead, "ARC", userSession.getCompanyId () ),
                     getTypeMap ( businessHead ) );
         } else {
-            logger.error ( "没有找到对应的表头" );
+           ExceptionCast.cast ( CommonCode.FILE_PARSING_EXCEPTION );
         }
     }
 
@@ -384,18 +390,41 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     private List < Map < Integer, String > > getMaps(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
+
+        //
         List < Map < Integer, String > > list = new ArrayList <> ();
         for (Map < String, String > map : mapList) {
             Map < Integer, String > stringMap = new HashMap <> ();
             for (Map.Entry < String, String > entry : map.entrySet ()) {
-                stringMap.put ( customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode ( entry.getKey (), userSession.getCompanyId (),
-                        funcCode ), entry.getValue () );
+                Map < Integer, String > map1 = transField ( funcCode, userSession.getCompanyId (), entry.getValue (), entry.getKey () );
+                for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
+                    stringMap.put ( integerStringEntry.getKey (),integerStringEntry.getValue () );
+                }
+                Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode ( entry.getKey (),
+                        userSession.getCompanyId (), funcCode );
+                if(integer!=null && integer!=0) {
+                    stringMap.put (integer , entry.getValue () );
+                }
             }
             list.add ( stringMap );
         }
         return list;
     }
-
+/**
+ * 根据fieldName与funcode找到对应的fieldId
+ */
+private Map<Integer,String> transField(String funcCode,Integer companyId,String value,String fieldName){
+    if(ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName )){
+        return customTableFieldDao.transOrgId(funcCode,companyId,value);
+    }
+    if(SUPORCODE.equals ( fieldName ) ){
+        return customTableFieldDao.transSupiorId(funcCode,companyId,value);
+    }
+    if(POSTCODE.equals ( fieldName ) ){
+        return customTableFieldDao.transPostId(funcCode,companyId,value);
+    }
+    return null;
+}
 
     /**
      * 从传过来map中解析数据并转化封装到Dates中

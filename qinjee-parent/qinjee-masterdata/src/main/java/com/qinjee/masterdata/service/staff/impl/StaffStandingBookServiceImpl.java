@@ -7,15 +7,17 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
 import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
+import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
+import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,11 +58,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Autowired
     private UserArchiveDao userArchiveDao;
     @Autowired
-    private UserArchivePostRelationDao userArchivePostRelationDao;
-    @Autowired
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
+    @Autowired
+    private CustomTableFieldService customTableFieldService;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, String dataSource, UserSession userSession) {
@@ -75,7 +78,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteBlackList(List<Integer> list) throws Exception {
+    public void deleteBlackList(List<Integer> list)  {
         blacklistDao.deleteBlackList(list);
     }
 
@@ -86,9 +89,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     @Override
-    public PageResult<Blacklist> selectBalckList(Integer currentPage, Integer pageSize) {
+    public PageResult<Blacklist> selectBalckList(Integer currentPage, Integer pageSize,UserSession userSession) {
         PageHelper.startPage(currentPage, pageSize);
-        List<Blacklist> blacklists = blacklistDao.selectByPage();
+        List<Blacklist> blacklists = blacklistDao.selectByPage(userSession.getCompanyId ());
         return new PageResult<>(blacklists);
     }
 
@@ -171,23 +174,34 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) {
         StringBuffer stringBuffer=new StringBuffer();
+        List<Integer> fieldIdList=new ArrayList <> (  );
+        List<CustomFieldVO> fieldVoList=new ArrayList <> (  );
         stringBuffer.append(" where ");
         //在查询台账之前被筛选的数据
-        List<Integer> oneList = userArchiveDao.selectStaffNoStandingBook(archiveType, orgId);
         //存储大数据表字段解析出的档案id
         //key是用来存是第几个筛选条件，value存档案id(可能多个)
         //没经过台账之前筛选的档案id
-        List<Integer> twoList = userArchivePostRelationDao.selectByType(type, oneList);
         //通过id查询档案
-        List<UserArchive> list = userArchiveDao.selectByPrimaryKeyList(twoList);
-//        List<UserArchive> list=userArchiveDao.selectBeforeFilter(archiveType,orgId,type);
+        List<UserArchive> list=userArchiveDao.selectBeforeFilter(archiveType,orgId,type);
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
         List<StandingBookFilter> filters = standingBookFilterDao.selectByStandingBookId(stangdingBookId);
         for (StandingBookFilter filter : filters) {
                 stringBuffer.append(filter.getSqlStr());
         }
-        String baseSql = getBaseSql(userSession);
-        String sql=baseSql+stringBuffer.toString();
+        for (StandingBookFilter filter : filters) {
+            fieldIdList.add (filter.getFieldId ());
+        }
+        CustomTableVO customTableVO=new CustomTableVO ();
+        customTableVO.setCompanyId ( userSession.getCompanyId () );
+        customTableVO.setFuncCode ( "ARC" );
+        List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
+        List < CustomFieldVO > list1 = customTableFieldDao.selectFieldByIdList ( fieldIdList );
+        for (CustomFieldVO customFieldVO : list1) {
+            if(customFieldVO.getIsSystemDefine ()==0){
+                fieldVoList.add ( customFieldVO );
+            }
+        }
+        String sql=getBaseSql ( userSession.getCompanyId (),fieldVoList,customTableVOS )+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
         List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
         //取交集
@@ -197,11 +211,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
 
-    private String getBaseSql(UserSession userSession){
-
-        List<Integer> list = customArchiveTableDao.selectFieldIdNotInside(userSession.getCompanyId());
+    private String getBaseSql(Integer companyId,List<CustomFieldVO> fieldvos,List<CustomTableVO> tableVOS){
         String a="select t.archive_id from( select t0.* , ";
-        return a+SqlUtil.getsql(userSession.getCompanyId(),list);
+        return a+ SqlUtil.getsql( companyId,  fieldvos,  tableVOS);
     }
 
     /**

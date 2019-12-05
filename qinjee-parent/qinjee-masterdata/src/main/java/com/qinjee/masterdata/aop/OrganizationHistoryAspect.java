@@ -31,12 +31,8 @@ public class OrganizationHistoryAspect {
 
     @AfterReturning(returning = "returnObj", pointcut = "@annotation(com.qinjee.masterdata.aop.OrganizationSaveAnno)")
     public void afterAddOrganization(JoinPoint joinPoint, Object returnObj) {
-        if (Objects.nonNull(returnObj) && (returnObj instanceof ResponseResult)) {
-            OrganizationVO orgBean = null;
-            ResponseResult responseResult = (ResponseResult) returnObj;
-            if (responseResult.getResult() instanceof OrganizationVO) {
-                orgBean = (OrganizationVO) responseResult.getResult();
-            }
+        if (Objects.nonNull(returnObj) && (returnObj instanceof OrganizationVO)) {
+            OrganizationVO orgBean = (OrganizationVO) returnObj;
             OrganizationHistory orgHisBean = new OrganizationHistory();
             if (Objects.nonNull(orgBean)) {
                 BeanUtils.copyProperties(orgBean, orgHisBean);

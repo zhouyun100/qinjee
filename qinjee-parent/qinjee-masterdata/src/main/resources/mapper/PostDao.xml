@@ -37,10 +37,7 @@
     where post_id = #{postId,jdbcType=INTEGER}
   </delete>
 
-    <update id="deleteByOrgId" parameterType="java.lang.Integer">
-    update  t_post set is_delete = 1
-    where org_id = #{orgId,jdbcType=INTEGER}
-  </update>
+   
     <insert id="insert" keyColumn="post_id" keyProperty="postId" parameterType="com.qinjee.masterdata.model.entity.Post"
             useGeneratedKeys="true">
     insert into t_post (post_name, post_code, parent_post_id,
@@ -521,4 +518,13 @@
          and company_id =#{companyId}
 
     </select>
+
+
+    <update id="batchDelete">
+        update  t_post set is_delete = 1
+        where org_id in
+        <foreach collection="idList" item="item" close=")" open="(" separator=",">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

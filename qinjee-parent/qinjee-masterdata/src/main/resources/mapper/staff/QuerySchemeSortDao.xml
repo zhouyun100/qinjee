@@ -133,13 +133,11 @@ select
       #{item.sort,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}
     </foreach>
   </insert>
-  <select id="selectSortByIdList" resultType="java.lang.String">
+  <select id="selectSortById" resultType="java.lang.String">
     select order_by_rule
     from t_query_scheme_sort
-    where field_id
-    in <foreach collection="integerList" item="item" open="(" separator="," close=")">
-    #{item}
-    </foreach>
+    where field_id =#{fieldId}
+
   </select>
 
 </mapper>

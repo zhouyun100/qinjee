@@ -89,11 +89,7 @@ public interface PostDao {
      */
     String selectPostNameById(@Param("postId") Integer postId);
 
-    /**
-     * 逻辑删除
-     * @param orgId
-     */
-    void deleteByOrgId(Integer orgId);
+
 
     Integer selectPostIdByName(@Param("postName") String post_name);
 
@@ -119,5 +115,7 @@ public interface PostDao {
     List<Post> listDirectPostPage(PostPageVo postPageVo, String sortFieldStr);
 
     Post getPostByPostCode(String postCode, Integer companyId);
+
+    void batchDelete(@Param("idList") List<Integer> idList);
 }
 

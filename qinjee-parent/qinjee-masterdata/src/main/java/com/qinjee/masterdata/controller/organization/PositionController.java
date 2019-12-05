@@ -1,10 +1,14 @@
 package com.qinjee.masterdata.controller.organization;
 
+import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Position;
+import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
 import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
+import com.qinjee.masterdata.service.organation.PositionGroupService;
 import com.qinjee.masterdata.service.organation.PositionService;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -13,8 +17,12 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -28,7 +36,18 @@ import java.util.List;
 public class PositionController extends BaseController {
 
   @Autowired
-  private PositionService positionService;
+  private PositionService positionService;@Autowired
+  private PositionGroupService positionGroupService;
+
+  private Boolean checkParam(Object... params) {
+    for (Object param : params) {
+      if (null == param || "".equals(param)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
   @PostMapping("/getPositionPage")
@@ -46,6 +65,27 @@ public class PositionController extends BaseController {
   public ResponseResult addPosition(PositionVo positionVo) {
     return positionService.addPosition(positionVo, getUserSession());
   }
+
+  @ApiOperation(value = "ok，保证职位名称在同一家企业下唯一", notes = "ok")
+  @PostMapping("/determinePositionNameIsOnly")
+  public ResponseResult determinePositionNameIsOnly(String positionName) {
+    Boolean b = checkParam(positionName);
+    if (b) {
+      try {
+        positionService.determinePositionNameIsOnly(positionName, getUserSession());
+        return ResponseResult.SUCCESS();
+      } catch (Exception e) {
+        e.printStackTrace();
+        if (e instanceof BusinessException) {
+          BusinessException be = (BusinessException) e;
+          return new ResponseResult<>(null, be.getResultCode());
+        }
+        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+      }
+    }
+    return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+  }
+
 
   @ApiOperation(value = "ok，编辑职位", notes = "ok")
   @PostMapping("/editPosition")
