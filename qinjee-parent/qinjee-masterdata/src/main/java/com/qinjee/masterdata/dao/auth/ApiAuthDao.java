@@ -53,6 +53,16 @@ public interface ApiAuthDao {
      */
     int insertRoleOrg(Integer orgId,Integer roleId, Integer operatorId);
 
+    /**
+     * 新增机构档案角色关系
+     * @param orgId 机构ID
+     * @param archiveId 档案ID
+     * @param roleId 角色ID
+     * @param operatorId 操作人
+     * @return
+     */
+    int insertUserOrg(Integer orgId, Integer archiveId, Integer roleId, Integer operatorId);
+
 
     /**
      * 删除角色机构

@@ -110,7 +110,9 @@
         where t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
         and t_user_role.role_id = t_role.role_id
         and t_user_role.is_delete = 0
+        <if test="companyId != null">
         and t_role.company_id = #{companyId,jdbcType=INTEGER}
+        </if>
         and t_role.is_delete = 0
         ORDER BY t_user_role.id DESC
     </select>

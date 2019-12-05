@@ -118,7 +118,7 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
     @Override
     public List<UserRoleVO> searchRoleListByArchiveId(Integer archiveId, Integer companyId) {
-        if(null == archiveId || null == companyId){
+        if(null == archiveId){
             return null;
         }
         List<UserRoleVO> roleList = authHandoverDao.searchRoleListByArchiveId(archiveId,companyId);

@@ -12,7 +12,9 @@ package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.ApiAuthDao;
 import com.qinjee.masterdata.model.entity.Role;
+import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
+import com.qinjee.masterdata.service.auth.AuthHandoverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,9 @@ public class ApiAuthServiceImpl implements ApiAuthService {
 
     @Autowired
     private ApiAuthDao apiAuthDao;
+
+    @Autowired
+    private AuthHandoverService authHandoverService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -98,6 +103,16 @@ public class ApiAuthServiceImpl implements ApiAuthService {
             for(Role role : roleList){
                 resultNum += apiAuthDao.insertRoleOrg(orgId,role.getRoleId(),operatorId);
             }
+        }else{
+
+            /**
+             * 新增的机构如何对应的上级机构角色没有自动授权子集机构权限，则默认给当前操作人所有角色添加机构人员角色权限
+             */
+            List<UserRoleVO> userRoleVOList = authHandoverService.searchRoleListByArchiveId(operatorId,null);
+            for(UserRoleVO userRoleVO : userRoleVOList){
+                resultNum += apiAuthDao.insertUserOrg(orgId,operatorId,userRoleVO.getRoleId(),operatorId);
+            }
+
         }
         return resultNum;
     }

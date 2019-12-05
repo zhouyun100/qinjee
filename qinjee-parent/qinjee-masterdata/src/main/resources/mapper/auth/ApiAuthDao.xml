@@ -79,4 +79,10 @@
             and org_id = #{orgId,jdbcType=INTEGER}
         </if>
     </update>
+
+    <!-- 新增角色机构范围权限 -->
+    <insert id="insertUserOrg">
+        insert into t_user_org_auth (org_id,archive_id,role_id,operator_id)
+        values (#{orgId,jdbcType=INTEGER},#{archiveId,jdbcType=INTEGER},#{roleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
 </mapper>
