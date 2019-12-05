@@ -115,4 +115,6 @@ public interface OrganizationDao {
   List<OrganizationVO> getAllOrganizationByArchiveIdAndOrgId( List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
 
     void updateByOrgCode(OrganizationVO vo);
+
+    void batchDelete(@Param("idList") List<Integer> idList);
 }

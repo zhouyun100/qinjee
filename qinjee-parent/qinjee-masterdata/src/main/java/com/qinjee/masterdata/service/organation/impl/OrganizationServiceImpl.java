@@ -18,6 +18,7 @@ import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
@@ -29,13 +30,10 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.model.response.ResultCode;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -43,8 +41,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -339,7 +335,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         } else {
             orgList = organizationDao.getOrganizationsByOrgIds(orgIds);
         }
-        if(CollectionUtils.isEmpty(orgList)){
+        if (CollectionUtils.isEmpty(orgList)) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
         }
         return orgList;
@@ -448,7 +444,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        ResponseResult responseResult=new ResponseResult();
+        ResponseResult responseResult = new ResponseResult();
         //将校验结果与原表格信息返回
         HashMap<Object, Object> resultMap = new HashMap<>();
         //判断文件名
@@ -533,7 +529,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             response.setHeader("errorInfoKey", errorInfoKey);
             //文件解析失败
             responseResult.setResultCode(CommonCode.FILE_PARSE_FAILED);
-        }else{
+        } else {
             responseResult.setResultCode(CommonCode.SUCCESS);
             responseResult.setMessage("文件校验成功");
         }
@@ -623,43 +619,32 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationDeleteAnno
-    public ResponseResult deleteOrganizationById(List<Integer> orgIds, UserSession userSession) {
+    public void deleteOrganizationById(List<Integer> orgIds, UserSession userSession) {
         List<Integer> idList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orgIds)) {
             for (Integer orgId : orgIds) {
                 //递归至每一层机构
                 idList.add(orgId);
-                recursive(orgId, idList);
+                recursiveFindOrgIds(orgId, idList);
             }
         }
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
-        for (Integer orgId : idList) {
-            List<Integer> userArchiveList = userArchiveDao.selectByOrgId(orgId);
-            if (userArchiveList != null && userArchiveList.size() > 0) {
-                isExsit = true;
-                //只要有一个存在则跳出循环
-                return new ResponseResult(CommonCode.ORG_EXIST_USER);
-            }
+        List<UserArchiveVo> userArchiveVos = userArchiveDao.selectByOrgListAndAuth(idList, userSession.getArchiveId(), userSession.getCompanyId());
+        if (!CollectionUtils.isEmpty(userArchiveVos)){
+            isExsit=true;
+            ExceptionCast.cast(CommonCode.ORG_EXIST_USER);
         }
         //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
         if (!isExsit) {
-            for (Integer orgId : idList) {
-                OrganizationVO organizationVO = new OrganizationVO();
-                organizationVO.setOrgId(orgId);
-                organizationVO.setOperatorId(userSession.getArchiveId());
-                organizationVO.setIsEnable(Short.parseShort("0"));
-                organizationDao.updateByPrimaryKey(organizationVO);
-                //删除岗位,逻辑删除
-                postDao.deleteByOrgId(orgId);
-            }
+            //批量逻辑删除
+            organizationDao.batchDelete(idList);
 
+            postDao.batchDelete(idList);
         }
         // 回收机构权限
         apiAuthService.deleteOrg(idList, userSession.getArchiveId());
-
-        return new ResponseResult(CommonCode.SUCCESS);
     }
 
     //=====================================================================
@@ -670,12 +655,12 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param orgId
      * @param idSet
      */
-    public void recursive(Integer orgId, List idSet) {
+    public void recursiveFindOrgIds(Integer orgId, List idSet) {
         List<OrganizationVO> parentOrgList = organizationDao.getOrganizationListByParentOrgId(orgId);
         if (parentOrgList != null && parentOrgList.size() > 0) {
             for (OrganizationVO OrganizationVO : parentOrgList) {
                 idSet.add(OrganizationVO.getOrgId());
-                recursive(OrganizationVO.getOrgId(), idSet);
+                recursiveFindOrgIds(OrganizationVO.getOrgId(), idSet);
             }
         }
     }
@@ -717,9 +702,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
     @Override
     public List<UserArchive> getUserArchiveListByUserName(String userName) {
-        //TODO 调用人员的接口
-
-        return null;
+        //调用人员的接口
+        List<UserArchive> userArchives = userArchiveDao.selectUserArchiveByName(userName);
+        return userArchives;
     }
 
     //=====================================================================
@@ -1045,7 +1030,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
 
             //TODO
-            if (null != organizationVO.getOrgManagerId() && "".equals(organizationVO.getOrgManagerId())){
+            if (null != organizationVO.getOrgManagerId() && "".equals(organizationVO.getOrgManagerId())) {
 
             }
 
