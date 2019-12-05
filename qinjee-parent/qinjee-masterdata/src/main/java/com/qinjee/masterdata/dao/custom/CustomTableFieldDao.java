@@ -14,6 +14,7 @@ import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomGroupVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -283,6 +284,8 @@ public interface CustomTableFieldDao {
     List< CustomFieldVO> selectFieldByIdList(@Param("integers2") List < Integer > integers2);
 
     CustomFieldVO selectFieldById(@Param("fieldId") Integer fieldId);
+
+    String selectFieldCodeByIdAndCompanyIdAndFunccode(@Param("id") Integer id, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 }
 
 

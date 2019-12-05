@@ -285,11 +285,11 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true),
 //    })
 
-    public ResponseResult exportBusiness(@RequestBody ExportRequest exportRequest,HttpServletResponse response) {
+    public ResponseResult exportBusiness(@RequestBody ExportRequest exportRequest,HttpServletResponse response,String funcCode) {
         Boolean b = checkParam(exportRequest,response,getUserSession());
         if(b){
             try {
-                staffImportAndExportService.exportBusiness(exportRequest,response,getUserSession());
+                staffImportAndExportService.exportBusiness(exportRequest,response,getUserSession(),funcCode);
                 return null;
             } catch (Exception e) {
                 e.printStackTrace ();

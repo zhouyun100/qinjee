@@ -48,7 +48,7 @@ public class HeadMapUtil {
      */
     public static List<String> getHeadsForBlackList() {
         List<String> keyList=new ArrayList<>();
-        String[] strings = {"姓名","证件号码", "手机号", "所属单位", "部门", "岗位","拉黑原因"};
+        String[] strings = {"姓名","证件号码", "联系电话", "单位", "部门", "岗位","拉黑原因"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }

@@ -76,7 +76,10 @@ public class LaborContract implements Serializable {
      * 合同编号
      */
     private String contractNumber;
-
+    /**
+     * 试用期限
+     */
+    private Integer probationPeriod;
     /**
      * 合同状态
      */

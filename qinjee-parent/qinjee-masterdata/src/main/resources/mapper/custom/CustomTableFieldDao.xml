@@ -223,6 +223,7 @@
     where field_name=#{head}
     and tab.company_id=#{companyId}
     and field.is_delete=0
+    and tab.func_code='PRE'
   </select>
   <select id="selectFieldIdByFieldNameAndCompanyIdAndFuncCode" resultType="java.lang.Integer">
     select field_id
@@ -424,8 +425,16 @@
   <select id="selectFieldCodeListByTableIdList" resultType="java.lang.String">
 
   </select>
-  <select id="selectCustomArchiveField" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
-
+  <select id="selectCustomArchiveField" resultType="String">
+    select field_code from
+    t_custom_archive_field field
+    left join t_custom_archive_table tab on field.table_id = tab.table_id
+    and tab.func_code=#{funcCode}
+    and tab.company_id=#{companyId}
+    and field.field_id=#{id}
+    and field.is_delete=0
+    and tab.is_delete=0
+    and tab.is_enable=1
   </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
@@ -435,5 +444,6 @@
   <select id="selectPhysicName" resultType="java.lang.String"></select>
   <select id="selectFieldCodeByList" resultType="java.lang.String"></select>
     <select id="selectCodeId" resultType="java.lang.Integer"></select>
+    <select id="selectFieldCodeByIdAndCompanyIdAndFunccode" resultType="java.lang.String"></select>
 
 </mapper>

@@ -324,7 +324,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportBusiness(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws Exception {
+    public void exportBusiness(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession,String funcCode) throws Exception {
         //根据title找到表id
         //通过表id与业务id集合找到存储数据的字段
         //将字段进行解析,循环置于List<map>中
@@ -340,7 +340,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             Map < String, Object > map2 = new LinkedHashMap <> ();
             String[] split = big_data.split ( "@@" );
             for (int i = 1; i < split.length; i = i + 2) {
-                map2.put ( split[i].split ( ";" )[0], split[i + 1].split ( ":" )[1] );
+                map2.put ( customTableFieldDao.selectFieldCodeByIdAndCompanyIdAndFunccode(Integer.parseInt(split[i].split ( ";" )[0]),
+                        userSession.getCompanyId(),funcCode), split[i + 1].split ( ":" )[1] );
             }
             map.put ( integerMapEntry.getKey (), map2 );
         }
@@ -353,7 +354,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         if (businessHead != null) {
             ExcelUtil.download ( response, exportFile.getTittle (),
                     businessHead,
-                    getDates ( exportFile, businessHead, "ARC", userSession.getCompanyId () ),
+                    getDates ( exportFile, businessHead, funcCode, userSession.getCompanyId () ),
                     getTypeMap ( businessHead ) );
         } else {
            ExceptionCast.cast ( CommonCode.FILE_PARSING_EXCEPTION );
@@ -496,6 +497,10 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         }
         if (head.equals ( "任职类型" )) {
             stringMap.put ( head, "在职" );
+            return;
+        }
+        if(head.equals("拉黑原因")){
+            stringMap.put(head,String.valueOf(stringObjectMap.get("block_reason")));
             return;
         }
         Object o = stringObjectMap.get ( s );

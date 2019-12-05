@@ -37,7 +37,7 @@ public interface IStaffImportAndExportService {
      * @param exportRequest
      * @param userSession
      */
-    void exportBusiness(ExportRequest exportRequest,HttpServletResponse response, UserSession userSession) throws Exception;
+    void exportBusiness(ExportRequest exportRequest,HttpServletResponse response, UserSession userSession,String funcCode) throws Exception;
 
 
 
