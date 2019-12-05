@@ -251,7 +251,7 @@ public class OrganizationController extends BaseController {
 
     @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
     @GetMapping("/getOrganizationPostTree")
-    public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0包含（默认）、1 不包含", example = "0") @RequestParam(value = "isEnable") Short isEnable) {
+    public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0不包含（默认）、1 包含", example = "0") @RequestParam(value = "isEnable") Short isEnable) {
         Boolean b = checkParam(isEnable);
         if (b) {
             try {

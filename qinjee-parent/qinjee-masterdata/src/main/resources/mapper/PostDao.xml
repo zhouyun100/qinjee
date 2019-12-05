@@ -247,8 +247,8 @@
         <include refid="Base_Column_List"/>
         from t_post
         where org_id = #{orgId}
-        <if test="isEnable != null and isEnable == 1">
-            and is_enable = #{isEnable}
+        <if test="isEnable != null">
+            and is_enable = 1
         </if>
         and is_delete = 0 ORDER BY sort_id ASC
     </select>
