@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.custom;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -21,6 +22,7 @@ import java.util.List;
  * @date 2019/11/28
  */
 @Data
+@JsonInclude
 public class CustomTableVO{
     /**
      * 表ID

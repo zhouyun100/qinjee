@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.custom;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.List;
  * @date 2019/11/29
  */
 @Data
+@JsonInclude
 public class CustomGroupVO {
 
     /**

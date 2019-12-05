@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.custom;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.masterdata.model.entity.SysDict;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * @date 2019/11/28
  */
 @Data
+@JsonInclude
 public class CustomFieldVO {
     /**
      * 字段ID
