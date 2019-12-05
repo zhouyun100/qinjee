@@ -53,52 +53,52 @@ public class ExcelUtil {
      * @param map   以表头信息为key，类型为value的Map集合
      */
     public static void download(HttpServletResponse response,
-                                String title, List<String> heads, List<Map<String, String>> dates, Map<String, String> map) throws IOException {
+                                String title, List < String > heads, List < Map < String, String > > dates, Map < String, String > map) throws IOException {
         // 新建excel报表
-        HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook ();
         // 添加一个sheet名称
-        HSSFSheet hssfSheet = hssfWorkbook.createSheet(title);
-        HSSFCellStyle style = hssfWorkbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
+        HSSFSheet hssfSheet = hssfWorkbook.createSheet ( title );
+        HSSFCellStyle style = hssfWorkbook.createCellStyle ();
+        style.setAlignment ( HorizontalAlignment.CENTER );
         //设置垂直对齐的样式为居中对齐;
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        HSSFRow hssfRow = hssfSheet.createRow(0);
-        for (int i = 0; i < heads.size(); i++) {
-            HSSFCell hssfCell = hssfRow.createCell(i);
+        style.setVerticalAlignment ( VerticalAlignment.CENTER );
+        HSSFRow hssfRow = hssfSheet.createRow ( 0 );
+        for (int i = 0; i < heads.size (); i++) {
+            HSSFCell hssfCell = hssfRow.createCell ( i );
             //先设定类型，再设定值
-            hssfCell.setCellType(getCellType(map.get(heads.get(i))));
-            hssfCell.setCellValue(heads.get(i));
+            hssfCell.setCellType ( getCellType ( map.get ( heads.get ( i ) ) ) );
+            hssfCell.setCellValue ( heads.get ( i ) );
         }
 
         // 循环将list里面的值取出来放进excel中
-        for (int i = 0; i < dates.size(); i++) {
-            HSSFRow hssfRow1 = hssfSheet.createRow(i + 1);
+        for (int i = 0; i < dates.size (); i++) {
+            HSSFRow hssfRow1 = hssfSheet.createRow ( i + 1 );
             int j = 0;
-            Iterator<Map.Entry<String, String>> it = dates.get(i).entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String> entry = it.next();
-                HSSFCell hssfCell = hssfRow1.createCell(j);
-                hssfCell.setCellValue(entry.getValue());
+            Iterator < Map.Entry < String, String > > it = dates.get ( i ).entrySet ().iterator ();
+            while (it.hasNext ()) {
+                Map.Entry < String, String > entry = it.next ();
+                HSSFCell hssfCell = hssfRow1.createCell ( j );
+                hssfCell.setCellValue ( entry.getValue () );
                 j++;
             }
         }
         // 清空response
-        response.reset();
-            // 取得文件名。
-            String fileName =title+".xls";
-            // 设置响应头，控制浏览器下载该文件
+        response.reset ();
+        // 取得文件名。
+        String fileName = title + ".xls";
+        // 设置响应头，控制浏览器下载该文件
 //        fileName=new String ( fileName.getBytes ("UTF-8"),"gb2312" );
-        response.setHeader("Content-disposition", "attachment; filename=\"" + URLEncoder.encode(fileName, "UTF-8") + "\"");
+        response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( fileName, "UTF-8" ) + "\"" );
         // application/ms-excel;charset=utf-8 告诉浏览器下载的文件是excel
-        response.setContentType("application/ms-excel");
-        OutputStream out=null;
+        response.setContentType ( "application/ms-excel" );
+        OutputStream out = null;
         try {
             out = new BufferedOutputStream ( response.getOutputStream () );
-            hssfWorkbook.write(out);
+            hssfWorkbook.write ( out );
         } catch (IOException e) {
             e.printStackTrace ();
-        }finally {
-            if(out!=null) {
+        } finally {
+            if (out != null) {
                 out.close ();
             }
         }
@@ -144,55 +144,55 @@ public class ExcelUtil {
      * @param file
      * @throws IOException
      */
-    public static List<Map<String, String>> readExcel(MultipartFile file)
+    public static List < Map < String, String > > readExcel(MultipartFile file)
             throws Exception {
         // 获得Workbook工作薄对象
-        Workbook workbook = getWorkBook(file);
+        Workbook workbook = getWorkBook ( file );
         // 创建返回对象，把每行中的值作为一个数组，所有行作为一个集合返回
-        List<String[]> list = new ArrayList<>();
+        List < String[] > list = new ArrayList <> ();
         if (workbook != null) {
-            for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
+            for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets (); sheetNum++) {
                 // 获得当前sheet工作表
-                Sheet sheet = workbook.getSheetAt(sheetNum);
+                Sheet sheet = workbook.getSheetAt ( sheetNum );
                 if (sheet == null) {
                     continue;
                 }
                 // 获得当前sheet的开始行
-                int firstRowNum = sheet.getFirstRowNum();
+                int firstRowNum = sheet.getFirstRowNum ();
                 // 获得当前sheet的结束行
-                int lastRowNum = sheet.getLastRowNum();
+                int lastRowNum = sheet.getLastRowNum ();
                 // 循环除了第一行的所有行
                 for (int rowNum = firstRowNum; rowNum <= lastRowNum; rowNum++) {
                     // 获得当前行
-                    Row row = sheet.getRow(rowNum);
+                    Row row = sheet.getRow ( rowNum );
                     if (row == null) {
                         continue;
                     }
                     // 获得当前行的开始列
-                    int firstCellNum = row.getFirstCellNum();
+                    int firstCellNum = row.getFirstCellNum ();
                     // 获得当前行的列数
-                    int lastCellNum = row.getPhysicalNumberOfCells();
-                    String[] cells = new String[row.getPhysicalNumberOfCells()];
+                    int lastCellNum = row.getPhysicalNumberOfCells ();
+                    String[] cells = new String[row.getPhysicalNumberOfCells ()];
                     // 循环当前行
                     for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
-                        Cell cell = row.getCell(cellNum);
-                        cells[cellNum] = getCellValue(cell);
+                        Cell cell = row.getCell ( cellNum );
+                        cells[cellNum] = getCellValue ( cell );
                     }
-                    list.add(cells);
+                    list.add ( cells );
                     //此时应该返回一个表属性的list集合，与一个以表头为key，value为数据的map
                 }
             }
         }
         //heads存的是第一行的字段名
-        List<String> heads = Arrays.asList(list.get(0));
-        List<Map<String, String>> listMap = new ArrayList<>();
-        Map<String, String> mapRow;
-        for (int i = 1; i < list.size(); i++) {
-            mapRow = new HashMap<>();
-            for (int j = 0; j < heads.size(); j++) {
-                mapRow.put(heads.get(j), list.get(i)[j]);
+        List < String > heads = Arrays.asList ( list.get ( 0 ) );
+        List < Map < String, String > > listMap = new ArrayList <> ();
+        Map < String, String > mapRow;
+        for (int i = 1; i < list.size (); i++) {
+            mapRow = new HashMap <> ();
+            for (int j = 0; j < heads.size (); j++) {
+                mapRow.put ( heads.get ( j ), list.get ( i )[j] );
             }
-            listMap.add(mapRow);
+            listMap.add ( mapRow );
         }
 
         return listMap;
@@ -204,26 +204,27 @@ public class ExcelUtil {
      */
     public static Workbook getWorkBook(MultipartFile file) throws Exception {
         // 获得文件名
-        String fileName = file.getOriginalFilename();
+        String fileName = file.getOriginalFilename ();
         // 创建Workbook工作薄对象，表示整个excel
         Workbook workbook = null;
         try {
             // 获取excel文件的io流
-            InputStream is = file.getInputStream();
+            InputStream is = file.getInputStream ();
             // 根据文件后缀名不同(xls和xlsx)获得不同的Workbook实现类对象
             assert fileName != null;
-            if (fileName.endsWith(xls)) {
+            if (fileName.endsWith ( xls )) {
                 // 2003
-                workbook = new HSSFWorkbook(is);
-            } else if (fileName.endsWith(xlsx)) {
+                workbook = new HSSFWorkbook ( is );
+            } else if (fileName.endsWith ( xlsx )) {
                 // 2007
-                workbook = new XSSFWorkbook(is);
+                workbook = new XSSFWorkbook ( is );
             }
         } catch (IOException e) {
             throw new Exception ( "文件类型不支持！" );
         }
         return workbook;
     }
+
     /**
      * @param cell
      * @return 根据excel表格中的数据类型和数据值返回相对应的数据值
@@ -234,22 +235,22 @@ public class ExcelUtil {
             return cellValue;
         }
         // 判断数据的类型
-        switch (cell.getCellType()) {
+        switch (cell.getCellType ()) {
             // 数字
             case NUMERIC:
-                cellValue = String.valueOf(cell.getNumericCellValue());
+                cellValue = String.valueOf ( cell.getNumericCellValue () );
                 break;
             // 字符串
             case STRING:
-                cellValue = String.valueOf(cell.getStringCellValue());
+                cellValue = String.valueOf ( cell.getStringCellValue () );
                 break;
             // Boolean
             case BOOLEAN:
-                cellValue = String.valueOf(cell.getBooleanCellValue());
+                cellValue = String.valueOf ( cell.getBooleanCellValue () );
                 break;
             // 公式
             case FORMULA:
-                cellValue = String.valueOf(cell.getCellFormula());
+                cellValue = String.valueOf ( cell.getCellFormula () );
                 break;
             // 空值
             case BLANK:
@@ -270,28 +271,28 @@ public class ExcelUtil {
     public static MultipartFile getMultipartFile(File file) {
         MultipartFile multipartFile = null;
         try {
-            FileInputStream fileInput = new FileInputStream(file);
-            multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
+            FileInputStream fileInput = new FileInputStream ( file );
+            multipartFile = new MockMultipartFile ( "file", file.getName (), "text/plain", IOUtils.toByteArray ( fileInput ) );
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace ();
         }
         return multipartFile;
     }
 
     public static void main(String[] args) throws IOException {
         MultipartFile multipartFile = null;
-        File file = new File("E:\\import_test.xlsx");
-        FileInputStream fileInput = new FileInputStream(file);
-        multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(fileInput));
-        List<Map<String, String>> list = null;
+        File file = new File ( "E:\\import_test.xlsx" );
+        FileInputStream fileInput = new FileInputStream ( file );
+        multipartFile = new MockMultipartFile ( "file", file.getName (), "text/plain", IOUtils.toByteArray ( fileInput ) );
+        List < Map < String, String > > list = null;
         try {
-            list = ExcelUtil.readExcel(multipartFile);
+            list = ExcelUtil.readExcel ( multipartFile );
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace ();
         }
 
-        for (Map<String, String> stringStringMap : list) {
-            System.out.println(stringStringMap);
+        for (Map < String, String > stringStringMap : list) {
+            System.out.println ( stringStringMap );
         }
 
 //        for (List<String> strings : list) {

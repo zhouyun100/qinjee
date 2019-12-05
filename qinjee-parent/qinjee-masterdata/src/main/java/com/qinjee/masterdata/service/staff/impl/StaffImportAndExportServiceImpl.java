@@ -40,6 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -437,9 +439,15 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getExportList ().getMap ().values () );
         for (Map < String, Object > stringObjectMap : maps) {
             //linkedHashMap保证有序
+            SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );
             Map < String, String > stringMap = new LinkedHashMap <> ();
             for (String head : heads) {
-                stringMap.put ( head, String.valueOf ( stringObjectMap.get ( customTableFieldDao.selectFieldCodeByNameAndFuncCodeAndCompanyId ( head, funcCode, companyId ) ) ) );
+                Object o = stringObjectMap.get ( customTableFieldDao.selectFieldCodeByNameAndFuncCodeAndCompanyId ( head, funcCode, companyId ) );
+                if(isDate ( String.valueOf ( o ))){
+                    Date date=new Date ( String.valueOf ( o ) );
+                    o=sdf.format ( date );
+                }
+                stringMap.put ( head, String.valueOf (o) );
             }
             mapList.add ( stringMap );
         }
@@ -458,10 +466,15 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         for (Map < String, Object > stringObjectMap : maps) {
             //linkedHashMap保证有序
             Map < String, String > stringMap = new LinkedHashMap <> ();
+            SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );
             for (String head : heads) {
-                stringMap.put ( head, String.valueOf ( stringObjectMap.get ( customTableFieldDao.selectFieldCodeByName ( head, companyId ) ) ) );
+                Object o = stringObjectMap.get ( stringObjectMap.get ( customTableFieldDao.selectFieldCodeByName ( head, companyId ) )  );
+                if(isDate ( String.valueOf ( o ) )){
+                    Date date=new Date ( String.valueOf ( o ) );
+                    o=sdf.format ( date );
+                }
+                stringMap.put ( head, String.valueOf (o) );
             }
-
             mapList.add ( stringMap );
         }
         return mapList;
@@ -507,6 +520,16 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
             typeMap.put ( customFieldVO.getFieldName (), customFieldVO.getTextType () );
         }
         return typeMap;
+    }
+
+    private Boolean isDate(String date){
+        SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );
+        try {
+            sdf.parse ( date );
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
 }

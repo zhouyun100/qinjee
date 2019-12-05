@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
@@ -28,6 +27,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +57,6 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private BlacklistDao blacklistDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
-    @Autowired
-    private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
@@ -212,7 +210,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     private String getBaseSql(Integer companyId,List<CustomFieldVO> fieldvos,List<CustomTableVO> tableVOS){
-        String a="select t.archive_id from( select t0.* , ";
+        String a="select distinct t.archive_id from( select t0.*,  ";
+        if(CollectionUtils.isEmpty ( fieldvos )){
+            int i = a.lastIndexOf ( "," );
+            a=a.substring ( 0,i );
+        }
         return a+ SqlUtil.getsql( companyId,  fieldvos,  tableVOS);
     }
 
@@ -225,24 +227,47 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         Integer fieldId = filter.getFieldId();
         String condition=null;
         //根据id获得字段类型
-        String type=customTableFieldDao.selectTypeByFieldId(fieldId);
-        if(type!=null) {
-            if (TYPEDATE.equals(type) || TYPENUMBER.equals(type)) {
-                condition = fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldById (fieldId);
+        String textType = customFieldVO.getTextType ();
+        Short isSystemDefine = customFieldVO.getIsSystemDefine ();
+        String fieldCode = customFieldVO.getFieldCode ();
+        if(textType !=null && isSystemDefine==0 ) {
+            if (TYPEDATE.equals(textType) || TYPENUMBER.equals(textType)) {
+                condition = "t.t"+fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
             }
-            if (TYPETEXT.equals(type)) {
+            if (TYPETEXT.equals(textType)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
-                    condition = fieldId + " = " + filter.getFieldValue();
+                    condition ="t.t"+fieldId + " = " + filter.getFieldValue();
                 }
                 if (BUDENGYU.equals(filter.getOperateSymbol())) {
-                    condition = fieldId + " != " + filter.getFieldValue();
+                    condition ="t.t"+fieldId + " != " + filter.getFieldValue();
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = fieldId + " like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = "t.t"+fieldId + " like "+"'%" + filter.getFieldValue() + "%' ";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = fieldId + " not like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = "t.t"+fieldId + " not like "+"'%" + filter.getFieldValue() + "%' ";
+                }
+            }
+        }
+        if(textType !=null && isSystemDefine==1 ) {
+            if (TYPEDATE.equals(textType) || TYPENUMBER.equals(textType)) {
+                condition = fieldCode + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+            }
+            if (TYPETEXT.equals(textType)) {
+                if (DENGYU.equals(filter.getOperateSymbol())) {
+                    condition = fieldCode + " = " + filter.getFieldValue();
+                }
+                if (BUDENGYU.equals(filter.getOperateSymbol())) {
+                    condition = fieldCode + " != " + filter.getFieldValue();
+                }
+                if (BAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = fieldCode + " like "+"'%" + filter.getFieldValue() + "%' ";
+                }
+
+                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = fieldCode + " not like "+"'%" + filter.getFieldValue() + "%' ";
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
@@ -290,7 +291,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         outList.addAll(notIn);
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
-        String b = "select t.archive_id, ";
+        String b = "select distinct t.archive_id, ";
         String c = null;
         String d = "FROM ( select t0.*";
         for (CustomFieldVO customFieldVO : inList) {

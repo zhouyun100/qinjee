@@ -281,6 +281,8 @@ public interface CustomTableFieldDao {
     String selectFieldCodeById(@Param("integer") Integer integer);
 
     List< CustomFieldVO> selectFieldByIdList(@Param("integers2") List< Integer> integers2);
+
+    CustomFieldVO selectFieldById(@Param("fieldId") Integer fieldId);
 }
 
 

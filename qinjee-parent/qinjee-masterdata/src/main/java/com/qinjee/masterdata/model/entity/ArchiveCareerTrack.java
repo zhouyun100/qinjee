@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 public class ArchiveCareerTrack {
     /** 版本号 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3896584191643968254L;
 
     /** 变更ID */
     private Integer changeId;
@@ -18,20 +18,35 @@ public class ArchiveCareerTrack {
     /** 档案ID */
     private Integer archiveId;
 
-    /** 人员分类 */
-    private String userCategory;
+    /** 变更前人员分类 */
+    private String beforeUserCategory;
 
-    /** 单位 */
-    private Integer businessUnitId;
+    /** 变更后人员分类 */
+    private String afterUserCategory;
 
-    /** 部门 */
-    private Integer orgId;
+    /** 变更前单位 */
+    private Integer beforeBusinessUnitId;
 
-    /** 岗位 */
-    private Integer postId;
+    /** 变更后单位 */
+    private Integer afterBusinessUnitId;
 
-    /** 职位 */
-    private Integer positionId;
+    /** 变更前部门 */
+    private Integer beforeOrgId;
+
+    /** 变更后部门 */
+    private Integer afterOrgId;
+
+    /** 变更前岗位 */
+    private Integer beforePostId;
+
+    /** 变更后岗位 */
+    private Integer afterPostId;
+
+    /** 变更前职位 */
+    private Integer beforePositionId;
+
+    /** 变更后职位 */
+    private Integer afterPositionId;
 
     /** 变更类型 */
     private String changeType;
