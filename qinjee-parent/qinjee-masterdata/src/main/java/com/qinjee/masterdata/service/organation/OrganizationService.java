@@ -128,17 +128,11 @@ public interface OrganizationService  {
   /**
    * 获取用户下所有机构树
    *
-   * @param userSession
+   * @param archiveId
    * @param isEnable
    * @return
    */
-  List<OrganizationVO> getAllOrganizationTree(UserSession userSession, Short isEnable);
-
-  //TODO 重新写
-  ResponseResult downloadAllOrganizationToExcel(String filePath, UserSession userSession);
-
-  //TODO 重新写
-  ResponseResult downloadOrganizationToExcelByOrgId(String filePath, List<Integer> orgIds, UserSession userSession);
+  List<OrganizationVO> getAllOrganizationTree(Integer archiveId, Short isEnable);
 
 
   /**

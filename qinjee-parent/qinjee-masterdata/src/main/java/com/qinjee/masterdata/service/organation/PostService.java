@@ -85,7 +85,7 @@ public interface PostService {
    * @param orgId
    * @return
    */
-  List<Post> getAllPost(UserSession userSession, Integer orgId, Short isEnable);
+  List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable);
 
   /**
    * 查看岗位历任

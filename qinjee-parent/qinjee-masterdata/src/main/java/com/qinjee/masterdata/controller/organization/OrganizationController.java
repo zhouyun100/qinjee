@@ -141,7 +141,7 @@ public class OrganizationController extends BaseController {
                 if (isEnable != 0) {
                     isEnable = null;
                 }
-                List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(getUserSession(), isEnable);
+                List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(getUserSession().getArchiveId(), isEnable);
                 PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
                 return new ResponseResult(pageResult, CommonCode.SUCCESS);
             } catch (Exception e) {
@@ -255,8 +255,8 @@ public class OrganizationController extends BaseController {
         Boolean b = checkParam(isEnable);
         if (b) {
             try {
-                if (isEnable == null) {
-                    isEnable = Short.parseShort("0");
+                if (isEnable !=0) {
+                    isEnable = null;
                 }
                 List<OrganizationVO> orgList = organizationService.getOrganizationPostTree(getUserSession(), isEnable);
                 ResponseResult responseResult = new ResponseResult();

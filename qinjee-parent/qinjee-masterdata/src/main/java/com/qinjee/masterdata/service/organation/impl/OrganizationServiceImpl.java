@@ -354,18 +354,23 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession) {
         List<Integer> orgidList = new ArrayList<>();
+        PageResult<OrganizationVO> pageResult = null;
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;
         Short isEnable = organizationPageVo.getIsEnable();
         Integer orgId = organizationPageVo.getOrgParentId();
+        //如果当前机构为空的话 返回空集合
         orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, null, isEnable);
-        if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
-            PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
+        if (!CollectionUtils.isEmpty(orgIdList)) {
+            if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
+                PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
+            }
+            List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIdList);
+            PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
+            pageResult = new PageResult<>(pageInfo.getList());
+            pageResult.setTotal(pageInfo.getTotal());
         }
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIdList);
-        PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
-        PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
-        pageResult.setTotal(pageInfo.getTotal());
+
         return pageResult;
     }
 
@@ -550,6 +555,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
+
+        OrganizationVO currentOrg = organizationDao.selectByPrimaryKey(orgId);
+        if (Objects.isNull(currentOrg)) {
+            return idsList;
+        }
+
         //先查询到所有机构
         List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
@@ -599,6 +610,13 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 
     //=====================================================================
+
+    /**
+     * 递归修改机构全称
+     *
+     * @param parentOrgFullName
+     * @param orgId
+     */
     private void recursiveUpdateOrgNameByParentOrgId(String parentOrgFullName, String orgId) {
 
         List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(Integer.parseInt(orgId));
@@ -632,15 +650,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
         List<UserArchiveVo> userArchiveVos = userArchiveDao.selectByOrgListAndAuth(idList, userSession.getArchiveId(), userSession.getCompanyId());
-        if (!CollectionUtils.isEmpty(userArchiveVos)){
-            isExsit=true;
+        if (!CollectionUtils.isEmpty(userArchiveVos)) {
+            isExsit = true;
             ExceptionCast.cast(CommonCode.ORG_EXIST_USER);
         }
         //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
         if (!isExsit) {
-            //批量逻辑删除
+            //物理删除机构表
             organizationDao.batchDelete(idList);
-
+            //逻辑删除物理表
             postDao.batchDelete(idList);
         }
         // 回收机构权限
@@ -769,8 +787,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
     @Override
     public List<OrganizationVO> getOrganizationPostTree(UserSession userSession, Short isEnable) {
-        //TODO 只显示未封存的机构
-        List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession, Short.parseShort("1"));
+        //T拿到未被封存的机构树
+        List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession.getArchiveId(), Short.parseShort("1"));
         //递归设置机构下的岗位
         //TODO 暂时不设置岗位下的子岗位
         handlerOrganizationPost(organizationVOTreeList, isEnable);
@@ -780,56 +798,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
     public void handlerOrganizationPost(List<OrganizationVO> orgList, Short isEnable) {
         for (OrganizationVO organizationVO : orgList) {
-            if (organizationVO.getOrgType().equals("DEPT")) {
-                List<Post> postList = postDao.getPostListByOrgId(organizationVO.getOrgId(), isEnable);
-                organizationVO.setPostList(postList);
-            }
+            List<Post> postList = postDao.getPostListByOrgId(organizationVO.getOrgId(), isEnable);
+            organizationVO.setPostList(postList);
             if (organizationVO.getChildList() != null && organizationVO.getChildList().size() > 0) {
                 handlerOrganizationPost(organizationVO.getChildList(), isEnable);
             }
         }
     }
-
-
-    //=====================================================================
-    @Override
-    public ResponseResult downloadOrganizationToExcelByOrgId(String filePath, List<Integer> orgIds, UserSession userSession) {
-        ResponseResult responseResult;
-
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIds);
-        System.out.println("organizationVOList:" + organizationVOList);
-        if (CollectionUtils.isEmpty(organizationVOList)) {
-            responseResult = new ResponseResult(CommonCode.FAIL);
-            responseResult.setMessage("机构列表为空，导出失败");
-            return responseResult;
-        }
-        responseResult = new ResponseResult(CommonCode.SUCCESS);
-        responseResult.setMessage("导出成功");
-        return responseResult;
-    }
-
-
-    //=====================================================================
-
-    /**
-     * @param userSession
-     * @Description: 导出用户所有机构到excel
-     * @Param:
-     * @return:
-     * @Author: penghs
-     * @Date: 2019/11/20 0020
-     */
-    @Override
-    public ResponseResult downloadAllOrganizationToExcel(String filePath, UserSession userSession) {
-        Integer archiveId = userSession.getArchiveId();
-        List<OrganizationVO> organizationVOList = organizationDao.getOrganizationListByUserArchiveId(archiveId, new Date());
-        if (Objects.isNull(organizationVOList) || organizationVOList.size() <= 0) {
-            return new ResponseResult(CommonCode.FAIL);
-        }
-        return new ResponseResult(CommonCode.SUCCESS);
-    }
-
-    //=====================================================================
 
 
     @Override
@@ -847,14 +822,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     /**
      * 获取所有的机构树
      *
-     * @param userSession
+     * @param archiveId
      * @param isEnable
      * @return
      */
     @Override
-    public List<OrganizationVO> getAllOrganizationTree(UserSession userSession, Short isEnable) {
-        Integer archiveId = userSession.getArchiveId();
+    public List<OrganizationVO> getAllOrganizationTree(Integer archiveId, Short isEnable) {
 
+        //拿到所有未被封存的机构
         List<OrganizationVO> organizationVOList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //获取第一级机构
         List<OrganizationVO> organizationVOS = organizationVOList.stream().filter(organization -> {
