@@ -371,6 +371,8 @@
     <include refid="Base_Column_List" />
     from t_blacklist
     where is_delete=0
+    and
+    company_id=#{companyId}
   </select>
   <select id="selectByPhone" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
     select

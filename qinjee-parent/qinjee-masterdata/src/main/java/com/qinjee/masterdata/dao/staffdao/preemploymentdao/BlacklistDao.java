@@ -26,7 +26,7 @@ public interface BlacklistDao {
 
     void deleteBlackList(List<Integer> list);
 
-    List<Blacklist> selectByPage();
+    List<Blacklist> selectByPage(@Param("companyId") Integer companyId);
 
     List<Blacklist> selectByPhone(@Param("phoneList") List<String> phoneList);
 

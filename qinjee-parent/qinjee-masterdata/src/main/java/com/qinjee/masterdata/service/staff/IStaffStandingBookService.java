@@ -45,7 +45,7 @@ public interface IStaffStandingBookService {
      * @param pageSize
      * @return
      */
-    PageResult<Blacklist> selectBalckList(Integer currentPage, Integer pageSize);
+    PageResult<Blacklist> selectBalckList(Integer currentPage, Integer pageSize,UserSession userSession);
 
     /**
      * 删除台账

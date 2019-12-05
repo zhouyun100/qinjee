@@ -413,6 +413,11 @@
             #{item}
         </foreach>
     </select>
+    <select id="selectTypeByFieldId" resultType="java.lang.String">
+        select text_type from t_custom_archive_field
+        where field_id=#{fieldId}
+        and is_delete=0
+    </select>
   <select id="selectFieldCodeListByTableIdList" resultType="java.lang.String">
 
   </select>
@@ -423,7 +428,7 @@
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldTypeByNameList" resultType="java.lang.String"></select>
   <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
-  <select id="selectTypeByFieldId" resultType="java.lang.String"></select>
+
   <select id="selectPhysicName" resultType="java.lang.String"></select>
   <select id="selectFieldCodeByList" resultType="java.lang.String"></select>
 

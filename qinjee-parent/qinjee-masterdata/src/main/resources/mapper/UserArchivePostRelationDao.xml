@@ -253,16 +253,7 @@
     archive_id = #{id,jdbcType=INTEGER}
     AND is_delete=0
   </select>
-  <select id="selectByType" resultType="java.lang.Integer">
-    select archive_id
-    from   t_user_archive_post_relation
-    where   employment_type = #{type,jdbcType=VARCHAR}
-    AND archive_id in
-    <foreach collection="oneList" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
 
-  </select>
   <select id="selectEmploymentTypeByArichiveId" resultType="java.lang.String">
     select employment_type
     from  t_user_archive_post_relation

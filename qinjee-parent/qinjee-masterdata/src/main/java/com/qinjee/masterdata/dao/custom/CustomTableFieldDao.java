@@ -263,7 +263,7 @@ public interface CustomTableFieldDao {
 
     List < CustomArchiveField > selectFieldNameByTableName(Integer companyId, String preEmployment);
 
-    String selectTypeByFieldId(Integer fieldId);
+    String selectTypeByFieldId(@Param("fieldId") Integer fieldId);
 
     String selectPhysicName(Integer fieldId);
 

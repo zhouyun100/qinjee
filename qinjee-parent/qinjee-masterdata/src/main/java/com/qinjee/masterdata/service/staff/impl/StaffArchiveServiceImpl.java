@@ -107,7 +107,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return new PageResult <> ( list );
 
     }
+    public PageResult < UserArchiveVo > selectArchivebatchAndOrgList(UserSession userSession, List<Integer> orgList, Integer pageSize, Integer currentPage) {
+        PageHelper.startPage ( currentPage, pageSize );
+        List < UserArchiveVo > list = userArchiveDao.selectByOrgListAndAuth ( orgList, userSession.getArchiveId (), userSession.getCompanyId () );
+        return new PageResult <> ( list );
 
+    }
     @Override
     public void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) {
         UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation ();
@@ -271,7 +276,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     /**
      * list是所查询项的集合
      */
-    private String getBaseSql(List<CustomFieldVO> notIn,List < Integer > integers, Integer companyId, List<CustomTableVO> customTableVOS) {
+    private String getBaseSql(List<CustomFieldVO> notIn,List < Integer > integers, Integer companyId, List<CustomTableVO> tableVOS) {
         List<CustomFieldVO> inList=new ArrayList<>();
         List<CustomFieldVO> outList=new ArrayList<>();
         List<CustomFieldVO> list = customTableFieldDao.selectFieldByIdList(integers);
@@ -303,7 +308,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         } else {
             c = b + a + "\t" + d + ",";
         }
-        return c + SqlUtil.getsql ( companyId, outList, customTableVOS );
+        return c + SqlUtil.getsql ( companyId, outList, tableVOS );
     }
 
     private String getSort(String sort) {

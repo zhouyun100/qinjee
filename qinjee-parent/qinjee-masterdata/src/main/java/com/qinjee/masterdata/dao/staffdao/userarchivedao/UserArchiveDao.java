@@ -71,7 +71,7 @@ public interface UserArchiveDao {
 
     List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
 
-    List<Integer> selectStaffNoStandingBook(@Param("archiveType") String archiveType, @Param("id") Integer id);
+
 
     Integer selectArchiveIdByTel(@Param("phoneNumber") String phoneNumber);
 
@@ -109,4 +109,6 @@ public interface UserArchiveDao {
     List< UserArchive> selectBeforeFilter(@Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
 
     List< UserArchive> selectUserArchiveByName(@Param("name") String name);
+
+    List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 }
