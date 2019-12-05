@@ -167,7 +167,9 @@
     </if>
   </select>
 
-  <select id="getPositionByName" resultMap="BaseResultMap">
-    select position_id from t_position where position_name =#{positionName} and is_delete =0  limit 1
+  <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">
+    SELECT tp.position_id FROM t_position tp
+    LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id
+    WHERE tpg.company_id=#{companyId} AND tp.position_name=#{positionName} and  tp.is_delete =0
   </select>
 </mapper>

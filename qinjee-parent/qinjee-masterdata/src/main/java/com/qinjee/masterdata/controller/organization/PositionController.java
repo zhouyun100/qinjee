@@ -66,6 +66,27 @@ public class PositionController extends BaseController {
     return positionService.addPosition(positionVo, getUserSession());
   }
 
+  @ApiOperation(value = "ok，保证职位名称在同一家企业下唯一", notes = "ok")
+  @PostMapping("/determinePositionNameIsOnly")
+  public ResponseResult determinePositionNameIsOnly(String positionName) {
+    Boolean b = checkParam(positionName);
+    if (b) {
+      try {
+        positionService.determinePositionNameIsOnly(positionName, getUserSession());
+        return ResponseResult.SUCCESS();
+      } catch (Exception e) {
+        e.printStackTrace();
+        if (e instanceof BusinessException) {
+          BusinessException be = (BusinessException) e;
+          return new ResponseResult<>(null, be.getResultCode());
+        }
+        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+      }
+    }
+    return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+  }
+
+
   @ApiOperation(value = "ok，编辑职位", notes = "ok")
   @PostMapping("/editPosition")
   public ResponseResult editPosition(PositionVo positionVo) {
@@ -105,41 +126,6 @@ public class PositionController extends BaseController {
     public ResponseResult<Position> getPositionLevelAndGrade(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
         return positionService.getPositionLevelAndGrade(positionId);
     }*/
-
-
-  @PostMapping("/getPositionSystem")
-  @ApiOperation(value = "ok,获取职位体系分页显示", notes = "ok")
-  /**
-   * 初始化(如果什么都不传)显示职位族树以及职位体系表所有内容
-   */
-  public ResponseResult getPositionSystem(PositionPageVo positionPageVo) throws Exception {
-    Map<String,Object> resultMap=new HashMap<>();
-    //如果都不传，返回所有
-    if((positionPageVo.getPositionGroupId()==null||"".equals(positionPageVo.getPositionGroupId()))
-        &&(positionPageVo.getPositionId()==null||"".equals(positionPageVo.getPositionId()))){
-      //获取职位族
-      ResponseResult<List<PositionGroup>> positionGroupTree = positionGroupService.getAllPositionGroupTree(getUserSession());
-      //获取所有职位
-      ResponseResult<PageResult<Position>> positionPage=positionService.getAllPositionPage(getUserSession());
-
-      resultMap.put("positionGroupTree",positionGroupTree);
-      resultMap.put("positionPage",positionPage);
-
-    }
-    //如果传了positionGroupId但没传positionId，则查询该positionGroupId下所有职位
-    if((positionPageVo.getPositionGroupId()!=null&&!"".equals(positionPageVo.getPositionGroupId()))
-        &&(positionPageVo.getPositionId()==null||"".equals(positionPageVo.getPositionId()))){
-      ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(getUserSession(), positionPageVo);
-      resultMap.put("positionPage",positionPage);
-    }
-    if(positionPageVo.getPositionId()!=null&&!"".equals(positionPageVo.getPositionId())){
-      PageResult<Position> positionPage=positionService.getPositionByPositionId(positionPageVo.getPositionId());
-      resultMap.put("positionPage",positionPage);
-    }
-
-    //如果传了positionId，则只返回该职位
-    return new ResponseResult<>(resultMap);
-  }
 
 
 }

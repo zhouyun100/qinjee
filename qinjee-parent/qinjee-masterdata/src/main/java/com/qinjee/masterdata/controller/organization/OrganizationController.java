@@ -134,7 +134,7 @@ public class OrganizationController extends BaseController {
         @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0不包含（默认）、1 包含", paramType = "query", dataType = "short")
     })
     @GetMapping("/getAllOrganizationTree")
-    public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable", required = false) Short isEnable) {
+    public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable") Short isEnable) {
         Boolean b = checkParam(isEnable);
         if (b) {
             try {
@@ -249,10 +249,9 @@ public class OrganizationController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-    //TODO
     @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
     @GetMapping("/getOrganizationPostTree")
-    public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0包含（默认）、1 不包含", example = "0") @RequestParam(value = "isEnable", required = false) Short isEnable) {
+    public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0包含（默认）、1 不包含", example = "0") @RequestParam(value = "isEnable") Short isEnable) {
         Boolean b = checkParam(isEnable);
         if (b) {
             try {
@@ -275,6 +274,11 @@ public class OrganizationController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
+    /**
+     * 机构下有人，不能封存
+     * @param orgIds
+     * @return
+     */
     @PostMapping("/lockOrganizationByIds")
     @ApiOperation(value = "ok，封存机构，设为0", notes = "ok")
     public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {

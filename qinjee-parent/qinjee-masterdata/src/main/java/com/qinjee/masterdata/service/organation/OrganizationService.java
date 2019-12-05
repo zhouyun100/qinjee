@@ -47,7 +47,7 @@ public interface OrganizationService  {
    * @param orgIds
    * @return
    */
-  ResponseResult deleteOrganizationById(List<Integer> orgIds, UserSession userSession);
+  void deleteOrganizationById(List<Integer> orgIds, UserSession userSession);
 
   /**
    * 封存/封存机构

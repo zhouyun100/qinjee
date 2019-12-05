@@ -622,4 +622,11 @@
         where org_code = #{orgCode,jdbcType=VARCHAR}
 
     </update>
+    <update id="batchDelete">
+        update t_organization set is_enable =0
+        where org_id in
+        <foreach collection="idList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

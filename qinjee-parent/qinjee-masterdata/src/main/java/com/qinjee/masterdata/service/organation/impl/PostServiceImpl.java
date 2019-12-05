@@ -430,7 +430,7 @@ public class PostServiceImpl implements PostService {
                 Post ifExistVo = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
                 Post parentPost = postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
                 OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
-                Position position = positionDao.getPositionByName(vo.getPositionName());
+                Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(),userSession.getCompanyId());
                 vo.setOrgId(orgVo.getOrgId());
                 vo.setPositionId(position.getPositionId());
 
@@ -774,7 +774,7 @@ public class PostServiceImpl implements PostService {
             }
 
             //校验职位是否存在
-            Position position = positionDao.getPositionByName(post.getPositionName());
+            Position position = positionDao.getPositionByNameAndCompanyId(post.getPositionName(),userSession.getCompanyId());
             if (Objects.isNull(position)) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("职位" + post.getPositionName() + "不存在|");
