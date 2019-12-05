@@ -436,7 +436,7 @@ public class CommonController extends BaseController {
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
-                return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
+                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
             }
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);

@@ -263,9 +263,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public List<CustomTableVO> searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO) {
-        if(customTableVO.getIsEnable() == null){
             customTableVO.setIsEnable(Short.valueOf("1"));
-        }
         List<CustomTableVO> customTableList = customTableFieldDao.searchCustomTableListByCompanyIdAndFuncCode(customTableVO);
         return customTableList;
     }

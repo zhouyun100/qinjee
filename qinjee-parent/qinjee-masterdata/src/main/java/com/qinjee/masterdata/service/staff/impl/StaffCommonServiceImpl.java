@@ -260,13 +260,15 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         if ("ARC".equals ( funcCode )) {
             //找到确认唯一性的字段id，进行判断新增或是更新操作
            //进行对象组装
+
             for (Map < Integer, String > integerStringMap : list) {
+                UserArchive userArchive = new UserArchive ();
                 Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
                 if(checkMap ( map )) {
                     for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                         for (Integer integer : integerListEntry.getValue ()) {
                             Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                            UserArchive userArchive = new UserArchive ();
+
                             Field[] declaredFields = userArchive.getClass ().getDeclaredFields ();
                             for (Field declaredField : declaredFields) {
                                 declaredField.setAccessible ( true );
@@ -284,13 +286,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                             }
+                        }
                             if (archiveId != null && archiveId != 0) {
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             } else {
                                 userArchiveDao.insertSelective ( userArchive );
                             }
                         }
-                    }
+
                 }
                 if(archiveId!=null && archiveId!=0) {
                 if(checkMap ( notMap )) {
@@ -313,16 +316,17 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
         } else if("PRE".equals ( funcCode )){
             for (Map < Integer, String > integerStringMap : list) {
+                PreEmployment preEmployment = new PreEmployment ();
                 Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
                 for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                     if(checkMap ( map )) {
                         for (Integer integer : integerListEntry.getValue ()) {
                             Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                            PreEmployment preEmployment = new PreEmployment ();
+
                             preEmployment.setEmploymentState ( "未入职" );
-                            preEmployment.setResidentCharacter ( "未发送" );
+                            preEmployment.setEmploymentRegister ( "未发送" );
                             preEmployment.setDataSource ( "手工录入" );
-                            preEmployment.setHireDate ( new Date (  ) );
+                            preEmployment.setHireDate ( new Date () );
                             preEmployment.setCompanyId ( userSession.getCompanyId () );
                             preEmployment.setOperatorId ( userSession.getArchiveId () );
                             Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
@@ -342,12 +346,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                             }
+                        }
                             if (preemploymentId != null && preemploymentId != 0) {
                                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
                             } else {
                                 preEmploymentDao.insert ( preEmployment );
                             }
-                        }
+
                     }
                 }
                 if(preemploymentId!=null && preemploymentId!=0) {
