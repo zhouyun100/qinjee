@@ -115,7 +115,7 @@ public class ImportAndExportStaffController extends BaseController {
     /**
      * 导入文件
      */
-    @RequestMapping(value = "/importFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/importFile", method = RequestMethod.GET)
     @ApiOperation(value = "导入文件", notes = "hkt")
 
     public ResponseResult ImportFile(String title,  String funcCode) {

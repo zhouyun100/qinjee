@@ -4,7 +4,6 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
@@ -50,8 +49,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private OrganizationDao organizationDao;
-    @Autowired
-    private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
@@ -362,9 +359,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         for (Integer integer : list) {
             QuerySchemeList querySchemeList = new QuerySchemeList ();
             //通过查询方案id找到显示字段
-            List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( id );
+            List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( integer );
             //通过查询方案id找到排序字段
-            List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( id );
+            List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( integer );
             querySchemeList.setQuerySchemeFieldList ( querySchemeFields );
             querySchemeList.setQuerySchemeSortList ( querySchemeSorts );
             lists.add ( querySchemeList );

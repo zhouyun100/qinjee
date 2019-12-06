@@ -16,6 +16,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
+import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
@@ -231,8 +232,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveFieldAndValue(List < Map < Integer, String > > list, UserSession userSession, String funcCode) throws Exception {
-        List < Integer > idList = new ArrayList <> ( list.get ( 0 ).keySet () );
+    public void saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws Exception {
+        List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
         Set < Integer > isSystemDefineSet = new HashSet <> ();
         List < Integer > isSystemDefineList = new ArrayList <> ();
         Set < Integer > notSystemDefineSet = new HashSet <> ();
@@ -257,11 +258,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         Map < Integer, List < Integer > > map = searchFieldIdByTableId ( isSystemDefineSet, isSystemDefineList );
         Map < Integer, List < Integer > > notMap = searchFieldIdByTableId ( notSystemDefineSet, notSystemDefineList );
-        if ("ARC".equals ( funcCode )) {
+        if ("ARC".equals ( insertDataVo.getFuncCode () )) {
             //找到确认唯一性的字段id，进行判断新增或是更新操作
            //进行对象组装
 
-            for (Map < Integer, String > integerStringMap : list) {
+            for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                 UserArchive userArchive = new UserArchive ();
                 Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
                 if(checkMap ( map )) {
@@ -314,8 +315,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             }
         }
 
-        } else if("PRE".equals ( funcCode )){
-            for (Map < Integer, String > integerStringMap : list) {
+        } else if("PRE".equals ( insertDataVo.getFuncCode () )){
+            for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                 PreEmployment preEmployment = new PreEmployment ();
                 Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
                 for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {

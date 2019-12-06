@@ -16,6 +16,7 @@ import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
+import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -174,7 +175,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //还原成list
         List < Map < Integer, String > > list = ( List < Map < Integer, String > > ) JSONArray.parse ( s );
-        staffCommonService.saveFieldAndValue ( list,userSession,funcCode );
+        InsertDataVo insertDataVo=new InsertDataVo ();
+        insertDataVo.setFuncCode ( funcCode );
+        insertDataVo.setList ( list );
+        staffCommonService.saveFieldAndValue ( userSession,insertDataVo );
     }
 
     /**
