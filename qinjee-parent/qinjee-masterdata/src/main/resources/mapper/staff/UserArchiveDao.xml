@@ -871,17 +871,14 @@
     select arch.user_name,arch.employee_number,orga.org_name,post.post_name,arch.hire_date,arch.probation_due_date,
     arch.supervisor_id,arch.phone,arch.attrition_type
     from t_user_archive arc
-    right join t_user_org_auth auth on auth.archive_id= arc.archive_id
-    right join t_organization org on org.org_id=auth.org_id
-    right join t_user_archive arch on arch.org_id = org.org_id
-    right join t_organization orga on orga.org_id=arch.org_id
-    right join t_post post on post.post_id= arch.post_id
+    left join t_user_org_auth auth on auth.archive_id= arc.archive_id
+    left join t_organization org on org.org_id=auth.org_id
+    left join t_user_archive arch on arch.org_id = org.org_id and org.org_id=#{orgId}  and org.company_id=#{companyId}
+    left join t_organization orga on orga.org_id=arch.org_id
+    left join t_post post on post.post_id= arch.post_id
     where auth.archive_id=#{archiveId}
     and arc.is_delete=0 and arch.is_delete=0
     and post.is_delete=0 and org.is_enable=1 and orga.is_enable=1
-    and org.company_id=#{companyId}
-    and org.org_id=#{orgId}
-
   </select>
   <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
     SELECT

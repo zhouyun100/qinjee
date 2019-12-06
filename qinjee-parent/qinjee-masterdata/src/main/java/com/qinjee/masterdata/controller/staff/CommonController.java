@@ -209,9 +209,9 @@ public class CommonController extends BaseController {
     /**
      * 根据表ID查询自定义组字段
      */
-    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableId", method = RequestMethod.POST)
+    @RequestMapping(value = "/searchCustomTableGroupFieldListByTableId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID查询自定义组字段", notes = "hkt")
-    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableId(@RequestBody Integer tableId) {
+    public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableId( Integer tableId) {
         Boolean b = checkParam(tableId);
         if (b) {
             try {
@@ -423,7 +423,7 @@ public class CommonController extends BaseController {
 //    @ApiImplicitParam(name = "JsonObject", value = "用户所填写的信息与操作人信息,处理之后存入自定义表数据", paramType = "form", required = true)
 
     /**
-     * 将传过来的字段id与值进行入库操作zhang
+     * 将传过来的字段id与值进行入库操作
      */
     @RequestMapping(value = "/SaveFieldAndValue", method = RequestMethod.POST)
     @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
