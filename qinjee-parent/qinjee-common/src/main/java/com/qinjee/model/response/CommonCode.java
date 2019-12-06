@@ -23,7 +23,7 @@ public enum CommonCode implements ResultCode{
     ORGANIZATION_OUT_OF_RANGE(false,10302,"本级机构长度超出范围,添加失败！"),
     POSITION_GROUP_NAME_REPEAT(false,10303,"职位族名重复,添加失败！"),
     POSITION_NAME_REPEAT(false,10304,"职位名重复,添加失败！"),
-    ORG_EXIST_USER(false,10305, "该机构下存在人员信息，不允许删除!"),
+    EXIST_USER(false,10305, "该机构/岗位下存在人员信息，不允许删除!"),
     FILE_PARSING_EXCEPTION(false,10306, "导入文件解析异常,导入失败!"),
     FILE_FORMAT_ERROR(false,10307, "导入文件格式错误,导入失败!"),
     POST_DOES_NOT_EXIST(false,10308, "此岗位不存在,导入失败!"),
