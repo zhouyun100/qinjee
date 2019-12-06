@@ -299,6 +299,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             customGroupList = new ArrayList<>();
             CustomGroupVO groupVO = new CustomGroupVO();
             groupVO.setCustomFieldVOList(customFieldList);
+            customGroupList.add(groupVO);
             customTable.setCustomGroupVOList(customGroupList);
         }else{
             for(CustomGroupVO groupVO : customGroupList){
@@ -340,6 +341,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         if(customTable != null && !CollectionUtils.isEmpty(mapValue)){
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
 
+            SysDict sysDict = null;
             if(!CollectionUtils.isEmpty(groupList)){
                 for(CustomGroupVO groupVO : groupList){
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
@@ -347,7 +349,15 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     if(!CollectionUtils.isEmpty(fieldList)){
                         for(CustomFieldVO fieldVO : fieldList){
                             if(fieldVO.getFieldId() != null){
-                                fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
+                                if(StringUtils.isNoneBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNoneBlank(fieldVO.getCode())){
+
+                                    sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
+                                    if(sysDict != null){
+                                        fieldVO.setDefaultValue(sysDict.getDictValue());
+                                    }
+                                }else{
+                                    fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
+                                }
                             }
                         }
                     }
