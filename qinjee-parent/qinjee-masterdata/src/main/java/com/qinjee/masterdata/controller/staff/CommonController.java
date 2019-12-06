@@ -454,8 +454,7 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
             try {
-                String tableCode="t_pre_employment";
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession ().getCompanyId (), tableCode );
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId);
                 Map<Integer,String> map=staffCommonService.selectValue (tableId, businessId );
                 customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map );
                 return new ResponseResult <> (customTableVO, CommonCode.SUCCESS);

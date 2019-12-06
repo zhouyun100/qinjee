@@ -341,7 +341,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         if(customTable != null && !CollectionUtils.isEmpty(mapValue)){
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
 
-            SysDict sysDict = null;
+            SysDict sysDict;
             if(!CollectionUtils.isEmpty(groupList)){
                 for(CustomGroupVO groupVO : groupList){
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
