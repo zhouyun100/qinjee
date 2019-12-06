@@ -948,7 +948,8 @@
   <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.entity.UserArchive">
     select  <include refid="Base_Column_List"/>
     from t_user_archive
-    where user_name=#{name}
+    where user_name LIKE
+    CONCAT(CONCAT('%', #{name}), '%')
     and is_delete=0
   </select>
 </mapper>
