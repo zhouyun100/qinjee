@@ -60,12 +60,13 @@ public interface ArchiveAuthService {
     List<OrganizationArchiveVO> getOrganizationArchiveTreeByArchiveId(Integer companyId,Integer archiveId);
 
     /**
-     * 查询角色机构权限树
+     * 查询操作人机构权限树
+     * @param operatorId
      * @param roleId
      * @param archiveId
      * @return
      */
-    List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer archiveId);
+    List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId, Integer archiveId);
 
     /**
      * 修改人员机构权限

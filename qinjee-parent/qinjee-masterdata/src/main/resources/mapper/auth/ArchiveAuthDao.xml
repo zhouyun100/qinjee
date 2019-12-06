@@ -178,11 +178,30 @@
     from (
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
         t_organization.org_parent_id,t_organization.org_full_name,t_organization.sort_id
-        from t_role_org_auth,t_organization
-        where t_role_org_auth.role_id = #{roleId,jdbcType=INTEGER}
-        and t_role_org_auth.org_id = t_organization.org_id
-        and t_role_org_auth.is_delete = 0
-        and t_organization.is_enable = 1
+        from t_organization,(
+            select roa.org_id from t_role_org_auth roa
+            where roa.role_id in (
+            select role_id from t_user_role ur
+            WHERE ur.archive_id = #{operatorId,jdbcType=INTEGER}
+            and (ur.is_trusteeship = 0
+            or (ur.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= ur.trusteeship_begin_time
+            and ur.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+            ))
+            and ur.is_delete = 0
+            )
+            and roa.is_delete = 0
+            UNION
+            select uoa.org_id from t_user_org_auth uoa
+            where uoa.archive_id = #{operatorId,jdbcType=INTEGER}
+            and (uoa.is_trusteeship = 0
+            or (uoa.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= uoa.trusteeship_begin_time
+            and uoa.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+            ))
+            and uoa.is_delete = 0
+        ) v1
+        WHERE t_organization.org_id = v1.org_id
     ) v
     LEFT JOIN (
         select t_organization.org_id
@@ -198,7 +217,7 @@
         and t_user_org_auth.is_delete = 0
         and t_organization.is_enable = 1
     ) t ON v.org_id = t.org_id
-    ORDER BY sort_id;
+    ORDER BY sort_id
   </select>
 
   <!--根据档案ID查询已有的机构列表 -->

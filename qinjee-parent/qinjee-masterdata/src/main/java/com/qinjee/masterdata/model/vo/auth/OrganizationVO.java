@@ -28,7 +28,6 @@ import java.util.List;
 @ApiModel(description = "机构树")
 @Data
 @NoArgsConstructor
-@JsonInclude
 public class OrganizationVO implements Serializable {
 
     /**
