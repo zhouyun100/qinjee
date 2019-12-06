@@ -232,8 +232,15 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         Short isSystemDefine = customFieldVO.getIsSystemDefine ();
         String fieldCode = customFieldVO.getFieldCode ();
         if(textType !=null && isSystemDefine==0 ) {
-            if (TYPEDATE.equals(textType) || TYPENUMBER.equals(textType)) {
+            if (  TYPENUMBER.equals(textType)) {
                 condition = "t.t"+fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+            }
+            if(TYPEDATE.equals(TYPEDATE)){
+                if("<".equals(filter.getOperateSymbol())){
+                    condition = "t.t"+fieldId + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
+                }else {
+                    condition = "t.t"+fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                }
             }
             if (TYPETEXT.equals(textType)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
@@ -252,8 +259,15 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
         }
         if(textType !=null && isSystemDefine==1 ) {
-            if (TYPEDATE.equals(textType) || TYPENUMBER.equals(textType)) {
+            if ( TYPENUMBER.equals(textType)) {
                 condition = fieldCode + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+            }
+            if(TYPEDATE.equals(TYPEDATE)){
+                if("<".equals(filter.getOperateSymbol())){
+                    condition = "t.t"+fieldCode + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
+                }else {
+                    condition = "t.t"+fieldCode + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                }
             }
             if (TYPETEXT.equals(textType)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {

@@ -284,13 +284,18 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession) {
         List < QueryScheme > list = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         for (QueryScheme queryScheme : list) {
             if(querySchmeId.equals ( queryScheme.getQuerySchemeId () )){
                 queryScheme.setIsDefault ( 1 );
+                querySchemeDao.updateByPrimaryKeySelective(queryScheme);
             }else {
-                queryScheme.setIsDefault ( 0 );
+                if(queryScheme.getIsDelete()==1) {
+                    queryScheme.setIsDefault(0);
+                    querySchemeDao.updateByPrimaryKeySelective(queryScheme);
+                }
             }
         }
     }
