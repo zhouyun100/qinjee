@@ -49,7 +49,7 @@ public class RoleSearchController extends BaseController{
 
     @GetMapping("/getOrganizationTree")
     @ApiOperation(value = "根据是否封存查询当前登录用户下所有的机构树",notes = "根据是否封存查询当前登录用户下所有的机构树")
-    public ResponseResult<PageResult<OrganizationVO>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
+    public ResponseResult<List<OrganizationVO>> getOrganizationTree(@RequestParam("isEnable") @ApiParam(value = "是否含有封存 0不含有、1含有",example = "0") Short isEnable){
         try{
             userSession = getUserSession();
             if(userSession == null){
@@ -58,10 +58,10 @@ public class RoleSearchController extends BaseController{
                 return responseResult;
             }
             //还需要查托管的机构
-            PageResult<OrganizationVO> pageResult = organizationService.getOrganizationPageTree(userSession,isEnable);
+            List<OrganizationVO> organizationList = organizationService.getAllOrganizationTree(userSession.getArchiveId(),isEnable);
             logger.info("getOrganizationTree success！isEnable={},archiveId={}",isEnable,userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
-            responseResult.setResult(pageResult);
+            responseResult.setResult(organizationList);
         }catch (Exception e){
             logger.info("getOrganizationTree exception!isEnable={},exception={}", isEnable,e.toString());
             e.printStackTrace();

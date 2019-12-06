@@ -241,7 +241,7 @@ public class ArchiveAuthController extends BaseController {
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            List<OrganizationVO> organizationList = archiveAuthService.searchOrgAuthTree(roleId, archiveId);
+            List<OrganizationVO> organizationList = archiveAuthService.searchOrgAuthTree(userSession.getArchiveId(), roleId, archiveId);
             if(CollectionUtils.isEmpty(organizationList)){
                 logger.info("searchOrgAuthTreeByArchiveIdAndRoleId fail！roleId={},archiveId={},organizationList={}", roleId, archiveId, organizationList);
                 responseResult = ResponseResult.FAIL();

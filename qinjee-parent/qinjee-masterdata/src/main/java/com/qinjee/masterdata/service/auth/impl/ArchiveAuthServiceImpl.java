@@ -156,7 +156,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     }
 
     @Override
-    public List<OrganizationVO> searchOrgAuthTree(Integer roleId, Integer archiveId) {
+    public List<OrganizationVO> searchOrgAuthTree(Integer operatorId, Integer roleId, Integer archiveId) {
         if(roleId == null || archiveId == null){
             return null;
         }
@@ -166,6 +166,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
         requestRole.setRoleId(roleId);
         requestRole.setArchiveId(archiveId);
         requestRole.setCurrentDateTime(new Date());
+        requestRole.setOperatorId(operatorId);
         List<OrganizationVO> organizationList = archiveAuthDao.searchOrgAuthTree(requestRole);
 
         /**
