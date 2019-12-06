@@ -23,6 +23,7 @@ import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -258,7 +259,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         Map < Integer, List < Integer > > map = searchFieldIdByTableId ( isSystemDefineSet, isSystemDefineList );
         Map < Integer, List < Integer > > notMap = searchFieldIdByTableId ( notSystemDefineSet, notSystemDefineList );
-        if ("ARC".equals ( insertDataVo.getFuncCode () )) {
+        if ("ARC".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
             //找到确认唯一性的字段id，进行判断新增或是更新操作
            //进行对象组装
 
@@ -315,7 +316,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             }
         }
 
-        } else if("PRE".equals ( insertDataVo.getFuncCode () )){
+        } else if("PRE".equalsIgnoreCase ( insertDataVo.getFuncCode () )){
             for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                 PreEmployment preEmployment = new PreEmployment ();
                 Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
@@ -497,9 +498,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         if(String.valueOf (stringStringMap.get ( "is_system_define")).equals ( "0" ) ){
                 String s = customArchiveTableDataDao.selectBigDataBybusinessIdAndTableId ( businessId, tableId );
-                String[] split = s.split ( "@@" );
-                for (int i = 1; i < split.length; i = i + 2) {
-                    map.put ( Integer.parseInt (split[i]), split[i + 1].split ( ":" )[1] );
+                if(StringUtils.isNotBlank ( s )) {
+                    String[] split = s.split ( "@@" );
+                    for (int i = 1; i < split.length; i = i + 2) {
+                        map.put ( Integer.parseInt ( split[i] ), split[i + 1].split ( ":" )[1] );
+                    }
                 }
         }
         if(String.valueOf (stringStringMap.get ( "is_system_define")).equals ( "1" )&& stringStringMap.get ( "func_code" ).equals ( "PRE" )){

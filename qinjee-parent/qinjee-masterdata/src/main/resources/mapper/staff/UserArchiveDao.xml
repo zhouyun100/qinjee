@@ -60,6 +60,7 @@
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisor_user_name" />
     <result column="employment_type" jdbcType="VARCHAR" property="employment_type" />
   </resultMap>
+
   <sql id="Base_Column_List">
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
     user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
@@ -868,11 +869,15 @@
   </select>
   <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     SELECT
-    <include refid="Base_Column_List"/>
-    orga.org_name as org_name,
-    post.post_name as post_name,
-    arch.user_name as supervisor_user_name
-
+    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+    arc.user_name, arc.id_type, arc.id_number, arc.gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
+    arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
+    arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
+    arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+    orga.org_name ,
+    post.post_name ,
+    arch.user_name
     FROM
     t_user_archive arc
     LEFT JOIN t_organization orga ON orga.org_id = arc.org_id

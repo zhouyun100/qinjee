@@ -506,8 +506,8 @@ public class CommonController extends BaseController {
     /**
      * 修改自定义字段表中的数据
      */
-    @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.POST)
-    @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
+//    @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.POST)
+//    @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
     public ResponseResult updateCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableDataVo customArchiveTableDataVo) {
         Boolean b = checkParam(customArchiveTableDataVo,getUserSession ());
@@ -526,8 +526,8 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义表内容
      */
-    @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.GET)
-    @ApiOperation(value = "展示自定义表数据内容,返回自定义表数据", notes = "hkt")
+//    @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.GET)
+//    @ApiOperation(value = "展示自定义表数据内容,返回自定义表数据", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),

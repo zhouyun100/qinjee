@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
 @Data
 @JsonInclude
 public class UserArchiveVo implements Serializable {
@@ -275,7 +277,12 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("上级领导姓名")
     private Integer supervisorUserName;
+    /**
+     * 动态表头
+     */
+    private List <ArcHead> heads;
 
     private static final long serialVersionUID = 1L;
+
 
 }

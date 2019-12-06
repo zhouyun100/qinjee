@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -100,7 +99,7 @@ public class PreEmployment implements Serializable {
         /**
          * 身高
          */
-        private BigDecimal height;
+        private Integer height;
 
         /**
          * 血型

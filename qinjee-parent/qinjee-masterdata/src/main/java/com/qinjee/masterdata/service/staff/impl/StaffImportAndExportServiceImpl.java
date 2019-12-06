@@ -344,8 +344,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             Map < String, Object > map2 = new LinkedHashMap <> ();
             String[] split = big_data.split ( "@@" );
             for (int i = 1; i < split.length; i = i + 2) {
-                map2.put ( customTableFieldDao.selectFieldCodeByIdAndCompanyIdAndFunccode(Integer.parseInt(split[i].split ( ";" )[0]),
-                        userSession.getCompanyId(),funcCode), split[i + 1].split ( ":" )[1] );
+                map2.put ( customTableFieldDao.selectFieldById (Integer.parseInt(split[i].split ( ";" )[0]), userSession.getCompanyId(),funcCode).getCode (), split[i + 1].split ( ":" )[1] );
             }
             map.put ( integerMapEntry.getKey (), map2 );
         }
@@ -404,8 +403,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     private List < Map < Integer, String > > getMaps(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
-
-        //
         List < Map < Integer, String > > list = new ArrayList <> ();
         for (Map < String, String > map : mapList) {
             Map < Integer, String > stringMap = new HashMap <> ();

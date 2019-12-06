@@ -122,7 +122,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
                 standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
                 standingBookFilter.setOperatorId(userSession.getArchiveId());
-                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
+                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter,userSession.getCompanyId (),"ARC"));
                 standingBookFilterDao.insertSelective(standingBookFilter);
             }
         }else {
@@ -137,7 +137,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
                 standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
                 standingBookFilter.setOperatorId(userSession.getArchiveId());
-                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter));
+                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter,userSession.getCompanyId (),"ARC"));
                 if(standingBookFilter.getFilterId()==null||standingBookFilter.getFilterId()==0){
                     standingBookFilterDao.insertSelective(standingBookFilter);
                 }
@@ -223,11 +223,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
      * 字段类型分四种：
      * 日期 DATE，数字 NUMBER，代码 CODE，文本 TEXT
      */
-    private String getWhereSql(StandingBookFilter filter){
+    private String getWhereSql(StandingBookFilter filter,Integer companyId,String funcCode){
         Integer fieldId = filter.getFieldId();
         String condition=null;
         //根据id获得字段类型
-        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldById (fieldId);
+        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldById (fieldId,companyId,funcCode);
         String textType = customFieldVO.getTextType ();
         Short isSystemDefine = customFieldVO.getIsSystemDefine ();
         String fieldCode = customFieldVO.getFieldCode ();

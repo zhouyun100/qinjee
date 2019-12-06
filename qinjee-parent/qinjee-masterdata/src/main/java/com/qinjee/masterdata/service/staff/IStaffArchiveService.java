@@ -56,10 +56,10 @@ public interface IStaffArchiveService {
 
     /**
      * 展示排序方案的显示字段与排序字段
-     * @param id
+     * @param userSession
      * @return
      */
-    List<QuerySchemeList> selectQueryScheme(Integer id);
+    List<QuerySchemeList> selectQueryScheme(UserSession userSession);
 
 
     void saveQueryScheme(QueryArcVo queryArcVo);
@@ -164,4 +164,6 @@ public interface IStaffArchiveService {
     UserArchive selectArchiveSingle(Integer id);
 
     List<UserArchive> selectUserArchiveByName(String name);
+
+    void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession);
 }

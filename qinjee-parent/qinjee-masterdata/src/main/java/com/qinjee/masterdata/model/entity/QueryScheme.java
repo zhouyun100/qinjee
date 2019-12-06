@@ -35,6 +35,11 @@ public class QueryScheme implements Serializable {
     private Integer sort;
 
     /**
+     * 企业id
+     */
+    private Integer isDefault;
+
+    /**
      * 创建时间
      */
     private Date createTime;

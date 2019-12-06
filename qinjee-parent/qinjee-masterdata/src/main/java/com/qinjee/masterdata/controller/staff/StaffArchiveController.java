@@ -380,6 +380,26 @@ public class StaffArchiveController extends BaseController {
         return  failResponseResult("参数错误");
     }
 
+    /**
+     *
+     设置默认查询方案
+     */
+
+    @RequestMapping(value = "/setDefaultQuerySchme", method = RequestMethod.GET)
+    @ApiOperation(value = "保存查询方案", notes = "hkt")
+    public ResponseResult setDefaultQuerySchme(Integer querySchmeId){
+        Boolean b = checkParam(querySchmeId,getUserSession ());
+        if(b){
+            try {
+                staffArchiveService.setDefaultQuerySchme(querySchmeId,getUserSession ());
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("设置查询方案失败");
+            }
+        }
+        return  failResponseResult("参数为空");
+    }
 
     /**
      * 删除查询方案
@@ -409,11 +429,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
-    public ResponseResult<List<QuerySchemeList>> selectUserArchivePostRelation(Integer id) {
-        Boolean b = checkParam(id);
+    public ResponseResult<List<QuerySchemeList>> selectUserArchivePostRelation() {
+        Boolean b = checkParam(getUserSession ());
         if(b){
             try {
-                List<QuerySchemeList> lists = staffArchiveService.selectQueryScheme(id);
+                List<QuerySchemeList> lists = staffArchiveService.selectQueryScheme(getUserSession ());
                 if(null!=lists){
                     return new ResponseResult<>(lists,CommonCode.SUCCESS);
                 }

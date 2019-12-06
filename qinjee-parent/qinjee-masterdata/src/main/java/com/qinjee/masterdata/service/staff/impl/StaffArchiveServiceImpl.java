@@ -102,9 +102,59 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public PageResult < UserArchiveVo > selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId () );
+        List<ArcHead> headList=new ArrayList <> (  );
+        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId( userSession.getArchiveId () );
+        //组装默认显示方案表头
+        if(CollectionUtils.isEmpty ( list1 ) ){
+            headList=setDefaultHead ( userSession, headList,0 );
+        }
+        //非默认显示方案表头
+        for (QueryScheme queryScheme : list1) {
+            if(queryScheme.getIsDefault ().equals ( 0 )){
+                continue;
+            }else{
+                //找到默认的显示方案然后设值
+                headList=setDefaultHead ( userSession, headList,queryScheme.getQuerySchemeId () );
+            }
+        }
+        for (UserArchiveVo userArchiveVo : list) {
+           userArchiveVo.setHeads ( headList );
+        }
         return new PageResult <> ( list );
-
     }
+
+    private List<ArcHead> setDefaultHead(UserSession userSession, List < ArcHead > headList,Integer querySchemaId) {
+        List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
+        for (QuerySchemeField querySchemeField : querySchemeFieldList) {
+            ArcHead arcHead=new ArcHead ();
+            arcHead.setIndex ( querySchemeField.getSort () );
+
+             CustomFieldVO customFieldVO=customTableFieldDao.selectFieldById (querySchemeField.getFieldId (),userSession.getCompanyId (),
+                     "Arc");
+             arcHead.setName ( customFieldVO.getFieldName () );
+            arcHead.setKey (customFieldVO.getFieldCode ());
+            if("org_id".equals ( customFieldVO.getCode () )){
+                arcHead.setKey ( "org_name" );
+                continue;
+            }
+            if("post_id".equals ( customFieldVO.getCode () )){
+                arcHead.setKey ( "post_name" );
+                continue;
+            }
+            if("bussiness_unit_id".equals ( customFieldVO.getCode () )){
+                arcHead.setKey ( "business_unit_user_name" );
+                continue;
+            }
+            if("suprvior_id".equals ( customFieldVO.getCode () )){
+                arcHead.setKey ( "supvior_user_name" );
+                continue;
+            }
+            arcHead.setIsShow (1);
+            headList.add ( arcHead );
+        }
+        return headList;
+    }
+
     public PageResult < UserArchiveVo > selectArchivebatchAndOrgList(UserSession userSession, List<Integer> orgList, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgListAndAuth ( orgList, userSession.getArchiveId (), userSession.getCompanyId () );
@@ -233,6 +283,18 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return userArchiveDao.selectUserArchiveByName ( name );
     }
 
+    @Override
+    public void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession) {
+        List < QueryScheme > list = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
+        for (QueryScheme queryScheme : list) {
+            if(querySchmeId.equals ( queryScheme.getQuerySchemeId () )){
+                queryScheme.setIsDefault ( 1 );
+            }else {
+                queryScheme.setIsDefault ( 0 );
+            }
+        }
+    }
+
     private Map < String, Object > getParamMap(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
         ArchiveCareerTrack archiveCareerTrack = new ArchiveCareerTrack ();
         BeanUtils.copyProperties ( archiveCareerTrackVo, archiveCareerTrack );
@@ -353,9 +415,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List < QuerySchemeList > selectQueryScheme(Integer id) {
+    public List < QuerySchemeList > selectQueryScheme(UserSession userSession) {
         List < QuerySchemeList > lists = new ArrayList <> ();
-        List < Integer > list = querySchemeDao.selectIdByArchiveId ( id );
+        List < Integer > list = querySchemeDao.selectIdByArchiveId (userSession.getArchiveId () );
         for (Integer integer : list) {
             QuerySchemeList querySchemeList = new QuerySchemeList ();
             //通过查询方案id找到显示字段
