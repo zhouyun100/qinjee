@@ -11,10 +11,9 @@
     <result column="org_id" jdbcType="INTEGER" property="orgId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="orgName" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
     <result column="businessUnitName" jdbcType="VARCHAR" property="businessUnitName" />
-
-    <result column="postName" jdbcType="VARCHAR" property="postName" />
+    <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
     <result column="gender" jdbcType="VARCHAR" property="gender" />
@@ -46,7 +45,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
-    <result column="supervisorUserName" jdbcType="VARCHAR" property="supervisorUserName" />
+    <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
@@ -867,18 +866,43 @@
     where archive_status = #{string}
     and arc.is_delete=0
   </select>
-  <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
-    select arch.user_name,arch.employee_number,orga.org_name,post.post_name,arch.hire_date,arch.probation_due_date,
-    arch.supervisor_id,arch.phone,arch.attrition_type
-    from t_user_archive arc
-    left join t_user_org_auth auth on auth.archive_id= arc.archive_id
-    left join t_organization org on org.org_id=auth.org_id
-    left join t_user_archive arch on arch.org_id = org.org_id and org.org_id=#{orgId}  and org.company_id=#{companyId}
-    left join t_organization orga on orga.org_id=arch.org_id
-    left join t_post post on post.post_id= arch.post_id
-    where auth.archive_id=#{archiveId}
-    and arc.is_delete=0 and arch.is_delete=0
-    and post.is_delete=0 and org.is_enable=1 and orga.is_enable=1
+  <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    orga.org_name as org_name,
+    post.post_name as post_name,
+    arch.user_name as supervisor_user_name
+
+    FROM
+    t_user_archive arc
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id
+    LEFT JOIN t_post post ON post.post_id = arc.post_id
+    left join t_user_archive arch on arc.supervisor_id=arch.archive_id
+    WHERE arc.is_delete = 0
+    AND arch.is_delete = 0
+    AND post.is_delete = 0
+    AND orga.is_enable = 1
+    and orga.company_id=#{companyId}
+    and arc.org_id in(
+    -- 查询人员机构权限
+    select org_id from t_user_org_auth oa where oa.archive_id = 1-- 操作人档案ID
+    and (oa.is_trusteeship = 0
+    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
+    )
+    and oa.is_delete = 0
+
+    -- 查询人员角色机构权限
+    UNION
+    select org_id from t_role_org_auth roa,t_user_role ur
+    where roa.role_id = ur.role_id
+    and ur.archive_id = #{archiveId} -- 操作人档案ID
+    and (ur.is_trusteeship = 0
+    or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time)
+    )
+    and roa.is_delete = 0
+    and ur.is_delete = 0
+    and org_id=#{orgId}
+    )
   </select>
   <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
     SELECT

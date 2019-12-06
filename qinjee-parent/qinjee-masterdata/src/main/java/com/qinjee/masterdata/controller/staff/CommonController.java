@@ -5,6 +5,7 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
+import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
@@ -428,11 +429,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/SaveFieldAndValue", method = RequestMethod.POST)
     @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
 
-    public ResponseResult saveFieldAndValue(@RequestBody List < Map < Integer, String > > list, String funcCode) {
-        Boolean b = checkParam(list,getUserSession (),funcCode);
+    public ResponseResult saveFieldAndValue(@RequestBody InsertDataVo insertDataVo) {
+        Boolean b = checkParam(insertDataVo,getUserSession ());
         if(b) {
             try {
-                staffCommonService.saveFieldAndValue (list,getUserSession (),funcCode );
+                staffCommonService.saveFieldAndValue (getUserSession (),insertDataVo );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -446,7 +447,7 @@ public class CommonController extends BaseController {
     /**
      * 在进行修改操作时，根据businessId与对应的表id找到值，进行回显
      */
-    @RequestMapping(value = "/selectValue", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectValue", method = RequestMethod.GET)
     @ApiOperation(value = "在进行修改操作时，根据businessId与对应的表id找到值，进行回显", notes = "hkt")
 
     public ResponseResult<Map<Integer,String>> selectValue(Integer tableId,Integer businessId) {
@@ -465,7 +466,7 @@ public class CommonController extends BaseController {
     /**
      * 删除预入职(根据业务id与funccode进行逻辑删除)
      */
-    @RequestMapping(value = "/deletePreValue", method = RequestMethod.POST)
+    @RequestMapping(value = "/deletePreValue", method = RequestMethod.GET)
     @ApiOperation(value = "删除预入职(根据业务id与funccode进行逻辑删除)", notes = "hkt")
 
     public ResponseResult deletePreValue(Integer id) {
@@ -483,7 +484,7 @@ public class CommonController extends BaseController {
     /**
      * 删除档案(根据业务id与funccode进行逻辑删除)
      */
-    @RequestMapping(value = "/deleteArcValue", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteArcValue", method = RequestMethod.GET)
     @ApiOperation(value = "删除档案(根据业务id与funccode进行逻辑删除)", notes = "hkt")
 
     public ResponseResult deleteArcValue(Integer businessId) {
@@ -522,7 +523,7 @@ public class CommonController extends BaseController {
     /**
      * 展示自定义表内容
      */
-    @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectCustomArchiveTableData", method = RequestMethod.GET)
     @ApiOperation(value = "展示自定义表数据内容,返回自定义表数据", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -573,7 +574,7 @@ public class CommonController extends BaseController {
     /**
      * 根据档案显示对应权限下的单位
      */
-    @RequestMapping(value = "/getCompany", method = RequestMethod.POST)
+    @RequestMapping(value = "/getCompany", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案显示对应权限下的单位", notes = "hkt")
     public ResponseResult<Integer> getCompanyId() {
         Boolean b = checkParam(getUserSession());
@@ -592,7 +593,7 @@ public class CommonController extends BaseController {
     /**
      * 根据档案id显示对应权限下的子集部门
      */
-    @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.POST)
+    @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门与岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult< OrganzitionVo > getOrgIdByCompanyId(Integer companyId) {
@@ -615,7 +616,7 @@ public class CommonController extends BaseController {
     /**
      * 显示部门下的岗位
      */
-    @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.POST)
+    @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.GET)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
     public ResponseResult<String> getPostByOrgId(Integer orgId) {

@@ -460,6 +460,9 @@
             AND auth.is_delete = 0
             AND arc.is_delete = 0
             AND arc.archive_id = #{archiveId}
+            and (auth.is_trusteeship = 0
+            or (auth.trusteeship_begin_time <![CDATA[<=]]> CURDATE()) and CURDATE() > auth.trusteeship_end_time
+            )
             UNION
             SELECT
                 orga.org_id,orga.org_name,orga.org_parent_id
@@ -470,6 +473,9 @@
             LEFT JOIN t_user_archive arch ON arch.archive_id = role.archive_id
             WHERE
                 orga.is_enable = 1
+            and (role.is_trusteeship = 0
+            or (role.trusteeship_begin_time <![CDATA[<=]]> CURDATE() and CURDATE() > role.trusteeship_end_time)
+            )
             AND orga.company_id=#{companyId}
             AND roleauth.is_delete = 0
             AND role.is_delete = 0

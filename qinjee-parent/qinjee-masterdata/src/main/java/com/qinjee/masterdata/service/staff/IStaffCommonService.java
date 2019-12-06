@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
+import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -163,7 +164,7 @@ public interface IStaffCommonService {
      */
     List<String> selectFieldValueById(Integer customArchiveFieldId);
 
-    void saveFieldAndValue(List< Map< Integer, String>> list, UserSession userSession, String funcCode) throws Exception;
+    void saveFieldAndValue (UserSession userSession, InsertDataVo insertDataVo) throws Exception;
 
     /**
      *
