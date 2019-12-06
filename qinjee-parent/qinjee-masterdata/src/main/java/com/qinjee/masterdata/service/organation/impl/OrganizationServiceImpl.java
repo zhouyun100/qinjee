@@ -652,7 +652,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<UserArchiveVo> userArchiveVos = userArchiveDao.selectByOrgListAndAuth(idList, userSession.getArchiveId(), userSession.getCompanyId());
         if (!CollectionUtils.isEmpty(userArchiveVos)) {
             isExsit = true;
-            ExceptionCast.cast(CommonCode.ORG_EXIST_USER);
+            ExceptionCast.cast(CommonCode.EXIST_USER);
         }
         //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
         if (!isExsit) {

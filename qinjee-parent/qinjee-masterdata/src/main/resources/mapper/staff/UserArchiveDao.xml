@@ -949,5 +949,14 @@
     CONCAT(CONCAT('%', #{name}), '%')
     and is_delete=0
   </select>
+  <select id="listUserArchiveByPostIds" resultMap="BaseResultMap">
+    select  archive_id
+    from t_user_archive
+    where archive_status ='SERVICE' and is_delete =0 and post_id in
+    <foreach collection="postIds" item="item" close=")" open="(" separator=",">
+
+      #{item}
+    </foreach>
+  </select>
 </mapper>
 

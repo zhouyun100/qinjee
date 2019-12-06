@@ -111,4 +111,6 @@ public interface UserArchiveDao {
     List< UserArchive> selectUserArchiveByName(@Param("name") String name);
 
     List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
+
+    List<UserArchive> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
 }

@@ -204,7 +204,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(UserSession userSession, List<Integer> postIds) {
         //TODO 被删除的岗位下不允许有人员档案
-        //被引用过的岗位 不允许删除
+        List<UserArchive> userArchiveList=userArchiveDao.listUserArchiveByPostIds(postIds);
+        if (!CollectionUtils.isEmpty(userArchiveList)){
+            ExceptionCast.cast(CommonCode.EXIST_USER);
+        }
         if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
                 Post post = new Post();
