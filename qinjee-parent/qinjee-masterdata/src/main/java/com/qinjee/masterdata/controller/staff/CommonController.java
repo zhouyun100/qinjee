@@ -450,18 +450,21 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/selectValue", method = RequestMethod.GET)
     @ApiOperation(value = "在进行修改操作时，根据businessId与对应的表id找到值，进行回显", notes = "hkt")
 
-    public ResponseResult<Map<Integer,String>> selectValue(Integer tableId,Integer businessId) {
+    public ResponseResult<CustomTableVO> selectValue(Integer tableId,Integer businessId) {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
             try {
+                String tableCode="t_pre_employment";
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession ().getCompanyId (), tableCode );
                 Map<Integer,String> map=staffCommonService.selectValue (tableId, businessId );
-                return new ResponseResult <> (map, CommonCode.SUCCESS);
+                customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map );
+                return new ResponseResult <> (customTableVO, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
             }
         }
-        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+            return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
     /**
      * 删除预入职(根据业务id与funccode进行逻辑删除)
