@@ -12,10 +12,7 @@ import com.qinjee.masterdata.model.entity.StandingBookFilter;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
-import com.qinjee.masterdata.model.vo.staff.BlackListVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.utils.SqlUtil;
@@ -180,7 +177,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         //key是用来存是第几个筛选条件，value存档案id(可能多个)
         //没经过台账之前筛选的档案id
         //通过id查询档案
-        List<UserArchive> list=userArchiveDao.selectBeforeFilter(archiveType,orgId,type);
+        List< UserArchiveVo > list=userArchiveDao.selectBeforeFilter(archiveType,orgId,type);
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
         List<StandingBookFilter> filters = standingBookFilterDao.selectByStandingBookId(stangdingBookId);
         for (StandingBookFilter filter : filters) {

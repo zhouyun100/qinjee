@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.model.request.UserSession;
@@ -89,7 +88,7 @@ public interface IStaffArchiveService {
      * @param userSession
      * @return
      */
-    UserArchive selectArchive(UserSession userSession);
+    UserArchiveVo selectArchive(UserSession userSession);
 
     /**
      * 新增档案
@@ -161,9 +160,9 @@ public interface IStaffArchiveService {
      */
     void deleteCareerTrack(Integer id);
 
-    UserArchive selectArchiveSingle(Integer id);
+    UserArchiveVo selectArchiveSingle(Integer id);
 
-    List<UserArchive> selectUserArchiveByName(String name);
+    List<UserArchiveVo> selectUserArchiveByName(String name);
 
     void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession);
 }

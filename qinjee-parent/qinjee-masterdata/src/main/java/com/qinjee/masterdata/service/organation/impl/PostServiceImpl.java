@@ -14,6 +14,7 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
@@ -204,7 +205,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(UserSession userSession, List<Integer> postIds) {
         //TODO 被删除的岗位下不允许有人员档案
-        List<UserArchive> userArchiveList=userArchiveDao.listUserArchiveByPostIds(postIds);
+        List< UserArchiveVo > userArchiveList=userArchiveDao.listUserArchiveByPostIds(postIds);
         if (!CollectionUtils.isEmpty(userArchiveList)){
             ExceptionCast.cast(CommonCode.EXIST_USER);
         }

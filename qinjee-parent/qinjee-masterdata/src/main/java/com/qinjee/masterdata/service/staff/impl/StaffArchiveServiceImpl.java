@@ -77,9 +77,31 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchive selectArchive(UserSession userSession) {
-        return userArchiveDao.selectByPrimaryKey ( userSession.getArchiveId () );
+    public UserArchiveVo selectArchive(UserSession userSession) {
+        UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( userSession.getArchiveId () );
+        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
+        List < ArcHead > headList = getHeadList ( userSession, list1 );
+        userArchiveVo.setHeads ( headList );
+        return userArchiveVo;
 
+    }
+
+    private  List < ArcHead >  getHeadList(UserSession userSession, List < QueryScheme > list1) {
+        List < ArcHead > headList = new ArrayList <> ();
+        if (CollectionUtils.isEmpty ( list1 )) {
+            headList = setDefaultHead ( userSession, headList, 0 );
+        }
+        //非默认显示方案表头
+        for (QueryScheme queryScheme : list1) {
+            if (queryScheme.getIsDefault ().equals ( 1 )) {
+                //找到默认的显示方案然后设值
+                headList = setDefaultHead ( userSession, headList, queryScheme.getQuerySchemeId () );
+                break;
+            } else {
+                headList = setDefaultHead ( userSession, headList, 0 );
+            }
+        }
+        return headList;
     }
 
     @Override
@@ -102,65 +124,59 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public PageResult < UserArchiveVo > selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId () );
-        List<ArcHead> headList=new ArrayList <> (  );
-        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId( userSession.getArchiveId () );
+        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         //组装默认显示方案表头
-        if(CollectionUtils.isEmpty ( list1 ) ){
-            headList=setDefaultHead ( userSession, headList,0 );
-        }
-        //非默认显示方案表头
-        for (QueryScheme queryScheme : list1) {
-            if(queryScheme.getIsDefault ().equals ( 0 )){
-                continue;
-            }else{
-                //找到默认的显示方案然后设值
-                headList=setDefaultHead ( userSession, headList,queryScheme.getQuerySchemeId () );
-            }
-        }
+        List < ArcHead > headList = getHeadList ( userSession, list1 );
         for (UserArchiveVo userArchiveVo : list) {
-           userArchiveVo.setHeads ( headList );
+            userArchiveVo.setHeads ( headList );
+            userArchiveVo.setEmploymentType ( "在职" );
         }
         return new PageResult <> ( list );
     }
 
-    private List<ArcHead> setDefaultHead(UserSession userSession, List < ArcHead > headList,Integer querySchemaId) {
+    private List < ArcHead > setDefaultHead(UserSession userSession, List < ArcHead > headList, Integer querySchemaId) {
         List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
         for (QuerySchemeField querySchemeField : querySchemeFieldList) {
-            ArcHead arcHead=new ArcHead ();
+            ArcHead arcHead = new ArcHead ();
             arcHead.setIndex ( querySchemeField.getSort () );
 
-             CustomFieldVO customFieldVO=customTableFieldDao.selectFieldById (querySchemeField.getFieldId (),userSession.getCompanyId (),
-                     "Arc");
-             arcHead.setName ( customFieldVO.getFieldName () );
-            arcHead.setKey (customFieldVO.getFieldCode ());
-            if("org_id".equals ( customFieldVO.getCode () )){
-                arcHead.setKey ( "org_name" );
-                continue;
+            CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
+                    "ARC" );
+            arcHead.setName ( customFieldVO.getFieldName () );
+            arcHead.setKey ( customFieldVO.getFieldCode () );
+            if ("org_id".equals ( customFieldVO.getFieldCode () )) {
+                arcHead.setKey ( "orgName" );
             }
-            if("post_id".equals ( customFieldVO.getCode () )){
-                arcHead.setKey ( "post_name" );
-                continue;
+            if ("post_id".equals ( customFieldVO.getFieldCode () )) {
+                arcHead.setKey ( "postName" );
             }
-            if("bussiness_unit_id".equals ( customFieldVO.getCode () )){
-                arcHead.setKey ( "business_unit_user_name" );
-                continue;
+            if ("bussiness_unit_id".equals ( customFieldVO.getFieldCode () )) {
+                arcHead.setKey ( "businessUnitName" );
             }
-            if("suprvior_id".equals ( customFieldVO.getCode () )){
-                arcHead.setKey ( "supvior_user_name" );
-                continue;
+            if ("supervisor_id".equals ( customFieldVO.getFieldCode () )) {
+                arcHead.setKey ( "supervisorUserName" );
             }
-            arcHead.setIsShow (1);
+            arcHead.setIsShow ( 1 );
             headList.add ( arcHead );
-        }
+            }
+            if(querySchemaId.equals ( 0 )) {
+                ArcHead arcHead = new ArcHead ();
+                arcHead.setName ( "任职类型" );
+                arcHead.setKey ( "employment_type" );
+                arcHead.setIndex ( 10 );
+                arcHead.setIsShow ( 1 );
+                headList.add ( arcHead );
+            }
         return headList;
     }
 
-    public PageResult < UserArchiveVo > selectArchivebatchAndOrgList(UserSession userSession, List<Integer> orgList, Integer pageSize, Integer currentPage) {
+    public PageResult < UserArchiveVo > selectArchivebatchAndOrgList(UserSession userSession, List < Integer > orgList, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgListAndAuth ( orgList, userSession.getArchiveId (), userSession.getCompanyId () );
         return new PageResult <> ( list );
 
     }
+
     @Override
     public void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) {
         UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation ();
@@ -187,7 +203,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public ExportList selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List < Integer > archiveIdList) throws IllegalAccessException {
         ExportList exportList = new ExportList ();
-        List<CustomFieldVO> orderNotIn=new ArrayList<>();
+        List < CustomFieldVO > orderNotIn = new ArrayList <> ();
         Map < Integer, Map < String, Object > > userArchiveListCustom;
         if (null != schemeId && 0 != schemeId) {
             StringBuilder stringBuffer = new StringBuilder ();
@@ -196,7 +212,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             List < Integer > integers1 = querySchemeFieldDao.selectFieldIdWithSort ( schemeId );
             List < Integer > integers2 = querySchemeSortDao.selectSortId ( schemeId );
 
-            CustomTableVO customTableVO=new CustomTableVO ();
+            CustomTableVO customTableVO = new CustomTableVO ();
             customTableVO.setCompanyId ( userSession.getCompanyId () );
             customTableVO.setFuncCode ( "ARC" );
             List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
@@ -206,12 +222,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             List < CustomFieldVO > customFields = customTableFieldDao.selectFieldByIdList ( integers2 );
             for (CustomFieldVO customFieldVO : customFields) {
                 if (customFieldVO.getIsSystemDefine () == 1) {
-                    stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () )+"\t" )
-                            .append(getSort(querySchemeSortDao.selectSortById(customFieldVO.getFieldId()))).append ( "," );
+                    stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () ) + "\t" )
+                            .append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId () ) ) ).append ( "," );
                 } else {
-                    orderNotIn.add(customFieldVO);
-                    stringBuffer.append ( "t." ).append ("t"+ customFieldVO.getFieldId ()+"\t" ).
-                            append(getSort(querySchemeSortDao.selectSortById(customFieldVO.getFieldId()))).append ( "," );
+                    orderNotIn.add ( customFieldVO );
+                    stringBuffer.append ( "t." ).append ( "t" + customFieldVO.getFieldId () + "\t" ).
+                            append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId () ) ) ).append ( "," );
                 }
             }
             assert order != null;
@@ -220,7 +236,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //调用接口查询机构权限范围内的档案集合
             //进行sql查询，返回数据，档案在机构范围内
 
-            userArchiveListCustom = userArchiveDao.getUserArchiveListCustom ( getBaseSql ( orderNotIn,integers1, userSession.getCompanyId (), customTableVOS), order );
+            userArchiveListCustom = userArchiveDao.getUserArchiveListCustom ( getBaseSql ( orderNotIn, integers1, userSession.getCompanyId (), customTableVOS ), order );
 
             List < Integer > integers = new ArrayList <> ( userArchiveListCustom.keySet () );
             integers.removeAll ( archiveIdList );
@@ -273,28 +289,28 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchive selectArchiveSingle(Integer id) {
+    public UserArchiveVo selectArchiveSingle(Integer id) {
 
         return userArchiveDao.selectByPrimaryKey ( id );
     }
 
     @Override
-    public List < UserArchive > selectUserArchiveByName(String name) {
+    public List < UserArchiveVo > selectUserArchiveByName(String name) {
         return userArchiveDao.selectUserArchiveByName ( name );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession) {
+    public void setDefaultQuerySchme(Integer querySchmeId, UserSession userSession) {
         List < QueryScheme > list = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         for (QueryScheme queryScheme : list) {
-            if(querySchmeId.equals ( queryScheme.getQuerySchemeId () )){
+            if (querySchmeId.equals ( queryScheme.getQuerySchemeId () )) {
                 queryScheme.setIsDefault ( 1 );
-                querySchemeDao.updateByPrimaryKeySelective(queryScheme);
-            }else {
-                if(queryScheme.getIsDelete()==1) {
-                    queryScheme.setIsDefault(0);
-                    querySchemeDao.updateByPrimaryKeySelective(queryScheme);
+                querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
+            } else {
+                if (queryScheme.getIsDelete () == 1) {
+                    queryScheme.setIsDefault ( 0 );
+                    querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
                 }
             }
         }
@@ -341,25 +357,25 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     /**
      * list是所查询项的集合
      */
-    private String getBaseSql(List<CustomFieldVO> notIn,List < Integer > integers, Integer companyId, List<CustomTableVO> tableVOS) {
-        List<CustomFieldVO> inList=new ArrayList<>();
-        List<CustomFieldVO> outList=new ArrayList<>();
-        List<CustomFieldVO> list = customTableFieldDao.selectFieldByIdList(integers);
+    private String getBaseSql(List < CustomFieldVO > notIn, List < Integer > integers, Integer companyId, List < CustomTableVO > tableVOS) {
+        List < CustomFieldVO > inList = new ArrayList <> ();
+        List < CustomFieldVO > outList = new ArrayList <> ();
+        List < CustomFieldVO > list = customTableFieldDao.selectFieldByIdList ( integers );
         for (CustomFieldVO customFieldVO : list) {
-            if(customFieldVO.getIsSystemDefine()==0){
-                outList.add(customFieldVO);
-            }else{
-                inList.add(customFieldVO);
+            if (customFieldVO.getIsSystemDefine () == 0) {
+                outList.add ( customFieldVO );
+            } else {
+                inList.add ( customFieldVO );
             }
         }
-        outList.addAll(notIn);
+        outList.addAll ( notIn );
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
         String b = "select distinct t.archive_id, ";
         String c = null;
         String d = "FROM ( select t0.*";
         for (CustomFieldVO customFieldVO : inList) {
-            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode() ).append ( "," );
+            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
         }
         if (!CollectionUtils.isEmpty ( outList )) {
             for (CustomFieldVO customFieldVO : outList) {
@@ -422,7 +438,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public List < QuerySchemeList > selectQueryScheme(UserSession userSession) {
         List < QuerySchemeList > lists = new ArrayList <> ();
-        List < Integer > list = querySchemeDao.selectIdByArchiveId (userSession.getArchiveId () );
+        List < Integer > list = querySchemeDao.selectIdByArchiveId ( userSession.getArchiveId () );
         for (Integer integer : list) {
             QuerySchemeList querySchemeList = new QuerySchemeList ();
             //通过查询方案id找到显示字段

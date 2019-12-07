@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.UserArchive">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
     <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
@@ -12,7 +12,7 @@
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="businessUnitName" jdbcType="VARCHAR" property="businessUnitName" />
+    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
@@ -41,10 +41,6 @@
     <result column="attrition_date" jdbcType="DATE" property="attritionDate" />
     <result column="attrition_type" jdbcType="VARCHAR" property="attritionType" />
     <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
-    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
@@ -875,12 +871,15 @@
     arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
     arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
     arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
-    orga.org_name ,
-    post.post_name ,
-    arch.user_name
+    orga.org_name as org_name ,
+    post.post_name as post_name ,
+    org.org_name as business_unit_name,
+    arch.user_name as supervisor_user_name
+
     FROM
     t_user_archive arc
     LEFT JOIN t_organization orga ON orga.org_id = arc.org_id
+    left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id
     WHERE arc.is_delete = 0
@@ -971,7 +970,7 @@
 
 
   </select>
-  <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.entity.UserArchive">
+  <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     select  <include refid="Base_Column_List"/>
     from t_user_archive
     where user_name LIKE

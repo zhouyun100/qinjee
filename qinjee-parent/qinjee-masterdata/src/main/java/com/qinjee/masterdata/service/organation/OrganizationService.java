@@ -1,19 +1,16 @@
 package com.qinjee.masterdata.service.organation;
 
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.redis.RedisClusterService;
+import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 
 public interface OrganizationService  {
@@ -76,7 +73,7 @@ public interface OrganizationService  {
    * @param userName
    * @return
    */
-  List<UserArchive> getUserArchiveListByUserName(String userName);
+  List< UserArchiveVo > getUserArchiveListByUserName(String userName);
 
   /**
    * 机构排序

@@ -58,7 +58,7 @@ public class UserArchiveVo implements Serializable {
      * 单位名称
      */
     @ApiModelProperty("单位名称")
-    private Integer businessUnitName;
+    private String businessUnitName;
 
     /**
      * 部门ID
@@ -71,7 +71,7 @@ public class UserArchiveVo implements Serializable {
      * 部门名称
      */
     @ApiModelProperty("部门名称")
-    private Integer orgName;
+    private String orgName;
 
     /**
      * 岗位ID
@@ -84,7 +84,7 @@ public class UserArchiveVo implements Serializable {
      * 岗位名称
      */
     @ApiModelProperty("岗位名称")
-    private Integer postName;
+    private String postName;
 
     /**
      * 姓名
@@ -276,7 +276,12 @@ public class UserArchiveVo implements Serializable {
      * 上级领导姓名
      */
     @ApiModelProperty("上级领导姓名")
-    private Integer supervisorUserName;
+    private String supervisorUserName;
+
+    /**
+     * 任职类型
+     */
+    private String  employmentType;
     /**
      * 动态表头
      */

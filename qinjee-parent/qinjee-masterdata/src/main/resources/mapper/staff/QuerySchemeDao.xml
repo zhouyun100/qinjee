@@ -138,7 +138,7 @@
     where  archive_id = #{archiveId,jdbcType=INTEGER}
     and is_delete=0
   </select>
-  <select id="selectQueryByArchiveId" resultType="com.qinjee.masterdata.model.entity.QueryScheme">
+  <select id="selectQueryByArchiveId" resultType="com.qinjee.masterdata.model.entity.QueryScheme" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from t_query_scheme
     where  archive_id=#{archiveId,jdbcType=INTEGER}

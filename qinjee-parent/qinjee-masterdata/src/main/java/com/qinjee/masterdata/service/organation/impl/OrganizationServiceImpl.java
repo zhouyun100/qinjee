@@ -719,9 +719,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     //=====================================================================
     @Override
-    public List<UserArchive> getUserArchiveListByUserName(String userName) {
+    public List<UserArchiveVo> getUserArchiveListByUserName(String userName) {
         //调用人员的接口
-        List<UserArchive> userArchives = userArchiveDao.selectUserArchiveByName(userName);
+        List<UserArchiveVo> userArchives = userArchiveDao.selectUserArchiveByName(userName);
         return userArchives;
     }
 

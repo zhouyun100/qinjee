@@ -2,9 +2,8 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
-import com.qinjee.masterdata.model.vo.staff.*;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -16,7 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -138,11 +140,11 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案(查询当前登陆人的档案)", notes = "hkt")
-    public ResponseResult<UserArchive> selectArchiveAtOnce() {
+    public ResponseResult<UserArchiveVo> selectArchiveAtOnce() {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                UserArchive userArchive = staffArchiveService.selectArchive(getUserSession());
+                UserArchiveVo userArchive = staffArchiveService.selectArchive(getUserSession());
                 return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -155,11 +157,11 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchiveSingle", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案", notes = "hkt")
-    public ResponseResult<UserArchive> selectArchiveSingle(Integer id ) {
+    public ResponseResult<UserArchiveVo> selectArchiveSingle(Integer id ) {
         Boolean b = checkParam(id);
         if(b){
             try {
-                UserArchive userArchive = staffArchiveService.selectArchiveSingle(id);
+                UserArchiveVo userArchive = staffArchiveService.selectArchiveSingle(id);
                 return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -202,6 +204,7 @@ public class StaffArchiveController extends BaseController {
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
+                e.printStackTrace ();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
@@ -564,11 +567,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectUserArchiveByName", method = RequestMethod.POST)
     @ApiOperation(value = "根据姓名返回UserArchive", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult<List<UserArchive>> selectUserArchiveByName(String name) {
+    public ResponseResult<List<UserArchiveVo>> selectUserArchiveByName(String name) {
         Boolean b = checkParam(name);
         if(b){
             try {
-                List<UserArchive> userArchiveList=staffArchiveService. selectUserArchiveByName(name);
+                List<UserArchiveVo> userArchiveList=staffArchiveService. selectUserArchiveByName(name);
                return new ResponseResult <> ( userArchiveList,CommonCode.SUCCESS );
             } catch (Exception e) {
                 e.printStackTrace();

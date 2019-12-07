@@ -14,10 +14,7 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.BigDataVo;
-import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
-import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
-import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
@@ -486,7 +483,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List < Map < String, String > > mapList = customTableFieldDao.selectCodAndIdByTableId ( tableId );
 
         if(String.valueOf (stringStringMap.get ( "is_system_define")).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "ARC" )){
-            UserArchive userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
+            UserArchiveVo userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
             for (Field declaredField : userArchive.getClass ().getDeclaredFields ()) {
                 declaredField.setAccessible ( true );
                 for (Map < String, String > stringMap : mapList) {

@@ -24,7 +24,7 @@ public interface UserArchiveDao {
 
     int insertSelective(UserArchive record);
 
-    UserArchive selectByPrimaryKey(Integer archiveId);
+    UserArchiveVo selectByPrimaryKey(Integer archiveId);
 
     int updateByPrimaryKeySelective(UserArchive record);
 
@@ -106,11 +106,11 @@ public interface UserArchiveDao {
 
     void deleteArchiveById(Integer businessId);
 
-    List< UserArchive> selectBeforeFilter(@Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
+    List< UserArchiveVo> selectBeforeFilter(@Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
 
-    List< UserArchive> selectUserArchiveByName(@Param("name") String name);
+    List< UserArchiveVo> selectUserArchiveByName(@Param("name") String name);
 
     List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
-    List<UserArchive> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
+    List<UserArchiveVo> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
 }

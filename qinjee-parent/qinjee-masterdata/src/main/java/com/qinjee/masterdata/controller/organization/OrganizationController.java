@@ -1,11 +1,10 @@
 package com.qinjee.masterdata.controller.organization;
 
-import com.alibaba.fastjson.JSONArray;
 import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
@@ -16,14 +15,15 @@ import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -483,12 +483,12 @@ public class OrganizationController extends BaseController {
     //TODO
     @GetMapping("/getUserArchiveListByUserName")
     @ApiOperation(value = "未实现，机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
-    public ResponseResult<List<UserArchive>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
+    public ResponseResult<List< UserArchiveVo >> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
         //TODO 校验参数 不带参则全量查询
         if (checkParam(userName)) {
             try {
                 //TODO 接口未实现
-                List<UserArchive> users = organizationService.getUserArchiveListByUserName(userName);
+                List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName);
                 return new ResponseResult(users);
             } catch (Exception e) {
                 e.printStackTrace();
