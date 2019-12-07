@@ -26,7 +26,6 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
-import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
@@ -43,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -191,11 +191,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     public void importBlaFile(MultipartFile multipartFile, UserSession userSession,String funcCode) throws Exception {
         //excel方法获得值
-        List<Map<String,String>>  list=new ArrayList <> (  );
-        List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
+        List<BlackListVo> objectList=new ArrayList<>();
+        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         List < Blacklist > blacklistList = new ArrayList <> ();
-        @SuppressWarnings("unchecked")
-        List < BlackListVo > objectList = HeadListUtil.getObjectList (list , BlackListVo.class ,getTypeMaps("BLA",userSession.getCompanyId ()));
+        //反射组装对象
+        for (Map<String, String> map : mapList) {
+            BlackListVo blackListVo=new BlackListVo();
+            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
+                Class aclass = blackListVo.getClass();
+                for (Field declaredField : aclass.getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    Class typeClass = declaredField.getType();
+                    Constructor con = typeClass.getConstructor(typeClass);
+                    Object field = con.newInstance(integerStringEntry.getValue());
+                    declaredField.set(aclass, field);
+                }
+            }
+            objectList.add(blackListVo);
+        }
         for (BlackListVo blackListVo : objectList) {
             Blacklist blacklist = new Blacklist ();
             setValue ( blackListVo, blacklist );
@@ -217,12 +230,25 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     public void importConFile(MultipartFile multipartFile,String funcCode ,UserSession userSession) throws Exception {
         //excel方法获得值
-        List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
         List < LaborContract > laborContractList = new ArrayList <> ();
-        @SuppressWarnings("unchecked")
+        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         List<Map<String,String>>  list=new ArrayList <> (  );
-        List < ContractVo > objectList = HeadListUtil.getObjectList ( list, ContractVo.class,getTypeMaps("CON",userSession.getCompanyId ()) );
-        for (ContractVo contractVo : objectList) {
+        List < ContractVo > contractVos = new ArrayList <> ();
+        for (Map<String, String> map : mapList) {
+           ContractVo contractVo=new ContractVo();
+            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
+                Class aclass = contractVo.getClass();
+                for (Field declaredField : aclass.getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    Class typeClass = declaredField.getType();
+                    Constructor con = typeClass.getConstructor(typeClass);
+                    Object field = con.newInstance(integerStringEntry.getValue());
+                    declaredField.set(aclass, field);
+                }
+            }
+            contractVos.add(contractVo);
+        }
+        for (ContractVo contractVo : contractVos) {
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );
             //根据证件号与工号找到人员id
