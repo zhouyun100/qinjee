@@ -95,7 +95,7 @@ public class StaffStandingBookController extends BaseController {
      * 展示黑名单表
      * //TODO 需要session
      */
-    @RequestMapping(value = "/selectBalckList", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectBalckList", method = RequestMethod.GET)
     @ApiOperation(value = "展示黑名单表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -123,7 +123,7 @@ public class StaffStandingBookController extends BaseController {
      * 删除台账
      */
 
-    @RequestMapping(value = "/deleteStandingBook", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "删除台账", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "台账id", paramType = "query", required = true, example = "1")
     public ResponseResult deleteStandingBook(Integer standingBookId) {
@@ -237,7 +237,7 @@ public class StaffStandingBookController extends BaseController {
      *     3，操作符中的包含分为字符串与非字符串两种情况
      *     4，连接符分为或者与并且
      */
-    @RequestMapping(value = "/selectStaff", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectStaff", method = RequestMethod.GET)
     @ApiOperation(value = "通过台账查询", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "StandingBookId", value = "员工台账id", paramType = "query", required = true),

@@ -212,13 +212,13 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 确认入职
      */
-    @RequestMapping(value = "/confirmPreemployment", method = RequestMethod.POST)
+    @RequestMapping(value = "/confirmPreemployment", method = RequestMethod.GET)
     @ApiOperation(value = "确认入职", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult confirmPreemployment(@RequestBody ConfirmId confirmId) {
+    public ResponseResult confirmPreemployment( ConfirmId confirmId) {
         Boolean b = checkParam(confirmId,getUserSession());
         if(b){
             try {
