@@ -4,6 +4,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -460,14 +461,14 @@ public class StaffArchiveController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
 //    })
-    public ResponseResult<ExportList> selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList,Integer schemeId) {
+    public ResponseResult< ExportFile > selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList) {
         Boolean b = checkParam(getUserSession(),archiveIdList);
         if(b){
             try {
-                ExportList exportList =
-                        staffArchiveService.selectArchiveByQueryScheme(schemeId, getUserSession(), archiveIdList);
-                if(exportList!=null){
-                    return new ResponseResult<>(exportList,CommonCode.SUCCESS);
+                ExportFile exportFile =
+                        staffArchiveService.selectArchiveByQueryScheme( getUserSession(), archiveIdList);
+                if(exportFile!=null){
+                    return new ResponseResult<>(exportFile,CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

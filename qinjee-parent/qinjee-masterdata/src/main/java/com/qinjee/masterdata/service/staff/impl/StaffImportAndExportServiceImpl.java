@@ -8,13 +8,14 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
+import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
-import com.qinjee.masterdata.model.vo.staff.ExportList;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
@@ -24,6 +25,7 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
+import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.masterdata.utils.export.HeadListUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
@@ -73,6 +75,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private BlacklistDao blacklistDao;
     @Autowired
     private RedisClusterService redisClusterService;
+    @Autowired
+    private QuerySchemeDao querySchemeDao;
     @Autowired
     private IStaffCommonService staffCommonService;
 
@@ -222,7 +226,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );
             //根据证件号与工号找到人员id
-            Integer businessId = userArchiveDao.selectIdByNumberAndEmploy ( contractVo.getId_number (), contractVo.getEmployment_number () );
+            Integer businessId = userArchiveDao.selectIdByNumberAndEmploy ( contractVo.getId_number (), contractVo.getEmployee_number () );
             laborContract.setArchiveId ( businessId );
             laborContract.setOperatorId ( userSession.getArchiveId () );
             laborContractList.add ( laborContract );
@@ -252,11 +256,49 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportArcFile(ExportFile exportFile, HttpServletResponse response, UserSession userSession) throws IOException {
+        List<String> headsByArc=new LinkedList <> (  );
+        List < QueryScheme > list = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
+        Integer j=0;
+        for (QueryScheme queryScheme :list ) {
+            if(queryScheme.getIsDefault ()==1){
+                j++;
+            }
+        }
+        if(j>0){
+            headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );
+        }else{
+            headsByArc=HeadMapUtil.getHeadForArc (headsByArc);
+        }
         ExcelUtil.download ( response, exportFile.getTittle (),
-                getHeadsByArc ( exportFile, userSession.getCompanyId () ),
-                getDates ( exportFile, getHeadsByArc ( exportFile, userSession.getCompanyId () ), "ARC", userSession.getCompanyId () ),
-//                getTypeMapForArc ( exportFile, getHeadsByArc ( exportFile, userSession.getCompanyId () ) ) );
-                getTypeMap ( getHeadsByArc(exportFile,userSession.getCompanyId ()) ) );
+                headsByArc,
+                getDates ( exportFile, headsByArc, "ARC", userSession.getCompanyId () ),
+                getTypeMap ( headsByArc ) );
+    }
+        /**
+     * 分情况获得文件头
+     *
+     * @param exportFile
+     * @return
+     */
+    private List < String > getHeadsByArc(ExportFile exportFile,Integer companyId) {
+        List<String> keyList=new LinkedList <> (  ) ;
+        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getMap ().values () );
+        for (Map < String, Object > stringObjectMap : maps) {
+            for (String s : stringObjectMap.keySet ()) {
+                if(HeadFieldUtil.getFieldCode ().get(s)!=null){
+                    keyList.add ( HeadFieldUtil.getFieldCode ().get ( s ) );
+                }else{
+                    String arc = customTableFieldDao.selectFieldNameByCode ( s, companyId, "ARC" );
+                    if(arc!=null){
+                        keyList.add ( arc );
+                    }
+                }
+                if("employment_type".equals ( s )){
+                    keyList.add ( "任职类型" );
+                }
+            }
+        }
+       return keyList;
     }
 
     /**
@@ -278,9 +320,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
-        ExportList exportList = new ExportList ();
-        exportList.setMap ( map );
-        exportFile.setExportList ( exportList );
+        exportFile.setMap ( map );
         ExcelUtil.download ( response, exportFile.getTittle (),
                 HeadMapUtil.getHeadsForPre (),
                 getDates ( exportFile, HeadMapUtil.getHeadsForPre (), "PRE", userSession.getCompanyId () ),
@@ -301,12 +341,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId () );
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
-        ExportList exportList = new ExportList ();
-        exportList.setMap ( map );
-        exportFile.setExportList ( exportList );
+        exportFile.setMap ( map );
         ExcelUtil.download ( response, exportFile.getTittle (),
                 HeadMapUtil.getHeadsForBlackList (),
-                getDatesPhysic ( exportFile, HeadMapUtil.getHeadsForBlackList (), userSession.getCompanyId () ),
+                getDates ( exportFile, HeadMapUtil.getHeadsForBlackList (),"ARC", userSession.getCompanyId () ),
                 getTypeMap ( HeadMapUtil.getHeadsForBlackList () ) );
     }
 
@@ -316,12 +354,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         Map < Integer, Map < String, Object > > map = laborContractDao.selectExportConList ( exportRequest.getList (), userSession.getCompanyId () );
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
-        ExportList exportList = new ExportList ();
-        exportList.setMap ( map );
-        exportFile.setExportList ( exportList );
+        exportFile.setMap ( map );
         ExcelUtil.download ( response, exportFile.getTittle (),
                 HeadMapUtil.getHeadsForCon (),
-                getDatesPhysic ( exportFile, HeadMapUtil.getHeadsForCon (), userSession.getCompanyId () ),
+                getDates ( exportFile, HeadMapUtil.getHeadsForCon (), "ARC",userSession.getCompanyId () ),
                 getTypeMap ( HeadMapUtil.getHeadsForCon () ) );
     }
 
@@ -350,9 +386,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
-        ExportList exportList = new ExportList ();
-        exportList.setMap ( map );
-        exportFile.setExportList ( exportList );
+        exportFile.setMap ( map );
         List < String > businessHead = HeadMapUtil.getBusinessHead ( exportFile.getTittle () );
         if (businessHead != null) {
             ExcelUtil.download ( response, exportFile.getTittle (),
@@ -364,26 +398,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
     }
 
-
-    /**
-     * 档案存储字段类型的集合
-     **/
-    private Map < String, String > getTypeMapForArc(ExportFile exportFile, List < String > heads) {
-        Map < String, String > map = new HashMap <> ();
-        //如果没有查询方案
-        if (exportFile.getExportList ().getQuerySchemaId () == null || exportFile.getExportList ().getQuerySchemaId () == 0) {
-            for (String head : heads) {
-                map.put ( head, "String" );
-            }
-
-            return map;
-        }
-        List < String > list = customTableFieldDao.selectFieldTypeByNameList ( heads );
-        for (int i = 0; i < list.size (); i++) {
-            map.put ( heads.get ( i ), "String" );
-        }
-        return map;
-    }
 
     /**
      * 预入职存储字段类型的集合
@@ -421,7 +435,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         return list;
     }
-/**
+
+    /**
  * 根据fieldName与funcode找到对应的fieldId
  */
 private Map<Integer,String> transField(String funcCode,Integer companyId,String value,String fieldName){
@@ -443,106 +458,48 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
      * @param exportFile
      * @return
      */
-    private List < Map < String, String > > getDates(ExportFile exportFile, List < String > heads, String funcCode, Integer companyId) {
+    private List < Map < String, String > > getDates(ExportFile exportFile, List < String > heads,String funcCode, Integer companyId) {
         List < Map < String, String > > mapList = new ArrayList <> ();
-        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getExportList ().getMap ().values () );
+        String s;
+        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getMap ().values () );
         for (Map < String, Object > stringObjectMap : maps) {
             //linkedHashMap保证有序
             Map < String, String > stringMap = new LinkedHashMap <> ();
             for (String head : heads) {
-                String s = customTableFieldDao.selectFieldCodeByNameAndFuncCodeAndCompanyId ( head, funcCode, companyId );
-                TransValue ( stringObjectMap, stringMap, head, s );
+                s = TransValue ( head );
+                if(s==null) {
+                    s = customTableFieldDao.selectFieldCodeByName ( head, companyId,funcCode );
+                }
+                if (head.equals ( "任职类型" )) {
+                    stringMap.put ( head, "在职" );
+                }
+                Object o = stringObjectMap.get ( s );
+                String date = isDate ( String.valueOf ( o ) );
+                if (date != null) {
+                    o = date;
+                }
+                stringMap.put ( head, String.valueOf ( o ) );
             }
             mapList.add ( stringMap );
         }
         return mapList;
     }
 
-    /**
-     * 从传过来map中解析数据并转化封装到Dates中
-     *
-     * @param exportFile
-     * @return
-     */
-    private List < Map < String, String > > getDatesPhysic(ExportFile exportFile, List < String > heads, Integer companyId) {
-        List < Map < String, String > > mapList = new ArrayList <> ();
-        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getExportList ().getMap ().values () );
-        for (Map < String, Object > stringObjectMap : maps) {
-            //linkedHashMap保证有序
-            Map < String, String > stringMap = new LinkedHashMap <> ();
-            for (String head : heads) {
-                String s = customTableFieldDao.selectFieldCodeByName ( head, companyId );
-                TransValue ( stringObjectMap, stringMap, head, s );
+
+
+    private String TransValue( String head) {
+        for (Map.Entry < String, String > entry : HeadFieldUtil.getFieldMap ().entrySet ()) {
+            if(head.equals ( entry.getKey () )){
+                 return entry.getValue ();
             }
-            mapList.add ( stringMap );
         }
-        return mapList;
-    }
-
-    private void TransValue(Map < String, Object > stringObjectMap, Map < String, String > stringMap, String head, String s) {
-        if (head.equals ( "部门" )) {
-            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "org_name" ) ) );
-            return;
-        }
-        if (head.equals ( "单位" )) {
-            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "business_unit_name" ) ) );
-            return;
-        }
-        if (head.equals ( "直接上级" )) {
-            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "supervisor_user_name" ) ) );
-            return;
-        }
-        if (head.equals ( "岗位" )) {
-            stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "post_name" ) ) );
-            return;
-        }
-        if (head.equals ( "任职类型" )) {
-            stringMap.put ( head, "在职" );
-            return;
-        }
-        if(head.equals("拉黑原因")){
-            stringMap.put(head,String.valueOf(stringObjectMap.get("block_reason")));
-            return;
-        }
-        Object o = stringObjectMap.get ( s );
-        String date = isDate ( String.valueOf ( o ) );
-        if (date != null) {
-            o = date;
-        }
-        stringMap.put ( head, String.valueOf ( o ) );
-    }
-
-    /**
-     * 分情况获得文件头
-     *
-     * @param exportFile
-     * @return
-     */
-    private List < String > getHeadsByArc(ExportFile exportFile, Integer companyId) {
-        Integer querySchemaId = exportFile.getExportList ().getQuerySchemaId ();
-        List < String > keyList = new ArrayList <> ( 11 );
-        if (querySchemaId == null || querySchemaId == 0) {
-            return HeadMapUtil.getHeadForArc ( keyList );
-        }
-        keyList = getKeyList ( exportFile );
-        return customTableFieldDao.selectFieldNameByCodeList ( keyList, companyId );
+        return null;
     }
 
 
-    /**
-     * 获取list中的key，通过此来对应表头
-     *
-     * @param exportFile
-     * @return
-     */
-    private List < String > getKeyList(ExportFile exportFile) {
-        List < String > keyList = new ArrayList <> ();
-        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getExportList ().getMap ().values () );
-        for (Map < String, Object > stringObjectMap : maps) {
-            keyList = new ArrayList <> ( (new ArrayList <> ( stringObjectMap.keySet () )) );
-        }
-        return keyList;
-    }
+
+
+
 
     private Map < String, String > getTypeMaps(String funcCode, Integer companyId) {
         List < CustomFieldVO > customFieldVOS =

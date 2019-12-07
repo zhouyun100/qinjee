@@ -15,7 +15,7 @@ public class BlackListVo implements Serializable {
     /**
      * 所属单位
      */
-    private String business_name;
+    private String business_unit_name;
     /**
      * 部门
      */

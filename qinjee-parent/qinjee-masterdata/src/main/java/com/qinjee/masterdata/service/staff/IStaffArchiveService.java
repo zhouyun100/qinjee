@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.staff;
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -115,10 +116,9 @@ public interface IStaffArchiveService {
 
     /**
      * 根据显示方案展示人员信息
-     * @param schemeId
      * @return
      */
-    ExportList selectArchiveByQueryScheme(Integer schemeId, UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    ExportFile selectArchiveByQueryScheme( UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 显示权限下，对应表的字段

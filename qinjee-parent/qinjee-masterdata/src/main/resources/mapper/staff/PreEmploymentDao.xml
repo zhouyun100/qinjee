@@ -92,7 +92,7 @@
         <result column="political_status" property="politicalStatus" jdbcType="INTEGER" />
         <result column="birthplace" property="birthplace" jdbcType="VARCHAR" />
         <result column="application_position" property="applicationPosition" jdbcType="VARCHAR" />
-        <result column="probation_period" property="probationPeriod" jdbcType="VARCHAR" />
+        <result column="probation_period" property="probationPeriod" jdbcType="INTEGER" />
         <result column="hire_date" property="hireDate" jdbcType="VARCHAR" />
         <result column="org_id" property="orgId" jdbcType="INTEGER" />
         <result column="post_id" property="postId" jdbcType="INTEGER" />
@@ -105,6 +105,8 @@
         <result column="id_type_name" property="idTypeName" jdbcType="VARCHAR" />
         <result column="highest_degree_name" property="highestDegreeName" jdbcType="VARCHAR" />
         <result column="marry_status_name" property="marryStatusName" jdbcType="VARCHAR" />
+        <result column="post_code" property="postCode" jdbcType="VARCHAR" />
+        <result column="org_code" property="orgCode" jdbcType="VARCHAR" />
         <result column="company_id" property="companyId" jdbcType="INTEGER" />
 
     </resultMap>
@@ -1020,7 +1022,7 @@
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
         t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
-        dict1.dict_value as marry_status_name
+        dict1.dict_value as marry_status_name,post.post_code,org.org_code
         from t_pre_employment t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
         left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1

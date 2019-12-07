@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.model.vo.staff.export;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.qinjee.masterdata.model.vo.staff.ExportList;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Map;
+
 /**
  * @author Administrator
  */
@@ -12,6 +14,7 @@ import java.io.Serializable;
 @JsonInclude
 public class ExportFile implements Serializable {
     private String tittle;
-    private ExportList exportList;
+    @NotNull
+    private Map<Integer, Map <String,Object> > map;
 
 }

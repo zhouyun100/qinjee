@@ -24,8 +24,8 @@ public class HeadMapUtil {
      */
     public static List<String> getHeadsForPre() {
         List<String> keyList=new ArrayList<>();
-            String[] strings = {"姓名", "性别", "手机号", "个人邮箱", "证件类型", "证件号码", "年龄","参加工作时间","最高学历","毕业院校",
-                            "毕业专业","最近工作单位","入职日期","试用期限","应聘岗位","入职部门编码","部门",
+            String[] strings = {"姓名", "性别", "联系电话", "个人邮箱", "证件类型", "证件号码", "年龄","参加工作时间","最高学历","毕业学校",
+                            "毕业专业","最近工作单位","计划入职日期","试用期限（月）","应聘岗位","入职部门编码","部门",
                             "入职岗位编码","岗位","备注"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;

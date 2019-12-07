@@ -225,4 +225,12 @@ public class PreEmploymentVo implements Serializable {
      * 延期入职时间
      */
     private Date delayDate;
+    /**
+     * 部门编码
+     */
+    private String orgCode;
+    /**
+     * 岗位编码
+     */
+    private String postCode;
 }

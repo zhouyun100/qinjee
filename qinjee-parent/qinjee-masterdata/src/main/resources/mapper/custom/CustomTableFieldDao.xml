@@ -223,7 +223,7 @@
     where field_name=#{head}
     and tab.company_id=#{companyId}
     and field.is_delete=0
-    and tab.func_code='PRE'
+    and tab.func_code=#{funcCode}
   </select>
   <select id="selectFieldIdByFieldNameAndCompanyIdAndFuncCode" resultType="java.lang.Integer">
     select field_id
@@ -246,7 +246,7 @@
     and tab.is_enable=1
     and tab.is_delete=0
   </select>
-  <select id="selectFieldNameByCodeList" resultType="java.lang.String">
+  <select id="selectFieldNameByCode" resultType="java.lang.String">
     select  field_name
     from  t_custom_archive_field field
     left join t_custom_archive_table tab on tab.table_id=field.table_id
@@ -254,10 +254,8 @@
     and tab.func_code="ARC"
     and tab.is_delete=0
     and tab.is_enable=1
-    and field_code in
-    <foreach collection="strings" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
+    and tab.func_code=#{funcCode}
+    and field_code =#{fieldCode}
     AND field. is_delete=0
   </select>
   <select id="selectNameAndIdAndIsSystemDefine" resultType="java.util.Map">

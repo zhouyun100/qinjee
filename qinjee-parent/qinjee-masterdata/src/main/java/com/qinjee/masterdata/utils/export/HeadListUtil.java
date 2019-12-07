@@ -72,8 +72,6 @@ public class HeadListUtil {
         }
         if("工作经历".equals(tableName)){
             return WorkLine.class;
-        }if("测试".equals ( tableName )){
-            return TEXT.class;
         }else {
             return null;
         }

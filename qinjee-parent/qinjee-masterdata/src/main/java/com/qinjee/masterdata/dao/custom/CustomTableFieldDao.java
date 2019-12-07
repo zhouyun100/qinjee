@@ -105,11 +105,11 @@ public interface CustomTableFieldDao {
     /**
      * companyId
      *
-     * @param strings
+     * @param fieldCode
      * @param companyId
      * @return
      */
-    List < String > selectFieldNameByCodeList(@Param("strings") List < String > strings, @Param("companyId") Integer companyId);
+     String  selectFieldNameByCode(@Param("fieldCode") String fieldCode, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
 
     /**
@@ -170,7 +170,7 @@ public interface CustomTableFieldDao {
      * @param companyId
      * @return
      */
-    String selectFieldCodeByName(@Param("head") String head, @Param("companyId") Integer companyId);
+    String selectFieldCodeByName(@Param("head") String head, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
     /**
      * key

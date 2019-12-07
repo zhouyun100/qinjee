@@ -806,7 +806,7 @@
   <select id="selectStaff" resultType="java.lang.Integer">
     ${sql}
   </select>
-  <select id="getUserArchiveListCustom" parameterType="String" resultType="hashmap">
+  <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
         <if test="baseSql != null">
             ${baseSql}
         </if>
