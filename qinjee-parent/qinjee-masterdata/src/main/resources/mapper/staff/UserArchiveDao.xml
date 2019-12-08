@@ -910,6 +910,7 @@
   </select>
   <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
     SELECT
+
     arc.user_name,
     arc.employee_number,
     org.org_name,
@@ -921,18 +922,19 @@
     arc.attrition_type
     FROM
     t_user_archive arc
-    LEFT JOIN t_user_org_auth auth
-    ON auth.archive_id = arc.archive_id
     LEFT JOIN t_organization org
-    ON org.org_id = auth.org_id
+    ON org.org_id = arc.org_id
+    LEFT JOIN t_user_org_auth auth
+    ON auth.org_id = org.org_id
+
     LEFT JOIN t_post post
     ON post.post_id = arc.post_id
-    WHERE auth.archive_id = #{archiveId}
-    AND auth.is_delete=0
+    WHERE auth.archive_id = 1
+    AND auth.is_delete = 0
     AND arc.is_delete = 0
     AND post.is_delete = 0
     AND org.is_enable = 1
-    AND org.company_id = #{companyId}
+    AND org.company_id = 1
     AND org.org_id IN
     <foreach collection="orgList" item="item" open="(" separator="," close=")">
       #{item}
