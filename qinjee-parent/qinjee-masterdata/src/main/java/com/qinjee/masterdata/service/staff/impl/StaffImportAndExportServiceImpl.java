@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -77,6 +78,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private RedisClusterService redisClusterService;
     @Autowired
     private QuerySchemeDao querySchemeDao;
+    @Autowired
+    private OrganizationDao organizationDao;
     @Autowired
     private IStaffCommonService staffCommonService;
 
@@ -193,18 +196,22 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //excel方法获得值
         List<BlackListVo> objectList=new ArrayList<>();
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
+        List<Map<Integer, String>> maps = getMaps(multipartFile, funcCode, userSession);
         List < Blacklist > blacklistList = new ArrayList <> ();
         //反射组装对象
-        for (Map<String, String> map : mapList) {
+        for (int i = 0; i < mapList.size(); i++) {
             BlackListVo blackListVo=new BlackListVo();
-            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
-                Class aclass = blackListVo.getClass();
+            Class aclass = blackListVo.getClass();
+            for (Map.Entry<String, String> integerStringEntry : mapList.get(i).entrySet()) {
                 for (Field declaredField : aclass.getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    Class typeClass = declaredField.getType();
-                    Constructor con = typeClass.getConstructor(typeClass);
-                    Object field = con.newInstance(integerStringEntry.getValue());
-                    declaredField.set(aclass, field);
+                    if(declaredField.getName().equals(
+                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+                        Class typeClass = declaredField.getType();
+                        Constructor con = typeClass.getConstructor(typeClass);
+                        Object field = con.newInstance(integerStringEntry.getValue());
+                        declaredField.set(blackListVo, field);
+                    }
                 }
             }
             objectList.add(blackListVo);
@@ -214,9 +221,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             setValue ( blackListVo, blacklist );
             blacklist.setOperatorId ( userSession.getArchiveId () );
             blacklist.setCompanyId ( userSession.getCompanyId () );
+            Map<String, Integer> stringIntegerMap = organizationDao.selectOrgIdByNameAndCompanyId(blackListVo.getOrg_name(), userSession.getCompanyId(), blackListVo.getPost_name());
+            blacklist.setOrgId(stringIntegerMap.get("org_id"));
+            blacklist.setPostId(stringIntegerMap.get("post_id"));
+            blacklistDao.insert(blacklist);
             blacklistList.add (blacklist);
+
         }
-        blacklistDao.insertBatch ( blacklistList );
+//        blacklistDao.insertBatch ( blacklistList );
         //批量添加
     }
 
@@ -232,7 +244,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //excel方法获得值
         List < LaborContract > laborContractList = new ArrayList <> ();
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        List<Map<String,String>>  list=new ArrayList <> (  );
         List < ContractVo > contractVos = new ArrayList <> ();
         for (Map<String, String> map : mapList) {
            ContractVo contractVo=new ContractVo();
@@ -243,7 +254,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     Class typeClass = declaredField.getType();
                     Constructor con = typeClass.getConstructor(typeClass);
                     Object field = con.newInstance(integerStringEntry.getValue());
-                    declaredField.set(aclass, field);
+                    declaredField.set(contractVo, field);
                 }
             }
             contractVos.add(contractVo);
@@ -451,11 +462,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
                     stringMap.put ( integerStringEntry.getKey (),integerStringEntry.getValue () );
                 }
-                Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode ( entry.getKey (),
-                        userSession.getCompanyId (), funcCode );
-                if(integer!=null && integer!=0) {
-                    stringMap.put (integer , entry.getValue () );
-                }
             }
             list.add ( stringMap );
         }
@@ -475,7 +481,15 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
     if(POSTCODE.equals ( fieldName ) ){
         return customTableFieldDao.transPostId(funcCode,companyId,value);
     }
-    return null;
+    else {
+        Map<Integer, String> map = new HashMap<>();
+        Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
+        if(integer!=null && integer!=0) {
+            map.put(integer, value);
+        }
+        return map;
+    }
+
 }
 
     /**

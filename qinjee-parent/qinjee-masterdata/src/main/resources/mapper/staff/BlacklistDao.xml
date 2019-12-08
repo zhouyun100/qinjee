@@ -21,17 +21,6 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
-  <resultMap id="blackListVo" type="com.qinjee.masterdata.model.vo.staff.export.BlackListVo">
-<!--    <id column="blacklist_id" jdbcType="INTEGER" property="blacklist_id" />-->
-    <result column="user_name" jdbcType="VARCHAR" property="user_name" />
-<!--    <result column="gender" jdbcType="VARCHAR" property="gender" />-->
-    <result column="id_number" jdbcType="VARCHAR" property="id_number" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="business_name" jdbcType="VARCHAR" property="business_name" />
-    <result column="org_name" jdbcType="VARCHAR" property="org_name" />
-    <result column="post_name" jdbcType="VARCHAR" property="post_name" />
-    <result column="block_reason" jdbcType="VARCHAR" property="block_reason" />
-  </resultMap>
   <sql id="Base_Column_List">
     blacklist_id, user_name, phone, id_type, id_number, business_unit_id, org_id, post_id,business_unit_name,
     org_name,post_name,

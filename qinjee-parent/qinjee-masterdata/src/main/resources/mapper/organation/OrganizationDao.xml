@@ -635,4 +635,12 @@
             #{item}
         </foreach>
     </update>
+    <select id="selectOrgIdByNameAndCompanyId" resultType="java.util.Map">
+        select org.org_id,post.post_id from t_organization org
+        left join t_post post on org.org_id=post.org_id and post.is_delete=0
+        where org.org_name=#{orgName}
+        and org.company_id=#{CompanyId}
+        and post.post_name=#{postName}
+        and org.is_enable=1
+    </select>
 </mapper>

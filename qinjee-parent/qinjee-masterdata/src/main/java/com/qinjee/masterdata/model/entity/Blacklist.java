@@ -53,7 +53,7 @@ public class Blacklist implements Serializable {
     /**
      * 部门姓名
      */
-    private Integer orgName;
+    private String orgName;
 
     /**
      * 岗位ID
@@ -62,7 +62,7 @@ public class Blacklist implements Serializable {
     /**
      * 岗位名称
      */
-    private Integer postName;
+    private String postName;
 
     /**
      * 拉黑原因

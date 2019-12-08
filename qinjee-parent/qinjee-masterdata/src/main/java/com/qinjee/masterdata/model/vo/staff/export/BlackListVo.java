@@ -9,7 +9,6 @@ import java.io.Serializable;
 public class BlackListVo implements Serializable {
 
     private String user_name;
-    private String gender;
     private String id_number;
     private String phone;
     /**
