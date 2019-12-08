@@ -187,117 +187,117 @@
     </trim>
   </insert>
   <insert id="insertBatch" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
-    <foreach collection="laborContractList" item="item" open="(" separator="," close=")">
+    <foreach collection="laborContractList" item="item" >
       insert into t_labor_contract
       <trim prefix="(" suffix=")" suffixOverrides=",">
-        <if test="archiveId != null">
+        <if test="item.archiveId != null">
           archive_id,
         </if>
-        <if test="businessUnitId != null">
+        <if test="item.businessUnitId != null">
           business_unit_id,
         </if>
-        <if test="orgId != null">
+        <if test="item.orgId != null">
           org_id,
         </if>
-        <if test="postId != null">
+        <if test="item.postId != null">
           post_id,
         </if>
-        <if test="contractSignDate != null">
+        <if test="item.contractSignDate != null">
           contract_sign_date,
         </if>
-        <if test="contractBeginDate != null">
+        <if test="item.contractBeginDate != null">
           contract_begin_date,
         </if>
-        <if test="contractEndDate != null">
+        <if test="item.contractEndDate != null">
           contract_end_date,
         </if>
-        <if test="contractPeriodMonth != null">
+        <if test="item.contractPeriodMonth != null">
           contract_period_month,
         </if>
-        <if test="contractPeriodType != null">
+        <if test="item.contractPeriodType != null">
           contract_period_type,
         </if>
-        <if test="contractSubject != null">
+        <if test="item.contractSubject != null">
           contract_subject,
         </if>
-        <if test="contractNumber != null">
+        <if test="item.contractNumber != null">
           contract_number,
         </if>
-        <if test="contractState != null">
+        <if test="item.contractState != null">
           contract_state,
         </if>
-        <if test="contractRemark != null">
+        <if test="item.contractRemark != null">
           contract_remark,
         </if>
-        <if test="signNumber != null">
+        <if test="item.signNumber != null">
           sign_number,
         </if>
-        <if test="operatorId != null">
+        <if test="item.operatorId != null">
           operator_id,
         </if>
-        <if test="createTime != null">
+        <if test="item.createTime != null">
           create_time,
         </if>
-        <if test="updateTime != null">
+        <if test="item.updateTime != null">
           update_time,
         </if>
-        <if test="probationPeriod != null">
+        <if test="item.probationPeriod != null">
           probation_period,
         </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
-        <if test="archiveId != null">
+        <if test="item.archiveId != null">
           #{item.archiveId,jdbcType=INTEGER},
         </if>
-        <if test="businessUnitId != null">
+        <if test="item.businessUnitId != null">
           #{item.businessUnitId,jdbcType=INTEGER},
         </if>
-        <if test="orgId != null">
+        <if test="item.orgId != null">
           #{item.orgId,jdbcType=INTEGER},
         </if>
-        <if test="postId != null">
+        <if test="item.postId != null">
           #{item.postId,jdbcType=INTEGER},
         </if>
-        <if test="contractSignDate != null">
+        <if test="item.contractSignDate != null">
           #{item.contractSignDate,jdbcType=DATE},
         </if>
-        <if test="contractBeginDate != null">
+        <if test="item.contractBeginDate != null">
           #{item.contractBeginDate,jdbcType=DATE},
         </if>
-        <if test="contractEndDate != null">
+        <if test="item.contractEndDate != null">
           #{item.contractEndDate,jdbcType=DATE},
         </if>
-        <if test="contractPeriodMonth != null">
+        <if test="item.contractPeriodMonth != null">
           #{item.contractPeriodMonth,jdbcType=INTEGER},
         </if>
-        <if test="contractPeriodType != null">
+        <if test="item.contractPeriodType != null">
           #{item.contractPeriodType,jdbcType=VARCHAR},
         </if>
-        <if test="contractSubject != null">
+        <if test="item.contractSubject != null">
           #{item.contractSubject,jdbcType=VARCHAR},
         </if>
-        <if test="contractNumber != null">
+        <if test="item.contractNumber != null">
           #{item.contractNumber,jdbcType=VARCHAR},
         </if>
-        <if test="contractState != null">
+        <if test="item.contractState != null">
           #{item.contractState,jdbcType=VARCHAR},
         </if>
-        <if test="contractRemark != null">
+        <if test="item.contractRemark != null">
           #{item.contractRemark,jdbcType=VARCHAR},
         </if>
-        <if test="signNumber != null">
+        <if test="item.signNumber != null">
           #{item.signNumber,jdbcType=INTEGER},
         </if>
-        <if test="operatorId != null">
+        <if test="item.operatorId != null">
           #{item.operatorId,jdbcType=INTEGER},
         </if>
-        <if test="createTime != null">
+        <if test="item.createTime != null">
           #{item.createTime,jdbcType=TIMESTAMP},
         </if>
-        <if test="updateTime != null">
+        <if test="item.updateTime != null">
           #{item.updateTime,jdbcType=TIMESTAMP},
         </if>
-        <if test="probationPeriod != null">
+        <if test="item.probationPeriod != null">
           #{item.probationPeriod},
         </if>
       </trim>

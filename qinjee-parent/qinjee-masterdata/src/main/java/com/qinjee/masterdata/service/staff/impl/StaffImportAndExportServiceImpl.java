@@ -196,13 +196,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         //excel方法获得值
         List<BlackListVo> objectList=new ArrayList<>();
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        List<Map<Integer, String>> maps = getMaps(multipartFile, funcCode, userSession);
         List < Blacklist > blacklistList = new ArrayList <> ();
         //反射组装对象
-        for (int i = 0; i < mapList.size(); i++) {
+        for (Map < String, String > map : mapList) {
             BlackListVo blackListVo=new BlackListVo();
             Class aclass = blackListVo.getClass();
-            for (Map.Entry<String, String> integerStringEntry : mapList.get(i).entrySet()) {
+            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
                 for (Field declaredField : aclass.getDeclaredFields()) {
                     declaredField.setAccessible(true);
                     if(declaredField.getName().equals(
@@ -224,11 +223,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             Map<String, Integer> stringIntegerMap = organizationDao.selectOrgIdByNameAndCompanyId(blackListVo.getOrg_name(), userSession.getCompanyId(), blackListVo.getPost_name());
             blacklist.setOrgId(stringIntegerMap.get("org_id"));
             blacklist.setPostId(stringIntegerMap.get("post_id"));
-            blacklistDao.insert(blacklist);
             blacklistList.add (blacklist);
 
         }
-//        blacklistDao.insertBatch ( blacklistList );
+        blacklistDao.insertBatch ( blacklistList );
         //批量添加
     }
 
@@ -242,34 +240,38 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     public void importConFile(MultipartFile multipartFile,String funcCode ,UserSession userSession) throws Exception {
         //excel方法获得值
-        List < LaborContract > laborContractList = new ArrayList <> ();
+        List<ContractVo> objectList=new ArrayList<>();
         List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
-        List < ContractVo > contractVos = new ArrayList <> ();
-        for (Map<String, String> map : mapList) {
-           ContractVo contractVo=new ContractVo();
-            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
-                Class aclass = contractVo.getClass();
+        List < LaborContract > contractVos = new ArrayList <> ();
+        //反射组装对象
+        for (Map < String, String > map : mapList) {
+           ContractVo contractVo=new ContractVo ();
+            Class aclass = contractVo.getClass();
+            for (Map.Entry<String, String> integerStringEntry :map.entrySet()) {
                 for (Field declaredField : aclass.getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    Class typeClass = declaredField.getType();
-                    Constructor con = typeClass.getConstructor(typeClass);
-                    Object field = con.newInstance(integerStringEntry.getValue());
-                    declaredField.set(contractVo, field);
+                    if(declaredField.getName().equals(
+                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+                        Class typeClass = declaredField.getType();
+                        Constructor con = typeClass.getConstructor(typeClass);
+                        Object field = con.newInstance(integerStringEntry.getValue());
+                        declaredField.set(contractVo, field);
+                    }
                 }
             }
-            contractVos.add(contractVo);
+            objectList.add(contractVo);
         }
-        for (ContractVo contractVo : contractVos) {
+        for (ContractVo contractVo : objectList) {
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );
             //根据证件号与工号找到人员id
             Integer businessId = userArchiveDao.selectIdByNumberAndEmploy ( contractVo.getId_number (), contractVo.getEmployee_number () );
             laborContract.setArchiveId ( businessId );
             laborContract.setOperatorId ( userSession.getArchiveId () );
-            laborContractList.add ( laborContract );
+            contractVos.add ( laborContract );
         }
         //批量添加
-        laborContractDao.insertBatch ( laborContractList );
+        laborContractDao.insertBatch ( contractVos );
     }
     private void setValue(Object voObject, Object object) throws IllegalAccessException {
         Field[] declaredFields = voObject.getClass ().getDeclaredFields ();

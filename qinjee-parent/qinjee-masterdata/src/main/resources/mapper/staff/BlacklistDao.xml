@@ -159,112 +159,112 @@
     </trim>
   </insert>
   <insert id="insertBatch" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.model.entity.Blacklist" useGeneratedKeys="true">
-  <foreach collection="blacklistList" item="item" open="(" separator="," close=")">
+  <foreach collection="blacklistList" item="item" >
     insert into t_blacklist
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userName != null">
+      <if test="item.userName != null">
         user_name,
       </if>
-      <if test="phone != null">
+      <if test="item.phone != null">
         phone,
       </if>
-      <if test="idType != null">
+      <if test="item.idType != null">
         id_type,
       </if>
-      <if test="idNumber != null">
+      <if test="item.idNumber != null">
         id_number,
       </if>
-      <if test="businessUnitId != null">
+      <if test="item.businessUnitId != null">
         business_unit_id,
       </if>
-      <if test="orgId != null">
+      <if test="item.orgId != null">
         org_id,
       </if>
-      <if test="postId != null">
+      <if test="item.postId != null">
         post_id,
       </if>
-      <if test="blockReason != null">
+      <if test="item.blockReason != null">
         block_reason,
       </if>
-      <if test="blockTime != null">
+      <if test="item.blockTime != null">
         block_time,
       </if>
-      <if test="dataSource != null">
+      <if test="item.dataSource != null">
         data_source,
       </if>
-      <if test="companyId != null">
+      <if test="item.companyId != null">
         company_id,
       </if>
-      <if test="operatorId != null">
+      <if test="item.operatorId != null">
         operator_id,
       </if>
-      <if test="updateTime != null">
+      <if test="item.updateTime != null">
         update_time,
       </if>
-      <if test="isDelete != null">
+      <if test="item.isDelete != null">
         is_delete,
       </if>
-      <if test="businessUnitName != null">
+      <if test="item.businessUnitName != null">
         business_unit_name,
       </if>
-      <if test="orgName != null">
+      <if test="item.orgName != null">
         org_name,
       </if>
-      <if test="postName != null">
+      <if test="item.postName != null">
         post_name,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userName != null">
-        #{userName,jdbcType=VARCHAR},
+      <if test="item.userName != null">
+        #{item.userName,jdbcType=VARCHAR},
       </if>
-      <if test="phone != null">
-        #{phone,jdbcType=VARCHAR},
+      <if test="item.phone != null">
+        #{item.phone,jdbcType=VARCHAR},
       </if>
-      <if test="idType != null">
-        #{idType,jdbcType=VARCHAR},
+      <if test="item.idType != null">
+        #{item.idType,jdbcType=VARCHAR},
       </if>
-      <if test="idNumber != null">
-        #{idNumber,jdbcType=VARCHAR},
+      <if test="item.idNumber != null">
+        #{item.idNumber,jdbcType=VARCHAR},
       </if>
-      <if test="businessUnitId != null">
-        #{businessUnitId,jdbcType=INTEGER},
+      <if test="item.businessUnitId != null">
+        #{item.businessUnitId,jdbcType=INTEGER},
       </if>
-      <if test="orgId != null">
-        #{orgId,jdbcType=INTEGER},
+      <if test="item.orgId != null">
+        #{item.orgId,jdbcType=INTEGER},
       </if>
-      <if test="postId != null">
-        #{postId,jdbcType=INTEGER},
+      <if test="item.postId != null">
+        #{item.postId,jdbcType=INTEGER},
       </if>
-      <if test="blockReason != null">
-        #{blockReason,jdbcType=VARCHAR},
+      <if test="item.blockReason != null">
+        #{item.blockReason,jdbcType=VARCHAR},
       </if>
-      <if test="blockTime != null">
-        #{blockTime,jdbcType=TIMESTAMP},
+      <if test="item.blockTime != null">
+        #{item.blockTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="dataSource != null">
-        #{dataSource,jdbcType=VARCHAR},
+      <if test="item.dataSource != null">
+        #{item.dataSource,jdbcType=VARCHAR},
       </if>
-      <if test="companyId != null">
-        #{companyId,jdbcType=INTEGER},
+      <if test="item.companyId != null">
+        #{item.companyId,jdbcType=INTEGER},
       </if>
-      <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
+      <if test="item.operatorId != null">
+        #{item.operatorId,jdbcType=INTEGER},
       </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
+      <if test="item.updateTime != null">
+        #{item.updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isDelete != null">
-        #{isDelete,jdbcType=SMALLINT},
+      <if test="item.isDelete != null">
+        #{item.isDelete,jdbcType=SMALLINT},
       </if>
-      <if test="businessUnitName != null">
-        #{businessUnitName},
+      <if test="item.businessUnitName != null">
+        #{item.businessUnitName},
       </if>
-      <if test="orgName != null">
-        #{orgName},
+      <if test="item.orgName != null">
+        #{item.orgName},
       </if>
-      <if test="postName != null">
-        #{postName}
+      <if test="item.postName != null">
+        #{item.postName}
       </if>
     </trim>
   </foreach>
