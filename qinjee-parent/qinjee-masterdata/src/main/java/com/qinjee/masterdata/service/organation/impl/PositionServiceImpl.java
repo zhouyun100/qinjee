@@ -303,7 +303,7 @@ public class PositionServiceImpl implements PositionService {
         if (parentOrgSet.size() > 1) {
             ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
         }
-        positionDao.sortPosition(positionList);
+        positionDao.sortPosition(positionIds);
     }
 
     @Override
