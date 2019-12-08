@@ -52,7 +52,7 @@ public interface PositionDao {
 
     Position getPositionByNameAndCompanyId(String positionName,Integer companyId);
 
-    List<Position> getSinglePositionListByOrgIds(@Param("positionIds")List<Integer> positionIds);
+    List<Position> getSinglePositionList(@Param("positionIds")List<Integer> positionIds);
 
     void sortPosition(@Param("positionIds") List<Position> positionIds);
 }
