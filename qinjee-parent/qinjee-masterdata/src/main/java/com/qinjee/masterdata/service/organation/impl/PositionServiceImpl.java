@@ -25,9 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -292,25 +290,20 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public ResponseResult sortPosition(Integer prePositionId, Integer midPositionId, Integer nextPositionId) {
-        Position prePosition;
-        Position nextPosition;
-        Integer midSort = null;
-        if(nextPositionId != null){
-            //移动
-            nextPosition = positionDao.selectByPrimaryKey(nextPositionId);
-            midSort = nextPosition.getSortId() - 1;
-        }else if(nextPositionId == null){
-            //移动到最后
-            prePosition = positionDao.selectByPrimaryKey(prePositionId);
-            midSort = prePosition.getSortId() + 1;
+    @Transactional
+    public void sortPosition(List<Integer> positionIds) {
+        //查询出机构列表
+        List<Position> positionList = positionDao.getSinglePositionListByOrgIds(positionIds);
+        Set<Integer> parentOrgSet = new HashSet<>();
+        for (Position position : positionList) {
+            //将父机构id存储在set中
+            parentOrgSet.add(position.getPositionGroupId());
         }
-        Position position = new Position();
-        position.setSortId(midSort);
-        position.setPositionId(midPositionId);
-        positionDao.insertSelective(position);
-
-        return new ResponseResult();
+        //判断是否在同一级职位族下
+        if (parentOrgSet.size() > 1) {
+            ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
+        }
+        positionDao.sortPosition(positionList);
     }
 
     @Override

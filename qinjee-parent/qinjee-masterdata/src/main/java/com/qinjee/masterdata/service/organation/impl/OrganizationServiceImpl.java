@@ -399,7 +399,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 public int compare(Object o1, Object o2) {
                     OrganizationVO org1 = (OrganizationVO) o1;
                     OrganizationVO org2 = (OrganizationVO) o2;
-                    return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+                    return org1.getOrgCode().compareTo(org2.getOrgCode());
+                    //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
                 }
             });
             int sortId = 1000;
@@ -491,7 +492,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 } else if (org1.getOrgCode().length() < org2.getOrgCode().length()) {
                     return -1;
                 }
-                return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+                return org1.getOrgCode().compareTo(org2.getOrgCode());
+                //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
             }
         });
         //将排序后的orgList存入redis

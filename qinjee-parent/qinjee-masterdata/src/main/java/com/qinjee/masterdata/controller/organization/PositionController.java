@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -99,18 +100,27 @@ public class PositionController extends BaseController {
     return positionService.deletePosition(positionIds, getUserSession());
   }
 
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "prePositionId", value = "上个职位id", paramType = "query", dataType = "int", required = true, example = "3"),
-      @ApiImplicitParam(name = "midPositionId", value = "需要排序的职位id", paramType = "query", dataType = "int", required = true, example = "1"),
-      @ApiImplicitParam(name = "nextPositionId", value = "下一个职位id", paramType = "query", dataType = "int", required = true, example = "2"),
-  })
-  @ApiOperation(value = "未验证，职位排序", notes = "未验证")
-  @GetMapping("/sortPositionGroup")
-  public ResponseResult sortPosition(Integer prePositionId,
-                                     Integer midPositionId,
-                                     Integer nextPositionId) {
-    return positionService.sortPosition(prePositionId, midPositionId, nextPositionId);
+
+  @PostMapping("/sortPosition")
+  @ApiOperation(value = "ok，职位排序，只能同一级别下机构排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
+  public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> positionIds) {
+    //参数校验
+    if (checkParam(positionIds)) {
+      try {
+        positionService.sortPosition(positionIds);
+        return ResponseResult.SUCCESS();
+      } catch (Exception e) {
+        e.printStackTrace();
+        if (e instanceof BusinessException) {
+          BusinessException be = (BusinessException) e;
+          return new ResponseResult<>(null, be.getResultCode());
+        }
+        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+      }
+    }
+    return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
   }
+
 
 
   @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)

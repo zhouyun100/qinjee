@@ -386,7 +386,8 @@ public class PostServiceImpl implements PostService {
                 } else if (post1.getPostCode().length() < post1.getPostCode().length()) {
                     return -1;
                 }
-                return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
+                return post1.getPostCode().compareTo(post2.getPostCode());
+                //return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
             }
         });
         //校验
@@ -455,7 +456,8 @@ public class PostServiceImpl implements PostService {
                     } else if (post1.getPostCode().length() < post1.getPostCode().length()) {
                         return -1;
                     }
-                    return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
+                    return post1.getPostCode().compareTo(post2.getPostCode());
+                    //return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
                 }
             });
             //TODO
