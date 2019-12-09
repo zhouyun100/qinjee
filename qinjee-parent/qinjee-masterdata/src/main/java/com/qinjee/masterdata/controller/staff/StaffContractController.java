@@ -266,7 +266,7 @@ public class StaffContractController extends BaseController {
      * 批量续签
      */
     @RequestMapping(value = "/insertReNewLaborContractBatch", method = RequestMethod.POST)
-    @ApiOperation(value = "续签合同", notes = "hkt")
+    @ApiOperation(value = "批量续签合同", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "laborContractVo", value = "合同VO表", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true),
