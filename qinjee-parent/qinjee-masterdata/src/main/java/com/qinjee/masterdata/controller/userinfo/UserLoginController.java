@@ -267,7 +267,7 @@ public class UserLoginController extends BaseController{
             logger.info("loadMenuTreeByCurrentLoginUser exception! archiveId={},companyId={},exception={}", userSession.getArchiveId(),userSession.getCompanyId(), e.toString());
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("修改密码操作异常！");
+            responseResult.setMessage("加载当前登录用户菜单树异常！");
         }
         return responseResult;
     }

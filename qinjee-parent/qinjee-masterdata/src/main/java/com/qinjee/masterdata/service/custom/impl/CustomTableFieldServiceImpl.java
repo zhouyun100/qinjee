@@ -341,30 +341,34 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         if(customTable != null && !CollectionUtils.isEmpty(mapValue)){
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
 
-            SysDict sysDict;
             if(!CollectionUtils.isEmpty(groupList)){
                 for(CustomGroupVO groupVO : groupList){
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
 
-                    if(!CollectionUtils.isEmpty(fieldList)){
-                        for(CustomFieldVO fieldVO : fieldList){
-                            if(fieldVO.getFieldId() != null){
-                                if(StringUtils.isNoneBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNoneBlank(fieldVO.getCode())){
-
-                                    sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
-                                    if(sysDict != null){
-                                        fieldVO.setDefaultValue(sysDict.getDictValue());
-                                    }
-                                }else{
-                                    fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
-                                }
-                            }
-                        }
-                    }
+                    /**
+                     * 处理自定义组字段数据回填
+                     */
+                    handlerCustomTableGroupFieldList(fieldList,mapValue);
                 }
             }
-
         }
-        return null;
+        return customTable;
+    }
+
+    @Override
+    public void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList, Map<Integer, String> mapValue) {
+        if(!CollectionUtils.isEmpty(customFieldList)){
+            SysDict sysDict;
+            for(CustomFieldVO fieldVO : customFieldList){
+                if(StringUtils.isNoneBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNoneBlank(fieldVO.getCode())){
+                    sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
+                    if(sysDict != null){
+                        fieldVO.setDefaultValue(sysDict.getDictValue());
+                    }
+                }else{
+                    fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
+                }
+            }
+        }
     }
 }

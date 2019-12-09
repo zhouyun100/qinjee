@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.custom.TemplateCustomTableFieldDao">
+
+    <resultMap id="TableResultMap" type="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO">
+        <result column="tct_id" jdbcType="INTEGER" property="tctId" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="table_id" jdbcType="INTEGER" property="tableId" />
+        <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+    </resultMap>
+
+    <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO">
+        <result column="tctf_id" jdbcType="INTEGER" property="tctfId" />
+        <result column="table_id" jdbcType="INTEGER" property="tableId" />
+        <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+        <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+        <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+        <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+        <result column="is_must" jdbcType="INTEGER" property="isMust" />
+        <result column="placeholder" jdbcType="VARCHAR" property="placeholder" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+    </resultMap>
+
+    <resultMap id="EntryRegistrationTableResultMap" type="com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO">
+        <result column="table_id" jdbcType="INTEGER" property="tableId" />
+        <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    </resultMap>
+
+    <resultMap id="CustomFieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
+        <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+        <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
+        <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+        <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+        <result column="input_type" jdbcType="VARCHAR" property="inputType" />
+        <result column="text_type" jdbcType="VARCHAR" property="textType" />
+        <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
+        <result column="placeholder" jdbcType="VARCHAR" property="placeholder" />
+        <result column="max_length" jdbcType="INTEGER" property="maxLength" />
+        <result column="min_length" jdbcType="INTEGER" property="minLength" />
+        <result column="max_number" jdbcType="INTEGER" property="maxNumber" />
+        <result column="min_number" jdbcType="INTEGER" property="minNumber" />
+        <result column="float_length" jdbcType="INTEGER" property="floatLength" />
+        <result column="is_time_range" jdbcType="INTEGER" property="isTimeRange" />
+        <result column="min_time" jdbcType="VARCHAR" property="minTime" />
+        <result column="max_time" jdbcType="VARCHAR" property="maxTime" />
+        <result column="format_time" jdbcType="VARCHAR" property="formatTime" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="is_must" jdbcType="INTEGER" property="isMust" />
+        <result column="rule" jdbcType="VARCHAR" property="rule" />
+        <result column="is_only_read" jdbcType="INTEGER" property="isOnlyRead" />
+        <result column="table_id" jdbcType="INTEGER" property="tableId" />
+        <result column="group_id" jdbcType="INTEGER" property="groupId" />
+        <result column="is_show" jdbcType="SMALLINT" property="isShow" />
+        <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+    </resultMap>
+
+    <!-- 根据企业ID和模板ID查询自定义表列表 -->
+    <select id="searchTableListByCompanyIdAndTemplateId" resultMap="TableResultMap">
+        SELECT cat.table_id,cat.table_name,tct.sort,tct.template_id,tct.tct_id
+        FROM t_custom_archive_table cat
+        LEFT JOIN t_template_custom_table tct
+        ON cat.table_id = tct.table_id
+        AND tct.template_id = #{templateId,jdbcType=INTEGER}
+        WHERE cat.company_id = #{companyId,jdbcType=INTEGER}
+        AND cat.func_code = 'PRE'
+        AND cat.is_delete = 0
+        AND cat.is_enable = 1
+      <if test="isAll != null and isAll == 1">
+          ORDER BY cat.sort
+      </if>
+      <if test="isAll == null or isAll == 0">
+          AND tct.template_id IS NOT NULL
+          ORDER BY tct.sort
+      </if>
+    </select>
+
+
+    <!-- 根据企业ID和模板ID查询自定义表列表 -->
+    <select id="searchTableListByTemplateId" resultMap="TableResultMap">
+        SELECT tct.tct_id,cat.table_id,cat.table_name,tct.sort,tct.template_id,tct.tct_id
+        FROM t_custom_archive_table cat,t_template_custom_table tct
+        WHERE tct.template_id = #{templateId,jdbcType=INTEGER}
+        AND tct.table_id = cat.table_id
+        AND cat.is_enable = 1
+        AND cat.is_delete = 0
+        ORDER BY tct.sort
+    </select>
+
+    <!-- 根据模板ID查询所有表字段信息 -->
+    <select id="searchTableFieldListByTemplateId" resultMap="FieldResultMap">
+        select tctf.tctf_id,cat.table_id,cat.table_name,caf.field_id,caf.field_name,caf.field_type,tctf.is_must,tctf.placeholder,tctf.sort
+        from t_template_custom_table tct,t_custom_archive_table cat,t_template_custom_table_field tctf,t_custom_archive_field caf
+        where tct.template_id = #{templateId,jdbcType=INTEGER}
+        and tct.template_id = tctf.template_id
+        and tct.table_id = cat.table_id
+        and tct.table_id = tctf.table_id
+        and tctf.field_id = caf.field_id
+        and cat.is_enable = 1
+        and tct.is_delete = 0
+        and cat.is_delete = 0
+        and tctf.is_delete = 0
+        and caf.is_delete = 0
+        ORDER BY tct.sort,tctf.sort
+  </select>
+
+    <!-- 根据表ID和模板ID查询对应表字段配置信息 -->
+    <select id="searchFieldListByTableIdAndTemplateId" resultMap="FieldResultMap">
+        SELECT caf.field_id,caf.field_name,caf.field_type,
+        CASE WHEN tctf.is_must IS NOT NULL THEN tctf.is_must ELSE caf.is_must END is_must,
+        CASE WHEN tctf.placeholder IS NOT NULL THEN tctf.placeholder ELSE caf.placeholder END placeholder,
+        caf.sort,tctf.tctf_id,tctf.template_id,tctf.table_id
+        FROM t_custom_archive_field caf
+        LEFT JOIN t_template_custom_table_field tctf
+        ON tctf.template_id = #{templateId,jdbcType=INTEGER}
+        AND tctf.table_id = caf.table_id
+        AND tctf.field_id = caf.field_id
+        AND tctf.is_delete = 0
+        WHERE caf.table_id = #{tableId,jdbcType=INTEGER}
+        AND caf.is_delete = 0
+        AND caf.is_show = 1
+        ORDER BY caf.sort
+    </select>
+
+    <!-- 根据模板ID和自定义表ID删除表数据 -->
+    <update id="deleteTemplateTable">
+        update t_template_custom_table set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where template_id = #{templateId,jdbcType=INTEGER}
+        and table_id in
+        <foreach collection="templateCustomTableList" item="customTable" open="(" separator="," close=")">
+            #{customTable.tableId}
+        </foreach>
+    </update>
+
+
+    <!-- 根据模板ID和自定义表ID列表批量删除表字段数据 -->
+    <update id="deleteTemplateTableField">
+        update t_template_custom_table_field set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where template_id = #{templateId,jdbcType=INTEGER}
+        and table_id in
+        <foreach collection="templateCustomTableList" item="customTable" open="(" separator="," close=")">
+            #{customTable.tableId}
+        </foreach>
+    </update>
+
+
+    <!-- 根据模板ID和自定义表ID删除表字段数据 -->
+    <update id="deleteTemplateTableFieldByTemplateIdAndTableId">
+        update t_template_custom_table_field set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where template_id = #{templateId,jdbcType=INTEGER}
+        and table_id = #{tableId,jdbcType=INTEGER}
+        and is_delete = 0
+    </update>
+
+    <!-- 添加模板自定义表 -->
+    <insert id="addTemplateTable">
+        <foreach collection="templateCustomTableList" item="customTable">
+            INSERT INTO t_template_custom_table
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                template_id,
+                table_id,
+                <if test="customTable.sort != null">
+                    sort,
+                </if>
+                operator_id,
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                #{templateId,jdbcType=INTEGER},
+                #{customTable.tableId,jdbcType=INTEGER},
+                <if test="customTable.sort != null">
+                    #{customTable.sort,jdbcType=INTEGER},
+                </if>
+                #{operatorId,jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+
+    <!-- 添加模板自定义表字段 -->
+    <insert id="addTemplateTableField">
+        <foreach collection="templateCustomTableFieldList" item="customField">
+            INSERT INTO t_template_custom_table_field
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                template_id,
+                table_id,
+                field_id,
+                <if test="customField.isMust != null">
+                    is_must,
+                </if>
+                <if test="customField.sort != null">
+                    sort,
+                </if>
+                <if test="customField.placeholder != null">
+                    placeholder,
+                </if>
+                operator_id,
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                #{templateId,jdbcType=INTEGER},
+                #{customTable.tableId,jdbcType=INTEGER},
+                #{customTable.fieldId,jdbcType=INTEGER},
+                <if test="customField.isMust != null">
+                    #{customField.isMust,jdbcType=INTEGER},
+                </if>
+                <if test="customField.sort != null">
+                    #{customField.sort,jdbcType=INTEGER},
+                </if>
+                <if test="customField.placeholder != null">
+                    #{customField.placeholder,jdbcType=VARCHAR},
+                </if>
+                #{operatorId,jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+
+    <!-- 修改自定义表数据 -->
+    <update id="updateTemplateTable">
+        update t_template_custom_table set sort = #{templateCustomTable.sort,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
+        where template_id = #{templateId,jdbcType=INTEGER}
+        and table_id = #{tableId,jdbcType=INTEGER}
+        and is_delete = 0
+    </update>
+
+    <!-- 根据模板ID查询预入职登记表单所有的表 -->
+    <select id="searchEntryRegistrationTableListByTemplateId" resultMap="EntryRegistrationTableResultMap">
+        SELECT cat.table_id,cat.table_name
+        FROM t_custom_archive_table cat,t_template_custom_table tct
+        WHERE tct.template_id = #{templateId,jdbcType=INTEGER}
+        AND cat.table_id = tct.table_id
+        AND cat.is_delete = 0
+        AND cat.is_enable = 1
+        ORDER BY tct.sort
+    </select>
+
+    <!-- 根据企业ID和功能CODE查询字段集合 -->
+    <select id="searchCustomFieldListByTemplateIdAndTableId" resultMap="CustomFieldResultMap">
+        select caf.field_id,caf.field_code,caf.field_name,caf.field_type,caf.input_type,caf.text_type,caf.default_value,
+        caf.placeholder,caf.max_length,caf.min_length,caf.max_number,caf.min_number,caf.float_length,
+        caf.is_time_range,caf.min_time,caf.max_time,caf.format_time,caf.is_must,caf.rule,caf.is_only_read,
+        caf.table_id,caf.group_id,caf.is_show,caf.is_system_define,caf.sort
+        from t_custom_archive_field caf,t_template_custom_table_field tctf
+        where tctf.template_id = #{templateId,jdbcType=INTEGER}
+        and tctf.table_id = #{tableId,jdbcType=INTEGER}
+        and tctf.table_id = caf.table_id
+        and caf.is_show = 1
+        and tctf.is_delete = 0
+        and caf.is_delete = 0
+    </select>
+</mapper>

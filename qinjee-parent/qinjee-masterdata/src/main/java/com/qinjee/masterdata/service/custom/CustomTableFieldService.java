@@ -74,6 +74,13 @@ public interface CustomTableFieldService {
     CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable,Map<Integer,String> mapValue);
 
     /**
+     * 处理自定义组字段数据回填
+     * @param customFieldList
+     * @param mapValue
+     */
+    void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList,Map<Integer,String> mapValue);
+
+    /**
      * 根据企业ID和功能CODE查询字段集合
      * @param companyId
      * @param funcCode
