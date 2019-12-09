@@ -309,9 +309,10 @@
             </if>
         </if>
 
-        <if test="sortFieldStr != null and sortFieldStr != ''">
+       <!-- <if test="sortFieldStr != null and sortFieldStr != ''">
             ORDER BY ${sortFieldStr}
-        </if>
+        </if>-->
+       order by  org.sort_id asc
     </select>
 
 

@@ -108,6 +108,9 @@
       <if test="positionId != null">
         position_id =#{positionId,jdbcType=INTEGER},
       </if>
+       <if test="positionGroupId != null">
+         position_group_id =#{positionGroupId,jdbcType=INTEGER},
+      </if>
       <if test="positionName != null">
         position_name = #{positionName,jdbcType=VARCHAR},
       </if>

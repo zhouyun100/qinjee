@@ -371,10 +371,11 @@
                 </if>
             </foreach>
         </if>
-
+<!--
         <if test="sortFieldStr != null and sortFieldStr != ''">
             ORDER BY ${sortFieldStr}
-        </if>
+        </if>-->
+        ORDER BY tp.sort_id asc
     </select>
 
 
@@ -502,7 +503,7 @@
                 </if>
             </if>
         </where>
-
+        order by tp.sort_id asc
     </select>
 
     <select id="getPostByPostCode" resultMap="BaseResultMap">
