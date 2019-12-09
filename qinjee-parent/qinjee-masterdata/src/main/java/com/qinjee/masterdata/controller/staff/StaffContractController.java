@@ -8,6 +8,8 @@ import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVoAndHeader;
+import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -32,6 +34,8 @@ import java.util.List;
 public class StaffContractController extends BaseController {
     @Autowired
     private IStaffContractService staffContractService;
+    @Autowired
+    private IStaffArchiveService staffArchiveService;
     private static final Logger logger = LoggerFactory.getLogger(StaffContractController.class);
 
     /**
@@ -44,17 +48,17 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 //    })
-    public ResponseResult<PageResult<UserArchiveVo>> selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
+    public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
     ) {
         Boolean b = checkParam(orgId, currentPage, pageSize);
         if (b) {
             try {
                 PageResult< UserArchiveVo > pageResult =
                         staffContractService.selectNoLaborContract(orgId, currentPage, pageSize);
-                if (pageResult != null) {
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+                userArchiveVoAndHeader.setPageResult (pageResult);
+                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
+                return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
