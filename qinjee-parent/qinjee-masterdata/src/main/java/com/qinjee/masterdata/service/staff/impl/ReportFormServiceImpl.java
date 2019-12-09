@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.qinjee.masterdata.dao.staffdao.reportDao.ReportFormDao;
 import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.RegulationDetailVo;
 import com.qinjee.masterdata.service.staff.ReportFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,12 @@ public class ReportFormServiceImpl implements ReportFormService {
     ReportFormDao reportFormDao;
 
     @Override
-    public List<UserArchiveVo> selectOrgIncreaseMemberDetail(Integer orgId, Date startDate, Date endDate) {
+    public List<RegulationDetailVo> selectOrgIncreaseMemberDetail(Integer orgId, Date startDate, Date endDate) {
        return reportFormDao.selectOrgIncreaseMemberDetail(orgId,startDate,endDate);
+    }
+
+    @Override
+    public List<RegulationDetailVo> selectOrgDecreaseMemberDetail(Integer orgId, Date startDate, Date endDate) {
+        return reportFormDao.selectOrgDecreaseMemberDetail(orgId,startDate,endDate);
     }
 }

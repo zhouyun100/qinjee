@@ -22,11 +22,18 @@ public class PostVo  implements Serializable {
     @ApiModelProperty("岗位ID")
     private Integer postId;
 
+
     /**
      * 岗位名称
      */
     @ApiModelProperty("岗位名称")
     private String postName;
+
+    /**
+     * 岗位code
+     */
+    @ApiModelProperty("岗位code")
+    private String postCode;
 
 //    /**
 //     * 岗位编码

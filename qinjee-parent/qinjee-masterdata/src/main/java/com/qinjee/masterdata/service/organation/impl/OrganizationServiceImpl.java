@@ -274,7 +274,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgCode(orgCode);
         organizationDao.updateByPrimaryKey(organization);
         //修改子机构名称
-        recursiveUpdateOrgNameAndOrgCode(newOrgFullName, orgId);
+        recursiveUpdateOrgName(newOrgFullName, orgId);
     }
 
 //=====================================================================
@@ -616,7 +616,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param parentOrgFullName
      * @param orgId
      */
-    private void recursiveUpdateOrgNameAndOrgCode(String parentOrgFullName, String orgId) {
+    private void recursiveUpdateOrgName(String parentOrgFullName, String orgId) {
 
         List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(Integer.parseInt(orgId));
         for (OrganizationVO org : childOrgList) {
@@ -626,7 +626,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             organizationDao.updateByPrimaryKey(org);
             List<OrganizationVO> childOrgList2 = organizationDao.getOrganizationListByParentOrgId(org.getOrgId());
             if (!CollectionUtils.isEmpty(childOrgList2)) {
-                recursiveUpdateOrgNameAndOrgCode(org.getOrgFullName(), String.valueOf(org.getOrgId()));
+                recursiveUpdateOrgName(org.getOrgFullName(), String.valueOf(org.getOrgId()));
             }
         }
     }

@@ -4,6 +4,7 @@ import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.controller.organization.OrganizationController;
 import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.RegulationDetailVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.staff.ReportFormService;
 import com.qinjee.model.response.CommonCode;
@@ -54,8 +55,27 @@ public class ReportFormController extends BaseController {
         //参数校验
         if (checkParam(orgId)) {
             try {
-                List<UserArchiveVo> userArchiveList=reportFormService.selectOrgIncreaseMemberDetail(orgId,startDate,endDate);
-                return ResponseResult.SUCCESS();
+                List<RegulationDetailVo> regulationDetailList=reportFormService.selectOrgIncreaseMemberDetail(orgId,startDate,endDate);
+                return new ResponseResult(regulationDetailList, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof BusinessException) {
+                    BusinessException be = (BusinessException) e;
+                    return new ResponseResult<>(null, be.getResultCode());
+                }
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+    @RequestMapping(value = "/selectOrgDecreaseMemberDetail", method = RequestMethod.GET)
+    @ApiOperation(value = "显示机构减员明细表", notes = "彭洪思")
+    public ResponseResult selectOrgDecreaseMemberDetail(Integer orgId, Date startDate, Date endDate){
+        //参数校验
+        if (checkParam(orgId)) {
+            try {
+                List<RegulationDetailVo> regulationDetailList=reportFormService.selectOrgDecreaseMemberDetail(orgId,startDate,endDate);
+                return new ResponseResult(regulationDetailList, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 if (e instanceof BusinessException) {
