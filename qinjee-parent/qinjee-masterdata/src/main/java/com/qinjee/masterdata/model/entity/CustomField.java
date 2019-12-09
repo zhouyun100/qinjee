@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,11 +36,13 @@ public class CustomField implements Serializable {
     private Short isSystemDefine;
 
     private Integer sort;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date createTime;
 
     private Integer creatorId;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date operatorTime;
 
     private Short isDelete;

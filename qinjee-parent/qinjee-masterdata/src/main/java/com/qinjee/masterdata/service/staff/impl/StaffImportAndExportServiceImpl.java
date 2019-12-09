@@ -253,9 +253,22 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     if(declaredField.getName().equals(
                             HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
                         Class typeClass = declaredField.getType();
-                        Constructor con = typeClass.getConstructor(typeClass);
-                        Object field = con.newInstance(integerStringEntry.getValue());
-                        declaredField.set(contractVo, field);
+                        int i = typeClass.getName ().lastIndexOf ( "." );
+                        String type=typeClass.getTypeName ().substring ( i+1 );
+                        Object field;
+                        if("Date".equals ( type )){
+                            SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
+                             field=sdf.parse ( integerStringEntry.getValue () );
+                            declaredField.set(contractVo, field);
+                        }
+                        if("Integer".equals ( type )){
+                             field=Integer.parseInt ( integerStringEntry.getValue () );
+                            declaredField.set(contractVo, field);
+                        }
+                        if("String".equals ( type )){
+                             field=integerStringEntry.getValue ();
+                            declaredField.set(contractVo, field);
+                        }
                     }
                 }
             }
@@ -266,6 +279,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             setValue ( contractVo, laborContract );
             //根据证件号与工号找到人员id
             Integer businessId = userArchiveDao.selectIdByNumberAndEmploy ( contractVo.getId_number (), contractVo.getEmployee_number () );
+            if(businessId==null || businessId==0){
+               ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST);
+            }
             laborContract.setArchiveId ( businessId );
             laborContract.setOperatorId ( userSession.getArchiveId () );
             contractVos.add ( laborContract );
@@ -387,6 +403,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 getTypeMap ( HeadMapUtil.getHeadsForBlackList () ) );
     }
 
+    /**
+     * 导出合同表
+     * @param exportRequest
+     * @param response
+     * @param userSession
+     * @throws IOException
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportContractList(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {

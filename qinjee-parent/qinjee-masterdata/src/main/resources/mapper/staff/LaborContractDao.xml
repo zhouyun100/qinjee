@@ -13,6 +13,7 @@
     <result column="contract_end_date" jdbcType="DATE" property="contractEndDate" />
     <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth" />
     <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType" />
+    <result column="contract_category" jdbcType="VARCHAR" property="contractCategory" />
     <result column="contract_subject" jdbcType="VARCHAR" property="contractSubject" />
     <result column="contract_number" jdbcType="VARCHAR" property="contractNumber" />
     <result column="contract_state" jdbcType="VARCHAR" property="contractState" />
@@ -40,7 +41,7 @@
     <result column="contract_remark" jdbcType="VARCHAR" property="contract_remark" />
   </resultMap>
   <sql id="Base_Column_List">
-    contract_id, archive_id,business_unit_id,org_id,post_id,
+    contract_id, archive_id,business_unit_id,org_id,post_id,contract_category,
     contract_sign_date, contract_begin_date, contract_end_date, contract_period_month,
     contract_period_type, contract_subject, contract_number, contract_state, contract_remark,
     sign_number, operator_id, create_time, update_time
@@ -62,14 +63,14 @@
       contract_end_date, contract_period_month, contract_period_type,
       contract_subject, contract_number, contract_state,
       contract_remark, sign_number, operator_id,
-      create_time, update_time)
+      create_time, update_time,contract_category)
     values (#{id,jdbcType=INTEGER},#{archiveId,jdbcType=INTEGER},
     #{businessUnitId,jdbcType=INTEGER},#{orgId,jdbcType=INTEGER},#{postId,jdbcType=INTEGER},
       #{contractSignDate,jdbcType=DATE}, #{contractBeginDate,jdbcType=DATE},
       #{contractEndDate,jdbcType=DATE}, #{contractPeriodMonth,jdbcType=INTEGER}, #{contractPeriodType,jdbcType=VARCHAR},
       #{contractSubject,jdbcType=VARCHAR}, #{contractNumber,jdbcType=VARCHAR}, #{contractState,jdbcType=VARCHAR},
       #{contractRemark,jdbcType=VARCHAR}, #{signNumber,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},#{contractCategory})
   </insert>
   <insert id="insertSelective" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
     insert into t_labor_contract
@@ -128,6 +129,9 @@
       <if test="probationPeriod != null">
         probation_period,
       </if>
+      <if test="contractCategory != null">
+        contract_category,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="archiveId != null">
@@ -182,7 +186,10 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
       <if test="probationPeriod != null">
-        #{probationPeriod}
+        #{probationPeriod},
+      </if>
+      <if test="contractCategory != null">
+        #{contractCategory}
       </if>
     </trim>
   </insert>
@@ -244,6 +251,9 @@
         <if test="item.probationPeriod != null">
           probation_period,
         </if>
+        <if test="item.contractCategory != null">
+          contract_category,
+        </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
         <if test="item.archiveId != null">
@@ -299,6 +309,9 @@
         </if>
         <if test="item.probationPeriod != null">
           #{item.probationPeriod},
+        </if>
+        <if test="item.contractCategory != null">
+          #{item.contractCategory}
         </if>
       </trim>
     </foreach>
@@ -357,6 +370,9 @@
       <if test="probationPeriod != null">
         probation_period = #{probationPeriod,jdbcType=TIMESTAMP},
       </if>
+      <if test="contractCategory != null">
+        contract_category=#{contractCategory}
+      </if>
     </set>
     where contract_id = #{contractId,jdbcType=INTEGER}
   </update>
@@ -378,7 +394,8 @@
       operator_id = #{operatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      probation_period = #{probationPeriod,jdbcType=TIMESTAMP}
+      probation_period = #{probationPeriod,jdbcType=TIMESTAMP},
+      contract_category=#{contractCategory}
     where contract_id = #{contractId,jdbcType=INTEGER}
   </update>
   <select id="seleltByArcId" resultType="java.lang.Integer">
@@ -427,7 +444,7 @@
   <select id="selectExportConList" resultType="hashmap" >
     select arc.user_name,arc.id_number,arc.employee_number,con.contract_number,con.contract_period_type,
     con.contract_sign_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
-    con.contract_subject,con.sign_number,con.contract_remark,con.contract_category,con.probation_period,con.contract_id
+    con.contract_subject,con.sign_number,con.contract_remark,con.contract_category,con.probation_period,con.contract_id,con.contract_state
     from t_labor_contract con
     left join t_user_archive arc on arc.archive_id = con.archive_id
     where con.contract_id in

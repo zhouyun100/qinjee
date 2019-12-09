@@ -351,7 +351,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             } else {
                                 preEmploymentDao.insert ( preEmployment );
                             }
-
                     }
                 }
                 if(preemploymentId!=null && preemploymentId!=0) {

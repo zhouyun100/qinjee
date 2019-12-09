@@ -94,7 +94,7 @@ public class HeadMapUtil {
     public static List<String> getHeadsForCon(){
         List<String> keyList=new ArrayList<>();
         String[] strings={"姓名","证件号码","工号","合同类别","合同编号","合同期限类型","合同签订日期","合同起始日期",
-                "合同终止日期","合同期限","合同主体","签订次数","合同备注"};
+                "合同终止日期","合同期限","合同主体","签订次数","合同备注","合同状态"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }

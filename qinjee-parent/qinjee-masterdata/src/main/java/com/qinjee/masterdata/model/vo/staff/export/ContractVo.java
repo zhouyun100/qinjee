@@ -39,4 +39,8 @@ public class ContractVo implements Serializable {
      *合同备注
      */
     private String    contract_remark;
+    /**
+     * 合同状态
+     */
+    private String    contract_state;
 }

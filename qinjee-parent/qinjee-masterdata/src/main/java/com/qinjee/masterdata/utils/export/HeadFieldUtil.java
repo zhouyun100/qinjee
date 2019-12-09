@@ -10,12 +10,14 @@ public class HeadFieldUtil {
         map.put("姓名", "user_name");
         map.put("证件号码", "id_number");
         map.put("联系电话", "phone");
+        map.put("工号", "employee_number");
         map.put("部门", "org_name");
         map.put("单位", "business_unit_name");
         map.put("岗位", "post_name");
         map.put("直接上级", "supervisor_user_name");
         map.put("合同类别", "contract_category");
         map.put("合同编号", "contract_number");
+        map.put("合同状态", "contract_state");
         map.put("合同期限类型", "contract_period_type");
         map.put("合同签订日期", "contract_sign_date");
         map.put("合同起始日期", "contract_begin_date");

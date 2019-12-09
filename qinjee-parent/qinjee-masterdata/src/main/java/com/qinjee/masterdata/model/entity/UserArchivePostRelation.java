@@ -72,6 +72,7 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 任职结束时间
      */
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
     @ApiModelProperty("任职结束时间")

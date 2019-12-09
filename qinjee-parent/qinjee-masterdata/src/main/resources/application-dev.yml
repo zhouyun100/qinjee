@@ -9,6 +9,12 @@ spring:
     encoding: utf-8
     cache-duration: 3600
 
+  jackson:
+    #设置时间格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    #设置时区
+    time-zone: GMT+8
+
   datasource:
     # mysql 8.0 数据库配置
     url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
@@ -128,10 +134,10 @@ server:
 logging:
   config: classpath:log4j/log4j2_dev.xml
   level:
-   com:
-     qinjee:
-       masterdata:
-         dao: DEBUG
+    com:
+      qinjee:
+        masterdata:
+          dao: DEBUG
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml,classpath:mapper/**/*.xml

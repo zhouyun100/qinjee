@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -42,21 +44,29 @@ public class LaborContract implements Serializable {
     /**
      * 合同签订日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date contractSignDate;
 
     /**
      * 合同开始日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date contractBeginDate;
 
     /**
      * 合同结束日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date contractEndDate;
 
     /**
      * 合同期限(月)
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Integer contractPeriodMonth;
     /**
      * 合同类别
@@ -103,6 +113,8 @@ public class LaborContract implements Serializable {
     /**
      * 创建时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date createTime;
 
     /**
