@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qinjee.masterdata.dao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
@@ -85,7 +86,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
         UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
-        userArchiveVoAndHeader.setList ( userArchiveVos );
+        PageInfo < UserArchiveVo > userArchiveVoPageInfo = new PageInfo <> ( userArchiveVos );
+        PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> (  userArchiveVoPageInfo.getList () );
+        userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult );
         userArchiveVoAndHeader.setHeads ( headList );
         return userArchiveVoAndHeader;
 
@@ -134,8 +137,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List < ArcHead > headList = getHeadList ( userSession, list1 );
         UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
         userArchiveVoAndHeader.setHeads ( headList );
-        userArchiveVoAndHeader.setList ( list );
-           return userArchiveVoAndHeader;
+        PageInfo < UserArchiveVo > userArchiveVoPageInfo = new PageInfo <> ( list );
+        PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( userArchiveVoPageInfo.getList () );
+        userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
+        return userArchiveVoAndHeader;
 
     }
 
@@ -227,7 +232,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 //找到tableId
 
                 //拼接order
-                List < CustomFieldVO > customFields = customTableFieldDao.selectFieldByIdList ( integers2 );
+                List < CustomFieldVO > customFields = customTableFieldDao.selectFieldByIdList ( integers2,userSession.getCompanyId (),"ARC" );
                 for (CustomFieldVO customFieldVO : customFields) {
                     if (customFieldVO.getIsSystemDefine () == 1) {
                         stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () ) + "\t" )
@@ -300,9 +305,19 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchiveVo selectArchiveSingle(Integer id) {
+    public UserArchiveVoAndHeader selectArchiveSingle(Integer id,UserSession userSession) {
 
-        return userArchiveDao.selectByPrimaryKey ( id );
+        UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( id );
+        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( id );
+        List < ArcHead > headList = getHeadList ( userSession, list1 );
+        List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
+        userArchiveVos.add ( userArchiveVo );
+        PageInfo < UserArchiveVo > userArchiveVoPageInfo = new PageInfo <> ( userArchiveVos );
+        UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+        PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( userArchiveVoPageInfo.getList () );
+        userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
+        userArchiveVoAndHeader.setHeads ( headList );
+        return userArchiveVoAndHeader;
     }
 
     @Override
@@ -371,7 +386,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private String getBaseSql(List < CustomFieldVO > notIn, List < Integer > integers, Integer companyId, List < CustomTableVO > tableVOS) {
         List < CustomFieldVO > inList = new ArrayList <> ();
         List < CustomFieldVO > outList = new ArrayList <> ();
-        List < CustomFieldVO > list = customTableFieldDao.selectFieldByIdList ( integers );
+        List < CustomFieldVO > list = customTableFieldDao.selectFieldByIdList ( integers,companyId,"ARC" );
         for (CustomFieldVO customFieldVO : list) {
             if (customFieldVO.getIsSystemDefine () == 0) {
                 outList.add ( customFieldVO );

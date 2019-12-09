@@ -190,7 +190,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         customTableVO.setCompanyId ( userSession.getCompanyId () );
         customTableVO.setFuncCode ( "ARC" );
         List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
-        List < CustomFieldVO > list1 = customTableFieldDao.selectFieldByIdList ( fieldIdList );
+        List < CustomFieldVO > list1 = customTableFieldDao.selectFieldByIdList ( fieldIdList,userSession.getCompanyId (),"ARC" );
         for (CustomFieldVO customFieldVO : list1) {
             if(customFieldVO.getIsSystemDefine ()==0){
                 fieldVoList.add ( customFieldVO );

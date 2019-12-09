@@ -158,12 +158,12 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchiveSingle", method = RequestMethod.GET)
     @ApiOperation(value = "查看档案", notes = "hkt")
-    public ResponseResult<UserArchiveVo> selectArchiveSingle(Integer id ) {
-        Boolean b = checkParam(id);
+    public ResponseResult<UserArchiveVoAndHeader> selectArchiveSingle(Integer id ) {
+        Boolean b = checkParam(id,getUserSession ());
         if(b){
             try {
-                UserArchiveVo userArchive = staffArchiveService.selectArchiveSingle(id);
-                return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
+                UserArchiveVoAndHeader userArchiveVoAndHeader = staffArchiveService.selectArchiveSingle ( id,getUserSession () );
+                return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }

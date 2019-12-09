@@ -160,7 +160,7 @@ public interface IStaffArchiveService {
      */
     void deleteCareerTrack(Integer id);
 
-    UserArchiveVo selectArchiveSingle(Integer id);
+    UserArchiveVoAndHeader selectArchiveSingle(Integer id,UserSession userSession);
 
     List<UserArchiveVo> selectUserArchiveByName(String name);
 

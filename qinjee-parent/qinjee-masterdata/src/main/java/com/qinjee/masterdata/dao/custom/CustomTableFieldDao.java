@@ -280,7 +280,7 @@ public interface CustomTableFieldDao {
 
     String selectFieldCodeById(@Param("integer") Integer integer);
 
-    List< CustomFieldVO> selectFieldByIdList(@Param("integers2") List < Integer > integers2);
+    List< CustomFieldVO> selectFieldByIdList(@Param("integers2") List < Integer > integers2, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
     CustomFieldVO selectFieldById(@Param("fieldId") Integer fieldId, @Param("companyId") Integer companyId, @Param("arc") String arc);
 
