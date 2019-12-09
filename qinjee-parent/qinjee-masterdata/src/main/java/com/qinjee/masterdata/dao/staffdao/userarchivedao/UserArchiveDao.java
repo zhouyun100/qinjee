@@ -64,6 +64,8 @@ public interface UserArchiveDao {
 
     Integer selectArchiveIdByNumber(String employeeNumber);
 
+    UserArchiveVo selectArchiveByNumber(String employeeNumber);
+
 
     List<Integer> selectByOrgId(Integer orgId);
 

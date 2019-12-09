@@ -722,6 +722,12 @@
     where is_delete=0
     AND  employee_number = #{employeeNumber,jdbcType=VARCHAR}
   </select>
+  <select id="selectArchiveByNumber" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from   t_user_archive
+    where is_delete=0
+    AND  employee_number = #{employeeNumber,jdbcType=VARCHAR}
+  </select>
   <select id="getUserArchiveListByOrgId" resultMap="BaseResultMap">
     select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id, tua.post_id,
     tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birthdate, tua.age, tua.nationality, tua.birthplace, tua.political_status, tua.marital_status,

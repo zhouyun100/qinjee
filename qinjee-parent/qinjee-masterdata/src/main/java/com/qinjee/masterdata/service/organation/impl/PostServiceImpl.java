@@ -369,11 +369,10 @@ public class PostServiceImpl implements PostService {
         List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), Post.class);
         List<Post> orgList = new ArrayList<>();
         //记录行号
-        Map<String, Integer> lineNumber = new HashMap<>();
         Integer number = 1;
         for (Object object : objects) {
             Post vo = (Post) object;
-            lineNumber.put(vo.getPostCode(), number++);
+            vo.setLineNumber(++number);
             orgList.add(vo);
         }
         orgList.sort(new Comparator() {
@@ -391,7 +390,7 @@ public class PostServiceImpl implements PostService {
             }
         });
         //校验
-        List<Post> checkResultList = checkExcel(lineNumber, orgList, userSession);
+        List<Post> checkResultList = checkExcel( orgList, userSession);
         //拿到错误校验列表
         List<Post> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
@@ -754,14 +753,11 @@ public class PostServiceImpl implements PostService {
     }
 
 
-    public List<Post> checkExcel(Map<String, Integer> lineNumber, List<Post> voList, UserSession userSession) {
+    public List<Post> checkExcel( List<Post> voList, UserSession userSession) {
         List<Post> checkVos = new ArrayList<>();
-        int line = 1;
-        int groupCount = 0;
         for (Post post : voList) {
             Post checkVo = new Post();
             BeanUtils.copyProperties(post, checkVo);
-            checkVo.setLineNumber(line++);
             checkVo.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder();
             //验空
