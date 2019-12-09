@@ -14,7 +14,6 @@ import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
@@ -260,7 +259,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
         }
 
-        //修改子机构编码
         String newOrgFullName;
         if (Objects.nonNull(parentOrganization)) {
             newOrgFullName = parentOrganization.getOrgFullName() + "/" + orgName;
@@ -273,12 +271,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgType(orgType);
         organization.setOrgName(orgName);
         organization.setOrgFullName(newOrgFullName);
-        int result = organizationDao.updateByPrimaryKey(organization);
-
-        //递归修改子机构的全称
-        recursiveUpdateOrgNameByParentOrgId(newOrgFullName, orgId);
+        organization.setOrgCode(orgCode);
+        organizationDao.updateByPrimaryKey(organization);
+        //修改子机构名称
+        recursiveUpdateOrgNameAndOrgCode(newOrgFullName, orgId);
     }
-
 
 //=====================================================================
 
@@ -402,7 +399,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 public int compare(Object o1, Object o2) {
                     OrganizationVO org1 = (OrganizationVO) o1;
                     OrganizationVO org2 = (OrganizationVO) o2;
-                    return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+                    return org1.getOrgCode().compareTo(org2.getOrgCode());
+                    //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
                 }
             });
             int sortId = 1000;
@@ -494,7 +492,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 } else if (org1.getOrgCode().length() < org2.getOrgCode().length()) {
                     return -1;
                 }
-                return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+                return org1.getOrgCode().compareTo(org2.getOrgCode());
+                //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
             }
         });
         //将排序后的orgList存入redis
@@ -617,7 +616,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param parentOrgFullName
      * @param orgId
      */
-    private void recursiveUpdateOrgNameByParentOrgId(String parentOrgFullName, String orgId) {
+    private void recursiveUpdateOrgNameAndOrgCode(String parentOrgFullName, String orgId) {
 
         List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(Integer.parseInt(orgId));
         for (OrganizationVO org : childOrgList) {
@@ -627,7 +626,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             organizationDao.updateByPrimaryKey(org);
             List<OrganizationVO> childOrgList2 = organizationDao.getOrganizationListByParentOrgId(org.getOrgId());
             if (!CollectionUtils.isEmpty(childOrgList2)) {
-                recursiveUpdateOrgNameByParentOrgId(org.getOrgFullName(), String.valueOf(org.getOrgId()));
+                recursiveUpdateOrgNameAndOrgCode(org.getOrgFullName(), String.valueOf(org.getOrgId()));
             }
         }
     }

@@ -172,4 +172,31 @@
     LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id
     WHERE tpg.company_id=#{companyId} AND tp.position_name=#{positionName} and  tp.is_delete =0
   </select>
+  <select id="getSinglePositionList" resultMap="BaseResultMap">
+
+    SELECT <include refid="Base_Column_List"></include> FROM t_position tp where
+    1 =1
+    and tp.position_id in
+    <foreach collection="positionIds" item="item" open="(" close=")" separator=",">
+        #{item}
+    </foreach>
+
+  </select>
+  <update id="sortPosition" parameterType="java.util.LinkedList">
+
+    <foreach collection="positionIds" item="id" index="index" separator=";">
+      UPDATE t_position
+      <set>
+        position_id=(#{index}+1)*1000
+      </set>
+      <where>
+        position_id = #{id}
+      </where>
+    </foreach>
+
+  </update>
+
+
+
+
 </mapper>

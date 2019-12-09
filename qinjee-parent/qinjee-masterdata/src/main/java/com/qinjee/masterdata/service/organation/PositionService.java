@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -52,14 +53,8 @@ public interface PositionService {
      */
     ResponseResult deletePosition(List<Integer> positionIds, UserSession userSession);
 
-    /**
-     * 职位排序
-     * @param prePositionId
-     * @param midPositionId
-     * @param nextPositionId
-     * @return
-     */
-    ResponseResult sortPosition(Integer prePositionId, Integer midPositionId, Integer nextPositionId);
+
+    void sortPosition(List<Integer> positionIds);
     ResponseResult<List<Position>> getAllPositions(UserSession userSession);
 
     void determinePositionNameIsOnly(String positionName, UserSession userSession);
