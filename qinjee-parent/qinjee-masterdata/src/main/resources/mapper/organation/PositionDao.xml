@@ -187,7 +187,7 @@
     <foreach collection="positionIds" item="id" index="index" separator=";">
       UPDATE t_position
       <set>
-        position_id=(#{index}+1)*1000
+        sort_id=(#{index}+1)*1000
       </set>
       <where>
         position_id = #{id}

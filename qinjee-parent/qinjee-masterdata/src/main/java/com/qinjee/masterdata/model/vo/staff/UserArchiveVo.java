@@ -58,6 +58,8 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("单位名称")
     private String businessUnitName;
+    @ApiModelProperty("职位名称")
+    private String positionName;
 
     /**
      * 部门ID

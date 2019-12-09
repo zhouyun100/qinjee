@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.reportDao.ReportFormDao">
+  <resultMap id="UserArchiveMap" type="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="user_category" jdbcType="VARCHAR" property="userCategory" />
+    <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
+    <result column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
+    <result column="post_name" jdbcType="VARCHAR" property="postName" />
+    <result column="id_type" jdbcType="VARCHAR" property="idType" />
+    <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="birth_date" jdbcType="DATE" property="birthDate" />
+    <result column="age" jdbcType="SMALLINT" property="age" />
+    <result column="nationality" jdbcType="INTEGER" property="nationality" />
+    <result column="birthplace" jdbcType="VARCHAR" property="birthplace" />
+    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
+    <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
+    <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
+    <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
+    <result column="hire_date" jdbcType="DATE" property="hireDate" />
+    <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
+    <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
+    <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
+    <result column="probation_period" jdbcType="INTEGER" property="probationPeriod" />
+    <result column="converse_date" jdbcType="DATE" property="converseDate" />
+    <result column="first_degree" jdbcType="VARCHAR" property="firstDegree" />
+    <result column="highest_degree" jdbcType="VARCHAR" property="highestDegree" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="professional_certification" jdbcType="VARCHAR" property="professionalCertification" />
+    <result column="professional_title" jdbcType="VARCHAR" property="professionalTitle" />
+    <result column="professional_level" jdbcType="VARCHAR" property="professionalLevel" />
+    <result column="attrition_date" jdbcType="DATE" property="attritionDate" />
+    <result column="attrition_type" jdbcType="VARCHAR" property="attritionType" />
+    <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
+    <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
+  </resultMap>
+
+
+  <select id="selectOrgIncreaseMemberDetail" resultMap="UserArchiveMap">
+    SELECT tua.user_name ,org.org_name ,unit.org_name business_unit_name ,tp.post_name ,tpo.position_name,track.after_position_id,track.after_post_id ,track.change_reason FROM t_archive_career_track track
+    LEFT JOIN t_user_archive tua ON tua.archive_id =track.archive_id
+    LEFT JOIN t_organization org ON org.org_id=track.after_org_id
+    LEFT JOIN t_organization unit ON unit.org_id=track.after_business_unit_id
+    LEFT JOIN t_post tp ON tp.post_id =track.after_post_id
+    LEFT JOIN t_position tpo ON tpo.position_id =track.after_position_id
+    WHERE org.org_id =#{orgId} AND  track.change_date >= #{startDate} AND #{endDate} >= track.change_date
+  </select>
+
+</mapper>
