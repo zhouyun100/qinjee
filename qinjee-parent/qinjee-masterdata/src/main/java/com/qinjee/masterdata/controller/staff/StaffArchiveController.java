@@ -145,8 +145,11 @@ public class StaffArchiveController extends BaseController {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                UserArchiveVoAndHeader userArchive = staffArchiveService.selectArchive(getUserSession());
-                return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
+                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchive ( getUserSession () );
+                userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
+                return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
@@ -159,10 +162,13 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectArchiveSingle", method = RequestMethod.GET)
     @ApiOperation(value = "查看档案", notes = "hkt")
     public ResponseResult<UserArchiveVoAndHeader> selectArchiveSingle(Integer id ) {
-        Boolean b = checkParam(id,getUserSession ());
+        Boolean b = checkParam(id);
         if(b){
             try {
-                UserArchiveVoAndHeader userArchiveVoAndHeader = staffArchiveService.selectArchiveSingle ( id,getUserSession () );
+                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveSingle ( id, getUserSession () );
+                userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult  );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -199,7 +205,10 @@ public class StaffArchiveController extends BaseController {
         Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage);
         if(b){
             try {
-                UserArchiveVoAndHeader userArchiveVoAndHeader = staffArchiveService.selectArchivebatch ( getUserSession (), orgId, pageSize, currentPage );
+                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), orgId, pageSize, currentPage );
+                userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
                 if(userArchiveVoAndHeader!=null) {
                     return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
                 }

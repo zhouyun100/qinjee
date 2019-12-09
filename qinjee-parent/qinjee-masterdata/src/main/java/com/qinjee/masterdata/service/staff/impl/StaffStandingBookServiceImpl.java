@@ -129,16 +129,18 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             standingBook.setCompanyId(userSession.getCompanyId());
             standingBook.setCreatorId(userSession.getArchiveId());
             standingBookDao.updateByPrimaryKeySelective(standingBook);
-            for (StandingBookFilterVo standingBookFilterVo : standingBookInfoVo.getListVo()) {
-                StandingBookFilter standingBookFilter = new StandingBookFilter();
-                BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
-                standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
-                standingBookFilter.setOperatorId(userSession.getArchiveId());
-                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter,userSession.getCompanyId (),"ARC"));
-                if(standingBookFilter.getFilterId()==null||standingBookFilter.getFilterId()==0){
-                    standingBookFilterDao.insertSelective(standingBookFilter);
+            if(!CollectionUtils.isEmpty ( standingBookInfoVo.getListVo () )) {
+                for (StandingBookFilterVo standingBookFilterVo : standingBookInfoVo.getListVo ()) {
+                    StandingBookFilter standingBookFilter = new StandingBookFilter ();
+                    BeanUtils.copyProperties ( standingBookFilterVo, standingBookFilter );
+                    standingBookFilter.setStandingBookId ( standingBook.getStandingBookId () );
+                    standingBookFilter.setOperatorId ( userSession.getArchiveId () );
+                    standingBookFilter.setSqlStr ( getWhereSql ( standingBookFilter, userSession.getCompanyId (), "ARC" ) );
+                    if (standingBookFilter.getFilterId () == null || standingBookFilter.getFilterId () == 0) {
+                        standingBookFilterDao.insertSelective ( standingBookFilter );
+                    }
+                    standingBookFilterDao.updateByPrimaryKeySelective ( standingBookFilter );
                 }
-                standingBookFilterDao.updateByPrimaryKeySelective(standingBookFilter);
             }
         }
     }

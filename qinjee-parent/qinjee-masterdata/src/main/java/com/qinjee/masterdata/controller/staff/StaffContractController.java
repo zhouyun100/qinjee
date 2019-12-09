@@ -84,14 +84,14 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "合同状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(Integer orgId, Integer currentPage,
+    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(@RequestParam List<Integer> orgIdList, Integer currentPage,
                                                                               Integer pageSize,Boolean isEnable,
                                                                               @RequestBody List<String> status) {
-        Boolean b = checkParam(orgId, currentPage, pageSize,isEnable,status);
+        Boolean b = checkParam(orgIdList, currentPage, pageSize,isEnable,status);
         if (b) {
             try {
                 PageResult<UserArchive> pageResult =
-                        staffContractService.selectLaborContractserUser(orgId, currentPage, pageSize,isEnable,status);
+                        staffContractService.selectLaborContractserUser(orgIdList, currentPage, pageSize,isEnable,status);
                 if (pageResult != null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
                 }

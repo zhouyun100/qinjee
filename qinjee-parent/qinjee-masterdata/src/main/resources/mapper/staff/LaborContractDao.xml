@@ -405,7 +405,10 @@
     select
     <include refid="Base_Column_List" />
     from t_labor_contract
-    where org_id = #{orgId,jdbcType=INTEGER}
+    where org_id
+    in <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
   </select>
 
 

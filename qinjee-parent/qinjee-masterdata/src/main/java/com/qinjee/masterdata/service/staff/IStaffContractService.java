@@ -111,12 +111,12 @@ public interface IStaffContractService {
 
     /**
      * 展示已签合同人员
-     * @param orgId
+     * @param orgIdList
      * @param currentPage
      * @param pageSize
      * @return
      */
-    PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage,
+    PageResult<UserArchive> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
                                                        Integer pageSize, Boolean isEnable,
                                                        List<String> status) throws Exception;
 

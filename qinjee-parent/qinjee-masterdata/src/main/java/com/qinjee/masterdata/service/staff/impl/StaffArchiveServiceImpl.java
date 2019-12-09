@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.qinjee.masterdata.dao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
@@ -79,18 +78,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchiveVoAndHeader selectArchive(UserSession userSession) {
+    public PageResult<UserArchiveVo> selectArchive(UserSession userSession) {
         UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( userSession.getArchiveId () );
-        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
-        List < ArcHead > headList = getHeadList ( userSession, list1 );
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
-        UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
-        PageInfo < UserArchiveVo > userArchiveVoPageInfo = new PageInfo <> ( userArchiveVos );
-        PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> (  userArchiveVoPageInfo.getList () );
-        userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult );
-        userArchiveVoAndHeader.setHeads ( headList );
-        return userArchiveVoAndHeader;
+        return new PageResult <> (  userArchiveVos );
+
 
     }
 
@@ -129,18 +122,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchiveVoAndHeader  selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
+    public PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId () );
-        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
-        //组装默认显示方案表头
-        List < ArcHead > headList = getHeadList ( userSession, list1 );
-        UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
-        userArchiveVoAndHeader.setHeads ( headList );
-        PageInfo < UserArchiveVo > userArchiveVoPageInfo = new PageInfo <> ( list );
-        PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( userArchiveVoPageInfo.getList () );
-        userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-        return userArchiveVoAndHeader;
+        return new PageResult <> ( list );
 
     }
 
@@ -305,19 +290,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchiveVoAndHeader selectArchiveSingle(Integer id,UserSession userSession) {
+    public PageResult<UserArchiveVo> selectArchiveSingle(Integer id,UserSession userSession) {
 
         UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( id );
-        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( id );
-        List < ArcHead > headList = getHeadList ( userSession, list1 );
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
-        PageInfo < UserArchiveVo > userArchiveVoPageInfo = new PageInfo <> ( userArchiveVos );
         UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
-        PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( userArchiveVoPageInfo.getList () );
-        userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-        userArchiveVoAndHeader.setHeads ( headList );
-        return userArchiveVoAndHeader;
+        return new PageResult <> ( userArchiveVos );
+
+
     }
 
     @Override
@@ -340,6 +321,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 }
             }
         }
+    }
+
+    @Override
+    public List < ArcHead > getHeadList(UserSession userSession, Integer id) {
+        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
+        //组装默认显示方案表头
+       return getHeadList ( userSession, list1 );
     }
 
     private Map < String, Object > getParamMap(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {

@@ -89,7 +89,7 @@ public interface IStaffArchiveService {
      * @param userSession
      * @return
      */
-    UserArchiveVoAndHeader selectArchive(UserSession userSession);
+    PageResult<UserArchiveVo> selectArchive(UserSession userSession);
 
     /**
      * 新增档案
@@ -104,7 +104,7 @@ public interface IStaffArchiveService {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    UserArchiveVoAndHeader selectArchivebatch(UserSession userSession, Integer companyId, Integer pageSize, Integer currentPage);
+    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, Integer companyId, Integer pageSize, Integer currentPage);
     /**
      * 通过id找到人员姓名与工号
      */
@@ -160,9 +160,11 @@ public interface IStaffArchiveService {
      */
     void deleteCareerTrack(Integer id);
 
-    UserArchiveVoAndHeader selectArchiveSingle(Integer id,UserSession userSession);
+    PageResult<UserArchiveVo> selectArchiveSingle(Integer id,UserSession userSession);
 
     List<UserArchiveVo> selectUserArchiveByName(String name);
 
     void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession);
+
+    List<ArcHead> getHeadList(UserSession userSession,Integer id);
 }

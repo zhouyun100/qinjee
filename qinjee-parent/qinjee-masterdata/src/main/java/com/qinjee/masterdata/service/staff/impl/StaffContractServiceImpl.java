@@ -84,16 +84,15 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
 
     @Override
-    public PageResult<UserArchive> selectLaborContractserUser(Integer orgId, Integer currentPage,
+    public PageResult<UserArchive> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
                                                               Integer pageSize,Boolean isEnable,
                                                               List<String> status) {
-        PageHelper.startPage(currentPage,pageSize);
+
         List<LaborContract> noEffectLabList=new ArrayList<>();
         List<Integer> conList;
         //查看机构下的合同
-        List<LaborContract> labList=laborContractDao.selectLabByorgId(orgId);
+        List<LaborContract> labList=laborContractDao.selectLabByorgId(orgIdList);
         //把返回的合同进行筛选，通过isEnable，得到合同id
-
 
         //将合同快到期的，解除合同，终止合同筛选为无效合同
         for (LaborContract laborContract : labList) {
@@ -109,8 +108,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         }else {
              conList = getConList(status, noEffectLabList);
         }
-
-
+        PageHelper.startPage(currentPage,pageSize);
         //根据合同id找到有合同的档案id
         List<Integer> arcList=laborContractDao.seleltByArcIdIn(conList);
         //根据档案id查询档案
