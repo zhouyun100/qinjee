@@ -3,10 +3,10 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -16,7 +16,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -246,11 +249,11 @@ public class StaffStandingBookController extends BaseController {
 //            @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<List<UserArchive>> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type){
+    public ResponseResult<List< UserArchiveVo >> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type){
         Boolean b = checkParam(stangdingBookId,archiveType,orgId,type,getUserSession());
         if (b) {
             try {
-                List<UserArchive> list=staffStandingBookService.selectStaff(stangdingBookId,archiveType,orgId,type,getUserSession());
+                List<UserArchiveVo> list=staffStandingBookService.selectStaff(stangdingBookId,archiveType,orgId,type,getUserSession());
                 if(list!=null){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
                 }

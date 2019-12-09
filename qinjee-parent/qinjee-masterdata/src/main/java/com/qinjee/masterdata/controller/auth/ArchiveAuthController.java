@@ -32,6 +32,7 @@ import java.util.List;
  */
 @Api(tags = "【权限管理】用户授权接口")
 @RestController
+@CrossOrigin
 @RequestMapping("/archiveAuth")
 public class ArchiveAuthController extends BaseController {
 

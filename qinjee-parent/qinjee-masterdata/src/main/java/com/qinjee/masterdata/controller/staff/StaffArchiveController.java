@@ -148,7 +148,7 @@ public class StaffArchiveController extends BaseController {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchive ( getUserSession () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -168,7 +168,7 @@ public class StaffArchiveController extends BaseController {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveSingle ( id, getUserSession () );
                 userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult  );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession () ) );
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -208,7 +208,7 @@ public class StaffArchiveController extends BaseController {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), orgId, pageSize, currentPage );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession ()) );
                 if(userArchiveVoAndHeader!=null) {
                     return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
                 }

@@ -36,6 +36,7 @@ import java.util.List;
  */
 @Api(tags = "【权限管理】权限移交接口")
 @RestController
+@CrossOrigin
 @RequestMapping("/authHandover")
 public class AuthHandoverController extends BaseController{
 

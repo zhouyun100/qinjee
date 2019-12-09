@@ -34,6 +34,7 @@ import java.util.List;
  */
 @Api(tags = "【权限管理】角色反查接口")
 @RestController
+@CrossOrigin
 @RequestMapping("/roleSearch")
 public class RoleSearchController extends BaseController{
 

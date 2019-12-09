@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -51,6 +48,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private static final String RELESESTATUS = "RELESESTATUS";
     private static final String NOTCONFIRM = "待确认";
     private static final String CONFIRM = "已确认";
+    private static final String  HAVEFFECT= "有效";
+    private static final String NOTHAVAEFFECT = "无效";
     @Autowired
     private LaborContractDao laborContractDao;
     @Autowired
@@ -84,12 +83,12 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
 
     @Override
-    public PageResult<UserArchive> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
-                                                              Integer pageSize,Boolean isEnable,
+    public PageResult<UserArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
+                                                              Integer pageSize,String isEnable,
                                                               List<String> status) {
 
         List<LaborContract> noEffectLabList=new ArrayList<>();
-        List<Integer> conList;
+        Set<Integer> conSet;
         //查看机构下的合同
         List<LaborContract> labList=laborContractDao.selectLabByorgId(orgIdList);
         //把返回的合同进行筛选，通过isEnable，得到合同id
@@ -103,29 +102,35 @@ public class StaffContractServiceImpl implements IStaffContractService {
             }
         }
         labList.removeAll(noEffectLabList);
-        if(isEnable){
-             conList = getConList(status, labList);
-        }else {
-             conList = getConList(status, noEffectLabList);
+        if(HAVEFFECT.equals (isEnable)){
+             conSet = getConList(status, labList);
+        }else if(NOTHAVAEFFECT.equals ( isEnable )) {
+             conSet = getConList(status, noEffectLabList);
+        }else{
+            Set < Integer > conList = getConList ( status, labList );
+            Set < Integer > conList1 = getConList ( status, noEffectLabList );
+            conList.addAll ( conList1 );
+            conSet=conList;
         }
-        PageHelper.startPage(currentPage,pageSize);
-        //根据合同id找到有合同的档案id
-        List<Integer> arcList=laborContractDao.seleltByArcIdIn(conList);
-        //根据档案id查询档案
-        List<UserArchive> list=userArchiveDao.selectByPrimaryKeyList(arcList);
-        return new PageResult<>(list);
+        ArrayList < Integer > integers = new ArrayList <> ( conSet );
+        if(!CollectionUtils.isEmpty ( integers )) {
+            PageHelper.startPage ( currentPage, pageSize );
+            List < UserArchiveVo > userArchiveList = userArchiveDao.selectByPrimaryKeyList ( integers );
+            return new PageResult <> ( userArchiveList );
+        }
+        return null;
     }
 
-    private List<Integer> getConList(List<String> status, List<LaborContract> labList) {
-        List<Integer> conList=new ArrayList<>();
+    private Set<Integer> getConList(List<String> status, List<LaborContract> labList) {
+        Set<Integer> conSet=new HashSet <> (  );
         for (LaborContract laborContract : labList) {
             for (String s : status) {
                 if (laborContract.getContractState().equals(s)) {
-                    conList.add(laborContract.getArchiveId());
+                    conSet.add(laborContract.getArchiveId());
                 }
             }
         }
-        return conList;
+        return conSet;
     }
     /**
      *

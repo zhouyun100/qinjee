@@ -224,7 +224,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                                 .append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId () ) ) ).append ( "," );
                     } else {
                         orderNotIn.add ( customFieldVO );
-                        stringBuffer.append ( "t." ).append ( "t" + customFieldVO.getFieldId () + "\t" ).
+                        stringBuffer.append ( "t." ).append (   customFieldVO.getFieldName ()+ "\t" ).
                                 append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId () ) ) ).append ( "," );
                     }
                 }
@@ -324,7 +324,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public List < ArcHead > getHeadList(UserSession userSession, Integer id) {
+    public List < ArcHead > getHeadList(UserSession userSession) {
         List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         //组装默认显示方案表头
        return getHeadList ( userSession, list1 );
@@ -393,7 +393,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         if (!CollectionUtils.isEmpty ( outList )) {
             for (CustomFieldVO customFieldVO : outList) {
-                stringBuffer.append ( "t.t" ).append ( customFieldVO.getFieldId () ).append ( "," );
+                stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
             }
         }
         int i1 = stringBuffer.toString ().lastIndexOf ( "," );

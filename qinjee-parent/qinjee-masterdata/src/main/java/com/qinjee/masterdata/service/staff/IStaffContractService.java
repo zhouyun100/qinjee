@@ -116,8 +116,8 @@ public interface IStaffContractService {
      * @param pageSize
      * @return
      */
-    PageResult<UserArchive> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
-                                                       Integer pageSize, Boolean isEnable,
+    PageResult<UserArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
+                                                       Integer pageSize, String isEnable,
                                                        List<String> status) throws Exception;
 
     /**

@@ -32,6 +32,7 @@ import java.util.List;
  */
 @Api(tags = "【权限管理】角色授权接口")
 @RestController
+@CrossOrigin
 @RequestMapping("/roleAuth")
 public class RoleAuthController extends BaseController{
 

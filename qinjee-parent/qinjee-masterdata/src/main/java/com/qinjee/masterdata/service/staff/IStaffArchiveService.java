@@ -166,5 +166,5 @@ public interface IStaffArchiveService {
 
     void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession);
 
-    List<ArcHead> getHeadList(UserSession userSession,Integer id);
+    List<ArcHead> getHeadList(UserSession userSession);
 }

@@ -31,7 +31,7 @@
     <result column="contract_sign_date" jdbcType="TIMESTAMP" property="contract_period_type" />
     <result column="contract_number" jdbcType="VARCHAR" property="contract_sign_date" />
     <result column="contract_begin_date" jdbcType="TIMESTAMP" property="contract_begin_date" />
-    <result column="TIMESTAMP" jdbcType="TIMESTAMP" property="contract_end_date" />
+    <result column="contract_end_date" jdbcType="TIMESTAMP" property="contract_end_date" />
     <result column="contract_number" jdbcType="VARCHAR" property="contract_number" />
     <result column="contract_period_month" jdbcType="INTEGER" property="contract_period_month" />
     <result column="contract_number" jdbcType="VARCHAR" property="contract_number" />
@@ -392,15 +392,7 @@
   </select>
 
 
-  <select id="seleltByArcIdIn" resultType="java.lang.Integer">
-    select archive_id
-    from  t_labor_contract
-    where
-    archive_id  in
-    <foreach  collection="arcList"  item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
+
   <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

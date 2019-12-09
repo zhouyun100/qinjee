@@ -2,8 +2,10 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.BlackListVo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -91,6 +93,6 @@ public interface IStaffStandingBookService {
      * @param type
      * @return
      */
-   List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) throws ParseException;
+   List<UserArchiveVo> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) throws ParseException;
 
 }

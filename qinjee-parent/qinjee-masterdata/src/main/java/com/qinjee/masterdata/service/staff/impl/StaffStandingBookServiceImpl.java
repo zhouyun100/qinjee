@@ -9,7 +9,6 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.*;
@@ -112,15 +111,16 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             standingBook.setCompanyId(userSession.getCompanyId());
             standingBook.setCreatorId(userSession.getArchiveId());
             standingBookDao.insertSelective(standingBook);
-
-            //设置台账属性表的id给筛选表
-            for (StandingBookFilterVo standingBookFilterVo : standingBookInfoVo.getListVo()) {
-                StandingBookFilter standingBookFilter = new StandingBookFilter();
-                BeanUtils.copyProperties(standingBookFilterVo, standingBookFilter);
-                standingBookFilter.setStandingBookId(standingBook.getStandingBookId());
-                standingBookFilter.setOperatorId(userSession.getArchiveId());
-                standingBookFilter.setSqlStr(getWhereSql(standingBookFilter,userSession.getCompanyId (),"ARC"));
-                standingBookFilterDao.insertSelective(standingBookFilter);
+            if(!CollectionUtils.isEmpty ( standingBookInfoVo.getListVo () )) {
+                //设置台账属性表的id给筛选表
+                for (StandingBookFilterVo standingBookFilterVo : standingBookInfoVo.getListVo ()) {
+                    StandingBookFilter standingBookFilter = new StandingBookFilter ();
+                    BeanUtils.copyProperties ( standingBookFilterVo, standingBookFilter );
+                    standingBookFilter.setStandingBookId ( standingBook.getStandingBookId () );
+                    standingBookFilter.setOperatorId ( userSession.getArchiveId () );
+                    standingBookFilter.setSqlStr ( getWhereSql ( standingBookFilter, userSession.getCompanyId (), "ARC" ) );
+                    standingBookFilterDao.insertSelective ( standingBookFilter );
+                }
             }
         }else {
             //说明是更新操作
@@ -169,7 +169,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     @Override
-    public List<UserArchive> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) {
+    public List<UserArchiveVo> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) {
         StringBuffer stringBuffer=new StringBuffer();
         List<Integer> fieldIdList=new ArrayList <> (  );
         List<CustomFieldVO> fieldVoList=new ArrayList <> (  );
@@ -200,7 +200,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         }
         String sql=getBaseSql ( userSession.getCompanyId (),fieldVoList,customTableVOS )+stringBuffer.toString();
         List<Integer> integerList=userArchiveDao.selectStaff(sql);
-        List<UserArchive> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
+        List<UserArchiveVo> userArchives = userArchiveDao.selectByPrimaryKeyList(integerList);
         //取交集
         userArchives.retainAll(list);
         return userArchives;
@@ -230,30 +230,31 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String textType = customFieldVO.getTextType ();
         Short isSystemDefine = customFieldVO.getIsSystemDefine ();
         String fieldCode = customFieldVO.getFieldCode ();
+         String fieldName = customFieldVO.getFieldName ();
         if(textType !=null && isSystemDefine==0 ) {
             if (  TYPENUMBER.equals(textType)) {
-                condition = "t.t"+fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                condition = "t."+fieldName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
             }
             if(TYPEDATE.equals(TYPEDATE)){
                 if("<".equals(filter.getOperateSymbol())){
-                    condition = "t.t"+fieldId + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
+                    condition = "t."+fieldName + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
                 }else {
-                    condition = "t.t"+fieldId + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                    condition = "t."+fieldName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
                 }
             }
             if (TYPETEXT.equals(textType)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
-                    condition ="t.t"+fieldId + " = " + filter.getFieldValue();
+                    condition ="t."+fieldName + " = " + filter.getFieldValue();
                 }
                 if (BUDENGYU.equals(filter.getOperateSymbol())) {
-                    condition ="t.t"+fieldId + " != " + filter.getFieldValue();
+                    condition ="t."+fieldName + " != " + filter.getFieldValue();
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = "t.t"+fieldId + " like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = "t."+fieldName + " like "+"'%" + filter.getFieldValue() + "%' ";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = "t.t"+fieldId + " not like "+"'%" + filter.getFieldValue() + "%' ";
+                    condition = "t."+fieldName + " not like "+"'%" + filter.getFieldValue() + "%' ";
                 }
             }
         }
@@ -263,9 +264,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
             if(TYPEDATE.equals(TYPEDATE)){
                 if("<".equals(filter.getOperateSymbol())){
-                    condition = "t.t"+fieldCode + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
+                    condition = "t."+fieldCode + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
                 }else {
-                    condition = "t.t"+fieldCode + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                    condition = "t."+fieldCode + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
                 }
             }
             if (TYPETEXT.equals(textType)) {

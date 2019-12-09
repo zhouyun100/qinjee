@@ -50,14 +50,14 @@ public class StaffContractController extends BaseController {
 //    })
     public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
     ) {
-        Boolean b = checkParam(orgId, currentPage, pageSize);
+        Boolean b = checkParam(orgId, currentPage, pageSize,getUserSession ());
         if (b) {
             try {
                 PageResult< UserArchiveVo > pageResult =
                         staffContractService.selectNoLaborContract(orgId, currentPage, pageSize);
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
-                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList ( userSession,userSession.getArchiveId () ) );
+                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList ( getUserSession ()));
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -88,16 +88,19 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "合同状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContractserUser(@RequestParam List<Integer> orgIdList, Integer currentPage,
-                                                                              Integer pageSize,Boolean isEnable,
+    public ResponseResult<UserArchiveVoAndHeader> selectLaborContractserUser(@RequestParam List<Integer> orgIdList, Integer currentPage,
+                                                                              Integer pageSize,String isEnable,
                                                                               @RequestBody List<String> status) {
-        Boolean b = checkParam(orgIdList, currentPage, pageSize,isEnable,status);
+        Boolean b = checkParam(orgIdList, currentPage, pageSize,isEnable,status,getUserSession ());
         if (b) {
             try {
-                PageResult<UserArchive> pageResult =
+                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+                PageResult<UserArchiveVo> pageResult =
                         staffContractService.selectLaborContractserUser(orgIdList, currentPage, pageSize,isEnable,status);
-                if (pageResult != null) {
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                userArchiveVoAndHeader.setPageResult ( pageResult );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList (getUserSession () ) );
+                if (userArchiveVoAndHeader != null) {
+                    return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

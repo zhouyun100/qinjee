@@ -69,7 +69,7 @@ public interface UserArchiveDao {
 
     Integer selectArcNumberIn(Integer id);
 
-    List<UserArchive> selectByPrimaryKeyList(@Param("achiveList") List<Integer> achiveList);
+    List<UserArchiveVo> selectByPrimaryKeyList(@Param("archiveList") List<Integer> archiveList);
 
 
 

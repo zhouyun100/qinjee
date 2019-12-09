@@ -26,9 +26,9 @@ public class ContractVo implements Serializable {
      * 试用期限
      */
     private Integer probation_period;
-    private Date contract_sign_date;
+    private Date   contract_sign_date;
     private Date   contract_begin_date;
-    private Date contract_end_date;
+    private Date   contract_end_date;
     /**
      *期限月
      */

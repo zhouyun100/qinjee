@@ -772,13 +772,13 @@
     AND  is_delete=0
   </select>
 
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"  />
     from t_user_archive
     where
     archive_id in
-    <foreach collection="achiveList" item="item" open="(" separator="," close=")">
+    <foreach collection="archiveList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </select>
