@@ -887,6 +887,7 @@
     AND post.is_delete = 0
     AND orga.is_enable = 1
     and orga.company_id=#{companyId}
+    and arc.org_id=#{orgId}
     and arc.org_id in(
     -- 查询人员机构权限
     select org_id from t_user_org_auth oa where oa.archive_id = 1-- 操作人档案ID
@@ -905,7 +906,6 @@
     )
     and roa.is_delete = 0
     and ur.is_delete = 0
-    and org_id=#{orgId}
     )
   </select>
   <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
@@ -986,5 +986,13 @@
       #{item}
     </foreach>
   </select>
+    <select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+    select * from t_user_archive arc
+    where arc.archive_id not in(
+    select tlc.archive_id from t_labor_contract tlc
+    )
+    and arc.org_id = #{orgId}
+  </select>
+
 </mapper>
 

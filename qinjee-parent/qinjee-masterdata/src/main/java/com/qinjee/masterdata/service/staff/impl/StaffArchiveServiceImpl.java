@@ -78,12 +78,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public UserArchiveVo selectArchive(UserSession userSession) {
+    public UserArchiveVoAndHeader selectArchive(UserSession userSession) {
         UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( userSession.getArchiveId () );
         List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         List < ArcHead > headList = getHeadList ( userSession, list1 );
-        userArchiveVo.setHeads ( headList );
-        return userArchiveVo;
+        List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
+        userArchiveVos.add ( userArchiveVo );
+        UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+        userArchiveVoAndHeader.setList ( userArchiveVos );
+        userArchiveVoAndHeader.setHeads ( headList );
+        return userArchiveVoAndHeader;
 
     }
 
@@ -122,17 +126,17 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult < UserArchiveVo > selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
+    public UserArchiveVoAndHeader  selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId () );
         List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         //组装默认显示方案表头
         List < ArcHead > headList = getHeadList ( userSession, list1 );
-        for (UserArchiveVo userArchiveVo : list) {
-            userArchiveVo.setHeads ( headList );
-            userArchiveVo.setEmploymentType ( "在职" );
-        }
-        return new PageResult <> ( list );
+        UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+        userArchiveVoAndHeader.setHeads ( headList );
+        userArchiveVoAndHeader.setList ( list );
+           return userArchiveVoAndHeader;
+
     }
 
     private List < ArcHead > setDefaultHead(UserSession userSession, List < ArcHead > headList, Integer querySchemaId) {

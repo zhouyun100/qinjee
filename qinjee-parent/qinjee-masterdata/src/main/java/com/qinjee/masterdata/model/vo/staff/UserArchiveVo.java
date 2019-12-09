@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @JsonInclude
@@ -282,10 +281,6 @@ public class UserArchiveVo implements Serializable {
      * 任职类型
      */
     private String  employmentType;
-    /**
-     * 动态表头
-     */
-    private List <ArcHead> heads;
 
     private static final long serialVersionUID = 1L;
 

@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.LaborContract;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -31,11 +30,6 @@ public interface LaborContractDao {
 
 
     List<LaborContract> selectLabByorgId(@Param("orgId") Integer orgId);
-
-
-    List<UserArchive> selectArcByNotCon(@Param("conList") List<Integer> conList);
-
-    List<Integer> selectByorgId(@Param("orgId") Integer orgId);
 
     List<Integer> selectConByArcId(@Param("list") List<Integer> list);
 

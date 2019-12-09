@@ -141,11 +141,11 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案(查询当前登陆人的档案)", notes = "hkt")
-    public ResponseResult<UserArchiveVo> selectArchiveAtOnce() {
+    public ResponseResult<UserArchiveVoAndHeader> selectArchiveAtOnce() {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                UserArchiveVo userArchive = staffArchiveService.selectArchive(getUserSession());
+                UserArchiveVoAndHeader userArchive = staffArchiveService.selectArchive(getUserSession());
                 return new ResponseResult<>(userArchive,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -195,13 +195,13 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.GET)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
 //    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
-    public ResponseResult<PageResult<UserArchiveVo>> selectArchivebatch(Integer orgId,Integer pageSize,Integer currentPage) {
+    public ResponseResult<UserArchiveVoAndHeader>  selectArchivebatch(Integer orgId,Integer pageSize,Integer currentPage) {
         Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage);
         if(b){
             try {
-                PageResult<UserArchiveVo> pageResult = staffArchiveService.selectArchivebatch(getUserSession(), orgId,pageSize,currentPage);
-                if(pageResult!=null) {
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                UserArchiveVoAndHeader userArchiveVoAndHeader = staffArchiveService.selectArchivebatch ( getUserSession (), orgId, pageSize, currentPage );
+                if(userArchiveVoAndHeader!=null) {
+                    return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
                 }
                 return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

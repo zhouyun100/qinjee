@@ -10,6 +10,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
@@ -68,13 +69,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     @Override
-    public PageResult<UserArchive> selectNoLaborContract(Integer orgId,
+    public PageResult<UserArchiveVo> selectNoLaborContract(Integer orgId,
                                                          Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage,pageSize);
-        //查看机构下的合同id
-        List<Integer> conList=laborContractDao.selectByorgId(orgId);
         //根据合同id找到没有合同的档案
-        List<UserArchive> arcList=laborContractDao.selectArcByNotCon(conList);
+        List< UserArchiveVo > arcList=userArchiveDao.selectArcByNotCon(orgId);
         return new PageResult<>(arcList);
     }
     /**合同状态  新签、变更   续签、解除、终止

@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -25,7 +26,7 @@ public interface IStaffContractService {
      * @param
      * @return
      */
-    PageResult<UserArchive> selectNoLaborContract(Integer orgId, Integer currentPage, Integer pageSize);
+    PageResult< UserArchiveVo > selectNoLaborContract(Integer orgId, Integer currentPage, Integer pageSize);
     /**
      * 删除合同
      * @param laborContractid

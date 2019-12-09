@@ -113,4 +113,6 @@ public interface UserArchiveDao {
     List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
     List<UserArchiveVo> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
+
+    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") Integer orgId);
 }

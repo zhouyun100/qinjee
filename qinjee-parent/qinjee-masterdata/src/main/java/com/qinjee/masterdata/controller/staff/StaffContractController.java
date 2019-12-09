@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -43,12 +44,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 //    })
-    public ResponseResult<PageResult<UserArchive>> selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
+    public ResponseResult<PageResult<UserArchiveVo>> selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
     ) {
         Boolean b = checkParam(orgId, currentPage, pageSize);
         if (b) {
             try {
-                PageResult<UserArchive> pageResult =
+                PageResult< UserArchiveVo > pageResult =
                         staffContractService.selectNoLaborContract(orgId, currentPage, pageSize);
                 if (pageResult != null) {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
