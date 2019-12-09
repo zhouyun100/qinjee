@@ -239,7 +239,7 @@
         LEFT JOIN t_user_archive tua
         ON v.org_manager_id = tua.archive_id GROUP BY
         v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
-        ORDER BY v.org_id ASC
+        ORDER BY v.sort_id ASC
     </select>
 
     <select id="getDirectOrganizationList" resultMap="BaseResultMap">
@@ -382,6 +382,7 @@
         <foreach collection="orgIds" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
+        order by t_org.sort_id
     </select>
 
     <select id="getOrganizationListByUserArchiveId"  resultMap="BaseResultMap">
