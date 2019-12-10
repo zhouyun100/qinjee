@@ -645,4 +645,14 @@
         and post.post_name=#{postName}
         and org.is_enable=1
     </select>
+    <select id="getNameForOrganzition" resultType="java.util.Map">
+        select org.org_name,orga.org_name as bussiness_name,post.post_name
+        from t_organization org,t_organization orga ,t_post post
+        where org.org_id=#{orgId}
+        and orga.org_id=#{companyId}
+        and post.post_id=#{postId}
+        and org.is_enable=1
+        and orga.is_enable=1
+        and post.is_delete=0
+    </select>
 </mapper>

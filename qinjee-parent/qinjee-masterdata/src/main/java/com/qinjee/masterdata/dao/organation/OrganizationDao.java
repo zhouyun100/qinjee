@@ -1,11 +1,10 @@
 package com.qinjee.masterdata.dao.organation;
 
 
-import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
-import com.qinjee.model.request.UserSession;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -120,4 +119,6 @@ public interface OrganizationDao {
     void batchDelete(@Param("idList") List<Integer> idList);
 
     Map<String,Integer> selectOrgIdByNameAndCompanyId(@Param("orgName") String orgName, @Param("CompanyId") Integer CompanyId, @Param("postName") String postName);
+
+    Map< String, String> getNameForOrganzition(@Param("companyId") Integer companyId, @Param("orgId") Integer orgId, @Param("postId") Integer postId);
 }

@@ -132,8 +132,8 @@
           #{item}
         </foreach>
     </update>
-  <select id="selectIdByArchiveId" resultType="java.lang.Integer">
-    select query_scheme_id
+  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.QueryScheme">
+    select <include refid="Base_Column_List"/>
     from t_query_scheme
     where  archive_id = #{archiveId,jdbcType=INTEGER}
     and is_delete=0

@@ -530,6 +530,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         customArchiveTableDataDao.deleteByBusinessIdAndFuncode (userSession.getCompanyId (),businessId,"ARC" );
     }
 
+    @Override
+    public Map < String, String > getNameForOrganzition(Integer orgId, UserSession userSession,Integer postId) {
+       return organizationDao.getNameForOrganzition(userSession.getCompanyId (),orgId,postId);
+    }
+
 }
 
 

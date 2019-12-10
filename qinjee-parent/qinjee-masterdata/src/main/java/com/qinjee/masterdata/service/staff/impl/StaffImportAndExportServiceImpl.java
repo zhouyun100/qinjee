@@ -17,8 +17,10 @@ import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
+import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
+import com.qinjee.masterdata.model.vo.staff.TableHead;
 import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -41,7 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -84,17 +88,92 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private IStaffCommonService staffCommonService;
 
     @Override
-    public List < Map < Integer, String > > importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         // 获取文件名
         String fileName = multipartFile.getOriginalFilename ();
         assert fileName != null;
         if (!fileName.endsWith ( xls ) && !fileName.endsWith ( xlsx )) {
             ExceptionCast.cast (CommonCode.FILE_FORMAT_ERROR );
         }
-        return getMaps ( multipartFile, funcCode, userSession );
+        //解析集合
+        List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
+        //获取检验结果
+        List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode );
+        //将获取的结果存进缓存中，有效期2小时
+        redisClusterService.setex ( userSession.getCompanyId ()+userSession.getArchiveId ()+funcCode,2*60*60,
+                JSON.toJSONString (checkCustomTableVOS));
+        //拼接head
+        List< TableHead> list=new ArrayList <> (  );
+        for (Map < Integer, String > map : maps) {
+            for (Map.Entry < Integer, String > integerStringEntry : map.entrySet ()) {
+                TableHead tableHead=new TableHead ();
+                tableHead.setIsShow ( 1 );
+
+                if("PRE".equals ( funcCode )) {
+                    CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( integerStringEntry.getKey (),
+                            userSession.getCompanyId (), "PRE" );
+                    tableHead.setName ( customFieldVO.getFieldName () );
+                    tableHead.setKey ( customFieldVO.getFieldCode () );
+                }else{
+                    CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( integerStringEntry.getKey (),
+                            userSession.getCompanyId (), "ARC" );
+                    tableHead.setName ( customFieldVO.getFieldName () );
+                    tableHead.setKey ( customFieldVO.getFieldCode () );
+                }
+                list.add ( tableHead );
+            }
+                break;
+        }
+        CheckImportVo checkImportVo = new CheckImportVo ();
+        checkImportVo.setHeadList ( list );
+        checkImportVo.setList ( checkCustomTableVOS );
+        return checkImportVo;
+    }
+    @Override
+    public String exportCheckFile(UserSession userSession, String funcCode) {
+        String key=userSession.getCompanyId ()+userSession.getArchiveId ()+funcCode;
+        String s=null;
+        if (redisClusterService.exists ( key )) {
+            s = redisClusterService.get ( key );
+        } else {
+            logger.error ( "获取缓存失败" );
+        }
+        List < CheckCustomTableVO > list =(List < CheckCustomTableVO >) JSONArray.parse ( s );
+        Map<Integer,String> map=new HashMap <> (  );
+        if(!CollectionUtils.isEmpty ( list )){
+            for (int i = 0; i < list.size (); i++) {
+                if(!list.get ( i ).getCheckResult ()){
+                    map.put ( i,list.get ( i ).getResultMsg () );
+                }
+            }
+        }
+       return JSON.toJSONString ( map );
     }
 
+
+
     @Override
+    public void exportCheckFileTxt(String josnString,HttpServletResponse response) throws IOException {
+        Map<Integer,String> map = (Map<Integer,String>) JSON.parse ( josnString );
+        //导出txt
+        response.setContentType("text/plain");
+        response.addHeader("Content-Disposition","attachment;filename=错误详情.txt");
+        StringBuffer stringBuffer=new StringBuffer (  );
+        ServletOutputStream outputStream = response.getOutputStream ();
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream ( outputStream );
+        stringBuffer.append ("行号").append ( "\t" ).append ( "错误原因" ).append ( "\r\n" );
+        for (Map.Entry < Integer, String > integerStringEntry : map.entrySet ()) {
+            stringBuffer.append ( integerStringEntry.getKey () ).append ( "\t" )
+                    .append ( integerStringEntry.getValue () ).append ( "/r/n" );
+        }
+        bufferedOutputStream.write ( stringBuffer.toString ().getBytes ("UTF-8") );
+        bufferedOutputStream.flush ();
+        bufferedOutputStream.close ();
+    }
+
+
+
     public List < CheckCustomTableVO > checkFile(List < Map < Integer, String > > list, String funcCode) {
         List < Integer > idList = null;
         idList = new ArrayList <> ( list.get ( 0 ).keySet () );
@@ -130,7 +209,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 } else if (funcCode.equals ( "ARC" )) {
                     achiveId = userArchiveDao.selectIdByNumberAndEmploy ( idnumber, employmentNumber );
                 }
-                if (pre != null && achiveId != null) {
+                if (pre != null || achiveId != null) {
                     result = true;
                 }
             }
@@ -187,6 +266,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         insertDataVo.setList ( list );
         staffCommonService.saveFieldAndValue ( userSession,insertDataVo );
     }
+
+
 
     /**
      * 导入黑名单

@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.ArchiveCareerTrackDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
@@ -87,8 +87,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     }
 
-    private  List < ArcHead >  getHeadList(UserSession userSession, List < QueryScheme > list1) {
-        List < ArcHead > headList = new ArrayList <> ();
+    private  List < TableHead >  getHeadList(UserSession userSession, List < QueryScheme > list1) {
+        List < TableHead > headList = new ArrayList <> ();
         if (CollectionUtils.isEmpty ( list1 )) {
             headList = setDefaultHead ( userSession, headList, 0 );
         }
@@ -129,10 +129,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     }
 
-    private List < ArcHead > setDefaultHead(UserSession userSession, List < ArcHead > headList, Integer querySchemaId) {
+    private List < TableHead > setDefaultHead(UserSession userSession, List < TableHead > headList, Integer querySchemaId) {
         List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
         for (QuerySchemeField querySchemeField : querySchemeFieldList) {
-            ArcHead arcHead = new ArcHead ();
+            TableHead arcHead = new TableHead ();
             arcHead.setIndex ( querySchemeField.getSort () );
 
             CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
@@ -155,7 +155,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             headList.add ( arcHead );
             }
             if(querySchemaId.equals ( 0 )) {
-                ArcHead arcHead = new ArcHead ();
+                TableHead arcHead = new TableHead ();
                 arcHead.setName ( "任职类型" );
                 arcHead.setKey ( "employment_type" );
                 arcHead.setIndex ( 10 );
@@ -324,7 +324,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public List < ArcHead > getHeadList(UserSession userSession) {
+    public List < TableHead > getHeadList(UserSession userSession) {
         List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         //组装默认显示方案表头
        return getHeadList ( userSession, list1 );
@@ -452,13 +452,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public List < QuerySchemeList > selectQueryScheme(UserSession userSession) {
         List < QuerySchemeList > lists = new ArrayList <> ();
-        List < Integer > list = querySchemeDao.selectIdByArchiveId ( userSession.getArchiveId () );
-        for (Integer integer : list) {
+        List < QueryScheme > list = querySchemeDao.selectByArchiveId ( userSession.getArchiveId () );
+        for (QueryScheme queryScheme : list) {
             QuerySchemeList querySchemeList = new QuerySchemeList ();
             //通过查询方案id找到显示字段
-            List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( integer );
+            querySchemeList.setQuerySchemeId ( queryScheme.getQuerySchemeId () );
+            querySchemeList.setQuerySchemeName ( queryScheme.getQuerySchemeName () );
+            List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( queryScheme.getQuerySchemeId () );
             //通过查询方案id找到排序字段
-            List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( integer );
+            List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( queryScheme.getQuerySchemeId () );
             querySchemeList.setQuerySchemeFieldList ( querySchemeFields );
             querySchemeList.setQuerySchemeSortList ( querySchemeSorts );
             lists.add ( querySchemeList );

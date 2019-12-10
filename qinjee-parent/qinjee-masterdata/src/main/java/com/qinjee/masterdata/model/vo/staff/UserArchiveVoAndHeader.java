@@ -10,5 +10,5 @@ import java.util.List;
 @JsonInclude
 public class UserArchiveVoAndHeader {
     private PageResult <UserArchiveVo>  pageResult;
-    private List<ArcHead> heads;
+    private List<TableHead> heads;
 }
