@@ -173,7 +173,7 @@ public class ImportAndExportStaffController extends BaseController {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                staffImportAndExportService.importBlaFile(getUserSession(),);
+                staffImportAndExportService.importBlaFile(getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
