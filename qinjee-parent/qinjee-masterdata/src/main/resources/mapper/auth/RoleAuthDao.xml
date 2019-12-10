@@ -56,7 +56,7 @@
         select v.menu_id,v.menu_name,v.icon_url,v.func_type,v.func_url,v.parent_menu_id,v.button_code,
         CASE WHEN t.menu_id is not NULL THEN 1 ELSE 0 END has_menu
         from (
-            select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id,t_menu.button_code
+            select t_menu.menu_id,t_company_menu.menu_name,t_company_menu.icon_url,t_menu.func_type,t_menu.func_url,t_menu.parent_menu_id,t_menu.button_code,t_menu.sort
             from t_menu,t_company_menu,t_role_menu_auth,t_role,t_user_role
             where t_user_role.archive_id = #{operatorId,jdbcType=INTEGER}
             and (t_user_role.is_trusteeship = 0
@@ -83,6 +83,7 @@
         and t_role.is_delete = 0
         and t_role_menu_auth.is_delete = 0) t
         ON v.menu_id = t.menu_id
+        ORDER BY v.sort
       </select>
 
     <!--根据角色ID和企业ID查询角色机构树 -->

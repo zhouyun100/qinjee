@@ -2,7 +2,7 @@ package com.qinjee.masterdata.model.entity;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 模板附件组表(t_template_attachment_group)
@@ -38,10 +38,10 @@ public class TemplateAttachmentGroup implements java.io.Serializable {
     private Integer operatorId;
 
     /** 创建时间 */
-    private Timestamp createTime;
+    private Date createTime;
 
     /** 更新时间 */
-    private Timestamp updateTime;
+    private Date updateTime;
 
     /** 是否删除 */
     private Integer isDelete;
