@@ -411,9 +411,9 @@ public class RoleAuthController extends BaseController{
     @ApiOperation(value="修改角色功能权限", notes="修改角色功能权限")
     @RequestMapping(value = "/updateRoleMenuAuth",method = RequestMethod.POST)
     public ResponseResult updateRoleMenuAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\nmenuIdList：功能ID集合")RequestRoleAuthVO requestRoleAuthVO) {
-        if(null == requestRoleAuthVO.getRoleId() || CollectionUtils.isEmpty(requestRoleAuthVO.getMenuIdList())){
+        if(null == requestRoleAuthVO.getRoleId()){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("角色或菜单不能为空!");
+            responseResult.setMessage("角色不能为空!");
             return responseResult;
         }
         try{
