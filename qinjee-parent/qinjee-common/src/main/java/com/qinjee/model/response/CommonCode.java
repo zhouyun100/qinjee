@@ -12,6 +12,7 @@ public enum CommonCode implements ResultCode{
     INVALID_PARAM(false,10003,"非法参数！"),
     SUCCESS(true,10000,"操作成功！"),
     FAIL(false,10002,"操作失败！"),
+    CODE_GENER_FAIL(false,10007,"机构/岗位编码生成失败（可能由于存在字符）！"),
     UNAUTHENTICATED(false,10001,"此操作需要登陆系统！"),
     UNAUTHORISE(false,10004,"权限不足，无权操作！"),
     SERVER_ERROR(false,99999,"抱歉，系统繁忙，请稍后重试！"),
