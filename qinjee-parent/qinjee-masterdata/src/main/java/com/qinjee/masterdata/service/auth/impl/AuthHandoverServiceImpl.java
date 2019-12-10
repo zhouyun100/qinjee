@@ -96,13 +96,14 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int roleTrusteeshipByArchiveId(Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId) {
+    public int roleTrusteeshipByArchiveId(Integer archiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId) {
         if(null == acceptArchiveId || null == operatorId || CollectionUtils.isEmpty(roleIdList)){
             return 0;
         }
 
         int resultNumber = 0;
         RequestRoleVO userRole = new RequestRoleVO();
+        userRole.setArchiveId(archiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setIsTrusteeship(1);
         userRole.setTrusteeshipBeginTime(trusteeshipBeginTime);
