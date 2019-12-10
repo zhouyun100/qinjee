@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
+import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
@@ -13,10 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,40 +39,58 @@ public class ImportAndExportStaffController extends BaseController {
      */
     @RequestMapping(value = "/importFileAndCheckFile", method = RequestMethod.POST)
     @ApiOperation(value = "文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< List< Map< Integer,String>>> importFileAndCheckFile(MultipartFile multipartFile,String funcCode) {
+    public ResponseResult< CheckImportVo > importFileAndCheckFile(@RequestParam("file") MultipartFile multipartFile, String funcCode) {
         Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
             try {
-                List < Map < Integer, String > > list = staffImportAndExportService.importFileAndCheckFile ( multipartFile,funcCode,getUserSession ());
-                return new ResponseResult <> (list, CommonCode.SUCCESS);
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile, funcCode, getUserSession () );
+                return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (IOException e) {
+                e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. FILE_PARSING_EXCEPTION);
             } catch (Exception e) {
+                e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
             }
-
+        }
+        return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
+    }
+    /**
+     * 显示校验信息
+     */
+    @RequestMapping(value = "/exportCheckFile", method = RequestMethod.GET)
+    @ApiOperation(value = "显示校验信息", notes = "hkt")
+    public ResponseResult<String> exportCheckFileTxt(String funcCode) {
+        Boolean b = checkParam(getUserSession (),funcCode);
+        if(b) {
+            try {
+                staffImportAndExportService.exportCheckFile (  getUserSession (),funcCode );
+                return new ResponseResult  (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
+            }
         }
         return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
     }
 
     /**
-     * 校验所传的字段
+     * 导出校验信息
      */
-    @RequestMapping(value = "/checkField", method = RequestMethod.POST)
-    @ApiOperation(value = "校验所传的字段", notes = "hkt")
-//    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
-
-    public ResponseResult<List<CheckCustomTableVO>> checkFile(@RequestBody  List< Map< Integer,String>> list,String funcCode) {
-        Boolean b = checkParam(list,funcCode);
+    @RequestMapping(value = "/exportCheckFileTxt", method = RequestMethod.POST)
+    @ApiOperation(value = "导出校验信息", notes = "hkt")
+    public ResponseResult exportCheckFileTxt(String jsonString,HttpServletResponse response) {
+        Boolean b = checkParam(jsonString,response);
         if(b) {
             try {
-                 List<CheckCustomTableVO> list1=staffImportAndExportService.checkFile ( list,funcCode );
-                return new ResponseResult <> (list1, CommonCode.SUCCESS);
+                staffImportAndExportService.exportCheckFileTxt (jsonString,response );
+                return new ResponseResult  (null, CommonCode.SUCCESS);
             } catch (Exception e) {
-                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
             }
         }
-        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+        return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
     }
     /**
      * 准备导入文件

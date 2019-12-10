@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Data
 @JsonInclude
-public class ArcHead implements Serializable {
+public class TableHead implements Serializable {
     private String name;
     private Integer index;
     private String  key;

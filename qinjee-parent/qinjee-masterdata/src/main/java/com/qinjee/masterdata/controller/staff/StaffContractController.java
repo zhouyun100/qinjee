@@ -78,7 +78,7 @@ public class StaffContractController extends BaseController {
     /**
      * 展示已签合同的人员信息
      */
-    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.GET)
     @ApiOperation(value = "展示已签合同的人员信息", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -90,7 +90,8 @@ public class StaffContractController extends BaseController {
 //    })
     public ResponseResult<UserArchiveVoAndHeader> selectLaborContractserUser(@RequestParam List<Integer> orgIdList, Integer currentPage,
                                                                               Integer pageSize,String isEnable,
-                                                                              @RequestBody List<String> status) {
+                                                                              @RequestParam List<String> status) {
+
         Boolean b = checkParam(orgIdList, currentPage, pageSize,isEnable,status,getUserSession ());
         if (b) {
             try {
@@ -181,7 +182,6 @@ public class StaffContractController extends BaseController {
             } catch (Exception e) {
                 return failResponseResult("保存合同失败");
             }
-
         }
         return  failResponseResult("参数错误");
 
@@ -532,10 +532,10 @@ public class StaffContractController extends BaseController {
     /**
      * 查询机构下合同即将到期的员工
      */
-    @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.GET)
     @ApiOperation(value = "查询机构下合同即将到期的员工", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id,@RequestBody List<UserArchive> list) {
+    public ResponseResult<List<UserArchive>> selectArcDeadLine(Integer id,@RequestParam List<UserArchive> list) {
         Boolean b = checkParam(id);
         if(b){
             try {

@@ -1,7 +1,10 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.entity.CustomArchiveField;
+import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
+import com.qinjee.masterdata.model.entity.CustomArchiveTable;
+import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
@@ -639,6 +642,30 @@ public class CommonController extends BaseController {
 
     }
 
+    /**
+     * 根据id显示单位名称，部门名称，岗位名称
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/getNameForOrganzition", method = RequestMethod.GET)
+    @ApiOperation(value = "获得部门名称，单位名称以及岗位名称", notes = "hkt")
+    public  ResponseResult<Map<String,String>> getNameForOrganzition(Integer orgId,Integer postId){
+        Boolean b = checkParam(orgId,postId,getUserSession ());
+        if (b) {
+            try {
+                Map<String,String> map=staffCommonService.getNameForOrganzition ( orgId,getUserSession (),postId );
+                if (!StringUtils.isEmpty(map)) {
+                    return new ResponseResult<>(map, CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+
+    }
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {

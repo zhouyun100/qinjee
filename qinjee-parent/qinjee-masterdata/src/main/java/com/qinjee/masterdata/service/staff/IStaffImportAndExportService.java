@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
+import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
@@ -60,15 +60,9 @@ public interface IStaffImportAndExportService {
     /**文件检验
      * @param multipartFile
      */
-    List <Map< Integer,String>> importFileAndCheckFile(MultipartFile multipartFile,String funcCode,UserSession userSession) throws Exception;
+    CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception;
 
-    /**
-     * 字段检验
-     * @param list
-     * @param
-     * @return
-     */
-    List<CheckCustomTableVO> checkFile(List< Map< Integer, String>> list,String funcCode);
+
 
     /**
      * 准备上传
@@ -108,4 +102,20 @@ public interface IStaffImportAndExportService {
      * @throws Exception
      */
     void importFile(String title, UserSession userSession, String funcCode) throws Exception;
+
+    /**
+     * 导出文件txt
+     * @param
+     * @param jsonString
+     * @param response
+     * @throws IOException
+     */
+    void exportCheckFileTxt(String jsonString,HttpServletResponse response) throws IOException;
+
+    /**
+     * 显示错误信息
+     * @param userSession
+     * @param funcCode
+     */
+    String exportCheckFile(UserSession userSession, String funcCode);
 }

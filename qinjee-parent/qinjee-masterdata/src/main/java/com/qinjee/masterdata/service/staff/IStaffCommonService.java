@@ -178,4 +178,12 @@ public interface IStaffCommonService {
     void deletePreValue(Integer id,UserSession userSession);
 
     void deleteArcValue(Integer businessId,UserSession userSession);
+
+    /**
+     *
+     * @param orgId
+     * @param userSession
+     * @return
+     */
+    Map< String, String> getNameForOrganzition(Integer orgId, UserSession userSession,Integer postId);
 }

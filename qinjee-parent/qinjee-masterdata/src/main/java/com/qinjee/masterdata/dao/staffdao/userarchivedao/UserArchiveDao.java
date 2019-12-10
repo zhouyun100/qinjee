@@ -73,8 +73,6 @@ public interface UserArchiveDao {
 
     List<UserArchiveVo> selectByPrimaryKeyList(@Param("archiveList") List<Integer> archiveList);
 
-
-
     Integer selectArchiveIdByTel(@Param("phoneNumber") String phoneNumber);
 
     Integer selectId(@Param("idType") String idType, @Param("idNumber") String idNumber);

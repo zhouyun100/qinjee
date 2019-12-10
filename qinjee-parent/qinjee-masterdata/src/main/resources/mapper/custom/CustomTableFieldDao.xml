@@ -228,7 +228,7 @@
   <select id="selectFieldIdByFieldNameAndCompanyIdAndFuncCode" resultType="java.lang.Integer">
     select field_id
     from t_custom_archive_field field
-    inner join t_custom_archive_table tab on tab.table_id=field.table_id
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
     where tab.company_id=#{companyId}
     and tab.func_code=#{funcCode}
     and field.field_name =#{key}

@@ -16,7 +16,8 @@ import java.util.List;
 @ToString
 @JsonInclude
 public class QuerySchemeList implements Serializable {
+    private Integer querySchemeId;
+    private String querySchemeName;
     private List<QuerySchemeField> querySchemeFieldList;
     private List<QuerySchemeSort>  querySchemeSortList;
-
 }

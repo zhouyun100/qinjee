@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 员工职业轨迹表(t_archive_career_track) -->
-<mapper namespace="com.qinjee.masterdata.dao.ArchiveCareerTrackDao">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao">
     <!-- 结果映射 -->
     <resultMap id="t_archive_career_trackMap" type="com.qinjee.masterdata.model.entity.ArchiveCareerTrack">
         <id column="change_id" property="changeId" jdbcType="INTEGER" />
