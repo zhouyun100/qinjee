@@ -17,10 +17,7 @@ import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
-import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
-import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
-import com.qinjee.masterdata.model.vo.staff.TableHead;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -47,8 +44,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -91,17 +88,15 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Transactional(rollbackFor = Exception.class)
     public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         // 获取文件名
-        String fileName = multipartFile.getOriginalFilename ();
-        assert fileName != null;
-        if (!fileName.endsWith ( xls ) && !fileName.endsWith ( xlsx )) {
-            ExceptionCast.cast (CommonCode.FILE_FORMAT_ERROR );
-        }
+        checkFileType ( multipartFile );
         //解析集合
         List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
         //获取检验结果
         List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode );
+        redisClusterService.setex ( userSession.getCompanyId ()+funcCode+userSession.getArchiveId ()+"import",2*60*60,
+                JSON.toJSONString ( maps ));
         //将获取的结果存进缓存中，有效期2小时
-        redisClusterService.setex ( userSession.getCompanyId ()+userSession.getArchiveId ()+funcCode,2*60*60,
+        redisClusterService.setex ( userSession.getCompanyId ()+funcCode+userSession.getArchiveId ()+"check",2*60*60,
                 JSON.toJSONString (checkCustomTableVOS));
         //拼接head
         List< TableHead> list=new ArrayList <> (  );
@@ -131,47 +126,89 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         return checkImportVo;
     }
     @Override
-    public String exportCheckFile(UserSession userSession, String funcCode) {
-        String key=userSession.getCompanyId ()+userSession.getArchiveId ()+funcCode;
-        String s=null;
-        if (redisClusterService.exists ( key )) {
-            s = redisClusterService.get ( key );
-        } else {
-            logger.error ( "获取缓存失败" );
-        }
-        List < CheckCustomTableVO > list =(List < CheckCustomTableVO >) JSONArray.parse ( s );
-        Map<Integer,String> map=new HashMap <> (  );
-        if(!CollectionUtils.isEmpty ( list )){
-            for (int i = 0; i < list.size (); i++) {
-                if(!list.get ( i ).getCheckResult ()){
-                    map.put ( i,list.get ( i ).getResultMsg () );
-                }
-            }
-        }
-       return JSON.toJSONString ( map );
+    public CheckImportVo importFileAndCheckFileBlackList(MultipartFile multipartFile, UserSession userSession) throws Exception {
+        checkFileType ( multipartFile );
+        List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
+        InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new BlackListVo (), mapList );
+        redisClusterService.setex ( userSession.getCompanyId ()+"blackList"+userSession.getArchiveId ()+"import",2*60*60,
+                JSON.toJSONString ( insideCheckAndImport.getObjectList () ));
+        //将获取的结果存进缓存中，有效期2小时
+        redisClusterService.setex ( userSession.getCompanyId ()+"blackList"+userSession.getArchiveId ()+"check",2*60*60,
+                JSON.toJSONString (insideCheckAndImport.getList ()));
+        CheckImportVo checkImportVo = new CheckImportVo ();
+        checkImportVo.setList ( insideCheckAndImport.getList () );
+        return checkImportVo;
     }
 
-
+    @Override
+    public CheckImportVo importFileAndCheckFileContract(MultipartFile multipartFile, UserSession userSession) throws Exception {
+        // 获取文件名
+        checkFileType ( multipartFile );
+        List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
+        InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new ContractVo (), mapList );
+        redisClusterService.setex ( userSession.getCompanyId ()+"Contract"+userSession.getArchiveId ()+"import",2*60*60,
+                JSON.toJSONString ( insideCheckAndImport.getObjectList () ));
+        //将获取的结果存进缓存中，有效期2小时
+        redisClusterService.setex ( userSession.getCompanyId ()+"Contract"+userSession.getArchiveId ()+"check",2*60*60,
+                JSON.toJSONString (insideCheckAndImport.getList ()));
+        CheckImportVo checkImportVo = new CheckImportVo ();
+        checkImportVo.setList ( insideCheckAndImport.getList () );
+        return checkImportVo;
+    }
+    private void checkFileType(MultipartFile multipartFile) {
+        // 获取文件名
+        String fileName = multipartFile.getOriginalFilename ();
+        assert fileName != null;
+        if (!fileName.endsWith ( xls ) && !fileName.endsWith ( xlsx )) {
+            ExceptionCast.cast ( CommonCode.FILE_FORMAT_ERROR );
+        }
+    }
+    @Override
+    public String exportCheckFile(UserSession userSession, String funcCode) {
+        Map < String, String > map = getCheckMap ( funcCode, userSession );
+        return JSON.toJSONString ( map );
+    }
 
     @Override
-    public void exportCheckFileTxt(String josnString,HttpServletResponse response) throws IOException {
-        Map<Integer,String> map = (Map<Integer,String>) JSON.parse ( josnString );
+    public void exportCheckFileTxt(String funcCode,HttpServletResponse response,UserSession userSession) throws IOException {
+        Map < String, String > map = getCheckMap ( funcCode, userSession );
         //导出txt
-        response.setContentType("text/plain");
-        response.addHeader("Content-Disposition","attachment;filename=错误详情.txt");
+        response.setContentType("application/x-msdownload;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode(funcCode+".txt", "UTF-8") + "\"");
+        response.setHeader("fileName", URLEncoder.encode(funcCode+".txt", "UTF-8"));
         StringBuffer stringBuffer=new StringBuffer (  );
         ServletOutputStream outputStream = response.getOutputStream ();
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream ( outputStream );
         stringBuffer.append ("行号").append ( "\t" ).append ( "错误原因" ).append ( "\r\n" );
-        for (Map.Entry < Integer, String > integerStringEntry : map.entrySet ()) {
+        for (Map.Entry < String, String > integerStringEntry : map.entrySet ()) {
             stringBuffer.append ( integerStringEntry.getKey () ).append ( "\t" )
-                    .append ( integerStringEntry.getValue () ).append ( "/r/n" );
+                    .append ( integerStringEntry.getValue () ).append ( "\r\n" );
         }
         bufferedOutputStream.write ( stringBuffer.toString ().getBytes ("UTF-8") );
         bufferedOutputStream.flush ();
         bufferedOutputStream.close ();
     }
 
+    private Map < String, String > getCheckMap(String funcCode, UserSession userSession) {
+        String key = userSession.getCompanyId () +funcCode+ userSession.getArchiveId () +"check";
+        String s = null;
+        if (redisClusterService.exists ( key )) {
+            s = redisClusterService.get ( key );
+        } else {
+            logger.error ( "获取缓存失败" );
+        }
+        Map < String, String > map = new HashMap <> ();
+        List < CheckCustomTableVO > list = JSONArray.parseArray ( s, CheckCustomTableVO.class );
+        if (!CollectionUtils.isEmpty ( list )) {
+            for (int i = 0; i < list.size (); i++) {
+                if (list.get ( i ).getCheckResult () == false) {
+                    map.put ( "第" + (i + 1) + "行", list.get ( i ).getResultMsg () );
+                }
+            }
+        }
+        return map;
+    }
 
 
     public List < CheckCustomTableVO > checkFile(List < Map < Integer, String > > list, String funcCode) {
@@ -186,6 +223,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             mapList.add ( map1 );
         }
         //请求接口获得返回前端的结果
+
         List < CheckCustomTableVO > checkCustomTableVOS = customTableFieldService.checkCustomFieldValue ( idList, mapList );
         for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
             String idtype = null;
@@ -221,24 +259,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
         return checkCustomTableVOS;
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void readyForImport(List < Map < Integer, String > > list, UserSession userSession, String title) {
-        //将list存进缓存，并且设置过期时间
-        String s = JSON.toJSONString ( list );
-        //定义唯一的key
-        String s1 = userSession.getCompanyId ()+title + userSession.getArchiveId ();
-        //过期时间为2小时
-        //存储的值
-        redisClusterService.setex ( s1, 2 * 60 * 60, s );
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void cancelForImport(String title, UserSession userSession)  {
+    public void cancelForImport(String funcCode, UserSession userSession)  {
         //拼接key
-        String s1 = userSession.getCompanyId ()+title + userSession.getArchiveId () ;
+        String s1 = userSession.getCompanyId ()+funcCode+userSession.getArchiveId () ;
         if (redisClusterService.exists ( s1 )) {
             redisClusterService.del ( s1 );
         } else {
@@ -248,10 +273,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void importFile(String title, UserSession userSession, String funcCode) throws Exception {
+    public void importFile( UserSession userSession, String funcCode) throws Exception {
+
         //从redis中取得文件
         //拼接key
-        String s1 = userSession.getCompanyId () + userSession.getArchiveId () + title;
+        String s1 = userSession.getCompanyId () +funcCode+ userSession.getArchiveId () + "import";
         String s=null;
         //缓存中获取内容
         if (redisClusterService.exists ( s1 )) {
@@ -273,29 +299,41 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      * 导入黑名单
      */
     @Override
-    public void importBlaFile(MultipartFile multipartFile, UserSession userSession,String funcCode) throws Exception {
-        //excel方法获得值
-        List<BlackListVo> objectList=new ArrayList<>();
-        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
+    public void importBlaFile( UserSession userSession) throws Exception {
+//        //excel方法获得值
+//        List<BlackListVo> objectList=new ArrayList<>();
+//        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         List < Blacklist > blacklistList = new ArrayList <> ();
-        //反射组装对象
-        for (Map < String, String > map : mapList) {
-            BlackListVo blackListVo=new BlackListVo();
-            Class aclass = blackListVo.getClass();
-            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
-                for (Field declaredField : aclass.getDeclaredFields()) {
-                    declaredField.setAccessible(true);
-                    if(declaredField.getName().equals(
-                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
-                        Class typeClass = declaredField.getType();
-                        Constructor con = typeClass.getConstructor(typeClass);
-                        Object field = con.newInstance(integerStringEntry.getValue());
-                        declaredField.set(blackListVo, field);
-                    }
-                }
-            }
-            objectList.add(blackListVo);
+//        //反射组装对象
+//        for (Map < String, String > map : mapList) {
+//            BlackListVo blackListVo=new BlackListVo();
+//            Class aclass = blackListVo.getClass();
+//            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
+//                for (Field declaredField : aclass.getDeclaredFields()) {
+//                    declaredField.setAccessible(true);
+//                    if(declaredField.getName().equals(
+//                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+//                        Class typeClass = declaredField.getType();
+//                        Constructor con = typeClass.getConstructor(typeClass);
+//                        Object field = con.newInstance(integerStringEntry.getValue());
+//                        declaredField.set(blackListVo, field);
+//                    }
+//                }
+//            }
+//            objectList.add(blackListVo);
+//        }
+        //从redis中取得文件
+        //拼接key
+        String s1 = userSession.getCompanyId () +"blackList"+ userSession.getArchiveId () + "import";
+        String s=null;
+        //缓存中获取内容
+        if (redisClusterService.exists ( s1 )) {
+            s = redisClusterService.get ( s1 );
+        } else {
+            logger.error ( "获取缓存失败" );
         }
+        //还原成list
+        List<BlackListVo> objectList = ( List < BlackListVo > ) JSONArray.parse ( s );
         for (BlackListVo blackListVo : objectList) {
             Blacklist blacklist = new Blacklist ();
             setValue ( blackListVo, blacklist );
@@ -314,47 +352,58 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     /**
      * 导入合同表
      *
-     * @param multipartFile
      * @param userSession
      * @throws Exception
      */
     @Override
-    public void importConFile(MultipartFile multipartFile,String funcCode ,UserSession userSession) throws Exception {
-        //excel方法获得值
-        List<ContractVo> objectList=new ArrayList<>();
-        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
+    public void importConFile(UserSession userSession) throws Exception {
+//        //excel方法获得值
+//        List<ContractVo> objectList=new ArrayList<>();
+//        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         List < LaborContract > contractVos = new ArrayList <> ();
-        //反射组装对象
-        for (Map < String, String > map : mapList) {
-           ContractVo contractVo=new ContractVo ();
-            Class aclass = contractVo.getClass();
-            for (Map.Entry<String, String> integerStringEntry :map.entrySet()) {
-                for (Field declaredField : aclass.getDeclaredFields()) {
-                    declaredField.setAccessible(true);
-                    if(declaredField.getName().equals(
-                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
-                        Class typeClass = declaredField.getType();
-                        int i = typeClass.getName ().lastIndexOf ( "." );
-                        String type=typeClass.getTypeName ().substring ( i+1 );
-                        Object field;
-                        if("Date".equals ( type )){
-                            SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
-                             field=sdf.parse ( integerStringEntry.getValue () );
-                            declaredField.set(contractVo, field);
-                        }
-                        if("Integer".equals ( type )){
-                             field=Integer.parseInt ( integerStringEntry.getValue () );
-                            declaredField.set(contractVo, field);
-                        }
-                        if("String".equals ( type )){
-                             field=integerStringEntry.getValue ();
-                            declaredField.set(contractVo, field);
-                        }
-                    }
-                }
-            }
-            objectList.add(contractVo);
+//        //反射组装对象
+//        for (Map < String, String > map : mapList) {
+//           ContractVo contractVo=new ContractVo ();
+//            Class aclass = contractVo.getClass();
+//            for (Map.Entry<String, String> integerStringEntry :map.entrySet()) {
+//                for (Field declaredField : aclass.getDeclaredFields()) {
+//                    declaredField.setAccessible(true);
+//                    if(declaredField.getName().equals(
+//                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+//                        Class typeClass = declaredField.getType();
+//                        int i = typeClass.getName ().lastIndexOf ( "." );
+//                        String type=typeClass.getTypeName ().substring ( i+1 );
+//                        Object field;
+//                        if("Date".equals ( type )){
+//                            SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
+//                             field=sdf.parse ( integerStringEntry.getValue () );
+//                            declaredField.set(contractVo, field);
+//                        }
+//                        if("Integer".equals ( type )){
+//                             field=Integer.parseInt ( integerStringEntry.getValue () );
+//                            declaredField.set(contractVo, field);
+//                        }
+//                        if("String".equals ( type )){
+//                             field=integerStringEntry.getValue ();
+//                            declaredField.set(contractVo, field);
+//                        }
+//                    }
+//                }
+//            }
+//            objectList.add(contractVo);
+//        }
+        //从redis中取得文件
+        //拼接key
+        String s1 = userSession.getCompanyId () +"Contract"+ userSession.getArchiveId () + "import";
+        String s=null;
+        //缓存中获取内容
+        if (redisClusterService.exists ( s1 )) {
+            s = redisClusterService.get ( s1 );
+        } else {
+            logger.error ( "获取缓存失败" );
         }
+        //还原成list
+        List<ContractVo> objectList = ( List < ContractVo > ) JSONArray.parse ( s );
         for (ContractVo contractVo : objectList) {
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );
@@ -665,5 +714,6 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
             return null;
         }
     }
+
 
 }

@@ -9,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
 
 public interface IStaffImportAndExportService {
 
@@ -62,21 +60,12 @@ public interface IStaffImportAndExportService {
      */
     CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception;
 
-
-
-    /**
-     * 准备上传
-     * @param list
-     * @param userSession
-     */
-    void readyForImport(List< Map< Integer, String>> list, UserSession userSession,String title);
-
     /**
      * 取消文件导入
-     * @param title
+     * @param funcCode
      * @param userSession
      */
-    void cancelForImport(String title, UserSession userSession) throws Exception;
+    void cancelForImport(String funcCode, UserSession userSession) throws Exception;
 
 
     /**
@@ -85,32 +74,30 @@ public interface IStaffImportAndExportService {
      * @param userSession
      * @throws Exception
      */
-    void importBlaFile(MultipartFile multipartFile, UserSession userSession,String funcCode) throws Exception;
+    void importBlaFile( UserSession userSession) throws Exception;
 
     /**
      * 导入合同
      * @param multipartFile
      * @param userSession
      */
-    void importConFile(MultipartFile multipartFile,String funcCode, UserSession userSession) throws Exception;
+    void importConFile( UserSession userSession) throws Exception;
 
     /**
      * 导入文件
-     * @param title
      * @param userSession
      * @param funcCode
      * @throws Exception
      */
-    void importFile(String title, UserSession userSession, String funcCode) throws Exception;
+    void importFile( UserSession userSession, String funcCode) throws Exception;
 
     /**
      * 导出文件txt
      * @param
-     * @param jsonString
      * @param response
      * @throws IOException
      */
-    void exportCheckFileTxt(String jsonString,HttpServletResponse response) throws IOException;
+    void exportCheckFileTxt(String funcCode,HttpServletResponse response,UserSession userSession) throws IOException;
 
     /**
      * 显示错误信息
@@ -118,4 +105,8 @@ public interface IStaffImportAndExportService {
      * @param funcCode
      */
     String exportCheckFile(UserSession userSession, String funcCode);
+
+    CheckImportVo importFileAndCheckFileBlackList(MultipartFile multipartFile, UserSession userSession) throws Exception;
+
+    CheckImportVo importFileAndCheckFileContract(MultipartFile multipartFile, UserSession userSession) throws Exception;
 }

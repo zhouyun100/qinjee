@@ -1,12 +1,10 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -20,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Administrator
@@ -35,19 +31,55 @@ public class ImportAndExportStaffController extends BaseController {
     private IStaffImportAndExportService staffImportAndExportService;
 
     /**
-     * 文件类型校验以及生成list
+     * 自定义文件类型校验以及生成list
      */
     @RequestMapping(value = "/importFileAndCheckFile", method = RequestMethod.POST)
-    @ApiOperation(value = "文件类型校验以及生成list", notes = "hkt")
+    @ApiOperation(value = "自定义文件类型校验以及生成list", notes = "hkt")
     public ResponseResult< CheckImportVo > importFileAndCheckFile(@RequestParam("file") MultipartFile multipartFile, String funcCode) {
         Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
             try {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile, funcCode, getUserSession () );
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile, funcCode.toUpperCase (), getUserSession () );
                 return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (IOException e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. FILE_PARSING_EXCEPTION);
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
+    }
+    /**
+     * 黑名单文件类型校验以及生成list
+     */
+    @RequestMapping(value = "/importFileAndCheckFileBlackList", method = RequestMethod.POST)
+    @ApiOperation(value = "黑名单文件类型校验以及生成list", notes = "hkt")
+    public ResponseResult< CheckImportVo > importFileAndCheckFileBlackList(@RequestParam("file") MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile,getUserSession ());
+        if(b) {
+            try {
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFileBlackList ( multipartFile, getUserSession () );
+                return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
+            }catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
+    }
+    /**
+     * 合同文件类型校验以及生成list
+     */
+    @RequestMapping(value = "/importFileAndCheckFileContract", method = RequestMethod.POST)
+    @ApiOperation(value = "合同文件类型校验以及生成list", notes = "hkt")
+    public ResponseResult< CheckImportVo > importFileAndCheckFileContract(@RequestParam("file") MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile,getUserSession ());
+        if(b) {
+            try {
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFileContract ( multipartFile, getUserSession () );
+                return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
@@ -61,11 +93,11 @@ public class ImportAndExportStaffController extends BaseController {
     @RequestMapping(value = "/exportCheckFile", method = RequestMethod.GET)
     @ApiOperation(value = "显示校验信息", notes = "hkt")
     public ResponseResult<String> exportCheckFileTxt(String funcCode) {
-        Boolean b = checkParam(getUserSession (),funcCode);
+        Boolean b = checkParam(getUserSession (),funcCode.toUpperCase ());
         if(b) {
             try {
-                staffImportAndExportService.exportCheckFile (  getUserSession (),funcCode );
-                return new ResponseResult  (null, CommonCode.SUCCESS);
+                String s = staffImportAndExportService.exportCheckFile ( getUserSession (), funcCode );
+                return new ResponseResult  (s, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
@@ -79,11 +111,11 @@ public class ImportAndExportStaffController extends BaseController {
      */
     @RequestMapping(value = "/exportCheckFileTxt", method = RequestMethod.POST)
     @ApiOperation(value = "导出校验信息", notes = "hkt")
-    public ResponseResult exportCheckFileTxt(String jsonString,HttpServletResponse response) {
-        Boolean b = checkParam(jsonString,response);
+    public ResponseResult exportCheckFileTxt(String funcCode,HttpServletResponse response) {
+        Boolean b = checkParam(funcCode,response,getUserSession ());
         if(b) {
             try {
-                staffImportAndExportService.exportCheckFileTxt (jsonString,response );
+                staffImportAndExportService.exportCheckFileTxt (funcCode,response,getUserSession () );
                 return new ResponseResult  (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -92,35 +124,18 @@ public class ImportAndExportStaffController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
     }
-    /**
-     * 准备导入文件
-     */
-    @RequestMapping(value = "/readyForImport", method = RequestMethod.POST)
-    @ApiOperation(value = "准备导入文件", notes = "hkt")
 
-    public ResponseResult<List< CheckCustomTableVO >> readyForImport(List< Map< Integer,String>> list, UserSession userSession,String title) {
-        Boolean b = checkParam(list,userSession,title);
-        if(b) {
-            try {
-                 staffImportAndExportService.readyForImport ( list,userSession,title );
-                return new ResponseResult <> (null, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                return new ResponseResult <> (null, CommonCode. BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
-    }
     /**
      * 取消导入文件
      */
     @RequestMapping(value = "/cancelForImport", method = RequestMethod.POST)
     @ApiOperation(value = "取消导入文件", notes = "hkt")
 
-    public ResponseResult readyForImport(String title) {
-        Boolean b = checkParam(title,getUserSession ());
+    public ResponseResult readyForImport(String funcCode) {
+        Boolean b = checkParam(funcCode,getUserSession ());
         if(b) {
             try {
-                staffImportAndExportService.cancelForImport (title,getUserSession () );
+                staffImportAndExportService.cancelForImport (funcCode.toUpperCase (),getUserSession () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
@@ -134,11 +149,11 @@ public class ImportAndExportStaffController extends BaseController {
     @RequestMapping(value = "/importFile", method = RequestMethod.GET)
     @ApiOperation(value = "导入文件", notes = "hkt")
 
-    public ResponseResult ImportFile(String title,  String funcCode) {
-        Boolean b = checkParam(title,getUserSession (),funcCode);
+    public ResponseResult ImportFile(  String funcCode) {
+        Boolean b = checkParam(getUserSession (),funcCode.toUpperCase ());
         if(b) {
             try {
-                staffImportAndExportService.importFile (title,getUserSession (),funcCode );
+                staffImportAndExportService.importFile (getUserSession (),funcCode.toUpperCase () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
@@ -154,11 +169,11 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "模板导入黑名单", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importBlaFile(MultipartFile multipartFile,String funcCode) {
-        Boolean b = checkParam(multipartFile,getUserSession(),funcCode);
+    public ResponseResult importBlaFile() {
+        Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                staffImportAndExportService.importBlaFile(multipartFile,getUserSession(),funcCode);
+                staffImportAndExportService.importBlaFile(getUserSession(),);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -174,11 +189,11 @@ public class ImportAndExportStaffController extends BaseController {
     @ApiOperation(value = "模板导入合同", notes = "hkt")
 //    @ApiImplicitParam(name = "path", value = "文件路径", paramType = "query", required = true)
 
-    public ResponseResult importConFile(MultipartFile multipartFile,String funcCode) {
-        Boolean b = checkParam(multipartFile,funcCode,getUserSession());
+    public ResponseResult importConFile() {
+        Boolean b = checkParam(getUserSession());
         if(b){
             try {
-                staffImportAndExportService.importConFile(multipartFile,funcCode,getUserSession());
+                staffImportAndExportService.importConFile(getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -305,7 +320,7 @@ public class ImportAndExportStaffController extends BaseController {
         Boolean b = checkParam(exportRequest,response,getUserSession());
         if(b){
             try {
-                staffImportAndExportService.exportBusiness(exportRequest,response,getUserSession(),funcCode);
+                staffImportAndExportService.exportBusiness(exportRequest,response,getUserSession(),funcCode.toUpperCase ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace ();

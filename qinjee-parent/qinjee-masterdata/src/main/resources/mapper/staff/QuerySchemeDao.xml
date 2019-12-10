@@ -18,7 +18,7 @@
     select
     <include refid="Base_Column_List" />
     from t_query_scheme
-    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}  AND  is_delete = 1
+    where query_scheme_id = #{querySchemeId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_query_scheme
@@ -132,7 +132,7 @@
           #{item}
         </foreach>
     </update>
-  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.QueryScheme">
+  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.QueryScheme" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from t_query_scheme
     where  archive_id = #{archiveId,jdbcType=INTEGER}

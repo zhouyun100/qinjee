@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
+import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -442,11 +443,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
-    public ResponseResult<List<QuerySchemeList>> selectUserArchivePostRelation() {
+    public ResponseResult<List<QueryScheme>> selectUserArchivePostRelation() {
         Boolean b = checkParam(getUserSession ());
         if(b){
             try {
-                List<QuerySchemeList> lists = staffArchiveService.selectQueryScheme(getUserSession ());
+                List < QueryScheme > lists = staffArchiveService.selectQueryScheme(getUserSession ());
                 if(null!=lists){
                     return new ResponseResult<>(lists,CommonCode.SUCCESS);
                 }
@@ -458,7 +459,27 @@ public class StaffArchiveController extends BaseController {
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
-
+    /**
+     * 展示查询方案信息
+     */
+    @RequestMapping(value = "/selectQuerySchemeMessage", method = RequestMethod.POST)
+    @ApiOperation(value = "展示查询方案信息", notes = "hkt")
+//    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
+    public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
+        Boolean b = checkParam();
+        if(b){
+            try {
+                QuerySchemeList querySchemeList = staffArchiveService.selectQuerySchemeMessage ( id );
+                if(null!=querySchemeList){
+                    return new ResponseResult<>(querySchemeList,CommonCode.SUCCESS);
+                }
+                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+            } catch (Exception e) {
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
     /**
      * 根据显示方案展示人员信息
      */

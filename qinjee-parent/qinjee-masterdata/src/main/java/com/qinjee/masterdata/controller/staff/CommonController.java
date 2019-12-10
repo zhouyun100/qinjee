@@ -236,7 +236,7 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(getUserSession (),funcCode);
         if (b) {
             try {
-                List < CustomFieldVO > customFieldVOS = customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( getUserSession ().getCompanyId (), funcCode );
+                List < CustomFieldVO > customFieldVOS = customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( getUserSession ().getCompanyId (), funcCode.toUpperCase () );
                 return new ResponseResult<>  ( customFieldVOS, CommonCode.SUCCESS );
             } catch (Exception e) {
                 return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );

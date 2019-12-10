@@ -295,7 +295,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( id );
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
-        UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
         return new PageResult <> ( userArchiveVos );
 
 
@@ -329,6 +328,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //组装默认显示方案表头
        return getHeadList ( userSession, list1 );
     }
+
+
 
     private Map < String, Object > getParamMap(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
         ArchiveCareerTrack archiveCareerTrack = new ArchiveCareerTrack ();
@@ -450,22 +451,24 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List < QuerySchemeList > selectQueryScheme(UserSession userSession) {
-        List < QuerySchemeList > lists = new ArrayList <> ();
-        List < QueryScheme > list = querySchemeDao.selectByArchiveId ( userSession.getArchiveId () );
-        for (QueryScheme queryScheme : list) {
+    public List < QueryScheme > selectQueryScheme(UserSession userSession) {
+        return querySchemeDao.selectByArchiveId ( userSession.getArchiveId () );
+
+    }
+    @Override
+    public  QuerySchemeList  selectQuerySchemeMessage(Integer id) {
+            QueryScheme queryScheme = querySchemeDao.selectByPrimaryKey ( id );
             QuerySchemeList querySchemeList = new QuerySchemeList ();
             //通过查询方案id找到显示字段
-            querySchemeList.setQuerySchemeId ( queryScheme.getQuerySchemeId () );
+            querySchemeList.setQuerySchemeId (id );
             querySchemeList.setQuerySchemeName ( queryScheme.getQuerySchemeName () );
-            List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( queryScheme.getQuerySchemeId () );
+            List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( id );
             //通过查询方案id找到排序字段
-            List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( queryScheme.getQuerySchemeId () );
+            List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( id );
             querySchemeList.setQuerySchemeFieldList ( querySchemeFields );
             querySchemeList.setQuerySchemeSortList ( querySchemeSorts );
-            lists.add ( querySchemeList );
-        }
-        return lists;
+
+        return querySchemeList;
     }
 
     @Override

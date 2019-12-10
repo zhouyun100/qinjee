@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
+import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -59,7 +60,7 @@ public interface IStaffArchiveService {
      * @param userSession
      * @return
      */
-    List<QuerySchemeList> selectQueryScheme(UserSession userSession);
+    List < QueryScheme > selectQueryScheme(UserSession userSession);
 
 
     void saveQueryScheme(QueryArcVo queryArcVo);
@@ -167,4 +168,6 @@ public interface IStaffArchiveService {
     void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession);
 
     List<TableHead> getHeadList(UserSession userSession);
+
+     QuerySchemeList selectQuerySchemeMessage(Integer id);
 }

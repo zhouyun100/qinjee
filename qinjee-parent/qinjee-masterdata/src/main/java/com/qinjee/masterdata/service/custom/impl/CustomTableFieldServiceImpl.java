@@ -13,8 +13,10 @@ package com.qinjee.masterdata.service.custom.impl;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.*;
+import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.utils.RegexpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -109,6 +119,67 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             checkCustomTableVOList.add(customTableVO);
         }
         return checkCustomTableVOList;
+    }
+
+    @Override
+    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String,String>> lists) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
+            List<Object> list=new ArrayList <> (  );
+            List<CheckCustomFieldVO> checkCustomFieldVOS=new ArrayList <> (  );
+            List<CheckCustomTableVO> checkCustomTableVOS=new ArrayList <> (  );
+            StringBuffer resultMsg=null;
+            InsideCheckAndImport insideCheckAndImport=new InsideCheckAndImport ();
+        for (Map < String, String > map : lists) {
+            for (Map.Entry < String, String > integerStringEntry : map.entrySet ()) {
+                for (Field declaredField : object.getClass ().getDeclaredFields ()) {
+                    declaredField.setAccessible ( true );
+                    CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO ();
+                    if (declaredField.getName ().equals (
+                            HeadFieldUtil.getFieldMap ().get ( integerStringEntry.getKey () ) )) {
+                        Class typeClass = declaredField.getType ();
+                        Constructor con = typeClass.getConstructor ( typeClass );
+                        Object field = con.newInstance ( integerStringEntry.getValue () );
+                        int i = typeClass.getName ().lastIndexOf ( "." );
+                        String type=typeClass.getTypeName ().substring ( i+1 );
+                        declaredField.set ( object, field );
+                        checkCustomFieldVO.setIsMust ( ( short ) 1 );
+                        if("Date".equals ( type )){
+                            SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
+                            field=sdf.parse ( integerStringEntry.getValue () );
+                            checkCustomFieldVO.setTextType ( "date" );
+                            declaredField.set(object, field);
+                        }
+                        if("Integer".equals ( type )){
+                            field=Integer.parseInt ( integerStringEntry.getValue () );
+                            checkCustomFieldVO.setTextType ( "number" );
+                            declaredField.set(object, field);
+                        }
+                        if("String".equals ( type )){
+                            field=integerStringEntry.getValue ();
+                            checkCustomFieldVO.setTextType ( "text" );
+                            declaredField.set(object, field);
+                        }
+                        checkCustomFieldVO.setDefaultValue ( integerStringEntry.getValue () );
+                        //字段值规则校验
+                        validCustomFieldValue(checkCustomFieldVO);
+                        //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
+                        if(!checkCustomFieldVO.getCheckResult()){
+                            //错误信息追加
+                            checkCustomFieldVO.setCheckResult ( false );
+                            resultMsg.append(checkCustomFieldVO.getResultMsg ());
+                        }
+                    }
+                    checkCustomFieldVOS.add ( checkCustomFieldVO );
+                }
+            }
+            list.add ( object );
+            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO ();
+            checkCustomTableVO.setResultMsg ( resultMsg.toString () );
+            checkCustomTableVO.setCustomFieldVOList ( checkCustomFieldVOS );
+            checkCustomTableVOS.add ( checkCustomTableVO );
+        }
+        insideCheckAndImport.setList ( checkCustomTableVOS );
+        insideCheckAndImport.setObjectList ( list );
+        return insideCheckAndImport;
     }
 
 
