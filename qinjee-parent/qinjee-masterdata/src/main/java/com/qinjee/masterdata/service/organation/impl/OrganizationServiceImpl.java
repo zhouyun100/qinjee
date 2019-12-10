@@ -9,7 +9,7 @@ import com.qinjee.masterdata.aop.OrganizationDeleteAnno;
 import com.qinjee.masterdata.aop.OrganizationEditAnno;
 import com.qinjee.masterdata.aop.OrganizationSaveAnno;
 import com.qinjee.masterdata.aop.OrganizationTransferAnno;
-import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Organization;

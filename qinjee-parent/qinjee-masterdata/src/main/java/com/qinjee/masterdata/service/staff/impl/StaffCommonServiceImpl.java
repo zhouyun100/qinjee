@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
-import com.qinjee.masterdata.dao.PostDao;
+import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;

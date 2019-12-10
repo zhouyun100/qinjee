@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.PositionGradeDao">
+<mapper namespace="com.qinjee.masterdata.dao.organation.PositionGradeDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionGrade">
     <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId" />
     <result column="position_grade_name" jdbcType="VARCHAR" property="positionGradeName" />

@@ -2,9 +2,9 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.dao.PositionDao;
-import com.qinjee.masterdata.dao.PositionGradeRelationDao;
-import com.qinjee.masterdata.dao.PositionLevelRelationDao;
+import com.qinjee.masterdata.dao.organation.PositionDao;
+import com.qinjee.masterdata.dao.organation.PositionGradeRelationDao;
+import com.qinjee.masterdata.dao.organation.PositionLevelRelationDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGradeRelation;
 import com.qinjee.masterdata.model.entity.PositionLevelRelation;

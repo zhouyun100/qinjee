@@ -2,8 +2,8 @@ package com.qinjee.masterdata.service.organation.impl;
 
 
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.dao.PostDao;
-import com.qinjee.masterdata.dao.PostInstructionsDao;
+import com.qinjee.masterdata.dao.organation.PostDao;
+import com.qinjee.masterdata.dao.organation.PostInstructionsDao;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.PostInstructions;
 import com.qinjee.masterdata.service.organation.PostInstructionsService;

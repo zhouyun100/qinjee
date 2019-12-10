@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.qinjee.masterdata.dao.UserRoleDao;
+import com.qinjee.masterdata.dao.organation.UserRoleDao;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.service.organation.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;

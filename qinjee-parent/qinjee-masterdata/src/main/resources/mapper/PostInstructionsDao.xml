@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.qinjee.masterdata.dao.PostInstructionsDao">
+<mapper namespace="com.qinjee.masterdata.dao.organation.PostInstructionsDao">
   <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PostInstructions">
     <id column="instruction_id" jdbcType="INTEGER" property="instructionId" />
     <result column="post_id" jdbcType="INTEGER" property="postId" />

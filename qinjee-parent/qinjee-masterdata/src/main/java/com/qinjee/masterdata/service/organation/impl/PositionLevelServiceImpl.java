@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.PositionLevelDao;
+import com.qinjee.masterdata.dao.organation.PositionLevelDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGrade;
 import com.qinjee.masterdata.model.entity.PositionGroup;
