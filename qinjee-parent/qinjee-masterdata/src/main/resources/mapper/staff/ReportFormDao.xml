@@ -18,7 +18,8 @@
 
   <select id="selectOrgIncreaseMemberDetail" resultMap="RegulationDetailMap">
     SELECT
-      tua.user_name,
+       tua.user_name,
+      tua.archive_id,
       org.org_name,
       org.org_id,
       track.before_org_id,
@@ -27,6 +28,7 @@
       tp.post_name,
       tpo.position_name,
       track.after_position_id,
+       track.before_position_id,
       track.after_post_id,
       track.after_user_category,
       track.before_user_category,
@@ -49,21 +51,49 @@
         OR track.after_user_category = 'ON_TRAIL'
         OR track.after_user_category = 'REGULAR_EMPLOYEE'
       )
-        org.org_id =#{orgId}
+      and   org.org_id =#{orgId}
         AND  track.change_date >= #{startDate,jdbcType=DATE}
         AND #{endDate,jdbcType=DATE} >= track.change_date
   </select>
 
   <select id="selectOrgDecreaseMemberDetail" resultMap="RegulationDetailMap">
-    SELECT tua.user_name ,org.org_name ,unit.org_name business_unit_name ,tp.post_name ,
-    tpo.position_name,track.after_position_id,track.after_post_id ,track.change_reason,track.change_date
-    FROM t_archive_career_track track
-    LEFT JOIN t_user_archive tua ON tua.archive_id =track.archive_id
-    LEFT JOIN t_organization org ON org.org_id=track.after_org_id
-    LEFT JOIN t_organization unit ON unit.org_id=track.after_business_unit_id
-    LEFT JOIN t_post tp ON tp.post_id =track.after_post_id
-    LEFT JOIN t_position tpo ON tpo.position_id =track.after_position_id
-    WHERE org.org_id =#{orgId} AND  track.change_date >= #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE} >= track.change_date
+    SELECT
+      tua.user_name,
+      tua.archive_id,
+      org.org_name,
+      org.org_id,
+      track.before_org_id,
+      track.after_org_id,
+      unit.org_name business_unit_name,
+      tp.post_name,
+      tpo.position_name,
+      track.after_position_id,
+       track.before_position_id,
+      track.after_post_id,
+      track.after_user_category,
+      track.before_user_category,
+      track.change_reason,
+      track.change_date
+    FROM
+      t_archive_career_track track
+      LEFT JOIN t_organization unit
+        ON track.before_business_unit_id = unit.org_id
+      LEFT JOIN t_organization org
+        ON track.before_org_id = org.org_id
+      LEFT JOIN t_post tp
+        ON track.after_post_id = tp.post_id
+      LEFT JOIN t_user_archive tua
+        ON track.archive_id = tua.archive_id
+      LEFT JOIN t_position tpo
+        ON track.before_position_id = tpo.position_id
+      WHERE ((
+          track.after_user_category = 'INTERNSHIP'
+          OR track.after_user_category = 'ON_TRAIL'
+          OR track.after_user_category = 'REGULAR_EMPLOYEE'
+        )
+        OR (
+        track.after_user_category = 'LEAVE_OFFICE' OR track.after_user_category = 'RETIRE' ))
+        and org.org_id =#{orgId} AND  track.change_date >= #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE} >= track.change_date
   </select>
 
 </mapper>

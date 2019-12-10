@@ -185,7 +185,8 @@ public class PostServiceImpl implements PostService {
     public void editPost(PostVo postVo, UserSession userSession) {
         Post post = new Post();
         Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
-        if(Objects.nonNull(postByPostCode)){
+
+        if(Objects.nonNull(postByPostCode)&&postVo.getOrgId()!=postByPostCode.getOrgId()){
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         BeanUtils.copyProperties(postVo, post);
