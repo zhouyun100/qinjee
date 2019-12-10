@@ -142,7 +142,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return
    */
-  OrganizationVO addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
+  OrganizationVO addOrganization(String orgName, String orgCode,String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
 
   /**

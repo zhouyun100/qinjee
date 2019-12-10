@@ -124,7 +124,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationSaveAnno
-    public OrganizationVO addOrganization(String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
+    public OrganizationVO addOrganization(String orgName, String orgCode, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
+
+        //校验orgCode是否已存在
+        OrganizationVO orgByCode = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
+        if (Objects.nonNull(orgByCode)) {
+            ExceptionCast.cast(CommonCode.CODE_USED);
+        }
         //根据父级机构id查询一些基础信息，构建Organization对象
         OrganizationVO orgBean = initOrganization(Integer.parseInt(parentOrgId));
         String full_name;
@@ -136,6 +142,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         orgBean.setOrgParentId(Integer.parseInt(parentOrgId));
         orgBean.setOrgType(orgType);
         orgBean.setOrgName(orgName);
+        orgBean.setOrgCode(orgCode);
         if (orgManagerId != null && !orgManagerId.equals("")) {
             orgBean.setOrgManagerId(Integer.parseInt(orgManagerId));
         }
@@ -167,16 +174,18 @@ public class OrganizationServiceImpl implements OrganizationService {
                 sortId = 1000;
             } else {
                 sortId = brotherOrgList.get(0).getSortId() + 100;
-                orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
+                //orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
             }
             orgBean.setSortId(sortId);
-            orgBean.setOrgCode(orgCode);
+            //TODO 取消后台生成编码的逻辑，由前端生成
+            //orgBean.setOrgCode(orgCode);
             orgBean.setOrgFullName(parentOrg.getOrgFullName());
             return orgBean;
             //如果是0，就是顶级机构
         } else {
             orgBean.setSortId(1000);
-            orgBean.setOrgCode("1");
+            //TODO 取消后台生成编码的逻辑，由前端生成
+            //orgBean.setOrgCode("1");
             return orgBean;
         }
     }
@@ -188,33 +197,38 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param orgParentId
      * @return
      */
+    //TODO 存在隐患，新增机构时机构编码由前端生成没问题，但机构划转和机构合并  编码需要由后端生成，如果编码中存在非数字字符，可能导致异常
     private OrganizationVO getNewOrgCode(Integer orgParentId) {
         OrganizationVO orgBean = new OrganizationVO();
-        if (orgParentId > 0) {
-            //查询父级机构
-            OrganizationVO parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
-            //查询最新的同级机构
-            List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
-            //如果没有同级机构，则当前机构为parentOrg下第一个子机构
-            String orgCode;
-            Integer sortId;
-            if (CollectionUtils.isEmpty(brotherOrgList)) {
-                orgCode = parentOrg.getOrgCode() + "01";
-                sortId = 1000;
+        try {
+            if (orgParentId > 0) {
+                //查询父级机构
+                OrganizationVO parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
+                //查询最新的同级机构
+                List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
+                //如果没有同级机构，则当前机构为parentOrg下第一个子机构
+                String orgCode;
+                Integer sortId;
+                if (CollectionUtils.isEmpty(brotherOrgList)) {
+                    orgCode = parentOrg.getOrgCode() + "01";
+                    sortId = 1000;
+                } else {
+                    sortId = brotherOrgList.get(0).getSortId() + 1000;
+                    orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
+                }
+                BeanUtils.copyProperties(parentOrg, orgBean);
+                orgBean.setOrgParentId(parentOrg.getOrgId());
+                orgBean.setSortId(sortId);
+                orgBean.setOrgCode(orgCode);
+                return orgBean;
             } else {
-                sortId = brotherOrgList.get(0).getSortId() + 100;
-                orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
+                orgBean.setSortId(1000);
+                orgBean.setOrgCode("1");
             }
-            BeanUtils.copyProperties(parentOrg, orgBean);
-            orgBean.setOrgParentId(parentOrg.getOrgId());
-            orgBean.setSortId(sortId);
-            orgBean.setOrgCode(orgCode);
-            return orgBean;
-        } else {
-            orgBean.setSortId(1000);
-            orgBean.setOrgCode("1");
-            return orgBean;
+        } catch (Exception e) {
+            ExceptionCast.cast(CommonCode.CODE_GENER_FAIL);
         }
+        return orgBean;
     }
 
 //=====================================================================
@@ -1001,7 +1015,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             //TODO
             if (null != organizationVO.getManagerEmployeeNumber() && !"".equals(organizationVO.getManagerEmployeeNumber())) {
-                UserArchiveVo userArchive=userArchiveDao.selectArchiveByNumber(organizationVO.getManagerEmployeeNumber());
+                UserArchiveVo userArchive = userArchiveDao.selectArchiveByNumber(organizationVO.getManagerEmployeeNumber());
                 if (Objects.isNull(userArchive)) {
                     checkVo.setCheckResult(false);
                     resultMsg.append("部门负责人不存在|");
@@ -1017,11 +1031,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             //根据上级机构编码查询数据库 判断上级机构是否存在
             if (null != organizationVO.getOrgParentCode() && !"".equals(organizationVO.getOrgParentCode())) {
                 OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
-                if(Objects.isNull(org)){
+                if (Objects.isNull(org)) {
                     checkVo.setCheckResult(false);
                     resultMsg.append("编码为" + organizationVO.getOrgParentCode() + "的上级机构不存在|");
-                }else{
-                    if(null==org.getOrgName()||"".equals(org.getOrgName())||!organizationVO.getOrgParentName().equals(org.getOrgName())){
+                } else {
+                    if (null == org.getOrgName() || "".equals(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
                         checkVo.setCheckResult(false);
                         resultMsg.append("上级机构名称不匹配|");
                     }

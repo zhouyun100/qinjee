@@ -63,11 +63,11 @@ public class OrganizationController extends BaseController {
     //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName,@RequestParam("orgCode")String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
         Boolean b = checkParam(orgName, orgType, orgParentId, orgManagerId);
         if (b) {
             try {
-                organizationService.addOrganization(orgName, orgType, orgParentId, orgManagerId, getUserSession());
+                organizationService.addOrganization(orgName, orgCode,orgType, orgParentId, orgManagerId, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
