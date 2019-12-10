@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.entryregistration.TemplateAttachmentGroupDao">
+
+    <resultMap id="TemplateAttachmentGroupResultMap" type="com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO">
+        <result column="group_id" jdbcType="INTEGER" property="groupId" />
+        <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+        <result column="group_type" jdbcType="VARCHAR" property="groupType" />
+        <result column="attachment_number" jdbcType="VARCHAR" property="attachmentNumber" />
+        <result column="tag_id" jdbcType="VARCHAR" property="tagId" />
+        <result column="template_id" jdbcType="VARCHAR" property="templateId" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="is_must" jdbcType="VARCHAR" property="isMust" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+    </resultMap>
+
+
+    <!-- 根据模板ID查询模板附件配置列表 -->
+    <select id="searchTemplateAttachmentListByTemplateId" resultMap="TemplateAttachmentGroupResultMap">
+        SELECT ag.group_id,ag.group_name,ag.group_type,ag.attachment_number,tag.tag_id,tag.template_id,tag.description,tag.is_must,tag.sort
+        FROM t_attachment_group ag LEFT JOIN t_template_attachment_group tag
+        ON ag.group_id = tag.group_id AND tag.template_id = #{templateId,jdbcType=INTEGER}
+        WHERE ag.group_type = 'GROUP'
+        <if test="isAll == null or isAll == 0">
+            AND tag.tag_id IS NOT NULL
+        </if>
+        ORDER BY tag.sort
+    </select>
+
+
+    <!-- 根据模板ID查询模板附件详情 -->
+    <select id="getTemplateAttachmentListByTagId" resultMap="TemplateAttachmentGroupResultMap">
+        SELECT tag.tag_id,ag.group_name,tag.template_id,tag.description,tag.is_must,tag.sort
+        FROM t_template_attachment_group tag,t_attachment_group ag
+        WHERE ag.group_id = tag.group_id
+        AND tag.tag_id = #{tagId,jdbcType=INTEGER}
+    </select>
+
+
+    <!-- 删除模板附件信息 -->
+    <update id="delTemplateAttachmentGroup">
+        update t_template_attachment_group set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where tag_id = #{tagId,jdbcType=INTEGER}
+    </update>
+
+
+    <!-- 新增模板附件信息 -->
+    <insert id="addTemplateAttachmentGroup" parameterType="com.qinjee.masterdata.model.entity.TemplateAttachmentGroup">
+        INSERT INTO t_template_attachment_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">
+                template_id,
+            </if>
+            <if test="groupId != null">
+                group_id,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="isMust != null">
+                is_must,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            operator_id
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">
+                #{templateId,jdbcType=INTEGER},
+            </if>
+            <if test="groupId != null">
+                #{groupId,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="isMust != null">
+                #{isMust,jdbcType=INTEGER},
+            </if>
+            <if test="sort != null">
+                #{sort,jdbcType=INTEGER},
+            </if>
+            #{operatorId,jdbcType=INTEGER}
+        </trim>
+    </insert>
+
+
+    <!-- 修改模板附件信息 -->
+    <update id="modifyTemplateAttachmentGroup" parameterType="com.qinjee.masterdata.model.entity.TemplateAttachmentGroup">
+        update t_template_attachment_group
+        <set>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="isMust != null">
+                is_must = #{isMust,jdbcType=INTEGER},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            operator_id = #{operatorId,jdbcType=INTEGER}
+        </set>
+        where tag_id = #{tagId,jdbcType=INTEGER}
+        and is_delete = 0
+    </update>
+
+    <!-- 模板附件排序 -->
+    <update id="sortTemplateAttachmentGroup">
+        <foreach collection="templateAttachmentGroupList" item="templateAttachmentGroup">
+            update t_template_attachment_group set
+            sort = #{templateAttachmentGroup.sort,jdbcType=INTEGER},
+            operator_id = #{templateAttachmentGroup.operatorId,jdbcType=INTEGER}
+            where tag_id = #{templateAttachmentGroup.tagId,jdbcType=INTEGER}
+            and is_delete = 0
+        </foreach>
+    </update>
+</mapper>

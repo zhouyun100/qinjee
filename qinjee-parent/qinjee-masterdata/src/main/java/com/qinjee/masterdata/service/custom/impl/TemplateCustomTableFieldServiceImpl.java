@@ -156,6 +156,6 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
                 customTableFieldService.handlerCustomTableGroupFieldList(fieldList,mapValue);
             }
         }
-        return null;
+        return entryRegistrationTableList;
     }
 }
