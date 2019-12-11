@@ -19,7 +19,7 @@ import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,19 +51,21 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     @Override
     public void addArchiveRole(Integer roleId, List<Integer> archiveIdList,Integer operatorId) {
 
-        if(!CollectionUtils.isEmpty(archiveIdList)){
+        if(CollectionUtils.isNotEmpty(archiveIdList)){
 
             UserRole userRole;
             List<ArchiveInfoVO> archiveList = archiveAuthDao.searchArchiveListByRoleId(roleId);
 
-            for(ArchiveInfoVO archive : archiveList){
-                archiveIdList = archiveIdList.stream().filter(archiveId -> {
-                    if(archiveId.equals(archive.getArchiveId())){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }).collect(Collectors.toList());
+            if(CollectionUtils.isNotEmpty(archiveList)){
+                for(ArchiveInfoVO archive : archiveList){
+                    archiveIdList = archiveIdList.stream().filter(archiveId -> {
+                        if(archiveId.equals(archive.getArchiveId())){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    }).collect(Collectors.toList());
+                }
             }
 
             for(Integer archiveId : archiveIdList){
@@ -79,7 +81,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delArchiveRole(Integer roleId, List<Integer> archiveIdList,Integer operatorId) {
-        if(!CollectionUtils.isEmpty(archiveIdList)){
+        if(CollectionUtils.isNotEmpty(archiveIdList)){
             UserRole userRole;
             UserOrgAuth userOrgAuth;
             for(Integer archiveId : archiveIdList){
@@ -141,13 +143,13 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
                 }
             }).collect(Collectors.toList());
 
-            if(!CollectionUtils.isEmpty(childArchiveList)){
+            if(CollectionUtils.isNotEmpty(childArchiveList)){
                 orgArchive.setChildArchiveList(childArchiveList);
                 archiveInfoList.removeAll(childArchiveList);
             }
 
             //判断是否还有子级机构
-            if (!CollectionUtils.isEmpty(childOrgList)) {
+            if (CollectionUtils.isNotEmpty(childOrgList)) {
                 orgArchive.setChildOrgList(childOrgList);
                 organizationList.removeAll(childOrgList);
                 handlerOrganizationArchiveToTree(archiveInfoList,organizationList, childOrgList);
@@ -172,7 +174,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
         /**
          * 如果机构列表为空则直接返回null
          */
-        if(!CollectionUtils.isEmpty(organizationList)){
+        if(CollectionUtils.isNotEmpty(organizationList)){
             /**
              * 提取当前机构树的一级节点
              */
@@ -206,8 +208,8 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
 
         List<OrganizationVO> organizationList = archiveAuthDao.searchArchiveOrgListByRoleId(roleId, archiveId);
 
-        if(!CollectionUtils.isEmpty(orgIdList)){
-            if(!CollectionUtils.isEmpty(organizationList)){
+        if(CollectionUtils.isNotEmpty(orgIdList)){
+            if(CollectionUtils.isNotEmpty(organizationList)){
                 for(Integer orgId : orgIdList){
                     organizationList.stream().filter(organization ->{
                         if(orgId.equals(organization.getOrgId())){
@@ -228,7 +230,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
             }
         }
 
-        if(!CollectionUtils.isEmpty(organizationList)){
+        if(CollectionUtils.isNotEmpty(organizationList)){
             organizationList.removeAll(tempOrganizationList);
             for(OrganizationVO organization : organizationList){
                 userOrgAuth.setOrgId(organization.getOrgId());

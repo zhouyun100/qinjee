@@ -11,7 +11,6 @@
 package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.AuthHandoverDao;
-import com.qinjee.masterdata.dao.auth.RoleAuthDao;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.OrganizationVO;
 import com.qinjee.masterdata.model.vo.auth.RequestRoleVO;
@@ -21,7 +20,7 @@ import com.qinjee.masterdata.service.auth.RoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;

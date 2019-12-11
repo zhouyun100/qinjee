@@ -110,7 +110,7 @@
         <foreach collection="templateAttachmentGroupList" item="templateAttachmentGroup">
             update t_template_attachment_group set
             sort = #{templateAttachmentGroup.sort,jdbcType=INTEGER},
-            operator_id = #{templateAttachmentGroup.operatorId,jdbcType=INTEGER}
+            operator_id = #{operatorId,jdbcType=INTEGER}
             where tag_id = #{templateAttachmentGroup.tagId,jdbcType=INTEGER}
             and is_delete = 0
         </foreach>

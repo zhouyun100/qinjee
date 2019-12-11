@@ -94,9 +94,16 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     }
 
     @Override
-    public int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList) {
+    public int delTemplateAttachmentGroup(Integer tagId, Integer operatorId) {
         int resultCount = 0;
-        resultCount += templateAttachmentGroupDao.sortTemplateAttachmentGroup(templateAttachmentGroupList);
+        resultCount += templateAttachmentGroupDao.delTemplateAttachmentGroup(tagId, operatorId);
+        return resultCount;
+    }
+
+    @Override
+    public int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList, Integer operatorId) {
+        int resultCount = 0;
+        resultCount += templateAttachmentGroupDao.sortTemplateAttachmentGroup(templateAttachmentGroupList, operatorId);
         return resultCount;
     }
 }

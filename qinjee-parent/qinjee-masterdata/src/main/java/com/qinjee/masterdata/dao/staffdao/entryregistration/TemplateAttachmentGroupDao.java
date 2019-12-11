@@ -65,5 +65,5 @@ public interface TemplateAttachmentGroupDao {
      * @param templateAttachmentGroupList
      * @return
      */
-    int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList);
+    int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList, Integer operatorId);
 }

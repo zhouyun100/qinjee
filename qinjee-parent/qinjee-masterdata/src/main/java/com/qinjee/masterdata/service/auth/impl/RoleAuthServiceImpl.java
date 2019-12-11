@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -270,9 +270,9 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
         List<MenuVO> menuList = roleAuthDao.searchRoleMenuListByRoleId(roleId);
 
-        if(!CollectionUtils.isEmpty(menuIdList)){
+        if(CollectionUtils.isNotEmpty(menuIdList)){
             for(Integer menuId : menuIdList){
-                if(!CollectionUtils.isEmpty(menuList)){
+                if(CollectionUtils.isNotEmpty(menuList)){
                     for(MenuVO menu : menuList){
                         if(menuId.equals(menu.getMenuId())){
                             tempMenuIdList.add(menuId);
@@ -290,7 +290,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
             }
         }
 
-        if(!CollectionUtils.isEmpty(menuList)){
+        if(CollectionUtils.isNotEmpty(menuList)){
             menuList.removeAll(tempMenuList);
             for(MenuVO menu : menuList){
                 roleMenuAuth.setMenuId(menu.getMenuId());
@@ -316,8 +316,8 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
         List<OrganizationVO> organizationList = roleAuthDao.searchRoleOrgListByRoleId(roleId);
 
-        if(!CollectionUtils.isEmpty(orgIdList)){
-            if(!CollectionUtils.isEmpty(organizationList)){
+        if(CollectionUtils.isNotEmpty(orgIdList)){
+            if(CollectionUtils.isNotEmpty(organizationList)){
                 for(Integer orgId : orgIdList){
                     for(OrganizationVO organization : organizationList){
                         if(orgId.equals(organization.getOrgId())){
@@ -335,7 +335,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
             }
         }
 
-        if(!CollectionUtils.isEmpty(organizationList)){
+        if(CollectionUtils.isNotEmpty(organizationList)){
             organizationList.removeAll(tempOrganizationList);
             for(OrganizationVO organization : organizationList){
                 roleOrgAuth.setOrgId(organization.getOrgId());
@@ -377,7 +377,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     }
                     return false;
                 }).collect(Collectors.toList());
-                if(!CollectionUtils.isEmpty(childList)){
+                if(CollectionUtils.isNotEmpty(childList)){
                     allRoleGroupList.remove(childList);
                     roleGroupVO.setChildRoleGroupList(childList);
                 }else{
@@ -391,7 +391,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     @Override
     public int updateRoleCustomArchiveTableFieldAuth(List<CustomArchiveTableFieldVO> requestCustomTableFieldList, Integer operatorId) {
         int resultNumber = 0;
-        if(!CollectionUtils.isEmpty(requestCustomTableFieldList)){
+        if(CollectionUtils.isNotEmpty(requestCustomTableFieldList)){
 
             //定义已存在的字段权限列表
             List<CustomArchiveTableFieldVO> customArchiveTableList = null;
@@ -409,7 +409,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
             }
 
             //筛选
-            if(!CollectionUtils.isEmpty(customArchiveTableList)){
+            if(CollectionUtils.isNotEmpty(customArchiveTableList)){
                 for(CustomArchiveTableFieldVO requestCustomTableField : requestCustomTableFieldList){
                     for(CustomArchiveTableFieldVO customTableField : customArchiveTableList){
                         if(requestCustomTableField.getFieldId().equals(customTableField.getFieldId())
@@ -459,7 +459,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
             /**
              * 判断是否还有子级，如果有则递归处理
              */
-            if(!CollectionUtils.isEmpty(childList)){
+            if(CollectionUtils.isNotEmpty(childList)){
                 menuVO.setChildMenuList(childList);
                 allMenuVOList.removeAll(childList);
                 handlerMenuToTree(allMenuVOList,childList);
@@ -481,7 +481,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
             /**
              * 判断是否还有子级，如果有则递归处理
              */
-            if(!CollectionUtils.isEmpty(childList)){
+            if(CollectionUtils.isNotEmpty(childList)){
                 organizationVO.setChildOrganizationList(childList);
                 allOrgList.removeAll(childList);
                 handlerOrgToTree(allOrgList,childList);

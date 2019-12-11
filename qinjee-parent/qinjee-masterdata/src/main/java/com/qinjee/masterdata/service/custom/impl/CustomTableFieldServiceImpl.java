@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -366,7 +366,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         CustomTableVO customTable = new CustomTableVO();
 
         //如果没有自定义组，则设置一个groupId为0的空组
-        if(CollectionUtils.isEmpty(customGroupList) || customGroupList.size() == 0){
+        if(CollectionUtils.isEmpty(customGroupList)){
             customGroupList = new ArrayList<>();
             CustomGroupVO groupVO = new CustomGroupVO();
             groupVO.setCustomFieldVOList(customFieldList);
@@ -409,10 +409,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Override
     public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue) {
 
-        if(customTable != null && !CollectionUtils.isEmpty(mapValue)){
+        if(customTable != null && !org.springframework.util.CollectionUtils.isEmpty(mapValue)){
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
 
-            if(!CollectionUtils.isEmpty(groupList)){
+            if(CollectionUtils.isNotEmpty(groupList)){
                 for(CustomGroupVO groupVO : groupList){
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
 
@@ -428,7 +428,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList, Map<Integer, String> mapValue) {
-        if(!CollectionUtils.isEmpty(customFieldList)){
+        if(CollectionUtils.isNotEmpty(customFieldList)){
             SysDict sysDict;
             for(CustomFieldVO fieldVO : customFieldList){
                 if(StringUtils.isNoneBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNoneBlank(fieldVO.getCode())){

@@ -16,14 +16,13 @@ import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
-import com.qinjee.masterdata.model.vo.auth.UserRoleVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -66,7 +65,7 @@ public class RoleSearchServiceImpl implements RoleSearchService {
         /**
          * 如果角色列表为空则直接返回null
          */
-        if(!CollectionUtils.isEmpty(roleList)){
+        if(CollectionUtils.isNotEmpty(roleList)){
             /**
              * 提取当前角色树的一级节点
              */
@@ -97,7 +96,7 @@ public class RoleSearchServiceImpl implements RoleSearchService {
         userRole.setOperatorId(operatorId);
         roleSearchDao.delUserRole(userRole);
 
-        if(!CollectionUtils.isEmpty(roleIdList)){
+        if(CollectionUtils.isNotEmpty(roleIdList)){
             for (Integer roleId : roleIdList){
                 userRole.setRoleId(roleId);
                 roleSearchDao.insertUserRole(userRole);

@@ -89,9 +89,17 @@ public interface EntryRegistrationService {
     int addTemplateAttachmentGroup(TemplateAttachmentGroup templateAttachmentGroup);
 
     /**
+     * 删除模板附件信息
+     * @param tagId
+     * @param operatorId
+     * @return
+     */
+    int delTemplateAttachmentGroup(Integer tagId, Integer operatorId);
+
+    /**
      * 模板附件排序
      * @param templateAttachmentGroupList
      * @return
      */
-    int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList);
+    int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList, Integer operatorId);
 }

@@ -20,8 +20,7 @@ import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     public List<TemplateCustomTableVO> searchTableFieldListByTemplateId(Integer templateId) {
         List<TemplateCustomTableVO> templateCustomTableList = templateCustomTableFieldDao.searchTableListByTemplateId(templateId);
 
-        if(!CollectionUtils.isEmpty(templateCustomTableList)){
+        if(CollectionUtils.isNotEmpty(templateCustomTableList)){
             List<TemplateCustomTableFieldVO> templateCustomTableFieldList = templateCustomTableFieldDao.searchTableFieldListByTemplateId(templateId);
             for(TemplateCustomTableVO templateCustomTable : templateCustomTableList){
                 List<TemplateCustomTableFieldVO> fieldList = templateCustomTableFieldList.stream().filter(fieldVO -> {
@@ -85,7 +84,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
         /**
          * 表单与DB数据对比，删除DB中多余的模板自定义表
          */
-        if(!StringUtils.isEmpty(customTableList) && !StringUtils.isEmpty(templateCustomTableList)){
+        if(CollectionUtils.isNotEmpty(customTableList) && CollectionUtils.isNotEmpty(templateCustomTableList)){
             List<TemplateCustomTableVO> delTemplateTableList = new ArrayList<>();
             for(TemplateCustomTableVO customTableDB : customTableList){
 
@@ -100,7 +99,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
 
             //删除DB中多余的表和字段
             customTableList.removeAll(delTemplateTableList);
-            if(!CollectionUtils.isEmpty(customTableList)){
+            if(CollectionUtils.isNotEmpty(customTableList)){
                 resultCount += templateCustomTableFieldDao.deleteTemplateTable(templateId,customTableList,operatorId);
                 resultCount += templateCustomTableFieldDao.deleteTemplateTableField(templateId,customTableList,operatorId);
             }
@@ -110,7 +109,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
          * 新增DB中不存在的表和字段
          */
         templateCustomTableList.removeAll(addTemplateTableList);
-        if(!CollectionUtils.isEmpty(templateCustomTableList)){
+        if(CollectionUtils.isNotEmpty(templateCustomTableList)){
             resultCount += templateCustomTableFieldDao.addTemplateTable(templateId,templateCustomTableList,operatorId);
             for(TemplateCustomTableVO customTable : templateCustomTableList){
                 resultCount += templateCustomTableFieldDao.addTemplateTableField(templateId,customTable.getFieldList(),operatorId);
@@ -146,7 +145,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
 
     @Override
     public List<EntryRegistrationTableVO> handlerCustomTableGroupFieldList(List<EntryRegistrationTableVO> entryRegistrationTableList, Map<Integer, String> mapValue) {
-        if(!CollectionUtils.isEmpty(entryRegistrationTableList)){
+        if(CollectionUtils.isNotEmpty(entryRegistrationTableList)){
             for(EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableList){
                 List<CustomFieldVO> fieldList = entryRegistrationTableVO.getCustomFieldVOList();
 

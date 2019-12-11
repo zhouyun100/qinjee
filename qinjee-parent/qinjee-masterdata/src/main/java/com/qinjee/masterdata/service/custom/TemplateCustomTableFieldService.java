@@ -59,13 +59,13 @@ public interface TemplateCustomTableFieldService {
 
     /**
      * 根据模板ID和档案查询自定义表及字段信息
-     * templateId:模板ID
-     * archiveId:档案ID
-     * @param templateId
-     * @param archiveId
+     * templateId：模板ID
+     * preId：预入职ID
+     * @param templateId 模板ID
+     * @param preId 预入职ID
      * @return
      */
-    List<EntryRegistrationTableVO> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId, Integer archiveId);
+    List<EntryRegistrationTableVO> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId, Integer preId);
 
     /**
      * 处理自定义表字段数据回填
