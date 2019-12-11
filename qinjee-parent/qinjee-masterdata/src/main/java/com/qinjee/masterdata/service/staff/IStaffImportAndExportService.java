@@ -70,7 +70,7 @@ public interface IStaffImportAndExportService {
 
     /**
      * 导入黑名单
-     * @param multipartFile
+     * @param userSession
      * @param userSession
      * @throws Exception
      */
@@ -78,7 +78,7 @@ public interface IStaffImportAndExportService {
 
     /**
      * 导入合同
-     * @param multipartFile
+     * @param userSession
      * @param userSession
      */
     void importConFile( UserSession userSession) throws Exception;

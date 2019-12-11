@@ -130,10 +130,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         checkFileType ( multipartFile );
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
         InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new BlackListVo (), mapList );
-        redisClusterService.setex ( userSession.getCompanyId ()+"blackList"+userSession.getArchiveId ()+"import",2*60*60,
+        redisClusterService.setex ( userSession.getCompanyId ()+"BLACKLIST"+userSession.getArchiveId ()+"import",2*60*60,
                 JSON.toJSONString ( insideCheckAndImport.getObjectList () ));
         //将获取的结果存进缓存中，有效期2小时
-        redisClusterService.setex ( userSession.getCompanyId ()+"blackList"+userSession.getArchiveId ()+"check",2*60*60,
+        redisClusterService.setex ( userSession.getCompanyId ()+"BLACKLIST"+userSession.getArchiveId ()+"check",2*60*60,
                 JSON.toJSONString (insideCheckAndImport.getList ()));
         CheckImportVo checkImportVo = new CheckImportVo ();
         checkImportVo.setList ( insideCheckAndImport.getList () );
@@ -146,10 +146,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         checkFileType ( multipartFile );
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
         InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new ContractVo (), mapList );
-        redisClusterService.setex ( userSession.getCompanyId ()+"Contract"+userSession.getArchiveId ()+"import",2*60*60,
+        redisClusterService.setex ( userSession.getCompanyId ()+"CONTRACT"+userSession.getArchiveId ()+"import",2*60*60,
                 JSON.toJSONString ( insideCheckAndImport.getObjectList () ));
         //将获取的结果存进缓存中，有效期2小时
-        redisClusterService.setex ( userSession.getCompanyId ()+"Contract"+userSession.getArchiveId ()+"check",2*60*60,
+        redisClusterService.setex ( userSession.getCompanyId ()+"CONTRACT"+userSession.getArchiveId ()+"check",2*60*60,
                 JSON.toJSONString (insideCheckAndImport.getList ()));
         CheckImportVo checkImportVo = new CheckImportVo ();
         checkImportVo.setList ( insideCheckAndImport.getList () );
@@ -263,11 +263,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Transactional(rollbackFor = Exception.class)
     public void cancelForImport(String funcCode, UserSession userSession)  {
         //拼接key
-        String s1 = userSession.getCompanyId ()+funcCode+userSession.getArchiveId () ;
+        String s1 = userSession.getCompanyId ()+funcCode+userSession.getArchiveId ()+"import" ;
         if (redisClusterService.exists ( s1 )) {
             redisClusterService.del ( s1 );
         } else {
-           logger.error ( "移除缓存失败" );
+           ExceptionCast.cast ( CommonCode.FAIL );
         }
     }
 
@@ -290,7 +290,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         InsertDataVo insertDataVo=new InsertDataVo ();
         insertDataVo.setFuncCode ( funcCode );
         insertDataVo.setList ( list );
-        staffCommonService.saveFieldAndValue ( userSession,insertDataVo );
+        try {
+            staffCommonService.saveFieldAndValue ( userSession,insertDataVo );
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
     }
 
 
@@ -324,7 +328,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 //        }
         //从redis中取得文件
         //拼接key
-        String s1 = userSession.getCompanyId () +"blackList"+ userSession.getArchiveId () + "import";
+        String s1 = userSession.getCompanyId () +"BLACKLIST"+ userSession.getArchiveId () + "import";
         String s=null;
         //缓存中获取内容
         if (redisClusterService.exists ( s1 )) {
@@ -394,7 +398,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 //        }
         //从redis中取得文件
         //拼接key
-        String s1 = userSession.getCompanyId () +"Contract"+ userSession.getArchiveId () + "import";
+        String s1 = userSession.getCompanyId () +"CONTRACT"+ userSession.getArchiveId () + "import";
         String s=null;
         //缓存中获取内容
         if (redisClusterService.exists ( s1 )) {

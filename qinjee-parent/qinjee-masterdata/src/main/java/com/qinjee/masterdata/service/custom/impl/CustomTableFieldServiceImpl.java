@@ -141,10 +141,12 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         int i = typeClass.getName ().lastIndexOf ( "." );
                         String type=typeClass.getTypeName ().substring ( i+1 );
                         declaredField.set ( object, field );
+                        //拼接单个字段
                         checkCustomFieldVO.setIsMust ( ( short ) 1 );
                         if("Date".equals ( type )){
                             SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
                             field=sdf.parse ( integerStringEntry.getValue () );
+                            //设置值类型
                             checkCustomFieldVO.setTextType ( "date" );
                             declaredField.set(object, field);
                         }
@@ -158,6 +160,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setTextType ( "text" );
                             declaredField.set(object, field);
                         }
+                        //设置值
                         checkCustomFieldVO.setDefaultValue ( integerStringEntry.getValue () );
                         //字段值规则校验
                         validCustomFieldValue(checkCustomFieldVO);
@@ -168,6 +171,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             resultMsg.append(checkCustomFieldVO.getResultMsg ());
                         }
                     }
+                    //检验一行的结果
                     checkCustomFieldVOS.add ( checkCustomFieldVO );
                 }
             }
@@ -175,6 +179,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO ();
             checkCustomTableVO.setResultMsg ( resultMsg.toString () );
             checkCustomTableVO.setCustomFieldVOList ( checkCustomFieldVOS );
+            //检验多行的结果
             checkCustomTableVOS.add ( checkCustomTableVO );
         }
         insideCheckAndImport.setList ( checkCustomTableVOS );
