@@ -74,6 +74,13 @@
         </dependency>
 
         <!-->excel工具<-->
+        <!-- https://mvnrepository.com/artifact/com.github.liaochong/myexcel -->
+        <dependency>
+            <groupId>com.github.liaochong</groupId>
+            <artifactId>myexcel</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
         <!-- json 相关依赖 -->
         <dependency>
             <groupId>com.alibaba</groupId>

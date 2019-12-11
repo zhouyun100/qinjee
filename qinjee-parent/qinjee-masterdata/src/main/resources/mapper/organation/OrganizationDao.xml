@@ -250,7 +250,7 @@
         parent_org.org_name parent_org_name,
         parent_org.org_code parent_org_code
         FROM (SELECT
-        o.org_id,
+        o.org_id, o.sort_id,
         o.is_enable,o.org_code,o.org_manager_id,
         o.org_name,o.org_type,o.org_full_name,
         o.org_parent_id,arc.user_name
@@ -267,7 +267,7 @@
         </if>
         UNION
         SELECT
-        o2.org_id,
+        o2.org_id, o2.sort_id,
         o2.is_enable,o2.org_code,o2.org_manager_id,
         o2.org_name,o2.org_type,o2.org_full_name,
         o2.org_parent_id,arch.user_name
