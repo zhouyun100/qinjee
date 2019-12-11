@@ -43,8 +43,8 @@
 
   <resultMap id="TableResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomTableVO">
     <result column="table_id" jdbcType="INTEGER" property="tableId" />
-    <result column="table_code" jdbcType="VARCHAR" property="tableName" />
-    <result column="table_name" jdbcType="VARCHAR" property="tableCode" />
+    <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
     <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
     <result column="company_id" jdbcType="VARCHAR" property="companyId" />
     <result column="is_system_define" jdbcType="VARCHAR" property="isSystemDefine" />
