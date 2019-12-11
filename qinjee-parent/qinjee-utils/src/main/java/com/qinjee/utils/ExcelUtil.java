@@ -177,6 +177,7 @@ public class ExcelUtil {
                     for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
                         Cell cell = row.getCell ( cellNum );
                         cells[cellNum] = getCellValue ( cell );
+
                     }
                     list.add ( cells );
                     //此时应该返回一个表属性的list集合，与一个以表头为key，value为数据的map
@@ -238,7 +239,7 @@ public class ExcelUtil {
         switch (cell.getCellType ()) {
             // 数字
             case NUMERIC:
-                cellValue = String.valueOf ( cell.getNumericCellValue () );
+                cellValue = String.valueOf ( new Double (cell.getNumericCellValue ()).intValue () );
                 break;
             // 字符串
             case STRING:

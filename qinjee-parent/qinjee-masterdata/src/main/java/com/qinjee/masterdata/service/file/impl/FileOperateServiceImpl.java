@@ -87,10 +87,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
         Integer companyId = userSession.getCompanyId();
         Integer businessId = attachmentVo.getBusinessId();
         String businessType = attachmentVo.getBusinessType();
+        Integer groupId = attachmentVo.getGroupId ();
         String employNumber=userArchiveDao.selectEmployNumber(attachmentVo.getBusinessId());
         String originalFilename = multipartFile.getOriginalFilename();
         String attachmentName = employNumber+originalFilename;
-        return businessModule+"/"+companyId+"/"+businessId+"/"+businessType+"/"+attachmentName;
+        return businessModule+"/"+companyId+"/"+businessId+"/"+businessType+"/"+groupId+"/"+attachmentName;
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -99,8 +100,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List<AttachmentRecord> selectAttach(String businessModule, String businessType, UserSession userSession) {
-        List<AttachmentRecord> list=attachmentRecordDao.selectAttach(businessModule,businessType,userSession.getArchiveId(),userSession.getCompanyId());
+    public List<AttachmentRecord> selectAttach(String businessModule, String businessType,String groupName, UserSession userSession) {
+        List<AttachmentRecord> list=attachmentRecordDao.selectAttach(businessModule,businessType,userSession.getArchiveId(),groupName,userSession.getCompanyId());
         return list;
     }
 

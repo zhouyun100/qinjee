@@ -126,7 +126,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             List<Object> list=new ArrayList <> (  );
             List<CheckCustomFieldVO> checkCustomFieldVOS=new ArrayList <> (  );
             List<CheckCustomTableVO> checkCustomTableVOS=new ArrayList <> (  );
-            StringBuffer resultMsg=null;
+            StringBuffer resultMsg=new StringBuffer (  );
             InsideCheckAndImport insideCheckAndImport=new InsideCheckAndImport ();
         for (Map < String, String > map : lists) {
             for (Map.Entry < String, String > integerStringEntry : map.entrySet ()) {
@@ -161,7 +161,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             declaredField.set(object, field);
                         }
                         //设置值
-                        checkCustomFieldVO.setDefaultValue ( integerStringEntry.getValue () );
+                        checkCustomFieldVO.setFieldValue ( integerStringEntry.getValue () );
                         //字段值规则校验
                         validCustomFieldValue(checkCustomFieldVO);
                         //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
@@ -170,9 +170,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setCheckResult ( false );
                             resultMsg.append(checkCustomFieldVO.getResultMsg ());
                         }
+                        //检验一行的结果
+                        checkCustomFieldVOS.add ( checkCustomFieldVO );
                     }
-                    //检验一行的结果
-                    checkCustomFieldVOS.add ( checkCustomFieldVO );
+
                 }
             }
             list.add ( object );

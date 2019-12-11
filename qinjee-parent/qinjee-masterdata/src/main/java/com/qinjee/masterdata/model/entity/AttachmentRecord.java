@@ -49,6 +49,10 @@ public class AttachmentRecord implements Serializable {
      * 业务ID
      */
     private Integer businessId;
+    /**
+     * 组id
+     */
+    private Integer groupId;
 
     /**
      * 企业ID
