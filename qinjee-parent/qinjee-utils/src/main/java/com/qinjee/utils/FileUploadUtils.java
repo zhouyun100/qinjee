@@ -50,7 +50,7 @@ public class FileUploadUtils {
      * @return
      */
     public static String uploadFile(File uploadFile, String relativeDirectory, String fileName){
-        String path = DOMAIN_NAME;
+        String path = null;
 
         ChannelSftp sftp = null;
         Channel channel = null;
