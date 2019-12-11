@@ -68,11 +68,11 @@ public interface EntryRegistrationService {
     List<TemplateAttachmentGroupVO> searchTemplateAttachmentListByTemplateId(Integer templateId,Integer isAll);
 
     /**
-     * 根据模板ID查询模板附件详情
-     * @param templateId
+     * 根据模板附件ID查询模板附件详情
+     * @param tagId
      * @return
      */
-    TemplateAttachmentGroupVO getTemplateAttachmentListByTemplateId(Integer templateId);
+    TemplateAttachmentGroupVO getTemplateAttachmentListByTagId(Integer tagId);
 
     /**
      * 修改模板附件信息

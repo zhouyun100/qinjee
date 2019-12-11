@@ -74,8 +74,8 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     }
 
     @Override
-    public TemplateAttachmentGroupVO getTemplateAttachmentListByTemplateId(Integer templateId) {
-        TemplateAttachmentGroupVO templateAttachmentGroup = templateAttachmentGroupDao.getTemplateAttachmentListByTagId(templateId);
+    public TemplateAttachmentGroupVO getTemplateAttachmentListByTagId(Integer tagId) {
+        TemplateAttachmentGroupVO templateAttachmentGroup = templateAttachmentGroupDao.getTemplateAttachmentListByTagId(tagId);
         return templateAttachmentGroup;
     }
 
