@@ -3,7 +3,6 @@ package com.qinjee.masterdata.model.vo.staff;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
@@ -17,9 +16,29 @@ import java.util.Objects;
  */
 @Data
 @JsonInclude
-@NoArgsConstructor
 public class RegulationCountVo implements Serializable {
 
+    @Override
+    public String toString() {
+        return "RegulationCountVo{" +
+            "businessUnitId=" + businessUnitId +
+            ", businessUnitName='" + businessUnitName + '\'' +
+            ", orgId=" + orgId +
+            ", orgParentId=" + orgParentId +
+            ", orgName='" + orgName + '\'' +
+            ", orgType='" + orgType + '\'' +
+            ", newJoinNum=" + newJoinNum +
+            ", transferInNum=" + transferInNum +
+            ", increasedNum=" + increasedNum +
+            ", transferOutNum=" + transferOutNum +
+            ", leaveNum=" + leaveNum +
+            ", retiredNum=" + retiredNum +
+            ", attritionNum=" + attritionNum +
+            ", beginNum=" + beginNum +
+            ", endNum=" + endNum +
+            ", childList=" + childList +
+            '}';
+    }
 
     private static final long serialVersionUID = 1L;
 
