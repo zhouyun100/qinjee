@@ -1,22 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.reportDao.ReportFormDao">
-  <resultMap id="RegulationDetailMap" type="com.qinjee.masterdata.model.vo.staff.RegulationDetailVo">
-    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
-    <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
-    <result column="org_id" jdbcType="INTEGER" property="orgId" />
-    <result column="post_id" jdbcType="INTEGER" property="postId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
-    <result column="post_name" jdbcType="VARCHAR" property="postName" />
-    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
-    <result column="change_reason" jdbcType="VARCHAR" property="changeReason" />
-    <result column="change_date" jdbcType="DATE" property="changeDate" />
-  </resultMap>
+    <resultMap id="RegulationDetailMap" type="com.qinjee.masterdata.model.vo.staff.RegulationDetailVo">
+        <id column="archive_id" jdbcType="INTEGER" property="archiveId"/>
+        <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId"/>
+        <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="post_id" jdbcType="INTEGER" property="postId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName"/>
+        <result column="post_name" jdbcType="VARCHAR" property="postName"/>
+        <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
+        <result column="change_reason" jdbcType="VARCHAR" property="changeReason"/>
+        <result column="change_date" jdbcType="DATE" property="changeDate"/>
+    </resultMap>
+    <resultMap id="RegulationCountMap" type="com.qinjee.masterdata.model.vo.staff.RegulationCountVo">
+        <id column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <id column="org_parent_id" jdbcType="INTEGER" property="orgParentId"/>
+        <id column="join_num" jdbcType="INTEGER" property="newJoinNum"/>
+        <id column="begin_num" jdbcType="INTEGER" property="beginNum"/>
+        <id column="end_num" jdbcType="INTEGER" property="endNum"/>
+        <id column="transfer_in_num" jdbcType="INTEGER" property="transferInNum"/>
+        <id column="increased_num" jdbcType="INTEGER" property="increasedNum"/>
+        <id column="leave_num" jdbcType="INTEGER" property="leaveNum"/>
+        <id column="retired_num" jdbcType="INTEGER" property="retiredNum"/>
+        <id column="transfer_out_num" jdbcType="INTEGER" property="transferOutNum"/>
+        <id column="attrition_num" jdbcType="INTEGER" property="attritionNum"/>
+        <id column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <id column="org_type" jdbcType="VARCHAR" property="orgType"/>
+    </resultMap>
 
+    <select id="selectOrgRegulationCount" resultMap="RegulationCountMap">
+        SELECT org2.org_id, org2.org_name,
+        org2.org_type, org2.org_parent_id,t3.begin_num,t3.end_num,t3.join_num,
+        t3.transfer_in_num,t3.increased_num,t3.leave_num ,
+        t3.retired_num,t3.transfer_out_num,t3.attrition_num
+        FROM (SELECT
+        t1.org_id,
+        t2.user_num begin_num,
+        t1.user_num end_num,
+        SUM(t1.join_num) join_num,
+        SUM(t1.transfer_in_num) transfer_in_num,
+        SUM(t1.increased_num) increased_num,
+        SUM(t1.leave_num) leave_num,
+        SUM(t1.retired_num) retired_num,
+        SUM(t1.transfer_out_num) transfer_out_num,
+        SUM(t1.attrition_num) attrition_num
+        FROM
+        t_organization_increased_attrition_stat t1
+        LEFT JOIN t_organization org
+        ON org.org_id = t1.org_id
+        LEFT JOIN t_organization_increased_attrition_stat t2 ON t1.org_id =t2.org_id
+        AND t2.stat_day=#{startDate,jdbcType=DATE}
+        WHERE t1.stat_day >= #{startDate,jdbcType=DATE}
+        AND #{endDate,jdbcType=DATE} >= t1.stat_day
+        AND t1.org_id IN
+        <foreach collection="orgIdList" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+        GROUP BY t1.org_id ) t3 RIGHT JOIN t_organization org2 ON org2.org_id=t3.org_id
+        WHERE org2.org_id IN
+        <foreach collection="orgIdList" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY org2.org_id
+  </select>
 
-  <select id="selectOrgIncreaseMemberDetail" resultMap="RegulationDetailMap">
+    <select id="selectOrgIncreaseMemberDetail" resultMap="RegulationDetailMap">
     SELECT
        tua.user_name,
       tua.archive_id,
@@ -51,12 +101,16 @@
         OR track.after_user_category = 'ON_TRAIL'
         OR track.after_user_category = 'REGULAR_EMPLOYEE'
       )
-      and   org.org_id =#{orgId}
         AND  track.change_date >= #{startDate,jdbcType=DATE}
         AND #{endDate,jdbcType=DATE} >= track.change_date
+        and   org.org_id in
+        <foreach collection="orgIdList" item="item" close=")" open="(" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY org.org_id
   </select>
 
-  <select id="selectOrgDecreaseMemberDetail" resultMap="RegulationDetailMap">
+    <select id="selectOrgDecreaseMemberDetail" resultMap="RegulationDetailMap">
     SELECT
       tua.user_name,
       tua.archive_id,
@@ -93,7 +147,13 @@
         )
         OR (
         track.after_user_category = 'LEAVE_OFFICE' OR track.after_user_category = 'RETIRE' ))
-        and org.org_id =#{orgId} AND  track.change_date >= #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE} >= track.change_date
+        AND  track.change_date >= #{startDate,jdbcType=DATE} AND #{endDate,jdbcType=DATE} >= track.change_date
+        and   org.org_id in
+        <foreach collection="orgIdList" item="item" close=")" open="(" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY org.org_id
   </select>
+
 
 </mapper>

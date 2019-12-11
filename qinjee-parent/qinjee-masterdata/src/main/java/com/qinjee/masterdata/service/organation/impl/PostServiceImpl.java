@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
@@ -17,6 +18,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
+import com.qinjee.masterdata.utils.FileUtil;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
 import com.qinjee.model.request.UserSession;
@@ -34,6 +36,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -186,7 +191,7 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
 
-        if(Objects.nonNull(postByPostCode)&&postVo.getOrgId()!=postByPostCode.getOrgId()){
+        if(Objects.nonNull(postByPostCode)&&!postVo.getOrgId().equals(postByPostCode.getOrgId())){
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         BeanUtils.copyProperties(postVo, post);
@@ -371,7 +376,12 @@ public class PostServiceImpl implements PostService {
             responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
             return responseResult;
         }
-        List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), Post.class);
+        //@ExcelColumn(order = 3, index = 3, width = 20)
+        //List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), Post.class);
+        File tempFile = File.createTempFile("temp", ".xls");
+        multfile.transferTo(tempFile);
+        List<Post> objects = DefaultExcelReader.of(Post.class).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
+        tempFile.delete();
         List<Post> orgList = new ArrayList<>();
         //记录行号
         Integer number = 1;
@@ -791,7 +801,7 @@ public class PostServiceImpl implements PostService {
             OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(post.getOrgCode(), userSession.getCompanyId());
             if (Objects.isNull(org)) {
                 checkVo.setCheckResult(false);
-                resultMsg.append("部门编码" + org.getOrgCode() + "不存在|");
+                resultMsg.append("部门编码不存在|");
             } else {
                 if (!post.getOrgName().equals(org.getOrgName())) {
                     checkVo.setCheckResult(false);
