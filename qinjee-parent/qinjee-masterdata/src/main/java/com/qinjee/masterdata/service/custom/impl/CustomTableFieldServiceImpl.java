@@ -228,21 +228,21 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 //验证身份证
                 if(rule.equals(CUSTOM_FIELD_CHECK_TYPE_ID_CARD)){
                     if(!RegexpUtils.checkIdCard(customFieldVO.getFieldValue())){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"格式不正确！");
+                        handlerCheckCustomFieldVO(customFieldVO, false,"身份证号码格式不正确！");
                     }
                 }
 
                 //验证邮箱
                 if(rule.equals(CUSTOM_FIELD_CHECK_TYPE_EMAIL)){
                     if(!RegexpUtils.checkEmail(customFieldVO.getFieldValue())){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"格式不正确！");
+                        handlerCheckCustomFieldVO(customFieldVO, false,"邮箱格式不正确！");
                     }
                 }
 
                 //验证手机号
-                if(!rule.equals(CUSTOM_FIELD_CHECK_TYPE_PHONE)){
+                if(rule.equals(CUSTOM_FIELD_CHECK_TYPE_PHONE)){
                     if(!RegexpUtils.checkPhone(customFieldVO.getFieldValue())){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"格式不正确！");
+                        handlerCheckCustomFieldVO(customFieldVO, false,"手机号格式不正确！");
                     }
                 }
             }
