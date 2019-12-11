@@ -287,6 +287,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             }
                         }
                             if (archiveId != null && archiveId != 0) {
+                                userArchive.setArchiveId ( archiveId );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             } else {
                                 userArchiveDao.insertSelective ( userArchive );
@@ -336,7 +337,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
                                     }
                                     if (map1.get ( "text_type" ).equals ( "number" )) {
-                                        declaredField.set ( preEmployment, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
+                                        declaredField.set ( preEmployment, new Double(selectValueById ( integerStringMap, integer )).intValue ()  );
                                     }
                                     if (map1.get ( "text_type" ).equals ( "date" )) {
                                         SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
@@ -347,6 +348,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             }
                         }
                             if (preemploymentId != null && preemploymentId != 0) {
+                                preEmployment.setEmploymentId ( preemploymentId );
                                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
                             } else {
                                 preEmploymentDao.insert ( preEmployment );
