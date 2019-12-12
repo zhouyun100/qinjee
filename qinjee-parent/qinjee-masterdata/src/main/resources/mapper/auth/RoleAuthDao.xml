@@ -161,13 +161,13 @@
     <!-- 根据角色ID修改角色是否自动授权新增子集机构权限 -->
     <update id="updateRoleAutoAuthChildOrgByRoleId" parameterType="com.qinjee.masterdata.model.entity.Role">
         update t_role set is_auto_auth_child_org = #{isAutoAuthChildOrg,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
-        where role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+        where role_id = #{roleId,jdbcType=INTEGER} and is_system_define = 0 and is_delete = 0
     </update>
 
     <!-- 修改角色 -->
     <update id="updateRole" parameterType="com.qinjee.masterdata.model.entity.Role">
         update t_role set role_name = #{roleName,jdbcType=VARCHAR},role_group_id = #{roleGroupId,jdbcType=INTEGER},operator_id = #{operatorId,jdbcType=INTEGER}
-        where role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+        where role_id = #{roleId,jdbcType=INTEGER} and is_system_define = 0 and is_delete = 0
     </update>
 
     <!-- 修改角色组 -->
@@ -179,7 +179,7 @@
   <!-- 删除角色 -->
     <update id="delRole" parameterType="com.qinjee.masterdata.model.entity.Role">
         update t_role set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
-        where role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+        where role_id = #{roleId,jdbcType=INTEGER} and is_system_define = 0 and is_delete = 0
     </update>
 
     <!-- 删除角色组 -->

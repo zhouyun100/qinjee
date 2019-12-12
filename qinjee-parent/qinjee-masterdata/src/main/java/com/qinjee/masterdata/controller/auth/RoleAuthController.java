@@ -168,14 +168,22 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.updateRole(roleId,roleGroupId,roleName,userSession.getArchiveId());
-            if(resultNumber > 0){
-                logger.info("updateRole success！roleId={},roleGroupId={},roleName={},operatorId={}", roleId, roleGroupId, roleName, userSession.getArchiveId());
-                responseResult = ResponseResult.SUCCESS();
+
+            Role role = roleAuthService.searchRoleDetailByRoleId(roleId);
+            if(role != null && role.getIsSystemDefine() == 0){
+                int resultNumber = roleAuthService.updateRole(roleId,roleGroupId,roleName,userSession.getArchiveId());
+                if(resultNumber > 0){
+                    logger.info("updateRole success！roleId={},roleGroupId={},roleName={},operatorId={}", roleId, roleGroupId, roleName, userSession.getArchiveId());
+                    responseResult = ResponseResult.SUCCESS();
+                }else{
+                    logger.info("updateRole fail！roleId={},roleGroupId={},roleName={},operatorId={}", roleId, roleGroupId, roleName, userSession.getArchiveId());
+                    responseResult = ResponseResult.FAIL();
+                }
             }else{
-                logger.info("updateRole fail！roleId={},roleGroupId={},roleName={},operatorId={}", roleId, roleGroupId, roleName, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("系统内置角色不允许修改权限！");
             }
+
 
         }catch (Exception e){
             logger.info("updateRole exception！roleId={},roleGroupId={},roleName={},exception={}", roleId, roleGroupId, roleName, e.toString());
@@ -242,13 +250,19 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.updateRoleAutoAuthChildOrgByRoleId(roleId,isAutoAuthChildOrg,userSession.getArchiveId());
-            if(resultNumber > 0){
-                logger.info("updateRoleAutoAuthChildOrgByRoleId success！roleId={},isAutoAuthChildOrg={},operatorId={}", roleId, isAutoAuthChildOrg, userSession.getArchiveId());
-                responseResult = ResponseResult.SUCCESS();
+
+            Role role = roleAuthService.searchRoleDetailByRoleId(roleId);
+            if(role != null && role.getIsSystemDefine() == 0){
+                int resultNumber = roleAuthService.updateRoleAutoAuthChildOrgByRoleId(roleId,isAutoAuthChildOrg,userSession.getArchiveId());
+                if(resultNumber > 0){
+                    logger.info("updateRoleAutoAuthChildOrgByRoleId success！roleId={},isAutoAuthChildOrg={},operatorId={}", roleId, isAutoAuthChildOrg, userSession.getArchiveId());
+                    responseResult = ResponseResult.SUCCESS();
+                }else{
+                    responseResult = ResponseResult.FAIL();
+                }
             }else{
-                logger.info("updateRoleAutoAuthChildOrgByRoleId fail！roleId={},isAutoAuthChildOrg={},operatorId={}", roleId, isAutoAuthChildOrg, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("系统内置角色不允许修改权限！");
             }
 
         }catch (Exception e){
@@ -315,13 +329,20 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            int resultNumber = roleAuthService.delRole(roleId, userSession.getArchiveId());
-            if(resultNumber > 0){
-                logger.info("delRole success！roleId={},operatorId={}", roleId,userSession.getArchiveId());
-                responseResult = ResponseResult.SUCCESS();
+
+            Role role = roleAuthService.searchRoleDetailByRoleId(roleId);
+            if(role != null && role.getIsSystemDefine() == 0){
+                int resultNumber = roleAuthService.delRole(roleId, userSession.getArchiveId());
+                if(resultNumber > 0){
+                    logger.info("delRole success！roleId={},operatorId={}", roleId,userSession.getArchiveId());
+                    responseResult = ResponseResult.SUCCESS();
+                }else{
+                    logger.info("delRole fail！roleId={},operatorId={}", roleId, userSession.getArchiveId());
+                    responseResult = ResponseResult.FAIL();
+                }
             }else{
-                logger.info("delRole fail！roleId={},operatorId={}", roleId, userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("系统内置角色不允许修改权限！");
             }
 
         }catch (Exception e){
@@ -423,9 +444,16 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            roleAuthService.updateRoleMenuAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
-            logger.info("updateRoleMenuAuth success！roleId={}, menuIdList={}, operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
-            responseResult = ResponseResult.SUCCESS();
+            Role role = roleAuthService.searchRoleDetailByRoleId(requestRoleAuthVO.getRoleId());
+            if(role != null && role.getIsSystemDefine() == 0){
+                roleAuthService.updateRoleMenuAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
+                logger.info("updateRoleMenuAuth success！roleId={}, menuIdList={}, operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("系统内置角色不允许修改权限！");
+            }
+
 
         }catch (Exception e){
             logger.info("updateRoleMenuAuth exception！roleId={}, menuIdList={}, exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), e.toString());
@@ -490,9 +518,16 @@ public class RoleAuthController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            roleAuthService.updateRoleOrgAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(), userSession.getArchiveId());
-            logger.info("updateRoleOrgAuth success！roleId={},orgIdList={},operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(),userSession.getArchiveId());
-            responseResult = ResponseResult.SUCCESS();
+            Role role = roleAuthService.searchRoleDetailByRoleId(requestRoleAuthVO.getRoleId());
+            if(role != null && role.getIsSystemDefine() == 0){
+                roleAuthService.updateRoleOrgAuth(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(), userSession.getArchiveId());
+                logger.info("updateRoleOrgAuth success！roleId={},orgIdList={},operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(),userSession.getArchiveId());
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("系统内置角色不允许修改权限！");
+            }
+
 
         }catch (Exception e){
             logger.info("updateRole exception！roleId={},orgIdList={},exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getOrgIdList(), e.toString());
@@ -643,14 +678,22 @@ public class RoleAuthController extends BaseController{
                 return responseResult;
             }
             roleDataLevelAuthVO.setOperatorId(userSession.getArchiveId());
-            int resultNumber = roleAuthService.saveRoleDataLevelAuth(roleDataLevelAuthVO);
-            if(resultNumber > 0){
-                logger.info("saveRoleDataLevelAuth success！roleId={},childDataLevelAuthList={},operatorId={}", roleDataLevelAuthVO.getRoleId(), roleDataLevelAuthVO.getChildDataLevelAuthList(), userSession.getArchiveId());
-                responseResult = ResponseResult.SUCCESS();
+
+            Role role = roleAuthService.searchRoleDetailByRoleId(roleDataLevelAuthVO.getRoleId());
+            if(role != null && role.getIsSystemDefine() == 0){
+                int resultNumber = roleAuthService.saveRoleDataLevelAuth(roleDataLevelAuthVO);
+                if(resultNumber > 0){
+                    logger.info("saveRoleDataLevelAuth success！roleId={},childDataLevelAuthList={},operatorId={}", roleDataLevelAuthVO.getRoleId(), roleDataLevelAuthVO.getChildDataLevelAuthList(), userSession.getArchiveId());
+                    responseResult = ResponseResult.SUCCESS();
+                }else{
+                    logger.info("saveRoleDataLevelAuth fail！roleId={},childDataLevelAuthList={},operatorId={}", roleDataLevelAuthVO.getRoleId(), roleDataLevelAuthVO.getChildDataLevelAuthList(), userSession.getArchiveId());
+                    responseResult = ResponseResult.FAIL();
+                }
             }else{
-                logger.info("saveRoleDataLevelAuth fail！roleId={},childDataLevelAuthList={},operatorId={}", roleDataLevelAuthVO.getRoleId(), roleDataLevelAuthVO.getChildDataLevelAuthList(), userSession.getArchiveId());
                 responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("系统内置角色不允许修改权限！");
             }
+
         }catch (Exception e){
             logger.info("saveRoleDataLevelAuth exception！roleId={},childDataLevelAuthList={},exception={}", roleDataLevelAuthVO.getRoleId(), roleDataLevelAuthVO.getChildDataLevelAuthList(), e.toString());
             e.printStackTrace();
