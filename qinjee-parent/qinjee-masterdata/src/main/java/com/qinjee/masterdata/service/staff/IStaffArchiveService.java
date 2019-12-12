@@ -113,7 +113,7 @@ public interface IStaffArchiveService {
     /**
      * 通过id查询到对应机构名称
      */
-    String selectOrgName(Integer id);
+    String selectOrgName(Integer id,UserSession userSession);
 
     /**
      * 根据显示方案展示人员信息

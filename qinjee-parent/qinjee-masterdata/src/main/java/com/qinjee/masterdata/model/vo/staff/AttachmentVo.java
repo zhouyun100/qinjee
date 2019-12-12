@@ -31,10 +31,9 @@ public class AttachmentVo implements Serializable {
     @NotNull
     private String 	attachmentType;
     /**
-     * 组id
+     * 组名称
      */
     @NotNull
-    private Integer groupId;
-
+    private String groupName;
 
 }

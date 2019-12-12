@@ -6,9 +6,10 @@ import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
+import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
-import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
+import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import com.qinjee.masterdata.service.staff.IPreTemplateService;
 import com.qinjee.model.response.CommonCode;
@@ -23,12 +24,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/staffTemp")
-@Api(tags = "【人员管理】预入职模板")
+@Api(tags = "【人员管理】预入职登记模板")
 public class PreTemplateController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger ( PreTemplateController.class );
@@ -37,10 +41,46 @@ public class PreTemplateController extends BaseController {
     @Autowired
     private EntryRegistrationService entryRegistrationService;
     @Autowired
-    private TemplateCustomTableFieldService templateCustomTableFieldService;
+    private SmsRecordService smsRecordService;
     @Autowired
-    private CustomTableFieldService customTableFieldService;
+    private TemplateCustomTableFieldService templateCustomTableFieldService;
 
+    /**
+     * 发送预入职登记
+     */
+    @RequestMapping(value = "/sendPreRegist", method = RequestMethod.POST)
+    @ApiOperation(value = "发送预入职登记", notes = "hkt")
+    public ResponseResult sendPreRegist(@RequestBody @Valid PreRegistVo preRegistVo) {
+        Boolean b = checkParam(preRegistVo);
+        if (b) {
+            try {
+                preTemplateService.sendRegisterMessage(preRegistVo);
+                return new ResponseResult<>(null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+    }
+    /**
+     * 发送短信
+     */
+    @RequestMapping(value = "/sendMessage", method = RequestMethod.POST)
+    @ApiOperation(value = "发送短信", notes = "hkt")
+    public ResponseResult sendMessage(@RequestBody @Valid List<Integer> list, Integer templateId ) {
+        Boolean b = checkParam(list);
+        if (b) {
+            try {
+                smsRecordService.sendMessageSms ( list,templateId );
+                return new ResponseResult<>(null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+    }
     /**
      * 根据企业ID查询入职登记模板列表
      */
@@ -60,28 +100,30 @@ public class PreTemplateController extends BaseController {
             } catch (Exception e) {
                 return failResponseResult ( "查询异常" );
             }
-
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
 
-//    /**
-//     * 生成logo背景图路径
-//     * @param multipartFile
-//     * @return
-//     */
-//    public String getLogoPath(MultipartFile multipartFile){
-//        Boolean b = checkParam ( multipartFile,getUserSession () );
-//        if (b) {
-//            try {
-//                String path="http://193.112.188.180/file/CompanyLogo/"+
-//            } catch (Exception e) {
-//                return failResponseResult ( "查询异常" );
-//            }
-//
-//        }
-//        return failResponseResult ( "参数错误或者session错误" );
-//    }
+    /**
+     * 生成logo背景图路径
+     * @param file
+     * @return
+     */
+    @RequestMapping(value = "/createBackGraundPhoto", method = RequestMethod.GET)
+    @ApiOperation(value = "根据企业ID查询入职登记模板列表", notes = "hkt")
+    public ResponseResult<String> getLogoPath(MultipartFile file)  {
+        Boolean b = checkParam ( file,getUserSession () );
+       if(b){
+           try {
+               String s=preTemplateService.createBackGroundPhoto(file,getUserSession ());
+                return new ResponseResult <> ( s,CommonCode.SUCCESS );
+           } catch (Exception e) {
+               e.printStackTrace ();
+           }
+
+       }
+        return failResponseResult ( "参数错误或者session错误" );
+    }
 
     /**
      * 新增入职登记模板
@@ -153,20 +195,18 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
-    @RequestMapping(value = "/getTemplateEntryRegistrationByTemplateId", method = RequestMethod.POST)
+    @RequestMapping(value = "/getTemplateEntryRegistrationByTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据模板ID获取模板详情", notes = "hkt")
     public ResponseResult < TemplateEntryRegistration > getTemplateEntryRegistrationByTemplateId(Integer templateId) {
         Boolean b = checkParam ( templateId );
         if (b) {
             try {
-
                 TemplateEntryRegistration templateEntryRegistrationByTemplateId =
                         entryRegistrationService.getTemplateEntryRegistrationByTemplateId ( templateId );
                 return new ResponseResult <> ( templateEntryRegistrationByTemplateId, CommonCode.SUCCESS );
             } catch (Exception e) {
                 return failResponseResult ( "展示异常" );
             }
-
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
@@ -227,9 +267,9 @@ public class PreTemplateController extends BaseController {
      * @param templateAttachmentGroup
      * @return
      */
-    @RequestMapping(value = "/modifyTemplateAttachmentGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/modifyTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "修改模板附件信息", notes = "hkt")
-    public ResponseResult modifyTemplateAttachmentGroup(TemplateAttachmentGroup templateAttachmentGroup) {
+    public ResponseResult modifyTemplateAttachmentGroup(@RequestBody TemplateAttachmentGroup templateAttachmentGroup) {
         Boolean b = checkParam ( templateAttachmentGroup );
         if (b) {
             try {
@@ -239,7 +279,6 @@ public class PreTemplateController extends BaseController {
             } catch (Exception e) {
                 return failResponseResult ( "修改异常" );
             }
-
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
@@ -248,9 +287,9 @@ public class PreTemplateController extends BaseController {
      * @param templateAttachmentGroup
      * @return
      */
-    @RequestMapping(value = "/addTemplateAttachmentGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/addTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增模板附件信息", notes = "hkt")
-    public ResponseResult addTemplateAttachmentGroup(TemplateAttachmentGroup templateAttachmentGroup) {
+    public ResponseResult addTemplateAttachmentGroup(@RequestBody TemplateAttachmentGroup templateAttachmentGroup) {
         Boolean b = checkParam ( templateAttachmentGroup );
         if (b) {
             try {
@@ -293,7 +332,7 @@ public class PreTemplateController extends BaseController {
      */
     @RequestMapping(value = "/delTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "模板附件排序", notes = "hkt")
-    public ResponseResult sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList) {
+    public ResponseResult sortTemplateAttachmentGroup(@RequestBody List<TemplateAttachmentGroup> templateAttachmentGroupList) {
         Boolean b = checkParam ( templateAttachmentGroupList,getUserSession () );
         if (b) {
             try {
@@ -313,7 +352,7 @@ public class PreTemplateController extends BaseController {
      * @param isAll 是否显示全部表(1:显示全部自定义表,0:显示模板对应的自定义表)
      * @return
      */
-    @RequestMapping(value = "/searchTableListByCompanyIdAndTemplateId", method = RequestMethod.POST)
+    @RequestMapping(value = "/searchTableListByCompanyIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId,Integer isAll) {
         Boolean b = checkParam (templateId,isAll,getUserSession () );
@@ -337,7 +376,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
-    @RequestMapping(value = "/searchTableFieldListByTemplateId", method = RequestMethod.POST)
+    @RequestMapping(value = "/searchTableFieldListByTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableVO >> searchTableFieldListByTemplateId(Integer templateId) {
         Boolean b = checkParam (templateId );
@@ -363,7 +402,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
-    @RequestMapping(value = "/searchFieldListByTableIdAndTemplateId", method = RequestMethod.POST)
+    @RequestMapping(value = "/searchFieldListByTableIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableFieldVO >> searchTableFieldListByTemplateId(Integer tableId,Integer templateId) {
         Boolean b = checkParam (templateId,tableId );
@@ -393,7 +432,7 @@ public class PreTemplateController extends BaseController {
     @RequestMapping(value = "/saveTemplateTableField", method = RequestMethod.POST)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableFieldVO >> saveTemplateTableField(Integer templateId,
-                                                                                                 List<TemplateCustomTableVO> templateCustomTableList) {
+                                                                                                 @RequestBody List<TemplateCustomTableVO> templateCustomTableList) {
         Boolean b = checkParam (templateId,templateCustomTableList,getUserSession () );
         if (b) {
             try {
@@ -413,7 +452,7 @@ public class PreTemplateController extends BaseController {
      * @param preId 预入职ID
      * @return
      */
-    @RequestMapping(value = "/searchCustomTableListByTemplateIdAndArchiveId", method = RequestMethod.POST)
+    @RequestMapping(value = "/searchCustomTableListByTemplateIdAndArchiveId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < EntryRegistrationTableVO >> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId,Integer preId) {
         Boolean b = checkParam (templateId,preId );
@@ -434,18 +473,17 @@ public class PreTemplateController extends BaseController {
     }
     /**
      * 处理自定义表字段数据回填
-     * 目前一家企业只有一个预入职模板
      * @param preId
      * @return
      */
-    @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.POST)
+    @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
-    public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId) {
-        Boolean b = checkParam (getUserSession (),preId );
+    public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId ) {
+        Boolean b = checkParam (getUserSession (),preId,templateId );
         if (b) {
             try {
                 List < EntryRegistrationTableVO > list =
-                        preTemplateService.handlerCustomTableGroupFieldList ( getUserSession ().getCompanyId (), preId );
+                        preTemplateService.handlerCustomTableGroupFieldList ( getUserSession ().getCompanyId (), preId,templateId );
                 if(CollectionUtils.isEmpty ( list )){
                     return new ResponseResult <> ( list, CommonCode.SUCCESS);
                 }else{
@@ -453,6 +491,24 @@ public class PreTemplateController extends BaseController {
                 }
             } catch (Exception e) {
                 return failResponseResult ( "更改异常" );
+            }
+        }
+        return failResponseResult ( "参数错误或者session错误" );
+    }
+    /**
+     *
+     生成预入职登记二维码
+     */
+    @RequestMapping(value = "/createPreRegistQrcode", method = RequestMethod.GET)
+    @ApiOperation(value = "生成预入职登记二维码", notes = "hkt")
+    public ResponseResult  createPreRegistQrcode(Integer templateId, HttpServletResponse response) {
+        Boolean b = checkParam (templateId,response );
+        if (b) {
+            try {
+                preTemplateService.createPreRegistQrcode(templateId,response);
+                return null;
+            } catch (Exception e) {
+                return failResponseResult ( "生成失败" );
             }
         }
         return failResponseResult ( "参数错误或者session错误" );

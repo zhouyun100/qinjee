@@ -34,7 +34,7 @@ public class ImportAndExportStaffController extends BaseController {
      * 自定义文件类型校验以及生成list
      */
     @RequestMapping(value = "/importFileAndCheckFilePre", method = RequestMethod.POST)
-    @ApiOperation(value = "自定义文件类型校验以及生成list", notes = "hkt")
+    @ApiOperation(value = "预入职自定义文件类型校验以及生成list", notes = "hkt")
     public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile) {
         Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
@@ -54,13 +54,13 @@ public class ImportAndExportStaffController extends BaseController {
     /**
      * 自定义文件类型校验以及生成list
      */
-    @RequestMapping(value = "/importFileAndCheckFileCon", method = RequestMethod.POST)
-    @ApiOperation(value = "自定义文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< CheckImportVo > importFileAndCheckFileCon(@RequestParam("file") MultipartFile multipartFile) {
+    @RequestMapping(value = "/importFileAndCheckFileArc", method = RequestMethod.POST)
+    @ApiOperation(value = "档案自定义文件类型校验以及生成list", notes = "hkt")
+    public ResponseResult< CheckImportVo > importFileAndCheckFileARC(@RequestParam("file") MultipartFile multipartFile) {
         Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
             try {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"CON",  getUserSession () );
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession () );
                 return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (IOException e) {
                 e.printStackTrace ();

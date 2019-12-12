@@ -355,6 +355,7 @@
     select  org_name
     from  t_organization
     where org_id = #{id,jdbcType=INTEGER}
+    and company_id=#{companyId}
     and is_enable=1
   </select>
     <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">

@@ -20,7 +20,7 @@ public interface SmsRecordService {
     /**
      * 记录发送登录短信验证码发送短信验证码
      */
-    void sendMessageSms(List <Integer> list) throws Exception;
+    void sendMessageSms(List <Integer> list,Integer templateId) throws Exception;
 
     /**
      * 发送短信验证码

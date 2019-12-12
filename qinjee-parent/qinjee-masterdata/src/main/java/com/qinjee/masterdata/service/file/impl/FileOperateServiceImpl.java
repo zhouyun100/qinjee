@@ -1,13 +1,14 @@
 package com.qinjee.masterdata.service.file.impl;
 
 import com.qcloud.cos.model.COSObjectInputStream;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
-import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +47,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
         file.delete();
     }
 
+
     @Override
     public void downLoadFile(HttpServletResponse response, String path) throws Exception {
         try {
@@ -63,17 +65,27 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List<URL> getFilePath(GetFilePath getFilePath, UserSession userSession) {
+    public List<URL> getFilePath(AttachmentVo attachmentVo, UserSession userSession) {
         List<URL> stringList=new ArrayList<>();
-        List<String> list = attachmentRecordDao.selectFilePath(getFilePath, userSession.getCompanyId());
+        List<String> list = attachmentRecordDao.selectFilePath(attachmentVo, userSession.getCompanyId());
         for (String s : list) {
             stringList.add(UpAndDownUtil.getPath(s));
         }
         return stringList;
     }
-    private void insertAttachment(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession,String pathUrl) {
+    @Transactional(rollbackFor = Exception.class)
+    public void insertAttachment(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession,String pathUrl) {
+        List < URL > filePath = getFilePath ( attachmentVo, userSession );
+        //找到应该上传文件的个数
+        Integer fileSize=attachmentRecordDao.selectFileSize(attachmentVo.getGroupName ());
+        if(filePath.size ()>=fileSize){
+            ExceptionCast.cast ( CommonCode.File_NUMBER_WRONG );
+        }
         AttachmentRecord attachmentRecord=new AttachmentRecord();
         BeanUtils.copyProperties(attachmentVo,attachmentRecord);
+        //通过groupName找到id
+        Integer groupId=attachmentRecordDao.selectGroupId(attachmentVo.getGroupName ());
+        attachmentRecord.setGroupId ( groupId );
         attachmentRecord.setCompanyId(userSession.getCompanyId());
         attachmentRecord.setAttachmentName(multipartFile.getOriginalFilename());
         attachmentRecord.setIsDelete((short) 0);
@@ -82,27 +94,30 @@ public class FileOperateServiceImpl implements IFileOperateService {
         attachmentRecord.setOperatorId(userSession.getArchiveId());
         attachmentRecordDao.insertSelective(attachmentRecord);
     }
+
     private String getPathUrl(AttachmentVo attachmentVo,UserSession userSession,MultipartFile multipartFile) {
         String businessModule = attachmentVo.getBusinessModule();
         Integer companyId = userSession.getCompanyId();
         Integer businessId = attachmentVo.getBusinessId();
         String businessType = attachmentVo.getBusinessType();
-        Integer groupId = attachmentVo.getGroupId ();
+        String groupName=attachmentVo.getGroupName ();
         String employNumber=userArchiveDao.selectEmployNumber(attachmentVo.getBusinessId());
         String originalFilename = multipartFile.getOriginalFilename();
         String attachmentName = employNumber+originalFilename;
-        return businessModule+"/"+companyId+"/"+businessId+"/"+businessType+"/"+groupId+"/"+attachmentName;
+        return businessModule+"/"+companyId+"/"+businessId+"/"+businessType+"/"+groupName+"/"+attachmentName;
     }
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteAttachment(List<Integer> list) {
-        attachmentRecordDao.deleteByIdList(list);
+    public void deleteFile(AttachmentVo attachmentVo,UserSession userSession) {
+        attachmentRecordDao.deleteFile (attachmentVo,userSession.getCompanyId ());
     }
 
     @Override
-    public List<AttachmentRecord> selectAttach(String businessModule, String businessType,String groupName, UserSession userSession) {
-        List<AttachmentRecord> list=attachmentRecordDao.selectAttach(businessModule,businessType,userSession.getArchiveId(),groupName,userSession.getCompanyId());
-        return list;
-    }
+    public List<AttachmentRecord> selectAttach(AttachmentVo attachmentVo,UserSession userSession) {
+      return attachmentRecordDao.
+              selectAttach(attachmentVo,userSession.getCompanyId ());
 
+    }
 }

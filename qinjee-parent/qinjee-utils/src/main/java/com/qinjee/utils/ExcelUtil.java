@@ -267,19 +267,6 @@ public class ExcelUtil {
         }
         return cellValue;
     }
-
-
-    public static MultipartFile getMultipartFile(File file) {
-        MultipartFile multipartFile = null;
-        try {
-            FileInputStream fileInput = new FileInputStream ( file );
-            multipartFile = new MockMultipartFile ( "file", file.getName (), "text/plain", IOUtils.toByteArray ( fileInput ) );
-        } catch (Exception e) {
-            e.printStackTrace ();
-        }
-        return multipartFile;
-    }
-
     public static void main(String[] args) throws IOException {
         MultipartFile multipartFile = null;
         File file = new File ( "E:\\import_test.xlsx" );

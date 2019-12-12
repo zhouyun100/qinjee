@@ -317,10 +317,10 @@ public class StaffArchiveController extends BaseController {
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true)
 
     public ResponseResult selectOrgName(Integer id) {
-        Boolean b = checkParam(id);
+        Boolean b = checkParam(id,getUserSession ());
         if(b){
             try {
-                String s = staffArchiveService.selectOrgName(id);
+                String s = staffArchiveService.selectOrgName(id,getUserSession ());
                 return new ResponseResult<>(s,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return failResponseResult("通过id查询到对应机构名称失败");

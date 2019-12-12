@@ -13,6 +13,7 @@ import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -50,6 +51,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private OrganizationDao organizationDao;
+    @Autowired
+    private UserLoginService userLoginService;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
@@ -106,8 +109,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
         UserArchive userArchive = new UserArchive ();
+        int userId = userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () );
+        userArchive.setUserId ( userId );
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
@@ -189,8 +195,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public String selectOrgName(Integer id) {
-        return organizationDao.selectOrgName ( id );
+    public String selectOrgName(Integer id,UserSession userSession) {
+        return organizationDao.selectOrgName ( id,userSession.getCompanyId () );
     }
 
     @Override
@@ -371,6 +377,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     /**
      * list是所查询项的集合
+     * 组装sql
      */
     private String getBaseSql(List < CustomFieldVO > notIn, List < Integer > integers, Integer companyId, List < CustomTableVO > tableVOS) {
         List < CustomFieldVO > inList = new ArrayList <> ();

@@ -92,7 +92,7 @@ public interface OrganizationDao {
      * @param id
      * @return
      */
-    String selectOrgName(Integer id);
+    String selectOrgName(@Param("id") Integer id, @Param("companyId") Integer companyId);
 
 
 

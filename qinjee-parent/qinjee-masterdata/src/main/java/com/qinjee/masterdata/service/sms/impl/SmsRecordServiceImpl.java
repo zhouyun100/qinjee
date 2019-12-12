@@ -58,9 +58,10 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     private SysDictService sysDictService;
 
 
+
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void sendMessageSms(List<Integer> list) throws Exception {
+    public void sendMessageSms(List<Integer> list,Integer templateId) throws Exception {
         SmsConfig smsConfig = smsConfigService.selectEntryRegistrationSmsConfig ();
         //获取预入职的信息
         Map < Integer, Map < String, String > > integerMapMap = preEmploymentDao.selectNameAndOrg ( list );
@@ -69,7 +70,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             Map < String, String > value = integerMapEntry.getValue ();
             String userName = value.get ( "user_name" );
             String applicationPosition = value.get ( "application_position" );
-            String companyId = String.valueOf (value.get ( "company_id" ));
+//            String companyId = String.valueOf (value.get ( "company_id" ));
             String phone = value.get ( "phone" );
             List<String> phoneNumbers = new ArrayList<>();
             phoneNumbers.add(phone);
@@ -77,11 +78,14 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add ( baseShortUrl + "/" + AesUtils.aesEncrypt ( integerMapEntry.getKey () + companyId, AesKeyConsts.PRE_SMS_AES_KEY ) );
+            params.add ( AesUtils.aesEncrypt ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId , AesKeyConsts.PRE_SMS_AES_KEY ) );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
+            //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
+            redisClusterService.setex ( AesUtils.aesEncrypt ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId, AesKeyConsts.PRE_SMS_AES_KEY ),
+                    2*60*60,baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId);
         }
     }
 

@@ -16,6 +16,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -64,6 +65,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private PreEmploymentDao preEmploymentDao;
     @Autowired
     private UserArchiveDao  userArchiveDao;
+    @Autowired
+    private UserLoginService userLoginService;
     @Autowired
     private PostDao postDao;
     @Override
@@ -272,17 +275,17 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             for (Field declaredField : declaredFields) {
                                 declaredField.setAccessible ( true );
                                 if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                    if (map1.get ( "text_type" ).equals ( "text" )) {
-                                        declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
-                                    }
-                                    if (map1.get ( "text_type" ).equals ( "number" )) {
-                                        declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
-                                    }
-                                    if (map1.get ( "text_type" ).equals ( "date" )) {
-                                        SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                        Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );
-                                        declaredField.set ( userArchive, parse );
-                                    }
+                                        if (map1.get ( "text_type" ).equals ( "text" )) {
+                                            declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
+                                        }
+                                        if (map1.get ( "text_type" ).equals ( "number" )) {
+                                            declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
+                                        }
+                                        if (map1.get ( "text_type" ).equals ( "date" )) {
+                                            SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                            Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );
+                                            declaredField.set ( userArchive, parse );
+                                        }
                                 }
                             }
                         }
@@ -290,6 +293,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 userArchive.setArchiveId ( archiveId );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             } else {
+                                userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (),userSession.getCompanyId () ) );
                                 userArchiveDao.insertSelective ( userArchive );
                             }
                         }

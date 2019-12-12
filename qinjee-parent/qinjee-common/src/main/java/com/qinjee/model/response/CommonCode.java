@@ -41,8 +41,10 @@ public enum CommonCode implements ResultCode{
     POST_NOT_EXSIT_EXCEPTION(false,10320,"不存在相关岗位！"),
     TRANSFER_REPET_OPERATION(false,10321,"已在目标对象中存在，请勿重复划转！"),
     SET_DEADLINE_EXCEPTION(false,10316, "一种类型只能设置一种临近天数!"),
-    SEND_MAIL_FAIL(false,10317, "发送邮件失败!");
-
+    SEND_MAIL_FAIL(false,10317, "发送邮件失败!"),
+    File_NUMBER_WRONG(false,10318, "文件存储超过数量上限!"),
+    CAN_NOT_SEND_PREREGIST(false,10319, "不允许发送入职登记!"),
+    DATE_SO_LONG(false,10320, "二维码过期!");
 
     /**
      * 操作是否成功

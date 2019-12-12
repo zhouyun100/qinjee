@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.file;
 
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
-import com.qinjee.masterdata.model.vo.staff.GetFilePath;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,18 +24,18 @@ public interface IFileOperateService {
 
     /**
      * 获取文件路径
-     * @param getFilePath
+     * @param attachmentVo
      * @param userSession
      * @return
      */
-    List<URL> getFilePath(GetFilePath getFilePath, UserSession userSession);
+    List<URL> getFilePath(AttachmentVo attachmentVo, UserSession userSession);
     /**
      * 删除文件(逻辑删除)
      */
-    void deleteAttachment(List<Integer> list);
+    void deleteFile(AttachmentVo attachmentVo,UserSession userSession);
     /**
      * 展示附件列表
      */
-    List<AttachmentRecord> selectAttach(String 	businessModule,String businessType,String groupName, UserSession userSession);
+    List<AttachmentRecord> selectAttach(AttachmentVo attachmentVo,UserSession userSession);
 
 }
