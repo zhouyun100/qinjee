@@ -88,7 +88,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
         response.setDateHeader("Expires", 0);
         response.setContentType("image/png");
         String baseUrl="www.baidu.com?"+templateId;
-        BitMatrix bitMatrix = QRCodeUtil.generateQRCodeStream ( baseUrl, response );
+//        BitMatrix bitMatrix = QRCodeUtil.generateQRCodeStream ( baseUrl, response );
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 //        BufferedImage image = toBufferedImage(bitMatrix)
     }
