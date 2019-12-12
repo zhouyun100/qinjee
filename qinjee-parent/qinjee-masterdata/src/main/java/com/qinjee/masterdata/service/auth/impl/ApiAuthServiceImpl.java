@@ -40,7 +40,7 @@ public class ApiAuthServiceImpl implements ApiAuthService {
     @Override
     public int mergeOrg(List<Integer> oldOrgIdList, Integer newOrgId, Integer operatorId) {
         int resultNum = 0;
-        if(CollectionUtils.isNotEmpty(oldOrgIdList)){
+        if(CollectionUtils.isEmpty(oldOrgIdList)){
             return 0;
         }
 
