@@ -10,6 +10,7 @@
     <result column="attachment_size" jdbcType="INTEGER" property="attachmentSize" />
     <result column="business_type" jdbcType="VARCHAR" property="businessType" />
     <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -17,7 +18,7 @@
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    attachment_id, attachment_name, attachment_url,attachment_type,business_module, attachment_size, business_type, business_id,
+    attachment_id, attachment_name, attachment_url,attachment_type,business_module, attachment_size, business_type, business_id,group_id
     company_id, operator_id, create_time, update_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -32,12 +33,12 @@
   </delete>
   <insert id="insert" keyColumn="attachment_id" keyProperty="attachmentId" parameterType="com.qinjee.masterdata.model.entity.AttachmentRecord" useGeneratedKeys="true">
     insert into t_attachment_record (attachment_name, attachment_url,attachment_type, business_module,attachment_size,
-      business_type, business_id, company_id,
+      business_type, business_id, company_id,group_id,
       operator_id, create_time, update_time,
       is_delete)
     values (#{attachmentName,jdbcType=VARCHAR}, #{attachmentUrl,jdbcType=VARCHAR}, #{attachmentType,jdbcType=INTEGER},
     #{businessModule,jdbcType=INTEGER},#{attachmentSize,jdbcType=INTEGER},
-      #{businessType,jdbcType=VARCHAR}, #{businessId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER},
+      #{businessType,jdbcType=VARCHAR}, #{businessId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER},#{groupId,jdbcType=INTEGER},
       #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
       #{isDelete,jdbcType=SMALLINT})
   </insert>
@@ -80,6 +81,9 @@
       <if test="isDelete != null">
         is_delete,
       </if>
+      <if test="groupId != null">
+        group_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="attachmentName != null">
@@ -117,6 +121,9 @@
       </if>
       <if test="isDelete != null">
         #{isDelete,jdbcType=SMALLINT},
+      </if>
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -159,6 +166,9 @@
       <if test="isDelete != null">
         is_delete = #{isDelete,jdbcType=SMALLINT},
       </if>
+      <if test="groupId != null">
+        group_id=#{groupId,jdbcType=INTEGER},
+      </if>
     </set>
     where attachment_id = #{attachmentId,jdbcType=INTEGER}
   </update>
@@ -175,7 +185,8 @@
       operator_id = #{operatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=SMALLINT}
+      is_delete = #{isDelete,jdbcType=SMALLINT},
+      group_id = #{groupId,jdbcType=INTEGER}
     where attachment_id = #{attachmentId,jdbcType=INTEGER}
   </update>
   <select id="selectFilePath" resultType="java.lang.String">
@@ -187,6 +198,14 @@
     and   attachment_type = #{getFilePath.attachmentType,jdbcType=VARCHAR}
     and   company_id = #{companyId,jdbcType=INTEGER}
     and   is_delete=0
+    AND   group_id IN
+            (SELECT
+                group_id
+            FROM
+                t_attachment_group
+            WHERE
+                group_name = #{getFilePath.groupName}
+            AND is_delete = 0)
   </select>
   <update id="deleteByIdList">
     update  t_attachment_record
@@ -198,14 +217,24 @@
       #{item}
     </foreach>
   </update>
-  <select id="selectAttach" resultType="com.qinjee.masterdata.model.entity.AttachmentRecord">
-    select * from
-    t_attachment_record
-    where
-    business_id = #{archiveId,jdbcType=INTEGER}
-    and   business_type = #{businessType,jdbcType=VARCHAR}
-    and   business_module = #{businessModule,jdbcType=VARCHAR}
-    and   company_id = #{companyId,jdbcType=INTEGER}
-    and is_delete=0
+  <select id="selectAttach" resultType="com.qinjee.masterdata.model.entity.AttachmentRecord" resultMap="BaseResultMap">
+            SELECT
+                <include refid="Base_Column_List"/>
+            FROM
+                t_attachment_record
+            WHERE
+            business_id = #{archiveId}
+            AND business_type =#{businessType}
+            AND business_module =#{businessModule}
+            AND company_id = 1
+            AND is_delete = 0
+            AND group_id IN
+            (SELECT
+                group_id
+            FROM
+                t_attachment_group
+            WHERE
+                group_name = #{groupName}
+            AND is_delete = 0)
   </select>
 </mapper>

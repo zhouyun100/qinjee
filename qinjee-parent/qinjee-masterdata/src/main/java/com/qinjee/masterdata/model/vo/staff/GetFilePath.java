@@ -30,4 +30,10 @@ public class GetFilePath implements Serializable {
      */
     @NotNull
     private Integer businessId;
+
+    /**
+     * 组名称
+     */
+    @NotNull
+    private String groupName;
 }

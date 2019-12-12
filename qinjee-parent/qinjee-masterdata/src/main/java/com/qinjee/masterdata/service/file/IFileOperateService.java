@@ -37,6 +37,6 @@ public interface IFileOperateService {
     /**
      * 展示附件列表
      */
-    List<AttachmentRecord> selectAttach(String 	businessModule,String businessType, UserSession userSession);
+    List<AttachmentRecord> selectAttach(String 	businessModule,String businessType,String groupName, UserSession userSession);
 
 }

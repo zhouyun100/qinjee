@@ -46,6 +46,9 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
         return templateCustomTableList;
     }
 
+
+
+
     @Override
     public List<TemplateCustomTableVO> searchTableFieldListByTemplateId(Integer templateId) {
         List<TemplateCustomTableVO> templateCustomTableList = templateCustomTableFieldDao.searchTableListByTemplateId(templateId);
@@ -96,7 +99,6 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
 
                 }
             }
-
             //删除DB中多余的表和字段
             customTableList.removeAll(delTemplateTableList);
             if(CollectionUtils.isNotEmpty(customTableList)){
@@ -148,7 +150,6 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
         if(CollectionUtils.isNotEmpty(entryRegistrationTableList)){
             for(EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableList){
                 List<CustomFieldVO> fieldList = entryRegistrationTableVO.getCustomFieldVOList();
-
                 /**
                  * 处理自定义表字段数据回填
                  */

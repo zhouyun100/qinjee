@@ -200,12 +200,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         Map < String, String > map = new HashMap <> ();
         List < CheckCustomTableVO > list = JSONArray.parseArray ( s, CheckCustomTableVO.class );
-        if (!CollectionUtils.isEmpty ( list )) {
+        try {
             for (int i = 0; i < list.size (); i++) {
-                if (list.get ( i ).getCheckResult () == false) {
+                if (!"".equals (list.get ( 0 ).getCheckResult())&& list.get ( 0 ).getCheckResult () == false) {
                     map.put ( "第" + (i + 1) + "行", list.get ( i ).getResultMsg () );
                 }
             }
+        } catch (Exception e) {
+            ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
         }
         return map;
     }

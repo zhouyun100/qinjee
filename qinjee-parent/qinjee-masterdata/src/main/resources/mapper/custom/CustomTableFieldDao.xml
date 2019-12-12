@@ -448,6 +448,14 @@
     and tab.is_delete=0
     and tab.is_enable=1
   </select>
+    <select id="selectTableIdByCompanyIdAndFuncCode" resultType="java.lang.Integer">
+        select table_id
+        from t_custom_archive_table
+        where company_id=#{companyId}
+        and func_code=#{funcCode}
+        and is_enable=1
+        and is_delete=0
+    </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldTypeByNameList" resultType="java.lang.String"></select>
@@ -456,6 +464,7 @@
   <select id="selectPhysicName" resultType="java.lang.String"></select>
   <select id="selectFieldCodeByList" resultType="java.lang.String"></select>
     <select id="selectCodeId" resultType="java.lang.Integer"></select>
+
 
 
 </mapper>

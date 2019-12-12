@@ -25,5 +25,5 @@ public interface AttachmentRecordDao {
 
     void deleteByIdList(@Param("list") List<Integer> list);
 
-    List<AttachmentRecord> selectAttach(@Param("businessModule") String businessModule, @Param("businessType") String businessType, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
+    List<AttachmentRecord> selectAttach(@Param("businessModule") String businessModule, @Param("businessType") String businessType, @Param("archiveId") Integer archiveId, @Param("groupName") String groupName, @Param("companyId") Integer companyId);
 }

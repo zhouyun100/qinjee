@@ -33,13 +33,34 @@ public class ImportAndExportStaffController extends BaseController {
     /**
      * 自定义文件类型校验以及生成list
      */
-    @RequestMapping(value = "/importFileAndCheckFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/importFileAndCheckFilePre", method = RequestMethod.POST)
     @ApiOperation(value = "自定义文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< CheckImportVo > importFileAndCheckFile(@RequestParam("file") MultipartFile multipartFile, String funcCode) {
+    public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile) {
         Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
             try {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile, funcCode.toUpperCase (), getUserSession () );
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession () );
+                return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
+            } catch (IOException e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode. FILE_PARSING_EXCEPTION);
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
+    }
+    /**
+     * 自定义文件类型校验以及生成list
+     */
+    @RequestMapping(value = "/importFileAndCheckFileCon", method = RequestMethod.POST)
+    @ApiOperation(value = "自定义文件类型校验以及生成list", notes = "hkt")
+    public ResponseResult< CheckImportVo > importFileAndCheckFileCon(@RequestParam("file") MultipartFile multipartFile) {
+        Boolean b = checkParam(multipartFile,getUserSession ());
+        if(b) {
+            try {
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"CON",  getUserSession () );
                 return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (IOException e) {
                 e.printStackTrace ();
