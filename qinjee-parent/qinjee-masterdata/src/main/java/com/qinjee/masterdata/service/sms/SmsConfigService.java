@@ -19,7 +19,7 @@ import com.qinjee.masterdata.model.entity.SmsConfig;
 public interface SmsConfigService {
 
     /**
-     * 根据业务类型查询短信配置信息
+     * 查询手机号验证码登录短信配置信息
      * @return
      */
     SmsConfig selectLoginCodeSmsConfig();
@@ -30,4 +30,10 @@ public interface SmsConfigService {
      * @return
      */
     SmsConfig selectEntryRegistrationSmsConfig();
+
+    /**
+     * 查询预入职手机号验证码登录短信配置信息
+     * @return
+     */
+    SmsConfig selectPreLoginCodeSmsConfig();
 }

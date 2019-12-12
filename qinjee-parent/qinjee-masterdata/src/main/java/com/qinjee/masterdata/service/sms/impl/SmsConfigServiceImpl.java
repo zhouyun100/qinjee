@@ -27,6 +27,8 @@ public class SmsConfigServiceImpl implements SmsConfigService {
 
     private static final String BUSINESS_TYPE_LOGIN_CODE = "LOGIN_CODE";
     private static final String BUSINESS_TYPE_ENTRY_REGISTRATION = "ENTRY_REGISTRATION";
+    private static final String BUSINESS_TYPE_PRE_LOGIN_CODE = "PRE_LOGIN_CODE";
+
 
     @Autowired
     private SmsConfigDao smsConfigDao;
@@ -41,6 +43,12 @@ public class SmsConfigServiceImpl implements SmsConfigService {
     @Override
     public SmsConfig selectEntryRegistrationSmsConfig() {
         SmsConfig smsConfig = smsConfigDao.selectByBusinessType(BUSINESS_TYPE_ENTRY_REGISTRATION);
+        return smsConfig;
+    }
+
+    @Override
+    public SmsConfig selectPreLoginCodeSmsConfig() {
+        SmsConfig smsConfig = smsConfigDao.selectByBusinessType(BUSINESS_TYPE_PRE_LOGIN_CODE);
         return smsConfig;
     }
 }

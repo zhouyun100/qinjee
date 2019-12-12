@@ -19,9 +19,12 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.KeyUtils;
+import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,7 +113,42 @@ public class SmsRecordServiceImpl implements SmsRecordService {
         insertSmsRecord(smsConfig,phone,params);
     }
 
-    private void insertSmsRecord(SmsConfig smsConfig,String phone,List<String> params){
+    @Override
+    public void sendSmsPreLoginCode(String phone) {
+        /**
+         * 查询预入职手机号验证码登录短信配置信息
+         */
+        SmsConfig smsConfig = smsConfigService.selectPreLoginCodeSmsConfig();
+
+        /**
+         * 生成6位随机数字验证码
+         */
+        String smsCode = KeyUtils.getNonceCodeNumber(6);
+        List<String> params = new ArrayList<>();
+        params.add(smsCode);
+        params.add(String.valueOf(SMS_CODE_VALID_MINUTE));
+        redisClusterService.setex("PRE_LOGIN_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
+
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add(phone);
+        SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,params);
+
+        //添加短信记录
+        insertSmsRecord(smsConfig,phone,params);
+    }
+
+    @Override
+    public boolean checkPreLoginCodeByPhoneAndCode(String phone, String code) {
+        if(StringUtils.isNoneBlank(phone) && StringUtils.isNoneBlank(code)){
+            String redisPhoneLoginCode = redisClusterService.get("PRE_LOGIN_" + phone);
+            if(StringUtils.isNoneBlank(redisPhoneLoginCode) && redisPhoneLoginCode.equals(code)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void insertSmsRecord(SmsConfig smsConfig, String phone, List<String> params){
         SmsRecord smsRecord = new SmsRecord();
 
         smsRecord.setPhone(phone);
