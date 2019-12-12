@@ -173,7 +173,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 orgCode = parentOrg.getOrgCode() + "01";
                 sortId = 1000;
             } else {
-                sortId = brotherOrgList.get(0).getSortId() + 100;
+                sortId = brotherOrgList.get(0).getSortId() + 1000;
                 //orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
             }
             orgBean.setSortId(sortId);
@@ -839,7 +839,6 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public List<OrganizationVO> getAllOrganizationTree(Integer archiveId, Short isEnable) {
-
         //拿到所有未被封存的机构
         List<OrganizationVO> organizationVOList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //获取第一级机构

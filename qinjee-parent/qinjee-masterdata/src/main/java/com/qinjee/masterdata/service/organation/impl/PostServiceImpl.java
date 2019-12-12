@@ -191,13 +191,13 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
 
-        if(Objects.nonNull(postByPostCode)&&!postVo.getOrgId().equals(postByPostCode.getOrgId())){
+        if(Objects.nonNull(postByPostCode)&&!postVo.getPostId().equals(postByPostCode.getPostId())){
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
 
-        //如果上级机构id或上级岗位id改变，则重新生成岗位编码 和 排序id
+        //如果上级机构id或上级岗位id改变，则重新排序id
         Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
         if (!postVo.getOrgId().equals(post1.getOrgId())) {
             generateSortId(post, postVo.getOrgId(), postVo.getParentPostId());

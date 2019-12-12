@@ -24,4 +24,5 @@ public interface ReportFormDao {
     List<RegulationDetailVo> selectOrgDecreaseMemberDetail(@Param("orgIdList")List<Integer> orgIdList, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     List<RegulationCountVo> selectOrgRegulationCount(@Param("orgIdList")List<Integer> orgIdList,@Param("startDate")Date startDate, @Param("endDate")Date endDate);
+    List<RegulationCountVo> selectOrgRegulationCount2(@Param("startDate")Date startDate, @Param("endDate")Date endDate);
 }

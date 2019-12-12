@@ -126,7 +126,7 @@ public class ReportFormController extends BaseController {
     }
 
     @PostMapping(value = "/selectOrgRegulationCount")
-    @ApiOperation(value = "显示增减员统计表 {\"orgIds\":[28,671,672,673,675,679],\"startDate\":\"2019-12-01\",\"endDate\":\"2019-12-07\",\"layer\":2}", notes = "彭洪思")
+    @ApiOperation(value = "测试 显示增减员统计表 {\"orgIds\":[28,671,672,673,674,675,679,678,680,681,676],\"startDate\":\"2019-12-01\",\"endDate\":\"2019-12-07\",\"layer\":2}", notes = "彭洪思")
     public ResponseResult selectOrgRegulationCount( @RequestBody Map<String,Object> paramMap){
         //参数校验 List<Integer> orgIds, Date startDate, Date endDate,Integer layer
         if (checkParam(paramMap)) {

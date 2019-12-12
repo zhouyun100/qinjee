@@ -165,9 +165,7 @@
         </foreach>
       </if>
     </if>
-    <if test="sortFieldStr != null and sortFieldStr != ''">
-      ORDER BY ${sortFieldStr}
-    </if>
+    order by tp.sort_id ASC
   </select>
 
   <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">

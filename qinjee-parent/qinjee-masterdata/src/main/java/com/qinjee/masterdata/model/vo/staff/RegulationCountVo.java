@@ -43,7 +43,7 @@ public class RegulationCountVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("单位ID")
-    private Integer businessUnitId;
+    private int businessUnitId;
 
     /**
      * 单位名称
@@ -60,6 +60,8 @@ public class RegulationCountVo implements Serializable {
      */
     @ApiModelProperty("部门名称")
     private String orgName;
+    @ApiModelProperty("部门code")
+    private String orgCode;
     /**
      * 部门名称
      */
@@ -71,42 +73,42 @@ public class RegulationCountVo implements Serializable {
     /**
      * 新加入
      */
-    private Integer newJoinNum;
+    private int newJoinNum;
     /**
      * 调入
      */
-    private Integer transferInNum;
+    private int transferInNum;
     /**
      * 增加的人数=新加入+调入
      */
-    private Integer increasedNum;
+    private int increasedNum;
     /**
      * 调出
      */
-    private Integer transferOutNum;
+    private int transferOutNum;
     /**
      * 离职
      */
-    private Integer leaveNum;
+    private int leaveNum;
     /**
      * 退休
      */
-    private Integer retiredNum;
+    private int retiredNum;
 
     /**
      * 减员=调出+离职+退休
      */
-    private Integer attritionNum;
+    private int attritionNum;
 
     /**
      * 本期初人数
      */
-    private Integer beginNum;
+    private int beginNum;
 
     /**
      * 本期末人数
      */
-    private Integer endNum;
+    private int endNum;
 
     List<RegulationCountVo> childList;
 
