@@ -16,6 +16,7 @@
     </resultMap>
     <resultMap id="RegulationCountMap" type="com.qinjee.masterdata.model.vo.staff.RegulationCountVo">
         <id column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <id column="org_code" jdbcType="VARCHAR" property="orgCode"/>
         <id column="org_parent_id" jdbcType="INTEGER" property="orgParentId"/>
         <id column="join_num" jdbcType="INTEGER" property="newJoinNum"/>
         <id column="begin_num" jdbcType="INTEGER" property="beginNum"/>
@@ -76,6 +77,46 @@
             #{item}
         </foreach>
         ORDER BY org2.org_id
+  </select>
+    <select id="selectOrgRegulationCount2" resultMap="RegulationCountMap">
+        SELECT
+        org2.org_id,
+        org2.org_code,
+        org2.org_name org_name,
+        org2.org_type org_type,
+        org2.org_parent_id,
+        t3.begin_num begin_num,
+        t3.end_num end_num,
+        t3.join_num join_num ,
+        t3.transfer_in_num transfer_in_num,
+        t3.increased_num increased_num,
+        t3.leave_num leave_num,
+        t3.retired_num retired_num,
+        t3.transfer_out_num transfer_out_num,
+        t3.attrition_num attrition_num
+        FROM
+        (SELECT
+        t1.org_id,
+        t2.user_num begin_num,
+        t1.user_num end_num,
+        SUM(t1.join_num) join_num,
+        SUM(t1.transfer_in_num) transfer_in_num,
+        SUM(t1.increased_num) increased_num,
+        SUM(t1.leave_num) leave_num,
+        SUM(t1.retired_num) retired_num,
+        SUM(t1.transfer_out_num) transfer_out_num,
+        SUM(t1.attrition_num) attrition_num
+        FROM
+        t_organization_increased_attrition_stat t1
+        LEFT JOIN t_organization org
+        ON org.org_id = t1.org_id
+        LEFT JOIN t_organization_increased_attrition_stat t2
+        ON t1.org_id = t2.org_id
+        AND t2.stat_day=#{startDate,jdbcType=DATE}
+        WHERE t1.stat_day >= #{startDate,jdbcType=DATE}
+        AND #{endDate,jdbcType=DATE} >= t1.stat_day
+        GROUP BY t1.org_id ) t3 RIGHT JOIN t_organization org2 ON org2.org_id=t3.org_id
+        ORDER BY org2.org_id DESC,org2.sort_id DESC
   </select>
 
     <select id="selectOrgIncreaseMemberDetail" resultMap="RegulationDetailMap">

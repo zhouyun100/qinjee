@@ -292,7 +292,7 @@ public class PositionServiceImpl implements PositionService {
     @Override
     @Transactional
     public void sortPosition(List<Integer> positionIds) {
-        //查询出机构列表
+        //查询出职位列表
         List<Position> positionList = positionDao.getSinglePositionList(positionIds);
         Set<Integer> parentOrgSet = new HashSet<>();
         for (Position position : positionList) {
