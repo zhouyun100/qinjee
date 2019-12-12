@@ -24,14 +24,48 @@ public class QrcodeController extends BaseController {
      */
     @RequestMapping(value = "/dealQrcodeRequest", method = RequestMethod.GET)
     @ApiOperation(value = "处理二维码请求类", notes = "hkt")
-    public ResponseResult selectCustomTableForArc(HttpServletResponse response, @Param ("date") Date date,
+    public ResponseResult selectCustomTableForArc( @Param ("date") Date date,
                                                   @Param ( "templateId" ) Integer templateId,
                                                   @Param ( "companyId" ) Integer companyId) {
         //companyId, funcCode
-        Boolean b = checkParam(response,date,templateId,companyId);
+        Boolean b = checkParam(date,templateId,companyId);
         if (b) {
             try {
-                qrcodeService.dealQrcodeRequest(response,date,templateId,companyId);
+                qrcodeService.dealQrcodeRequest(date,templateId,companyId);
+            } catch (Exception e) {
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
+            }
+        }
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
+    }
+    /**
+     * 发送预入职验证码
+     */
+    @RequestMapping(value = "/sendPreCheckCode", method = RequestMethod.GET)
+    @ApiOperation(value = "发送预入职验证码", notes = "hkt")
+    public ResponseResult selectCustomTableForArc( String phone) {
+        //companyId, funcCode
+        Boolean b = checkParam(phone);
+        if (b) {
+            try {
+                qrcodeService.sendPreCheckCode(phone);
+            } catch (Exception e) {
+                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
+            }
+        }
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
+    }
+    /**
+     * 检验是否登陆成功并跳转到数据页面
+     */
+    @RequestMapping(value = "/checkPreCodeAndRedirect", method = RequestMethod.GET)
+    @ApiOperation(value = "检验是否登陆成功并跳转到数据页面", notes = "hkt")
+    public ResponseResult checkPreCodeAndRedirect( String phone,String code,HttpServletResponse response,Integer templateId,Integer companyId ) {
+        //companyId, funcCode
+        Boolean b = checkParam(phone,code,response,templateId,companyId);
+        if (b) {
+            try {
+                qrcodeService.checkPreCodeAndRedirect(phone,code,response,templateId,companyId);
             } catch (Exception e) {
                 return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
             }
