@@ -23,6 +23,14 @@
     <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
   </resultMap>
 
+
+  <resultMap id="UserInfoMap" type="com.qinjee.masterdata.model.entity.UserInfo">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+  </resultMap>
+
   <select id="searchUserInfoByAccountAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
     select
     t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
@@ -93,4 +101,23 @@
     ORDER BY t_menu.sort
   </select>
 
+
+  <select id="searchUserInfoDetailByPhone" parameterType="java.lang.String" resultMap="UserInfoMap">
+    select t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email
+    from t_user_info
+    where t_user_info.phone = #{phone,jdbcType=VARCHAR}
+  </select>
+
+
+  <!-- 新增登录用户 -->
+  <insert id="addUserInfo" keyColumn="user_id" keyProperty="userId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.UserInfo">
+      INSERT INTO t_user_info (phone, password)
+      value (#{phone,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 新增登录用户与企业关系记录 -->
+  <insert id="addCompanyUserInfo">
+      INSERT INTO t_user_company (user_id, company_id, is_enable)
+      value (#{userId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, 1)
+  </insert>
 </mapper>

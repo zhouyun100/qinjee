@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.userinfo.impl;
 
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
+import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
@@ -126,4 +127,29 @@ public class UserLoginServiceImpl implements UserLoginService {
         return firstLevelMenuList;
     }
 
+    @Override
+    public int getUserIdByPhone(String phone, Integer companyId) {
+        int userId = 0;
+        UserInfo userInfo = userLoginDao.searchUserInfoDetailByPhone(phone);
+        if(userInfo != null && userInfo.getUserId() != null){
+            RequestLoginVO requestLoginVO = new RequestLoginVO();
+            requestLoginVO.setUserId(userInfo.getUserId());
+            requestLoginVO.setCompanyId(companyId);
+            UserInfoVO userInfoVO = userLoginDao.searchUserInfoByUserIdAndCompanyId(requestLoginVO);
+            if(userInfoVO == null){
+                userLoginDao.addCompanyUserInfo(companyId,userInfo.getUserId());
+            }
+            userId = userInfo.getUserId();
+        }else{
+            userInfo = new UserInfo();
+            userInfo.setPhone(phone);
+            userInfo.setPassword(phone);
+            int resultCount = userLoginDao.addUserInfo(userInfo);
+            if(resultCount > 0){
+                userId = userInfo.getUserId();
+            }
+            userLoginDao.addCompanyUserInfo(companyId,userId);
+        }
+        return userId;
+    }
 }

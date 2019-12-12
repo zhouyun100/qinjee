@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.dao.userinfo;
 
+import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
@@ -60,4 +61,25 @@ public interface UserLoginDao {
      */
     List<MenuVO> searchUserMenuListByArchiveIdAndCompanyId(RequestLoginVO userLoginVO);
 
+    /**
+     * 根据手机号查询登录用户详情
+     * @param phone
+     * @return
+     */
+    UserInfo searchUserInfoDetailByPhone(String phone);
+
+    /**
+     * 新增登录用户
+     * @param userInfo
+     * @return 新增登录用户主键userId
+     */
+    int addUserInfo(UserInfo userInfo);
+
+    /**
+     * 新增登录用户与企业关系记录
+     * @param companyId
+     * @param userId
+     * @return
+     */
+    int addCompanyUserInfo(Integer companyId,Integer userId);
 }

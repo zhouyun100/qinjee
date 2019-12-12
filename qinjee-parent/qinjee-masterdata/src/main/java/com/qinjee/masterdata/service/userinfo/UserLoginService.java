@@ -61,4 +61,12 @@ public interface UserLoginService {
      * @return
      */
     List<MenuVO> searchUserMenuTreeByArchiveIdAndCompanyId(Integer archiveId, Integer companyId);
+
+    /**
+     * 根据手机号和企业ID查询用户登录账号主键userId
+     * @param phone
+     * @param companyId
+     * @return
+     */
+    int getUserIdByPhone(String phone,Integer companyId);
 }
