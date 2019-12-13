@@ -21,9 +21,9 @@ public interface OrganizationDao {
 
     int insertSelective(OrganizationVO record);
 
-    OrganizationVO selectByPrimaryKey(Integer orgId);
+    OrganizationVO getOrganizationById(Integer orgId);
 
-    int updateByPrimaryKeySelective(OrganizationVO record);
+    int updateOrganization(OrganizationVO record);
 
     int updateByPrimaryKey(OrganizationVO record);
 
@@ -35,9 +35,9 @@ public interface OrganizationDao {
      * @param now
      * @return
      */
-    List<OrganizationVO> getAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
-                                                       @Param("isEnable") Short isEnable,
-                                                       @Param("now") Date now);
+    List<OrganizationVO> listAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
+                                                        @Param("isEnable") Short isEnable,
+                                                        @Param("now") Date now);
 
     /**
      * 根据查询条件查询机构
@@ -47,10 +47,10 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<OrganizationVO> getDirectOrganizationList(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
-                                                   @Param("sortFieldStr") String sortFieldStr,
-                                                   @Param("archiveId") Integer archiveId,
-                                                   @Param("now") Date now);
+    List<OrganizationVO> listDirectOrganizationByCondition(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
+                                                           @Param("sortFieldStr") String sortFieldStr,
+                                                           @Param("archiveId") Integer archiveId,
+                                                           @Param("now") Date now);
 
 
 
@@ -61,7 +61,7 @@ public interface OrganizationDao {
      * @param isEnable
      * @return
      */
-    Integer UpdateIsEnableByOrgIds(@Param("orgIds") List<Integer> orgIds, @Param("isEnable") Short isEnable);
+    Integer updateEnable(@Param("orgIds") List<Integer> orgIds, @Param("isEnable") Short isEnable);
 
     /**
      * 根据机构父级id查询所有的子级
@@ -69,7 +69,7 @@ public interface OrganizationDao {
      * @param orgParentId
      * @return
      */
-    List<OrganizationVO> getOrganizationListByParentOrgId(Integer orgParentId);
+    List<OrganizationVO> listSonOrganization(Integer orgParentId);
 
     /**
      * 根据机构id查询机构
@@ -77,7 +77,7 @@ public interface OrganizationDao {
      * @param orgIds
      * @return
      */
-    List<OrganizationVO> getSingleOrganizationListByOrgIds(@Param("orgIds")List<Integer> orgIds);
+    List<OrganizationVO> listOrgnizationByIds(@Param("orgIds")List<Integer> orgIds);
 
     /**
      * 根据机构编码查询机构
@@ -96,27 +96,26 @@ public interface OrganizationDao {
 
 
 
-    List<OrganizationVO> getOrganizationsByOrgIds(@Param("orgIds")List<Integer> orgIds);
+    List<OrganizationVO> listOrganizationsByIds2(@Param("orgIds")List<Integer> orgIds);
 
-    Integer selectOrgIdByName(@Param("name") String name);
 
     BusinessOrgPostPos selectManyId(@Param("unitName") String businessUnitName, @Param("orgName") String orgName,
                                     @Param("postName") String postName, @Param("positionName") String positionName);
 
     Integer sortOrganization(@Param("orgIds") LinkedList<Integer> orgIds);
 
-    List<OrganizationVO> getOrganizationListByUserArchiveId(@Param("archiveId")Integer archiveId,@Param("now") Date now);
+    List<OrganizationVO> listOrganizationByArchiveId(@Param("archiveId")Integer archiveId, @Param("now") Date now);
 
-    List< OrganzitionVo > selectorgBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
+    List< OrganzitionVo > getOrganizationBycomanyIdAndUserAuth(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
 
 
     List<OrganizationVO> getOrganizationGraphics(Integer archiveId, List<Integer> orgIdList, Short isEnable, Date now);
 
-  List<OrganizationVO> getAllOrganizationByArchiveIdAndOrgId( List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
+  List<OrganizationVO> listAllOrganizationByArchiveIdAndOrgId(List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
 
     void updateByOrgCode(OrganizationVO vo);
 
-    void batchDelete(@Param("idList") List<Integer> idList);
+    void batchDeleteOrganization(@Param("idList") List<Integer> idList);
 
     Map<String,Integer> selectOrgIdByNameAndCompanyId(@Param("orgName") String orgName, @Param("CompanyId") Integer CompanyId, @Param("postName") String postName);
 

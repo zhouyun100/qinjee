@@ -53,7 +53,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     public void sendRegisterMessage(PreRegistVo preRegistVo) throws Exception {
         //判断是否可以发短信
 //        for (Integer integer : preRegistVo.getList ()) {
-//            PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( integer );
+//            PreEmployment preEmployment = preEmploymentDao.getOrganizationById ( integer );
 //            if(CHANGSTATUS_BLACKLIST.equals (preEmployment.getEmploymentState ()) ||
 //              CHANGSTATUS_GIVEUP.equals (preEmployment.getEmploymentState ()) || CHANGSTATUS_READY.equals ( preEmployment.getEmploymentState ()
 //            )){

@@ -172,7 +172,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         OrganzitionVo organzitionVo = new OrganzitionVo ();
         organzitionVo.setOrg_id ( companyId );
         //获取该人员下的所有权限机构
-        List < OrganzitionVo > list = organizationDao.selectorgBycomanyIdAndUserAuth ( companyId, archiveId );
+        List < OrganzitionVo > list = organizationDao.getOrganizationBycomanyIdAndUserAuth( companyId, archiveId );
 
         //取一级子机构
         List < OrganzitionVo > organzitionVoList = list.stream ().filter ( organzitionVo1 -> {

@@ -24,7 +24,7 @@
     org_id, org_code, org_name, org_type, org_parent_id, org_full_name, org_manager_id,
     company_id, sort_id, operator_id, create_time, is_enable
   </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="getOrganizationById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_organization
@@ -119,7 +119,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+    <update id="updateOrganization" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
         update t_organization
         <set>
             <if test="orgCode != null">
@@ -202,7 +202,7 @@
 
 
 
-    <select id="getAllOrganizationByArchiveId" resultMap="BaseResultMap">
+    <select id="listAllOrganizationByArchiveId" resultMap="BaseResultMap">
         select
         v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,tua.user_name orgManagerName, tua.employee_number,
         parentOrg.org_code parent_org_code,
@@ -242,7 +242,7 @@
         ORDER BY v.sort_id ASC
     </select>
 
-    <select id="getDirectOrganizationList" resultMap="BaseResultMap">
+    <select id="listDirectOrganizationByCondition" resultMap="BaseResultMap">
         SELECT org.org_id,org.is_enable,org.org_code,org.org_manager_id,
         org.org_name,org.org_type,org.org_full_name,
         org.org_parent_id,
@@ -317,7 +317,7 @@
 
 
 
-    <update id="UpdateIsEnableByOrgIds">
+    <update id="updateEnable">
         update t_organization
         set is_enable = #{isEnable,jdbcType=SMALLINT}
         where org_id in
@@ -327,7 +327,7 @@
         </foreach>
     </update>
 
-    <select id="getOrganizationListByParentOrgId" resultMap="BaseResultMap">
+    <select id="listSonOrganization" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_organization
@@ -335,7 +335,7 @@
     </select>
 
 
-    <select id="getSingleOrganizationListByOrgIds" resultMap="BaseResultMap">
+    <select id="listOrgnizationByIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_organization
@@ -358,7 +358,7 @@
     and company_id=#{companyId}
     and is_enable=1
   </select>
-    <select id="getOrganizationsByOrgIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="listOrganizationsByIds2" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
         t_org.org_id,
         t_org.org_code,
@@ -387,7 +387,7 @@
         order by t_org.org_id asc,t_org.sort_id asc
     </select>
 
-    <select id="getOrganizationListByUserArchiveId"  resultMap="BaseResultMap">
+    <select id="listOrganizationByArchiveId" resultMap="BaseResultMap">
        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name parent_org_name
        FROM (
              SELECT v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name
@@ -425,12 +425,6 @@
         LEFT JOIN t_organization o
             ON v.org_parent_id = o.org_id
     </select>
-    <select id="selectOrgIdByName" resultType="java.lang.Integer">
-    select org_id
-    from t_organization
-    where org_name=#{name}
-    and is_enable=1
-  </select>
     <select id="selectManyId" resultType="com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos">
    select org.org_id as orgId ,orga.org_id as businessUnitId, post.post_id as postId ,pos.position_id as positionId
    from t_organization org,t_organization orga ,t_post post ,t_position pos
@@ -450,7 +444,7 @@
             </where>
         </foreach>
     </update>
-    <select id="selectorgBycomanyIdAndUserAuth" resultType="com.qinjee.masterdata.model.vo.staff.OrganzitionVo">
+    <select id="getOrganizationBycomanyIdAndUserAuth" resultType="com.qinjee.masterdata.model.vo.staff.OrganzitionVo">
             select t1.org_id,t1.org_name,t1.org_parent_id from (SELECT
             org.org_id,org.org_name,org.org_parent_id
             FROM
@@ -542,7 +536,7 @@
          </if>
     </select>
 
-    <select id="getAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
+    <select id="listAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
         SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name parent_org_name,
         v.org_manager_id,
         tua.employee_number,
@@ -631,7 +625,7 @@
         where org_code = #{orgCode,jdbcType=VARCHAR}
 
     </update>
-    <update id="batchDelete">
+    <update id="batchDeleteOrganization">
         delete from t_organization
         where org_id in
         <foreach collection="idList" separator="," open="(" close=")" item="item">

@@ -75,7 +75,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public PageResult<OrganizationVO> getOrganizationPageTree(UserSession userSession, Short isEnable) {
         Integer archiveId = userSession.getArchiveId();
-        List<OrganizationVO> allOrgsList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
+        List<OrganizationVO> allOrgsList = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //获取第一级机构
         List<OrganizationVO> topOrgsList = allOrgsList.stream().filter(organization -> {
             if (organization.getOrgParentId() != null && organization.getOrgParentId() == 0) {
@@ -102,7 +102,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
         }
 
-        List<OrganizationVO> organizationVOList = organizationDao.getDirectOrganizationList(organizationPageVo, sortFieldStr, archiveId, new Date());
+        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageVo, sortFieldStr, archiveId, new Date());
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
         PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -163,9 +163,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         OrganizationVO orgBean = new OrganizationVO();
         if (orgParentId > 0) {
             //查询父级机构
-            OrganizationVO parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
+            OrganizationVO parentOrg = organizationDao.getOrganizationById(orgParentId);
             //查询最新的同级机构
-            List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
+            List<OrganizationVO> brotherOrgList = organizationDao.listSonOrganization(orgParentId);
             //如果没有同级机构，则当前机构为parentOrg下第一个子机构
 
             brotherOrgList.sort(new Comparator() {
@@ -240,8 +240,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     @OrganizationEditAnno
     public void editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //反查organizationVO
-        OrganizationVO organization = organizationDao.selectByPrimaryKey(Integer.parseInt(orgId));
-        OrganizationVO parentOrganization = organizationDao.selectByPrimaryKey(Integer.parseInt(parentOrgId));
+        OrganizationVO organization = organizationDao.getOrganizationById(Integer.parseInt(orgId));
+        OrganizationVO parentOrganization = organizationDao.getOrganizationById(Integer.parseInt(parentOrgId));
 
         //判断机构编码是否唯一
         if (!organization.getOrgCode().equals(orgCode)) {
@@ -321,9 +321,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<OrganizationVO> orgList = null;
         if (CollectionUtils.isEmpty(orgIds)) {
             List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, Short.parseShort("1"));
-            orgList = organizationDao.getAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, Short.parseShort("0"), new Date());
+            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, Short.parseShort("0"), new Date());
         } else {
-            orgList = organizationDao.getOrganizationsByOrgIds(orgIds);
+            orgList = organizationDao.listOrganizationsByIds2(orgIds);
         }
         if (CollectionUtils.isEmpty(orgList)) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
@@ -355,7 +355,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
                 PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
             }
-            List<OrganizationVO> organizationVOList = organizationDao.getOrganizationsByOrgIds(orgIdList);
+            List<OrganizationVO> organizationVOList = organizationDao.listOrganizationsByIds2(orgIdList);
             PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
             pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
@@ -546,13 +546,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
 
-        OrganizationVO currentOrg = organizationDao.selectByPrimaryKey(orgId);
+        OrganizationVO currentOrg = organizationDao.getOrganizationById(orgId);
         if (Objects.isNull(currentOrg)) {
             return idsList;
         }
 
         //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
+        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
@@ -609,13 +609,13 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     private void recursiveUpdateOrgName(String parentOrgFullName, String orgId) {
 
-        List<OrganizationVO> childOrgList = organizationDao.getOrganizationListByParentOrgId(Integer.parseInt(orgId));
+        List<OrganizationVO> childOrgList = organizationDao.listSonOrganization(Integer.parseInt(orgId));
         for (OrganizationVO org : childOrgList) {
             if (!"".equals(parentOrgFullName)) {
                 org.setOrgFullName(parentOrgFullName + "/" + org.getOrgName());
             }
             organizationDao.updateByPrimaryKey(org);
-            List<OrganizationVO> childOrgList2 = organizationDao.getOrganizationListByParentOrgId(org.getOrgId());
+            List<OrganizationVO> childOrgList2 = organizationDao.listSonOrganization(org.getOrgId());
             if (!CollectionUtils.isEmpty(childOrgList2)) {
                 recursiveUpdateOrgName(org.getOrgFullName(), String.valueOf(org.getOrgId()));
             }
@@ -647,7 +647,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
         if (!isExsit) {
             //物理删除机构表
-            organizationDao.batchDelete(idList);
+            organizationDao.batchDeleteOrganization(idList);
             //逻辑删除物理表
             postDao.batchDelete(idList);
         }
@@ -664,7 +664,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param idSet
      */
     public void recursiveFindOrgIds(Integer orgId, List idSet) {
-        List<OrganizationVO> parentOrgList = organizationDao.getOrganizationListByParentOrgId(orgId);
+        List<OrganizationVO> parentOrgList = organizationDao.listSonOrganization(orgId);
         if (parentOrgList != null && parentOrgList.size() > 0) {
             for (OrganizationVO OrganizationVO : parentOrgList) {
                 idSet.add(OrganizationVO.getOrgId());
@@ -676,7 +676,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
     @Override
     public void sealOrganizationByIds(List<Integer> orgIds, Short isEnable) {
-        organizationDao.UpdateIsEnableByOrgIds(orgIds, isEnable);
+        organizationDao.updateEnable(orgIds, isEnable);
     }
 
 
@@ -686,7 +686,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void mergeOrganization(String newOrgName, Integer parentOrgId, List<Integer> orgIds, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
         //查询机构列表
-        organizationVOList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
+        organizationVOList = organizationDao.listOrgnizationByIds(orgIds);
         //判断是否是同一个父级下的
         if (!CollectionUtils.isEmpty(organizationVOList)) {
             Set<Integer> OrgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
@@ -709,7 +709,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             apiAuthService.mergeOrg(orgIds, newOrgVO.getOrgId(), userSession.getArchiveId());
             //refactorOrganization(organizationVOList, newOrganizationVO);
-            organizationDao.batchDelete(orgIds);
+            organizationDao.batchDeleteOrganization(orgIds);
         }
     }
 
@@ -733,7 +733,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     public void sortOrganization(LinkedList<Integer> orgIds) {
         //查询出机构列表
-        List<OrganizationVO> organizationList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
+        List<OrganizationVO> organizationList = organizationDao.listOrgnizationByIds(orgIds);
         Set<Integer> parentOrgSet = new HashSet<>();
         for (OrganizationVO organizationVO : organizationList) {
             //将父机构id存储在set中
@@ -753,7 +753,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
         if (!CollectionUtils.isEmpty(orgIds)) {
-            organizationVOList = organizationDao.getSingleOrganizationListByOrgIds(orgIds);
+            organizationVOList = organizationDao.listOrgnizationByIds(orgIds);
         } else {
             //源对象不存在，带划转机构不存在
             ExceptionCast.cast(CommonCode.ORIGIN_NOT_EXIST);
@@ -771,7 +771,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             if (OrgParentIds.size() != 1) {
                 ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
             }
-            OrganizationVO parentOrganizationVO = organizationDao.selectByPrimaryKey(targetOrgId);
+            OrganizationVO parentOrganizationVO = organizationDao.getOrganizationById(targetOrgId);
             if (Objects.isNull(parentOrganizationVO)) {
                 ExceptionCast.cast(CommonCode.TARGET_NOT_EXIST);
             }
@@ -805,12 +805,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public OrganizationVO selectByPrimaryKey(Integer orgId) {
-        return organizationDao.selectByPrimaryKey(orgId);
+        return organizationDao.getOrganizationById(orgId);
     }
 
     @Override
     public List<OrganizationVO> getOrganizationListByParentOrgId(Integer orgId) {
-        return organizationDao.getOrganizationListByParentOrgId(orgId);
+        return organizationDao.listSonOrganization(orgId);
     }
 
 //=====================================================================
@@ -825,7 +825,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List<OrganizationVO> getAllOrganizationTree(Integer archiveId, Short isEnable) {
         //拿到所有未被封存的机构
-        List<OrganizationVO> organizationVOList = organizationDao.getAllOrganizationByArchiveId(archiveId, isEnable, new Date());
+        List<OrganizationVO> organizationVOList = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //获取第一级机构
         List<OrganizationVO> organizationVOS = organizationVOList.stream().filter(organization -> {
             if (organization.getOrgParentId() != null && organization.getOrgParentId() == 0) {
@@ -850,7 +850,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     private void refactorOrganization(List<OrganizationVO> originOrgList, OrganizationVO targetOrg) {
         //判断目标机构是否有子机构，如果有则返回最后一个子机构编码，否则返回自身编码
-        List<OrganizationVO> targetChildOrgList = organizationDao.getOrganizationListByParentOrgId(targetOrg.getOrgId());
+        List<OrganizationVO> targetChildOrgList = organizationDao.listSonOrganization(targetOrg.getOrgId());
         String targetOrgCode = "";
         //目标子机构为空或者包含原有子机构，当作初始化处理
         if (CollectionUtils.isEmpty(targetChildOrgList) || targetChildOrgList.containsAll(originOrgList)) {
@@ -882,8 +882,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             originOrg.setOrgFullName(parentFullName + "/" + originOrg.getOrgName());
             //sortId
             originOrg.setSortId(subfixOrgCode * 1000);
-            organizationDao.updateByPrimaryKeySelective(originOrg);
-            List<OrganizationVO> secondOriginOrgList = organizationDao.getOrganizationListByParentOrgId(originOrg.getOrgId());
+            organizationDao.updateOrganization(originOrg);
+            List<OrganizationVO> secondOriginOrgList = organizationDao.listSonOrganization(originOrg.getOrgId());
             //递归
             if (!CollectionUtils.isEmpty(secondOriginOrgList)) {
                 refactorOrganization(secondOriginOrgList, originOrg);

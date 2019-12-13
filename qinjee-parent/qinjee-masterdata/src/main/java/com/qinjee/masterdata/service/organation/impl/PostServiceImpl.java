@@ -18,9 +18,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
-import com.qinjee.masterdata.utils.FileUtil;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
-import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -37,8 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -170,7 +166,7 @@ public class PostServiceImpl implements PostService {
             List<Post> posts = postDao.getLastTopPostByOrgId(orgId);
             if (CollectionUtils.isEmpty(posts)) {
                 //当前机构编码+2位流水
-                OrganizationVO organizationVO = organizationDao.selectByPrimaryKey(orgId);
+                OrganizationVO organizationVO = organizationDao.getOrganizationById(orgId);
                 String orgCode = organizationVO.getOrgCode();
                 postCode = orgCode + "01";
             } else {
@@ -318,7 +314,7 @@ public class PostServiceImpl implements PostService {
             isEnable =null;
         }
         //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.getAllOrganizationByArchiveId(userSession.getArchiveId(),isEnable, new Date());
+        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(),isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
