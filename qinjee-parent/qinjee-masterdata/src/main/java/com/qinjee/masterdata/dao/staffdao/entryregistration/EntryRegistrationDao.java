@@ -12,6 +12,7 @@ package com.qinjee.masterdata.dao.staffdao.entryregistration;
 
 
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -57,4 +58,6 @@ public interface EntryRegistrationDao {
      * @return
      */
     TemplateEntryRegistration getTemplateEntryRegistrationByTemplateId(Integer templateId);
+
+    String searchLogurlByComanyIdAnadTemplateId(@Param("templateId") Integer templateId, @Param("companyId") Integer companyId);
 }

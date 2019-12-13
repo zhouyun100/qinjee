@@ -13,14 +13,12 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, table_id, business_id, operator_id, create_time, update_time,is_delete
+    id, table_id, business_id, operator_id, create_time, update_time,is_delete,big_data
   </sql>
-  <sql id="Blob_Column_List">
-    big_data
-  </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
-    <include refid="Blob_Column_List" />
+    <include refid="Base_Column_List" />
     from t_custom_archive_table_data
     where id = #{id,jdbcType=INTEGER}
   </select>
@@ -142,7 +140,7 @@
   </select>
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
     select
-    <include refid="Blob_Column_List" />
+    <include refid="Base_Column_List" />
     from t_custom_archive_table_data
     where id
     in <foreach collection="integerList" item="item" open="(" separator="," close=")">
@@ -160,7 +158,7 @@
   </select>
   <select id="selectByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
     select
-    <include refid="Blob_Column_List" />
+    <include refid="Base_Column_List" />
     from t_custom_archive_table_data
     where
     table_id = #{tableId,jdbcType=INTEGER}
@@ -182,8 +180,9 @@
     AND
     is_delete=0
   </select>
-  <select id="selectBigDataBybusinessIdAndTableId" resultType="java.lang.String">
-    select   big_data
+  <select id="selectBigDataBybusinessIdAndTableId"
+          resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select   <include refid="Base_Column_List"/>
     from t_custom_archive_table_data
     where
     business_id = #{businessId,jdbcType=INTEGER}

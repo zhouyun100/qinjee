@@ -173,7 +173,7 @@ public interface IStaffCommonService {
      * @return
      * @throws IllegalAccessException
      */
-    Map< Integer, String> selectValue(Integer tableId, Integer businessId) throws IllegalAccessException;
+    List<Map< Integer, String>> selectValue(Integer tableId, Integer businessId) throws IllegalAccessException;
 
     void deletePreValue(Integer id,UserSession userSession);
 

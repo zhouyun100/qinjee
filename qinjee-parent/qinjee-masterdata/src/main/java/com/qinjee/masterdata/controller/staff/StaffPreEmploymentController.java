@@ -3,7 +3,6 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.ConfirmId;
-import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -11,7 +10,6 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,62 +217,23 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
     public ResponseResult confirmPreemployment( ConfirmId confirmId) {
-        Boolean b = checkParam(confirmId,getUserSession());
-        if(b){
+        Boolean b = checkParam ( confirmId, getUserSession () );
+        if (b) {
             try {
-                StatusChangeVo statusChangeVo=new StatusChangeVo();
-                statusChangeVo.setAbandonReason("");
-                statusChangeVo.setChangeState(CHANGSTATUS_READY);
-                statusChangeVo.setPreEmploymentList(confirmId.getList () );
+                StatusChangeVo statusChangeVo = new StatusChangeVo ();
+                statusChangeVo.setAbandonReason ( "" );
+                statusChangeVo.setChangeState ( CHANGSTATUS_READY );
+                statusChangeVo.setPreEmploymentList ( confirmId.getList () );
                 statusChangeVo.setRuleId ( confirmId.getRuleId () );
-                staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("确认入职失败");
-            }
-        }
-        return  failResponseResult("参数错误");
-    }
-
-    /**
-     * 发邮件给预入职人员
-     */
-    @RequestMapping(value = "/sendMail", method = RequestMethod.POST)
-    @ApiOperation(value = "邮箱发送入职登记表", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "list", value = "预入职收信人id集合", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "list", value = "抄送人档案id集合", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "String", value = "发送邮件主题", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "String", value = "发送邮件内容", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "String[]", value = "发送邮件附件路径的数组", paramType = "query", required = true),
-//    })
-    public ResponseResult sendMail(@RequestBody EmailSendVo emailSendVo) {
-        Boolean b = checkParam(emailSendVo,getUserSession ());
-        if(b){
-            try {
-                staffPreEmploymentService.sendManyMail(emailSendVo,getUserSession ()) ;
+                staffPreEmploymentService.insertStatusChange ( getUserSession (), statusChangeVo );
                 return ResponseResult.SUCCESS ();
             } catch (Exception e) {
-                return failResponseResult("发邮件给预入职人员失败");
+                e.printStackTrace ();
+                return failResponseResult ( "确认入职失败" );
             }
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult ( "参数错误" );
     }
-
-    /**
-     * 生成入职登记二维码,返回是二维码图片链接
-     */
-    @RequestMapping(value = "/creatQrcodeForPre", method = RequestMethod.POST)
-    @ApiOperation(value = "生成入职登记二维码", notes = "hkt")
-    @ApiImplicitParam(name = "url", value = "链接地址", paramType = "query", required = true)
-    public ResponseResult creatQrcodeForPre(String url) {
-
-        return  new ResponseResult<>("qrcode path", CommonCode.SUCCESS);
-    }
-
-
-
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {

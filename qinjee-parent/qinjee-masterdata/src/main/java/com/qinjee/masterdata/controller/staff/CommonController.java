@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -455,14 +456,17 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/selectValue", method = RequestMethod.GET)
     @ApiOperation(value = "在进行修改操作时，根据businessId与对应的表id找到值，进行回显", notes = "hkt")
 
-    public ResponseResult<CustomTableVO> selectValue(Integer tableId,Integer businessId) {
+    public ResponseResult<List<CustomTableVO>> selectValue(Integer tableId,Integer businessId) {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
             try {
+                List<CustomTableVO> list=new ArrayList <> (  );
                 CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId);
-                Map<Integer,String> map=staffCommonService.selectValue (tableId, businessId );
-                customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map );
-                return new ResponseResult <> (customTableVO, CommonCode.SUCCESS);
+                List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
+                for (Map < Integer, String > map : mapList) {
+                    list.add (customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map ));
+                }
+                return new ResponseResult <> (list, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
@@ -508,12 +512,12 @@ public class CommonController extends BaseController {
     }
 
     /**
-     * 修改自定义字段表中的数据
+     * 新增或者修改自定义字段表中的数据
      */
-//    @RequestMapping(value = "/updateCustomArchiveTableData", method = RequestMethod.POST)
-//    @ApiOperation(value = "修改自定义数据表中的记录", notes = "hkt")
+    @RequestMapping(value = "/saveCustomArchiveTableData", method = RequestMethod.POST)
+    @ApiOperation(value = "新增或者修改自定义字段表中的数据", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
-    public ResponseResult updateCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableDataVo customArchiveTableDataVo) {
+    public ResponseResult saveCustomArchiveTableData(@RequestBody @Valid CustomArchiveTableDataVo customArchiveTableDataVo) {
         Boolean b = checkParam(customArchiveTableDataVo,getUserSession ());
         if (b) {
             try {

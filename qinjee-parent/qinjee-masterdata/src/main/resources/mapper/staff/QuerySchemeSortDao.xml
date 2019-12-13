@@ -140,4 +140,29 @@ select
 
   </select>
 
+  <update id="updateBatch" parameterType="list">
+            <foreach collection="list" index="index" item="item" separator=";">
+              update t_query_scheme_sort
+              <set>
+                <if test="item.querySchemeId != null">
+                  query_scheme_id = #{item.querySchemeId,jdbcType=INTEGER},
+                </if>
+                <if test="fieldId != null">
+                  field_id = #{item.fieldId,jdbcType=INTEGER},
+                </if>
+                <if test="orderByRule != null">
+                  order_by_rule = #{item.orderByRule,jdbcType=VARCHAR},
+                </if>
+                <if test="sort != null">
+                  sort = #{item.sort,jdbcType=INTEGER},
+                </if>
+                <if test="createTime != null">
+                  create_time = #{item.createTime,jdbcType=TIMESTAMP},
+                </if>
+              </set>
+              where query_scheme_sort_id = #{item.querySchemeSortId,jdbcType=INTEGER}
+            </foreach>
+
+  </update>
+
 </mapper>

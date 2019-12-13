@@ -19,10 +19,8 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
-import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.KeyUtils;
-import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.SendMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +57,6 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     private  PreEmploymentDao preEmploymentDao;
     @Autowired
     private SysDictService sysDictService;
-
 
 
     @Transactional(rollbackFor = Exception.class)

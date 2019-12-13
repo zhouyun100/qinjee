@@ -63,7 +63,7 @@ public interface IStaffArchiveService {
     List < QueryScheme > selectQueryScheme(UserSession userSession);
 
 
-    void saveQueryScheme(QueryArcVo queryArcVo);
+    void saveQueryScheme(QuerySchemaVo querySchemaVo);
 
     /**
      * 逻辑删除档案

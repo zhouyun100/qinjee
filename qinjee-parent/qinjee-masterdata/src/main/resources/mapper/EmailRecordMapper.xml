@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 邮件记录表(t_email_record) -->
+<mapper namespace="com.qinjee.masterdata.dao.EmailRecordDao">
+    <!-- 结果映射 -->
+    <resultMap id="t_email_recordMap" type="com.qinjee.masterdata.model.entity.EmailRecord">
+        <id column="email_record_id" property="emailRecordId" jdbcType="INTEGER" />
+        <result column="email_template_id" property="emailTemplateId" jdbcType="INTEGER" />
+        <result column="email_config_id" property="emailConfigId" jdbcType="INTEGER" />
+        <result column="email_title" property="emailTitle" jdbcType="VARCHAR" />
+        <result column="email_content" property="emailContent" jdbcType="VARCHAR" />
+        <result column="business_type" property="businessType" jdbcType="VARCHAR" />
+        <result column="from_user" property="fromUser" jdbcType="VARCHAR" />
+        <result column="to_user" property="toUser" jdbcType="VARCHAR" />
+        <result column="cc_user" property="ccUser" jdbcType="VARCHAR" />
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="send_status" property="sendStatus" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        t_email_record.email_record_id, t_email_record.email_template_id, t_email_record.email_config_id, t_email_record.email_title, t_email_record.email_content, t_email_record.business_type, 
+        t_email_record.from_user, t_email_record.to_user, t_email_record.cc_user, t_email_record.operator_id, t_email_record.create_time, t_email_record.send_status
+    </sql>
+    
+    <!-- 查询所有数据 -->
+    <select id="selectAll" resultMap="t_email_recordMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_email_record t_email_record
+    </select>
+    
+    <!-- 根据条件查询数据 -->
+    <select id="selectEmailRecordByCondition" resultMap="t_email_recordMap" parameterType="map">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_email_record t_email_record WHERE 1 = 1
+        <if test="email_template_id != null">
+            AND t_email_record.email_template_id = #{email_template_id}
+        </if>
+        <if test="email_config_id != null">
+            AND t_email_record.email_config_id = #{email_config_id}
+        </if>
+        <if test="email_title != null and email_title != ''">
+            AND t_email_record.email_title LIKE CONCAT('%',#{email_title},'%')
+        </if>
+        <if test="email_content != null">
+            AND t_email_record.email_content = #{email_content}
+        </if>
+        <if test="business_type != null and business_type != ''">
+            AND t_email_record.business_type LIKE CONCAT('%',#{business_type},'%')
+        </if>
+        <if test="from_user != null and from_user != ''">
+            AND t_email_record.from_user LIKE CONCAT('%',#{from_user},'%')
+        </if>
+        <if test="to_user != null and to_user != ''">
+            AND t_email_record.to_user LIKE CONCAT('%',#{to_user},'%')
+        </if>
+        <if test="cc_user != null and cc_user != ''">
+            AND t_email_record.cc_user LIKE CONCAT('%',#{cc_user},'%')
+        </if>
+        <if test="operator_id != null">
+            AND t_email_record.operator_id = #{operator_id}
+        </if>
+        <if test="create_time != null">
+            AND t_email_record.create_time = #{create_time}
+        </if>
+        <if test="send_status != null and send_status != ''">
+            AND t_email_record.send_status LIKE CONCAT('%',#{send_status},'%')
+        </if>
+    </select>
+    
+    <!-- 根据主键查询数据 -->
+    <select id="findEmailRecordByIds" resultMap="t_email_recordMap" parameterType="list">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_email_record t_email_record WHERE t_email_record.email_record_id IN
+        <foreach collection="list" index="index" item="email_record_id" open="(" separator="," close=")">
+            #{email_record_id}
+        </foreach>
+    </select>
+    
+    <!-- 插入数据 -->
+    <insert id="insertEmailRecord" parameterType="com.qinjee.masterdata.model.entity.EmailRecord">
+        INSERT INTO t_email_record (
+            email_record_id, email_template_id, email_config_id, email_title, email_content, business_type, 
+            from_user, to_user, cc_user, operator_id, create_time, send_status
+        ) VALUES (
+            #{email_record_id},
+            #{email_template_id},
+            #{email_config_id},
+            #{email_title},
+            #{email_content},
+            #{business_type},
+            #{from_user},
+            #{to_user},
+            #{cc_user},
+            #{operator_id},
+            #{create_time},
+            #{send_status}
+        )
+    </insert>
+    
+    <!-- 批量插入数据 -->
+    <insert id="insertEmailRecords" parameterType="list">
+        INSERT INTO t_email_record (
+            email_record_id, email_template_id, email_config_id, email_title, email_content, business_type, 
+            from_user, to_user, cc_user, operator_id, create_time, send_status
+        ) VALUES (
+        <foreach collection="list" index="index" item="item" separator=",">
+            (
+                #{item.email_record_id},
+                #{item.email_template_id},
+                #{item.email_config_id},
+                #{item.email_title},
+                #{item.email_content},
+                #{item.business_type},
+                #{item.from_user},
+                #{item.to_user},
+                #{item.cc_user},
+                #{item.operator_id},
+                #{item.create_time},
+                #{item.send_status}
+            )
+        </foreach>
+    </insert>
+<!--    -->
+<!--    &lt;!&ndash; 修改数据 &ndash;&gt;-->
+<!--    <update id="updateEmailRecord" parameterType="map">-->
+<!--        UPDATE t_email_record SET-->
+<!--            email_template_id = #{email_template_id},-->
+<!--            email_config_id = #{email_config_id},-->
+<!--            email_title = #{email_title},-->
+<!--            email_content = #{email_content},-->
+<!--            business_type = #{business_type},-->
+<!--            from_user = #{from_user},-->
+<!--            to_user = #{to_user},-->
+<!--            cc_user = #{cc_user},-->
+<!--            operator_id = #{operator_id},-->
+<!--            create_time = #{create_time},-->
+<!--            send_status = #{send_status}-->
+<!--        WHERE email_record_id = #{email_record_id}-->
+<!--    </update>-->
+<!--    -->
+<!--    &lt;!&ndash; 批量修改数据 &ndash;&gt;-->
+<!--    <update id="updateEmailRecords" parameterType="list">-->
+<!--        <foreach collection="list" index="index" item="item" separator=";">-->
+<!--            UPDATE t_email_record SET-->
+<!--                email_template_id = #{item.email_template_id},-->
+<!--                email_config_id = #{item.email_config_id},-->
+<!--                email_title = #{item.email_title},-->
+<!--                email_content = #{item.email_content},-->
+<!--                business_type = #{item.business_type},-->
+<!--                from_user = #{item.from_user},-->
+<!--                to_user = #{item.to_user},-->
+<!--                cc_user = #{item.cc_user},-->
+<!--                operator_id = #{item.operator_id},-->
+<!--                create_time = #{item.create_time},-->
+<!--                send_status = #{item.send_status}-->
+<!--            WHERE email_record_id = #{item.email_record_id}-->
+<!--        </foreach>-->
+<!--    </update>-->
+    
+
+</mapper>

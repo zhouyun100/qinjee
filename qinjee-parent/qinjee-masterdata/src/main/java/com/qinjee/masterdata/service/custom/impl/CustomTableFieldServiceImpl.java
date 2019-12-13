@@ -428,6 +428,11 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     handlerCustomTableGroupFieldList(fieldList,mapValue);
                 }
             }
+            if(StringUtils.isNotBlank (mapValue.get(-1))){
+
+                customTable.setBigDataId ( Integer.parseInt ( mapValue.get(-1) ) );
+            }
+
         }
         return customTable;
     }

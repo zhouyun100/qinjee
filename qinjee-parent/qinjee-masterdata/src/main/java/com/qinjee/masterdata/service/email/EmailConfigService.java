@@ -33,4 +33,5 @@ public interface EmailConfigService {
      */
     MailConfig handlerEmailtoMail(EmailConfig emailConfig);
 
+
 }

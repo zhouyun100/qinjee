@@ -3,14 +3,11 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.qinjee.consts.AesKeyConsts;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.sys.SysDictDao;
-import com.qinjee.masterdata.redis.RedisClusterConfig;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IQrcodeService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.GetDayUtil;
-import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.AesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Date;
 
 @Service
@@ -61,5 +57,6 @@ public class QrcodeServiceImpl implements IQrcodeService {
         if(GetDayUtil.getDay(date,new Date())>1){
             ExceptionCast.cast(CommonCode.DATE_SO_LONG);
         }
+        //重定向到前端页面
     }
 }

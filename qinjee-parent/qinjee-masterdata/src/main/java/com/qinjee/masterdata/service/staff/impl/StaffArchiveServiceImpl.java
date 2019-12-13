@@ -15,6 +15,7 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.SqlUtil;
+import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.BeanUtils;
@@ -144,7 +145,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
                     "ARC" );
             arcHead.setName ( customFieldVO.getFieldName () );
-            arcHead.setKey ( customFieldVO.getFieldCode () );
+            arcHead.setKey ( FieldToProperty.fieldToProperty  (customFieldVO.getFieldCode ()) );
             if ("org_id".equals ( customFieldVO.getFieldCode () )) {
                 arcHead.setKey ( "orgName" );
             }
@@ -480,38 +481,45 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveQueryScheme(QueryArcVo queryArcVo) {
-        QueryScheme queryScheme = queryArcVo.getQueryScheme ();
-        List < QuerySchemeField > querySchemeFieldlist = queryArcVo.getQuerySchemeFieldlist ();
-        List < QuerySchemeSort > querySchemeSortlist = queryArcVo.getQuerySchemeSortlist ();
-        if (queryScheme.getQuerySchemeId () == null || queryScheme.getQuerySchemeId () == 0) {
-            //说明是新增操作，新增查询方案
+    public void saveQueryScheme(QuerySchemaVo querySchemaVo) {
+        List<QuerySchemeField> fieldList=new ArrayList <> (  );
+        List<QuerySchemeSort>  sortList=new ArrayList <> (  );
+        if(querySchemaVo.getQuerySchemeId ()==null ){
+        //说明是新增操作
+            QueryScheme queryScheme=new QueryScheme ();
+            BeanUtils.copyProperties ( querySchemaVo,queryScheme );
+            queryScheme.setIsDefault ( 0 );
             querySchemeDao.insertSelective ( queryScheme );
-            //新增查询字段与排序
-            for (QuerySchemeField querySchemeField : querySchemeFieldlist) {
-                querySchemeField.setQuerySchemeId ( queryScheme.getQuerySchemeId () );
-            }
-            for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
-                querySchemeSort.setQuerySchemeId ( queryScheme.getQuerySchemeId () );
-            }
+            OperateFieldAndSort ( querySchemaVo, fieldList, sortList );
+            querySchemeFieldDao.insertBatch ( fieldList );
+            querySchemeSortDao.insertBatch ( sortList );
+        }else {
+            //更新操作
+            QueryScheme queryScheme = new QueryScheme ();
+            BeanUtils.copyProperties ( querySchemaVo, queryScheme );
+            queryScheme.setIsDefault ( 0 );
+            querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
+            OperateFieldAndSort ( querySchemaVo, fieldList, sortList );
+            querySchemeFieldDao.updateBatch ( fieldList );
+            querySchemeSortDao.updateBatch ( sortList );
+        }
+    }
 
-            querySchemeFieldDao.insertBatch ( querySchemeFieldlist );
-            querySchemeSortDao.insertBatch ( querySchemeSortlist );
+    private void OperateFieldAndSort(QuerySchemaVo querySchemaVo, List < QuerySchemeField > fieldList, List < QuerySchemeSort > sortList) {
+        for (int i = 0; i < querySchemaVo.getFieldId ().size (); i++) {
+            QuerySchemeField querySchemeField = new QuerySchemeField ();
+            querySchemeField.setQuerySchemeId ( querySchemaVo.getQuerySchemeId () );
+            querySchemeField.setFieldId (querySchemaVo.getFieldId ().get ( i )  );
+            querySchemeField.setSort (i);
+            fieldList.add ( querySchemeField );
         }
-        //说明是更新操作
-        //将list里面的queryschemeId设置为传过来的id
-        for (QuerySchemeField querySchemeField : querySchemeFieldlist) {
-            querySchemeField.setQuerySchemeId ( queryScheme.getQuerySchemeId () );
-        }
-        for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
-            querySchemeSort.setQuerySchemeId ( queryScheme.getQuerySchemeId () );
-        }
-        querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
-        for (QuerySchemeField querySchemeField : querySchemeFieldlist) {
-            querySchemeFieldDao.updateByPrimaryKey ( querySchemeField );
-        }
-        for (QuerySchemeSort querySchemeSort : querySchemeSortlist) {
-            querySchemeSortDao.updateByPrimaryKey ( querySchemeSort );
+        for (int i = 0; i < querySchemaVo.getSorts ().size (); i++) {
+            QuerySchemeSort querySchemeSort=new QuerySchemeSort ();
+            querySchemeSort.setFieldId ( querySchemaVo.getSorts ().get ( i ).getFieldId () );
+            querySchemeSort.setOrderByRule ( querySchemaVo.getSorts ().get ( i ).getOrderByRule () );
+            querySchemeSort.setSort ( i );
+            querySchemaVo.setQuerySchemeId ( querySchemaVo.getQuerySchemeId () );
+            sortList.add ( querySchemeSort );
         }
     }
 

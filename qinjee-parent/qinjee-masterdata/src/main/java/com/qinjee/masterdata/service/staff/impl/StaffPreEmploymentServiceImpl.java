@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -9,17 +8,12 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDa
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
-import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
-import com.qinjee.masterdata.service.email.EmailConfigService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
-import com.qinjee.utils.SendManyMailsUtil;
-import entity.MailConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -56,41 +50,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
-    private EmailConfigService emailConfigService;
-    @Autowired
     private UserInfoDao userInfoDao;
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
-
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void sendManyMail(EmailSendVo emailSendVo, UserSession userSession) throws Exception {
-        //根据预入职id查找邮箱
-        for (Integer integer1 : emailSendVo.getPrelist ()) {
-            if (preEmploymentDao.selectMaxId () < integer1) {
-                throw new Exception ( "id出错" );
-            }
-        }
-        List < String > tomails = preEmploymentDao.getMail ( emailSendVo.getPrelist () );
-
-        //根据档案id查询邮箱
-        Integer max = userArchiveDao.selectMaxId ();
-        for (Integer integer : emailSendVo.getConList ()) {
-            if (max < integer) {
-                throw new Exception ( "id出错" );
-            }
-        }
-        try {
-        List < String > mails = userArchiveDao.selectMail ( emailSendVo.getConList () );
-        EmailConfig emailConfig = emailConfigService.getEmailConfigByCompanyId ( userSession.getCompanyId () );
-        MailConfig mailConfig = emailConfigService.handlerEmailtoMail ( emailConfig );
-            SendManyMailsUtil.sendMail ( mailConfig, tomails, mails,
-                    emailSendVo.getSubject (), emailSendVo.getContent (), emailSendVo.getFilepath () );
-        } catch (Exception e) {
-            ExceptionCast.cast ( CommonCode.SEND_MAIL_FAIL );
-        }
-    }
 
     /**
      * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
@@ -248,9 +210,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     public PageResult < PreEmploymentVo > selectPreEmployment(UserSession userSession, Integer currentPage, Integer pageSize) {
-        PageHelper.startPage ( currentPage, pageSize );
-        List < PreEmploymentVo > list = new ArrayList <> ();
+
+
         //通过部门找到预入职Vo
+        PageHelper.startPage ( currentPage, pageSize );
         List < PreEmploymentVo > preEmploymentList = preEmploymentDao.selectPreEmploymentVo ( userSession.getCompanyId () );
         List < Integer > integers = new ArrayList <> ();
 
@@ -275,10 +238,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     }
                 }
             }
-            list.add ( preEmploymentVo );
         }
-        PageResult < PreEmploymentVo > preEmploymentVoPageResult = new PageResult <> ( list );
-        preEmploymentVoPageResult.setTotal ( list.size () );
+        PageResult < PreEmploymentVo > preEmploymentVoPageResult = new PageResult <> (preEmploymentList  );
         return preEmploymentVoPageResult;
     }
 

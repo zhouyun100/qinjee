@@ -239,7 +239,7 @@ public class QRCodeUtil {
 
     public static void main(String [] args) throws Exception{
         String content = "https://www.baidu.com";
-        String qrCodeImagePath = "E:\\QRCode\\512x512.png";
+        String qrCodeImagePath = "";
         File logoFile = new File("E:\\Logo\\108x108.png");
         String logoUrl = "http://193.112.188.180/file/company/logo/1.png";
         int width = 512;

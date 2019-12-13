@@ -51,10 +51,10 @@ public class PreTemplateController extends BaseController {
     @RequestMapping(value = "/sendPreRegist", method = RequestMethod.POST)
     @ApiOperation(value = "发送预入职登记", notes = "hkt")
     public ResponseResult sendPreRegist(@RequestBody @Valid PreRegistVo preRegistVo) {
-        Boolean b = checkParam(preRegistVo);
+        Boolean b = checkParam(preRegistVo,getUserSession ());
         if (b) {
             try {
-                preTemplateService.sendRegisterMessage(preRegistVo);
+                preTemplateService.sendRegisterMessage(preRegistVo,getUserSession ());
                 return new ResponseResult<>(null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -502,10 +502,10 @@ public class PreTemplateController extends BaseController {
     @RequestMapping(value = "/createPreRegistQrcode", method = RequestMethod.GET)
     @ApiOperation(value = "生成预入职登记二维码", notes = "hkt")
     public ResponseResult  createPreRegistQrcode(Integer templateId, HttpServletResponse response) {
-        Boolean b = checkParam (templateId,response );
+        Boolean b = checkParam (templateId,response,getUserSession () );
         if (b) {
             try {
-                preTemplateService.createPreRegistQrcode(templateId,response);
+                preTemplateService.createPreRegistQrcode(templateId,response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 return failResponseResult ( "生成失败" );
@@ -513,7 +513,6 @@ public class PreTemplateController extends BaseController {
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
-
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals ( param )) {

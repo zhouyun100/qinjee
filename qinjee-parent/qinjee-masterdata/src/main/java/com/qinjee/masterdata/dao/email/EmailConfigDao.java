@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.dao.email;
 
 import com.qinjee.masterdata.model.entity.EmailConfig;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,4 +27,6 @@ public interface EmailConfigDao {
      * @return
      */
     EmailConfig getEmailConfigByCompanyId(Integer companyId);
+
+    String selectTemplate(@Param("entry_registration") String entry_registration);
 }

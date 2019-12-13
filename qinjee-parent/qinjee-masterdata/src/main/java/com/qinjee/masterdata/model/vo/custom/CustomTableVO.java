@@ -86,7 +86,10 @@ public class CustomTableVO{
      * 是否删除
      */
     private Short isDelete;
-
+    /**
+     * 数据表id
+     */
+    private Integer bigDataId;
     /**
      * 自定义字段组列表
      */

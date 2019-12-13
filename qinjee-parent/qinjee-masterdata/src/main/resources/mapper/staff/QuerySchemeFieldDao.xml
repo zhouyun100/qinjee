@@ -128,4 +128,26 @@
     where  query_scheme_id=#{schemeId}
     order by sort asc
   </select>
+  <update id="updateBatch" parameterType="list">
+    <foreach collection="list" index="index" item="item" separator=";">
+      update t_query_scheme_field
+      <set>
+        <if test="item.querySchemeId != null">
+          query_scheme_id = #{item.querySchemeId,jdbcType=INTEGER},
+        </if>
+        <if test="item.fieldId != null">
+          field_id = #{item.fieldId,jdbcType=INTEGER},
+        </if>
+        <if test="item.sort != null">
+          sort = #{item.sort,jdbcType=INTEGER},
+        </if>
+        <if test="item.createTime != null">
+          create_time = #{item.createTime,jdbcType=TIMESTAMP},
+        </if>
+      </set>
+      where query_scheme_field_id = #{item.querySchemeFieldId,jdbcType=INTEGER}
+    </foreach>
+
+
+  </update>
 </mapper>

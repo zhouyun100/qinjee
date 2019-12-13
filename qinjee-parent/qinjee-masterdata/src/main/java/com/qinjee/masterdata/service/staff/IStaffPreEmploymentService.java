@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.model.request.UserSession;
@@ -15,13 +14,7 @@ import java.util.Map;
  */
 public interface IStaffPreEmploymentService {
 
-    /**
-     * 发送邮件
-     * @param emailSendVo
-     * @param userSession
-     * @throws Exception
-     */
-    void sendManyMail(EmailSendVo emailSendVo,UserSession userSession) throws Exception;
+
     /**
      * 新增预入职变更表
      * @param statusChangeVo

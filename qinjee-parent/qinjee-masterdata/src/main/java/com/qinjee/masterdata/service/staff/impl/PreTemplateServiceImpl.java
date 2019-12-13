@@ -1,14 +1,15 @@
 package com.qinjee.masterdata.service.staff.impl;
 
-import com.google.zxing.common.BitMatrix;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.staffdao.entryregistration.EntryRegistrationDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
+import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
+import com.qinjee.masterdata.service.email.EmailRecordService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
-import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import com.qinjee.masterdata.service.staff.IPreTemplateService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.FileUploadUtils;
@@ -19,16 +20,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class PreTemplateServiceImpl implements IPreTemplateService {
-    @Autowired
-    private EntryRegistrationService entryRegistrationService;
+
+    private static final int IMAGE_WIDTH = 512;
+    private static final int IMAGE_HEIGHT = 512;
+
+
     @Autowired
     private TemplateCustomTableFieldService templateCustomTableFieldService;
     @Autowired
@@ -39,6 +43,11 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     private PreEmploymentDao preEmploymentDao;
     @Autowired
     private SmsRecordService smsRecordService;
+    @Autowired
+    private EntryRegistrationDao entryRegistrationDao;
+
+    @Autowired
+    private EmailRecordService emailRecordService;
     private static final String CHANGSTATUS_READY = "已入职";
     private static final String CHANGSTATUS_BLACKLIST = "黑名单";
     private static final String CHANGSTATUS_GIVEUP = "放弃入职";
@@ -50,7 +59,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void sendRegisterMessage(PreRegistVo preRegistVo) throws Exception {
+    public void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) throws Exception {
         //判断是否可以发短信
 //        for (Integer integer : preRegistVo.getList ()) {
 //            PreEmployment preEmployment = preEmploymentDao.getOrganizationById ( integer );
@@ -66,6 +75,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
         }
         if(2==preRegistVo.getSendWay ()){
             //邮件发送
+        emailRecordService.SendMailForPreRegist (userSession ,preRegistVo.getList (),preRegistVo.getTemplateId () );
         }
         for (Integer integer : preRegistVo.getList ()) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( integer );
@@ -80,17 +90,23 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
      * @param response
      */
     @Override
-    public void createPreRegistQrcode(Integer templateId, HttpServletResponse response) {
+    public void createPreRegistQrcode(Integer templateId, HttpServletResponse response,UserSession userSession) throws IOException {
         //给相应添加头部信息，主要告诉浏览器返回的是图片流
         response.setHeader("Cache-Control", "no-store");
         // 不设置缓存
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("image/png");
-        String baseUrl="www.baidu.com?"+templateId;
-//        BitMatrix bitMatrix = QRCodeUtil.generateQRCodeStream ( baseUrl, response );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-//        BufferedImage image = toBufferedImage(bitMatrix)
+        //TODO  前端登陆页面url由前端提供
+        String baseUrl="www.baidu.com?"+templateId+"?"+userSession.getCompanyId ();
+        //数据库查询logurl
+        String url=entryRegistrationDao.searchLogurlByComanyIdAnadTemplateId(templateId,userSession.getCompanyId ());
+        QRCodeUtil.outputQRCodeImageByLogoUrl (url, IMAGE_WIDTH, IMAGE_HEIGHT, baseUrl, response.getOutputStream () );
+    }
+
+    @Override
+    public void sendManyMail(EmailSendVo emailSendVo, UserSession userSession) {
+
     }
 
     @Override
@@ -104,17 +120,15 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
        List<Integer> list=customTableFieldDao.selectTableIdByCompanyIdAndFuncCode(companyId,"PRE");
        //找到对应的值
         for (Integer integer : list) {
-            Map < Integer, String > map1 = staffCommonService.selectValue ( integer, preId );
-            for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
-                map.put ( integerStringEntry.getKey (),integerStringEntry.getValue () );
+            List < Map < Integer, String > > mapList = staffCommonService.selectValue ( integer, preId );
+            for (Map < Integer, String > integerStringMap : mapList) {
+                for (Map.Entry < Integer, String > integerStringEntry : integerStringMap.entrySet ()) {
+                    map.put ( integerStringEntry.getKey (),integerStringEntry.getValue () );
+                }
             }
         }
         List < EntryRegistrationTableVO > entryRegistrationTableVOS =
                 templateCustomTableFieldService.handlerCustomTableGroupFieldList ( entryRegistrationTableVOS1, map );
         return entryRegistrationTableVOS;
     }
-
-  
-
-
 }

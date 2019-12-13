@@ -380,11 +380,11 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/saveQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "保存查询方案", notes = "hkt")
-    public ResponseResult saveQueryScheme(@RequestBody @Valid QueryArcVo queryArcVo){
-        Boolean b = checkParam(queryArcVo);
+    public ResponseResult saveQueryScheme(@RequestBody @Valid QuerySchemaVo querySchemaVo){
+        Boolean b = checkParam(querySchemaVo);
         if(b){
             try {
-                staffArchiveService.saveQueryScheme(queryArcVo);
+                staffArchiveService.saveQueryScheme(querySchemaVo);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -400,7 +400,7 @@ public class StaffArchiveController extends BaseController {
      */
 
     @RequestMapping(value = "/setDefaultQuerySchme", method = RequestMethod.GET)
-    @ApiOperation(value = "保存查询方案", notes = "hkt")
+    @ApiOperation(value = "设置默认方案", notes = "hkt")
     public ResponseResult setDefaultQuerySchme(Integer querySchmeId){
         Boolean b = checkParam(querySchmeId,getUserSession ());
         if(b){

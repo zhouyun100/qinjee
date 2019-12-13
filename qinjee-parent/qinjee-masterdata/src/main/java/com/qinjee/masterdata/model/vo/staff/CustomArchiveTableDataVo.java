@@ -1,8 +1,19 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
+import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+@Data
+@JsonInclude
 public class CustomArchiveTableDataVo {
+    /**
+     * id
+     */
+    private  Integer id;
 
     /**
      * 表ID
@@ -17,10 +28,11 @@ public class CustomArchiveTableDataVo {
     private Integer businessId;
 
     /**
-     * 数据大字段
+     * 字段集合
      */
-    @NotNull
-    private String bigData;
-
+    /**
+     * 自定义字段列表
+     */
+    private List < CheckCustomFieldVO > customFieldVOList;
     private static final long serialVersionUID = 1L;
 }

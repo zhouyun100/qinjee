@@ -1,173 +1,62 @@
+/*
+ * Welcome to use the TableGo Tools.
+ * 
+ * http://vipbooks.iteye.com
+ * http://blog.csdn.net/vipbooks
+ * http://www.cnblogs.com/vipbooks
+ * 
+ * Author:bianj
+ * Email:edinsker@163.com
+ * Version:5.8.0
+ */
+
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
-/**
- * t_email_record
- * @author
- */
-public class EmailRecord implements Serializable {
-    /**
-     * 邮件记录ID
-     */
+@Data
+@JsonInclude
+public class EmailRecord {
+    /** 版本号 */
+    private static final long serialVersionUID = 2587262595458960728L;
+
+    /** 邮件记录ID */
     private Integer emailRecordId;
 
-    /**
-     * 模板ID
-     */
-    private Integer emailTempleteId;
+    /** 模板ID */
+    private Integer emailTemplateId;
 
-    /**
-     * 邮件配置ID
-     */
+    /** 邮件配置ID */
     private Integer emailConfigId;
 
-    /**
-     * 邮件标题
-     */
+    /** 邮件标题 */
     private String emailTitle;
 
-    /**
-     * 业务类型
-     */
+    /** 邮件正文 */
+    private String emailContent;
+
+    /** 业务类型 */
     private String businessType;
 
-    /**
-     * 发件人
-     */
+    /** 发件人 */
     private String fromUser;
 
-    /**
-     * 收件人
-     */
+    /** 收件人 */
     private String toUser;
 
-    /**
-     * 抄送人
-     */
+    /** 抄送人 */
     private String ccUser;
 
-    /**
-     * 操作人
-     */
+    /** 操作人 */
     private Integer operatorId;
 
-    /**
-     * 创建时间
-     */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
-    private Date createTime;
+    /** 创建时间 */
+    private Timestamp createTime;
 
-    /**
-     * 发送状态
-     */
+    /** 发送状态 */
     private String sendStatus;
 
-    /**
-     * 邮件正文
-     */
-    private byte[] emailContent;
-
-    private static final long serialVersionUID = 1L;
-
-    public Integer getEmailRecordId() {
-        return emailRecordId;
-    }
-
-    public void setEmailRecordId(Integer emailRecordId) {
-        this.emailRecordId = emailRecordId;
-    }
-
-    public Integer getEmailTempleteId() {
-        return emailTempleteId;
-    }
-
-    public void setEmailTempleteId(Integer emailTempleteId) {
-        this.emailTempleteId = emailTempleteId;
-    }
-
-    public Integer getEmailConfigId() {
-        return emailConfigId;
-    }
-
-    public void setEmailConfigId(Integer emailConfigId) {
-        this.emailConfigId = emailConfigId;
-    }
-
-    public String getEmailTitle() {
-        return emailTitle;
-    }
-
-    public void setEmailTitle(String emailTitle) {
-        this.emailTitle = emailTitle;
-    }
-
-    public String getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(String businessType) {
-        this.businessType = businessType;
-    }
-
-    public String getFromUser() {
-        return fromUser;
-    }
-
-    public void setFromUser(String fromUser) {
-        this.fromUser = fromUser;
-    }
-
-    public String getToUser() {
-        return toUser;
-    }
-
-    public void setToUser(String toUser) {
-        this.toUser = toUser;
-    }
-
-    public String getCcUser() {
-        return ccUser;
-    }
-
-    public void setCcUser(String ccUser) {
-        this.ccUser = ccUser;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getSendStatus() {
-        return sendStatus;
-    }
-
-    public void setSendStatus(String sendStatus) {
-        this.sendStatus = sendStatus;
-    }
-
-    public byte[] getEmailContent() {
-        return emailContent;
-    }
-
-    public void setEmailContent(byte[] emailContent) {
-        this.emailContent = emailContent;
-    }
 }
