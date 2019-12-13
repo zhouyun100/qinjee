@@ -5,9 +5,11 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.PositionDao;
 import com.qinjee.masterdata.dao.organation.PositionGradeRelationDao;
 import com.qinjee.masterdata.dao.organation.PositionLevelRelationDao;
+import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGradeRelation;
 import com.qinjee.masterdata.model.entity.PositionLevelRelation;
+import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
 import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
 import com.qinjee.masterdata.model.vo.organization.query.QueryField;
@@ -39,6 +41,8 @@ public class PositionServiceImpl implements PositionService {
 
     @Autowired
     private PositionDao positionDao;
+    @Autowired
+    private PostDao postDao;
     @Autowired
     private PositionGradeService positionGradeService;
     @Autowired
@@ -266,6 +270,11 @@ public class PositionServiceImpl implements PositionService {
     @Override
     public ResponseResult deletePosition(List<Integer> positionIds, UserSession userSession) {
         if(!CollectionUtils.isEmpty(positionIds)){
+
+            List<Post> posts=postDao.listPostByPisitionId(positionIds);
+            if(Objects.nonNull(posts)){
+                ExceptionCast.cast(CommonCode.POSITION_USED_NY_POST);
+            }
             for (Integer positionId : positionIds) {
                 Position position = new Position();
                 position.setPositionId(positionId);

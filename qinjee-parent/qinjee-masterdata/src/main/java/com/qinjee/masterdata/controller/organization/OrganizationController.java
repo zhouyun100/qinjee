@@ -542,7 +542,7 @@ public class OrganizationController extends BaseController {
             if (checkParam(orgIds, parentOrgId, newOrgName)) {
                 try {
                     //进行机构合并
-                    organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, userSession);
+                    organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, getUserSession());
                     return ResponseResult.SUCCESS();
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
@@ -37,7 +38,10 @@ import java.util.Map;
 public class PositionController extends BaseController {
 
   @Autowired
-  private PositionService positionService;@Autowired
+  private PositionService positionService;
+  @Autowired
+  private PostDao postDao;
+  @Autowired
   private PositionGroupService positionGroupService;
 
   private Boolean checkParam(Object... params) {

@@ -103,5 +103,7 @@ public interface PostDao {
     Post getPostByPostCode(String postCode, Integer companyId);
 
     void batchDelete(@Param("idList") List<Integer> idList);
+
+    List<Post> listPostByPisitionId(@Param("positionIds")List<Integer> positionIds);
 }
 

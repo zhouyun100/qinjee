@@ -29,6 +29,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.springframework.beans.BeanUtils;
@@ -132,7 +133,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         //根据父级机构id查询一些基础信息，构建Organization对象
-        OrganizationVO orgBean = initOrganization(Integer.parseInt(parentOrgId));
+        OrganizationVO orgBean = initOrganization(Integer.parseInt(parentOrgId),false);
         String full_name;
         if (orgBean.getOrgFullName() != null) {
             full_name = orgBean.getOrgFullName() + "/" + orgName;
@@ -159,7 +160,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     //=====================================================================
-    private OrganizationVO initOrganization(Integer orgParentId) {
+    private OrganizationVO initOrganization(Integer orgParentId,boolean generateCode) {
         OrganizationVO orgBean = new OrganizationVO();
         if (orgParentId > 0) {
             //查询父级机构
@@ -167,6 +168,20 @@ public class OrganizationServiceImpl implements OrganizationService {
             //查询最新的同级机构
             List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
             //如果没有同级机构，则当前机构为parentOrg下第一个子机构
+
+            brotherOrgList.sort(new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    OrganizationVO org1 = (OrganizationVO) o1;
+                    OrganizationVO org2 = (OrganizationVO) o2;
+                    if (org1.getOrgCode().length()> org2.getOrgCode().length()) {
+                        return -1;
+                    } else if (org1.getOrgCode().length()<org2.getOrgCode().length()) {
+                        return 1;
+                    }
+                    return org2.getOrgCode().compareTo(org1.getOrgCode());
+                }
+            });
             String orgCode;
             Integer sortId;
             if (CollectionUtils.isEmpty(brotherOrgList)) {
@@ -174,64 +189,29 @@ public class OrganizationServiceImpl implements OrganizationService {
                 sortId = 1000;
             } else {
                 sortId = brotherOrgList.get(0).getSortId() + 1000;
-                //orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
+                orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
             }
             orgBean.setSortId(sortId);
             //TODO 取消后台生成编码的逻辑，由前端生成
-            //orgBean.setOrgCode(orgCode);
+            if (generateCode){
+                orgBean.setOrgCode(orgCode);
+            }
             orgBean.setOrgFullName(parentOrg.getOrgFullName());
             return orgBean;
             //如果是0，就是顶级机构
         } else {
             orgBean.setSortId(1000);
             //TODO 取消后台生成编码的逻辑，由前端生成
-            //orgBean.setOrgCode("1");
+            if (generateCode){
+                orgBean.setOrgCode("1");
+            }
             return orgBean;
         }
     }
 //=====================================================================
 
-    /**
-     * 获取新编码和sortId的机构
-     *
-     * @param orgParentId
-     * @return
-     */
-    //TODO 存在隐患，新增机构时机构编码由前端生成没问题，但机构划转和机构合并  编码需要由后端生成，如果编码中存在非数字字符，可能导致异常
-    private OrganizationVO getNewOrgCode(Integer orgParentId) {
-        OrganizationVO orgBean = new OrganizationVO();
-        try {
-            if (orgParentId > 0) {
-                //查询父级机构
-                OrganizationVO parentOrg = organizationDao.selectByPrimaryKey(orgParentId);
-                //查询最新的同级机构
-                List<OrganizationVO> brotherOrgList = organizationDao.getOrganizationListByParentOrgId(orgParentId);
-                //如果没有同级机构，则当前机构为parentOrg下第一个子机构
-                String orgCode;
-                Integer sortId;
-                if (CollectionUtils.isEmpty(brotherOrgList)) {
-                    orgCode = parentOrg.getOrgCode() + "01";
-                    sortId = 1000;
-                } else {
-                    sortId = brotherOrgList.get(0).getSortId() + 1000;
-                    orgCode = culOrgCode(brotherOrgList.get(0).getOrgCode());
-                }
-                BeanUtils.copyProperties(parentOrg, orgBean);
-                orgBean.setOrgParentId(parentOrg.getOrgId());
-                orgBean.setSortId(sortId);
-                orgBean.setOrgCode(orgCode);
-                return orgBean;
-            } else {
-                orgBean.setSortId(1000);
-                orgBean.setOrgCode("1");
-            }
-        } catch (Exception e) {
-            ExceptionCast.cast(CommonCode.CODE_GENER_FAIL);
-        }
-        return orgBean;
-    }
 
-//=====================================================================
+
 
     /**
      * 获取新orgCode
@@ -715,8 +695,13 @@ public class OrganizationServiceImpl implements OrganizationService {
                 ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
             }
             //根据归属机构构建新的机构实体
-            OrganizationVO newOrgVO = getNewOrgCode(parentOrgId);
+            OrganizationVO newOrgVO = initOrganization(parentOrgId,true);
             newOrgVO.setOrgName(newOrgName);
+            newOrgVO.setCreateTime(new Date());
+            newOrgVO.setOperatorId(userSession.getArchiveId());
+            newOrgVO.setCompanyId(userSession.getCompanyId());
+            newOrgVO.setOrgParentId(parentOrgId);
+            newOrgVO.setIsEnable(Short.parseShort("1"));
             newOrgVO.setOrgType(organizationVOList.get(0).getOrgType());
             newOrgVO.setOrgFullName(newOrgVO.getOrgFullName() + "/" + newOrgVO.getOrgName());
             organizationDao.insert(newOrgVO);
@@ -725,6 +710,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             apiAuthService.mergeOrg(orgIds, newOrgVO.getOrgId(), userSession.getArchiveId());
             //refactorOrganization(organizationVOList, newOrganizationVO);
+            organizationDao.batchDelete(orgIds);
         }
     }
 

@@ -522,4 +522,14 @@
             #{item}
         </foreach>
     </update>
+
+    <select id="listPostByPisitionId" resultMap="BaseResultMap">
+    select  <include refid="Base_Column_List"></include>
+    from t_post where
+    position_id in
+ <foreach collection="positionIds" separator="," close=")" open="(" item="item">
+     #{item}
+ </foreach>
+
+ </select>
 </mapper>
