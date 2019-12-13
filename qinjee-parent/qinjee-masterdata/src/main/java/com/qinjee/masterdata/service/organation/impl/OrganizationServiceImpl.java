@@ -429,7 +429,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                     }
                     organizationDao.insertSelective(vo);
                     //维护机构与角色
-                    //TODO
                     apiAuthService.addOrg(vo.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
                 }
             }
@@ -528,7 +527,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             responseResult.setResultCode(CommonCode.SUCCESS);
             responseResult.setMessage("文件校验成功");
         }
-        //TODO 将redisKey置入表头，是否多余
         response.setHeader("redisKey", redisKey);
         responseResult.setResult(resultMap);
         return responseResult;
