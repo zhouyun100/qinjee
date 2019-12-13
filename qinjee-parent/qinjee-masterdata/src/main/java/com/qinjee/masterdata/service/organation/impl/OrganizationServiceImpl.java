@@ -23,6 +23,7 @@ import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
+import com.qinjee.masterdata.utils.MyCollectionUtil;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
 import com.qinjee.model.request.UserSession;
@@ -283,7 +284,6 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable) {
-        List<Integer> orgidList = new ArrayList<>();
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;
         if (layer < 1) {
@@ -429,7 +429,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                     }
                     organizationDao.insertSelective(vo);
                     //维护机构与角色
-                    //TODO
                     apiAuthService.addOrg(vo.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
                 }
             }
@@ -528,7 +527,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             responseResult.setResultCode(CommonCode.SUCCESS);
             responseResult.setMessage("文件校验成功");
         }
-        //TODO 将redisKey置入表头，是否多余
         response.setHeader("redisKey", redisKey);
         responseResult.setResult(resultMap);
         return responseResult;
@@ -545,12 +543,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
-
         OrganizationVO currentOrg = organizationDao.getOrganizationById(orgId);
         if (Objects.isNull(currentOrg)) {
             return idsList;
         }
-
         //先查询到所有机构
         List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
@@ -558,13 +554,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         for (OrganizationVO org : allOrgs) {
             multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
         }
-        for (Map.Entry<Integer, Integer> entry : multiValuedMap.entries()) {
-
-            System.out.println(entry.getKey() + ":" + entry.getValue());
-        }
         //根据机构id递归，取出该机构下的所有子机构
         collectOrgIds(multiValuedMap, orgId, idsList, layer);
-        return idsList;
+        return MyCollectionUtil.removeDuplicate(idsList);
     }
 
 
@@ -636,6 +628,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 recursiveFindOrgIds(orgId, idList);
             }
         }
+        //去重
+        idList=MyCollectionUtil.removeDuplicate(idList);
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
@@ -648,7 +642,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (!isExsit) {
             //物理删除机构表
             organizationDao.batchDeleteOrganization(idList);
-            //逻辑删除物理表
+            //逻辑删除岗位表
             postDao.batchDelete(idList);
         }
         // 回收机构权限
@@ -658,24 +652,24 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
 
     /**
-     * 递归查找机构id
+     * 递归查找机构子id
      *
      * @param orgId
-     * @param idSet
+     * @param idList
      */
-    public void recursiveFindOrgIds(Integer orgId, List idSet) {
+    public void recursiveFindOrgIds(Integer orgId, List idList) {
         List<OrganizationVO> parentOrgList = organizationDao.listSonOrganization(orgId);
         if (parentOrgList != null && parentOrgList.size() > 0) {
             for (OrganizationVO OrganizationVO : parentOrgList) {
-                idSet.add(OrganizationVO.getOrgId());
-                recursiveFindOrgIds(OrganizationVO.getOrgId(), idSet);
+                idList.add(OrganizationVO.getOrgId());
+                recursiveFindOrgIds(OrganizationVO.getOrgId(), idList);
             }
         }
     }
 
     //=====================================================================
     @Override
-    public void sealOrganizationByIds(List<Integer> orgIds, Short isEnable) {
+    public void sealOrganization(List<Integer> orgIds, Short isEnable) {
         organizationDao.updateEnable(orgIds, isEnable);
     }
 
@@ -1030,6 +1024,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         return checkVos;
     }
+
 }
 
 

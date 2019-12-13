@@ -299,7 +299,7 @@
         from t_post where parent_post_id = #{parentPostId} ORDER BY sort_id DESC
     </select>
 
-    <select id="ListPostByOrgIds" resultMap="BaseResultMap">
+    <select id="listPostByOrgIds" resultMap="BaseResultMap">
         SELECT
         tp.org_id org_id,
         org.org_code,

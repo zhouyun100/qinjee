@@ -53,7 +53,7 @@ public interface OrganizationService  {
    * @param isEnable
    * @return
    */
-  void sealOrganizationByIds(List<Integer> orgIds, Short isEnable);
+  void sealOrganization(List<Integer> orgIds, Short isEnable);
 
   /**
    * 合并机构（将多个老机构划转到一个新生成的机构，老机构逻辑删除）

@@ -18,6 +18,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
+import com.qinjee.masterdata.utils.MyCollectionUtil;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -296,8 +297,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable) {
         //递归拿到机构及所有子机构id
-        List<Integer> orgidList = getOrgIdList(userSession, orgId,isEnable);
-        List<Post> postList = postDao.ListPostByOrgIds(orgidList);
+        List<Integer> orgIdList = getOrgIdList(userSession, orgId,isEnable);
+        List<Post> postList = postDao.listPostByOrgIds(orgIdList);
         return postList;
     }
 
@@ -322,7 +323,7 @@ public class PostServiceImpl implements PostService {
         }
         //根据机构id递归，取出该机构下的所有子机构
         collectIds(multiValuedMap, orgId, idsList);
-        return idsList;
+        return MyCollectionUtil.removeDuplicate(idsList);
     }
 
     /**
@@ -354,7 +355,7 @@ public class PostServiceImpl implements PostService {
     public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
         if (CollectionUtils.isEmpty(postIds)) {
             List<Integer> orgIdList = getOrgIdList(userSession, orgId,null);
-            return postDao.ListPostByOrgIds(orgIdList);
+            return postDao.listPostByOrgIds(orgIdList);
         } else {
             return postDao.getPostListByPostIds(postIds);
         }

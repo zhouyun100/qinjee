@@ -81,7 +81,7 @@ public interface PostDao {
 
     List<Post> listPostByPostId(@Param("parentPostId") Integer parentPostId);
 
-    List<Post> ListPostByOrgIds(@Param("orgidList")List<Integer> orgidList);
+    List<Post> listPostByOrgIds(@Param("orgidList")List<Integer> orgidList);
 
 
     List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList, @Param("sortFieldStr")String sortFieldStr);
