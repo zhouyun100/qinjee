@@ -145,7 +145,7 @@ public class RoleSearchController extends BaseController{
     @ApiOperation(value="修改用户角色", notes="修改用户角色")
     @RequestMapping(value = "/updateArchiveRole",method = RequestMethod.POST)
     public ResponseResult updateArchiveRole(@RequestBody RequestArchiveRoleVO requestArchiveRoleVO) {
-        if(null == requestArchiveRoleVO.getArchiveId() || CollectionUtils.isEmpty(requestArchiveRoleVO.getRoleIdList())){
+        if(null == requestArchiveRoleVO.getArchiveId()){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("员工或角色为空！");
             return responseResult;
