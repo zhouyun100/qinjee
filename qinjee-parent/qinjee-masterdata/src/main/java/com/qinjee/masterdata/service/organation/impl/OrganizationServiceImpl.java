@@ -654,7 +654,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
 
     /**
-     * 递归查找机构id
+     * 递归查找机构子id
      *
      * @param orgId
      * @param idList
@@ -671,7 +671,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     //=====================================================================
     @Override
-    public void sealOrganizationByIds(List<Integer> orgIds, Short isEnable) {
+    public void sealOrganization(List<Integer> orgIds, Short isEnable) {
         organizationDao.updateEnable(orgIds, isEnable);
     }
 

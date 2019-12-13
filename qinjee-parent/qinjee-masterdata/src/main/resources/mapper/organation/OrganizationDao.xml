@@ -384,7 +384,7 @@
         <foreach collection="orgIds" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
-        order by t_org.org_id asc,t_org.sort_id asc
+        order by t_org.sort_id asc
     </select>
 
     <select id="listOrganizationByArchiveId" resultMap="BaseResultMap">

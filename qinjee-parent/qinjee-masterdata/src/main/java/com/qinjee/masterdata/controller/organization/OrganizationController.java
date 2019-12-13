@@ -284,7 +284,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         if (checkParam(orgIds)) {
             try {
-                organizationService.sealOrganizationByIds(orgIds, Short.parseShort("0"));
+                organizationService.sealOrganization(orgIds, Short.parseShort("0"));
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -303,7 +303,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         if (checkParam(orgIds)) {
             try {
-                organizationService.sealOrganizationByIds(orgIds, Short.parseShort("1"));
+                organizationService.sealOrganization(orgIds, Short.parseShort("1"));
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
