@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 邮件记录表(t_email_record) -->
-<mapper namespace="com.qinjee.masterdata.dao.EmailRecordDao">
+<mapper namespace="com.qinjee.masterdata.dao.email.EmailRecordDao">
     <!-- 结果映射 -->
     <resultMap id="t_email_recordMap" type="com.qinjee.masterdata.model.entity.EmailRecord">
         <id column="email_record_id" property="emailRecordId" jdbcType="INTEGER" />

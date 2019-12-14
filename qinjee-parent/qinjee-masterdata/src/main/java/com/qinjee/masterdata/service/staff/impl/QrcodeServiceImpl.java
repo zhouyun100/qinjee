@@ -33,7 +33,7 @@ public class QrcodeServiceImpl implements IQrcodeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void sendPreCheckCode(String phone) {
-        smsRecordService.sendSmsLoginCode(phone);
+        smsRecordService.sendSmsPreLoginCode(phone);
     }
 
     @Override

@@ -48,6 +48,8 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 
     @Autowired
     private EmailRecordService emailRecordService;
+
+
     private static final String CHANGSTATUS_READY = "已入职";
     private static final String CHANGSTATUS_BLACKLIST = "黑名单";
     private static final String CHANGSTATUS_GIVEUP = "放弃入职";

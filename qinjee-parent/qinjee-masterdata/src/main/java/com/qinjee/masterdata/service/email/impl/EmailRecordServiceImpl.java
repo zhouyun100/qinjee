@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.email.impl;
 
 import com.qinjee.consts.AesKeyConsts;
-import com.qinjee.masterdata.dao.EmailRecordDao;
 import com.qinjee.masterdata.dao.email.EmailConfigDao;
+import com.qinjee.masterdata.dao.email.EmailRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.EmailConfig;
 import com.qinjee.masterdata.model.entity.EmailRecord;
@@ -16,11 +16,12 @@ import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.SendManyMailsUtil;
 import entity.MailConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class EmailRecordServiceImpl implements EmailRecordService {
 
     @Autowired
