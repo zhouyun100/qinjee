@@ -79,7 +79,7 @@ public interface PostDao {
 
 
 
-    List<Post> listPostByPostId(@Param("parentPostId") Integer parentPostId);
+    List<Post> listPostByParentPostId(@Param("parentPostId") Integer parentPostId);
 
     List<Post> listPostByOrgIds(@Param("orgidList")List<Integer> orgidList);
 

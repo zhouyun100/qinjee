@@ -293,7 +293,7 @@
     </select>
 
 
-    <select id="listPostByPostId" resultMap="BaseResultMap">
+    <select id="listPostByParentPostId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
         from t_post where parent_post_id = #{parentPostId} ORDER BY sort_id DESC

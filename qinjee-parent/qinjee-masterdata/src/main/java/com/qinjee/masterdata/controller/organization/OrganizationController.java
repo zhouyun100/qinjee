@@ -63,11 +63,11 @@ public class OrganizationController extends BaseController {
     //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName,@RequestParam("orgCode")String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
         Boolean b = checkParam(orgName, orgType, orgParentId, orgManagerId);
         if (b) {
             try {
-                organizationService.addOrganization(orgName, orgCode,orgType, orgParentId, orgManagerId, getUserSession());
+                organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -255,7 +255,7 @@ public class OrganizationController extends BaseController {
         Boolean b = checkParam(isEnable);
         if (b) {
             try {
-                if (isEnable !=0) {
+                if (isEnable != 0) {
                     isEnable = null;
                 }
                 List<OrganizationVO> orgList = organizationService.getOrganizationPostTree(getUserSession(), isEnable);
@@ -276,6 +276,7 @@ public class OrganizationController extends BaseController {
 
     /**
      * 机构下有人，不能封存
+     *
      * @param orgIds
      * @return
      */
@@ -483,7 +484,7 @@ public class OrganizationController extends BaseController {
     //TODO
     @GetMapping("/getUserArchiveListByUserName")
     @ApiOperation(value = "未实现，机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
-    public ResponseResult<List< UserArchiveVo >> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
+    public ResponseResult<List<UserArchiveVo>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
         //TODO 校验参数 不带参则全量查询
         if (checkParam(userName)) {
             try {
@@ -553,6 +554,28 @@ public class OrganizationController extends BaseController {
                     return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
                 }
             }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+    @ApiOperation(value = "根据orgId生成机构编码（用于新增机构时获取新机构编码）")
+    @GetMapping("/generateOrgCode")
+    public ResponseResult generateOrgCode(Integer orgId) {
+        //校验参数
+        if (checkParam(orgId)) {
+
+            try {
+                String orgCode=organizationService.generateOrgCode(orgId);
+                return new ResponseResult<>(orgCode);
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof BusinessException) {
+                    BusinessException be = (BusinessException) e;
+                    return new ResponseResult<>(null, be.getResultCode());
+                }
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            }
+
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
