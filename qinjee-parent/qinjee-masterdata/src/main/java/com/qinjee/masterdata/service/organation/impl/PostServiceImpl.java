@@ -26,6 +26,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,42 +82,42 @@ public class PostServiceImpl implements PostService {
         List<Integer> orgIdList = null;
         List<Integer> postIdList = null;
         //如果postId>0,则根据postId+orgId查询岗位
-        if (null!=postPageVo.getPostId()&&postPageVo.getPostId() != 0){
+        if (null != postPageVo.getPostId() && postPageVo.getPostId() != 0) {
             //找出岗位id及子岗位id集合
-            postIdList= getPostIdList(postPageVo.getPostId(),userSession.getCompanyId(),postPageVo.getIsEnable());
+            postIdList = getPostIdList(postPageVo.getPostId(), userSession.getCompanyId(), postPageVo.getIsEnable());
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
-            List<Post> postList  = postDao.getPostConditionPages(postPageVo, orgIdList,postIdList, sortFieldStr);
+            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList, sortFieldStr);
             PageInfo<Post> pageInfo = new PageInfo<>(postList);
-            PageResult<Post>  pageResult = new PageResult<>(pageInfo.getList());
+            PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
             return pageResult;
-        }else{//否则只根据机构id查询 机构及子机构下所有岗位
+        } else {//否则只根据机构id查询 机构及子机构下所有岗位
             //如果机构id>0，则进行筛选子机构id，否则默认为全部就行了
-            if (null!=postPageVo.getOrgId()&&postPageVo.getOrgId() > 0) {
-                orgIdList = getOrgIdList(userSession, postPageVo.getOrgId(),postPageVo.getIsEnable());
+            if (null != postPageVo.getOrgId() && postPageVo.getOrgId() > 0) {
+                orgIdList = getOrgIdList(userSession, postPageVo.getOrgId(), postPageVo.getIsEnable());
             }
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList,postIdList, sortFieldStr);
+            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList, sortFieldStr);
             PageInfo<Post> pageInfo = new PageInfo<>(postList);
-            PageResult<Post>  pageResult = new PageResult<>(pageInfo.getList());
+            PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
             return pageResult;
         }
     }
 
-    private List<Integer> getPostIdList(Integer postId,Integer companyId,Short isEnable) {
+    private List<Integer> getPostIdList(Integer postId, Integer companyId, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
         List<Post> postList = postDao.listPostByCompanyId(companyId, isEnable);
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (Post post : postList) {
-            multiValuedMap.put(post.getParentPostId(),post.getPostId());
+            multiValuedMap.put(post.getParentPostId(), post.getPostId());
         }
         //根据机构id递归，取出该机构下的所有子机构
-         collectIds(multiValuedMap, postId, idsList);
+        collectIds(multiValuedMap, postId, idsList);
         return idsList;
     }
 
@@ -136,7 +137,8 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
-        generateSortId(post, orgId, postVo.getParentPostId());
+        Integer sortId = generatePostSortId(orgId, postVo.getParentPostId());
+        post.setSortId(sortId);
         post.setCompanyId(userSession.getCompanyId());
         post.setOperatorId(userSession.getArchiveId());
         post.setIsDelete((short) 0);
@@ -147,73 +149,124 @@ public class PostServiceImpl implements PostService {
         // addPostLevelAndGradeRelation(postVo, userSession, post);
     }
 
-    private void generateSortId(Post post, Integer orgId, Integer parentPostId) {
-        String postCode = "";
+    private Integer generatePostSortId(Integer orgId, Integer parentPostId) {
         Integer sortId = 1000;
-        //如果父级岗位存在 则按照父级岗位的编码为基础，否则以归属机构的为准
-        Post parentPost = postDao.selectByPrimaryKey(parentPostId);
-        if (Objects.nonNull(parentPost)) {
-            //查询父级岗位下的子岗位列表
-            List<Post> sonPosts = postDao.listPostByPostId(parentPostId);
-            if (CollectionUtils.isEmpty(sonPosts)) {
-                String parentPoatCode = parentPost.getPostCode();
-                postCode = parentPoatCode + "01";
-            } else {
-                postCode = sonPosts.get(0).getPostCode();
-                postCode = culPostCode(postCode);
-                sortId = sonPosts.get(0).getSortId() + 1000;
-            }
-        } else {
-            List<Post> posts = postDao.getLastTopPostByOrgId(orgId);
-            if (CollectionUtils.isEmpty(posts)) {
-                //当前机构编码+2位流水
-                OrganizationVO organizationVO = organizationDao.getOrganizationById(orgId);
-                String orgCode = organizationVO.getOrgCode();
-                postCode = orgCode + "01";
-            } else {
-                postCode = posts.get(0).getPostCode();
-                postCode = culPostCode(postCode);
-                sortId = posts.get(0).getSortId() + 1000;
-            }
-
+        List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
+        List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+        if (!CollectionUtils.isEmpty(sonPostsByOrgId)) {
+            int maxSortId = sonPostsByOrgId.stream().mapToInt(Post::getSortId).max().getAsInt();
+            sortId=maxSortId+1000;
         }
-        //TODO 取消岗位编码生成，由前端传入
-        //post.setPostCode(postCode);
-        post.setSortId(sortId);
+        //如果有上级岗位则以上级岗位下的子岗位为准
+        if (!CollectionUtils.isEmpty(sonPosts)) {
+            int maxSortId = sonPosts.stream().mapToInt(Post::getSortId).max().getAsInt();
+            sortId=maxSortId+1000;
+        }
+        return sortId;
     }
+
+    @Override
+    public String generatePostCode(Integer orgId,Integer parentPostId) {
+        //如果父岗位id不为空且不为0，则以父岗位为基准
+        if(null!=parentPostId&&parentPostId!=0){
+            List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
+            if(CollectionUtils.isEmpty(sonPosts)){
+                Post parentPost = postDao.selectByPrimaryKey(parentPostId);
+                return parentPost.getPostCode()+"01";
+            }else {
+                //先过滤掉机构编码最后两位为非数字的，再筛选最大值
+                //TODO 漏洞  如果getPostCode的总长度小于2，会出现越界异常（正常业务情况不会出现）
+                List<Post> filterBrotherPostList = sonPosts.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
+                //根据机构编码排序，并且只取最后两位位数字的
+                Comparator comparator = new Comparator() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        String postCode1=String.valueOf(o1);
+                        String postCode2=String.valueOf(o1);
+                        String orgCode1Num = postCode1.substring(postCode1.length() - 2);
+                        String orgCode2Num = postCode1.substring(postCode2.length() - 2);
+                        boolean isNum= StringUtils.isNumeric(orgCode1Num)&&StringUtils.isNumeric(orgCode2Num);
+                        if (isNum&&postCode1.length() > postCode2.length()) {
+                            return -1;
+                        } else if (isNum&&postCode1.length() < postCode2.length()) {
+                            return 1;
+                        }
+                        return postCode2.compareTo(postCode1);
+                    }
+                };
+                String lastOrgCode =filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
+                if(null==lastOrgCode||"".equals(lastOrgCode)){
+                    Post parentPost = postDao.selectByPrimaryKey(parentPostId);
+                    return parentPost.getPostCode()+"01";
+                }
+                //计算编码
+                String postCode = culPostCode(lastOrgCode);
+                return postCode;
+            }
+        }else{
+            List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+            if(CollectionUtils.isEmpty(sonPostsByOrgId)){
+                OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
+                return superOrg.getOrgCode()+"01";
+            }else{
+                //先过滤掉机构编码最后两位为非数字的，再筛选最大值
+                List<Post> filterBrotherPostList = sonPostsByOrgId.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
+                //根据机构编码排序，并且只取最后两位位数字的
+                Comparator comparator = new Comparator() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        String postCode1=String.valueOf(o1);
+                        String postCode2=String.valueOf(o1);
+                        String orgCode1Num = postCode1.substring(postCode1.length() - 2);
+                        String orgCode2Num = postCode1.substring(postCode2.length() - 2);
+                        boolean isNum= StringUtils.isNumeric(orgCode1Num)&&StringUtils.isNumeric(orgCode2Num);
+                        if (isNum&&postCode1.length() > postCode2.length()) {
+                            return -1;
+                        } else if (isNum&&postCode1.length() < postCode2.length()) {
+                            return 1;
+                        }
+                        return postCode2.compareTo(postCode1);
+                    }
+                };
+                String lastOrgCode =filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
+                if(null==lastOrgCode||"".equals(lastOrgCode)){
+                    OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
+                    return superOrg.getOrgCode()+"01";
+                }
+                //计算编码
+                String postCode = culPostCode(lastOrgCode);
+                return postCode;
+            }
+        }
+    }
+
+
 
     @Override
     @Transactional
     public void editPost(PostVo postVo, UserSession userSession) {
         Post post = new Post();
         Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
-
-        if(Objects.nonNull(postByPostCode)&&!postVo.getPostId().equals(postByPostCode.getPostId())){
+        if (Objects.nonNull(postByPostCode) && !postVo.getPostId().equals(postByPostCode.getPostId())) {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
-
         //如果上级机构id或上级岗位id改变，则重新排序id
         Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
-        if (!postVo.getOrgId().equals(post1.getOrgId())) {
-            generateSortId(post, postVo.getOrgId(), postVo.getParentPostId());
+        if (!postVo.getOrgId().equals(post1.getOrgId())||!postVo.getParentPostId().equals(post1.getParentPostId())) {
+            Integer sortId = generatePostSortId(postVo.getOrgId(), postVo.getParentPostId());
+            post.setSortId(sortId);
         }
         postDao.updateByPrimaryKeySelective(post);
-        //删除修改不含有的岗位职级关系信息
-        //deletePostLevel(postVo, userSession, post);
-        //删除修改不含有的岗位职等关系信息
-        //deletePostGrade(postVo, userSession, post);
-        //新增岗位职级关系表信息
-        //addPostLevelAndGradeRelation(postVo, userSession, post);
     }
 
     @Transactional
     @Override
     public void deletePost(UserSession userSession, List<Integer> postIds) {
         //TODO 被删除的岗位下不允许有人员档案
-        List< UserArchiveVo > userArchiveList=userArchiveDao.listUserArchiveByPostIds(postIds);
-        if (!CollectionUtils.isEmpty(userArchiveList)){
+        List<UserArchiveVo> userArchiveList = userArchiveDao.listUserArchiveByPostIds(postIds);
+        if (!CollectionUtils.isEmpty(userArchiveList)) {
             ExceptionCast.cast(CommonCode.EXIST_USER);
         }
         if (!CollectionUtils.isEmpty(postIds)) {
@@ -281,7 +334,9 @@ public class PostServiceImpl implements PostService {
                 post.setOrgId(orgId);
                 post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
-                generateSortId(post, orgId, null);
+                Integer sortId = generatePostSortId(orgId, null);
+                post.setSortId(sortId);
+                //TODO post.setPostCode();
                 postDao.insertSelective(post);
                 //岗位说明书
                 PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
@@ -297,7 +352,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable) {
         //递归拿到机构及所有子机构id
-        List<Integer> orgIdList = getOrgIdList(userSession, orgId,isEnable);
+        List<Integer> orgIdList = getOrgIdList(userSession, orgId, isEnable);
         List<Post> postList = postDao.listPostByOrgIds(orgIdList);
         return postList;
     }
@@ -309,13 +364,13 @@ public class PostServiceImpl implements PostService {
      * @param orgId
      * @return
      */
-    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId,Short isEnable) {
+    private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
-        if(isEnable!=0){
-            isEnable =null;
+        if (isEnable != 0) {
+            isEnable = null;
         }
         //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(),isEnable, new Date());
+        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(), isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
         for (OrganizationVO org : allOrgs) {
@@ -354,7 +409,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
         if (CollectionUtils.isEmpty(postIds)) {
-            List<Integer> orgIdList = getOrgIdList(userSession, orgId,null);
+            List<Integer> orgIdList = getOrgIdList(userSession, orgId, null);
             return postDao.listPostByOrgIds(orgIdList);
         } else {
             return postDao.getPostListByPostIds(postIds);
@@ -402,7 +457,7 @@ public class PostServiceImpl implements PostService {
             }
         });
         //校验
-        List<Post> checkResultList = checkExcel( orgList, userSession);
+        List<Post> checkResultList = checkExcel(orgList, userSession);
         //拿到错误校验列表
         List<Post> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
@@ -477,7 +532,7 @@ public class PostServiceImpl implements PostService {
                 Post ifExistVo = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
                 Post parentPost = postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
                 OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
-                Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(),userSession.getCompanyId());
+                Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(), userSession.getCompanyId());
                 vo.setOrgId(orgVo.getOrgId());
                 vo.setPositionId(position.getPositionId());
 
@@ -511,7 +566,7 @@ public class PostServiceImpl implements PostService {
         postIdList = getPostIdList(userSession, postId, (layer - 1), isEnable);
         //查询所有相关的岗位
         List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
-        if(CollectionUtils.isEmpty(allPost)){
+        if (CollectionUtils.isEmpty(allPost)) {
             //不存在相关岗位异常
             ExceptionCast.cast(CommonCode.POST_NOT_EXSIT_EXCEPTION);
         }
@@ -532,14 +587,14 @@ public class PostServiceImpl implements PostService {
         //TODO 拿出根节点，设置上两级父级岗位
         Post parentPost = postDao.selectByPrimaryKey(allPost.get(0).getParentPostId());
 
-        if(Objects.nonNull(parentPost)){
+        if (Objects.nonNull(parentPost)) {
             parentPost.setChildList(allPost);
-            List<Post> pList=new ArrayList<>();
+            List<Post> pList = new ArrayList<>();
             pList.add(parentPost);
             Post parentPost2 = postDao.selectByPrimaryKey(parentPost.getParentPostId());
-            if(Objects.nonNull(parentPost2)){
+            if (Objects.nonNull(parentPost2)) {
                 parentPost2.setChildList(pList);
-                List<Post> pList2=new ArrayList<>();
+                List<Post> pList2 = new ArrayList<>();
                 pList2.add(parentPost2);
                 return pList2;
             }
@@ -572,6 +627,7 @@ public class PostServiceImpl implements PostService {
         redisService.del(redisKey);
         redisService.del(errorInfoKey);
     }
+
 
 
     private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {
@@ -765,7 +821,7 @@ public class PostServiceImpl implements PostService {
     }
 
 
-    public List<Post> checkExcel( List<Post> voList, UserSession userSession) {
+    public List<Post> checkExcel(List<Post> voList, UserSession userSession) {
         List<Post> checkVos = new ArrayList<>();
         for (Post post : voList) {
             Post checkVo = new Post();
@@ -818,7 +874,7 @@ public class PostServiceImpl implements PostService {
             }
 
             //校验职位是否存在
-            Position position = positionDao.getPositionByNameAndCompanyId(post.getPositionName(),userSession.getCompanyId());
+            Position position = positionDao.getPositionByNameAndCompanyId(post.getPositionName(), userSession.getCompanyId());
             if (Objects.isNull(position)) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("职位" + post.getPositionName() + "不存在|");

@@ -17,6 +17,7 @@ import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
+import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.RegexpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,14 +142,19 @@ public class UserLoginServiceImpl implements UserLoginService {
             }
             userId = userInfo.getUserId();
         }else{
-            userInfo = new UserInfo();
-            userInfo.setPhone(phone);
-            userInfo.setPassword(phone);
-            int resultCount = userLoginDao.addUserInfo(userInfo);
-            if(resultCount > 0){
-                userId = userInfo.getUserId();
+
+            if(RegexpUtils.checkPhone(phone)){
+                userInfo = new UserInfo();
+                userInfo.setPhone(phone);
+                int phoneLength = phone.length();
+                userInfo.setPassword(MD5Utils.getMd5(phone.substring(phoneLength-6,phoneLength)));
+                int resultCount = userLoginDao.addUserInfo(userInfo);
+                if(resultCount > 0){
+                    userId = userInfo.getUserId();
+                }
+                userLoginDao.addCompanyUserInfo(companyId,userId);
             }
-            userLoginDao.addCompanyUserInfo(companyId,userId);
+
         }
         return userId;
     }
