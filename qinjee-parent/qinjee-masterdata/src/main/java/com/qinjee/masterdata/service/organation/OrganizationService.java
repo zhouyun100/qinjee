@@ -172,6 +172,9 @@ public interface OrganizationService  {
 
 
   void cancelImport(String redisKey, String errorInfoKey);
+
+
+    String generateOrgCode(Integer orgId);
 }
 
 

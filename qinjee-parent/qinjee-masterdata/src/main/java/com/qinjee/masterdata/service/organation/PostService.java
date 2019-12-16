@@ -109,4 +109,6 @@ public interface PostService {
   PageResult<Post> listDirectPostPage(PostPageVo postPageVo);
 
   void cancelImport(String redisKey, String errorInfoKey);
+
+    String generatePostCode(Integer orgId,Integer parentPostId);
 }

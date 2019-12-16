@@ -55,7 +55,7 @@ public class PostController extends BaseController {
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
         if (checkParam(postPageVo)) {
             try {
-                if(postPageVo.getIsEnable() !=0){
+                if (postPageVo.getIsEnable() != 0) {
                     postPageVo.setIsEnable(null);
                 }
                 PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
@@ -411,7 +411,7 @@ public class PostController extends BaseController {
                                                       @RequestParam("postId") @ApiParam(value = "postId", example = "1") Integer postId,
                                                       @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
 
-        if (checkParam(layer,isContainsCompiler,isContainsActualMembers,postId,isEnable)) {
+        if (checkParam(layer, isContainsCompiler, isContainsActualMembers, postId, isEnable)) {
             try {
                 if (isEnable != 0) {
                     isEnable = null;
@@ -429,4 +429,25 @@ public class PostController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
+    @ApiOperation(value = "根据postId生成岗位编码（用于新增机构时获取新岗位编码）")
+    @GetMapping("/generatePostCode")
+    public ResponseResult generatePostCode(@RequestParam("orgId")Integer orgId, @RequestParam(value = "parentPostId", required = false) Integer parentPostId) {
+        //校验参数
+        if (checkParam(orgId)) {
+            try {
+                String postCode = postService.generatePostCode(orgId, parentPostId);
+                return new ResponseResult<>(postCode);
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof BusinessException) {
+                    BusinessException be = (BusinessException) e;
+                    return new ResponseResult<>(null, be.getResultCode());
+                }
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
 }
