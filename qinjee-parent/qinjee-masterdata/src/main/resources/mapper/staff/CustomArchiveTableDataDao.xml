@@ -221,5 +221,13 @@
 )
 
   </update>
-
+<update id="deleteByPrimaryKeyList">
+  update
+  t_custom_archive_table_data
+   SET is_delete = 1
+   id in
+   <foreach collection="list" item="item" open="(" separator="," close=")">
+     #{item}
+   </foreach>
+</update>
 </mapper>

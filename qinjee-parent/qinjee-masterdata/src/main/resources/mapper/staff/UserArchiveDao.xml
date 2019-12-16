@@ -810,12 +810,25 @@
     AND is_delete=0
   </select>
   <select id="selectStaff" resultType="java.lang.Integer">
+  select arc.archive_id
+    from t_user_archive arc
+    where arc.user_category=#{archiveType}
+    and arc.is_delete=0
+    and  arc.archive_id in
+   (
+   select archive_id from t_user_archive_post_relation
+		where `employment_type`=#{type}
+    and is_delete=0
+  )
+    and arc.archive_id in(
     ${sql}
+    )
   </select>
   <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
         <if test="baseSql != null">
             ${baseSql}
         </if>
+
         <if test="order != null">
         order by ${order}
         </if>

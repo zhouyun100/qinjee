@@ -170,4 +170,6 @@ public interface IStaffArchiveService {
     List<TableHead> getHeadList(UserSession userSession);
 
      QuerySchemeList selectQuerySchemeMessage(Integer id);
+
+
 }

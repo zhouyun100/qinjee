@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
-import com.qinjee.masterdata.model.vo.staff.EmailSendVo;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,5 +18,7 @@ public interface IPreTemplateService {
 
     void createPreRegistQrcode(Integer templateId, HttpServletResponse response,UserSession userSession) throws IOException;
 
-    void sendManyMail(EmailSendVo emailSendVo, UserSession userSession);
+    Integer selectPreIdByPhone(String phone, UserSession userSession);
+
+    void ToCompleteMessage(String phone, UserSession userSession,Integer templateId,HttpServletResponse response) throws IOException;
 }

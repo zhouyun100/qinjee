@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
+import com.qinjee.masterdata.model.vo.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
@@ -21,11 +22,10 @@ public interface IStaffStandingBookService {
 
     /**新增黑名单
      * @param blacklists
-     * @param dataSource
      * @param userSession
      * @return
      */
-    void insertBlackList(List<BlackListVo> blacklists, String dataSource, UserSession userSession);
+    void insertBlackList(List<BlackListVo> blacklists,  UserSession userSession);
 
     /**
      * 批量删除黑名单
@@ -87,12 +87,8 @@ public interface IStaffStandingBookService {
 
     /**
      * 人员查询操作
-     * @param stangdingBookId
-     * @param archiveType
-     * @param orgId
-     * @param type
      * @return
      */
-   List<UserArchiveVo> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type,UserSession userSession) throws ParseException;
+    List< UserArchiveVo > selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) throws ParseException;
 
 }

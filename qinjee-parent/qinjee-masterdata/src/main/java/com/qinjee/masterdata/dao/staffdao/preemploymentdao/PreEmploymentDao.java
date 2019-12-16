@@ -52,7 +52,7 @@ public interface PreEmploymentDao {
 
     void deletePreEmployment(@Param("integer") Integer integer);
 
-    Integer selectIdByNumber(@Param("phoneNumber") String phoneNumber);
+    Integer selectIdByNumber(@Param("phoneNumber") String phoneNumber, @Param("companyId") Integer companyId);
 
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 

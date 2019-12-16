@@ -472,6 +472,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
         customArchiveTableData.setBigData ( stringBuilder.toString () );
         if (customArchiveTableDataVo.getId () != null && !customArchiveTableDataVo.getId ().equals ( 0 )) {
+            customArchiveTableData.setUpdateTime ( new Date (  ) );
             customArchiveTableDataDao.updateByPrimaryKey ( customArchiveTableData );
         } else {
             customArchiveTableDataDao.insertSelective ( customArchiveTableData );
@@ -556,6 +557,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public Map < String, String > getNameForOrganzition(Integer orgId, UserSession userSession, Integer postId) {
         return organizationDao.getNameForOrganzition ( userSession.getCompanyId (), orgId, postId );
+    }
+
+    @Override
+    public void deleteCustomArchiveTableData(List < Integer > list) {
+        customArchiveTableDataDao.deleteByPrimaryKeyList (list  );
     }
 
 }

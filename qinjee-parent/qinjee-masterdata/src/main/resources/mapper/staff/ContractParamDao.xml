@@ -38,57 +38,18 @@
     </select>
 
     <!-- 根据条件查询数据 -->
-    <select id="findContractParamByCondition" resultMap="ContractParamMap" parameterType="map">
+    <select id="findContractParamByCondition" resultMap="ContractParamMap" >
         SELECT
         <include refid="allColumns" />
-        FROM t_contract_param tContractParam WHERE 1 = 1
-        <if test="contractParamName != null and contractParamName != ''">
-            AND tContractParam.contract_param_name LIKE CONCAT('%',#{contractParamName},'%')
-        </if>
-        <if test="contractParamDescribe != null and contractParamDescribe != ''">
-            AND tContractParam.contract_param_describe LIKE CONCAT('%',#{contractParamDescribe},'%')
-        </if>
-        <if test="applicationScopeCode != null and applicationScopeCode != ''">
-            AND tContractParam.application_scope_code LIKE CONCAT('%',#{applicationScopeCode},'%')
-        </if>
-        <if test="rememberDays != null">
-            AND tContractParam.remember_days = #{rememberDays}
-        </if>
-        <if test="contractRulePrefix != null and contractRulePrefix != ''">
-            AND tContractParam.contract_rule_prefix LIKE CONCAT('%',#{contractRulePrefix},'%')
-        </if>
-        <if test="dateRule != null and dateRule != ''">
-            AND tContractParam.date_rule LIKE CONCAT('%',#{dateRule},'%')
-        </if>
-        <if test="contractRuleInfix != null and contractRuleInfix != ''">
-            AND tContractParam.contract_rule_infix LIKE CONCAT('%',#{contractRuleInfix},'%')
-        </if>
-        <if test="digitCapacity != null">
-            AND tContractParam.digit_capacity = #{digitCapacity}
-        </if>
-        <if test="contractRuleSuffix != null and contractRuleSuffix != ''">
-            AND tContractParam.contract_rule_suffix LIKE CONCAT('%',#{contractRuleSuffix},'%')
-        </if>
-        <if test="companyId != null">
-            AND tContractParam.company_id = #{companyId}
-        </if>
-        <if test="isEnable != null">
-            AND tContractParam.is_enable = #{isEnable}
-        </if>
-        <if test="operatorId != null">
-            AND tContractParam.operator_id = #{operatorId}
-        </if>
-        <if test="createTime != null">
-            AND tContractParam.create_time = #{createTime}
-        </if>
-        <if test="updateTime != null">
-            AND tContractParam.update_time = #{updateTime}
-        </if>
-        <if test="isDelete != null">
-            AND tContractParam.is_delete = #{isDelete}
-        </if>
+        FROM t_contract_param tContractParam  WHERE tContractParam.contract_param_id =#{id}
+        and tContractParam.is_delete=0
     </select>
-
+    <select id="findContractParamByCompanyId" resultMap="ContractParamMap" >
+        SELECT
+        <include refid="allColumns" />
+        FROM t_contract_param tContractParam  WHERE tContractParam.company_id =#{id}
+        and tContractParam.is_delete=0
+    </select>
     <!-- 根据主键查询数据 -->
     <select id="findContractParamByIds" resultMap="ContractParamMap" parameterType="list" >
         SELECT

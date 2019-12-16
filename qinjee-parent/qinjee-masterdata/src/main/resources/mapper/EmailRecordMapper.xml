@@ -39,7 +39,7 @@
         <include refid="allColumns" />
         FROM t_email_record t_email_record WHERE 1 = 1
         <if test="email_template_id != null">
-            AND t_email_record.email_template_id = #{email_template_id}
+            AND t_email_record.email_template_id = #{email_emplate_id}
         </if>
         <if test="email_config_id != null">
             AND t_email_record.email_config_id = #{email_config_id}
@@ -84,47 +84,165 @@
     </select>
     
     <!-- 插入数据 -->
-    <insert id="insertEmailRecord" parameterType="com.qinjee.masterdata.model.entity.EmailRecord">
-        INSERT INTO t_email_record (
-            email_record_id, email_template_id, email_config_id, email_title, email_content, business_type, 
-            from_user, to_user, cc_user, operator_id, create_time, send_status
-        ) VALUES (
-            #{email_record_id},
-            #{email_template_id},
-            #{email_config_id},
-            #{email_title},
-            #{email_content},
-            #{business_type},
-            #{from_user},
-            #{to_user},
-            #{cc_user},
-            #{operator_id},
-            #{create_time},
-            #{send_status}
-        )
-    </insert>
-    
+        <insert id="insertEmailRecord" keyColumn="email_record_id" keyProperty="emailRecordId" parameterType="com.qinjee.masterdata.model.entity.EmailRecord" useGeneratedKeys="true">
+            insert into   t_email_record
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="emailRecordId != null">
+                    email_record_id,
+                </if>
+                <if test="emailTemplateId != null">
+                    email_template_id,
+                </if>
+                <if test="emailConfigId != null">
+                    email_config_id,
+                </if>
+                <if test="emailTitle != null">
+                    email_title,
+                </if>
+                <if test="emailContent != null">
+                    email_content,
+                </if>
+                <if test="businessType != null">
+                    business_type,
+                </if>
+                <if test="fromUser != null">
+                    from_user,
+                </if>
+                <if test="toUser != null">
+                    to_user,
+                </if>
+                <if test="ccUser != null">
+                    cc_user,
+                </if>
+                <if test="operatorId != null">
+                    operator_id,
+                </if>
+                <if test="createTime != null">
+                    create_time,
+                </if>
+                <if test="sendStatus != null">
+                    send_status,
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="emailRecordId != null">
+                    #{emailRecordId},
+                </if>
+                <if test="emailTemplateId != null">
+                    #{emailTemplateId},
+                </if>
+                <if test="emailConfigId != null">
+                    #{emailConfigId},
+                </if>
+                <if test="emailTitle != null">
+                    #{emailTitle},
+                </if>
+                <if test="emailContent != null">
+                    #{emailContent},
+                </if>
+                <if test="businessType != null">
+                    #{businessType},
+                </if>
+                <if test="fromUser != null">
+                    #{fromUser},
+                </if>
+                <if test="toUser != null">
+                    #{toUser},
+                </if>
+                <if test="ccUser != null">
+                    #{ccUser},
+                </if>
+                <if test="operatorId != null">
+                    #{operatorId},
+                </if>
+                <if test="createTime != null">
+                    #{createTime},
+                </if>
+                <if test="sendStatus != null">
+                    #{sendStatus},
+                </if>
+            </trim>
+        </insert>
     <!-- 批量插入数据 -->
-    <insert id="insertEmailRecords" parameterType="list">
-        INSERT INTO t_email_record (
-            email_record_id, email_template_id, email_config_id, email_title, email_content, business_type, 
-            from_user, to_user, cc_user, operator_id, create_time, send_status
-        ) VALUES (
-        <foreach collection="list" index="index" item="item" separator=",">
-            (
-                #{item.email_record_id},
-                #{item.email_template_id},
-                #{item.email_config_id},
-                #{item.email_title},
-                #{item.email_content},
-                #{item.business_type},
-                #{item.from_user},
-                #{item.to_user},
-                #{item.cc_user},
-                #{item.operator_id},
-                #{item.create_time},
-                #{item.send_status}
-            )
+    <insert id="insertBatch" keyColumn="email_template_id" keyProperty="emailRrecordId" parameterType="com.qinjee.masterdata.model.entity.EmailRecord" useGeneratedKeys="true">
+        <foreach collection="list" item="item"  separator=",">
+            insert into  t_email_record
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.emailRecordId != null">
+                    email_record_id,
+                </if>
+                <if test="item.emailTemplateId != null">
+                    email_template_id,
+                </if>
+                <if test="item.emailConfigId != null">
+                    email_config_id,
+                </if>
+                <if test="item.emailTitle != null">
+                    email_title,
+                </if>
+                <if test="item.emailContent != null">
+                    email_content,
+                </if>
+                <if test="item.businessType != null">
+                    business_type,
+                </if>
+                <if test="item.fromUser != null">
+                    from_user,
+                </if>
+                <if test="item.toUser != null">
+                    to_user,
+                </if>
+                <if test="item.ccUser != null">
+                    cc_user,
+                </if>
+                <if test="item.operatorId != null">
+                    operator_id,
+                </if>
+                <if test="item.createTime != null">
+                    create_time,
+                </if>
+                <if test="item.sendStatus != null">
+                    send_status,
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.emailRrecordId != null">
+                    #{item.emailRrecordId},
+                </if>
+                <if test="item.emailTemplateId != null">
+                    #{item.emailTemplateId},
+                </if>
+                <if test="item.emailConfigId != null">
+                    #{item.emailConfigId},
+                </if>
+                <if test="item.emailTitle != null">
+                    #{item.emailTitle},
+                </if>
+                <if test="item.emailContent != null">
+                    #{item.emailContent},
+                </if>
+                <if test="item.businessType != null">
+                    #{item.businessType},
+                </if>
+                <if test="item.fromUser != null">
+                    #{item.fromUser},
+                </if>
+                <if test="item.toUser != null">
+                    #{item.toUser},
+                </if>
+                <if test="item.ccUser != null">
+                    #{item.ccUser},
+                </if>
+                <if test="item.operatorId != null">
+                    #{item.operatorId},
+                </if>
+                <if test="item.createTime != null">
+                    #{item.createTime},
+                </if>
+                <if test="item.sendStatus != null">
+                    #{item.sendStatus},
+                </if>
+            </trim>
         </foreach>
     </insert>
 <!--    -->

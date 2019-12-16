@@ -63,12 +63,23 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
 
     @Override
     public String createConNumber(Integer id, UserSession userSession) throws Exception {
-        Map <String,Object> map=new HashMap<> ( );
-        map.put ( "contract_param_id",id);
-        List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( map );
+        List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( id );
         CreatNumberVo creatNumberVo=new CreatNumberVo ();
         BeanUtils.copyProperties (contractParamByCondition.get(0),creatNumberVo);
         return getString ( userSession, creatNumberVo );
+    }
+
+    @Override
+    public List < ContractParam >  showCreateConRule(UserSession userSession) {
+        List < ContractParam > contractParamByCompanyId = contractParamDao.findContractParamByCompanyId ( userSession.getCompanyId () );
+
+        return contractParamByCompanyId;
+    }
+
+    @Override
+    public List < EmployeeNumberRule > showCreateEmpRule(UserSession userSession) {
+       return employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () );
+
     }
 
     private String getString(UserSession userSession, CreatNumberVo creatNumberVo) throws Exception {

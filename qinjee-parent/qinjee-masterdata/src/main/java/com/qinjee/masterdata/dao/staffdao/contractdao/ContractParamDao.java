@@ -18,7 +18,8 @@ public interface ContractParamDao {
      */
     int insertSelective(ContractParam contractParam);
     List<ContractParam> findContractParamAll();
-    List<ContractParam> findContractParamByCondition(@Param("map") Map<String,Object> map);
+    List<ContractParam> findContractParamByCondition(@Param("id") Integer id);
+    List<ContractParam> findContractParamByCompanyId(@Param("id") Integer id);
     List<ContractParam> findContractParamByIds(@Param("list") List<Integer> list);
     int insertContractParam(@Param("map") Map<String,Object> map);
     int insertContractParams(@Param("list") List<ContractParam> list);

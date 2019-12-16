@@ -1,8 +1,12 @@
 package com.qinjee.masterdata.service.employeenumberrule;
 
+import com.qinjee.masterdata.model.entity.ContractParam;
+import com.qinjee.masterdata.model.entity.EmployeeNumberRule;
 import com.qinjee.masterdata.model.vo.staff.ContractParamVo;
 import com.qinjee.masterdata.model.vo.staff.EmployeeNumberRuleVo;
 import com.qinjee.model.request.UserSession;
+
+import java.util.List;
 
 public interface IEmployeeNumberRuleService {
     /**
@@ -34,4 +38,7 @@ public interface IEmployeeNumberRuleService {
      */
     String createConNumber(Integer id, UserSession userSession) throws Exception;
 
+    List < ContractParam > showCreateConRule(UserSession userSession);
+
+    List< EmployeeNumberRule> showCreateEmpRule(UserSession userSession);
 }

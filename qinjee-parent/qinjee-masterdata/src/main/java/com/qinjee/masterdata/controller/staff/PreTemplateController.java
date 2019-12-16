@@ -9,7 +9,6 @@ import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
-import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import com.qinjee.masterdata.service.staff.IPreTemplateService;
 import com.qinjee.model.response.CommonCode;
@@ -41,10 +40,63 @@ public class PreTemplateController extends BaseController {
     @Autowired
     private EntryRegistrationService entryRegistrationService;
     @Autowired
-    private SmsRecordService smsRecordService;
-    @Autowired
     private TemplateCustomTableFieldService templateCustomTableFieldService;
+    /**
+     *
+     生成预入职登记二维码
+     */
+    @RequestMapping(value = "/createPreRegistQrcode", method = RequestMethod.GET)
+    @ApiOperation(value = "生成预入职登记二维码", notes = "hkt")
+    public ResponseResult  createPreRegistQrcode(Integer templateId, HttpServletResponse response) {
+        Boolean b = checkParam (templateId,response,getUserSession () );
+        if (b) {
+            try {
+                preTemplateService.createPreRegistQrcode(templateId,response,getUserSession ());
+                return null;
+            } catch (Exception e) {
+                return failResponseResult ( "生成失败" );
+            }
+        }
+        return failResponseResult ( "参数错误或者session错误" );
+    }
 
+    /**
+     * 根据电话号码找到preId
+     * @param phone
+     * @return
+     */
+    @RequestMapping(value = "/selectPreIdByPhone", method = RequestMethod.GET)
+    @ApiOperation(value = "根据电话号码找到preId", notes = "hkt")
+    public ResponseResult  selectPreIdByPhone(String phone) {
+        Boolean b = checkParam (phone,getUserSession () );
+        if (b) {
+            try {
+                Integer preId=preTemplateService.selectPreIdByPhone(phone,getUserSession ());
+                return new ResponseResult ( preId,CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return failResponseResult ( "获得id失败" );
+            }
+        }
+        return failResponseResult ( "参数错误或者session错误" );
+    }
+
+    /**
+     * 扫描二维码跳到信息填写页面
+     */
+    @RequestMapping(value = "/ToCompleteMessage", method = RequestMethod.GET)
+    @ApiOperation(value = "扫描二维码跳到信息填写页面", notes = "hkt")
+    public ResponseResult  ToCompleteMessage(String phone,Integer templateId,HttpServletResponse response) {
+        Boolean b = checkParam (phone,getUserSession (),templateId,response );
+        if (b) {
+            try {
+                preTemplateService.ToCompleteMessage(phone,getUserSession (),templateId,response);
+                return null;
+            } catch (Exception e) {
+                return failResponseResult ( "获得id失败" );
+            }
+        }
+        return failResponseResult ( "参数错误或者session错误" );
+    }
     /**
      * 发送预入职登记
      */
@@ -63,24 +115,7 @@ public class PreTemplateController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
     }
-    /**
-     * 发送短信
-     */
-    @RequestMapping(value = "/sendMessage", method = RequestMethod.POST)
-    @ApiOperation(value = "发送短信", notes = "hkt")
-    public ResponseResult sendMessage(@RequestBody @Valid List<Integer> list, Integer templateId ) {
-        Boolean b = checkParam(list);
-        if (b) {
-            try {
-                smsRecordService.sendMessageSms ( list,templateId );
-                return new ResponseResult<>(null, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-    }
+
     /**
      * 根据企业ID查询入职登记模板列表
      */
@@ -495,24 +530,7 @@ public class PreTemplateController extends BaseController {
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
-    /**
-     *
-     生成预入职登记二维码
-     */
-    @RequestMapping(value = "/createPreRegistQrcode", method = RequestMethod.GET)
-    @ApiOperation(value = "生成预入职登记二维码", notes = "hkt")
-    public ResponseResult  createPreRegistQrcode(Integer templateId, HttpServletResponse response) {
-        Boolean b = checkParam (templateId,response,getUserSession () );
-        if (b) {
-            try {
-                preTemplateService.createPreRegistQrcode(templateId,response,getUserSession ());
-                return null;
-            } catch (Exception e) {
-                return failResponseResult ( "生成失败" );
-            }
-        }
-        return failResponseResult ( "参数错误或者session错误" );
-    }
+
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals ( param )) {

@@ -24,10 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -526,6 +523,25 @@ public class CommonController extends BaseController {
             } catch (Exception e) {
                 e.printStackTrace();
                 return failResponseResult("修改自定义数据失败");
+            }
+        }
+        return failResponseResult("自定义数据参数错误");
+    }
+    /**
+     * 删除自定义字段表中的数据
+     */
+    @RequestMapping(value = "/ deleteCustomArchiveTableData", method = RequestMethod.POST)
+    @ApiOperation(value = "删除自定义字段表中的数据", notes = "hkt")
+//    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
+    public ResponseResult deleteCustomArchiveTableData(@RequestParam List<Integer> list) {
+        Boolean b = checkParam(list);
+        if (b) {
+            try {
+                staffCommonService.deleteCustomArchiveTableData(list);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("删除自定义数据失败");
             }
         }
         return failResponseResult("自定义数据参数错误");

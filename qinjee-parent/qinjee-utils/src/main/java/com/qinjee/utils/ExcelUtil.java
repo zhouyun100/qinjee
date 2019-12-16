@@ -1,6 +1,7 @@
 package com.qinjee.utils;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.IOUtils;
@@ -161,6 +162,9 @@ public class ExcelUtil {
                 int firstRowNum = sheet.getFirstRowNum ();
                 // 获得当前sheet的结束行
                 int lastRowNum = sheet.getLastRowNum ();
+
+                Row row1 = sheet.getRow ( firstRowNum );
+                int physicalNumberOfCells = row1.getPhysicalNumberOfCells ();
                 // 循环除了第一行的所有行
                 for (int rowNum = firstRowNum; rowNum <= lastRowNum; rowNum++) {
                     // 获得当前行
@@ -171,13 +175,16 @@ public class ExcelUtil {
                     // 获得当前行的开始列
                     int firstCellNum = row.getFirstCellNum ();
                     // 获得当前行的列数
-                    int lastCellNum = row.getPhysicalNumberOfCells ();
-                    String[] cells = new String[row.getPhysicalNumberOfCells ()];
+//                    int lastCellNum = row.getPhysicalNumberOfCells ();
+                    String[] cells = new String[physicalNumberOfCells];
                     // 循环当前行
-                    for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
+                    for (int cellNum = firstCellNum; cellNum <physicalNumberOfCells ; cellNum++) {
                         Cell cell = row.getCell ( cellNum );
-                        cells[cellNum] = getCellValue ( cell );
-
+                        if(cell==null){
+                            cells[cellNum]=null;
+                        }else {
+                            cells[cellNum] = getCellValue ( cell );
+                        }
                     }
                     list.add ( cells );
                     //此时应该返回一个表属性的list集合，与一个以表头为key，value为数据的map
@@ -191,7 +198,11 @@ public class ExcelUtil {
         for (int i = 1; i < list.size (); i++) {
             mapRow = new HashMap <> ();
             for (int j = 0; j < heads.size (); j++) {
-                mapRow.put ( heads.get ( j ), list.get ( i )[j] );
+                if(StringUtils.isBlank ( list.get ( i )[j] )) {
+                    mapRow.put ( heads.get ( j ), "" );
+                }else{
+                    mapRow.put ( heads.get ( j ), list.get ( i )[j] );
+                }
             }
             listMap.add ( mapRow );
         }

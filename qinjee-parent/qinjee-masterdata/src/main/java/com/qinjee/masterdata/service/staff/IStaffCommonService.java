@@ -186,4 +186,6 @@ public interface IStaffCommonService {
      * @return
      */
     Map< String, String> getNameForOrganzition(Integer orgId, UserSession userSession,Integer postId);
+
+    void deleteCustomArchiveTableData(List< Integer> list);
 }

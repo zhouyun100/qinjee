@@ -30,7 +30,7 @@
   </select>
 
   <select id="selectTemplate" resultType="java.lang.String">
-    select * from t_email_template
+    select email_template_content from t_email_template
     where  business_type=#{entry_registration}
     and is_delete=0
   </select>

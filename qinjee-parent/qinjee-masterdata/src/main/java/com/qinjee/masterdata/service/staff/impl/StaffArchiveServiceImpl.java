@@ -451,9 +451,30 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public void deleteQueryScheme(List < Integer > list) {
         querySchemeDao.deleteQuerySchemeList ( list );
         //删除查询字段
-        querySchemeFieldDao.deleteBySchemeIdList ( list );
-        //删除排序字段
-        querySchemeSortDao.deleteBySchemeIdList ( list );
+        for (Integer integer : list) {
+            deleteQuery ( integer );
+        }
+    }
+    private  void deleteQuery(Integer integer) {
+        List < Integer > fieldIdList = new ArrayList <> ();
+        List < Integer > sortIdList = new ArrayList <> ();
+        querySchemeDao.deleteByPrimaryKey ( integer );
+        List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( integer );
+            for (QuerySchemeField querySchemeField : querySchemeFieldList) {
+                fieldIdList.add ( querySchemeField.getQuerySchemeFieldId () );
+            }
+        List < QuerySchemeSort > querySchemeSortList = querySchemeSortDao.selectByQuerySchemeId ( integer );
+            for (QuerySchemeSort querySchemeSort : querySchemeSortList) {
+                sortIdList.add ( querySchemeSort.getQuerySchemeSortId () );
+            }
+        //进行删除
+        if(!CollectionUtils.isEmpty (  fieldIdList)){
+
+            querySchemeFieldDao.deleteBySchemeIdList ( fieldIdList );
+        }
+        if(!CollectionUtils.isEmpty (  sortIdList)) {
+            querySchemeSortDao.deleteBySchemeIdList ( sortIdList );
+        }
     }
 
 
@@ -470,6 +491,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //通过查询方案id找到显示字段
             querySchemeList.setQuerySchemeId (id );
             querySchemeList.setQuerySchemeName ( queryScheme.getQuerySchemeName () );
+            querySchemeList.setSort ( queryScheme.getSort () );
             List < QuerySchemeField > querySchemeFields = querySchemeFieldDao.selectByQuerySchemeId ( id );
             //通过查询方案id找到排序字段
             List < QuerySchemeSort > querySchemeSorts = querySchemeSortDao.selectByQuerySchemeId ( id );
@@ -479,47 +501,65 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return querySchemeList;
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveQueryScheme(QuerySchemaVo querySchemaVo) {
-        List<QuerySchemeField> fieldList=new ArrayList <> (  );
-        List<QuerySchemeSort>  sortList=new ArrayList <> (  );
-        if(querySchemaVo.getQuerySchemeId ()==null ){
-        //说明是新增操作
-            QueryScheme queryScheme=new QueryScheme ();
-            BeanUtils.copyProperties ( querySchemaVo,queryScheme );
+    public Integer insertQueryScheme(QuerySchemaVo querySchemaVo) {
+        if(querySchemaVo.getQuerySchemeId ()==null || querySchemaVo.getQuerySchemeId (  )==0 ) {
+            QueryScheme queryScheme = new QueryScheme ();
+            BeanUtils.copyProperties ( querySchemaVo, queryScheme );
+            queryScheme.setSort ( querySchemaVo.getSort () );
             queryScheme.setIsDefault ( 0 );
             querySchemeDao.insertSelective ( queryScheme );
-            OperateFieldAndSort ( querySchemaVo, fieldList, sortList );
-            querySchemeFieldDao.insertBatch ( fieldList );
-            querySchemeSortDao.insertBatch ( sortList );
-        }else {
-            //更新操作
+            return queryScheme.getQuerySchemeId ();
+        }else{
             QueryScheme queryScheme = new QueryScheme ();
             BeanUtils.copyProperties ( querySchemaVo, queryScheme );
             queryScheme.setIsDefault ( 0 );
-            querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
-            OperateFieldAndSort ( querySchemaVo, fieldList, sortList );
-            querySchemeFieldDao.updateBatch ( fieldList );
-            querySchemeSortDao.updateBatch ( sortList );
+            queryScheme.setSort ( querySchemaVo.getSort () );
+            queryScheme.setQuerySchemeId ( querySchemaVo.getQuerySchemeId () );
+            querySchemeDao.insertSelective( queryScheme );
+            return queryScheme.getQuerySchemeId ();
         }
     }
 
-    private void OperateFieldAndSort(QuerySchemaVo querySchemaVo, List < QuerySchemeField > fieldList, List < QuerySchemeSort > sortList) {
-        for (int i = 0; i < querySchemaVo.getFieldId ().size (); i++) {
-            QuerySchemeField querySchemeField = new QuerySchemeField ();
-            querySchemeField.setQuerySchemeId ( querySchemaVo.getQuerySchemeId () );
-            querySchemeField.setFieldId (querySchemaVo.getFieldId ().get ( i )  );
-            querySchemeField.setSort (i);
-            fieldList.add ( querySchemeField );
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveQueryScheme(QuerySchemaVo querySchemaVo) {
+        if(querySchemaVo.getQuerySchemeId ()!=null){
+            deleteQuery ( querySchemaVo.getQuerySchemeId () );
         }
-        for (int i = 0; i < querySchemaVo.getSorts ().size (); i++) {
-            QuerySchemeSort querySchemeSort=new QuerySchemeSort ();
-            querySchemeSort.setFieldId ( querySchemaVo.getSorts ().get ( i ).getFieldId () );
-            querySchemeSort.setOrderByRule ( querySchemaVo.getSorts ().get ( i ).getOrderByRule () );
-            querySchemeSort.setSort ( i );
-            querySchemaVo.setQuerySchemeId ( querySchemaVo.getQuerySchemeId () );
-            sortList.add ( querySchemeSort );
+        Integer integer = insertQueryScheme ( querySchemaVo );
+        List<QuerySchemeField> fieldList=new ArrayList <> (  );
+        List<QuerySchemeSort>  sortList=new ArrayList <> (  );
+        OperateFieldAndSort(querySchemaVo,fieldList,sortList,integer);
+        if(fieldList.size ()>0){
+            querySchemeFieldDao.insertBatch ( fieldList );
+        }
+        if(sortList.size ()>0) {
+            querySchemeSortDao.insertBatch ( sortList );
+        }
+    }
+
+    private void OperateFieldAndSort(QuerySchemaVo querySchemaVo, List < QuerySchemeField > fieldList, List < QuerySchemeSort > sortList,Integer integer) {
+        if(querySchemaVo.getFieldId ().size ()>0) {
+            for (int i = 0; i < querySchemaVo.getFieldId ().size (); i++) {
+                QuerySchemeField querySchemeField = new QuerySchemeField ();
+                querySchemeField.setQuerySchemeId ( integer );
+                querySchemeField.setFieldId ( querySchemaVo.getFieldId ().get ( i ) );
+                querySchemeField.setSort ( i );
+                querySchemeField.setCreateTime ( new Date () );
+                fieldList.add ( querySchemeField );
+            }
+        }
+        if(querySchemaVo.getSorts ().size ()>0 ) {
+            for (int i = 0; i < querySchemaVo.getSorts ().size (); i++) {
+                QuerySchemeSort querySchemeSort = new QuerySchemeSort ();
+                querySchemeSort.setFieldId (querySchemaVo.getSorts ().get(i).getFieldId ());
+                querySchemeSort.setOrderByRule ( querySchemaVo.getSorts ().get(i).getOrderByRule () );
+                querySchemeSort.setSort (i);
+                querySchemeSort.setCreateTime ( new Date () );
+                querySchemeSort.setQuerySchemeId ( integer );
+                sortList.add ( querySchemeSort );
+            }
         }
     }
 

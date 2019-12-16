@@ -11,12 +11,6 @@ import java.io.Serializable;
 @JsonInclude
 public class BlackListVo implements Serializable {
 
-
-    /**
-     * id
-     */
-    private Integer id;
-
     /**
      * 姓名
      */
@@ -44,20 +38,24 @@ public class BlackListVo implements Serializable {
     /**
      * 所属单位ID
      */
-    private Integer businessUnitId;
+    private String businessUnitName;
 
     /**
      * 部门ID
      */
-    private Integer orgId;
+    private String orgName;
 
     /**
      * 岗位ID
      */
-    private Integer postId;
+    private String postName;
 
     /**
      * 拉黑原因
      */
     private String blockReason;
+    /**
+     * 数据来源
+     */
+    private  String dataSource;
 }

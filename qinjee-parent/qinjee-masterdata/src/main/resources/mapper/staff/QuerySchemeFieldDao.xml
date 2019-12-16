@@ -103,18 +103,20 @@
   </select>
   <delete id="deleteBySchemeIdList">
     delete from t_query_scheme_field
-    where query_scheme_id
+    where query_scheme_field_id
     in
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </delete>
-  <insert id="insertBatch">
-      insert into t_query_scheme_field (query_scheme_id, field_id, sort,create_time)
-    values
-    <foreach collection="querySchemeFieldlist" item="item" open="(" separator="," close=")">
+  <insert id="insertBatch" keyColumn="query_scheme_field_id" keyProperty="querySchemeFieldId" parameterType="com.qinjee.masterdata.model.entity.QuerySchemeField" useGeneratedKeys="true">
+
+      insert into t_query_scheme_field (query_scheme_id, field_id, sort, create_time)
+      values
+    <foreach collection="list" item="item"  separator="," >
+    (
       #{item.querySchemeId,jdbcType=INTEGER}, #{item.fieldId,jdbcType=INTEGER}, #{item.sort,jdbcType=INTEGER},
-      #{item.createTime,jdbcType=TIMESTAMP}
+      #{item.createTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <select id="selectIdBySort" resultType="java.lang.Integer" >
@@ -130,7 +132,7 @@
   </select>
   <update id="updateBatch" parameterType="list">
     <foreach collection="list" index="index" item="item" separator=";">
-      update t_query_scheme_field
+    update t_query_scheme_field
       <set>
         <if test="item.querySchemeId != null">
           query_scheme_id = #{item.querySchemeId,jdbcType=INTEGER},
@@ -147,7 +149,5 @@
       </set>
       where query_scheme_field_id = #{item.querySchemeFieldId,jdbcType=INTEGER}
     </foreach>
-
-
   </update>
 </mapper>

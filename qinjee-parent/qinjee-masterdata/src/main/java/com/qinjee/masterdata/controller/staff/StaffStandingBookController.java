@@ -3,10 +3,9 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.vo.staff.BlackListVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.StandingBookReturnVo;
+import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -34,6 +33,8 @@ public class StaffStandingBookController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(StaffStandingBookController.class);
     @Autowired
     private IStaffStandingBookService staffStandingBookService;
+    @Autowired
+    private IStaffArchiveService staffArchiveService;
 
     /**
      * 加入黑名单表
@@ -41,11 +42,11 @@ public class StaffStandingBookController extends BaseController {
     @RequestMapping(value = "/insertBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "加入黑名单表", notes = "hkt")
 //    @ApiImplicitParam(name = "blackListGroup", value = "黑名单表集合", paramType = "query", required = true)
-    public ResponseResult insertBlackList(@RequestBody List<BlackListVo> blacklists, String dataSource) {
-        Boolean b = checkParam(blacklists, dataSource, getUserSession());
+    public ResponseResult insertBlackList(@RequestBody List<BlackListVo> blacklists) {
+        Boolean b = checkParam(blacklists,  getUserSession());
         if (b) {
             try {
-                staffStandingBookService.insertBlackList(blacklists, dataSource, getUserSession());
+                staffStandingBookService.insertBlackList(blacklists,  getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("加入黑名单表失败");
@@ -240,7 +241,7 @@ public class StaffStandingBookController extends BaseController {
      *     3，操作符中的包含分为字符串与非字符串两种情况
      *     4，连接符分为或者与并且
      */
-    @RequestMapping(value = "/selectStaff", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectStaff", method = RequestMethod.POST)
     @ApiOperation(value = "通过台账查询", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "StandingBookId", value = "员工台账id", paramType = "query", required = true),
@@ -249,15 +250,16 @@ public class StaffStandingBookController extends BaseController {
 //            @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<List< UserArchiveVo >> selectStaff(Integer stangdingBookId, String archiveType, Integer orgId, String type){
-        Boolean b = checkParam(stangdingBookId,archiveType,orgId,type,getUserSession());
+    public ResponseResult<UserArchiveVoAndHeader> selectStaff(@RequestBody StandingBookReturnVo standingBookReturnVo){
+        Boolean b = checkParam(standingBookReturnVo,getUserSession());
         if (b) {
             try {
-                List<UserArchiveVo> list=staffStandingBookService.selectStaff(stangdingBookId,archiveType,orgId,type,getUserSession());
-                if(list!=null){
-                    return new ResponseResult<>(list,CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
+                List < UserArchiveVo > list = staffStandingBookService.selectStaff ( standingBookReturnVo, getUserSession () );
+                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+                PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( list );
+                userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
+                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession ()));
+                return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);

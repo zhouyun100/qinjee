@@ -157,6 +157,7 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
     /**
      * 查看档案(查询单个)
      */
@@ -373,7 +374,6 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
     /**
      * 保存修改方案
      * 包括新增与更新
@@ -388,7 +388,7 @@ public class StaffArchiveController extends BaseController {
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
-                return failResponseResult("保存查询方案");
+                return failResponseResult("保存查询方案失败");
             }
         }
         return  failResponseResult("参数错误");

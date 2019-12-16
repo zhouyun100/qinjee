@@ -18,6 +18,7 @@ import java.util.List;
 public class QuerySchemeList implements Serializable {
     private Integer querySchemeId;
     private String querySchemeName;
+    private Integer sort;
     private List<QuerySchemeField> querySchemeFieldList;
     private List<QuerySchemeSort>  querySchemeSortList;
 }

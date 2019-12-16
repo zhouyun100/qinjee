@@ -173,7 +173,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
                 for (Integer integer : integerList) {
                     stringBuffer.append(integer);
                 }
-
                 throw new Exception("存在已签合同人员" + stringBuffer.toString());
             }
     }
@@ -349,9 +348,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     public List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list) throws Exception {
-        HashMap<String,Object> map=new HashMap<>();
-        map.put("companyId",id);
-        List<ContractParam> contractParams = contractParamDao.findContractParamByCondition(map);
+        List<ContractParam> contractParams = contractParamDao.findContractParamByCompanyId (id);
         List<String> strings=new ArrayList<>();
         strings.add("正式");
         strings.add("试用");

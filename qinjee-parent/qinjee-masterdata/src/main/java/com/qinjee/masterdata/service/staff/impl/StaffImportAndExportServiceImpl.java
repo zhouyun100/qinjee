@@ -256,7 +256,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 checkCustomTableVO.setResultMsg ( "用户不存在" );
             }
         }
-
         return checkCustomTableVOS;
     }
     @Override
@@ -273,7 +272,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void importFile( UserSession userSession, String funcCode) throws Exception {
+    public void importFile( UserSession userSession, String funcCode)  {
 
         //从redis中取得文件
         //拼接key
@@ -287,6 +286,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //还原成list
         List < Map < Integer, String > > list = ( List < Map < Integer, String > > ) JSONArray.parse ( s );
+        JSONArray.parseArray ( s, CheckCustomTableVO.class );
         InsertDataVo insertDataVo=new InsertDataVo ();
         insertDataVo.setFuncCode ( funcCode );
         insertDataVo.setList ( list );
@@ -298,34 +298,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     }
 
 
-
     /**
      * 导入黑名单
      */
     @Override
     public void importBlaFile( UserSession userSession) throws Exception {
-//        //excel方法获得值
-//        List<BlackListVo> objectList=new ArrayList<>();
-//        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
         List < Blacklist > blacklistList = new ArrayList <> ();
-//        //反射组装对象
-//        for (Map < String, String > map : mapList) {
-//            BlackListVo blackListVo=new BlackListVo();
-//            Class aclass = blackListVo.getClass();
-//            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
-//                for (Field declaredField : aclass.getDeclaredFields()) {
-//                    declaredField.setAccessible(true);
-//                    if(declaredField.getName().equals(
-//                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
-//                        Class typeClass = declaredField.getType();
-//                        Constructor con = typeClass.getConstructor(typeClass);
-//                        Object field = con.newInstance(integerStringEntry.getValue());
-//                        declaredField.set(blackListVo, field);
-//                    }
-//                }
-//            }
-//            objectList.add(blackListVo);
-//        }
         //从redis中取得文件
         //拼接key
         String s1 = userSession.getCompanyId () +"BLACKLIST"+ userSession.getArchiveId () + "import";
@@ -337,17 +315,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             logger.error ( "获取缓存失败" );
         }
         //还原成list
-        List<BlackListVo> objectList = ( List < BlackListVo > ) JSONArray.parse ( s );
-        for (BlackListVo blackListVo : objectList) {
+        List < BlackListVo > list = JSONArray.parseArray ( s, BlackListVo.class );
+        for (BlackListVo blackListVo : list) {
             Blacklist blacklist = new Blacklist ();
             setValue ( blackListVo, blacklist );
             blacklist.setOperatorId ( userSession.getArchiveId () );
             blacklist.setCompanyId ( userSession.getCompanyId () );
-            Map<String, Integer> stringIntegerMap = organizationDao.selectOrgIdByNameAndCompanyId(blackListVo.getOrg_name(), userSession.getCompanyId(), blackListVo.getPost_name());
-            blacklist.setOrgId(stringIntegerMap.get("org_id"));
-            blacklist.setPostId(stringIntegerMap.get("post_id"));
             blacklistList.add (blacklist);
-
         }
         blacklistDao.insertBatch ( blacklistList );
         //批量添加
@@ -361,41 +335,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     public void importConFile(UserSession userSession) throws Exception {
-//        //excel方法获得值
-//        List<ContractVo> objectList=new ArrayList<>();
-//        List<Map<String, String>> mapList = ExcelUtil.readExcel(multipartFile);
+
         List < LaborContract > contractVos = new ArrayList <> ();
-//        //反射组装对象
-//        for (Map < String, String > map : mapList) {
-//           ContractVo contractVo=new ContractVo ();
-//            Class aclass = contractVo.getClass();
-//            for (Map.Entry<String, String> integerStringEntry :map.entrySet()) {
-//                for (Field declaredField : aclass.getDeclaredFields()) {
-//                    declaredField.setAccessible(true);
-//                    if(declaredField.getName().equals(
-//                            HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
-//                        Class typeClass = declaredField.getType();
-//                        int i = typeClass.getName ().lastIndexOf ( "." );
-//                        String type=typeClass.getTypeName ().substring ( i+1 );
-//                        Object field;
-//                        if("Date".equals ( type )){
-//                            SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
-//                             field=sdf.parse ( integerStringEntry.getValue () );
-//                            declaredField.set(contractVo, field);
-//                        }
-//                        if("Integer".equals ( type )){
-//                             field=Integer.parseInt ( integerStringEntry.getValue () );
-//                            declaredField.set(contractVo, field);
-//                        }
-//                        if("String".equals ( type )){
-//                             field=integerStringEntry.getValue ();
-//                            declaredField.set(contractVo, field);
-//                        }
-//                    }
-//                }
-//            }
-//            objectList.add(contractVo);
-//        }
         //从redis中取得文件
         //拼接key
         String s1 = userSession.getCompanyId () +"CONTRACT"+ userSession.getArchiveId () + "import";
@@ -407,7 +348,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             logger.error ( "获取缓存失败" );
         }
         //还原成list
-        List<ContractVo> objectList = ( List < ContractVo > ) JSONArray.parse ( s );
+        List<ContractVo> objectList =JSONArray.parseArray ( s, ContractVo.class );
         for (ContractVo contractVo : objectList) {
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );

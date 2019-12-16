@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.email;
 
 import com.qinjee.masterdata.model.entity.EmailConfig;
+import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.model.request.UserSession;
-import entity.MailConfig;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,5 +18,5 @@ public interface EmailRecordService {
    void SendMailForPreRegist(UserSession userSession, List<Integer> list,Integer templateId ) throws Exception;
 
 
-   void RecordSendEmail( EmailConfig emailConfig, MailConfig mailConfig);
+   void recordSendEmail(UserSession userSession, EmailConfig emailConfig, String template, PreEmploymentVo preEmploymentVo);
 }

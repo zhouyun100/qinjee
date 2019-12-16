@@ -41,7 +41,7 @@ public class QrcodeServiceImpl implements IQrcodeService {
         //验证验证码结果
         boolean b = smsRecordService.checkPreLoginCodeByPhoneAndCode(phone, code);
         //根据电话号码与查询预入职人信息
-        Integer integer = preEmploymentDao.selectIdByNumber(phone);
+        Integer integer = preEmploymentDao.selectIdByNumber(phone,companyId);
         if(b){
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
             String baseShortUrl = sysDictService.searchSysDictByTypeAndCode ( "SHORT_URL", "EMPLOYMENT_REGISTER" ).getDictValue ();

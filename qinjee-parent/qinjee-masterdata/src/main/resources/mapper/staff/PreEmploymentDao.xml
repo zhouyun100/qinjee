@@ -365,7 +365,7 @@
       </trim>
   </insert>
     <insert id="insertBatch" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
-        <foreach collection="list" item="item" open="(" separator="," close=")">
+        <foreach collection="list" item="item"  separator="," >
             INSERT INTO t_pre_employment
             <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="employmentId != null">
@@ -984,6 +984,7 @@
     select employment_id
     from  t_pre_employment
     where   phone = #{phone,jdbcType=VARCHAR}
+    and company_id=#{companyId}
     AND is_delete = 0
   </select>
     <select id="selectIdByComId" resultType="java.lang.Integer">
@@ -1053,6 +1054,7 @@
         where
         t_pre_employment.is_delete=0
         and t_pre_employment.employment_id=#{businessId}
+        group by t_pre_employment.employment_id
 
     </select>
     <select id="selectNameAndOrg" resultType="java.util.Map">

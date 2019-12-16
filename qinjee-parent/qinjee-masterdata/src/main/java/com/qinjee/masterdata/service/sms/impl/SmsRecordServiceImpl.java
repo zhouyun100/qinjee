@@ -10,7 +10,6 @@
  */
 package com.qinjee.masterdata.service.sms.impl;
 
-import com.qinjee.consts.AesKeyConsts;
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.SmsConfig;
@@ -19,9 +18,9 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
-import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
+import com.qinjee.utils.ShortUrl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,13 +77,13 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add ( AesUtils.aesEncrypt ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId , AesKeyConsts.PRE_SMS_AES_KEY ) );
+            params.add ( ShortUrl.shortUrl ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId ) );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex ( AesUtils.aesEncrypt ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId, AesKeyConsts.PRE_SMS_AES_KEY ),
+            redisClusterService.setex (ShortUrl.shortUrl ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId ),
                     2*60*60,baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId);
         }
     }
