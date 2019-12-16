@@ -156,7 +156,7 @@
 
     <!-- 添加模板自定义表 -->
     <insert id="addTemplateTable">
-        <foreach collection="templateCustomTableList" item="customTable">
+        <foreach collection="templateCustomTableList" item="customTable" separator=";">
             INSERT INTO t_template_custom_table
             <trim prefix="(" suffix=")" suffixOverrides=",">
                 template_id,
