@@ -8,6 +8,7 @@ import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.staff.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
@@ -143,27 +144,26 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public void insertLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
-
+    public void insertLaborContract(ContractVo contractVo, UserSession userSession) {
             //将合同vo设置进去
-            mark(laborContractVo, id, userSession.getArchiveId(), NEWMARK);
+            mark(contractVo.getLaborContractVo (),contractVo.getList ().get ( 0 ), userSession.getArchiveId(), NEWMARK);
 
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list,
+    public void insertLaborContractBatch(ContractVo contractVo,
                                                    UserSession userSession) throws Exception {
         StringBuilder stringBuffer=new StringBuilder();
             //判断是否有已签合同，根据人员id寻找是否存在已签的
-            List<Integer> integerList=laborContractDao.selectConByArcId(list);
+            List<Integer> integerList=laborContractDao.selectConByArcId(contractVo.getList ());
 
             if(CollectionUtils.isEmpty(integerList)){
                 //将合同vo设置进去
                 LaborContract laborContract = new LaborContract();
                 //批量新签合同
-                for (Integer integer : list) {
-                    BeanUtils.copyProperties(laborContractVo, laborContract);
+                for (Integer integer : contractVo.getList ()) {
+                    BeanUtils.copyProperties(contractVo.getLaborContractVo (), laborContract);
                     laborContract.setArchiveId(integer);
                     laborContract.setOperatorId(userSession.getArchiveId());
                     laborContract.setContractState(NEWMARK);
@@ -178,8 +178,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public void saveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession) {
-            mark(laborContractVo, id, userSession.getArchiveId(), NOTMARK);
+    public void saveLaborContract(ContractVo contractVo, UserSession userSession) {
+            mark(contractVo.getLaborContractVo (),contractVo.getList ().get ( 0 ), userSession.getArchiveId(), NOTMARK);
     }
 
 
@@ -279,15 +279,14 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public void looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list,
-                                        UserSession userSession) {
+    public void looselaborContractBatch(ContractVo contractVo, UserSession userSession) {
 
-        for (Integer integer : list) {
+        for (Integer integer : contractVo.getList ()) {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
             laborContract.setContractState(LOOSEMARK);
             laborContractDao.updateByPrimaryKeySelective(laborContract);
             //新增变更表
-            change(laborContractChangeVo, COMMONCHANGE, integer, userSession.getArchiveId());
+            change(contractVo.getLaborContractChangeVo (), COMMONCHANGE, integer, userSession.getArchiveId());
         }
     }
 

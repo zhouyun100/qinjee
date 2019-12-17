@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -39,7 +41,13 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addContractParam(ContractParamVo contractParamVo, UserSession userSession) {
+        StringBuilder stringBuilder=new StringBuilder (  );
         ContractParam contractParam=new ContractParam();
+        List < String > applicationScopeCode = contractParamVo.getApplicationScopeCode ();
+        for (String s : applicationScopeCode) {
+            stringBuilder.append ( s ).append ( "," );
+        }
+        contractParam.setApplicationScopeCode ( stringBuilder.toString () );
         BeanUtils.copyProperties(contractParamVo,contractParam);
         contractParam.setCompanyId(userSession.getCompanyId());
         contractParam.setIsDelete((short) 0);

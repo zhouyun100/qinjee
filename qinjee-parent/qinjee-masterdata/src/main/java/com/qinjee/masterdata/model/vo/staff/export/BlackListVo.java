@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
+
 @Data
 @JsonInclude
 public class BlackListVo implements Serializable {
@@ -27,4 +29,8 @@ public class BlackListVo implements Serializable {
      * 拉黑原因
      */
     private String block_reason;
+    /**
+     * 拉黑时间
+     */
+    private Date block_time;
 }

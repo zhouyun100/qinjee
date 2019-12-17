@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
-import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -23,11 +22,12 @@ import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
+import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
-import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
+import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.ExcelUtil;
@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -80,7 +81,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Autowired
     private QuerySchemeDao querySchemeDao;
     @Autowired
-    private OrganizationDao organizationDao;
+    private IStaffArchiveService staffArchiveService;
     @Autowired
     private IStaffCommonService staffCommonService;
 
@@ -230,11 +231,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             String idnumber = null;
             String employmentNumber = null;
             for (CheckCustomFieldVO fieldVO : checkCustomTableVO.getCustomFieldVOList ()) {
-                if (fieldVO.getFieldCode ().equals ( "id_type" )) {
+                if ("id_type".equals ( fieldVO.getFieldCode () )) {
                     idtype = fieldVO.getFieldValue ();
-                } else if (fieldVO.getFieldCode ().equals ( "id_number" )) {
+                } else if ("id_number".equals ( fieldVO.getFieldCode () )) {
                     idnumber = fieldVO.getFieldValue ();
-                } else if (fieldVO.getFieldCode ().equals ( "employment_number" )) {
+                } else if ("employment_number".equals (fieldVO.getFieldCode ())) {
                     employmentNumber = fieldVO.getFieldValue ();
                 }
             }
@@ -242,9 +243,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
                 Integer pre = null;
                 Integer achiveId = null;
-                if (funcCode.equals ( "PRE" )) {
+                if ("PRE".equals ( funcCode )) {
                     pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber );
-                } else if (funcCode.equals ( "ARC" )) {
+                } else if ( "ARC".equals ( funcCode )) {
                     achiveId = userArchiveDao.selectIdByNumberAndEmploy ( idnumber, employmentNumber );
                 }
                 if (pre != null || achiveId != null) {
@@ -286,7 +287,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //还原成list
         List < Map < Integer, String > > list = ( List < Map < Integer, String > > ) JSONArray.parse ( s );
-        JSONArray.parseArray ( s, CheckCustomTableVO.class );
+//        JSONArray.parseArray ( s, CheckCustomTableVO.class );
         InsertDataVo insertDataVo=new InsertDataVo ();
         insertDataVo.setFuncCode ( funcCode );
         insertDataVo.setList ( list );
@@ -316,6 +317,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //还原成list
         List < BlackListVo > list = JSONArray.parseArray ( s, BlackListVo.class );
+        assert list != null;
         for (BlackListVo blackListVo : list) {
             Blacklist blacklist = new Blacklist ();
             setValue ( blackListVo, blacklist );
@@ -349,6 +351,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //还原成list
         List<ContractVo> objectList =JSONArray.parseArray ( s, ContractVo.class );
+        assert objectList != null;
         for (ContractVo contractVo : objectList) {
             LaborContract laborContract = new LaborContract ();
             setValue ( contractVo, laborContract );
@@ -385,11 +388,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportArcFile(ExportFile exportFile, HttpServletResponse response, UserSession userSession) throws IOException {
-        List<String> headsByArc=new LinkedList <> (  );
-        List < QueryScheme > list = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
+    public void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        List<String> headsByArc;
+        ExportFile exportFile = staffArchiveService.selectArchiveByQueryScheme ( userSession, list );
+        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         Integer j=0;
-        for (QueryScheme queryScheme :list ) {
+        for (QueryScheme queryScheme :list1 ) {
             if(queryScheme.getIsDefault ()==1){
                 j++;
             }
@@ -397,7 +401,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         if(j>0){
             headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );
         }else{
-            headsByArc=HeadMapUtil.getHeadForArc (headsByArc);
+            headsByArc=HeadMapUtil.getHeadForArc ();
         }
         ExcelUtil.download ( response, exportFile.getTittle (),
                 headsByArc,
@@ -411,24 +415,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      * @return
      */
     private List < String > getHeadsByArc(ExportFile exportFile,Integer companyId) {
-        List<String> keyList=new LinkedList <> (  ) ;
+        Set<String> keySet=new LinkedHashSet <> (  );
         List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getMap ().values () );
         for (Map < String, Object > stringObjectMap : maps) {
             for (String s : stringObjectMap.keySet ()) {
                 if(HeadFieldUtil.getFieldCode ().get(s)!=null){
-                    keyList.add ( HeadFieldUtil.getFieldCode ().get ( s ) );
+                    keySet.add ( HeadFieldUtil.getFieldCode ().get ( s ) );
                 }else{
                     String arc = customTableFieldDao.selectFieldNameByCode ( s, companyId, "ARC" );
                     if(arc!=null){
-                        keyList.add ( arc );
+                        keySet.add ( arc );
                     }
                 }
                 if("employment_type".equals ( s )){
-                    keyList.add ( "任职类型" );
+                    keySet.add ( "任职类型" );
                 }
             }
         }
-       return keyList;
+       return new ArrayList <> ( keySet );
     }
 
     /**
@@ -610,7 +614,7 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
                 if(s==null) {
                     s = customTableFieldDao.selectFieldCodeByName ( head, companyId,funcCode );
                 }
-                if (head.equals ( "任职类型" )) {
+                if ("任职类型" .equals(head) ) {
                     stringMap.put ( head, "在职" );
                 }
                 Object o = stringObjectMap.get ( s );

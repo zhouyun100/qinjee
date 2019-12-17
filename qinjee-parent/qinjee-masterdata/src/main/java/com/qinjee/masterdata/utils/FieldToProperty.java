@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.utils.pexcel;
+package com.qinjee.masterdata.utils;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;

@@ -111,6 +111,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             standingBook.setArchiveId(userSession.getArchiveId());
             standingBook.setCompanyId(userSession.getCompanyId());
             standingBook.setCreatorId(userSession.getArchiveId());
+            standingBook.setIsEnable ( ( short ) 1 );
             standingBookDao.insertSelective(standingBook);
             if(!CollectionUtils.isEmpty ( standingBookInfoVo.getListVo () )) {
                 //设置台账属性表的id给筛选表
@@ -202,7 +203,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         PageHelper.startPage ( standingBookReturnVo.getCurrentPage (),standingBookReturnVo.getPageSize () );
         List<Integer> integerList=userArchiveDao.selectStaff(sql,standingBookReturnVo.getArchiveType (),
                 standingBookReturnVo.getOrgId (),standingBookReturnVo.getType ());
-       return userArchiveDao.selectByPrimaryKeyList ( integerList );
+        standingBookReturnVo.setTotal ( integerList.size () );
+        return userArchiveDao.selectByPrimaryKeyList ( integerList );
     }
 
 

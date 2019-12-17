@@ -367,7 +367,7 @@
     <insert id="insertBatch" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
         <foreach collection="list" item="item"  separator="," >
             INSERT INTO t_pre_employment
-            <trim prefix="(" suffix=")" suffixOverrides=",">
+            <trim prefix="(" suffix=")" suffixOverrides=";">
                 <if test="employmentId != null">
                     employment_id,
                 </if>

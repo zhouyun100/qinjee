@@ -18,7 +18,7 @@ import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
-import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
+import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;

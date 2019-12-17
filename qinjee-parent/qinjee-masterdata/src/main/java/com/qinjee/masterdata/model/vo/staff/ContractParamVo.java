@@ -5,6 +5,8 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 @JsonInclude
 public class ContractParamVo implements Serializable {
@@ -20,7 +22,7 @@ public class ContractParamVo implements Serializable {
      *适用范围CODE
      */
     @NotNull
-    private String  applicationScopeCode;
+    private List <String> applicationScopeCode;
     /**
      *提前提醒参数
      */

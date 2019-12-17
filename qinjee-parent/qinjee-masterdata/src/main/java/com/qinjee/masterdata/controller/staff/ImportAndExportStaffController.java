@@ -1,9 +1,11 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.export.ExportNoConArcVo;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
@@ -12,12 +14,15 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -29,7 +34,8 @@ public class ImportAndExportStaffController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(ImportAndExportStaffController.class);
     @Autowired
     private IStaffImportAndExportService staffImportAndExportService;
-
+    @Autowired
+    private UserArchiveDao userArchiveDao;
     /**
      * 自定义文件类型校验以及生成list
      */
@@ -177,6 +183,7 @@ public class ImportAndExportStaffController extends BaseController {
                 staffImportAndExportService.importFile (getUserSession (),funcCode.toUpperCase () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
+                e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. REDIS_KEY_EXCEPTION);
             }
         }
@@ -237,11 +244,11 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile(@RequestBody @Valid ExportFile exportFile, HttpServletResponse response) {
-        Boolean b = checkParam(exportFile,response,getUserSession ());
+    public ResponseResult exportArcFile(@RequestParam List<Integer> list, HttpServletResponse response) {
+        Boolean b = checkParam(list,response,getUserSession ());
         if(b){
             try {
-                staffImportAndExportService.exportArcFile(exportFile,response,getUserSession ());
+                staffImportAndExportService.exportArcFile(list,response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -250,7 +257,39 @@ public class ImportAndExportStaffController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
-
+    /**
+     * 导出未签合同人员
+     */
+    @RequestMapping(value = "/exportArcFileNoCon", method = RequestMethod.POST)
+    @ApiOperation(value = "导出未签合同人员", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
+//    })
+    //导出的文件应该是以.xls结尾
+    public ResponseResult exportArcFileNoCon(@RequestBody @Valid ExportNoConArcVo exportNoConArcVo, HttpServletResponse response) {
+        Boolean b = checkParam(response,getUserSession (),exportNoConArcVo);
+        if(b){
+            try {
+                if(CollectionUtils.isEmpty ( exportNoConArcVo.getList () )){
+                    List< UserArchiveVo > arcList=userArchiveDao.selectArcByNotCon(exportNoConArcVo.getOrgId ());
+                    List < Integer > objects = new ArrayList <> ();
+                    for (UserArchiveVo userArchiveVo : arcList) {
+                        objects.add ( userArchiveVo.getArchiveId () );
+                    }
+                   exportNoConArcVo.setList ( objects );
+                }
+                staffImportAndExportService.exportArcFile(exportNoConArcVo.getList (),response,getUserSession ());
+                return null;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
 
     /**
      * 模板导出预入职

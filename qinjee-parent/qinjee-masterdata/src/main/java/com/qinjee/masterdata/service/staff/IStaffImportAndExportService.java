@@ -2,13 +2,13 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public interface IStaffImportAndExportService {
 
@@ -17,7 +17,7 @@ public interface IStaffImportAndExportService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(ExportFile exportFile, HttpServletResponse response,UserSession userSession) throws IOException;
+    void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 导出预入职
