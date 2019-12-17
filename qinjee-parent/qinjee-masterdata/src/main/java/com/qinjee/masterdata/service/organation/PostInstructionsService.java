@@ -21,13 +21,6 @@ public interface PostInstructionsService {
      */
     ResponseResult<PostInstructions> showPostInstructions(Integer postId);
 
-    /**
-     * 导入岗位说明书
-     * @param userSession
-     * @param file
-     * @return
-     */
-    ResponseResult uploadInstructions(UserSession userSession, MultipartFile file);
 
     /**
      * 下载岗位说明书

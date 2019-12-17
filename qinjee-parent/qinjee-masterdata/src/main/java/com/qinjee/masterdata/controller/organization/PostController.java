@@ -1,17 +1,18 @@
 package com.qinjee.masterdata.controller.organization;
 
-import com.qinjee.exception.BusinessException;
+import com.github.liaochong.myexcel.core.DefaultExcelBuilder;
+import com.github.liaochong.myexcel.utils.AttachmentExportUtil;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.service.organation.PostService;
-import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -196,15 +197,13 @@ public class PostController extends BaseController {
         if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
             orgId = (Integer) paramMap.get("orgId");
         }
-        List<Post> postOList = postService.exportPost(orgId, postIds, getUserSession());
-        if (!CollectionUtils.isEmpty(postOList)) {
-            byte[] bytes = ExcelExportUtil.exportToBytes(postOList);
-            response.setCharacterEncoding("UTF-8");
-            response.setHeader("content-Type", "application/vnd.ms-excel");
+        List<Post> postList = postService.exportPost(orgId, postIds, getUserSession());
+        if (!CollectionUtils.isEmpty(postList)) {
             response.setHeader("fileName", URLEncoder.encode("postDefualt.xls", "UTF-8"));
-            response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode("postDefualt", "UTF-8") + "\"");
-            response.getOutputStream().write(bytes);
+            Workbook workbook = DefaultExcelBuilder.of(Post.class).build(postList);
+            AttachmentExportUtil.export(workbook, "postDefualt", response);
+            //只能返回null
+
             return null;
         } else {
             responseResult.setMessage("岗位为空");

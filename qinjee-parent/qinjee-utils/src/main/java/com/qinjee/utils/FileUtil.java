@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.utils;
+package com.qinjee.utils;
 
 
 import java.io.*;
@@ -429,7 +429,7 @@ public final class FileUtil {
      */
     public final static boolean deleteDir(File file) {
         List<File> files = listFileAll(file);
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File f : files) {
                 if (f.isDirectory()) {
                     deleteDir(f);
@@ -476,7 +476,7 @@ public final class FileUtil {
             createPaths(targetPath);
         }
         File[] files = filePath.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 String path = file.getName();
                 if (file.isDirectory()) {
@@ -520,7 +520,7 @@ public final class FileUtil {
     public final static List<File> listFile(File path) {
         List<File> list = new ArrayList<>();
         File[] files = path.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     list.addAll(listFile(file));
@@ -542,7 +542,7 @@ public final class FileUtil {
     public final static List<File> listFile(File path, boolean child) {
         List<File> list = new ArrayList<>();
         File[] files = path.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 if (child && file.isDirectory()) {
                     list.addAll(listFile(file));
@@ -563,7 +563,7 @@ public final class FileUtil {
     public final static List<File> listFileAll(File path) {
         List<File> list = new ArrayList<>();
         File[] files = path.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 list.add(file);
                 if (file.isDirectory()) {
@@ -584,7 +584,7 @@ public final class FileUtil {
     public final static List<File> listFileFilter(File path, FilenameFilter filter) {
         List<File> list = new ArrayList<>();
         File[] files = path.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     list.addAll(listFileFilter(file, filter));
@@ -616,7 +616,7 @@ public final class FileUtil {
         */
         List<File> list = new ArrayList<File>();
         File[] files = dirPath.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     list.addAll(listFileFilter(file, postfixs));
@@ -641,7 +641,7 @@ public final class FileUtil {
     public final static List<File> searchFile(File dirPath, String fileName) {
         List<File> list = new ArrayList<>();
         File[] files = dirPath.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     list.addAll(searchFile(file, fileName));
@@ -666,7 +666,7 @@ public final class FileUtil {
     public final static List<File> searchFileReg(File dirPath, String reg) {
         List<File> list = new ArrayList<>();
         /*File[] files = dirPath.listFiles();
-        if (CheckUtil.valid(files)) {
+        if (checkParam(files)) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     list.addAll(searchFile(file, reg));
@@ -691,5 +691,11 @@ public final class FileUtil {
     public final static String suffix(File file) {
         String fileName = file.getName();
         return fileName.substring(fileName.indexOf(".") + 1);
+    }
+    private final static boolean checkParam(Object... objs) {
+        if (objs != null && objs.length != 0) {
+            return true;
+        }
+        return false;
     }
 }

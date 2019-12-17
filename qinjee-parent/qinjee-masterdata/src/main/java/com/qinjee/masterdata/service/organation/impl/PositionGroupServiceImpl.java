@@ -7,7 +7,6 @@ import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionGroupVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
 import com.qinjee.masterdata.service.organation.PositionService;
-import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -157,7 +156,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         positionGroup.setCompanyId(userSession.getCompanyId());
         List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
 
-        ExcelExportUtil.exportToFile(filePath, positionGroupByPosG);
+        //todo ExcelExportUtil.exportToFile(filePath, positionGroupByPosG);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 
@@ -172,7 +171,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
     @Override
     public ResponseResult downloadPositionGroupToExcelByOrgId(String filePath, List<Integer> positionGroupIds, UserSession userSession) {
         List<PositionGroup> positionGroups = positionGroupDao.selectBypositionGroupIds(positionGroupIds);
-        ExcelExportUtil.exportToFile(filePath, positionGroups);
+        //TODO ExcelExportUtil.exportToFile(filePath, positionGroups);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 

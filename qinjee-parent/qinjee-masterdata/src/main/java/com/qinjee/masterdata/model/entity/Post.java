@@ -1,15 +1,12 @@
 package com.qinjee.masterdata.model.entity;
 
 import com.github.liaochong.myexcel.core.annotation.ExcelColumn;
-import com.qinjee.masterdata.model.vo.organization.ImportExport;
-import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
-import com.qinjee.masterdata.utils.pexcel.annotation.ExcelSheetAnno;
+import com.github.liaochong.myexcel.core.annotation.ExcelTable;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.poi.hssf.util.HSSFColor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -22,7 +19,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @ApiModel(description = "岗位表实体类")
-@ExcelSheetAnno(name = "岗位信息", headColor = HSSFColor.HSSFColorPredefined.LIGHT_GREEN)
+@ExcelTable(sheetName = "岗位信息", useFieldNameAsTitle = false,includeAllField = false)
 public class Post  implements Serializable {
 
     private Boolean checkResult;
@@ -42,47 +39,41 @@ public class Post  implements Serializable {
      */
     @QueryColumn("tp.post_code")
     @ApiModelProperty("岗位编码")
-    @ExcelFieldAnno(name = "岗位编码")
-    @ExcelColumn(order = 0, index = 0, width = 20)
+    @ExcelColumn(order = 0, title = "岗位编码",index = 0)
     private String postCode;
     /**
      * 岗位名称
      */
     @QueryColumn("tp.post_name")
     @ApiModelProperty("岗位名称")
-    @ExcelFieldAnno(name = "岗位名称",width = 10000)
-    @ExcelColumn(order = 1, index = 1, width = 40)
+    @ExcelColumn(order = 1, title = "岗位名称",index = 1)
     private String postName;
     /**
      * 父级机构编码
      */
     @ApiModelProperty("所属部门编码")
-    @ExcelFieldAnno(name = "所属部门编码")
-    @ExcelColumn(order = 2, index = 2, width = 20)
+    @ExcelColumn(order = 2, title = "所属部门编码",index = 2)
     private String orgCode;
 
     /**
      * 机构名称
      */
     @ApiModelProperty("所属部门")
-    @ExcelFieldAnno(name = "所属部门")
-    @ExcelColumn(order = 3, index = 3, width = 40)
+    @ExcelColumn(order = 3, title = "所属部门",index = 3)
     private String orgName;
 
     /**
      * 父级岗位编码
      */
     @ApiModelProperty("上级岗位编码")
-    @ExcelFieldAnno(name = "上级岗位编码")
-    @ExcelColumn(order = 4, index = 4, width = 20)
+    @ExcelColumn(order = 4, title = "上级岗位编码",index = 4)
     private String parentPostCode;
 
     /**
      * 父级岗位名称
      */
     @ApiModelProperty("上级岗位")
-    @ExcelFieldAnno(name = "上级岗位")
-    @ExcelColumn(order = 5, index = 5, width =40)
+    @ExcelColumn(order = 5, title = "上级岗位",index = 5)
     private String parentPostName;
 
     /**
@@ -90,8 +81,7 @@ public class Post  implements Serializable {
      */
     @QueryColumn("tps.position_name")
     @ApiModelProperty("职位")
-    @ExcelFieldAnno(name = "职位")
-    @ExcelColumn(order = 6, index = 6, width = 20)
+    @ExcelColumn(order = 6, title = "职位",index = 6)
     private String positionName;
 
 

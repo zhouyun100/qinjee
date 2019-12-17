@@ -2,9 +2,10 @@ package com.qinjee.masterdata.dao.organation;
 
 
 import com.qinjee.masterdata.model.entity.PositionGrade;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface PositionGradeDao {
     int deleteByPrimaryKey(Integer positionGradeId);
 

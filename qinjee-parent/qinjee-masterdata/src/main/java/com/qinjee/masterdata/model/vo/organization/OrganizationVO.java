@@ -1,17 +1,16 @@
 package com.qinjee.masterdata.model.vo.organization;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.github.liaochong.myexcel.core.annotation.ExcelColumn;
+import com.github.liaochong.myexcel.core.annotation.ExcelTable;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.entity.Post;
-import com.qinjee.masterdata.utils.pexcel.annotation.ExcelFieldAnno;
-import com.qinjee.masterdata.utils.pexcel.annotation.ExcelSheetAnno;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -27,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @ApiModel(description = "机构实体VO类")
 @ToString
-@ExcelSheetAnno(name = "机构信息", headColor = HSSFColor.HSSFColorPredefined.LIGHT_GREEN)
+@ExcelTable(sheetName = "机构信息", useFieldNameAsTitle = false,includeAllField = false)
 public class OrganizationVO  implements Serializable {
 
     private Boolean checkResult;
@@ -44,7 +43,7 @@ public class OrganizationVO  implements Serializable {
     /**
      * 机构编码
      */
-    @ExcelFieldAnno(name = "机构编码")
+    @ExcelColumn(order = 0, title = "机构编码",index = 0)
     private String orgCode;
 
     /**
@@ -52,7 +51,7 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构名称")
     @QueryColumn("org.org_name")
-    @ExcelFieldAnno(name = "机构名称",width = 10000)
+    @ExcelColumn(order = 1, title = "机构名称",index = 1)
     private String orgName;
 
     /**
@@ -60,7 +59,7 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构类型  GROUP 集团、UNIT 单位、DEPT 部门")
     @QueryColumn("org.org_type")
-    @ExcelFieldAnno(name = "机构类型",width = 3000)
+    @ExcelColumn(order = 2, title = "机构类型",index = 2)
     private String orgType;
 
     /**
@@ -75,7 +74,7 @@ public class OrganizationVO  implements Serializable {
      * 机构父级编码
      */
     @ApiModelProperty("机构父级编码")
-    @ExcelFieldAnno(name = "上级机构编码")
+    @ExcelColumn(order = 3, title = "上级机构编码",index = 3)
     private String orgParentCode;
 
     /**
@@ -83,14 +82,14 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构父级名称")
     @QueryColumn("parent_org.org_name")
-    @ExcelFieldAnno(name = "上级机构",width = 10000)
+    @ExcelColumn(order = 4, title = "上级机构",index = 4)
     private String orgParentName;
 
     /**
      * 机构负责人工号
      */
     @ApiModelProperty("机构负责人工号")
-    @ExcelFieldAnno(name = "部门负责人编号",width = 4000)
+    @ExcelColumn(order = 5, title = "部门负责人编号",index = 5)
     private String managerEmployeeNumber;
 
     /**
@@ -98,7 +97,7 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构负责人姓名")
     @QueryColumn("tua.user_name")
-    @ExcelFieldAnno(name = "部门负责人",width = 3000)
+    @ExcelColumn(order = 6, title = "部门负责人",index = 6)
     private String orgManagerName;
     /**
      * 机构全称

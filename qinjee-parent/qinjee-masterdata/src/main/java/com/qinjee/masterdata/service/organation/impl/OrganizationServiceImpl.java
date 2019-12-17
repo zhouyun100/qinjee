@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
@@ -23,13 +24,13 @@ import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
-import com.qinjee.masterdata.utils.MyCollectionUtil;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
-import com.qinjee.masterdata.utils.pexcel.ExcelImportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.FileUtil;
+import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang.StringUtils;
@@ -42,8 +43,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 /**
  * @author 高雄
@@ -469,7 +472,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
         }
         //导入excel
-        List<Object> excelDataList = ExcelImportUtil.importExcel(multfile.getInputStream(), OrganizationVO.class);
+        File tempFile = File.createTempFile("temp", ".xls");
+        multfile.transferTo(tempFile);
+        List<OrganizationVO> excelDataList = DefaultExcelReader.of(OrganizationVO.class).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
+        tempFile.delete();
         if (CollectionUtils.isEmpty(excelDataList)) {
             //excel为空
             ExceptionCast.cast(CommonCode.FILE_EMPTY);
@@ -477,8 +483,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<OrganizationVO> orgList = new ArrayList<>();
         //记录行号
         Integer number = 1;
-        for (Object row : excelDataList) {
-            OrganizationVO org = (OrganizationVO) row;
+        for (OrganizationVO org : excelDataList) {
             org.setLineNumber(++number);
             //排序前记录行号
             orgList.add(org);

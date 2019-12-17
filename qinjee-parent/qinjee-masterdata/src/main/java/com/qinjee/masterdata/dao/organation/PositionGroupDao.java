@@ -2,10 +2,13 @@ package com.qinjee.masterdata.dao.organation;
 
 import com.qinjee.masterdata.model.entity.PositionGroup;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.LinkedList;
 import java.util.List;
 
+
+@Repository
 public interface PositionGroupDao {
     int deleteByPrimaryKey(Integer positionGroupId);
 

@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.CompanyInfo;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CompanyInfoDao {
     int deleteByPrimaryKey(Integer companyId);
 
