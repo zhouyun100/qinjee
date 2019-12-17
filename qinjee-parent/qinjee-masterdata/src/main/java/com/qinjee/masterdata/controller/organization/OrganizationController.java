@@ -54,7 +54,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
     public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId",required = false) String orgManagerId) {
-        Boolean b = checkParam(orgName, orgType, orgParentId, orgManagerId);
+        Boolean b = checkParam(orgName, orgType, orgParentId);
         if (b) {
             try {
                 organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
@@ -74,7 +74,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/editOrganization")
     @ApiOperation(value = "ok，编辑机构", notes = "机构编码待验证")
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId",required = false) String orgManagerId) {
-        Boolean b = checkParam(orgCode, orgId, orgParentId, orgManagerId);
+        Boolean b = checkParam(orgCode, orgId, orgParentId);
         if (b) {
             try {
                 organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
