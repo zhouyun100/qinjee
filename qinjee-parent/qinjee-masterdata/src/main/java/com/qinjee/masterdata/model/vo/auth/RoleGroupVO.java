@@ -80,6 +80,12 @@ public class RoleGroupVO implements Serializable {
     private Integer hasRole;
 
     /**
+     * 是否系统内置角色
+     */
+    @ApiModelProperty("是否系统内置角色(1:是,0:否)")
+    private Integer isSystemDefine;
+
+    /**
      * 子集角色组列表
      */
     @ApiModelProperty("子集角色组列表")

@@ -7,6 +7,7 @@
         <result column="role_group_name" jdbcType="VARCHAR" property="roleGroupName" />
         <result column="parent_role_group_id" jdbcType="INTEGER" property="parentRoleGroupId" />
         <result column="role_type" jdbcType="VARCHAR" property="roleType" />
+        <result column="is_system_define" jdbcType="INTEGER" property="isSystemDefine" />
     </resultMap>
 
     <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
@@ -44,10 +45,10 @@
 
     <!--根据企业ID查询角色列表 -->
     <select id="searchRoleTree" parameterType="java.lang.Integer" resultMap="RoleGroupResultMap">
-        select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type
+        select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type,is_system_define
         from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
         UNION ALL
-        select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'ROLE' as role_type
+        select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'ROLE' as role_type,is_system_define
         from t_role where t_role.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
     </select>
 
