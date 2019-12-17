@@ -167,10 +167,7 @@ public class ReportFormController extends BaseController {
         //参数校验 List<Integer> orgIds, Date startDate, Date endDate,Integer layer
         if (checkParam(htmlContent)) {
             try {
-                //TODO 将htmlContent写入file
                 File tempFile = File.createTempFile("tempFile", ".html");
-
-                System.out.println(htmlContent);
                 FileUtil.write(tempFile,htmlContent, "UTF-8");
                 Workbook workbook = HtmlToExcelFactory.readHtml(tempFile).workbookType(WorkbookType.SXLSX).build();
                 tempFile.delete();

@@ -1,9 +1,11 @@
 package com.qinjee.masterdata.dao.organation;
 
 import com.qinjee.masterdata.model.entity.PostGradeRelation;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface PostGradeRelationDao {
     int deleteByPrimaryKey(Integer id);
 

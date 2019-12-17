@@ -51,19 +51,9 @@ public class OrganizationController extends BaseController {
         return true;
     }
 
-    private ResponseResult failResponseResult(String message) {
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage(message);
-        logger.error(message);
-        return fail;
-    }
-
-
-    //TODO 新增子机构时需要维护 子机构与角色之间的联系
-    //TODO 新增没有父机构的机构时  机构编码递增
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId",required = false) String orgManagerId) {
         Boolean b = checkParam(orgName, orgType, orgParentId, orgManagerId);
         if (b) {
             try {
@@ -83,7 +73,7 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "ok，编辑机构", notes = "机构编码待验证")
-    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam("orgManagerId") String orgManagerId) {
+    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId",required = false) String orgManagerId) {
         Boolean b = checkParam(orgCode, orgId, orgParentId, orgManagerId);
         if (b) {
             try {
@@ -101,7 +91,6 @@ public class OrganizationController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-    //TODO 删除机构时，需要回收权限（调用权限接口）
     @PostMapping("/deleteOrganizationById")
     @ApiOperation(value = "ok，删除机构", notes = "ok")
     public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds) {
@@ -483,12 +472,10 @@ public class OrganizationController extends BaseController {
 
     //TODO
     @GetMapping("/getUserArchiveListByUserName")
-    @ApiOperation(value = "未实现，机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
+    @ApiOperation(value = "ok,机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
     public ResponseResult<List<UserArchiveVo>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
-        //TODO 校验参数 不带参则全量查询
         if (checkParam(userName)) {
             try {
-                //TODO 接口未实现
                 List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName);
                 return new ResponseResult(users);
             } catch (Exception e) {
@@ -505,9 +492,9 @@ public class OrganizationController extends BaseController {
 
 
     @ApiOperation(value = "ok，划转机构,参数demo  {\"orgIds\":[1001,1002],\"targetOrgId\":1003}")
-    @PostMapping("/transferOrganization2")
+    @PostMapping("/transferOrganization")
     //TODO 还需要将人员进行划转
-    public ResponseResult transferOrganization2(@RequestBody Map<String, Object> paramMap) {
+    public ResponseResult transferOrganization(@RequestBody Map<String, Object> paramMap) {
         //校验参数
         if (checkParam(paramMap)) {
             List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
@@ -563,7 +550,6 @@ public class OrganizationController extends BaseController {
     public ResponseResult generateOrgCode(Integer orgId) {
         //校验参数
         if (checkParam(orgId)) {
-
             try {
                 String orgCode=organizationService.generateOrgCode(orgId);
                 return new ResponseResult<>(orgCode);
@@ -575,9 +561,7 @@ public class OrganizationController extends BaseController {
                 }
                 return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
             }
-
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
-
 }
