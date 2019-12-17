@@ -37,103 +37,85 @@ import java.util.Map;
 @RequestMapping("/position")
 public class PositionController extends BaseController {
 
-  @Autowired
-  private PositionService positionService;
-  @Autowired
-  private PostDao postDao;
-  @Autowired
-  private PositionGroupService positionGroupService;
+    @Autowired
+    private PositionService positionService;
+    @Autowired
+    private PostDao postDao;
+    @Autowired
+    private PositionGroupService positionGroupService;
 
-  private Boolean checkParam(Object... params) {
-    for (Object param : params) {
-      if (null == param || "".equals(param)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
-  @PostMapping("/getPositionPage")
-  public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-    return positionService.getPositionPage(getUserSession(), positionPageVo);
-  }
-  @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
-  @GetMapping("/getAllPositions")
-  public ResponseResult<List<Position>> getAllPositions() {
-    return positionService.getAllPositions(getUserSession());
-  }
-
-  @ApiOperation(value = "ok，新增职位", notes = "ok")
-  @PostMapping("/addPosition")
-  public ResponseResult addPosition(PositionVo positionVo) {
-    return positionService.addPosition(positionVo, getUserSession());
-  }
-
-  @ApiOperation(value = "ok，保证职位名称在同一家企业下唯一", notes = "ok")
-  @PostMapping("/determinePositionNameIsOnly")
-  public ResponseResult determinePositionNameIsOnly(String positionName) {
-    Boolean b = checkParam(positionName);
-    if (b) {
-      try {
-        positionService.determinePositionNameIsOnly(positionName, getUserSession());
-        return ResponseResult.SUCCESS();
-      } catch (Exception e) {
-        e.printStackTrace();
-        if (e instanceof BusinessException) {
-          BusinessException be = (BusinessException) e;
-          return new ResponseResult<>(null, be.getResultCode());
+    private Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (null == param || "".equals(param)) {
+                return false;
+            }
         }
-        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-      }
+        return true;
     }
-    return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-  }
 
 
-  @ApiOperation(value = "ok，编辑职位", notes = "ok")
-  @PostMapping("/editPosition")
-  public ResponseResult editPosition(PositionVo positionVo) {
-    return positionService.editPosition(positionVo, getUserSession());
-  }
+    @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
+    @PostMapping("/getPositionPage")
+    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
+        return positionService.getPositionPage(getUserSession(), positionPageVo);
+    }
 
-  @ApiOperation(value = "ok，删除职位", notes = "ok")
-  @PostMapping("/deletePosition")
-  public ResponseResult deletePosition(@RequestBody List<Integer> positionIds) {
-    return positionService.deletePosition(positionIds, getUserSession());
-  }
+    @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
+    @GetMapping("/getAllPositions")
+    public ResponseResult<List<Position>> getAllPositions() {
+        return positionService.getAllPositions(getUserSession());
+    }
 
+    @ApiOperation(value = "ok，新增职位", notes = "ok")
+    @PostMapping("/addPosition")
+    public ResponseResult addPosition(PositionVo positionVo) {
+        return positionService.addPosition(positionVo, getUserSession());
+    }
 
-  @PostMapping("/sortPosition")
-  @ApiOperation(value = "ok，职位排序，只能同一级别下机构排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
-  public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> positionIds) {
-    //参数校验
-    if (checkParam(positionIds)) {
-      try {
-        positionService.sortPosition(positionIds);
-        return ResponseResult.SUCCESS();
-      } catch (Exception e) {
-        e.printStackTrace();
-        if (e instanceof BusinessException) {
-          BusinessException be = (BusinessException) e;
-          return new ResponseResult<>(null, be.getResultCode());
+    @ApiOperation(value = "ok，保证职位名称在同一家企业下唯一", notes = "ok")
+    @PostMapping("/determinePositionNameIsOnly")
+    public ResponseResult determinePositionNameIsOnly(String positionName) {
+        Boolean b = checkParam(positionName);
+        if (b) {
+            positionService.determinePositionNameIsOnly(positionName, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-      }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
-    return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-  }
 
 
+    @ApiOperation(value = "ok，编辑职位", notes = "ok")
+    @PostMapping("/editPosition")
+    public ResponseResult editPosition(PositionVo positionVo) {
+        return positionService.editPosition(positionVo, getUserSession());
+    }
 
-  @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
-  @ApiOperation(value = "未实现，导出职位excel", notes = "未实现")
-  @GetMapping("/downloadExcel")
-  public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds) {
+    @ApiOperation(value = "ok，删除职位", notes = "ok")
+    @PostMapping("/deletePosition")
+    public ResponseResult deletePosition(@RequestBody List<Integer> positionIds) {
+        return positionService.deletePosition(positionIds, getUserSession());
+    }
 
-    return null;
-  }
+
+    @PostMapping("/sortPosition")
+    @ApiOperation(value = "ok，职位排序，只能同一级别下机构排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
+    public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> positionIds) {
+        //参数校验
+        if (checkParam(positionIds)) {
+            positionService.sortPosition(positionIds);
+            return ResponseResult.SUCCESS();
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+
+    @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
+    @ApiOperation(value = "未实现，导出职位excel", notes = "未实现")
+    @GetMapping("/downloadExcel")
+    public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds) {
+
+        return null;
+    }
 
   /*  @ApiOperation(value = "新增岗位选择职位时带出职级职等", notes = "高雄")
     @GetMapping("/getPositionLevelAndGrade")

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,40 +54,22 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
-    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId",required = false) String orgManagerId) {
+    public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
         Boolean b = checkParam(orgName, orgType, orgParentId);
         if (b) {
-            try {
-                organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     @GetMapping("/editOrganization")
     @ApiOperation(value = "ok，编辑机构", notes = "机构编码待验证")
-    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId",required = false) String orgManagerId) {
+    public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
         Boolean b = checkParam(orgCode, orgId, orgParentId);
         if (b) {
-            try {
-                organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -96,17 +79,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds) {
         Boolean b = checkParam(orgIds);
         if (b) {
-            try {
-                organizationService.deleteOrganizationById(orgIds, getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.deleteOrganizationById(orgIds, getUserSession());
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -126,21 +99,12 @@ public class OrganizationController extends BaseController {
     public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable") Short isEnable) {
         Boolean b = checkParam(isEnable);
         if (b) {
-            try {
-                if (isEnable != 0) {
-                    isEnable = null;
-                }
-                List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(getUserSession().getArchiveId(), isEnable);
-                PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
-                return new ResponseResult(pageResult, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            if (isEnable != 0) {
+                isEnable = null;
             }
+            List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(getUserSession().getArchiveId(), isEnable);
+            PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
+            return new ResponseResult(pageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -150,24 +114,15 @@ public class OrganizationController extends BaseController {
     public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
         Boolean b = checkParam(organizationPageVo);
         if (b) {
-            try {
-                Short isEnable = organizationPageVo.getIsEnable();
-                if (isEnable == null || isEnable == 0) {
-                    isEnable = 0;
-                } else {
-                    isEnable = null;
-                }
-                organizationPageVo.setIsEnable(isEnable);
-                PageResult<OrganizationVO> pageResult = organizationService.getAllOrganizationPageList(organizationPageVo, getUserSession());
-                return new ResponseResult(pageResult, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            Short isEnable = organizationPageVo.getIsEnable();
+            if (isEnable == null || isEnable == 0) {
+                isEnable = 0;
+            } else {
+                isEnable = null;
             }
+            organizationPageVo.setIsEnable(isEnable);
+            PageResult<OrganizationVO> pageResult = organizationService.getAllOrganizationPageList(organizationPageVo, getUserSession());
+            return new ResponseResult(pageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -177,25 +132,16 @@ public class OrganizationController extends BaseController {
     public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
         Boolean b = checkParam(organizationPageVo);
         if (b) {
-            try {
-                Short isEnable = organizationPageVo.getIsEnable();
-                if (isEnable == null || isEnable == 0) {
-                    isEnable = 0;
-                } else {
-                    isEnable = null;
-                }
-                organizationPageVo.setIsEnable(isEnable);
-                UserSession userSession = getUserSession();
-                PageResult<OrganizationVO> pageResult = organizationService.getDirectOrganizationPageList(organizationPageVo, userSession);
-                return new ResponseResult<>(pageResult);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            Short isEnable = organizationPageVo.getIsEnable();
+            if (isEnable == null || isEnable == 0) {
+                isEnable = 0;
+            } else {
+                isEnable = null;
             }
+            organizationPageVo.setIsEnable(isEnable);
+            UserSession userSession = getUserSession();
+            PageResult<OrganizationVO> pageResult = organizationService.getDirectOrganizationPageList(organizationPageVo, userSession);
+            return new ResponseResult<>(pageResult);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -218,22 +164,13 @@ public class OrganizationController extends BaseController {
                                                                         @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
         Boolean b = checkParam(layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
         if (b) {
-            try {
-                if (isEnable == null || isEnable == 0) {
-                    isEnable = 0;
-                } else {
-                    isEnable = null;
-                }
-                List<OrganizationVO> pageResult = organizationService.getOrganizationGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
-                return new ResponseResult(pageResult);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            if (isEnable == null || isEnable == 0) {
+                isEnable = 0;
+            } else {
+                isEnable = null;
             }
+            List<OrganizationVO> pageResult = organizationService.getOrganizationGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
+            return new ResponseResult(pageResult);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -243,22 +180,13 @@ public class OrganizationController extends BaseController {
     public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0不包含（默认）、1 包含", example = "0") @RequestParam(value = "isEnable") Short isEnable) {
         Boolean b = checkParam(isEnable);
         if (b) {
-            try {
-                if (isEnable != 0) {
-                    isEnable = null;
-                }
-                List<OrganizationVO> orgList = organizationService.getOrganizationPostTree(getUserSession(), isEnable);
-                ResponseResult responseResult = new ResponseResult();
-                responseResult.setResult(orgList);
-                return responseResult;
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            if (isEnable != 0) {
+                isEnable = null;
             }
+            List<OrganizationVO> orgList = organizationService.getOrganizationPostTree(getUserSession(), isEnable);
+            ResponseResult responseResult = new ResponseResult();
+            responseResult.setResult(orgList);
+            return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -273,17 +201,8 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，封存机构，设为0", notes = "ok")
     public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         if (checkParam(orgIds)) {
-            try {
-                organizationService.sealOrganization(orgIds, Short.parseShort("0"));
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.sealOrganization(orgIds, Short.parseShort("0"));
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -292,17 +211,8 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，解封机构，设为1", notes = "ok")
     public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         if (checkParam(orgIds)) {
-            try {
-                organizationService.sealOrganization(orgIds, Short.parseShort("1"));
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.sealOrganization(orgIds, Short.parseShort("1"));
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -310,49 +220,40 @@ public class OrganizationController extends BaseController {
     // String filePath,  List<Integer> orgIds
     @PostMapping("/exportOrganization")
     @ApiOperation("机构导出，demo {\"orgId\":28,\"orgIds\":[14,25]}")
-    public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) {
+    public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
         if (checkParam(paramMap)) {
-            try {
-                List<Integer> orgIds = null;
-                Integer orgId = null;
-                if (paramMap.get("orgIds") != null && paramMap.get("orgIds") instanceof List) {
-                    orgIds = (List<Integer>) paramMap.get("orgIds");
-                }
-                if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
-                    orgId = (Integer) paramMap.get("orgId");
-                }
-                List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
-                List<OrganizationVO> dataList = new ArrayList<>();
-                //将部门类型转变为中文
-                for (OrganizationVO org : organizationVOList) {
-                    if ("GROUP".equalsIgnoreCase(org.getOrgType())) {
-                        org.setOrgType("集团");
-                    } else if ("UNIT".equalsIgnoreCase(org.getOrgType())) {
-                        org.setOrgType("单位");
-                    } else if ("DEPT".equalsIgnoreCase(org.getOrgType())) {
-                        org.setOrgType("部门");
-                    }
-                    dataList.add(org);
-                }
-                //将list转为字节流数组
-                byte[] bytes = ExcelExportUtil.exportToBytes(dataList);
-                //输出字节流到浏览器
-                response.setCharacterEncoding("UTF-8");
-                response.setHeader("content-Type", "application/vnd.ms-excel");
-                response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
-                response.setHeader("Content-Disposition",
-                    "attachment;filename=\"" + URLEncoder.encode("orgDefualt.xls", "UTF-8") + "\"");
-                response.getOutputStream().write(bytes);
-                //只能返回null
-                return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            List<Integer> orgIds = null;
+            Integer orgId = null;
+            if (paramMap.get("orgIds") != null && paramMap.get("orgIds") instanceof List) {
+                orgIds = (List<Integer>) paramMap.get("orgIds");
             }
+            if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
+                orgId = (Integer) paramMap.get("orgId");
+            }
+            List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
+            List<OrganizationVO> dataList = new ArrayList<>();
+            //将部门类型转变为中文
+            for (OrganizationVO org : organizationVOList) {
+                if ("GROUP".equalsIgnoreCase(org.getOrgType())) {
+                    org.setOrgType("集团");
+                } else if ("UNIT".equalsIgnoreCase(org.getOrgType())) {
+                    org.setOrgType("单位");
+                } else if ("DEPT".equalsIgnoreCase(org.getOrgType())) {
+                    org.setOrgType("部门");
+                }
+                dataList.add(org);
+            }
+            //将list转为字节流数组
+            byte[] bytes = ExcelExportUtil.exportToBytes(dataList);
+            //输出字节流到浏览器
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
+            response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode("orgDefualt.xls", "UTF-8") + "\"");
+            response.getOutputStream().write(bytes);
+            //只能返回null
+            return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -363,43 +264,24 @@ public class OrganizationController extends BaseController {
     public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
         //参数判空校验
         if (checkParam(multfile)) {
-            try {
-                ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession(), response);
-                return responseResult;
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            return organizationService.uploadAndCheck(multfile, getUserSession(), response);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     @GetMapping("/exportError2Txt")
     @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
-    public ResponseResult exportError2Txt(String redisKey, HttpServletResponse response) {
+    public ResponseResult exportError2Txt(String redisKey, HttpServletResponse response) throws Exception {
         if (checkParam(redisKey)) {
-            try {
-                String errorData = redisClusterService.get(redisKey.trim());
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("application/x-msdownload;charset=UTF-8");
-                response.setHeader("Content-Disposition",
-                    "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
-                response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
-                response.getOutputStream().write(errorData.getBytes());
-                //是否只能返回null
-                return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            String errorData = redisClusterService.get(redisKey.trim());
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/x-msdownload;charset=UTF-8");
+            response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
+            response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
+            response.getOutputStream().write(errorData.getBytes());
+            //是否只能返回null
+            return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -408,17 +290,8 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok,取消导入(将数据从redis中删除)")
     public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey, @RequestParam("errorInfoKey") String errorInfoKey) {
         if (checkParam(redisKey)) {
-            try {
-                organizationService.cancelImport(redisKey.trim(), errorInfoKey.trim());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.cancelImport(redisKey.trim(), errorInfoKey.trim());
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -428,17 +301,8 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok,导入机构入库")
     public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey) {
         if (checkParam(orgExcelRedisKey)) {
-            try {
-                organizationService.importToDatabase(orgExcelRedisKey, getUserSession());
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.importToDatabase(orgExcelRedisKey, getUserSession());
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -455,17 +319,8 @@ public class OrganizationController extends BaseController {
     public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> orgIds) {
         //参数校验
         if (checkParam(orgIds)) {
-            try {
-                organizationService.sortOrganization(orgIds);
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            organizationService.sortOrganization(orgIds);
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -475,17 +330,8 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok,机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
     public ResponseResult<List<UserArchiveVo>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
         if (checkParam(userName)) {
-            try {
-                List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName);
-                return new ResponseResult(users);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
+            List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName);
+            return new ResponseResult(users);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -501,17 +347,8 @@ public class OrganizationController extends BaseController {
             Integer targetOrgId = (Integer) paramMap.get("targetOrgId");
             //校验参数
             if (checkParam(orgIds, targetOrgId)) {
-                try {
-                    organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
-                    return ResponseResult.SUCCESS();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (e instanceof BusinessException) {
-                        BusinessException be = (BusinessException) e;
-                        return new ResponseResult<>(null, be.getResultCode());
-                    }
-                    return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-                }
+                organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
+                return ResponseResult.SUCCESS();
             }
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -528,18 +365,9 @@ public class OrganizationController extends BaseController {
             String newOrgName = (String) paramMap.get("newOrgName");
             //校验参数
             if (checkParam(orgIds, parentOrgId, newOrgName)) {
-                try {
-                    //进行机构合并
-                    organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, getUserSession());
-                    return ResponseResult.SUCCESS();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (e instanceof BusinessException) {
-                        BusinessException be = (BusinessException) e;
-                        return new ResponseResult<>(null, be.getResultCode());
-                    }
-                    return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-                }
+                //进行机构合并
+                organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, getUserSession());
+                return ResponseResult.SUCCESS();
             }
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -550,17 +378,8 @@ public class OrganizationController extends BaseController {
     public ResponseResult generateOrgCode(Integer orgId) {
         //校验参数
         if (checkParam(orgId)) {
-            try {
-                String orgCode=organizationService.generateOrgCode(orgId);
+                String orgCode = organizationService.generateOrgCode(orgId);
                 return new ResponseResult<>(orgCode);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException) e;
-                    return new ResponseResult<>(null, be.getResultCode());
-                }
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }

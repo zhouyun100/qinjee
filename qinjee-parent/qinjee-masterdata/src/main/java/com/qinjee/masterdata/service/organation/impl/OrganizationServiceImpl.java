@@ -246,6 +246,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationEditAnno
+    //TODO 目前修改机构编码码 下级机构编码不会联动修改
     public void editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
         //反查organizationVO
         OrganizationVO organization = organizationDao.getOrganizationById(Integer.parseInt(orgId));
@@ -267,7 +268,9 @@ public class OrganizationServiceImpl implements OrganizationService {
             newOrgFullName = orgName;
         }
         organization.setOrgParentId(Integer.parseInt(parentOrgId));
-        organization.setOrgManagerId(Integer.parseInt(orgManagerId));
+        if(null!=orgManagerId&&!"".equals(orgManagerId)){
+            organization.setOrgManagerId(Integer.parseInt(orgManagerId));
+        }
         organization.setOrgType(orgType);
         organization.setOrgName(orgName);
         organization.setOrgFullName(newOrgFullName);
