@@ -217,9 +217,9 @@ public class PostServiceImpl implements PostService {
                     public int compare(Object o1, Object o2) {
                         String postCode1=String.valueOf(o1);
                         String postCode2=String.valueOf(o1);
-                        String orgCode1Num = postCode1.substring(postCode1.length() - 2);
-                        String orgCode2Num = postCode1.substring(postCode2.length() - 2);
-                        boolean isNum= StringUtils.isNumeric(orgCode1Num)&&StringUtils.isNumeric(orgCode2Num);
+                        String postCode1Num = postCode1.substring(postCode1.length() - 2);
+                        String postCode2Num = postCode1.substring(postCode2.length() - 2);
+                        boolean isNum= StringUtils.isNumeric(postCode1Num)&&StringUtils.isNumeric(postCode2Num);
                         if (isNum&&postCode1.length() > postCode2.length()) {
                             return -1;
                         } else if (isNum&&postCode1.length() < postCode2.length()) {
@@ -366,9 +366,6 @@ public class PostServiceImpl implements PostService {
      */
     private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
-        if (isEnable != 0) {
-            isEnable = null;
-        }
         //先查询到所有机构
         List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(), isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多

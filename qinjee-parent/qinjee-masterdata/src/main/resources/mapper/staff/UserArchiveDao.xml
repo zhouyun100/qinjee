@@ -994,10 +994,15 @@
   <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     select  <include refid="Base_Column_List"/>
     from t_user_archive
-    where user_name LIKE
-    CONCAT(CONCAT('%', #{name}), '%')
+    where 1=1
+     <if test="name"> != null>
+       user_name LIKE
+       CONCAT(CONCAT('%', #{name}), '%')
+      </if>
     and is_delete=0
   </select>
+
+
   <select id="listUserArchiveByPostIds" resultMap="BaseResultMap">
     select  archive_id
     from t_user_archive

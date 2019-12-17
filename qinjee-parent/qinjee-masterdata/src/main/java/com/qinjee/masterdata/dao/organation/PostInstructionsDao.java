@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao.organation;
 
 import com.qinjee.masterdata.model.entity.PostInstructions;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface PostInstructionsDao {
     int deleteByPrimaryKey(Integer instructionId);
 
