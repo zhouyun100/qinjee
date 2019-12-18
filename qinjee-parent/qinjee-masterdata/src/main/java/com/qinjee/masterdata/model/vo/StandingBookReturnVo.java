@@ -30,4 +30,9 @@ public class StandingBookReturnVo {
      * 当前页
      */
     private Integer currentPage;
+    /**
+     * 总条数
+     */
+    private Integer total;
+
 }

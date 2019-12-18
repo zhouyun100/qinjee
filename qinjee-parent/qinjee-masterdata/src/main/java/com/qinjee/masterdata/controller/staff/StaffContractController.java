@@ -5,10 +5,7 @@ import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
-import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVoAndHeader;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.model.response.CommonCode;
@@ -123,11 +120,11 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractVo", value = "合同VO表", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
 //    })
-    public ResponseResult insertLaborContract(@RequestBody @Valid LaborContractVo laborContractVo, Integer id) {
-        Boolean b = checkParam(laborContractVo,id,getUserSession());
+    public ResponseResult insertLaborContract(@RequestBody @Valid ContractVo contractVo) {
+        Boolean b = checkParam(contractVo,getUserSession());
         if(b){
             try {
-                staffContractService.insertLaborContract(laborContractVo, id, getUserSession());
+                staffContractService.insertLaborContract(contractVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -143,7 +140,7 @@ public class StaffContractController extends BaseController {
      * 批量新签合同（合同编号不支持输入，需系统自动生成，对应的是提交，就是合同已经生效，此时字段是否已签改为是否已签）
      * 这里需要进行人员信息的查询，然后将属性取出来塞进合同集合中。
      *
-     * @param list
+     * @param contractVo
      * @return
      */
     @RequestMapping(value = "/insertLaborContractBatch", method = RequestMethod.POST)
@@ -152,11 +149,11 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractVo", value = "合同vo表", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true)
 //    })
-    public ResponseResult insertLaborContractBatch(@RequestBody @Valid LaborContractVo laborContractVo, List<Integer> list) {
-        Boolean b = checkParam(laborContractVo, list, getUserSession());
+    public ResponseResult insertLaborContractBatch(@RequestBody @Valid ContractVo contractVo) {
+        Boolean b = checkParam(contractVo, getUserSession());
         if (b) {
             try {
-                staffContractService.insertLaborContractBatch(laborContractVo, list, getUserSession());
+                staffContractService.insertLaborContractBatch(contractVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -173,11 +170,11 @@ public class StaffContractController extends BaseController {
      */
     @RequestMapping(value = "/SaveLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "保存合同", notes = "hkt")
-    public ResponseResult SaveLaborContract(@RequestBody @Valid LaborContractVo laborContractVo, Integer id) {
-        Boolean b = checkParam(laborContractVo,id,getUserSession());
+    public ResponseResult SaveLaborContract(@RequestBody @Valid ContractVo contractVo) {
+        Boolean b = checkParam(contractVo,getUserSession());
         if(b){
             try {
-                staffContractService.saveLaborContract(laborContractVo, id, getUserSession());
+                staffContractService.saveLaborContract(contractVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("保存合同失败");
@@ -365,11 +362,11 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "合同id集合", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult looselaborContractBatch(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo,@RequestParam List<Integer> list) {
-        Boolean b = checkParam(laborContractChangeVo,list,getUserSession());
+    public ResponseResult looselaborContractBatch(@RequestBody @Valid ContractVo contractVo) {
+        Boolean b = checkParam(contractVo,getUserSession());
         if(b){
             try {
-                staffContractService.looselaborContractBatch(laborContractChangeVo, list, getUserSession());
+                staffContractService.looselaborContractBatch(contractVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("批量解除合同失败");

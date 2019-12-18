@@ -7,8 +7,6 @@ import com.qinjee.masterdata.dao.organation.PostInstructionsDao;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.PostInstructions;
 import com.qinjee.masterdata.service.organation.PostInstructionsService;
-import com.qinjee.masterdata.utils.excel.ExcelRender;
-import com.qinjee.masterdata.utils.excel.ExcelSheet;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
@@ -59,34 +57,7 @@ public class PostInstructionsImpl implements PostInstructionsService {
         return new ResponseResult<>(postInstructions);
     }
 
-    @Transactional
-    @Override
-    public ResponseResult uploadInstructions(UserSession userSession, MultipartFile file) {
-        try {
-            //识别文件名是否符合文件的命名规则
-            String filename = file.getOriginalFilename();
-            if (filename.endsWith(".xlsx") ) {
-//                || filename.endsWith(".xls")
-                //Excel转html只支持 .xlsx格式
-                List<PostInstructions> postInstructionsList = getPostInstructionsExcel2Html(userSession, file);
-                if(!CollectionUtils.isEmpty(postInstructionsList)){
-                    for (PostInstructions postInstructions : postInstructionsList) {
-                        postInstructionsDao.insertSelective(postInstructions);
-                    }
-                }
-            } else if (filename.endsWith(".doc") ) {
-//                || filename.endsWith(".docx")
-                //岗位说明书word转html只支持doc
-                PostInstructions postInstructions = getPostInstructionsWord2Html(userSession, file.getInputStream(), filename);
-                postInstructionsDao.insertSelective(postInstructions);
-            } else {
-                ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
-            }
-        } catch (Exception e) {
-            ExceptionCast.cast(CommonCode.FILE_PARSING_EXCEPTION);
-        }
-        return new ResponseResult();
-    }
+
 
     @Override
     public ResponseResult downloadInstructions(Integer instructionId, HttpServletResponse response) {
@@ -141,28 +112,6 @@ public class PostInstructionsImpl implements PostInstructionsService {
         return htmlPrefix + htmlContent + htmlSuffix;
     }
 
-    /**
-     * Excel转html只支持.xlsx格式
-     * @param userSession
-     * @param file
-     * @return
-     * @throws Exception
-     */
-    private List<PostInstructions> getPostInstructionsExcel2Html(UserSession userSession, MultipartFile file) throws Exception {
-        List<PostInstructions> postInstructionsList = new ArrayList<>();
-        if (file != null) {
-                //判断excel的sheet页的命名是否符合规则
-                ExcelRender render = new ExcelRender(file.getInputStream());
-                List<ExcelSheet> excelSheets = render.render();
-            for (ExcelSheet excelSheet : excelSheets) {
-                    String sheetName = excelSheet.getTitle();
-                    PostInstructions postInstructions = packPostInstructions(userSession, sheetName);
-                    postInstructions.setInstructionContent(excelSheet.toString().getBytes("utf-8"));
-                    postInstructionsList.add(postInstructions);
-            }
-        }
-        return postInstructionsList;
-    }
 
     /**
      * 封装一个新的岗位说明对象

@@ -4,6 +4,7 @@ import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.vo.staff.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
 import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
@@ -36,20 +37,18 @@ public interface IStaffContractService {
 
     /**
      * 新增单签合同
-     * @param laborContractVo
-     * @param id
+     * @param contractVo
      * @param userSession
      * @return
      */
-    void insertLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession);
+    void insertLaborContract(ContractVo contractVo, UserSession userSession);
 
     /**批量新签合同
-     * @param laborContractVo
-     * @param list
+     * @param contractVo
      * @param userSession
      * @return
      */
-   void insertLaborContractBatch(LaborContractVo laborContractVo, List<Integer> list, UserSession userSession) throws Exception;
+   void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception;
 
     /**更新合同，同时新增更新记录
      * @param laborContract
@@ -89,12 +88,11 @@ public interface IStaffContractService {
 
     /**
      * 保存合同
-     * @param laborContractVo
-     * @param id
+     * @param contractVo
      * @param userSession
      * @return
      */
-    void saveLaborContract(LaborContractVo laborContractVo, Integer id, UserSession userSession);
+    void saveLaborContract(ContractVo contractVo, UserSession userSession);
 
     /**
      * 批量续签合同
@@ -149,12 +147,11 @@ public interface IStaffContractService {
 
     /**
      * 批量解除合同
-     * @param laborContractChangeVo
-     * @param list
+     * @param contractVo
      * @param userSession
      * @return
      */
-    void looselaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list,
+    void looselaborContractBatch(ContractVo contractVo,
                                  UserSession userSession);
 
     /**

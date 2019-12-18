@@ -15,7 +15,7 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.SqlUtil;
-import com.qinjee.masterdata.utils.pexcel.FieldToProperty;
+import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.BeanUtils;
@@ -102,9 +102,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 //找到默认的显示方案然后设值
                 headList = setDefaultHead ( userSession, headList, queryScheme.getQuerySchemeId () );
                 break;
-            } else {
-                headList = setDefaultHead ( userSession, headList, 0 );
             }
+        }
+        if(CollectionUtils.isEmpty ( headList )){
+            headList = setDefaultHead ( userSession, headList, 0 );
         }
         return headList;
     }
@@ -228,11 +229,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 for (CustomFieldVO customFieldVO : customFields) {
                     if (customFieldVO.getIsSystemDefine () == 1) {
                         stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () ) + "\t" )
-                                .append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId () ) ) ).append ( "," );
+                                .append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId (),queryScheme.getQuerySchemeId () ) ) ).append ( "," );
                     } else {
                         orderNotIn.add ( customFieldVO );
                         stringBuffer.append ( "t." ).append (   customFieldVO.getFieldName ()+ "\t" ).
-                                append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId () ) ) ).append ( "," );
+                                append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId (),queryScheme.getQuerySchemeId () ) ) ).append ( "," );
                     }
                 }
                 assert order != null;
@@ -321,7 +322,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 queryScheme.setIsDefault ( 1 );
                 querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
             } else {
-                if (queryScheme.getIsDelete () == 1) {
+                if (queryScheme.getIsDefault () == 1) {
                     queryScheme.setIsDefault ( 0 );
                     querySchemeDao.updateByPrimaryKeySelective ( queryScheme );
                 }

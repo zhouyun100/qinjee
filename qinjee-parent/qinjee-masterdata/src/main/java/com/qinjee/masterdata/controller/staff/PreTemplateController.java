@@ -157,7 +157,7 @@ public class PreTemplateController extends BaseController {
            }
 
        }
-        return failResponseResult ( "参数错误或者session错误" );
+        return failResponseResult ( "文件为空或者session错误" );
     }
 
     /**

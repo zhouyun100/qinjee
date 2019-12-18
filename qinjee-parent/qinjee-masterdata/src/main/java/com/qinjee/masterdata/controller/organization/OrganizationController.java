@@ -1,12 +1,13 @@
 package com.qinjee.masterdata.controller.organization;
 
+import com.github.liaochong.myexcel.core.DefaultExcelBuilder;
+import com.github.liaochong.myexcel.utils.AttachmentExportUtil;
 import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
-import com.qinjee.masterdata.utils.pexcel.ExcelExportUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -14,6 +15,7 @@ import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -243,15 +245,10 @@ public class OrganizationController extends BaseController {
                 }
                 dataList.add(org);
             }
-            //将list转为字节流数组
-            byte[] bytes = ExcelExportUtil.exportToBytes(dataList);
-            //输出字节流到浏览器
-            response.setCharacterEncoding("UTF-8");
-            response.setHeader("content-Type", "application/vnd.ms-excel");
             response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
-            response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode("orgDefualt.xls", "UTF-8") + "\"");
-            response.getOutputStream().write(bytes);
+            Workbook workbook = DefaultExcelBuilder.of(OrganizationVO.class).build(dataList);
+
+            AttachmentExportUtil.export(workbook, "orgDefualt", response);
             //只能返回null
             return null;
         }

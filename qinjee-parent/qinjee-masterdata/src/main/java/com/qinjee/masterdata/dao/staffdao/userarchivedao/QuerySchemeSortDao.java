@@ -35,7 +35,7 @@ public interface QuerySchemeSortDao {
 
     void insertBatch(@Param("list") List<QuerySchemeSort> querySchemeSortlist);
 
-    String selectSortById(@Param("fieldId") Integer fieldId);
+    String selectSortById(@Param("fieldId") Integer fieldId, @Param("querySchemaId") Integer querySchemaId);
 
     void updateBatch(@Param("list") List< QuerySchemeSort> sortList);
 }

@@ -38,6 +38,7 @@ public class BlackListVo implements Serializable {
     /**
      * 所属单位ID
      */
+    @NotNull
     private String businessUnitName;
 
     /**

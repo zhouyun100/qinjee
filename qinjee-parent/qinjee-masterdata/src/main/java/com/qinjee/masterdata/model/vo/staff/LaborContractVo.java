@@ -67,6 +67,10 @@ public class LaborContractVo implements Serializable {
     @NotNull
     private Integer signNumber;
 
+    /**
+     * 新签人员id
+     */
+    private Integer archiveId;
 
     private static final long serialVersionUID = 1L;
 

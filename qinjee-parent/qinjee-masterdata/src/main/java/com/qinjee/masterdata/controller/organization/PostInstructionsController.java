@@ -35,11 +35,6 @@ public class PostInstructionsController extends BaseController {
   }
 
 
-  @PostMapping("uploadInstructions")
-  @ApiOperation(value = "导入岗位说明书", notes = "待验证")
-  public ResponseResult uploadInstructions(@ApiParam(value = "导入的文件", required = true, allowMultiple = true) MultipartFile file) {
-    return postInstructionsService.uploadInstructions(getUserSession(), file);
-  }
 
 
   @GetMapping("downloadInstructions")

@@ -161,7 +161,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             declaredField.set(object, field);
                         }
                         //设置值
+                        checkCustomFieldVO.setCode ( integerStringEntry.getKey () );
                         checkCustomFieldVO.setFieldValue ( integerStringEntry.getValue () );
+
                         //字段值规则校验
                         validCustomFieldValue(checkCustomFieldVO);
                         //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过

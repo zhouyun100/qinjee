@@ -257,6 +257,7 @@ public class StaffStandingBookController extends BaseController {
                 List < UserArchiveVo > list = staffStandingBookService.selectStaff ( standingBookReturnVo, getUserSession () );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( list );
+                userArchiveVoPageResult.setTotal ( standingBookReturnVo.getTotal () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession ()));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);

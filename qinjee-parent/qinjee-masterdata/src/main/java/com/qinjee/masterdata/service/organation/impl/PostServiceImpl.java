@@ -18,12 +18,12 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
-import com.qinjee.masterdata.utils.MyCollectionUtil;
 import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang.StringUtils;
@@ -434,8 +434,7 @@ public class PostServiceImpl implements PostService {
         List<Post> orgList = new ArrayList<>();
         //记录行号
         Integer number = 1;
-        for (Object object : objects) {
-            Post vo = (Post) object;
+        for (Post vo : objects) {
             vo.setLineNumber(++number);
             orgList.add(vo);
         }
@@ -490,6 +489,7 @@ public class PostServiceImpl implements PostService {
         resultMap.put("redisKey", redisKey);
         responseResult.setResult(resultMap);
         response.setHeader("redisKey", redisKey);
+        responseResult.setMessage("文件校验成功");
         return responseResult;
     }
 

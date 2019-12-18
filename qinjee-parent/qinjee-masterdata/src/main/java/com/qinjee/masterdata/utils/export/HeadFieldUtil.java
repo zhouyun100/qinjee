@@ -27,6 +27,7 @@ public class HeadFieldUtil {
         map.put("签订次数", "sign_number");
         map.put("合同备注", "contract_remark");
         map.put("拉黑原因", "block_reason");
+        map.put("拉黑时间", "block_time");
         map.put("入职部门编码", "org_code");
         map.put("入职岗位编码", "post_code");
         map.put("试用期限（月）", "probation_period");
@@ -35,7 +36,6 @@ public class HeadFieldUtil {
     public static Map<String, String> getFieldCode() {
         Map<String, String> map = new HashMap<>();
         map.put("org_name", "部门");
-
         map.put("business_unit_name", "单位");
         map.put("post_name", "岗位");
         map.put("supervisor_user_name", "直接上级");
@@ -50,6 +50,7 @@ public class HeadFieldUtil {
         map.put("sign_number", "签订次数");
         map.put("contract_remark", "合同备注");
         map.put("block_reason", "拉黑原因");
+        map.put("block_time", "拉黑时间");
         map.put("org_code","入职部门编码");
         map.put("post_code","入职岗位编码");
         map.put("probation_period","试用期限（月）");

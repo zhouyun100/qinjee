@@ -140,7 +140,7 @@ select
     select order_by_rule
     from t_query_scheme_sort
     where field_id =#{fieldId}
-
+    and query_scheme_id=#{querySchemaId}
   </select>
 
   <update id="updateBatch" parameterType="list">

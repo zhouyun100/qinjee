@@ -383,16 +383,16 @@
               org.org_name,
               orga.org_name AS business_unit_name,
               post.post_name,
-              bla.block_reason
+              bla.block_reason,
+              bla.block_time
               FROM
                   t_blacklist bla
               LEFT JOIN t_organization org ON bla.org_id = org.org_id
-              left JOIN t_organization orga ON bla.company_id = orga.company_id
+              left JOIN t_organization orga ON bla.business_unit_id = orga.org_id
               LEFT JOIN t_post post ON post.post_id = bla.post_id
               WHERE
               bla.company_id =#{companyId}
               AND org.is_enable = 1
-              and orga.org_parent_id=0
               AND orga.is_enable = 1
               AND bla.is_delete = 0
               AND bla.blacklist_id in

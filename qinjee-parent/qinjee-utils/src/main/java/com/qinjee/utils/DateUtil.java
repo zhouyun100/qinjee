@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.utils;
+package com.qinjee.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
