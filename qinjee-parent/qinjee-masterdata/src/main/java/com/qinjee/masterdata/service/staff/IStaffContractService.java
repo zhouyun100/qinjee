@@ -3,14 +3,11 @@ package com.qinjee.masterdata.service.staff;
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.ContractVo;
-import com.qinjee.masterdata.model.vo.staff.LaborContractChangeVo;
-import com.qinjee.masterdata.model.vo.staff.LaborContractVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -41,7 +38,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void insertLaborContract(ContractVo contractVo, UserSession userSession);
+    void insertLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException;
 
     /**批量新签合同
      * @param contractVo
@@ -51,14 +48,10 @@ public interface IStaffContractService {
    void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception;
 
     /**更新合同，同时新增更新记录
-     * @param laborContract
-     * @param laborContractChangeVo
-     * @param id
      * @param userSession
      * @return
      */
-    void updatelaborContract(LaborContract laborContract, LaborContractChangeVo laborContractChangeVo,
-                             Integer id, UserSession userSession);
+    void updatelaborContract(ContractVo contractVo, UserSession userSession);
 
     /**
      *查询一个合同的变更历史
@@ -71,14 +64,11 @@ public interface IStaffContractService {
 
 
     /**新增续签合同
-     * @param laborContractVo
-     * @param id
-     * @param laborContractChangeVo
+     * @param contractVo
      * @param userSession
      * @return
      */
-    void insertReNewLaborContract(LaborContractVo laborContractVo, Integer id,
-                                  LaborContractChangeVo laborContractChangeVo, UserSession userSession);
+    void insertReNewLaborContract(ContractVo contractVo, UserSession userSession);
     /**
      * 新增续签意向表
      * @param contractRenewalIntention
@@ -92,7 +82,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void saveLaborContract(ContractVo contractVo, UserSession userSession);
+    void saveLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException;
 
     /**
      * 批量续签合同
@@ -188,8 +178,16 @@ public interface IStaffContractService {
 
     /**
      * 查询机构下合同即将到期的员工
-     * @param id
+     * @param orgId
      * @return
      */
-    List<UserArchive> selectArcDeadLine(Integer id,List<UserArchive> list) throws Exception;
+    PageResult<UserArchiveVo> selectArcDeadLine(Integer orgId,Integer pagesize,Integer currentPage) ;
+
+    Integer getSignNumber(Integer archiveId);
+
+    List< LaborContract > selectContractByArchiveId(Integer archiveId);
+
+    PageResult< ContractFormVo > createContractForm(List< Integer> list,Integer pageSize,Integer currentPage,UserSession userSession);
+
+   PageResult<ContractRenewalIntention> selectContractRenewalIntentionByOrg(List<Integer> orgId,Integer pageSIze,Integer currentPage);
 }

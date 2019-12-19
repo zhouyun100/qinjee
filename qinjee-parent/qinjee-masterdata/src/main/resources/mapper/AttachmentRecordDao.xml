@@ -192,10 +192,7 @@
   <select id="selectFilePath" resultType="java.lang.String">
     select  attachment_url  from
     t_attachment_record
-    where business_id = #{attachmentVo.businessId,jdbcType=INTEGER}
-    and   business_type = #{attachmentVo.businessType,jdbcType=VARCHAR}
-    and   business_module = #{attachmentVo.businessModule,jdbcType=VARCHAR}
-    and   attachment_type = #{attachmentVo.attachmentType,jdbcType=VARCHAR}
+    where business_id = #{archiveId,jdbcType=INTEGER}
     and   company_id = #{companyId,jdbcType=INTEGER}
     and   is_delete=0
     AND   group_id IN
@@ -204,7 +201,7 @@
             FROM
                 t_attachment_group
             WHERE
-                group_name = #{attachmentVo.groupName}
+                group_name = #{groupName}
             AND is_delete = 0)
   </select>
   <update id="deleteByIdList">
@@ -223,19 +220,9 @@
             FROM
                 t_attachment_record
             WHERE
-            business_id = #{attachmentVo.bussinessId}
-            AND business_type =#{attachmentVo.businessType}
-            AND business_module =#{attachmentVo.businessModule}
+            business_id = #{archiveId}
             AND company_id = #{companyId}
             AND is_delete = 0
-            AND group_id IN
-            (SELECT
-                group_id
-            FROM
-                t_attachment_group
-            WHERE
-                group_name = #{attachmentVo.groupName}
-            AND is_delete = 0)
   </select>
   <select id="selectGroupId" resultType="java.lang.Integer">
     select group_id from
@@ -246,23 +233,19 @@
     select attachment_number from
     t_attachment_group
     where group_name=#{groupName}
+    and group_type='CATEGORY'
   </select>
   <update id="deleteFile">
     update  t_attachment_record
     set
      is_delete=1
      where
-      business_id = #{attachmentVo.bussinessId}
-            AND business_type =#{attachmentVo.businessType}
-            AND business_module =#{attachmentVo.businessModule}
-            AND company_id = #{companyId}
-            AND group_id IN
-            (SELECT
-                group_id
-            FROM
-                t_attachment_group
-            WHERE
-                group_name = #{attachmentVo.groupName}
-            AND is_delete = 0)
+     company_id=#{companyId}
+     and
+     attachment_id=#{id}
   </update>
+  <select id="selectGroup" resultType="java.lang.String">
+    select group_name from
+    t_attachment_group
+  </select>
 </mapper>

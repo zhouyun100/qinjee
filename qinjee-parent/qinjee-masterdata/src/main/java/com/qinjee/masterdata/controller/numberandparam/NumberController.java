@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/number")
-@Api(tags = "工号合同编号操作")
+@Api(tags = "【人员管理】工号合同编号操作")
 public class NumberController extends BaseController {
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;

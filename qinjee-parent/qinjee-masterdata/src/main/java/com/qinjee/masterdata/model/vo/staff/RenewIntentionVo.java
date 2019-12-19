@@ -1,21 +1,23 @@
-package com.qinjee.masterdata.model.entity;
+package com.qinjee.masterdata.model.vo.staff;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-
-/**
- * t_contract_renewal_intention
- * @author 
- */
 @Data
 @JsonInclude
-public class ContractRenewalIntention implements Serializable {
+public class RenewIntentionVo implements Serializable {
+    private  String userName;
+    private  String employeeNumber;
+    private  String businessUnitName;
+    private  String orgName;
+    private  String postName;
+    private  Date sendTime;
+    private  String renewalOpinion;
+    private  String sendUser;
     /**
      * 续签意向ID
      */
@@ -32,11 +34,7 @@ public class ContractRenewalIntention implements Serializable {
      * 企业id
      */
     private Integer companyId;
-    /**
-     * 档案ID
-     */
-    @NotNull
-    private Integer archiveId;
+
 
     /**
      * 合同开始日期
@@ -67,30 +65,6 @@ public class ContractRenewalIntention implements Serializable {
      */
     private Short isAgree;
 
-    /**
-     * 续签意见（对是否同意的一些补充）
-     */
-    private String renewalOpinion;
-
-    /**
-     * 操作人ID
-     */
-    private Integer operatorId;
-
-    /**
-     * 创建时间
-     */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date updateTime;
-
-    private static final long serialVersionUID = 1L;
-
+    private Date createTime;
 }

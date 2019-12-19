@@ -9,7 +9,7 @@
     <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth" />
     <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType" />
     <result column="contract_number" jdbcType="VARCHAR" property="contractNumber" />
-    <result column="intention_status" jdbcType="VARCHAR" property="intensionStatus" />
+    <result column="intention_status" jdbcType="VARCHAR" property="intentionStatus" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="is_agree" jdbcType="SMALLINT" property="isAgree" />
     <result column="renewal_opinion" jdbcType="VARCHAR" property="renewalOpinion" />
@@ -41,47 +41,47 @@
       #{isAgree,jdbcType=SMALLINT}, #{renewalOpinion,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertBatch" parameterType="hashmap">
-    <foreach collection="contractRenewalIntentions" item="con" open="(" separator="," close=")">
+  <insert id="insertBatch" keyColumn="renewal_intention_id" keyProperty="renewalIntentionId" parameterType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" useGeneratedKeys="true">
+    <foreach collection="contractRenewalIntentions" item="con"  separator=";" >
     insert into t_contract_renewal_intention
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="archiveId != null">
+      <if test="con.archiveId != null">
         archive_id,
       </if>
-      <if test="contractNumber != null">
+      <if test="con.contractNumber != null">
         contract_number,
       </if>
-      <if test="intentionStatus != null">
+      <if test="con.intentionStatus != null">
         intention_status,
       </if>
-      <if test="companyId != null">
+      <if test="con.companyId != null">
         company_id,
       </if>
-      <if test="contractBeginDate != null">
+      <if test="con.contractBeginDate != null">
         contract_begin_date,
       </if>
-      <if test="contractEndDate != null">
+      <if test="con.contractEndDate != null">
         contract_end_date,
       </if>
-      <if test="contractPeriodMonth != null">
+      <if test="con.contractPeriodMonth != null">
         contract_period_month,
       </if>
-      <if test="contractPeriodType != null">
+      <if test="con.contractPeriodType != null">
         contract_period_type,
       </if>
-      <if test="isAgree != null">
+      <if test="con.isAgree != null">
         is_agree,
       </if>
-      <if test="renewalOpinion != null">
+      <if test="con.renewalOpinion != null">
         renewal_opinion,
       </if>
-      <if test="operatorId != null">
+      <if test="con.operatorId != null">
         operator_id,
       </if>
-      <if test="createTime != null">
+      <if test="con.createTime != null">
         create_time,
       </if>
-      <if test="updateTime != null">
+      <if test="con.updateTime != null">
         update_time,
       </if>
     </trim>
@@ -90,13 +90,13 @@
         #{con.archiveId,jdbcType=INTEGER},
       </if>
       <if test="con.contractNumber != null">
-        #{con.contractNumber,jdbcType=VARCHAR}
+        #{con.contractNumber,jdbcType=VARCHAR},
       </if>
       <if test="con.intentionStatus != null">
-        #{con.intentionStatus,jdbcType=VARCHAR}
+        #{con.intentionStatus,jdbcType=VARCHAR},
       </if>
       <if test="con.companyId != null">
-        #{con.companyId,jdbcType=INTEGER}
+        #{con.companyId,jdbcType=INTEGER},
       </if>
       <if test="con.contractBeginDate != null">
         #{con.contractBeginDate,jdbcType=DATE},
@@ -176,13 +176,13 @@
         #{archiveId,jdbcType=INTEGER},
       </if>
       <if test="contractNumber != null">
-         #{contractNumber,jdbcType=VARCHAR}
+         #{contractNumber,jdbcType=VARCHAR},
       </if>
       <if test="intentionStatus != null">
-        #{intentionStatus,jdbcType=VARCHAR}
+        #{intentionStatus,jdbcType=VARCHAR},
       </if>
       <if test="companyId != null">
-        #{companyId,jdbcType=INTEGER}
+        #{companyId,jdbcType=INTEGER},
       </if>
       <if test="contractBeginDate != null">
         #{contractBeginDate,jdbcType=DATE},
@@ -275,10 +275,66 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
   </update>
-  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_contract_renewal_intention
-    where archive_id = #{id,jdbcType=INTEGER}
+  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo" >
+    select arc.user_name as userName,
+           arc.employee_number as employeeNumber ,
+           org.org_name as orgName,
+           orga.org_name as bussinessUnitName,
+           post.post_name as postName,
+           intention.update_time as sendTime,
+           intention.renewal_opinion as renewalOpinion,
+           intention.renewal_intention_id as renewalIntentionId,
+           intention.contract_number as contractNumber,
+           intention.intention_status as intentionStatus,
+           intention.company_id as companyId,
+           intention.contract_begin_date as contractBeginDate,
+           intention.contract_end_date as contractEndDate,
+           intention.contract_period_month as contractPeriodMonth,
+           intention.contract_period_type as contractPeriodType,
+           intention.is_agree as isAgree,
+           intention.create_time as createTiem,
+           arch.user_name as sendUser
+    from t_contract_renewal_intention intention
+    left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
+    left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1
+    left join t_organization orga on orga.org_id = arc.business_unit_id and orga.is_enable=1
+    left join t_post post on post.post_id=arc.post_id and post.is_enable=1 and post.is_delete=0
+    left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
+    where arc.archive_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo" >
+    select arc.user_name as userName,
+    arc.employee_number as employeeNumber ,
+    org.org_name as orgName,
+    orga.org_name as bussinessUnitName,
+    post.post_name as postName,
+    intention.update_time as sendTime,
+    intention.renewal_opinion as renewalOpinion,
+    intention.renewal_intention_id as renewalIntentionId,
+    intention.contract_number as contractNumber,
+    intention.intention_status as intentionStatus,
+    intention.company_id as companyId,
+    intention.contract_begin_date as contractBeginDate,
+    intention.contract_end_date as contractEndDate,
+    intention.contract_period_month as contractPeriodMonth,
+    intention.contract_period_type as contractPeriodType,
+    intention.is_agree as isAgree,
+    intention.create_time as createTiem,
+    arch.user_name as sendUser
+    from t_contract_renewal_intention intention
+    left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
+    left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1
+    left join t_organization orga on orga.org_id = arc.business_unit_id and orga.is_enable=1
+    left join t_post post on post.post_id=arc.post_id and post.is_enable=1 and post.is_delete=0
+    left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
+    where arc.archive_id in
+    (select arc.archive_id from t_user_archive arc
+     left join t_organization org on org.org_id=arc.org_id
+     and org.is_enable=1 and arc.is_delete=0
+     where org.org_id in
+     <foreach collection="list" item="item" open="(" separator="," close=")">
+       #{item}
+    </foreach>)
+
   </select>
 </mapper>

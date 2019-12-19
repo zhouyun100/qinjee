@@ -264,7 +264,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         if ("ARC".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
             //找到确认唯一性的字段id，进行判断新增或是更新操作
             //进行对象组装
-
             for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                 UserArchive userArchive = new UserArchive ();
                 Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
@@ -295,6 +294,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             userArchive.setArchiveId ( archiveId );
                             userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                         } else {
+                            userArchive.setCompanyId ( userSession.getCompanyId () );
                             userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
                             userArchiveDao.insertSelective ( userArchive );
                         }

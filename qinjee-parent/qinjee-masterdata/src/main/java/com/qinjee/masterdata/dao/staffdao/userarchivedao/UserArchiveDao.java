@@ -84,7 +84,6 @@ public interface UserArchiveDao {
      @MapKey("archive_id")
      Map<Integer,Map<String,Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order);
 
-
     List<Integer> selectArchiveIdByOrgId(@Param("companyId") Integer companyId);
 
     List<ExportArcVo> selectDownLoadVoList(@Param("archiveIdList") List<Integer> archiveIdList);
@@ -101,7 +100,6 @@ public interface UserArchiveDao {
 
     void insertBatch(@Param("userArchives") List< UserArchive> userArchives);
 
-
     Integer countUserArchiveByPostId(Integer postId);
 
     void deleteArchiveById(Integer businessId);
@@ -115,4 +113,6 @@ public interface UserArchiveDao {
     List<UserArchiveVo> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
 
     List< UserArchiveVo> selectArcByNotCon(@Param("orgId") Integer orgId);
+
+    Map< String, Object> selectTransMessage(@Param("key") Integer key);
 }

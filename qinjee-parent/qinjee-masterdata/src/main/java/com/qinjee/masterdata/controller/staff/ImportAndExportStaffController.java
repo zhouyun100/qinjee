@@ -36,16 +36,18 @@ public class ImportAndExportStaffController extends BaseController {
     private IStaffImportAndExportService staffImportAndExportService;
     @Autowired
     private UserArchiveDao userArchiveDao;
+
+
     /**
      * 自定义文件类型校验以及生成list
      */
     @RequestMapping(value = "/importFileAndCheckFilePre", method = RequestMethod.POST)
     @ApiOperation(value = "预入职自定义文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile,getUserSession ());
+    public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile,Integer isSystemDefine) {
+        Boolean b = checkParam(multipartFile,getUserSession (),isSystemDefine);
         if(b) {
             try {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession () );
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession (),isSystemDefine );
                 return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (IOException e) {
                 e.printStackTrace ();
@@ -62,11 +64,11 @@ public class ImportAndExportStaffController extends BaseController {
      */
     @RequestMapping(value = "/importFileAndCheckFileArc", method = RequestMethod.POST)
     @ApiOperation(value = "档案自定义文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< CheckImportVo > importFileAndCheckFileARC(@RequestParam("file") MultipartFile multipartFile) {
-        Boolean b = checkParam(multipartFile,getUserSession ());
+    public ResponseResult< CheckImportVo > importFileAndCheckFileARC(@RequestParam("file") MultipartFile multipartFile,Integer isSystemDefine) {
+        Boolean b = checkParam(multipartFile,getUserSession (),isSystemDefine);
         if(b) {
             try {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession () );
+                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession (),isSystemDefine );
                 return new ResponseResult  (checkImportVo, CommonCode.SUCCESS);
             } catch (IOException e) {
                 e.printStackTrace ();
@@ -258,6 +260,39 @@ public class ImportAndExportStaffController extends BaseController {
         return  failResponseResult("参数错误");
     }
     /**
+     * 导出已签合同人员
+     */
+    @RequestMapping(value = "/exportArcFileCon", method = RequestMethod.POST)
+    @ApiOperation(value = "导出已签合同人员", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
+//    })
+    //导出的文件应该是以.xls结尾
+    public ResponseResult exportArcFileCon(@RequestBody @Valid ExportNoConArcVo exportNoConArcVo, HttpServletResponse response) {
+        Boolean b = checkParam(response,getUserSession (),exportNoConArcVo);
+        if(b){
+            try {
+                if(CollectionUtils.isEmpty ( exportNoConArcVo.getList () )){
+                    List< UserArchiveVo > arcList=userArchiveDao.selectArcByNotCon(exportNoConArcVo.getOrgId ());
+                    List < Integer > objects = new ArrayList <> ();
+                    for (UserArchiveVo userArchiveVo : arcList) {
+                        objects.add ( userArchiveVo.getArchiveId () );
+                    }
+                    exportNoConArcVo.setList ( objects );
+                }
+                staffImportAndExportService.exportArcFile(exportNoConArcVo.getList (),response,getUserSession ());
+                return null;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("导出失败");
+            }
+        }
+        return  failResponseResult("参数错误");
+    }
+    /**
      * 导出未签合同人员
      */
     @RequestMapping(value = "/exportArcFileNoCon", method = RequestMethod.POST)
@@ -280,6 +315,8 @@ public class ImportAndExportStaffController extends BaseController {
                         objects.add ( userArchiveVo.getArchiveId () );
                     }
                    exportNoConArcVo.setList ( objects );
+                }else{
+
                 }
                 staffImportAndExportService.exportArcFile(exportNoConArcVo.getList (),response,getUserSession ());
                 return null;

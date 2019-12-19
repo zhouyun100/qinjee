@@ -454,6 +454,26 @@
     and con.business_unit_id=#{companyId}
     and arc.is_delete=0
   </select>
-
-
+  <select id="selectByarcIdAndStatus" resultType="com.qinjee.masterdata.model.entity.LaborContract">
+    select <include refid="Base_Column_List"/>
+    from t_labor_contract
+    where archive_id=#{archiveId}
+    and  contract_state=#{renewagree}
+  </select>
+  <select id="selectContractByArchiveId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from
+    t_labor_contract
+    where archive_id=#{archiveId}
+  </select>
+  <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
+    select org.org_name,orga.org_name
+    from t_organization org,t_organization orga,t_user_archive arc
+    left j
+    where org.org_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and arc.archive_id=#{archiveId} and arc.is_delete=0
+    and orga.org_id=arc.bussiness_unit_id and orga.is_enable=1
+  </select>
 </mapper>

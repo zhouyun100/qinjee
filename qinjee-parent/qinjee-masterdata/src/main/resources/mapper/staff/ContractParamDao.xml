@@ -44,10 +44,13 @@
         FROM t_contract_param tContractParam  WHERE tContractParam.contract_param_id =#{id}
         and tContractParam.is_delete=0
     </select>
-    <select id="findContractParamByCompanyId" resultMap="ContractParamMap" >
+    <select id="findContractParamByCompanyId" resultMap="ContractParamMap"  >
         SELECT
         <include refid="allColumns" />
-        FROM t_contract_param tContractParam  WHERE tContractParam.company_id =#{id}
+        FROM t_contract_param tContractParam
+        WHERE tContractParam.company_id in
+        (select company_id from t_organization
+        where org_id=#{id} and is_delete=0 and is_enable=1)
         and tContractParam.is_delete=0
     </select>
     <!-- 根据主键查询数据 -->

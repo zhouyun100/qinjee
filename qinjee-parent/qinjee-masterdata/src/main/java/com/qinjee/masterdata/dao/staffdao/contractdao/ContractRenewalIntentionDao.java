@@ -26,4 +26,6 @@ public interface ContractRenewalIntentionDao {
     List<ContractRenewalIntention> selectByArchiveId(@Param("id") Integer id);
 
     void insertBatch(@Param("contractRenewalIntentions") List<ContractRenewalIntention> contractRenewalIntentions);
+
+    List< ContractRenewalIntention> selectByorgId(@Param("list") List<Integer> orgId);
 }

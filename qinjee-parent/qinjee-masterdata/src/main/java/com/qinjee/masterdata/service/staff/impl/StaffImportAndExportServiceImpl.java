@@ -25,9 +25,9 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
+import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
-import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.ExcelUtil;
@@ -62,6 +62,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private final static String POSTCODE = "岗位编码";
     private final static String SUPORCODE = "直接上级编码";
     private final static String BUSINESSUNITCODE = "机构编码编码";
+    private static final String ORGNAME = "部门";
+    private static final String BUSINESSUNITNAME ="单位" ;
+    private static final String POSTNAME ="岗位" ;
+    private static final String SUPVISORUSERNAME ="直接上级" ;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
@@ -87,13 +91,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
+    public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession,Integer isSystemDefine) throws Exception {
         // 获取文件名
         checkFileType ( multipartFile );
         //解析集合
         List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
         //获取检验结果
-        List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode );
+        List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode,isSystemDefine );
         redisClusterService.setex ( userSession.getCompanyId ()+funcCode+userSession.getArchiveId ()+"import",2*60*60,
                 JSON.toJSONString ( maps ));
         //将获取的结果存进缓存中，有效期2小时
@@ -106,13 +110,15 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 TableHead tableHead=new TableHead ();
                 tableHead.setIsShow ( 1 );
 
+                Integer key = integerStringEntry.getKey ();
                 if("PRE".equals ( funcCode )) {
-                    CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( integerStringEntry.getKey (),
+                    CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( key ,
                             userSession.getCompanyId (), "PRE" );
                     tableHead.setName ( customFieldVO.getFieldName () );
                     tableHead.setKey ( customFieldVO.getFieldCode () );
-                }else{
-                    CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( integerStringEntry.getKey (),
+                }
+                if("ARC".equals ( funcCode )){
+                    CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( key,
                             userSession.getCompanyId (), "ARC" );
                     tableHead.setName ( customFieldVO.getFieldName () );
                     tableHead.setKey ( customFieldVO.getFieldCode () );
@@ -212,7 +218,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     }
 
 
-    public List < CheckCustomTableVO > checkFile(List < Map < Integer, String > > list, String funcCode) {
+    public List < CheckCustomTableVO > checkFile(List < Map < Integer, String > > list, String funcCode,Integer isSystemDefine) {
         List < Integer > idList = null;
         idList = new ArrayList <> ( list.get ( 0 ).keySet () );
         List < Map < Integer, Object > > mapList = new ArrayList <> ();
@@ -224,8 +230,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             mapList.add ( map1 );
         }
         //请求接口获得返回前端的结果
-
         List < CheckCustomTableVO > checkCustomTableVOS = customTableFieldService.checkCustomFieldValue ( idList, mapList );
+        if(isSystemDefine!=0){
         for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
             String idtype = null;
             String idnumber = null;
@@ -235,7 +241,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     idtype = fieldVO.getFieldValue ();
                 } else if ("id_number".equals ( fieldVO.getFieldCode () )) {
                     idnumber = fieldVO.getFieldValue ();
-                } else if ("employment_number".equals (fieldVO.getFieldCode ())) {
+                } else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
                     employmentNumber = fieldVO.getFieldValue ();
                 }
             }
@@ -245,7 +251,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 Integer achiveId = null;
                 if ("PRE".equals ( funcCode )) {
                     pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber );
-                } else if ( "ARC".equals ( funcCode )) {
+                } else if ("ARC".equals ( funcCode )) {
                     achiveId = userArchiveDao.selectIdByNumberAndEmploy ( idnumber, employmentNumber );
                 }
                 if (pre != null || achiveId != null) {
@@ -256,6 +262,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 checkCustomTableVO.setCheckResult ( false );
                 checkCustomTableVO.setResultMsg ( "用户不存在" );
             }
+        }
         }
         return checkCustomTableVOS;
     }
@@ -390,7 +397,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Transactional(rollbackFor = Exception.class)
     public void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         List<String> headsByArc;
+        Map<String,Object> map;
         ExportFile exportFile = staffArchiveService.selectArchiveByQueryScheme ( userSession, list );
+        for (Map.Entry < Integer, Map < String, Object > > integerMapEntry : exportFile.getMap ().entrySet ()) {
+             map=userArchiveDao.selectTransMessage ( integerMapEntry.getKey () );
+             map.putAll ( integerMapEntry.getValue () );
+            integerMapEntry.setValue ( map );
+        }
         List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         Integer j=0;
         for (QueryScheme queryScheme :list1 ) {
@@ -576,24 +589,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
  * 根据fieldName与funcode找到对应的fieldId
  */
 private Map<Integer,String> transField(String funcCode,Integer companyId,String value,String fieldName){
-    if(ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName )){
-        return customTableFieldDao.transOrgId(funcCode,companyId,value);
-    }
-    if(SUPORCODE.equals ( fieldName ) ){
-        return customTableFieldDao.transSupiorId(funcCode,companyId,value);
-    }
-    if(POSTCODE.equals ( fieldName ) ){
-        return customTableFieldDao.transPostId(funcCode,companyId,value);
-    }
-    else {
-        Map<Integer, String> map = new HashMap<>();
+    Map<Integer,String> map=new HashMap <> (  );
+    if(ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName )||
+     ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName ) ){
+        Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+        map.put ( map1.get("field_id"),String.valueOf (map1.get ( "org_id" )) );
+    }else if(SUPORCODE.equals ( fieldName )||SUPVISORUSERNAME.equals ( fieldName ) ){
+        Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
+        map.put ( map1.get("field_id"),String.valueOf (map1.get ( "supervisor_id" ) ));
+    } else if(POSTCODE.equals ( fieldName )|| POSTNAME.equals ( fieldName ) ){
+        Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
+        map.put ( map1.get("field_id"),String.valueOf (map1.get ( "post_id" )) );
+    } else {
         Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
         if(integer!=null && integer!=0) {
             map.put(integer, value);
         }
-        return map;
     }
-
+    return map;
 }
 
     /**
@@ -613,6 +626,15 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
                 s = TransValue ( head );
                 if(s==null) {
                     s = customTableFieldDao.selectFieldCodeByName ( head, companyId,funcCode );
+                }
+                if ("部门" .equals(head) ) {
+                    stringMap.put ( head,String.valueOf (stringObjectMap.get ( "org_name" ))  );
+                } if ("岗位" .equals(head) ) {
+                    stringMap.put ( head, String.valueOf (stringObjectMap.get ( "post_name" )) );
+                } if ("单位" .equals(head) ) {
+                    stringMap.put ( head, String.valueOf (stringObjectMap.get ( "business_unit_name" )) );
+                } if ("直接领导" .equals(head) ) {
+                    stringMap.put ( head,String.valueOf (stringObjectMap.get ( "supervisor_name" )) );
                 }
                 if ("任职类型" .equals(head) ) {
                     stringMap.put ( head, "在职" );

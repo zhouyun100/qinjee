@@ -37,7 +37,7 @@ public class HeadMapUtil {
      */
     public static List<String> getHeadsForWorkLine() {
         List<String> keyList=new LinkedList <> (  );
-        String[] strings = {"姓名", "证件号码", "工号", "起始时间", "终止日期", "所在单位", "所在岗位","证明人姓名","变动原因"};
+        String[] strings = {"姓名", "证件号码", "工号", "起始时间", "终止时间", "所在单位", "所在岗位","证明人姓名","变动原因"};
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }

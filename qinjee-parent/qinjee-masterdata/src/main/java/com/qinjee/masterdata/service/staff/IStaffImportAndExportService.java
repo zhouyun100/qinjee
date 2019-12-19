@@ -58,7 +58,7 @@ public interface IStaffImportAndExportService {
     /**文件检验
      * @param multipartFile
      */
-    CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception;
+    CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession,Integer isSystemDefine) throws Exception;
 
     /**
      * 取消文件导入

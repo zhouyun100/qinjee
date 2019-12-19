@@ -151,11 +151,11 @@ public class UpAndDownUtil {
      * @param key        对象键，详情见上方说明
      * @param
      */
-    public static void putFile(File file,String key) throws Exception {
+    public static void putFile(File file,String key)  {
         try {
             // 指定要上传到 COS 上对象键
             PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET, key, file);
-            PutObjectResult putObjectResult = COSClIENT.putObject(putObjectRequest);
+            COSClIENT.putObject(putObjectRequest);
         } catch (CosServiceException serverException) {
             throw new CosServiceException("服务错误");
         } catch (CosClientException clientException) {

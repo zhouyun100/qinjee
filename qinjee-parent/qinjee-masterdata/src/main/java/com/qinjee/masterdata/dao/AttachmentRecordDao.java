@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -21,15 +20,17 @@ public interface AttachmentRecordDao {
 
     int updateByPrimaryKey(AttachmentRecord record);
 
-    List<String> selectFilePath(@Param("attachmentVo")AttachmentVo attachmentVo, @Param("companyId") Integer companyId);
+    List<String> selectFilePath(@Param("groupName") String groupName,@Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
     void deleteByIdList(@Param("list") List<Integer> list);
 
-    List<AttachmentRecord> selectAttach(@Param("attachmentVo") AttachmentVo attachmentVo, @Param("companyId") Integer companyId);
+    List<AttachmentRecord> selectAttach(@Param("archiveId") Integer arichveId, @Param("companyId") Integer companyId);
 
     Integer selectGroupId(@Param("groupName") String groupName);
 
     Integer selectFileSize(@Param("groupName") String groupName);
 
-    void deleteFile(@Param("attachmentVo") AttachmentVo attachmentVo, @Param("companyId") Integer companyId);
+    void deleteFile(@Param("id") Integer id, @Param("companyId") Integer companyId);
+
+    List< String> selectGroup();
 }

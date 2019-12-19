@@ -677,7 +677,7 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(multipartFile,attachmentVo,getUserSession ());
         if (b) {
             try {
-               fileOperateService.putFile ( multipartFile,attachmentVo,getUserSession () );
+               fileOperateService.putFile ( multipartFile,getUserSession () );
                 return new ResponseResult<>(null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -688,16 +688,15 @@ public class CommonController extends BaseController {
     }
     /**
      * 删除附件
-     * @param attachmentVo
      * @return
      */
     @RequestMapping(value = "/deleteFile", method = RequestMethod.GET)
     @ApiOperation(value = "删除附件", notes = "hkt")
-    public  ResponseResult deleteFile(AttachmentVo attachmentVo){
-        Boolean b = checkParam(attachmentVo,getUserSession ());
+    public  ResponseResult deleteFile(Integer id){
+        Boolean b = checkParam(getUserSession ());
         if (b) {
             try {
-                fileOperateService.deleteFile ( attachmentVo,getUserSession () );
+                fileOperateService.deleteFile (id ,getUserSession () );
                 return new ResponseResult<>(null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -708,16 +707,15 @@ public class CommonController extends BaseController {
     }
     /**
      * 获取附件链接
-     * @param attachmentVo
      * @return
      */
     @RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
     @ApiOperation(value = "上传附件", notes = "hkt")
-    public  ResponseResult getFilePath(AttachmentVo attachmentVo){
-        Boolean b = checkParam(attachmentVo,getUserSession ());
+    public  ResponseResult getFilePath(String groupName){
+        Boolean b = checkParam(getUserSession (),groupName);
         if (b) {
             try {
-                List < URL > filePath = fileOperateService.getFilePath ( attachmentVo, getUserSession () );
+                List < URL > filePath = fileOperateService.getFilePath (getUserSession (),groupName );
                 if(!CollectionUtils.isEmpty ( filePath )){
                     return new ResponseResult<>(filePath, CommonCode.SUCCESS);
                 }else {

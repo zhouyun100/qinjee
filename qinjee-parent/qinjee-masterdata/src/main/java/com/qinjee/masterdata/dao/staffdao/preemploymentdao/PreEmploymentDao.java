@@ -68,4 +68,6 @@ public interface PreEmploymentDao {
 
     PreEmploymentVo selectPreEmploymentVoById(@Param("businessId") Integer businessId);
     Integer selectPreByIdtypeAndIdnumber(@Param("idtype") String idtype, @Param("idnumber") String idnumber);
+
+    PreEmployment selectByEmployNumber(@Param("s") String s);
 }

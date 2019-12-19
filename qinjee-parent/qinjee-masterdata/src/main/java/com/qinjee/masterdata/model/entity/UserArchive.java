@@ -127,28 +127,24 @@ public class UserArchive implements Serializable {
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
     @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
-    @NotNull
     @ApiModelProperty("出生日期")
     private Date birthDate;
 
     /**
      * 年龄
      */
-    @NotNull
     @ApiModelProperty("年龄")
     private Integer age;
 
     /**
      * 民族
      */
-    @NotNull
     @ApiModelProperty("民族")
     private Integer nationality;
 
     /**
      * 籍贯
      */
-    @NotNull
     @ApiModelProperty("籍贯")
     private String birthplace;
 
@@ -218,7 +214,6 @@ public class UserArchive implements Serializable {
     /**
      * 第一学历
      */
-    @NotNull
     @ApiModelProperty("第一学历")
     private String firstDegree;
 

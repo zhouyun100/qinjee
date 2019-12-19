@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.service.file;
 
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +14,7 @@ public interface IFileOperateService {
      * @param multipartFile
      * @return
      */
-    void putFile(MultipartFile multipartFile, AttachmentVo attachmentVo, UserSession userSession) throws Exception;
+    void putFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
 
     /**
      * 下载文件
@@ -24,18 +23,18 @@ public interface IFileOperateService {
 
     /**
      * 获取文件路径
-     * @param attachmentVo
      * @param userSession
      * @return
      */
-    List<URL> getFilePath(AttachmentVo attachmentVo, UserSession userSession);
+    List<URL> getFilePath( UserSession userSession,String groupName);
     /**
      * 删除文件(逻辑删除)
      */
-    void deleteFile(AttachmentVo attachmentVo,UserSession userSession);
+    void deleteFile(Integer id,UserSession userSession);
     /**
      * 展示附件列表
      */
-    List<AttachmentRecord> selectAttach(AttachmentVo attachmentVo,UserSession userSession);
+    List<AttachmentRecord> selectAttach(Integer archiveId,UserSession userSession);
 
+    Boolean checkFielName(String fileName, UserSession userSession);
 }

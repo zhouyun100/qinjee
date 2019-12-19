@@ -272,15 +272,15 @@ public interface CustomTableFieldDao {
 
     List < Map < String, String > > selectCodAndIdByTableId(@Param("tableId") Integer tableId);
 
-    Map< Integer, String> transOrgId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    Map< String, Integer> transOrgId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
-    Map< Integer, String> transSupiorId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    Map< String, Integer> transSupiorId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
-    Map< Integer, String> transPostId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    Map< String, Integer> transPostId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     String selectFieldCodeById(@Param("integer") Integer integer);
 
-    List< CustomFieldVO> selectFieldByIdList(@Param("integers2") List < Integer > integers2, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+    List< CustomFieldVO> selectFieldByIdList(@Param("list") List < Integer > integers2, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
     CustomFieldVO selectFieldById(@Param("fieldId") Integer fieldId, @Param("companyId") Integer companyId, @Param("arc") String arc);
 

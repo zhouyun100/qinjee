@@ -24,13 +24,11 @@ public class LaborContractChangeVo implements Serializable {
     /**
      * 变更类型
      */
-    @NotNull
     private String changeType;
 
     /**
      * 变更日期
      */
-    @NotNull
     private Date changeDate;
 
     /**

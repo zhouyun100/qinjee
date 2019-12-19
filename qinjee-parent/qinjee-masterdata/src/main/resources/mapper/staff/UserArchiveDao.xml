@@ -547,7 +547,7 @@
       <if test="gender != null">
         gender = #{gender,jdbcType=VARCHAR},
       </if>
-      <if test="birth_date != null">
+      <if test="birthDate != null">
         birth_date = #{birthDate,jdbcType=DATE},
       </if>
       <if test="age != null">
@@ -568,7 +568,7 @@
       <if test="firstWorkDate != null">
         first_work_date = #{firstWorkDate,jdbcType=DATE},
       </if>
-      <if test="hire_date != null">
+      <if test="hireDate != null">
         hire_date = #{hireDate,jdbcType=DATE},
       </if>
       <if test="servingAge != null">
@@ -1018,6 +1018,23 @@
     select tlc.archive_id from t_labor_contract tlc
     )
     and arc.org_id = #{orgId}
+  </select>
+  <select id="selectTransMessage" resultType="java.util.Map">
+      SELECT
+	 org.org_name AS org_name,
+     arch.user_name AS supervisor_name,
+     orga.org_name AS business_unit_name ,
+     post.post_name AS post_name
+    FROM
+        t_user_archive arc
+    LEFT JOIN t_organization org ON arc.org_id = org.org_id AND org.is_enable = 1
+    LEFT JOIN t_organization orga ON arc.business_unit_id = orga.org_id AND orga.is_enable = 1
+    LEFT JOIN t_post post ON arc.post_id = post.post_id AND post.is_delete = 0 AND post.is_enable = 1
+
+    LEFT JOIN t_user_archive arch ON arc.supervisor_id = arch.archive_id AND arch.is_delete = 0
+
+    AND arc.is_delete = 0
+    where arc.archive_id = #{key}
   </select>
 
 </mapper>
