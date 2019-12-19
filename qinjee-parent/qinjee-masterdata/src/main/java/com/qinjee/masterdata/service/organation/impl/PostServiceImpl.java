@@ -452,7 +452,7 @@ public class PostServiceImpl implements PostService {
                 //return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
             }
         });
-        //校验
+        //校验 校验前先根据行号进行排序
         List<Post> checkResultList = checkExcel(orgList, userSession);
         //拿到错误校验列表
         List<Post> failCheckList = checkResultList.stream().filter(check -> {
@@ -473,7 +473,7 @@ public class PostServiceImpl implements PostService {
             }
             String errorInfoKey = "errorPostData" + String.valueOf(filename.hashCode());
             redisService.del(errorInfoKey);
-            redisService.setex(errorInfoKey, 60 * 60 * 2, errorSb.toString());
+            redisService.setex(errorInfoKey, 30 * 60, errorSb.toString());
             resultMap.put("errorInfoKey", errorInfoKey);
             responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
             response.setHeader("errorInfoKey", errorInfoKey);
@@ -482,14 +482,13 @@ public class PostServiceImpl implements PostService {
         String redisKey = "tempPostData" + String.valueOf(filename.hashCode());
         redisService.del(redisKey);
         String json = JSON.toJSONString(orgList);
-        redisService.setex(redisKey, 60 * 60 * 2, json);
+        redisService.setex(redisKey, 30 * 60, json);
 
         resultMap.put("failCheckList", failCheckList);
         resultMap.put("excelList", orgList);
         resultMap.put("redisKey", redisKey);
         responseResult.setResult(resultMap);
         response.setHeader("redisKey", redisKey);
-        responseResult.setMessage("文件校验成功");
         return responseResult;
     }
 
@@ -819,7 +818,23 @@ public class PostServiceImpl implements PostService {
 
 
     public List<Post> checkExcel(List<Post> voList, UserSession userSession) {
-        List<Post> checkVos = new ArrayList<>();
+        voList.sort(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Post org1 = (Post) o1;
+                Post org2 = (Post) o2;
+                return org1.getLineNumber().compareTo(org2.getLineNumber());
+                //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+            }
+        });
+
+        List<Post> checkVos = new ArrayList<>(voList.size());
+        //用来校验本地excel岗位编码与名称是否匹配，如果匹配 还要进行数据库校验
+        Map<String, String> excelPostNameMap = new HashMap<>(voList.size());
+        for (Post post : voList) {
+            excelPostNameMap.put(post.getPostCode(),post.getPostName());
+        }
+
         for (Post post : voList) {
             Post checkVo = new Post();
             BeanUtils.copyProperties(post, checkVo);
@@ -849,6 +864,8 @@ public class PostServiceImpl implements PostService {
 
             // 校验部门编码是否存在，部门编码与部门名称是否对应
             OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(post.getOrgCode(), userSession.getCompanyId());
+
+
             if (Objects.isNull(org)) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("部门编码不存在|");
@@ -859,13 +876,21 @@ public class PostServiceImpl implements PostService {
                 }
             }
 
-            if (null != post.getParentPostCode() && "".equals(post.getParentPostCode())) {
-                // 校验上级岗位编码是否存在，与岗位名称是否对应
-                Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
-                if (Objects.nonNull(parentPost)) {
-                    if (!post.getParentPostName().equals(parentPost.getPostName())) {
+            if (StringUtils.isNotBlank(post.getParentPostCode())) {
+                String parentPostName = excelPostNameMap.get(post.getParentPostCode());
+                if (StringUtils.isNotBlank(parentPostName)) {
+                    if(!parentPostName.equals(post.getParentPostName())){
                         checkVo.setCheckResult(false);
-                        resultMsg.append("上级岗位名称不匹配|");
+                        resultMsg.append("上级岗位名称在excel中不匹配|");
+                    }else{
+                        // 校验上级岗位编码是否存在，与岗位名称是否对应
+                        Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
+                        if (Objects.nonNull(parentPost)) {
+                            if (!post.getParentPostName().equals(parentPost.getPostName())) {
+                                checkVo.setCheckResult(false);
+                                resultMsg.append("上级岗位名称在数据库中不匹配|");
+                            }
+                        }
                     }
                 }
             }

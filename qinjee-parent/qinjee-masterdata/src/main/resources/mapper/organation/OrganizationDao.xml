@@ -161,45 +161,46 @@
 
 
     <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
-    update t_organization
-        set org_id = #{orgId,jdbcType=VARCHAR},
-        <if test="orgCode != null">
-            org_code = #{orgCode,jdbcType=VARCHAR},
-        </if>
-          <if test="orgName != null">
-              org_name = #{orgName,jdbcType=VARCHAR},
-        </if>
-          <if test="orgType != null">
-              org_type = #{orgType,jdbcType=VARCHAR},
-        </if>
-          <if test="orgParentId != null">
-              org_parent_id = #{orgParentId,jdbcType=INTEGER},
-        </if>
-          <if test="orgFullName != null">
-              org_full_name = #{orgFullName,jdbcType=VARCHAR},
-        </if>
-          <if test="orgManagerId != null">
-              org_manager_id = #{orgManagerId,jdbcType=INTEGER},
-        </if>
-          <if test="companyId != null">
-              company_id = #{companyId,jdbcType=INTEGER},
-        </if>
-          <if test="sortId != null">
-              sort_id = #{sortId,jdbcType=INTEGER},
-        </if>
+        update t_organization
+        <set>
+            org_id = #{orgId,jdbcType=VARCHAR},
+            <if test="orgCode != null">
+                org_code = #{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                org_name = #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgType != null">
+                org_type = #{orgType,jdbcType=VARCHAR},
+            </if>
+            <if test="orgParentId != null">
+                org_parent_id = #{orgParentId,jdbcType=INTEGER},
+            </if>
+            <if test="orgFullName != null">
+                org_full_name = #{orgFullName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgManagerId != null">
+                org_manager_id = #{orgManagerId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
 
-         <if test="createTime != null">
-             create_time = #{createTime,jdbcType=TIMESTAMP},
-        </if>
-         <if test="isEnable != null">
-             is_enable = #{isEnable,jdbcType=SMALLINT},
-        </if>
-        <if test="operatorId != null">
-            operator_id = #{operatorId,jdbcType=INTEGER}
-        </if>
-    where org_id = #{orgId,jdbcType=INTEGER}
-  </update>
-
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isEnable != null">
+                is_enable = #{isEnable,jdbcType=SMALLINT},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER}
+            </if>
+        </set>
+        where org_id = #{orgId,jdbcType=INTEGER}
+    </update>
 
 
     <select id="listAllOrganizationByArchiveId" resultMap="BaseResultMap">
@@ -234,7 +235,7 @@
         <if test="isEnable != null ">
             and t_organization.is_enable = 1
         </if>
-        ) v  LEFT JOIN t_organization parentOrg
+        ) v LEFT JOIN t_organization parentOrg
         ON parentOrg.org_id = v.org_parent_id
         LEFT JOIN t_user_archive tua
         ON v.org_manager_id = tua.archive_id GROUP BY
@@ -285,7 +286,6 @@
             and o2.is_enable = 1
         </if>
         )org
-
         LEFT JOIN t_organization parent_org
         ON org.org_parent_id = parent_org.org_id
         <if test="organizationPageVo != null">
@@ -309,12 +309,11 @@
             </if>
         </if>
 
-       <!-- <if test="sortFieldStr != null and sortFieldStr != ''">
-            ORDER BY ${sortFieldStr}
-        </if>-->
-       order by  org.sort_id asc
+        <!-- <if test="sortFieldStr != null and sortFieldStr != ''">
+             ORDER BY ${sortFieldStr}
+         </if>-->
+        order by org.sort_id asc
     </select>
-
 
 
     <update id="updateEnable">
@@ -333,8 +332,6 @@
         from t_organization
         where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY sort_Id DESC
     </select>
-
-
     <select id="listOrgnizationByIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -377,7 +374,7 @@
         t_parent.org_name AS parent_org_name,
         t_parent.org_code AS parent_org_code
         FROM t_organization t_org
-        LEFT JOIN    t_organization t_parent
+        LEFT JOIN t_organization t_parent
         ON t_org.org_parent_id = t_parent.org_id
         LEFT JOIN t_user_archive tua ON tua.archive_id= t_org.org_manager_id
         WHERE t_org.org_id IN
@@ -481,7 +478,6 @@
             </select>
 
 
-
     <select id="getOrganizationGraphics" resultMap="BaseResultMap">
         SELECT
         v.org_id,
@@ -522,63 +518,64 @@
             and t_organization.is_enable = 1
         </if>
         ) v
-        LEFT JOIN  t_attachment_record tar  ON tar.business_id = v.org_manager_id AND tar.business_type = 'archive'
+        LEFT JOIN t_attachment_record tar ON tar.business_id = v.org_manager_id AND tar.business_type = 'archive'
         LEFT JOIN t_user_archive tua
         ON tua.archive_id =v.org_manager_id
         LEFT JOIN t_post tp ON tp.post_id =tua.post_id
         LEFT JOIN t_position tps ON tps.position_id=tp.position_id
-         <if test="orgIdList != null">
-             where
-             v.org_id in
-             <foreach collection="orgIdList" item="item" close=")" open="(" separator=",">
-                 #{item}
-             </foreach>
-         </if>
+        <if test="orgIdList != null">
+            where
+            v.org_id in
+            <foreach collection="orgIdList" item="item" close=")" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="listAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
-        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name parent_org_name,
+        SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name
+        parent_org_name,
         v.org_manager_id,
         tua.employee_number,
         tua.user_name orgManagerName
-       FROM (
-             SELECT v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name,v1.org_manager_id
-              FROM (
-                SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
-                t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
-                FROM t_role_org_auth,t_role,t_user_role,t_organization
-                WHERE t_user_role.archive_id = #{archiveId}
-                AND (t_user_role.is_trusteeship = 0
-                OR (t_user_role.is_trusteeship = 1
-                AND #{now} >= t_user_role.trusteeship_begin_time
-                AND t_user_role.trusteeship_end_time >= #{now}
-                ))
-                AND t_user_role.role_id = t_role.role_id
-                AND t_role.role_id = t_role_org_auth.role_id
-                AND t_role_org_auth.org_id = t_organization.org_id
-                AND t_role.is_delete = 0
-                AND t_role_org_auth.is_delete = 0
-                AND t_organization.is_enable = 1
-      UNION
-             SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
-                t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
-                FROM t_user_org_auth,t_organization
-                WHERE t_user_org_auth.archive_id = #{archiveId}
-                AND (t_user_org_auth.is_trusteeship = 0
-                OR (t_user_org_auth.is_trusteeship = 1
-                AND #{now} >= t_user_org_auth.trusteeship_begin_time
-                AND t_user_org_auth.trusteeship_end_time >= #{now}
-                ))
-                AND t_user_org_auth.org_id = t_organization.org_id
-                AND t_user_org_auth.is_delete = 0
-                AND t_organization.is_enable = 1
+        FROM (
+        SELECT v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name,v1.org_manager_id
+        FROM (
+        SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
+        FROM t_role_org_auth,t_role,t_user_role,t_organization
+        WHERE t_user_role.archive_id = #{archiveId}
+        AND (t_user_role.is_trusteeship = 0
+        OR (t_user_role.is_trusteeship = 1
+        AND #{now} >= t_user_role.trusteeship_begin_time
+        AND t_user_role.trusteeship_end_time >= #{now}
+        ))
+        AND t_user_role.role_id = t_role.role_id
+        AND t_role.role_id = t_role_org_auth.role_id
+        AND t_role_org_auth.org_id = t_organization.org_id
+        AND t_role.is_delete = 0
+        AND t_role_org_auth.is_delete = 0
+        AND t_organization.is_enable = 1
+        UNION
+        SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_parent_id,t_organization.org_full_name, t_organization.org_manager_id
+        FROM t_user_org_auth,t_organization
+        WHERE t_user_org_auth.archive_id = #{archiveId}
+        AND (t_user_org_auth.is_trusteeship = 0
+        OR (t_user_org_auth.is_trusteeship = 1
+        AND #{now} >= t_user_org_auth.trusteeship_begin_time
+        AND t_user_org_auth.trusteeship_end_time >= #{now}
+        ))
+        AND t_user_org_auth.org_id = t_organization.org_id
+        AND t_user_org_auth.is_delete = 0
+        AND t_organization.is_enable = 1
         ) v1
         GROUP BY v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name) v
         LEFT JOIN t_organization o
-            ON v.org_parent_id = o.org_id
+        ON v.org_parent_id = o.org_id
         LEFT JOIN t_user_archive tua ON tua.archive_id = v.org_manager_id
         <if test="orgIdList != null and orgIdList.size > 0">
-            where  v.org_id in
+            where v.org_id in
             <foreach collection="orgIdList" item="item" open="(" close=")" separator=",">
                 #{item}
             </foreach>
@@ -625,13 +622,13 @@
         where org_code = #{orgCode,jdbcType=VARCHAR}
 
     </update>
-    <update id="batchDeleteOrganization">
+    <delete id="batchDeleteOrganization">
         delete from t_organization
         where org_id in
         <foreach collection="idList" separator="," open="(" close=")" item="item">
             #{item}
         </foreach>
-    </update>
+    </delete>
     <select id="selectOrgIdByNameAndCompanyId" resultType="java.util.Map">
         select org.org_id,post.post_id from t_organization org
         left join t_post post on org.org_id=post.org_id and post.is_delete=0
