@@ -69,4 +69,11 @@ public interface UserLoginService {
      * @return
      */
     int getUserIdByPhone(String phone,Integer companyId);
+
+    /**
+     * 根据微信code调用查询用户信息
+     * @param code
+     * @return
+     */
+    UserInfoVO searchUserInfoByWeChatCode(String code);
 }

@@ -26,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,27 +117,35 @@ public class UserLoginController extends BaseController{
             return responseResult;
         }
 
-        password = MD5Utils.getMd5(password);
-
-        try {
-            List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByAccountAndPassword(account,password);
-            if (CollectionUtils.isEmpty(userInfoList)) {
-                responseResult = ResponseResult.FAIL();
-                responseResult.setMessage("账号用户信息为空!");
-                return responseResult;
-            }
-
-            setResponseResult(response,userInfoList);
-
-            logger.info("Login success！phone={}", account);
-        }catch(Exception e) {
-            logger.info("Login exception! account={};password={};exception={}", account, password, e.toString());
-            e.printStackTrace();
+        List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByAccountAndPassword(account,password);
+        if (CollectionUtils.isEmpty(userInfoList)) {
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("根据账号、密码登录异常！");
+            responseResult.setMessage("账号用户信息为空!");
+            return responseResult;
         }
+        setResponseResult(response,userInfoList);
+
+        logger.info("Login success！phone={}", account);
         return responseResult;
     }
+
+    @ApiOperation(value="微信扫码登录", notes="微信扫码后生成code，使用code获取openid")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "code", value = "微信code", required = true, dataType = "String")
+    })
+    @RequestMapping(value = "/searchUserInfoByWeChatCode",method = RequestMethod.POST)
+    public ResponseResult<UserSession> searchUserInfoByWeChatCode(HttpServletResponse response, String code) {
+
+        UserInfoVO userInfoVO = userLoginService.searchUserInfoByWeChatCode(code);
+
+        setSessionAndCookie(response,userInfoVO);
+        responseResult = ResponseResult.SUCCESS();
+        responseResult.setResult(userInfoVO);
+
+        logger.info("WeChat scan code login success！userId={}", userInfoVO.getUserId());
+        return responseResult;
+    }
+
 
     private void setResponseResult(HttpServletResponse response, List<UserInfoVO> userInfoList){
         if(userInfoList.size() == 1){

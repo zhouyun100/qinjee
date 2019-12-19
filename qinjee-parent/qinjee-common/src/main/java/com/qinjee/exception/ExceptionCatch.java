@@ -41,11 +41,10 @@ public class ExceptionCatch {
      */
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
-    public ResponseResult customException(BusinessException be, Throwable ex){
+    public ResponseResult customException(BusinessException be){
 
         //记录日志
         LOGGER.error("catch customException！code={};success={};message={}" , be.getResultCode().code(),be.getResultCode().success(),be.getResultCode().message());
-        LOGGER.error("catch customException ex:", ex);
         ResultCode resultCode = be.getResultCode();
         return new ResponseResult(resultCode);
     }

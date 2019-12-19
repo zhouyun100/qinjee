@@ -82,4 +82,11 @@ public interface UserLoginDao {
      * @return
      */
     int addCompanyUserInfo(Integer companyId,Integer userId);
+
+    /**
+     * 根据openid查询用户信息
+     * @param openId
+     * @return
+     */
+    UserInfoVO searchUserInfoByOpenId(String openId);
 }

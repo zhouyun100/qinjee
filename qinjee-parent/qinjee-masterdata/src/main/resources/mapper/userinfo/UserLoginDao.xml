@@ -120,4 +120,16 @@
       INSERT INTO t_user_company (user_id, company_id, is_enable)
       value (#{userId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, 1)
   </insert>
+
+  <select id="searchUserInfoByOpenId" resultMap="UserInfoResultMap">
+    select t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
+    from t_user_info,t_user_company,t_company_info,t_user_archive
+    where t_user_info.open_id = #{openId,jdbcType=VARCHAR}
+    and t_user_info.user_id = t_user_company.user_id
+    and t_user_company.company_id = t_company_info.company_id
+    and t_user_info.user_id = t_user_archive.user_id
+    and t_user_company.company_id = t_user_archive.company_id
+    and t_user_company.is_enable = 1
+    and t_company_info.is_enable = 1
+  </select>
 </mapper>

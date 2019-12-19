@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.userinfo.impl;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
@@ -17,8 +18,11 @@ import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.RegexpUtils;
+import com.qinjee.utils.WeChatUtils;
+import entity.WeChatToken;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +54,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
         RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setAccount(account);
-        userLoginVO.setPassword(password);
+        userLoginVO.setPassword(MD5Utils.getMd5(password));
         return userLoginDao.searchUserInfoByAccountAndPassword(userLoginVO);
     }
 
@@ -157,5 +161,22 @@ public class UserLoginServiceImpl implements UserLoginService {
 
         }
         return userId;
+    }
+
+    @Override
+    public UserInfoVO searchUserInfoByWeChatCode(String code) {
+        UserInfoVO userInfoVO = null;
+        WeChatToken weChatToken = WeChatUtils.getWeChatToken(code);
+        if(weChatToken != null){
+
+            userInfoVO = userLoginDao.searchUserInfoByOpenId(weChatToken.getOpenid());
+
+            if(userInfoVO == null){
+                ExceptionCast.cast(CommonCode.WECHAT_NO_BIND);
+            }
+        }else{
+            ExceptionCast.cast(CommonCode.WECHAT_ACCESS_TOKEN);
+        }
+        return userInfoVO;
     }
 }
