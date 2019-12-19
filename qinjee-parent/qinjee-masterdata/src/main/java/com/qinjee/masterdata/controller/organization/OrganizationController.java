@@ -2,7 +2,6 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.github.liaochong.myexcel.core.DefaultExcelBuilder;
 import com.github.liaochong.myexcel.utils.AttachmentExportUtil;
-import com.qinjee.exception.BusinessException;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -325,7 +323,7 @@ public class OrganizationController extends BaseController {
     //TODO
     @GetMapping("/getUserArchiveListByUserName")
     @ApiOperation(value = "ok,机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
-    public ResponseResult<List<UserArchiveVo>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = true) @RequestParam(value = "userName", required = false) String userName) {
+    public ResponseResult<List<UserArchiveVo>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = false) @RequestParam(value = "userName", required = false) String userName) {
         if (checkParam(userName)) {
             List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName);
             return new ResponseResult(users);
