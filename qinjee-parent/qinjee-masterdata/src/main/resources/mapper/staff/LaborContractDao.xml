@@ -466,14 +466,36 @@
     where archive_id=#{archiveId}
   </select>
   <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
-    select org.org_name,orga.org_name
-    from t_organization org,t_organization orga,t_user_archive arc
-    left j
-    where org.org_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
+    SELECT
+    orga.org_name businessUnitName,
+    org.org_name orgName,
+    COUNT(org.org_id) staffCount,
+    COUNT(contract.contract_id) signCount,
+    COUNT(org.org_id) - COUNT(contract.contract_id) noSignCount,
+    COUNT(
+    deline_contract.contract_id
+    ) delineCount -- 即将到期人数
+    FROM
+    t_organization org,
+    t_organization orga,
+    t_user_archive arc
+    LEFT JOIN t_labor_contract contract
+    ON contract.archive_id = arc.archive_id
+    LEFT JOIN t_labor_contract deline_contract
+    ON deline_contract.archive_id = arc.archive_id
+    AND (SELECT
+    remember_days
+    FROM
+    t_contract_param WHERE company_id = #{companyId}) > DATEDIFF(
+    deline_contract.contract_end_date,
+    CURDATE())
+    WHERE org.org_id = arc.org_id
+    AND arc.business_unit_id = orga.org_id
+    AND arc.archive_status = 'SERVICE'
+    AND org.org_id IN
+    <foreach collection="list" item="orgId" open="(" close=")" separator=",">
+      #{orgId}
     </foreach>
-    and arc.archive_id=#{archiveId} and arc.is_delete=0
-    and orga.org_id=arc.bussiness_unit_id and orga.is_enable=1
+    GROUP BY org.org_id
   </select>
 </mapper>

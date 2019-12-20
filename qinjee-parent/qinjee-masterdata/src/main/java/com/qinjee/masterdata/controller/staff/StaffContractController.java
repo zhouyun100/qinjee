@@ -611,7 +611,7 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/createContractForm", method = RequestMethod.GET)
     @ApiOperation(value = "生成合同报表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<PageResult<ContractFormVo>> createContractForm(List<Integer> list,Integer pageSize,Integer currentPage) {
+    public ResponseResult<PageResult<ContractFormVo>> createContractForm(@RequestParam List<Integer> list,Integer pageSize,Integer currentPage) {
         Boolean b = checkParam(list,pageSize,currentPage,getUserSession ());
         if(b){
             try {

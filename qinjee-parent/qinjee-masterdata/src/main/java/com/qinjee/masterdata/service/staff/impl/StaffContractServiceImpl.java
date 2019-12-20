@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
@@ -98,9 +99,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     public PageResult < ContractFormVo > createContractForm(List < Integer > list,Integer pageSize,Integer currentPage,UserSession userSession) {
+
         PageHelper.startPage ( currentPage,pageSize );
-        List<ContractFormVo> contractFormVos=laborContractDao.selectContractForm(list,userSession.getArchiveId ());
-        return null;
+        List<ContractFormVo> contractFormList=laborContractDao.selectContractForm(list,userSession.getCompanyId());
+        PageInfo<ContractFormVo> pageInfo = new PageInfo<>(contractFormList);
+        PageResult<ContractFormVo> pageResult = new PageResult<>(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+        return pageResult;
     }
 
 
