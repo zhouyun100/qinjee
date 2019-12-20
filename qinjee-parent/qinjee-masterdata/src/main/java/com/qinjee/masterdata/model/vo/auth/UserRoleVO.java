@@ -29,6 +29,13 @@ import java.util.Date;
 @NoArgsConstructor
 @JsonInclude
 public class UserRoleVO implements Serializable {
+
+    /**
+     * 用户角色主键ID
+     */
+    @ApiModelProperty("用户角色主键ID")
+    private Integer id;
+
     /**
      * 角色ID
      */

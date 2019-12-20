@@ -69,10 +69,10 @@ public class RequestAuthHandoverVO implements Serializable {
     private String trusteeshipEndTime;
 
     /**
-     * 角色ID
+     * 用户角色ID
      */
-    @ApiModelProperty(name = "roleIdList", value = "角色ID")
-    private List<Integer> roleIdList;
+    @ApiModelProperty(name = "idList", value = "角色ID")
+    private List<Integer> idList;
 
     /**
      * 机构ID
