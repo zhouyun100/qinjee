@@ -2,13 +2,11 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.ContractParam;
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
@@ -16,7 +14,6 @@ import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +69,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     @Override
-    public PageResult<UserArchiveVo> selectNoLaborContract(Integer orgId, Integer currentPage, Integer pageSize) {
+    public PageResult<UserArchiveVo> selectNoLaborContract(List<Integer> orgId, Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage,pageSize);
         //根据合同id找到没有合同的档案
         List< UserArchiveVo > arcList=userArchiveDao.selectArcByNotCon(orgId);
@@ -84,7 +81,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @param orgId
      * @return
      */
-    public List < Integer > selectNoLaborContractAll(Integer orgId) {
+    public List < Integer > selectNoLaborContractAll(List<Integer> orgId) {
         List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId );
         List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {
@@ -107,9 +104,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
         pageResult.setTotal(pageInfo.getTotal());
         return pageResult;
     }
-
-
-
 
     /**合同状态  新签、变更   续签、解除、终止
      *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
@@ -144,7 +138,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
 
-    private Set < Integer > getContractIntegers(List < Integer > orgIdList, String isEnable, List < String > status) {
+    public Set < Integer > getContractIntegers(List < Integer > orgIdList, String isEnable, List < String > status) {
         List < LaborContract > noEffectLabList = new ArrayList <> ();
         Set < Integer > conSet;
         //查看机构下的合同
@@ -411,50 +405,6 @@ public class StaffContractServiceImpl implements IStaffContractService {
         List<ContractRenewalIntention> list=contractRenewalIntentionDao.selectByorgId(orgId);
         return  new PageResult <> ( list );
     }
-    @Override
-    public Integer selectArcNumberIn(Integer id) {
-        return userArchiveDao.selectArcNumberIn(id);
-    }
-
-    @Override
-    public PageResult<UserArchiveVo> selectArcDeadLine(Integer orgId,Integer pageSize,Integer currentPage)  {
-        //找到参数设置类
-        List<ContractParam> contractParams = contractParamDao.findContractParamByCompanyId (orgId);
-        //找到部门下的已签合同
-        List < Integer > orgList = new ArrayList <> ();
-        List < Integer > integers = new ArrayList <> ();
-        orgList.add ( orgId );
-        List < LaborContract > laborContractList = laborContractDao.selectLabByorgId ( orgList );
-        List<String> strings=new ArrayList<>();
-        strings.add("正式");
-        strings.add("试用");
-        strings.add("实习");
-        for (String string : strings) {
-            for (LaborContract laborContract : laborContractList) {
-                if(GetDayUtil.getDay(new Date(),laborContract.getContractEndDate ()) > getDeadLineDays(string,contractParams)){
-                   integers.add ( laborContract.getArchiveId () );
-                }
-            }
-        }
-       PageHelper.startPage ( currentPage,pageSize );
-        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectByPrimaryKeyList ( integers );
-        return new PageResult  ( userArchiveVos );
-    }
-
-
-
-    private Integer getDeadLineDays(String status,List<ContractParam> contractParams)  {
-       List<ContractParam> list=new ArrayList<>();
-        for (ContractParam contractParam : contractParams) {
-            if(contractParam.getApplicationScopeCode().contains ( status )){
-                list.add(contractParam);
-            }
-        }
-        if(list.size()>0){
-            ExceptionCast.cast ( CommonCode.SET_DEADLINE_EXCEPTION );
-        }
-            return Integer.parseInt(list.get(0).getDateRule());
-    }
 
     private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) throws ParseException {
         //新增合同
@@ -466,7 +416,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
             laborContract.setContractBeginDate ( userArchiveVo.getHireDate () );
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             String dateString = formatter.format(userArchiveVo.getHireDate ());
-            laborContract.setContractEndDate ( formatter.parse (addMonth (dateString,"yy-MM-dd",laborContractVo.getContractPeriodMonth () )) );
+            laborContract.setContractEndDate ( formatter.parse (addMonth (dateString,"yyyy-MM-dd",laborContractVo.getContractPeriodMonth () )) );
         }
         laborContract.setArchiveId(id);
         laborContract.setOperatorId(archiveId);

@@ -110,7 +110,6 @@ public class FileUploadUtils {
      * @throws Exception
      */
     public static File multipartFileToFile( @RequestParam MultipartFile file ) throws Exception {
-
         File toFile = null;
         if(file.equals("")||file.getSize()<=0){
             file = null;

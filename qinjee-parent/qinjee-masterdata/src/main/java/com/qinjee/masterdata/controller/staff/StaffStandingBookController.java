@@ -105,14 +105,13 @@ public class StaffStandingBookController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
 //    })
-    public ResponseResult<PageResult<Blacklist>> selectBalckList(Integer currentPage, Integer pageSize) {
-        Boolean b = checkParam(currentPage,pageSize,getUserSession ());
+    public ResponseResult<List<Blacklist>> selectBalckList() {
+        Boolean b = checkParam(getUserSession ());
         if (b) {
             try {
-                PageResult<Blacklist> pageResult =
-                        staffStandingBookService.selectBalckList(currentPage, pageSize,getUserSession ());
-                if(pageResult.getList().size()>0){
-                    return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+                List < Blacklist > blacklistList = staffStandingBookService.selectBalckList ( getUserSession () );
+                if(blacklistList.size()>0){
+                    return new ResponseResult<>(blacklistList, CommonCode.SUCCESS);
                 }
                     return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {

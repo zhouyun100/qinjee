@@ -1,14 +1,12 @@
 package com.qinjee.masterdata.service.file.impl;
 
 import com.qcloud.cos.model.COSObjectInputStream;
-import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
-import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.io.IOUtils;
@@ -32,16 +30,28 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Autowired
     private AttachmentRecordDao attachmentRecordDao;
     @Autowired
-    private PreEmploymentDao preEmploymentDao;
+    private UserArchiveDao userArchiveDao;
 
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void putFile(MultipartFile multipartFile, UserSession userSession) throws Exception {
-        String pathUrl=multipartFile.getOriginalFilename ();
-        File file = FileUploadUtils.multipartFileToFile ( multipartFile );
-        insertAttachment(multipartFile, userSession, pathUrl);
-        UpAndDownUtil.putFile(file, userSession.getCompanyId ()+pathUrl);
+    public void putFile(MultipartFile[] files, UserSession userSession) throws Exception {
+        File file1 = null;
+        for (int i = 0; i < files.length; i++) {
+            try {
+                String pathUrl=files[i].getOriginalFilename ();
+                String s = pathUrl.split ( "#" )[0];
+                file1 = FileUploadUtils.multipartFileToFile ( files[i] );
+                String name = getName ( pathUrl );
+                int i1 = pathUrl.lastIndexOf ( "." );
+                String substring = pathUrl.substring ( i1 );
+                pathUrl=s+"/"+name+"/"+name+"("+i+")"+substring;
+                insertAttachment(files[i], userSession, pathUrl);
+                UpAndDownUtil.putFile(file1, pathUrl);
+            } finally {
+                file1.delete();
+            }
+        }
     }
 
 
@@ -49,7 +59,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
     public void downLoadFile(HttpServletResponse response, String path) throws Exception {
         try {
             COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile(path);
-            int i = path.lastIndexOf("/");
+            int i = path.lastIndexOf("#");
             String fileName=path.substring(i+1);
             // 将文件输入流写入response的输出流中
             response.setHeader("content-disposition", "attachment;fileName="+fileName);
@@ -72,25 +82,37 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
     @Transactional(rollbackFor = Exception.class)
     public void insertAttachment(MultipartFile multipartFile, UserSession userSession,String pathUrl) {
-        int i = pathUrl.lastIndexOf ( "/" );
-        String substring = pathUrl.substring ( i, pathUrl.length () + 1 );
-        List < URL > filePath = getFilePath (userSession,substring );
-        //找到应该上传文件的个数
-        Integer fileSize=attachmentRecordDao.selectFileSize(substring);
-        if(filePath.size ()>=fileSize){
-            ExceptionCast.cast ( CommonCode.File_NUMBER_WRONG );
-        }
+        String s = getName ( pathUrl );
+        List < URL > filePath = getFilePath (userSession,s );
+//        //找到应该上传文件的个数
+//        Integer fileSize=attachmentRecordDao.selectFileSize(s);
+//        if(filePath.size ()>=fileSize){
+//            ExceptionCast.cast ( CommonCode.File_NUMBER_WRONG );
+//        }
         AttachmentRecord attachmentRecord=new AttachmentRecord();
         //通过groupName找到id
-        Integer groupId=attachmentRecordDao.selectGroupId(substring);
+        Integer groupId=attachmentRecordDao.selectGroupId(s);
         attachmentRecord.setGroupId ( groupId );
         attachmentRecord.setCompanyId(userSession.getCompanyId());
         attachmentRecord.setAttachmentName(multipartFile.getOriginalFilename());
         attachmentRecord.setIsDelete((short) 0);
+        attachmentRecord.setBusinessModule ( "ARC" );
+        String idnumber = multipartFile.getOriginalFilename ().split ( "#" )[0];
+        UserArchiveVo userArchiveVo = userArchiveDao.selectByIdNumber ( idnumber );
+        attachmentRecord.setBusinessId ( userArchiveVo.getArchiveId () );
+        attachmentRecord.setBusinessType ( "archive" );
+        attachmentRecord.setBusinessId ( userSession.getArchiveId () );
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)(multipartFile.getSize())/1024);
         attachmentRecord.setOperatorId(userSession.getArchiveId());
         attachmentRecordDao.insertSelective(attachmentRecord);
+    }
+
+    private String getName(String pathUrl) {
+        int i = pathUrl.lastIndexOf ( "#" );
+        String substring = pathUrl.substring ( i+1  );
+        int i1 = substring.lastIndexOf ( "." );
+        return substring.substring ( 0, i1 );
     }
 
     @Override
@@ -100,27 +122,32 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List<AttachmentRecord> selectAttach(Integer archiveId,UserSession userSession) {
-      return attachmentRecordDao.selectAttach(archiveId,userSession.getCompanyId ());
+    public List<AttachmentRecord> selectAttach(List<Integer> orgIdList,UserSession userSession) {
+      return attachmentRecordDao.selectAttach(orgIdList,userSession.getCompanyId ());
     }
 
     @Override
-    public Boolean checkFielName(String fileName, UserSession userSession) {
-        Boolean flag=false;
-        String s = fileName.split ( "/" )[0];
-        PreEmployment preEmployment=preEmploymentDao.selectByEmployNumber(s);
-        List<String> list=attachmentRecordDao.selectGroup();
-        for (String s1 : list) {
-            if(fileName.contains ( s1 )){
-                flag=true;
-                break;
+    public Boolean checkFielName(List<String> fileName, UserSession userSession) {
+        Boolean result=false;
+        for (String string : fileName) {
+            Boolean flag=false;
+            String s = string.split ( "#" )[0];
+            UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber(s);
+            List < String > list = attachmentRecordDao.selectGroup ();
+            for (String s1 : list) {
+                if (fileName.contains ( s1 )) {
+                    flag = true;
+                    break;
+                }
             }
+            if (userArchiveVo != null && flag == true) {
+               flag=true;
+            } else {
+               flag=false;
+            }
+            result=(result&&flag);
         }
-        if(preEmployment!=null && flag==true){
-            return true;
-        }else {
-            return false;
-        }
+        return result;
     }
 
 }

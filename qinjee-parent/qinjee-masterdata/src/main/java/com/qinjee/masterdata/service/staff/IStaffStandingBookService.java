@@ -8,7 +8,6 @@ import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
-import com.qinjee.model.response.PageResult;
 
 import java.text.ParseException;
 import java.util.List;
@@ -43,11 +42,9 @@ public interface IStaffStandingBookService {
 
     /**
      * 分页展示黑名单
-     * @param currentPage
-     * @param pageSize
      * @return
      */
-    PageResult<Blacklist> selectBalckList(Integer currentPage, Integer pageSize,UserSession userSession);
+    List<Blacklist> selectBalckList(UserSession userSession);
 
     /**
      * 删除台账

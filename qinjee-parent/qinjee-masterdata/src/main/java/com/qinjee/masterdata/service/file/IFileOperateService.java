@@ -11,10 +11,10 @@ import java.util.List;
 public interface IFileOperateService {
     /**
      * 文件上传
-     * @param multipartFile
+     * @param files
      * @return
      */
-    void putFile(MultipartFile multipartFile, UserSession userSession) throws Exception;
+    void putFile(MultipartFile[]  files, UserSession userSession) throws Exception;
 
     /**
      * 下载文件
@@ -34,7 +34,7 @@ public interface IFileOperateService {
     /**
      * 展示附件列表
      */
-    List<AttachmentRecord> selectAttach(Integer archiveId,UserSession userSession);
+    List<AttachmentRecord> selectAttach(List<Integer> orgIdList,UserSession userSession);
 
-    Boolean checkFielName(String fileName, UserSession userSession);
+    Boolean checkFielName(List<String> fileName, UserSession userSession);
 }

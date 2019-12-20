@@ -4,9 +4,8 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
-import com.qinjee.masterdata.model.vo.staff.export.ExportNoConArcVo;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
+import com.qinjee.masterdata.service.staff.impl.StaffContractServiceImpl;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -19,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +33,8 @@ public class ImportAndExportStaffController extends BaseController {
     private IStaffImportAndExportService staffImportAndExportService;
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private StaffContractServiceImpl staffContractService;
 
 
     /**
@@ -178,7 +177,7 @@ public class ImportAndExportStaffController extends BaseController {
     @RequestMapping(value = "/importFile", method = RequestMethod.GET)
     @ApiOperation(value = "导入文件", notes = "hkt")
 
-    public ResponseResult ImportFile(  String funcCode) {
+    public ResponseResult importFile(  String funcCode) {
         Boolean b = checkParam(getUserSession (),funcCode.toUpperCase ());
         if(b) {
             try {
@@ -247,7 +246,7 @@ public class ImportAndExportStaffController extends BaseController {
 //    })
     //导出的文件应该是以.xls结尾
     public ResponseResult exportArcFile(@RequestParam List<Integer> list, HttpServletResponse response) {
-        Boolean b = checkParam(list,response,getUserSession ());
+        Boolean b = checkParam(response,getUserSession ());
         if(b){
             try {
                 staffImportAndExportService.exportArcFile(list,response,getUserSession ());
@@ -271,19 +270,18 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFileCon(@RequestBody @Valid ExportNoConArcVo exportNoConArcVo, HttpServletResponse response) {
-        Boolean b = checkParam(response,getUserSession (),exportNoConArcVo);
+    public ResponseResult exportArcFileCon( HttpServletResponse response,@RequestParam List<Integer> list,
+                                           @RequestParam List<Integer> orgIdList, String isEnable,
+                                           @RequestParam List<String> status) {
+        Boolean b = checkParam(response,getUserSession (),orgIdList,isEnable,status);
         if(b){
             try {
-                if(CollectionUtils.isEmpty ( exportNoConArcVo.getList () )){
-                    List< UserArchiveVo > arcList=userArchiveDao.selectArcByNotCon(exportNoConArcVo.getOrgId ());
-                    List < Integer > objects = new ArrayList <> ();
-                    for (UserArchiveVo userArchiveVo : arcList) {
-                        objects.add ( userArchiveVo.getArchiveId () );
-                    }
-                    exportNoConArcVo.setList ( objects );
+                if(!CollectionUtils.isEmpty ( list )){
+                    staffImportAndExportService.exportArcFile(list,response,getUserSession ());
+                }else{
+                    List < Integer > list1 = staffContractService.selectLaborContractserUserAll ( orgIdList, isEnable, status );
+                    staffImportAndExportService.exportArcFile(list1,response,getUserSession ());
                 }
-                staffImportAndExportService.exportArcFile(exportNoConArcVo.getList (),response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -304,21 +302,17 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFileNoCon(@RequestBody @Valid ExportNoConArcVo exportNoConArcVo, HttpServletResponse response) {
-        Boolean b = checkParam(response,getUserSession (),exportNoConArcVo);
+    public ResponseResult exportArcFileNoCon(@RequestBody List<Integer> list, HttpServletResponse response,@RequestParam
+                                             List<Integer> orgIdList) {
+        Boolean b = checkParam(response,getUserSession (),list,orgIdList);
         if(b){
             try {
-                if(CollectionUtils.isEmpty ( exportNoConArcVo.getList () )){
-                    List< UserArchiveVo > arcList=userArchiveDao.selectArcByNotCon(exportNoConArcVo.getOrgId ());
-                    List < Integer > objects = new ArrayList <> ();
-                    for (UserArchiveVo userArchiveVo : arcList) {
-                        objects.add ( userArchiveVo.getArchiveId () );
-                    }
-                   exportNoConArcVo.setList ( objects );
+                if(!CollectionUtils.isEmpty ( list )){
+                    staffImportAndExportService.exportArcFile(list,response,getUserSession ());
                 }else{
-
+                    List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList );
+                    staffImportAndExportService.exportArcFile(list1,response,getUserSession ());
                 }
-                staffImportAndExportService.exportArcFile(exportNoConArcVo.getList (),response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();

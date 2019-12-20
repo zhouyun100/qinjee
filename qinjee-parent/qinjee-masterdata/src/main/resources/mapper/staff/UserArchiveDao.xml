@@ -1017,7 +1017,10 @@
     where arc.archive_id not in(
     select tlc.archive_id from t_labor_contract tlc
     )
-    and arc.org_id = #{orgId}
+    and arc.org_id in
+    <foreach collection="orgId" item='item' open="(" close=")" separator=",">
+      #{item}
+    </foreach>
   </select>
   <select id="selectTransMessage" resultType="java.util.Map">
       SELECT
@@ -1036,6 +1039,11 @@
     AND arc.is_delete = 0
     where arc.archive_id = #{key}
   </select>
-
+  <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+    select <include refid="Base_Column_List"/>
+    from t_user_archive
+    where id_number=#{s}
+    and is_delete=0
+  </select>
 </mapper>
 

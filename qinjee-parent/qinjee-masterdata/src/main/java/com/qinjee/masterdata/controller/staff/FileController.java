@@ -10,9 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,16 +31,16 @@ public class FileController extends BaseController {
 
     /**
      * 上传文件
-     * @param multipartFile
+     * @param
      * @return
      */
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ApiOperation(value = "上传文件", notes = "hkt")
-    public ResponseResult ImportFile(MultipartFile multipartFile) {
-        Boolean b = checkParam(getUserSession (),multipartFile);
+    public ResponseResult importFile( @RequestParam MultipartFile[] files) {
+        Boolean b = checkParam(getUserSession (),files);
         if(b) {
             try {
-                fileOperateService.putFile (multipartFile,getUserSession () );
+                fileOperateService.putFile (files,getUserSession () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -77,15 +75,14 @@ public class FileController extends BaseController {
      * 展示文件
      * @return
      */
-    @RequestMapping(value = "/showFile", method = RequestMethod.POST)
-    @ApiOperation(value = "下载文件", notes = "hkt")
-    public ResponseResult< List < AttachmentRecord >> showFile(Integer archiveId) {
-        Boolean b = checkParam(archiveId,getUserSession ());
+    @RequestMapping(value = "/showFile", method = RequestMethod.GET)
+    @ApiOperation(value = "展示文件", notes = "hkt")
+    public ResponseResult< List < AttachmentRecord >> showFile(@RequestParam List<Integer> orgIdList) {
+        Boolean b = checkParam(orgIdList,getUserSession ());
         if(b) {
             try {
-                List < AttachmentRecord > list = fileOperateService.selectAttach ( archiveId, getUserSession () );
+                List < AttachmentRecord > list = fileOperateService.selectAttach ( orgIdList, getUserSession () );
                 if(list.size ()>0){
-
                     return new ResponseResult <> (list, CommonCode.SUCCESS);
                 }else{
                     return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
@@ -147,7 +144,7 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/checkFielName", method = RequestMethod.POST)
     @ApiOperation(value = "验证文件名称是否合法", notes = "hkt")
-    public ResponseResult checkFielName(String fileName) {
+    public ResponseResult checkFielName(List<String> fileName) {
         Boolean b = checkParam(fileName,getUserSession ());
         if(b) {
             try {

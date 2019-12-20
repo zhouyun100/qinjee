@@ -44,7 +44,7 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 //    })
-    public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(Integer orgId, Integer currentPage, Integer pageSize
+    public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(@RequestParam List<Integer> orgId, Integer currentPage, Integer pageSize
     ) {
         Boolean b = checkParam(orgId, currentPage, pageSize,getUserSession ());
         if (b) {
@@ -128,7 +128,6 @@ public class StaffContractController extends BaseController {
                 e.printStackTrace();
                 return failResponseResult("新签合同失败");
             }
-
         }
         return  failResponseResult("参数错误");
 
@@ -556,51 +555,6 @@ public class StaffContractController extends BaseController {
             }
         }
         return  failResponseResult("参数错误");
-    }
-
-    /**
-     * 查询在职员工的人数
-     */
-    @RequestMapping(value = "/selectArcNumberIn", method = RequestMethod.GET)
-    @ApiOperation(value = "查询在职员工的人数", notes = "hkt")
-//    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<Integer> selectArcNumberIn(Integer id) {
-        Boolean b = checkParam(id);
-        if(b){
-            try {
-                Integer integer = staffContractService.selectArcNumberIn(id);
-                return new ResponseResult(integer, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-              return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-
-    }
-
-    /**
-     * 查询机构下合同即将到期的员工
-     */
-    @RequestMapping(value = "/selectArcDeadLine", method = RequestMethod.GET)
-    @ApiOperation(value = "查询机构下合同即将到期的员工", notes = "hkt")
-//    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<PageResult<UserArchiveVo>> selectArcDeadLine(Integer orgId,Integer pageSize,Integer currentPage) {
-        Boolean b = checkParam(orgId,pageSize,currentPage);
-        if(b){
-            try {
-                PageResult < UserArchiveVo > userArchiveVoPageResult = staffContractService.selectArcDeadLine ( orgId, pageSize, currentPage );
-                if(userArchiveVoPageResult.getList ().size ()>0){
-                    return new ResponseResult<>(userArchiveVoPageResult,CommonCode.SUCCESS);
-                }else {
-                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     /**
