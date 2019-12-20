@@ -81,6 +81,12 @@ public class RequestRoleVO implements Serializable {
     private Date trusteeshipEndTime;
 
     /**
+     * 托管人档案ID
+     */
+    @ApiModelProperty("托管人档案ID")
+    private Integer trusteeshipArchiveId;
+
+    /**
      * 操作人
      */
     @ApiModelProperty("操作人")

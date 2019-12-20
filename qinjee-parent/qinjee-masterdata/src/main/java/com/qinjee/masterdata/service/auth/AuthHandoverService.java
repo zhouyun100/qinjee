@@ -66,7 +66,7 @@ public interface AuthHandoverService {
 
     /**
      * 角色托管
-     * @param archiveId
+     * @param trusteeshipArchiveId
      * @param acceptArchiveId
      * @param trusteeshipBeginTime
      * @param trusteeshipEndTime
@@ -74,7 +74,7 @@ public interface AuthHandoverService {
      * @param operatorId
      * @return
      */
-    int roleTrusteeshipByArchiveId(Integer archiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId);
+    int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId);
 
 
     /**

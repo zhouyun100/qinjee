@@ -57,6 +57,14 @@ public interface AuthHandoverDao {
     int roleHandoverByArchiveId(RequestRoleVO userRole);
 
     /**
+     * 用户角色查询
+     * @param acceptArchiveId
+     * @param roleId
+     * @return
+     */
+    Integer searchAcceptArchiveAndRoleId(Integer acceptArchiveId,Integer roleId);
+
+    /**
      * 用户角色机构移交
      * @param userRole
      * @return

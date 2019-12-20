@@ -68,6 +68,12 @@ public class RoleGroupVO implements Serializable {
     private Date trusteeshipEndTime;
 
     /**
+     * 托管人
+     */
+    @ApiModelProperty("托管人")
+    private String trusteeshipUserName;
+
+    /**
      * 父角色组ID
      */
     @ApiModelProperty("父角色组ID")

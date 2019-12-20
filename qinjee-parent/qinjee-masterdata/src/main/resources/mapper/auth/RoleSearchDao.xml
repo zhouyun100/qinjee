@@ -21,6 +21,7 @@
         <result column="is_trusteeship" jdbcType="TINYINT" property="isTrusteeship" />
         <result column="trusteeship_begin_time" jdbcType="TIMESTAMP" property="trusteeshipBeginTime" />
         <result column="trusteeship_end_time" jdbcType="TIMESTAMP" property="trusteeshipEndTime" />
+        <result column="trusteeship_user_name" jdbcType="VARCHAR" property="trusteeshipUserName" />
         <result column="has_role" jdbcType="INTEGER" property="hasRole" />
     </resultMap>
 
@@ -64,6 +65,7 @@
             0 is_trusteeship,
             NULL trusteeship_begin_time,
             NULL trusteeship_end_time,
+            NULL trusteeship_user_name,
             0 has_role
         FROM
             t_role_group
@@ -84,6 +86,7 @@
                 END is_trusteeship,
                 t_user_role.trusteeship_begin_time,
                 t_user_role.trusteeship_end_time,
+                ua.user_name trusteeship_user_name,
                 CASE
                     WHEN t_user_role.role_id IS NOT NULL THEN
                         1
@@ -95,6 +98,7 @@
             LEFT JOIN t_user_role ON t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
             AND t_user_role.role_id = t_role.role_id
             AND t_user_role.is_delete = 0
+            LEFT JOIN t_user_archive ua ON t_user_role.trusteeship_archive_id = ua.archive_id
             WHERE
                 t_role.company_id = #{companyId,jdbcType=INTEGER}
             AND t_role.is_delete = 0

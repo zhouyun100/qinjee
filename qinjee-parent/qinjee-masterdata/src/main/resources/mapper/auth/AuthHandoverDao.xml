@@ -17,47 +17,51 @@
         insert into t_user_role (
             role_id,
             archive_id,
-            <if test="isTrusteeship != null">
-                is_trusteeship,
-            </if>
+            is_trusteeship,
             <if test="trusteeshipBeginTime != null">
                 trusteeship_begin_time,
             </if>
             <if test="trusteeshipEndTime != null">
                 trusteeship_end_time,
             </if>
+            trusteeship_archive_id,
             operator_id,
             is_delete)
         values (
             #{roleId,jdbcType=INTEGER},
             #{acceptArchiveId,jdbcType=INTEGER},
-            <if test="isTrusteeship != null">
-                #{isTrusteeship,jdbcType=TINYINT},
-            </if>
+            #{isTrusteeship,jdbcType=INTEGER},
             <if test="trusteeshipBeginTime != null">
                 #{trusteeshipBeginTime,jdbcType=TIMESTAMP},
             </if>
             <if test="trusteeshipEndTime != null">
                 #{trusteeshipEndTime,jdbcType=TIMESTAMP},
             </if>
+            #{trusteeshipArchiveId,jdbcType=INTEGER},
             #{operatorId,jdbcType=INTEGER},
             0)
     </insert>
 
     <!-- 用户角色机构托管 -->
     <insert id="archiveRoleOrgTrusteeship" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" >
-        insert into t_user_org_auth (org_id,role_id,archive_id,is_trusteeship,trusteeship_begin_time,trusteeship_end_time,operator_id)
+        insert into t_user_org_auth (org_id,role_id,archive_id,is_trusteeship,trusteeship_begin_time,trusteeship_end_time,trusteeship_archive_id,operator_id)
         select org_id, role_id,
         #{acceptArchiveId,jdbcType=INTEGER},
-        #{isTrusteeship,jdbcType=TINYINT},
+        #{isTrusteeship,jdbcType=INTEGER},
         #{trusteeshipBeginTime,jdbcType=TIMESTAMP},
         #{trusteeshipEndTime,jdbcType=TIMESTAMP},
+        #{trusteeshipArchiveId,jdbcType=INTEGER},
         #{operatorId,jdbcType=INTEGER}
         from t_user_org_auth
         where role_id = #{roleId,jdbcType=INTEGER}
-        and archive_id = #{archiveId,jdbcType=INTEGER}
+        and archive_id = #{trusteeshipArchiveId,jdbcType=INTEGER}
         and is_delete = 0
     </insert>
+
+    <!-- 用户角色查询 -->
+    <select id="searchAcceptArchiveAndRoleId" resultType="java.lang.Integer">
+        select id from t_user_role where archive_id = #{acceptArchiveId,jdbcType=INTEGER} and role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0 and is_trusteeship = 0
+    </select>
 
     <!-- 角色回收 -->
     <update id="roleRecoveryByArchiveId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
@@ -68,7 +72,7 @@
     <!-- 角色移交 -->
     <update id="roleHandoverByArchiveId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO">
         update t_user_role set archive_id = #{acceptArchiveId,jdbcType=INTEGER}, operator_id = #{operatorId,jdbcType=INTEGER}
-        where archive_id = #{handoverArchiveId,jdbcType=INTEGER} and role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+        where archive_id = #{handoverArchiveId,jdbcType=INTEGER} and role_id = #{roleId,jdbcType=INTEGER} and is_trusteeship = 0 and is_delete = 0
     </update>
 
     <!-- 用户角色机构回收 -->

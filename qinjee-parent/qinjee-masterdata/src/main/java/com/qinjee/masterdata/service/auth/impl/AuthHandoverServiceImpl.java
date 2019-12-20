@@ -86,7 +86,10 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
         userRole.setOperatorId(operatorId);
         for(Integer roleId : roleIdList){
             userRole.setRoleId(roleId);
-            resultNumber += authHandoverDao.roleHandoverByArchiveId(userRole);
+            Integer id = authHandoverDao.searchAcceptArchiveAndRoleId(acceptArchiveId,roleId);
+            if(id == null){
+                resultNumber += authHandoverDao.roleHandoverByArchiveId(userRole);
+            }
             resultNumber += authHandoverDao.archiveRoleOrgHandover(userRole);
         }
         return resultNumber;
@@ -95,14 +98,14 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int roleTrusteeshipByArchiveId(Integer archiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId) {
+    public int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId) {
         if(null == acceptArchiveId || null == operatorId || CollectionUtils.isEmpty(roleIdList)){
             return 0;
         }
 
         int resultNumber = 0;
         RequestRoleVO userRole = new RequestRoleVO();
-        userRole.setArchiveId(archiveId);
+        userRole.setTrusteeshipArchiveId(trusteeshipArchiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setIsTrusteeship(1);
         userRole.setTrusteeshipBeginTime(trusteeshipBeginTime);

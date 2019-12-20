@@ -185,9 +185,9 @@ public class AuthHandoverController extends BaseController{
 
     @ApiOperation(value="角色托管", notes="根据档案托管角色")
     @RequestMapping(value = "/roleTrusteeshipByArchiveId",method = RequestMethod.POST)
-    public ResponseResult roleTrusteeshipByArchiveId(@RequestBody @ApiParam(value = "请求参数：\narchiveId：托管人档案ID\nacceptArchiveId：托管接收人档案ID\ntrusteeshipBeginTime：托管开始时间\ntrusteeshipEndTime：托管结束时间\nroleIdList：角色ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
+    public ResponseResult roleTrusteeshipByArchiveId(@RequestBody @ApiParam(value = "请求参数：\ntrusteeshipArchiveId：托管人档案ID\nacceptArchiveId：托管接收人档案ID\ntrusteeshipBeginTime：托管开始时间\ntrusteeshipEndTime：托管结束时间\nroleIdList：角色ID集合") RequestAuthHandoverVO requestAuthHandoverVO) {
 
-        if(requestAuthHandoverVO.getArchiveId() != null && requestAuthHandoverVO.getAcceptArchiveId() != null && !CollectionUtils.isEmpty(requestAuthHandoverVO.getRoleIdList())){
+        if(requestAuthHandoverVO.getTrusteeshipArchiveId() != null && requestAuthHandoverVO.getAcceptArchiveId() != null && !CollectionUtils.isEmpty(requestAuthHandoverVO.getRoleIdList())){
 
             Date beginTime = DateFormatUtil.formatStrToDate(requestAuthHandoverVO.getTrusteeshipBeginTime(),DateFormatUtil.DATE_FORMAT);
             Date endTime = DateFormatUtil.formatStrToDate(requestAuthHandoverVO.getTrusteeshipEndTime(),DateFormatUtil.DATE_FORMAT);
@@ -205,7 +205,7 @@ public class AuthHandoverController extends BaseController{
                     responseResult.setMessage("Session失效！");
                     return responseResult;
                 }
-                int resultNumber = authHandoverService.roleTrusteeshipByArchiveId(requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(),beginTime,endTime,requestAuthHandoverVO.getRoleIdList(),userSession.getArchiveId());
+                int resultNumber = authHandoverService.roleTrusteeshipByArchiveId(requestAuthHandoverVO.getTrusteeshipArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(),beginTime,endTime,requestAuthHandoverVO.getRoleIdList(),userSession.getArchiveId());
                 if(resultNumber > 0){
                     logger.info("roleTrusteeshipByArchiveId success！archiveId={}, acceptArchiveId={},trusteeshipBeginTime={},trusteeshipEndTime={},roleIdList={}", requestAuthHandoverVO.getArchiveId(), requestAuthHandoverVO.getAcceptArchiveId(),requestAuthHandoverVO.getTrusteeshipBeginTime(),requestAuthHandoverVO.getTrusteeshipEndTime(),requestAuthHandoverVO.getRoleIdList());
                     responseResult = ResponseResult.SUCCESS();
