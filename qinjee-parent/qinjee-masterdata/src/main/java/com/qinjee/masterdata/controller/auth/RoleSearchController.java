@@ -76,7 +76,7 @@ public class RoleSearchController extends BaseController{
     @RequestMapping(value = "/searchArchiveListByUserName",method = RequestMethod.POST)
     public ResponseResult<PageResult<ArchiveInfoVO>> searchArchiveListByUserName(
             @RequestBody @ApiParam(value = "请求参数：\ncurrentPage：当前页数\npageSize：总页数(不传默认查全部)\norgId：机构ID\nuserName：姓名或工号")RequestArchivePageVO archivePageVO) {
-        if(StringUtils.isNoneBlank(archivePageVO.getUserName())){
+        if(StringUtils.isBlank(archivePageVO.getUserName())){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("工号或姓名不能为空!");
             return responseResult;
