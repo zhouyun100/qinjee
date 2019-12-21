@@ -232,11 +232,12 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //更新合同表
         LaborContract laborContract=new LaborContract ();
         BeanUtils.copyProperties ( contractVo.getLaborContractVo (),laborContract );
+        laborContract.setArchiveId(contractVo.getList ().get ( 0 ));
         laborContract.setContractState(CHANGEMARK);
         laborContract.setOperatorId ( userSession.getArchiveId () );
         laborContract.setCreateTime ( new Date (  ) );
         laborContract.setUpdateTime ( new Date (  ) );
-        laborContractDao.updateByPrimaryKey(laborContract);
+        laborContractDao.updateByPrimaryKeySelective(laborContract);
         //新增变更记录
         change(contractVo.getLaborContractChangeVo (), COMMONCHANGE, contractVo.getList ().get ( 0 ), userSession.getArchiveId());
     }
@@ -434,7 +435,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
 
-    public static String addMonth(String date,String dateType,int month) {
+    private static String addMonth(String date,String dateType,int month) {
         String nowDate = null;
         SimpleDateFormat format = new SimpleDateFormat ( dateType );
         try {
