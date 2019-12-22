@@ -38,6 +38,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private static final String TYPEDATE="date";
     private static final String TYPENUMBER="number";
     private static final String TYPETEXT="text";
+    private static final String TYPECODE="code";
     private static final String DENGYU="等于";
     private static final String BUDENGYU="不等于";
     private static final String BAOHAN="包含";
@@ -142,9 +143,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public StandingBookInfo selectStandingBook(Integer id) {
         StandingBook standingBook = standingBookDao.selectByPrimaryKey(id);
-        List<StandingBookFilter> list = standingBookFilterDao.selectByStandingBookId(id);
+        List < StandingBookFilterVo > standingBookFilterVos = standingBookFilterDao.selectByStandingBookId ( id );
         StandingBookInfo standingBookInfo= new StandingBookInfo();
-        standingBookInfo.setList(list);
+        standingBookInfo.setList(standingBookFilterVos);
         standingBookInfo.setStandingBook(standingBook);
         return standingBookInfo;
     }
@@ -175,11 +176,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         //没经过台账之前筛选的档案id
         //通过id查询档案
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
-        List<StandingBookFilter> filters = standingBookFilterDao.selectByStandingBookId(standingBookReturnVo.getStangdingBookId ());
-        for (StandingBookFilter filter : filters) {
+        List<StandingBookFilterVo> filters = standingBookFilterDao.selectByStandingBookId(standingBookReturnVo.getStangdingBookId ());
+        for (StandingBookFilterVo filter : filters) {
                 stringBuffer.append(filter.getSqlStr());
         }
-        for (StandingBookFilter filter : filters) {
+        for (StandingBookFilterVo filter : filters) {
             fieldIdList.add (filter.getFieldId ());
         }
         CustomTableVO customTableVO=new CustomTableVO ();
@@ -198,8 +199,13 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                 standingBookReturnVo.getOrgId (),standingBookReturnVo.getType ());
         standingBookReturnVo.setTotal ( integerList.size () );
         return userArchiveDao.selectByPrimaryKeyList ( integerList );
+
     }
 
+    @Override
+    public void updateStandingBook(Integer standingBookId, String name) {
+        standingBookDao.updateStandingBook(standingBookId,name);
+    }
 
 
     private String getBaseSql(Integer companyId,List<CustomFieldVO> fieldvos,List<CustomTableVO> tableVOS){
@@ -251,6 +257,15 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                     condition = "t."+fieldName + " not like "+"'%" + filter.getFieldValue() + "%' ";
                 }
             }
+            if (TYPECODE.equals(textType)) {
+                if (BAOHAN.equals(filter.getOperateSymbol())) {
+                    condition ="t."+fieldName + " = " + filter.getFieldValue();
+                }
+
+                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
+                    condition ="t."+fieldName + " != " + filter.getFieldValue();
+                }
+            }
         }
         if(textType !=null && isSystemDefine==1 ) {
             if ( TYPENUMBER.equals(textType)) {
@@ -276,6 +291,15 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
                     condition = fieldCode + " not like "+"'%" + filter.getFieldValue() + "%' ";
+                }
+            }
+            if (TYPECODE.equals(textType)) {
+                if (BAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = fieldCode + " = " + filter.getFieldValue();
+                }
+
+                if (BUBAOHAN.equals(filter.getOperateSymbol())) {
+                    condition = fieldCode + " != " + filter.getFieldValue();
                 }
             }
         }

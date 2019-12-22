@@ -1,12 +1,18 @@
 package com.qinjee.masterdata.service.file.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.qcloud.cos.model.COSObjectInputStream;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
+import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.io.IOUtils;
@@ -15,12 +21,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -31,6 +42,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
     private AttachmentRecordDao attachmentRecordDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private RedisClusterService redisClusterService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -122,20 +135,21 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List<AttachmentRecord> selectAttach(List<Integer> orgIdList,UserSession userSession) {
+    public List< AttchmentRecordVo > selectAttach(List<Integer> orgIdList, UserSession userSession) {
       return attachmentRecordDao.selectAttach(orgIdList,userSession.getCompanyId ());
     }
 
     @Override
-    public Boolean checkFielName(List<String> fileName, UserSession userSession) {
-        Boolean result=false;
-        for (String string : fileName) {
+    public String checkFielName(List<String> fileName, UserSession userSession) {
+        Map<String,String> map=new HashMap <> (  );
+        for (int i = 0; i < fileName.size (); i++) {
             Boolean flag=false;
-            String s = string.split ( "#" )[0];
+            String s =fileName.get ( i ).split ( "#" )[0];
             UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber(s);
             List < String > list = attachmentRecordDao.selectGroup ();
+            String name = getName ( fileName.get ( i ) );
             for (String s1 : list) {
-                if (fileName.contains ( s1 )) {
+                if (s1.contains ( name )) {
                     flag = true;
                     break;
                 }
@@ -145,9 +159,43 @@ public class FileOperateServiceImpl implements IFileOperateService {
             } else {
                flag=false;
             }
-            result=(result&&flag);
+            if(flag==false){
+                map.put ( fileName.get ( i ),"验证不通过" );
+                redisClusterService.setex ( userSession.getCompanyId ()+"证件号验证"+userSession.getArchiveId (),2*60*60,
+                        JSON.toJSONString (map));
+            }
         }
-        return result;
+        if(map.size ()>0){
+            return JSON.toJSONString ( map );
+        }else {
+            return "验证通过！";
+        }
+    }
+
+    @Override
+    public void exportCheckFile(UserSession userSession,HttpServletResponse response) throws IOException {
+        String value=null;
+        String s = userSession.getCompanyId () + "证件号验证" + userSession.getArchiveId ();
+        if (redisClusterService.exists ( s )) {
+            value = redisClusterService.get ( s );
+        } else {
+            ExceptionCast.cast ( CommonCode.REDIS_KEY_EXCEPTION );
+        }
+        Map < String, String > parse = ( Map < String, String > ) JSONArray.parse ( value );
+        response.setContentType("application/x-msdownload;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode("checkFile.txt", "UTF-8") + "\"");
+        response.setHeader("fileName", URLEncoder.encode("checkFile.txt", "UTF-8"));
+        StringBuffer stringBuffer=new StringBuffer (  );
+        ServletOutputStream outputStream = response.getOutputStream ();
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream ( outputStream );
+        for (Map.Entry < String, String > entry : parse.entrySet ()) {
+            stringBuffer.append ( entry.getKey () ).append ( "\t" )
+                    .append ( entry.getValue () ).append ( "\r\n" );
+        }
+        bufferedOutputStream.write ( stringBuffer.toString ().getBytes ("UTF-8") );
+        bufferedOutputStream.flush ();
+        bufferedOutputStream.close ();
     }
 
 }

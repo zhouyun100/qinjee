@@ -18,21 +18,17 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.utils.RegexpUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -136,29 +132,26 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     if (declaredField.getName ().equals (
                             HeadFieldUtil.getFieldMap ().get ( integerStringEntry.getKey () ) )) {
                         Class typeClass = declaredField.getType ();
-                        Constructor con = typeClass.getConstructor ( typeClass );
-                        Object field = con.newInstance ( integerStringEntry.getValue () );
                         int i = typeClass.getName ().lastIndexOf ( "." );
                         String type=typeClass.getTypeName ().substring ( i+1 );
-                        declaredField.set ( object, field );
                         //拼接单个字段
                         checkCustomFieldVO.setIsMust ( ( short ) 1 );
                         if("Date".equals ( type )){
                             SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
-                            field=sdf.parse ( integerStringEntry.getValue () );
+                            Date parse = sdf.parse ( integerStringEntry.getValue () );
                             //设置值类型
                             checkCustomFieldVO.setTextType ( "date" );
-                            declaredField.set(object, field);
+                            declaredField.set(object, parse);
                         }
                         if("Integer".equals ( type )){
-                            field=Integer.parseInt ( integerStringEntry.getValue () );
+                            int i1 = Integer.parseInt ( integerStringEntry.getValue () );
                             checkCustomFieldVO.setTextType ( "number" );
-                            declaredField.set(object, field);
+                            declaredField.set(object, i1);
                         }
                         if("String".equals ( type )){
-                            field=integerStringEntry.getValue ();
+                            String value = integerStringEntry.getValue ();
                             checkCustomFieldVO.setTextType ( "text" );
-                            declaredField.set(object, field);
+                            declaredField.set(object, value);
                         }
                         //设置值
                         checkCustomFieldVO.setCode ( integerStringEntry.getKey () );

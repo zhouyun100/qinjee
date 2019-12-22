@@ -88,4 +88,5 @@ public interface IStaffStandingBookService {
      */
     List< UserArchiveVo > selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) throws ParseException;
 
+    void updateStandingBook(Integer standingBookId, String name);
 }

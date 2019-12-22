@@ -8,7 +8,10 @@ import java.io.Serializable;
 @Data
 @JsonInclude
 public class AttachmentVo implements Serializable {
-
+    /**
+     * attatchmentId
+     */
+    private Integer attachmentId;
     /**
      * 业务模块
      */

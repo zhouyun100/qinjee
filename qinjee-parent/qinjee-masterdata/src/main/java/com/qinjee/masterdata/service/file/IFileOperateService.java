@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.service.file;
 
-import com.qinjee.masterdata.model.entity.AttachmentRecord;
+import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 
@@ -34,7 +36,9 @@ public interface IFileOperateService {
     /**
      * 展示附件列表
      */
-    List<AttachmentRecord> selectAttach(List<Integer> orgIdList,UserSession userSession);
+    List< AttchmentRecordVo > selectAttach(List<Integer> orgIdList, UserSession userSession);
 
-    Boolean checkFielName(List<String> fileName, UserSession userSession);
+    String checkFielName(List<String> fileName, UserSession userSession);
+
+    void exportCheckFile(UserSession userSession,HttpServletResponse response) throws UnsupportedEncodingException, IOException;
 }

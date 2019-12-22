@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
@@ -31,8 +30,6 @@ public class ImportAndExportStaffController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(ImportAndExportStaffController.class);
     @Autowired
     private IStaffImportAndExportService staffImportAndExportService;
-    @Autowired
-    private UserArchiveDao userArchiveDao;
     @Autowired
     private StaffContractServiceImpl staffContractService;
 

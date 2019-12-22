@@ -1,12 +1,13 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.AttachmentRecord;
+import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,13 +78,13 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showFile", method = RequestMethod.GET)
     @ApiOperation(value = "展示文件", notes = "hkt")
-    public ResponseResult< List < AttachmentRecord >> showFile(@RequestParam List<Integer> orgIdList) {
+    public ResponseResult< List < AttchmentRecordVo >> showFile(@RequestParam List<Integer> orgIdList) {
         Boolean b = checkParam(orgIdList,getUserSession ());
         if(b) {
             try {
-                List < AttachmentRecord > list = fileOperateService.selectAttach ( orgIdList, getUserSession () );
-                if(list.size ()>0){
-                    return new ResponseResult <> (list, CommonCode.SUCCESS);
+                List < AttchmentRecordVo > attachmentVos = fileOperateService.selectAttach ( orgIdList, getUserSession () );
+                if(attachmentVos.size ()>0){
+                    return new ResponseResult <> (attachmentVos, CommonCode.SUCCESS);
                 }else{
                     return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
                 }
@@ -144,16 +145,35 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/checkFielName", method = RequestMethod.POST)
     @ApiOperation(value = "验证文件名称是否合法", notes = "hkt")
-    public ResponseResult checkFielName(List<String> fileName) {
+    public ResponseResult checkFielName(@RequestBody List<String> fileName) {
         Boolean b = checkParam(fileName,getUserSession ());
         if(b) {
             try {
-                Boolean a = fileOperateService.checkFielName ( fileName, getUserSession () );
-                if(a){
-                    return new ResponseResult <> (null, CommonCode.SUCCESS);
+                String s = fileOperateService.checkFielName ( fileName, getUserSession () );
+                if(StringUtils.isNotBlank ( s )){
+                    return new ResponseResult <> (s, CommonCode.SUCCESS);
                 }else{
-                    return new ResponseResult <> ( null,CommonCode.FAIL );
+                    return new ResponseResult <> ( null,CommonCode.CHECK_FALSE );
                 }
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode. FAIL);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 导出校验文件
+     * @return
+     */
+    @RequestMapping(value = "/exportCheckFile", method = RequestMethod.POST)
+    @ApiOperation(value = "导出校验文件", notes = "hkt")
+    public ResponseResult exportCheckFile(HttpServletResponse response) {
+        Boolean b = checkParam(getUserSession (),response);
+        if(b) {
+            try {
+                 fileOperateService.exportCheckFile ( getUserSession (),response );
+                 return null;
             } catch (Exception e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. FAIL);

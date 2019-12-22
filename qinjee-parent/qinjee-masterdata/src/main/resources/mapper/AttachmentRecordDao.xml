@@ -216,12 +216,15 @@
   </update>
   <select id="selectAttach" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo" >
             SELECT
+               record.attachment_id as attatchmentId,
                arc.user_name as  userName,
                arc.employee_number as  employeeNumber,
                org.org_name as orgName,
                orga.org_name as businessUnitName,
                record.create_time as  creatTime,
-               record.attachment_url as fileName
+               record.attachment_url as attatchmentUrl,
+               substring_index(substring_index(record.attachment_url,'/',2) , '/', -1) as fileType,
+               concat(substring_index(record.attachment_url, '/', 1),'#',substring_index(record.attachment_url, '/', -1)) as fileName
             FROM
             t_user_archive  arc
             left join t_attachment_record record on record.business_id=arc.archive_id and arc.is_delete=0
@@ -235,7 +238,7 @@
           </foreach>)
             AND record.company_id = #{companyId}
             AND record.is_delete = 0
-            order by record.attachment_url
+            order by fileName
   </select>
   <select id="selectGroupId" resultType="java.lang.Integer">
     select group_id from

@@ -11,6 +11,10 @@ import java.io.Serializable;
 @JsonInclude
 public class StandingBookFilterVo implements Serializable {
     /**
+     * 表id
+     */
+    private Integer tableId;
+    /**
      * 筛选ID
      */
     private Integer filterId;
@@ -42,12 +46,18 @@ public class StandingBookFilterVo implements Serializable {
      * 右括号
      */
     private Short isRightBrackets;
-
+    /**
+     * sql串
+     */
+    private String sqlStr;
     /**
      * 连接符
      */
     private String linkSymbol;
-
+    /**
+     * 台账id
+     */
+    private Integer standingBookId;
     /**
      * 是否删除
      */

@@ -186,7 +186,7 @@
     </trim>
   </insert>
   <insert id="insertBatch" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
-    <foreach collection="laborContractList" item="item" >
+    <foreach collection="laborContractList" item="item" separator=";" >
       insert into t_labor_contract
       <trim prefix="(" suffix=")" suffixOverrides=",">
         <if test="item.archiveId != null">
@@ -434,7 +434,6 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
-    and con.business_unit_id=#{companyId}
     and arc.is_delete=0
   </select>
   <select id="selectByarcIdAndStatus" resultType="com.qinjee.masterdata.model.entity.LaborContract">

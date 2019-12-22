@@ -5,8 +5,8 @@ import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.vo.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.staff.*;
-import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
+import com.qinjee.masterdata.service.staff.impl.StaffArchiveServiceImpl;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -34,7 +34,7 @@ public class StaffStandingBookController extends BaseController {
     @Autowired
     private IStaffStandingBookService staffStandingBookService;
     @Autowired
-    private IStaffArchiveService staffArchiveService;
+    private StaffArchiveServiceImpl archiveService;
 
     /**
      * 加入黑名单表
@@ -145,8 +145,7 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 新增与修改台账
      */
-
-    @RequestMapping(value = "/updateStandingBook", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveStandingBook", method = RequestMethod.POST)
     @ApiOperation(value = "修改台账", notes = "hkt")
 //    @ApiImplicitParam(name = "StandingBookInfoVo", value = "台账表信息", paramType = "form", required = true)
 
@@ -166,7 +165,25 @@ public class StaffStandingBookController extends BaseController {
         }
         return failResponseResult("参数错误");
     }
-
+    /**
+     * 修改台账名称
+     */
+    @RequestMapping(value = "/updateStandingBook", method = RequestMethod.GET)
+    @ApiOperation(value = "修改台账名称", notes = "hkt")
+//    @ApiImplicitParam(name = "StandingBookInfoVo", value = "台账表信息", paramType = "form", required = true)
+    public ResponseResult updateStandingBook(Integer standingBookId,String name) {
+        Boolean b = checkParam(standingBookId,name);
+        if (b) {
+            try {
+                staffStandingBookService.updateStandingBook(standingBookId,name);
+                return ResponseResult.SUCCESS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return failResponseResult("查询台账失败");
+            }
+        }
+        return failResponseResult("参数错误");
+    }
     /**
      * 查询台账
      */
@@ -258,7 +275,7 @@ public class StaffStandingBookController extends BaseController {
                 PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( list );
                 userArchiveVoPageResult.setTotal ( standingBookReturnVo.getTotal () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession ()));
+                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),standingBookReturnVo.getQuerySchemaId () ));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
