@@ -562,10 +562,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
-        OrganizationVO currentOrg = organizationDao.getOrganizationById(orgId);
+/*        OrganizationVO currentOrg = organizationDao.getOrganizationById(orgId);
         if (Objects.isNull(currentOrg)) {
             return idsList;
-        }
+        }*/
         //先查询到所有机构
         List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
         //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
@@ -688,8 +688,17 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     //=====================================================================
     @Override
-    public void sealOrganization(List<Integer> orgIds, Short isEnable) {
-        organizationDao.updateEnable(orgIds, isEnable);
+    public void sealOrganization(Integer archiveId,List<Integer> orgIds, Short isEnable) {
+        List<Integer> idList=new ArrayList<>();
+        for (Integer orgId : orgIds) {
+            List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
+            idList.addAll(orgIdList);
+        }
+        if(!CollectionUtils.isEmpty(idList)){
+            organizationDao.updateEnable(idList, isEnable);
+        }else{
+            ExceptionCast.cast(CommonCode.FAIL);
+        }
     }
 
 

@@ -47,13 +47,13 @@ public interface OrganizationService  {
   void deleteOrganizationById(List<Integer> orgIds, UserSession userSession);
 
   /**
-   * 封存/封存机构
+   * 封存/封存机构 包括其下级机构
    *
    * @param orgIds
    * @param isEnable
    * @return
    */
-  void sealOrganization(List<Integer> orgIds, Short isEnable);
+  void sealOrganization(Integer archiveId,List<Integer> orgIds, Short isEnable);
 
   /**
    * 合并机构（将多个老机构划转到一个新生成的机构，老机构逻辑删除）
