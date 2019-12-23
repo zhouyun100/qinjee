@@ -48,11 +48,6 @@ public class RoleSearchServiceImpl implements RoleSearchService {
         if(null == archivePageVO || null == archivePageVO.getCompanyId()){
             return null;
         }
-        if(archivePageVO.getCurrentPage() != null && archivePageVO.getPageSize() != null){
-            PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
-        }
-        archivePageVO.setCurrentDateTime(new Date());
-
         List<Integer> orgIdList = null;
         Integer orgId = archivePageVO.getOrgId();
         if(orgId != null){
@@ -61,6 +56,11 @@ public class RoleSearchServiceImpl implements RoleSearchService {
             List<Organization> orgIdAllList = roleSearchDao.getOrganizationListByArchiveId(operatorId,new Date());
             handlerOrgIdSonList(orgIdList, orgId, orgIdAllList);
         }
+
+        if(archivePageVO.getCurrentPage() != null && archivePageVO.getPageSize() != null){
+            PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
+        }
+        archivePageVO.setCurrentDateTime(new Date());
         List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO,orgIdList);
         PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoList);
         return pageResult;
