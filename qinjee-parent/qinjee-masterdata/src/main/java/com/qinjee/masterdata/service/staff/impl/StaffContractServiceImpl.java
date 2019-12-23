@@ -95,7 +95,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public PageResult < ContractFormVo > createContractForm(List < Integer > list,Integer pageSize,Integer currentPage,UserSession userSession) {
+    public PageResult < ContractFormVo > createContractForm(List < Integer > list,Integer currentPage,Integer pageSize ,UserSession userSession) {
 
         PageHelper.startPage ( currentPage,pageSize );
         List<ContractFormVo> contractFormList=laborContractDao.selectContractForm(list,userSession.getCompanyId());
