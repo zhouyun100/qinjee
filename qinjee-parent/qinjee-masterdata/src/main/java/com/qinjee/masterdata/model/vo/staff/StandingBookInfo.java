@@ -2,7 +2,6 @@ package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.StandingBookFilter;
 import lombok.Data;
 import lombok.ToString;
 
@@ -13,5 +12,5 @@ import java.util.List;
 @JsonInclude
 public class StandingBookInfo implements Serializable {
     private StandingBook standingBook;
-    private List<StandingBookFilter> list;
+    private List<StandingBookFilterVo> list;
 }

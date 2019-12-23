@@ -41,5 +41,5 @@ public interface LaborContractDao {
 
     List< LaborContract> selectContractByArchiveId(@Param("archiveId") Integer archiveId);
 
-    List< ContractFormVo> selectContractForm(@Param("list") List< Integer> list, @Param("archiveId") Integer archiveId);
+    List< ContractFormVo> selectContractForm(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
 }

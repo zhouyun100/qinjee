@@ -47,7 +47,8 @@ public enum CommonCode implements ResultCode{
     DATE_SO_LONG(false,10320, "二维码过期!"),
     POSITION_USED_NY_POST(false,10321, "职位已被岗位引用，不许删除!"),
     WECHAT_NO_BIND(false,10322, "微信未绑定用户账号"),
-    WECHAT_ACCESS_TOKEN(false,40029, "invalid code");
+    WECHAT_ACCESS_TOKEN(false,40029, "invalid code"),
+    CHECK_FALSE(false,10323, "验证失败");
 
     /**
      * 操作是否成功

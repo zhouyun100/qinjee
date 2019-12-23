@@ -7,7 +7,6 @@ import com.qinjee.masterdata.model.entity.CustomArchiveTable;
 import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
-import com.qinjee.masterdata.model.vo.staff.AttachmentVo;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
@@ -25,10 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -665,70 +662,6 @@ public class CommonController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-    /**
-     * 上传附件
-     * @param multipartFile
-     * @param attachmentVo
-     * @return
-     */
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.GET)
-    @ApiOperation(value = "上传附件", notes = "hkt")
-    public  ResponseResult uploadFile(MultipartFile multipartFile, AttachmentVo attachmentVo){
-        Boolean b = checkParam(multipartFile,attachmentVo,getUserSession ());
-        if (b) {
-            try {
-               fileOperateService.putFile ( multipartFile,getUserSession () );
-                return new ResponseResult<>(null, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
-    /**
-     * 删除附件
-     * @return
-     */
-    @RequestMapping(value = "/deleteFile", method = RequestMethod.GET)
-    @ApiOperation(value = "删除附件", notes = "hkt")
-    public  ResponseResult deleteFile(Integer id){
-        Boolean b = checkParam(getUserSession ());
-        if (b) {
-            try {
-                fileOperateService.deleteFile (id ,getUserSession () );
-                return new ResponseResult<>(null, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
-    /**
-     * 获取附件链接
-     * @return
-     */
-    @RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
-    @ApiOperation(value = "上传附件", notes = "hkt")
-    public  ResponseResult getFilePath(String groupName){
-        Boolean b = checkParam(getUserSession (),groupName);
-        if (b) {
-            try {
-                List < URL > filePath = fileOperateService.getFilePath (getUserSession (),groupName );
-                if(!CollectionUtils.isEmpty ( filePath )){
-                    return new ResponseResult<>(filePath, CommonCode.SUCCESS);
-                }else {
-                    return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {

@@ -29,4 +29,5 @@ public interface StandingBookDao {
 
     List<StandingBook> selectShare(@Param("companyId") Integer companyId);
 
+    void updateStandingBook(@Param("standingBookId") Integer standingBookId, @Param("name") String name);
 }

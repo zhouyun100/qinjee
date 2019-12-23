@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
+import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ public interface AttachmentRecordDao {
 
     void deleteByIdList(@Param("list") List<Integer> list);
 
-    List<AttachmentRecord> selectAttach(@Param("archiveId") Integer arichveId, @Param("companyId") Integer companyId);
+    List< AttchmentRecordVo > selectAttach(@Param("orgIdList") List<Integer> orgIdList, @Param("companyId") Integer companyId);
 
     Integer selectGroupId(@Param("groupName") String groupName);
 

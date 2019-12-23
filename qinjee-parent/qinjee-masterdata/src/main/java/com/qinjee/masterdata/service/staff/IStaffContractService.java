@@ -24,7 +24,7 @@ public interface IStaffContractService {
      * @param
      * @return
      */
-    PageResult< UserArchiveVo > selectNoLaborContract(Integer orgId, Integer currentPage, Integer pageSize);
+    PageResult< UserArchiveVo > selectNoLaborContract(List<Integer> orgId, Integer currentPage, Integer pageSize);
     /**
      * 删除合同
      * @param laborContractid
@@ -47,11 +47,11 @@ public interface IStaffContractService {
      */
    void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception;
 
-    /**更新合同，同时新增更新记录
+    /**更新合同，同时新增更新  记录
      * @param userSession
      * @return
      */
-    void updatelaborContract(ContractVo contractVo, UserSession userSession);
+    void updatelaborContract(ContractVo contractVo,   UserSession userSession);
 
     /**
      *查询一个合同的变更历史
@@ -171,17 +171,7 @@ public interface IStaffContractService {
      * @return
      */
     void rejectRenew( Integer xuqianId);
-    /**
-     * 查询在职员工的人数
-     */
-    Integer selectArcNumberIn(Integer id);
 
-    /**
-     * 查询机构下合同即将到期的员工
-     * @param orgId
-     * @return
-     */
-    PageResult<UserArchiveVo> selectArcDeadLine(Integer orgId,Integer pagesize,Integer currentPage) ;
 
     Integer getSignNumber(Integer archiveId);
 

@@ -16,11 +16,11 @@ public class ContractVo implements Serializable {
     /**
      * 合同类别（这个数据库里面没有这个字段）
      */
-    private String contract_category;
     private String contract_number;
     /**
      *期限类型
      */
+
     private String contract_period_type;
     /**
      * 试用期限

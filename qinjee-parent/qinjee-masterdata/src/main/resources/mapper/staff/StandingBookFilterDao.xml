@@ -16,6 +16,19 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
   </resultMap>
+  <resultMap id="filterVo" type="com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo">
+    <id column="filter_id" jdbcType="INTEGER" property="filterId" />
+    <result column="standing_book_id" jdbcType="INTEGER" property="standingBookId" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="is_left_brackets" jdbcType="SMALLINT" property="isLeftBrackets" />
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="operate_symbol" jdbcType="VARCHAR" property="operateSymbol" />
+    <result column="field_value" jdbcType="VARCHAR" property="fieldValue" />
+    <result column="is_right_brackets" jdbcType="SMALLINT" property="isRightBrackets" />
+    <result column="link_symbol" jdbcType="VARCHAR" property="linkSymbol" />
+    <result column="sql_str" jdbcType="VARCHAR" property="sqlStr" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
   <sql id="Base_Column_List">
     filter_id, standing_book_id, is_left_brackets, field_id, operate_symbol, field_value,
     is_right_brackets, link_symbol, sql_str, operator_id, create_time, update_time, is_delete
@@ -181,13 +194,16 @@
     update t_standing_book_filter
     set
     is_delete =1
-    where standing_book_id = #{standingBookId,jdbcType=INTEGER}  AND  is_delete = 0
+    where standing_book_id = #{standingBookId,jdbcType=INTEGER}
   </update>
-  <select id="selectByStandingBookId" resultType="com.qinjee.masterdata.model.entity.StandingBookFilter" resultMap="BaseResultMap">
+  <select id="selectByStandingBookId" resultType="com.qinjee.masterdata.model.vo.staff.StandingBookFilterVo"  resultMap="filterVo">
     select
-    <include refid="Base_Column_List" />
-    from t_standing_book_filter
-    where standing_book_id = #{id,jdbcType=INTEGER} AND  is_delete = 0
+     filter.filter_id , filter.standing_book_id, filter.is_left_brackets, filter.field_id, filter.operate_symbol, filter.field_value,
+    filter.is_right_brackets, filter.link_symbol, filter.sql_str, filter.operator_id, filter.create_time, filter.update_time,
+    filter.is_delete,field.table_id
+    from t_standing_book_filter filter
+    left join t_custom_archive_field field on field.field_id=filter.field_id and  field.is_delete=0
+    where standing_book_id = #{id,jdbcType=INTEGER} AND filter.is_delete = 0
   </select>
   <select id="selectSqlById" resultType="java.lang.String">
     select

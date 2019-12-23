@@ -1073,7 +1073,7 @@
         and id_number=#{idnumber}
         and is_delete=0
     </select>
-    <select id="selectByEmployNumber" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
+    <select id="selectByEmployNumber" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from t_pre_employment
         where id_number=#{s}

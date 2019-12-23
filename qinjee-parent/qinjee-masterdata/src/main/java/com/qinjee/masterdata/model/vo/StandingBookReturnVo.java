@@ -34,5 +34,8 @@ public class StandingBookReturnVo {
      * 总条数
      */
     private Integer total;
-
+    /**
+     * 查询方案id
+     */
+    private Integer querySchemaId;
 }

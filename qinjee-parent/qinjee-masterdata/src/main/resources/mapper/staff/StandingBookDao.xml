@@ -188,7 +188,9 @@
   </update>
   <select id="selectByAchiveId" resultType="com.qinjee.masterdata.model.entity.StandingBook" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List" />
+    standing_book_id, standing_book_name, standing_book_remark, standing_book_describe,
+    company_id, archive_id, is_share, sort, is_enable, creator_id, create_time, update_time,
+    is_delete
     from t_standing_book
     where   archive_id = #{archiveId,jdbcType=INTEGER} AND  is_delete = 0 AND is_share=0
   </select>
@@ -198,4 +200,11 @@
     from t_standing_book
     where   company_id = #{companyId,jdbcType=INTEGER} AND  is_delete = 0 AND is_share=1
   </select>
+  <update id="updateStandingBook">
+    update t_standing_book
+    set
+        standing_book_name =#{name}
+        where standing_book_id = #{standingBookId,jdbcType=INTEGER}
+        and is_delete=0
+  </update>
 </mapper>
