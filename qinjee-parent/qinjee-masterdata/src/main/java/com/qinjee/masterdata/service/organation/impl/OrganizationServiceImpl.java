@@ -1054,10 +1054,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                         resultMsg.append("上级机构名称在excel中不匹配|");
                     }else {
                         OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
-                        if (Objects.isNull(org)) {
-                            checkVo.setCheckResult(false);
-                            resultMsg.append("编码为" + organizationVO.getOrgParentCode() + "的上级机构不存在|");
-                        } else {
+                        if (Objects.nonNull(org)) {
                             if (null == org.getOrgName() || "".equals(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
                                 checkVo.setCheckResult(false);
                                 resultMsg.append("上级机构名称在数据库中不匹配|");
