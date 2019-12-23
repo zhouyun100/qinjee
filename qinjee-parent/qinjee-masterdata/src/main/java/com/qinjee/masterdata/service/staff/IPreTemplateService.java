@@ -6,19 +6,18 @@ import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 public interface IPreTemplateService {
-    List< EntryRegistrationTableVO> handlerCustomTableGroupFieldList(Integer companyId, Integer preId,Integer templateId) throws IllegalAccessException;
+    List < EntryRegistrationTableVO > handlerCustomTableGroupFieldList(Integer companyId, Integer preId, Integer templateId) throws IllegalAccessException;
 
     String createBackGroundPhoto(MultipartFile file, UserSession userSession) throws Exception;
 
-    void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) throws Exception;
+    void sendRegisterMessage(PreRegistVo preRegistVo, UserSession userSession) throws Exception;
 
-    void createPreRegistQrcode(Integer templateId, HttpServletResponse response,UserSession userSession) throws IOException;
+    void createPreRegistQrcode(Integer templateId, HttpServletResponse response, UserSession userSession) throws Exception;
 
     Integer selectPreIdByPhone(String phone, UserSession userSession);
 
-    void ToCompleteMessage(String phone, UserSession userSession,Integer templateId,HttpServletResponse response) throws IOException;
+    String toCompleteMessage(String phone, String s, String code) throws Exception;
 }

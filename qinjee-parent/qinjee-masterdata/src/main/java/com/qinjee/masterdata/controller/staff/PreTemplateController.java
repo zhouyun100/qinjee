@@ -19,10 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +42,7 @@ public class PreTemplateController extends BaseController {
      *
      生成预入职登记二维码
      */
+    @CrossOrigin
     @RequestMapping(value = "/createPreRegistQrcode", method = RequestMethod.GET)
     @ApiOperation(value = "生成预入职登记二维码", notes = "hkt")
     public ResponseResult  createPreRegistQrcode(Integer templateId, HttpServletResponse response) {
@@ -65,6 +63,7 @@ public class PreTemplateController extends BaseController {
      * @param phone
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/selectPreIdByPhone", method = RequestMethod.GET)
     @ApiOperation(value = "根据电话号码找到preId", notes = "hkt")
     public ResponseResult  selectPreIdByPhone(String phone) {
@@ -83,13 +82,14 @@ public class PreTemplateController extends BaseController {
     /**
      * 扫描二维码跳到信息填写页面
      */
+    @CrossOrigin
     @RequestMapping(value = "/ToCompleteMessage", method = RequestMethod.GET)
     @ApiOperation(value = "扫描二维码跳到信息填写页面", notes = "hkt")
-    public ResponseResult  ToCompleteMessage(String phone,Integer templateId,HttpServletResponse response) {
-        Boolean b = checkParam (phone,getUserSession (),templateId,response );
+    public ResponseResult  ToCompleteMessage(String phone, String s, String code) {
+        Boolean b = checkParam (phone,getUserSession (),s,code );
         if (b) {
             try {
-                preTemplateService.ToCompleteMessage(phone,getUserSession (),templateId,response);
+                preTemplateService.toCompleteMessage (phone,s,code);
                 return null;
             } catch (Exception e) {
                 return failResponseResult ( "获得id失败" );
@@ -100,6 +100,7 @@ public class PreTemplateController extends BaseController {
     /**
      * 发送预入职登记
      */
+    @CrossOrigin
     @RequestMapping(value = "/sendPreRegist", method = RequestMethod.POST)
     @ApiOperation(value = "发送预入职登记", notes = "hkt")
     public ResponseResult sendPreRegist(@RequestBody @Valid PreRegistVo preRegistVo) {
@@ -119,6 +120,7 @@ public class PreTemplateController extends BaseController {
     /**
      * 根据企业ID查询入职登记模板列表
      */
+    @CrossOrigin
     @RequestMapping(value = "/searchTemplateEntryRegistrationList", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID查询入职登记模板列表", notes = "hkt")
     public ResponseResult < List < TemplateEntryRegistration > > searchTemplateEntryRegistrationList(Integer companyId) {
@@ -144,6 +146,7 @@ public class PreTemplateController extends BaseController {
      * @param file
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/createBackGraundPhoto", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID查询入职登记模板列表", notes = "hkt")
     public ResponseResult<String> getLogoPath(MultipartFile file)  {
@@ -163,6 +166,7 @@ public class PreTemplateController extends BaseController {
     /**
      * 新增入职登记模板
      */
+    @CrossOrigin
     @RequestMapping(value = "/addTemplateEntryRegistration", method = RequestMethod.POST)
     @ApiOperation(value = "新增入职登记模板", notes = "hkt")
     public ResponseResult addTemplateEntryRegistration(@RequestBody TemplateEntryRegistration templateEntryRegistration) {
@@ -185,6 +189,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/deleteTemplateEntryRegistration", method = RequestMethod.GET)
     @ApiOperation(value = "新增入职登记模板", notes = "hkt")
     public ResponseResult deleteTemplateEntryRegistration(Integer templateId) {
@@ -207,6 +212,7 @@ public class PreTemplateController extends BaseController {
      * @param templateEntryRegistration
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/modifyTemplateEntryRegistration", method = RequestMethod.POST)
     @ApiOperation(value = "新增入职登记模板", notes = "hkt")
     public ResponseResult modifyTemplateEntryRegistration(@RequestBody TemplateEntryRegistration
@@ -230,6 +236,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/getTemplateEntryRegistrationByTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据模板ID获取模板详情", notes = "hkt")
     public ResponseResult < TemplateEntryRegistration > getTemplateEntryRegistrationByTemplateId(Integer templateId) {
@@ -253,6 +260,7 @@ public class PreTemplateController extends BaseController {
      * @param isAll      是否显示全部(0：是[包含系统默认且未配置的信息]，1：否[仅显示模板已配置的附件信息])
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/searchTemplateAttachmentListByTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据模板ID查询模板附件配置列表", notes = "hkt")
     public ResponseResult < List < TemplateAttachmentGroupVO > > searchTemplateAttachmentListByTemplateId(Integer templateId, Integer isAll) {
@@ -280,6 +288,7 @@ public class PreTemplateController extends BaseController {
      * @param tagId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/getTemplateAttachmentListByTagId", method = RequestMethod.GET)
     @ApiOperation(value = "根据模板ID查询模板附件配置列表", notes = "hkt")
     public ResponseResult<TemplateAttachmentGroupVO>  getTemplateAttachmentListByTagId(Integer tagId) {
@@ -302,6 +311,7 @@ public class PreTemplateController extends BaseController {
      * @param templateAttachmentGroup
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/modifyTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "修改模板附件信息", notes = "hkt")
     public ResponseResult modifyTemplateAttachmentGroup(@RequestBody TemplateAttachmentGroup templateAttachmentGroup) {
@@ -322,6 +332,7 @@ public class PreTemplateController extends BaseController {
      * @param templateAttachmentGroup
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/addTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增模板附件信息", notes = "hkt")
     public ResponseResult addTemplateAttachmentGroup(@RequestBody TemplateAttachmentGroup templateAttachmentGroup) {
@@ -344,6 +355,7 @@ public class PreTemplateController extends BaseController {
      * @param tagId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/delTemplateAttachmentGroup", method = RequestMethod.GET)
     @ApiOperation(value = "删除模板附件信息", notes = "hkt")
     public ResponseResult delTemplateAttachmentGroup(Integer tagId) {
@@ -365,6 +377,7 @@ public class PreTemplateController extends BaseController {
      * @param templateAttachmentGroupList
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/delTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "模板附件排序", notes = "hkt")
     public ResponseResult sortTemplateAttachmentGroup(@RequestBody List<TemplateAttachmentGroup> templateAttachmentGroupList) {
@@ -387,6 +400,7 @@ public class PreTemplateController extends BaseController {
      * @param isAll 是否显示全部表(1:显示全部自定义表,0:显示模板对应的自定义表)
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/searchTableListByCompanyIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId,Integer isAll) {
@@ -411,6 +425,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/searchTableFieldListByTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableVO >> searchTableFieldListByTemplateId(Integer templateId) {
@@ -437,6 +452,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/searchFieldListByTableIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableFieldVO >> searchTableFieldListByTemplateId(Integer tableId,Integer templateId) {
@@ -464,6 +480,7 @@ public class PreTemplateController extends BaseController {
      * @param templateCustomTableList
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/saveTemplateTableField", method = RequestMethod.POST)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableFieldVO >> saveTemplateTableField(Integer templateId,
@@ -487,6 +504,7 @@ public class PreTemplateController extends BaseController {
      * @param preId 预入职ID
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/searchCustomTableListByTemplateIdAndArchiveId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < EntryRegistrationTableVO >> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId,Integer preId) {
@@ -494,7 +512,7 @@ public class PreTemplateController extends BaseController {
         if (b) {
             try {
                 List < EntryRegistrationTableVO > entryRegistrationTableVOS =
-                        templateCustomTableFieldService.searchCustomTableListByTemplateIdAndArchiveId ( templateId, preId );
+                        templateCustomTableFieldService.searchCustomTableListByTemplateId ( templateId );
                 if(!CollectionUtils.isEmpty ( entryRegistrationTableVOS )){
                     return new ResponseResult <> ( entryRegistrationTableVOS, CommonCode.SUCCESS);
                 }else{
@@ -511,6 +529,7 @@ public class PreTemplateController extends BaseController {
      * @param preId
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId ) {

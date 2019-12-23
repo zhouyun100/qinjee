@@ -60,7 +60,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void sendMessageSms(List<Integer> list,Integer templateId) throws Exception {
+    public void sendMessageSms(List<Integer> list,Integer templateId) {
         SmsConfig smsConfig = smsConfigService.selectEntryRegistrationSmsConfig ();
         //获取预入职的信息
         Map < Integer, Map < String, String > > integerMapMap = preEmploymentDao.selectNameAndOrg ( list );
@@ -77,14 +77,14 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add ( ShortUrl.shortUrl ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId ) );
+            params.add (baseShortUrl+ ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"?templateId="+ templateId ) );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex (ShortUrl.shortUrl ( baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId ),
-                    2*60*60,baseShortUrl + "?" + integerMapEntry.getKey () +"?"+ templateId);
+            redisClusterService.setex (ShortUrl.shortUrl (  "?preId=" + integerMapEntry.getKey () +"?templateId="+ templateId ),
+                    2*60*60, "?preId=" + integerMapEntry.getKey () +"?templateId="+ templateId);
         }
     }
 

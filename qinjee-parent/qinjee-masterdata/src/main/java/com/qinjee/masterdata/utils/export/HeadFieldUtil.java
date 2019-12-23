@@ -31,6 +31,8 @@ public class HeadFieldUtil {
         map.put("入职部门编码", "org_code");
         map.put("入职岗位编码", "post_code");
         map.put("试用期限（月）", "probation_period");
+        map.put ( "人员编号","employee_number" );
+        map.put("合同标识","is_enable");
         return map;
     }
     public static Map<String, String> getFieldCode() {

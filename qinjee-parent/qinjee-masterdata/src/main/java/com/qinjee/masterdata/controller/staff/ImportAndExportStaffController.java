@@ -269,8 +269,9 @@ public class ImportAndExportStaffController extends BaseController {
 //    })
     //导出的文件应该是以.xls结尾
     public ResponseResult exportArcFileCon( HttpServletResponse response,
-                                            @RequestParam List < ContractWithArchiveVo > list,
-                                           @RequestParam List<Integer> orgIdList, @RequestParam List<String> status) {
+                                            @RequestBody List < ContractWithArchiveVo > list,
+                                            @RequestParam List<Integer> orgIdList,
+                                            @RequestParam List<String> status) {
         Boolean b = checkParam(response,getUserSession (),orgIdList,status);
         if(b){
             try {

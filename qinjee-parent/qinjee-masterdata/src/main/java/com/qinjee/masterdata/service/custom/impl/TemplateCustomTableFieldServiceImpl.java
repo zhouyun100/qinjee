@@ -135,7 +135,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     }
 
     @Override
-    public List<EntryRegistrationTableVO> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId, Integer archiveId) {
+    public List<EntryRegistrationTableVO> searchCustomTableListByTemplateId(Integer templateId) {
         List<EntryRegistrationTableVO> entryRegistrationTableList = templateCustomTableFieldDao.searchEntryRegistrationTableListByTemplateId(templateId);
 
         for(EntryRegistrationTableVO tableVO : entryRegistrationTableList){

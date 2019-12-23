@@ -669,7 +669,7 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
   private  List<Map<String,String>> getDatesForConWithArc (List<ContractWithArchiveVo> list,List<String> head) throws IllegalAccessException {
       List<Map<String,String>> mapList=new ArrayList <> (  );
       for (ContractWithArchiveVo contractWithArchiveVo : list) {
-            Map<String,String> map=new HashMap <> (  );
+            Map<String,String> map=new LinkedHashMap <> (  ) ;
            Class aClass = contractWithArchiveVo.getClass ();
           Field[] declaredFields = aClass.getDeclaredFields ();
           for (String s : head) {
