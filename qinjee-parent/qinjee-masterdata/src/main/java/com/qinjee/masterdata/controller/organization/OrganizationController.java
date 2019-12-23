@@ -80,6 +80,7 @@ public class OrganizationController extends BaseController {
         Boolean b = checkParam(orgIds);
         if (b) {
             organizationService.deleteOrganizationById(orgIds, getUserSession());
+            return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
