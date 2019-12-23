@@ -630,7 +630,7 @@ public class RoleAuthController extends BaseController{
 
     @ApiOperation(value="修改角色自定义人员表字段权限", notes="参数需roleId、tableId、fieldId、readWriteCode")
     @RequestMapping(value = "/updateRoleCustomArchiveTableFieldAuth",method = RequestMethod.POST)
-    public ResponseResult updateRoleCustomArchiveTableFieldAuth(@RequestBody List<CustomArchiveTableFieldVO> customTableFieldList) {
+    public ResponseResult updateRoleCustomArchiveTableFieldAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\ntableId：表ID\nfieldId：字段ID\nreadWriteCode：读写权限CODE")List<CustomArchiveTableFieldVO> customTableFieldList) {
         if(CollectionUtils.isEmpty(customTableFieldList)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("请求对象不能为空!");
