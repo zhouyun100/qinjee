@@ -45,23 +45,21 @@ public interface AuthHandoverService {
 
     /**
      * 角色回收
-     * @param archiveId
-     * @param roleIdList
+     * @param idList
      * @param operatorId
      * @return
      */
-    int roleRecoveryByArchiveId(Integer archiveId, List<Integer> roleIdList, Integer operatorId);
+    int roleRecoveryByArchiveId(List<Integer> idList, Integer operatorId);
 
 
     /**
      * 角色移交
-     * @param handoverArchiveId
      * @param acceptArchiveId
-     * @param roleIdList
+     * @param idList
      * @param operatorId
      * @return
      */
-    int roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> roleIdList, Integer operatorId);
+    int roleHandoverByArchiveId(Integer acceptArchiveId, List<Integer> idList, Integer operatorId);
 
 
     /**
@@ -70,11 +68,11 @@ public interface AuthHandoverService {
      * @param acceptArchiveId
      * @param trusteeshipBeginTime
      * @param trusteeshipEndTime
-     * @param roleIdList
+     * @param idList
      * @param operatorId
      * @return
      */
-    int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId);
+    int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> idList, Integer operatorId);
 
 
     /**

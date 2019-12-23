@@ -58,11 +58,10 @@ public interface AuthHandoverDao {
 
     /**
      * 用户角色查询
-     * @param acceptArchiveId
-     * @param roleId
+     * @param userRole
      * @return
      */
-    Integer searchAcceptArchiveAndRoleId(Integer acceptArchiveId,Integer roleId);
+    Integer searchAcceptArchiveAndId(RequestRoleVO userRole);
 
     /**
      * 用户角色机构移交

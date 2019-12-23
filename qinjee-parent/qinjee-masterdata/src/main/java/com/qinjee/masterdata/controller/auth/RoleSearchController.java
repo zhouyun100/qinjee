@@ -58,6 +58,11 @@ public class RoleSearchController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
+            if (isEnable != null && isEnable == 0) {
+                isEnable = null;
+            }else{
+                isEnable = 0;
+            }
             //还需要查托管的机构
             List<OrganizationVO> organizationList = organizationService.getAllOrganizationTree(userSession.getArchiveId(),isEnable);
             logger.info("getOrganizationTree success！isEnable={},archiveId={}",isEnable,userSession.getArchiveId());

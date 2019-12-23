@@ -167,7 +167,7 @@ public interface RoleAuthDao {
      * @param roleId
      * @return
      */
-    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleId(Integer roleId);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleIdAndTableId(Integer roleId, Integer tableId);
 
     /**
      * 查询角色自定义人员表字段

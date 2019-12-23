@@ -53,18 +53,17 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int roleRecoveryByArchiveId(Integer archiveId, List<Integer> roleIdList, Integer operatorId) {
+    public int roleRecoveryByArchiveId(List<Integer> idList, Integer operatorId) {
 
-        if(null == archiveId || null == operatorId || CollectionUtils.isEmpty(roleIdList)){
+        if(null == operatorId || CollectionUtils.isEmpty(idList)){
             return 0;
         }
 
         int resultNumber = 0;
         RequestRoleVO userRole = new RequestRoleVO();
-        userRole.setArchiveId(archiveId);
         userRole.setOperatorId(operatorId);
-        for(Integer roleId : roleIdList){
-            userRole.setRoleId(roleId);
+        for(Integer id : idList){
+            userRole.setId(id);
             resultNumber += authHandoverDao.roleRecoveryByArchiveId(userRole);
             resultNumber += authHandoverDao.archiveRoleOrgRecovery(userRole);
         }
@@ -74,20 +73,19 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int roleHandoverByArchiveId(Integer handoverArchiveId, Integer acceptArchiveId, List<Integer> roleIdList, Integer operatorId) {
-        if(null == handoverArchiveId || null == acceptArchiveId || null == operatorId || CollectionUtils.isEmpty(roleIdList)){
+    public int roleHandoverByArchiveId(Integer acceptArchiveId, List<Integer> idList, Integer operatorId) {
+        if(null == acceptArchiveId || null == operatorId || CollectionUtils.isEmpty(idList)){
             return 0;
         }
 
         int resultNumber = 0;
         RequestRoleVO userRole = new RequestRoleVO();
-        userRole.setHandoverArchiveId(handoverArchiveId);
         userRole.setAcceptArchiveId(acceptArchiveId);
         userRole.setOperatorId(operatorId);
-        for(Integer roleId : roleIdList){
-            userRole.setRoleId(roleId);
-            Integer id = authHandoverDao.searchAcceptArchiveAndRoleId(acceptArchiveId,roleId);
-            if(id == null){
+        for(Integer id : idList){
+            userRole.setId(id);
+            Integer acceptArchiveRoleId = authHandoverDao.searchAcceptArchiveAndId(userRole);
+            if(acceptArchiveRoleId == null){
                 resultNumber += authHandoverDao.roleHandoverByArchiveId(userRole);
             }
             resultNumber += authHandoverDao.archiveRoleOrgHandover(userRole);
@@ -98,8 +96,8 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> roleIdList, Integer operatorId) {
-        if(null == acceptArchiveId || null == operatorId || CollectionUtils.isEmpty(roleIdList)){
+    public int roleTrusteeshipByArchiveId(Integer trusteeshipArchiveId, Integer acceptArchiveId, Date trusteeshipBeginTime, Date trusteeshipEndTime, List<Integer> idList, Integer operatorId) {
+        if(null == trusteeshipArchiveId || null == acceptArchiveId || null == operatorId || CollectionUtils.isEmpty(idList)){
             return 0;
         }
 
@@ -111,8 +109,8 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
         userRole.setTrusteeshipBeginTime(trusteeshipBeginTime);
         userRole.setTrusteeshipEndTime(trusteeshipEndTime);
         userRole.setOperatorId(operatorId);
-        for(Integer roleId : roleIdList){
-            userRole.setRoleId(roleId);
+        for(Integer id : idList){
+            userRole.setId(id);
             resultNumber += authHandoverDao.roleTrusteeshipByArchiveId(userRole);
             resultNumber += authHandoverDao.archiveRoleOrgTrusteeship(userRole);
         }

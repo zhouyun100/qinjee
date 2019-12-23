@@ -21,6 +21,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -39,16 +41,24 @@ import java.util.Map;
  */
 public class WeChatUtils {
 
-    public static final RestTemplate CLIENT = new RestTemplate();
+    private static Logger logger = LogManager.getLogger(WeChatUtils.class);
+
+    public static final RestTemplate restTemplate = new RestTemplate();
+    public static final String ERROR_KEY = "errcode";
 
     /**
-     * 开放平台APPID和APPSECRET
+     * 勤杰软件开放平台
      */
-    public static final String APPID = "wx0fbbbb3716bc7b87";
-    public static final String SECRET = "944e365bc56c68ae4cb69d30e670863a";
+    public static final String OPEN_APP_ID = "wx0fbbbb3716bc7b87";
+    public static final String OPEN_SECRET = "944e365bc56c68ae4cb69d30e670863a";
     public static final String GRANT_TYPE_AUTHORIZATION = "authorization_code";
     public static final String GRANT_TYPE_REFRESH = "refresh_token";
-    public static final String ERRORKEY = "errcode";
+
+    /**
+     * 勤杰软件公众号
+     */
+    public static final String WECHAT_SUBSCRIPTION_APPID = "wx0b873b65bd2eadb9";
+    public static final String WECHAT_SUBSCRIPTION_SECRET = "c2137f6d22f42b6b720cab070581a488";
 
     /**
      * 获取用户access_token
@@ -59,7 +69,7 @@ public class WeChatUtils {
         if(StringUtils.isBlank(code)){
             return null;
         }
-        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + APPID + "&secret=" + SECRET + "&code=" + code + "&grant_type=" + GRANT_TYPE_AUTHORIZATION;
+        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + OPEN_APP_ID + "&secret=" + OPEN_SECRET + "&code=" + code + "&grant_type=" + GRANT_TYPE_AUTHORIZATION;
         return clientExchangeWeChatToken(url);
     }
 
@@ -72,7 +82,7 @@ public class WeChatUtils {
         if(StringUtils.isBlank(refreshToken)){
             return null;
         }
-        String url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + APPID + "&grant_type=" + GRANT_TYPE_REFRESH + "&refresh_token=" + refreshToken;
+        String url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + OPEN_APP_ID + "&grant_type=" + GRANT_TYPE_REFRESH + "&refresh_token=" + refreshToken;
         return clientExchangeWeChatToken(url);
     }
 
@@ -97,10 +107,10 @@ public class WeChatUtils {
     private static WeChatToken clientExchangeWeChatToken(String url){
         WeChatToken weChatToken = null;
 
-        String resultBody = CLIENT.getForObject(url, String.class);
+        String resultBody = restTemplate.getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(resultBody);
 
-        if(StringUtils.isBlank(json.getString(ERRORKEY))){
+        if(StringUtils.isBlank(json.getString(ERROR_KEY))){
             weChatToken = new WeChatToken();
             weChatToken.setAccessToken(json.getString("access_token"));
             String expiresIn = json.getString("expires_in");
@@ -111,6 +121,8 @@ public class WeChatUtils {
             weChatToken.setOpenid(json.getString("openid"));
             weChatToken.setScope(json.getString("scope"));
             weChatToken.setUnionid(json.getString("unionid"));
+        }else{
+            logger.error("clientExchangeWeChatToken json={}", json);
         }
 
         return weChatToken;
@@ -123,10 +135,10 @@ public class WeChatUtils {
      */
     private static WeChatUserInfo clientExchangeWeChatUserInfo(String url){
         WeChatUserInfo weChatUserInfo = null;
-        String resultBody = CLIENT.getForObject(url, String.class);
+        String resultBody = restTemplate.getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(resultBody);
 
-        if(StringUtils.isBlank(json.getString(ERRORKEY))){
+        if(StringUtils.isBlank(json.getString(ERROR_KEY))){
             weChatUserInfo = new WeChatUserInfo();
             weChatUserInfo.setCountry(json.getString("country"));
             weChatUserInfo.setUnionid(json.getString("unionid"));
@@ -145,24 +157,27 @@ public class WeChatUtils {
             weChatUserInfo.setHeadimgurl(json.getString("headimgurl"));
             weChatUserInfo.setLanguage(json.getString("language"));
             weChatUserInfo.setPrivilege(json.getString("privilege"));
+        }else{
+            logger.error("clientExchangeWeChatUserInfo json={}", json);
         }
         return weChatUserInfo;
     }
 
+
     /**
-     * 获取小程序access_token
+     * 获取微信小程序或公众号access_token
      * @return
      */
-    public static String getSmallProgramAccessToken(){
+    public static String getWeChatAccessToken(String appid, String secret){
         String accessToken = null;
-        String appid = "wx3e27e76e4c9e783e";
-        String secret = "a001e9ed62799f4ca7e960649c1a1c60";
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
-        String resultBody = CLIENT.getForObject(url, String.class);
+        String resultBody = restTemplate.getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(resultBody);
 
-        if(StringUtils.isBlank(json.getString(ERRORKEY))){
+        if(StringUtils.isBlank(json.getString(ERROR_KEY))){
             accessToken = json.getString("access_token");
+        }else{
+            logger.error("getWeChatAccessToken json={}" , json);
         }
         return accessToken;
     }
@@ -193,6 +208,44 @@ public class WeChatUtils {
         }
     }
 
+    /**
+     * 获取公众号二维码ticket
+     * @param accessToken
+     * @return
+     */
+    public static String getTicketByAccessToken(String accessToken){
+        String ticket = null;
+        String url = "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=" + accessToken;
+
+        Map<String, Object> scene = new HashMap<>();
+        scene.put("scene_id", 123);
+        Map<String, Object> actionInfo = new HashMap<>();
+        actionInfo.put("scene", scene);
+        Map<String, Object> params = new HashMap<>();
+        params.put("expire_seconds",300);
+        params.put("action_name","QR_SCENE");
+        params.put("action_info",actionInfo);
+        String body = JSON.toJSONString(params);
+        HttpEntity httpEntity = new HttpEntity(body);
+        ResponseEntity<String> stringResponseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity ,String.class);
+        JSONObject json = JSONObject.parseObject(stringResponseEntity.getBody());
+
+        if(StringUtils.isBlank(json.getString(ERROR_KEY))){
+            ticket = json.getString("ticket");
+//            //通过ticket换取二维码
+//            String qrCodeUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + ticket;
+        }else{
+            logger.error("getTicketByAccessToken json={}", json);
+        }
+        return ticket;
+    }
+
+    /**
+     * 小程序二维码输出Buffer
+     * @param accessToken
+     * @param width
+     * @return
+     */
     private static BufferedImage outputSmallProgramStream(String accessToken, Integer width){
 
         BufferedImage bufferedImage = null;
@@ -218,30 +271,14 @@ public class WeChatUtils {
             bufferedImage = ImageIO.read(inputStream);
         }catch (Exception e){
             e.printStackTrace();
+            logger.error("getTicketByAccessToken exception={}", e);
         }
         return bufferedImage;
     }
 
-    public static void main(String [] args) throws Exception{
-        String accessToken = getSmallProgramAccessToken();
-        String url = "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=" + accessToken;
-
-        Map<String, Object> scene = new HashMap<>();
-        scene.put("scene_id", 123);
-
-        Map<String, Object> actionInfo = new HashMap<>();
-        actionInfo.put("scene", scene);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("expire_seconds",300);
-        params.put("action_name","QR_SCENE");
-        params.put("action_info",actionInfo);
-
-        String body = JSON.toJSONString(params);
-
-        HttpEntity httpEntity = new HttpEntity(body);
-        ResponseEntity<String> stringResponseEntity = CLIENT.exchange(url, HttpMethod.POST, httpEntity ,String.class);
-        System.out.println(stringResponseEntity.getBody());
+    public static void main(String [] args){
+        String accessToken = getWeChatAccessToken(WECHAT_SUBSCRIPTION_APPID,WECHAT_SUBSCRIPTION_SECRET);
+        System.out.println(getTicketByAccessToken(accessToken));
     }
 
 }

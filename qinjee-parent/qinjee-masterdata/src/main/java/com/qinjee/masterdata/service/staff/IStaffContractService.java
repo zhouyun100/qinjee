@@ -172,7 +172,7 @@ public interface IStaffContractService {
 
     List< LaborContract > selectContractByArchiveId(Integer archiveId);
 
-    PageResult< ContractFormVo > createContractForm(List< Integer> list,Integer pageSize,Integer currentPage,UserSession userSession);
+    PageResult< ContractFormVo > createContractForm(List< Integer> list,Integer currentPage,Integer pageSize,UserSession userSession);
 
    PageResult<ContractRenewalIntention> selectContractRenewalIntentionByOrg(List<Integer> orgId,Integer pageSIze,Integer currentPage);
 }
