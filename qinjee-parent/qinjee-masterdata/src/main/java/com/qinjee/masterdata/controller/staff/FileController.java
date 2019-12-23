@@ -4,6 +4,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,16 +55,15 @@ public class FileController extends BaseController {
     /**
      * 下载文件
      * @param response
-     * @param path
      * @return
      */
     @RequestMapping(value = "/downLoadFile", method = RequestMethod.POST)
     @ApiOperation(value = "下载文件", notes = "hkt")
-    public ResponseResult downLoadFile(HttpServletResponse response, String path) {
-        Boolean b = checkParam(response,path);
+    public ResponseResult downLoadFile(HttpServletResponse response, @RequestBody List<String> paths) {
+        Boolean b = checkParam(response,paths);
         if(b) {
             try {
-                fileOperateService.downLoadFile (response,path );
+                fileOperateService.downLoadFile (response,paths );
                 return null;
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -78,13 +78,13 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showFile", method = RequestMethod.GET)
     @ApiOperation(value = "展示文件", notes = "hkt")
-    public ResponseResult< List < AttchmentRecordVo >> showFile(@RequestParam List<Integer> orgIdList) {
-        Boolean b = checkParam(orgIdList,getUserSession ());
+    public ResponseResult< PageResult <AttchmentRecordVo>> showFile(@RequestParam List<Integer> orgIdList, Integer pageSize, Integer currengPage) {
+        Boolean b = checkParam(orgIdList,getUserSession (),pageSize,currengPage);
         if(b) {
             try {
-                List < AttchmentRecordVo > attachmentVos = fileOperateService.selectAttach ( orgIdList, getUserSession () );
-                if(attachmentVos.size ()>0){
-                    return new ResponseResult <> (attachmentVos, CommonCode.SUCCESS);
+                PageResult < AttchmentRecordVo > attchmentRecordVoPageResult = fileOperateService.selectAttach ( orgIdList, getUserSession (), pageSize, currengPage );
+                if(attchmentRecordVoPageResult!=null){
+                    return new ResponseResult <> (attchmentRecordVoPageResult, CommonCode.SUCCESS);
                 }else{
                     return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
                 }
@@ -101,11 +101,11 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showFilePath", method = RequestMethod.POST)
     @ApiOperation(value = "展示文件路径", notes = "hkt")
-    public ResponseResult<List < URL >> showFilePath(String groupName) {
-        Boolean b = checkParam(groupName,getUserSession ());
+    public ResponseResult<List < URL >> showFilePath(String groupName,Integer id) {
+        Boolean b = checkParam(groupName,getUserSession (),id);
         if(b) {
             try {
-                List < URL > filePath = fileOperateService.getFilePath ( getUserSession (), groupName );
+                List < URL > filePath = fileOperateService.getFilePath ( getUserSession (), groupName,id );
                 if(filePath.size ()>0){
 
                     return new ResponseResult <> (filePath, CommonCode.SUCCESS);
@@ -124,7 +124,7 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
     @ApiOperation(value = "删除文件", notes = "hkt")
-    public ResponseResult deleteFile(Integer id) {
+    public ResponseResult deleteFile(@RequestBody List<Integer> id) {
         Boolean b = checkParam(id,userSession);
         if(b) {
             try {

@@ -86,15 +86,10 @@ public interface IStaffContractService {
 
     /**
      * 批量续签合同
-     * @param laborContractVo
-     * @param list
-     * @param laborContractChangeVo
      * @param userSession
      * @return
      */
-    void insertReNewLaborContractBatch(LaborContractVo laborContractVo,
-                                       List<Integer> list,
-                                       LaborContractChangeVo laborContractChangeVo,
+    void insertReNewLaborContractBatch(ContractVo contractVo,
                                        UserSession userSession);
 
     /**
@@ -104,8 +99,8 @@ public interface IStaffContractService {
      * @param pageSize
      * @return
      */
-    PageResult<UserArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
-                                                       Integer pageSize, String isEnable,
+    PageResult<ContractWithArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
+                                                       Integer pageSize,
                                                        List<String> status) throws Exception;
 
     /**

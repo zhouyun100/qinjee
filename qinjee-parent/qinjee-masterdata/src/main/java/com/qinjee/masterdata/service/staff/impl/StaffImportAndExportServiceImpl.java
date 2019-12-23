@@ -162,6 +162,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         checkImportVo.setList ( insideCheckAndImport.getList () );
         return checkImportVo;
     }
+
+
+
     private void checkFileType(MultipartFile multipartFile) {
         // 获取文件名
         String fileName = multipartFile.getOriginalFilename ();
@@ -515,6 +518,19 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 getTypeMap ( HeadMapUtil.getHeadsForCon () ) );
     }
 
+    /**
+     * 导出合同人员表
+     * @param list
+     * @param response
+     * @param userSession
+     */
+    @Override
+    public void exportContractWithArc(List < ContractWithArchiveVo > list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException {
+        ExcelUtil.download ( response, "ContractWithArc",
+                HeadMapUtil.getHeadsForConWithArc (),
+                getDatesForConWithArc ( list,HeadMapUtil.getHeadsForConWithArc () ),
+                getTypeMap ( HeadMapUtil.getHeadsForConWithArc () ) );
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -563,7 +579,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         return map;
     }
-
 
 
     /**
@@ -623,7 +638,7 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
             //linkedHashMap保证有序
             Map < String, String > stringMap = new LinkedHashMap <> ();
             for (String head : heads) {
-                s = TransValue ( head );
+                s = transValue ( head );
                 if(s==null) {
                     s = customTableFieldDao.selectFieldCodeByName ( head, companyId,funcCode );
                 }
@@ -651,9 +666,27 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         return mapList;
     }
 
+  private  List<Map<String,String>> getDatesForConWithArc (List<ContractWithArchiveVo> list,List<String> head) throws IllegalAccessException {
+      List<Map<String,String>> mapList=new ArrayList <> (  );
+      for (ContractWithArchiveVo contractWithArchiveVo : list) {
+            Map<String,String> map=new HashMap <> (  );
+           Class aClass = contractWithArchiveVo.getClass ();
+          Field[] declaredFields = aClass.getDeclaredFields ();
+          for (String s : head) {
+              for (Field declaredField : declaredFields) {
+                  declaredField.setAccessible ( true );
+                  String s1 = transValue ( s );
+                  if(FieldToProperty.fieldToProperty ( s1 ).equals ( declaredField.getName () )){
+                      map.put ( s,String.valueOf (declaredField.get ( contractWithArchiveVo )) );
+                  }
+              }
+          }
+          mapList.add ( map );
+      }
+        return mapList;
+  }
 
-
-    private String TransValue( String head) {
+    private String transValue(String head) {
         for (Map.Entry < String, String > entry : HeadFieldUtil.getFieldMap ().entrySet ()) {
             if(head.equals ( entry.getKey () )){
                  return entry.getValue ();
@@ -662,20 +695,6 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
         return null;
     }
 
-
-
-
-
-
-    private Map < String, String > getTypeMaps(String funcCode, Integer companyId) {
-        List < CustomFieldVO > customFieldVOS =
-                customTableFieldService.searchCustomFieldListByCompanyIdAndFuncCode ( companyId, funcCode );
-        Map < String, String > typeMap = new HashMap <> ();
-        for (CustomFieldVO customFieldVO : customFieldVOS) {
-            typeMap.put ( customFieldVO.getFieldName (), customFieldVO.getTextType () );
-        }
-        return typeMap;
-    }
 
     private String isDate(String date){
         SimpleDateFormat sdf=new SimpleDateFormat ( "yy-MM-dd" );

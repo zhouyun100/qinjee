@@ -275,7 +275,7 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
   </update>
-  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo" >
+  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" >
     select arc.user_name as userName,
            arc.employee_number as employeeNumber ,
            org.org_name as orgName,
@@ -293,7 +293,8 @@
            intention.contract_period_type as contractPeriodType,
            intention.is_agree as isAgree,
            intention.create_time as createTiem,
-           arch.user_name as sendUser
+           arch.user_name as sendUser,
+           arc.archive_id as archiveId
     from t_contract_renewal_intention intention
     left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
     left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1
@@ -302,7 +303,7 @@
     left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
     where arc.archive_id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo" >
+  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo"  >
     select arc.user_name as userName,
     arc.employee_number as employeeNumber ,
     org.org_name as orgName,
@@ -320,7 +321,8 @@
     intention.contract_period_type as contractPeriodType,
     intention.is_agree as isAgree,
     intention.create_time as createTiem,
-    arch.user_name as sendUser
+    arch.user_name as sendUser,
+    arc.archive_id as archiveId
     from t_contract_renewal_intention intention
     left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
     left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1

@@ -258,10 +258,22 @@
      where
      company_id=#{companyId}
      and
-     attachment_id=#{id}
+     attachment_id in
+     <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+     </foreach>
   </update>
   <select id="selectGroup" resultType="java.lang.String">
     select group_name from
     t_attachment_group
+  </select>
+  <select id="selectByList" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from t_attachment_group
+    attachment_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and is_delete=0
   </select>
 </mapper>

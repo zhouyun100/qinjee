@@ -109,6 +109,17 @@ public class HeadMapUtil {
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }
+    /**
+     * 合同人员表
+     * @return
+     */
+    public static List<String> getHeadsForConWithArc(){
+        List<String> keyList=new LinkedList <> (  );
+        String[] strings={"单位","部门","人员编号","员工姓名","身份证号","合同编号","合同签订日期","合同起始日期","合同终止日期","合同期限类型","合同期限","签订次数","合同主体",
+                "合同标识","合同状态","审批状态"};
+        keyList.addAll(Arrays.asList(strings));
+        return keyList;
+    }
 
     /**
      * 职业资格子集

@@ -16,5 +16,4 @@ public class ExportFile implements Serializable {
     private String tittle;
     @NotNull
     private Map<Integer, Map <String,Object> > map;
-
 }

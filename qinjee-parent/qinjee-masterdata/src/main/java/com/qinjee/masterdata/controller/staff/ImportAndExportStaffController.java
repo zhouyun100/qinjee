@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
+import com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.service.staff.impl.StaffContractServiceImpl;
@@ -267,18 +268,17 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFileCon( HttpServletResponse response,@RequestParam List<Integer> list,
-                                           @RequestParam List<Integer> orgIdList, String isEnable,
-                                           @RequestParam List<String> status) {
-        Boolean b = checkParam(response,getUserSession (),orgIdList,isEnable,status);
+    public ResponseResult exportArcFileCon( HttpServletResponse response,
+                                            @RequestParam List < ContractWithArchiveVo > list,
+                                           @RequestParam List<Integer> orgIdList, @RequestParam List<String> status) {
+        Boolean b = checkParam(response,getUserSession (),orgIdList,status);
         if(b){
             try {
-                if(!CollectionUtils.isEmpty ( list )){
-                    staffImportAndExportService.exportArcFile(list,response,getUserSession ());
-                }else{
-                    List < Integer > list1 = staffContractService.selectLaborContractserUserAll ( orgIdList, isEnable, status );
-                    staffImportAndExportService.exportArcFile(list1,response,getUserSession ());
+                if(CollectionUtils.isEmpty ( list )){
+                   list = staffContractService.selectLaborContractserUserAll ( orgIdList, status );
                 }
+                //导出文件
+                staffImportAndExportService.exportContractWithArc(list,response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();

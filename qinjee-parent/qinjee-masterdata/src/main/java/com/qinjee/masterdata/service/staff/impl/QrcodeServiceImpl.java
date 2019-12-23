@@ -7,7 +7,6 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IQrcodeService;
 import com.qinjee.masterdata.service.sys.SysDictService;
-import com.qinjee.masterdata.utils.GetDayUtil;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.AesUtils;
 import org.springframework.beans.factory.annotation.Autowired;

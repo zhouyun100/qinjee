@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.file.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.github.pagehelper.PageHelper;
 import com.qcloud.cos.model.COSObjectInputStream;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
@@ -13,6 +14,7 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.io.IOUtils;
@@ -58,26 +60,35 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 String name = getName ( pathUrl );
                 int i1 = pathUrl.lastIndexOf ( "." );
                 String substring = pathUrl.substring ( i1 );
+                //根据层级拼接url
                 pathUrl=s+"/"+name+"/"+name+"("+i+")"+substring;
                 insertAttachment(files[i], userSession, pathUrl);
                 UpAndDownUtil.putFile(file1, pathUrl);
             } finally {
-                file1.delete();
+                if(file1!=null) {
+                    file1.delete ();
+                }
             }
         }
     }
 
 
     @Override
-    public void downLoadFile(HttpServletResponse response, String path) throws Exception {
+    public void downLoadFile(HttpServletResponse response, List<String> paths) throws Exception {
         try {
-            COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile(path);
-            int i = path.lastIndexOf("#");
-            String fileName=path.substring(i+1);
-            // 将文件输入流写入response的输出流中
-            response.setHeader("content-disposition", "attachment;fileName="+fileName);
-            response.setHeader("content-disposition", "attachment;fileName="+ URLEncoder.encode(fileName, "UTF-8"));
-            IOUtils.copy(cosObjectInputStream,response.getOutputStream());
+            for (String path : paths) {
+                COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( path );
+                int i = path.lastIndexOf ( "#" );
+                String fileName = path.substring ( i + 1 );
+                // 将文件输入流写入response的输出流中
+                response.setHeader ( "content-disposition", "attachment;fileName=" + fileName );
+                response.setHeader ( "content-disposition", "attachment;fileName=" + URLEncoder.encode ( fileName, "UTF-8" ) );
+                if(cosObjectInputStream!=null) {
+                    IOUtils.copy ( cosObjectInputStream, response.getOutputStream () );
+                }else {
+                    ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("下载失败!");
@@ -85,9 +96,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List<URL> getFilePath(UserSession userSession,String groupName) {
+    public List<URL> getFilePath(UserSession userSession, String groupName, Integer id) {
         List<URL> stringList=new ArrayList<>();
-        List<String> list = attachmentRecordDao.selectFilePath(groupName,userSession.getArchiveId (),userSession.getCompanyId());
+        List<String> list = attachmentRecordDao.selectFilePath(groupName,id,userSession.getCompanyId());
         for (String s : list) {
             stringList.add(UpAndDownUtil.getPath(s));
         }
@@ -96,7 +107,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Transactional(rollbackFor = Exception.class)
     public void insertAttachment(MultipartFile multipartFile, UserSession userSession,String pathUrl) {
         String s = getName ( pathUrl );
-        List < URL > filePath = getFilePath (userSession,s );
+        List < URL > filePath = getFilePath (userSession,s,userSession.getArchiveId () );
 //        //找到应该上传文件的个数
 //        Integer fileSize=attachmentRecordDao.selectFileSize(s);
 //        if(filePath.size ()>=fileSize){
@@ -130,13 +141,19 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteFile(Integer id ,UserSession userSession) {
+    public void deleteFile(List<Integer> id ,UserSession userSession) {
         attachmentRecordDao.deleteFile (id,userSession.getCompanyId ());
+        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectByList ( id );
+        for (AttchmentRecordVo attchmentRecordVo : attchmentRecordVos) {
+            UpAndDownUtil.delFile ( attchmentRecordVo.getAttatchmentUrl () );
+        }
     }
 
     @Override
-    public List< AttchmentRecordVo > selectAttach(List<Integer> orgIdList, UserSession userSession) {
-      return attachmentRecordDao.selectAttach(orgIdList,userSession.getCompanyId ());
+    public PageResult<AttchmentRecordVo> selectAttach(List<Integer> orgIdList, UserSession userSession,Integer pageSize,Integer currentPage) {
+        PageHelper.startPage ( currentPage,pageSize );
+        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectAttach ( orgIdList, userSession.getCompanyId () );
+        return new PageResult <> ( attchmentRecordVos );
     }
 
     @Override
@@ -154,12 +171,12 @@ public class FileOperateServiceImpl implements IFileOperateService {
                     break;
                 }
             }
-            if (userArchiveVo != null && flag == true) {
+            if (userArchiveVo != null && flag ) {
                flag=true;
             } else {
                flag=false;
             }
-            if(flag==false){
+            if(!flag){
                 map.put ( fileName.get ( i ),"验证不通过" );
                 redisClusterService.setex ( userSession.getCompanyId ()+"证件号验证"+userSession.getArchiveId (),2*60*60,
                         JSON.toJSONString (map));
@@ -186,6 +203,10 @@ public class FileOperateServiceImpl implements IFileOperateService {
         response.setHeader("Content-Disposition",
                 "attachment;filename=\"" + URLEncoder.encode("checkFile.txt", "UTF-8") + "\"");
         response.setHeader("fileName", URLEncoder.encode("checkFile.txt", "UTF-8"));
+        creatCheckResponse ( response, parse );
+    }
+
+    private void creatCheckResponse(HttpServletResponse response, Map < String, String > parse) throws IOException {
         StringBuffer stringBuffer=new StringBuffer (  );
         ServletOutputStream outputStream = response.getOutputStream ();
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream ( outputStream );

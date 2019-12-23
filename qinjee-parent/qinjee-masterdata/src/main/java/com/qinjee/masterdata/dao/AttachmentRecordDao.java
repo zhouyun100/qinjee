@@ -31,7 +31,9 @@ public interface AttachmentRecordDao {
 
     Integer selectFileSize(@Param("groupName") String groupName);
 
-    void deleteFile(@Param("id") Integer id, @Param("companyId") Integer companyId);
+    void deleteFile(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
 
     List< String> selectGroup();
+
+    List< AttchmentRecordVo> selectByList(@Param("list") List< Integer> id);
 }

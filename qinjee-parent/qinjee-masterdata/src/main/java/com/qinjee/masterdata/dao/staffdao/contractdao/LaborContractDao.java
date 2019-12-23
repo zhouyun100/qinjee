@@ -2,6 +2,7 @@ package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.vo.staff.ContractFormVo;
+import com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -42,4 +43,8 @@ public interface LaborContractDao {
     List< LaborContract> selectContractByArchiveId(@Param("archiveId") Integer archiveId);
 
     List< ContractFormVo> selectContractForm(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
+
+    List< ContractWithArchiveVo> selectHasPowerContract(@Param("orgIdList") List< Integer> orgIdList, @Param("status") List< String> status);
+
+
 }

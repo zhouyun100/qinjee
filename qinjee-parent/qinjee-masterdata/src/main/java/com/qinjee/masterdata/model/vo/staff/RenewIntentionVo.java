@@ -18,6 +18,7 @@ public class RenewIntentionVo implements Serializable {
     private  Date sendTime;
     private  String renewalOpinion;
     private  String sendUser;
+    private  Integer archiveId;
     /**
      * 续签意向ID
      */

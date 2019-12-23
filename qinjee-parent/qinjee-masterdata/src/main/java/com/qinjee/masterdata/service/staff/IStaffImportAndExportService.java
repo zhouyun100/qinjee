@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
+import com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.ExportRequest;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
@@ -110,4 +111,5 @@ public interface IStaffImportAndExportService {
 
     CheckImportVo importFileAndCheckFileContract(MultipartFile multipartFile, UserSession userSession) throws Exception;
 
+    void exportContractWithArc(List< ContractWithArchiveVo> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException;
 }

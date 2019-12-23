@@ -14,8 +14,8 @@ public class SqlUtil {
     public static String getsql(Integer companyId, List < CustomFieldVO > fieldIdNotInside, List< CustomTableVO > customTableVOS) {
         List<String> custom=new ArrayList<>();
         String substring="";
-        StringBuilder stringBuffer=new StringBuilder ();
-        StringBuilder stringBuffer1=new StringBuilder ();
+        StringBuffer stringBuffer=new StringBuffer ();
+        StringBuffer stringBuffer1=new StringBuffer ();
         for (CustomTableVO customTableVO : customTableVOS) {
             if (customTableVO.getIsSystemDefine ()==0) {
                 Integer tableId = customTableVO.getTableId ();
@@ -29,11 +29,11 @@ public class SqlUtil {
             }
         }
         for (String s : custom) {
-            if(custom!=null && !custom.equals ( "" )) {
+            if( custom!=null) {
                 stringBuffer.append ( s );
             }
         }
-        if(stringBuffer!=null && !stringBuffer.toString ().equals ( "" )) {
+        if(!"".equals (stringBuffer.toString ())) {
             int i = stringBuffer.toString ().lastIndexOf ( "," );
             substring = stringBuffer.toString ().substring ( 0, i );
         }
