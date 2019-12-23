@@ -12,6 +12,7 @@ package com.qinjee.masterdata.service.auth.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.auth.RoleSearchDao;
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.UserRole;
 import com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO;
 import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +44,7 @@ public class RoleSearchServiceImpl implements RoleSearchService {
     private RoleAuthService roleAuthService;
 
     @Override
-    public PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO) {
+    public PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO,Integer operatorId) {
         if(null == archivePageVO || null == archivePageVO.getCompanyId()){
             return null;
         }
@@ -50,9 +52,34 @@ public class RoleSearchServiceImpl implements RoleSearchService {
             PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
         }
         archivePageVO.setCurrentDateTime(new Date());
-        List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO);
+
+        List<Integer> orgIdList = null;
+        Integer orgId = archivePageVO.getOrgId();
+        if(orgId != null){
+            orgIdList = new ArrayList<>();
+            orgIdList.add(orgId);
+            List<Organization> orgIdAllList = roleSearchDao.getOrganizationListByArchiveId(operatorId,new Date());
+            handlerOrgIdSonList(orgIdList, orgId, orgIdAllList);
+        }
+        List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO,orgIdList);
         PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoList);
         return pageResult;
+    }
+
+    private void handlerOrgIdSonList(List<Integer> orgIdList,Integer parentOrgId, List<Organization> orgIdAllList){
+
+        List<Organization> orgIdSonList = orgIdAllList.stream().filter(organization ->{
+            if(organization.getOrgParentId().equals(parentOrgId)){
+                orgIdList.add(organization.getOrgId());
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        for(Organization organization : orgIdSonList){
+            handlerOrgIdSonList(orgIdList,organization.getOrgId(),orgIdAllList);
+        }
     }
 
     @Override

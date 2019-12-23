@@ -91,7 +91,7 @@ public class ArchiveAuthController extends BaseController {
                 return responseResult;
             }else{
                 archivePageVO.setCompanyId(userSession.getCompanyId());
-                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO,userSession.getArchiveId());
 
                 responseResult = ResponseResult.SUCCESS();
                 responseResult.setResult(pageResult);
@@ -182,7 +182,7 @@ public class ArchiveAuthController extends BaseController {
                 return responseResult;
             }
             archivePageVO.setCompanyId(userSession.getCompanyId());
-            PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+            PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO,userSession.getArchiveId());
 
             logger.info("searchArchiveListByUserNameOrJobNumber success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
             responseResult = ResponseResult.SUCCESS();

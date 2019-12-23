@@ -28,9 +28,10 @@ public interface RoleSearchService {
     /**
      * 根据工号或姓名模糊查询员工列表
      * @param archivePageVO
+     * @param operatorId
      * @return
      */
-    PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO);
+    PageResult<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO,Integer operatorId);
 
     /**
      * 根据档案ID查询角色树
