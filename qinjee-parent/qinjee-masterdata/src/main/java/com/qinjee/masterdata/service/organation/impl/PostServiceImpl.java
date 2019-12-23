@@ -892,6 +892,9 @@ public class PostServiceImpl implements PostService {
                             }
                         }
                     }
+                }else{
+                    checkVo.setCheckResult(false);
+                    resultMsg.append("编码为："+post.getParentPostCode()+"的上级岗位在excel中不存在|");
                 }
             }
 

@@ -1047,7 +1047,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
                 //先判断上级机构在表中是否存在，如果表中不存就需要去查询数据库
                 String orgName = excelOrgNameMap.get(organizationVO.getOrgParentCode());
-                if (null != orgName && !orgName.equals("")) {
+                if (StringUtils.isNotBlank(orgName)) {
                     //检查excel中的父级机构名称是否一致
                     if(!orgName.equals(organizationVO.getOrgParentName())){
                         checkVo.setCheckResult(false);
@@ -1061,6 +1061,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                             }
                         }
                     }
+                }else{
+                    checkVo.setCheckResult(false);
+                    resultMsg.append("编码为："+organizationVO.getOrgParentCode()+"的上级机构在excel中不存在|");
                 }
             }
             checkVo.setResultMsg(resultMsg);
