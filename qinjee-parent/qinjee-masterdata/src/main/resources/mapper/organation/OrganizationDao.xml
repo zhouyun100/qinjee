@@ -317,13 +317,20 @@
 
 
     <update id="updateEnable">
-        update t_organization
-        set is_enable = #{isEnable,jdbcType=SMALLINT}
-        where org_id in
-        <foreach item="orgId" collection="orgIds"
-                 open="(" separator="," close=")">
-            #{orgId}
-        </foreach>
+
+        <if test="orgIds !=null and orgIds.size >0 ">
+            update t_organization
+            <set>
+                 is_enable = #{isEnable,jdbcType=SMALLINT}
+            </set>
+            <where>
+                org_id in
+                <foreach item="orgId" collection="orgIds"
+                         open="(" separator="," close=")">
+                    #{orgId}
+                </foreach>
+            </where>
+        </if>
     </update>
 
     <select id="listSonOrganization" resultMap="BaseResultMap">

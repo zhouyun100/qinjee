@@ -202,7 +202,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，封存机构，设为0", notes = "ok")
     public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         if (checkParam(orgIds)) {
-            organizationService.sealOrganization(orgIds, Short.parseShort("0"));
+            organizationService.sealOrganization(getUserSession().getArchiveId(),orgIds, Short.parseShort("0"));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -212,7 +212,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，解封机构，设为1", notes = "ok")
     public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
         if (checkParam(orgIds)) {
-            organizationService.sealOrganization(orgIds, Short.parseShort("1"));
+            organizationService.sealOrganization(getUserSession().getArchiveId(),orgIds, Short.parseShort("1"));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

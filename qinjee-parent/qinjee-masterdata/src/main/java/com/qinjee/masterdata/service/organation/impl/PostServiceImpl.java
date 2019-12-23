@@ -866,7 +866,7 @@ public class PostServiceImpl implements PostService {
             OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(post.getOrgCode(), userSession.getCompanyId());
 
 
-            if (Objects.isNull(org)) {
+            if (Objects.nonNull(org)) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("部门编码不存在|");
             } else {
