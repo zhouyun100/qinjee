@@ -58,7 +58,7 @@ public class RoleSearchController extends BaseController{
                 responseResult.setMessage("Session失效！");
                 return responseResult;
             }
-            if (isEnable != null && isEnable == 1) {
+            if (isEnable != null && isEnable == 0) {
                 isEnable = null;
             }else{
                 isEnable = 0;
