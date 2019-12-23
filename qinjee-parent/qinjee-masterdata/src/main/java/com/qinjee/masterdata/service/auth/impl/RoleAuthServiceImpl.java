@@ -363,7 +363,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Override
     public List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleId(Integer roleId) {
-        List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthDao.searchCustomArchiveTableFieldListByRoleId(roleId);
+        List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthDao.searchCustomArchiveTableFieldListByRoleIdAndTableId(roleId ,null);
         return customArchiveTableList;
     }
 
@@ -400,12 +400,14 @@ public class RoleAuthServiceImpl implements RoleAuthService {
             List<CustomArchiveTableFieldVO> tempCustomArchiveTableList = new ArrayList<>();
             List<CustomArchiveTableFieldVO> tempRequestCustomTableFieldList = new ArrayList<>();
 
+            CustomArchiveTableFieldVO customArchiveTableFieldVO = requestCustomTableFieldList.get(0);
             //获取角色ID
-            Integer roleId = requestCustomTableFieldList.get(0).getRoleId();
+            Integer roleId = customArchiveTableFieldVO.getRoleId();
+            Integer tableId = customArchiveTableFieldVO.getTableId();
 
-            //查询角色已有字段权限
-            if(null != roleId){
-                customArchiveTableList = roleAuthDao.searchCustomArchiveTableFieldListByRoleId(roleId);
+            //查询角色自定义表已有字段权限
+            if(roleId != null && tableId != null){
+                customArchiveTableList = roleAuthDao.searchCustomArchiveTableFieldListByRoleIdAndTableId(roleId, tableId);
             }
 
             //筛选

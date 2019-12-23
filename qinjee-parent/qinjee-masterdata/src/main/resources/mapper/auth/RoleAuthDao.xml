@@ -254,13 +254,17 @@
 		and t.table_id = f.table_id
         and t.is_delete = 0
         and f.is_delete = 0
+        GROUP BY t.table_id,t.table_code,t.table_name,t.func_code,f.field_id,f.field_code,f.field_name,read_write_code
     </select>
 
     <!--根据角色和自定义表ID查询自定义字段列表 -->
-    <select id="searchCustomArchiveTableFieldListByRoleId" parameterType="java.lang.Integer" resultMap="CustomArchiveTableFieldResultMap">
+    <select id="searchCustomArchiveTableFieldListByRoleIdAndTableId" resultMap="CustomArchiveTableFieldResultMap">
         select a.role_id,t.table_id,t.table_code,t.table_name,f.field_id,f.field_code,f.field_name,a.read_write_code
         from t_role_custom_field_auth a,t_custom_archive_field f,t_custom_archive_table t
         where a.role_id = #{roleId,jdbcType=INTEGER}
+        <if test="tableId != null">
+            and f.table_id = #{tableId,jdbcType=INTEGER}
+        </if>
         and a.field_id = f.field_id
         and f.table_id = t.table_id
         and a.is_delete = 0
