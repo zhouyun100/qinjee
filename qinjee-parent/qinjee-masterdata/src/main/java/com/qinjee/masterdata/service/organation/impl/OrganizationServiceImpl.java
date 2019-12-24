@@ -533,8 +533,6 @@ public class OrganizationServiceImpl implements OrganizationService {
             String errorInfoKey = "errorOrgData" + filename.hashCode();
             redisService.del(errorInfoKey);
             String errorStr = errorSb.toString();
-            //去掉最后一个竖线
-            errorStr = StringUtils.removeEnd(errorStr, "|");
             redisService.setex(errorInfoKey, 30 * 60, errorStr);
             //将错误信息置入返回对象
             resultMap.put("failCheckList", failCheckList);
@@ -1068,6 +1066,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                     resultMsg.append("编码为："+organizationVO.getOrgParentCode()+"的上级机构在excel中不存在|");
                 }
             }
+            resultMsg.deleteCharAt(resultMsg.length()-1);
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }

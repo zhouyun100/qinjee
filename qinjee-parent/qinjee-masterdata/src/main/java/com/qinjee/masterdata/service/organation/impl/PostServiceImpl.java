@@ -473,8 +473,7 @@ public class PostServiceImpl implements PostService {
             String errorInfoKey = "errorPostData" + filename.hashCode();
             redisService.del(errorInfoKey);
             String errorStr = errorSb.toString();
-            //去掉最后一个竖线
-            errorStr = StringUtils.removeEnd(errorStr, "|");
+
             redisService.setex(errorInfoKey, 30 * 60, errorStr);
 
             resultMap.put("errorInfoKey", errorInfoKey);
@@ -906,6 +905,7 @@ public class PostServiceImpl implements PostService {
                 checkVo.setCheckResult(false);
                 resultMsg.append("职位" + post.getPositionName() + "不存在|");
             }
+            resultMsg.deleteCharAt(resultMsg.length()-1);
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }
