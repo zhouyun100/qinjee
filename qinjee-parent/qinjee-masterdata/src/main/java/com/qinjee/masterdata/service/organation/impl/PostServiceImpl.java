@@ -155,25 +155,25 @@ public class PostServiceImpl implements PostService {
         List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
         if (!CollectionUtils.isEmpty(sonPostsByOrgId)) {
             int maxSortId = sonPostsByOrgId.stream().mapToInt(Post::getSortId).max().getAsInt();
-            sortId=maxSortId+1000;
+            sortId = maxSortId + 1000;
         }
         //如果有上级岗位则以上级岗位下的子岗位为准
         if (!CollectionUtils.isEmpty(sonPosts)) {
             int maxSortId = sonPosts.stream().mapToInt(Post::getSortId).max().getAsInt();
-            sortId=maxSortId+1000;
+            sortId = maxSortId + 1000;
         }
         return sortId;
     }
 
     @Override
-    public String generatePostCode(Integer orgId,Integer parentPostId) {
+    public String generatePostCode(Integer orgId, Integer parentPostId) {
         //如果父岗位id不为空且不为0，则以父岗位为基准
-        if(null!=parentPostId&&parentPostId!=0){
+        if (null != parentPostId && parentPostId != 0) {
             List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
-            if(CollectionUtils.isEmpty(sonPosts)){
+            if (CollectionUtils.isEmpty(sonPosts)) {
                 Post parentPost = postDao.selectByPrimaryKey(parentPostId);
-                return parentPost.getPostCode()+"01";
-            }else {
+                return parentPost.getPostCode() + "01";
+            } else {
                 //先过滤掉机构编码最后两位为非数字的，再筛选最大值
                 //TODO 漏洞  如果getPostCode的总长度小于2，会出现越界异常（正常业务情况不会出现）
                 List<Post> filterBrotherPostList = sonPosts.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
@@ -181,57 +181,57 @@ public class PostServiceImpl implements PostService {
                 Comparator comparator = new Comparator() {
                     @Override
                     public int compare(Object o1, Object o2) {
-                        String postCode1=String.valueOf(o1);
-                        String postCode2=String.valueOf(o1);
+                        String postCode1 = String.valueOf(o1);
+                        String postCode2 = String.valueOf(o1);
                         String orgCode1Num = postCode1.substring(postCode1.length() - 2);
                         String orgCode2Num = postCode1.substring(postCode2.length() - 2);
-                        boolean isNum= StringUtils.isNumeric(orgCode1Num)&&StringUtils.isNumeric(orgCode2Num);
-                        if (isNum&&postCode1.length() > postCode2.length()) {
+                        boolean isNum = StringUtils.isNumeric(orgCode1Num) && StringUtils.isNumeric(orgCode2Num);
+                        if (isNum && postCode1.length() > postCode2.length()) {
                             return -1;
-                        } else if (isNum&&postCode1.length() < postCode2.length()) {
+                        } else if (isNum && postCode1.length() < postCode2.length()) {
                             return 1;
                         }
                         return postCode2.compareTo(postCode1);
                     }
                 };
-                String lastOrgCode =filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
-                if(null==lastOrgCode||"".equals(lastOrgCode)){
+                String lastOrgCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
+                if (null == lastOrgCode || "".equals(lastOrgCode)) {
                     Post parentPost = postDao.selectByPrimaryKey(parentPostId);
-                    return parentPost.getPostCode()+"01";
+                    return parentPost.getPostCode() + "01";
                 }
                 //计算编码
                 String postCode = culPostCode(lastOrgCode);
                 return postCode;
             }
-        }else{
+        } else {
             List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
-            if(CollectionUtils.isEmpty(sonPostsByOrgId)){
+            if (CollectionUtils.isEmpty(sonPostsByOrgId)) {
                 OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
-                return superOrg.getOrgCode()+"01";
-            }else{
+                return superOrg.getOrgCode() + "01";
+            } else {
                 //先过滤掉机构编码最后两位为非数字的，再筛选最大值
                 List<Post> filterBrotherPostList = sonPostsByOrgId.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
                 //根据机构编码排序，并且只取最后两位位数字的
                 Comparator comparator = new Comparator() {
                     @Override
                     public int compare(Object o1, Object o2) {
-                        String postCode1=String.valueOf(o1);
-                        String postCode2=String.valueOf(o1);
+                        String postCode1 = String.valueOf(o1);
+                        String postCode2 = String.valueOf(o1);
                         String postCode1Num = postCode1.substring(postCode1.length() - 2);
                         String postCode2Num = postCode1.substring(postCode2.length() - 2);
-                        boolean isNum= StringUtils.isNumeric(postCode1Num)&&StringUtils.isNumeric(postCode2Num);
-                        if (isNum&&postCode1.length() > postCode2.length()) {
+                        boolean isNum = StringUtils.isNumeric(postCode1Num) && StringUtils.isNumeric(postCode2Num);
+                        if (isNum && postCode1.length() > postCode2.length()) {
                             return -1;
-                        } else if (isNum&&postCode1.length() < postCode2.length()) {
+                        } else if (isNum && postCode1.length() < postCode2.length()) {
                             return 1;
                         }
                         return postCode2.compareTo(postCode1);
                     }
                 };
-                String lastOrgCode =filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
-                if(null==lastOrgCode||"".equals(lastOrgCode)){
+                String lastOrgCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
+                if (null == lastOrgCode || "".equals(lastOrgCode)) {
                     OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
-                    return superOrg.getOrgCode()+"01";
+                    return superOrg.getOrgCode() + "01";
                 }
                 //计算编码
                 String postCode = culPostCode(lastOrgCode);
@@ -239,7 +239,6 @@ public class PostServiceImpl implements PostService {
             }
         }
     }
-
 
 
     @Override
@@ -254,7 +253,7 @@ public class PostServiceImpl implements PostService {
         post.setOperatorId(userSession.getArchiveId());
         //如果上级机构id或上级岗位id改变，则重新排序id
         Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
-        if (!postVo.getOrgId().equals(post1.getOrgId())||!postVo.getParentPostId().equals(post1.getParentPostId())) {
+        if (!postVo.getOrgId().equals(post1.getOrgId()) || !postVo.getParentPostId().equals(post1.getParentPostId())) {
             Integer sortId = generatePostSortId(postVo.getOrgId(), postVo.getParentPostId());
             post.setSortId(sortId);
         }
@@ -471,7 +470,7 @@ public class PostServiceImpl implements PostService {
             for (Post error : failCheckList) {
                 errorSb.append(error.getLineNumber() + "," + error.getResultMsg() + "\n");
             }
-            String errorInfoKey = "errorPostData" + String.valueOf(filename.hashCode());
+            String errorInfoKey = "errorPostData" + filename.hashCode();
             redisService.del(errorInfoKey);
             String errorStr = errorSb.toString();
             //去掉最后一个竖线
@@ -627,7 +626,6 @@ public class PostServiceImpl implements PostService {
         redisService.del(redisKey);
         redisService.del(errorInfoKey);
     }
-
 
 
     private void handlerPostToGraphics(List<Post> allPost, List<Post> topPostList, boolean isContainsCompiler, boolean isContainsActualMembers) {
@@ -836,7 +834,7 @@ public class PostServiceImpl implements PostService {
         //用来校验本地excel岗位编码与名称是否匹配，如果匹配 还要进行数据库校验
         Map<String, String> excelPostNameMap = new HashMap<>(voList.size());
         for (Post post : voList) {
-            excelPostNameMap.put(post.getPostCode(),post.getPostName());
+            excelPostNameMap.put(post.getPostCode(), post.getPostName());
         }
 
         for (Post post : voList) {
@@ -845,48 +843,48 @@ public class PostServiceImpl implements PostService {
             checkVo.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder();
             //验空
-            if (Objects.isNull(post.getPostCode())) {
+            if (StringUtils.isBlank(post.getPostCode())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("岗位编码不能为空|");
             }
-            if (Objects.isNull(post.getPostName())) {
+            if (StringUtils.isBlank(post.getPostName())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("岗位名称不能为空|");
             }
-            if (Objects.isNull(post.getOrgCode())) {
+            if (StringUtils.isBlank(post.getOrgCode())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("所属部门编码不能为空|");
             }
-            if (Objects.isNull(post.getOrgName())) {
+            if (StringUtils.isBlank(post.getOrgName())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("所属部门名称不能为空|");
             }
-            if (Objects.isNull(post.getPositionName())) {
+            if (StringUtils.isBlank(post.getPositionName())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("职位名称不能为空|");
             }
 
             // 校验部门编码是否存在，部门编码与部门名称是否对应
-            OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(post.getOrgCode(), userSession.getCompanyId());
+            if (StringUtils.isNotBlank(post.getOrgCode())) {
+                OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(post.getOrgCode(), userSession.getCompanyId());
 
-
-            if (Objects.nonNull(org)) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("部门编码不存在|");
-            } else {
-                if (!post.getOrgName().equals(org.getOrgName())) {
+                if (Objects.isNull(org)) {
                     checkVo.setCheckResult(false);
-                    resultMsg.append("部门名称不匹配|");
+                    resultMsg.append("部门编码不存在|");
+                } else {
+                    if (!post.getOrgName().equals(org.getOrgName())) {
+                        checkVo.setCheckResult(false);
+                        resultMsg.append("部门名称不匹配|");
+                    }
                 }
             }
-
             if (StringUtils.isNotBlank(post.getParentPostCode())) {
                 String parentPostName = excelPostNameMap.get(post.getParentPostCode());
                 if (StringUtils.isNotBlank(parentPostName)) {
-                    if(!parentPostName.equals(post.getParentPostName())){
+                    if (!parentPostName.equals(post.getParentPostName())) {
                         checkVo.setCheckResult(false);
                         resultMsg.append("上级岗位名称在excel中不匹配|");
-                    }else{
+                    } else {
                         // 校验上级岗位编码是否存在，与岗位名称是否对应
                         Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
                         if (Objects.nonNull(parentPost)) {
@@ -896,9 +894,9 @@ public class PostServiceImpl implements PostService {
                             }
                         }
                     }
-                }else{
+                } else {
                     checkVo.setCheckResult(false);
-                    resultMsg.append("编码为："+post.getParentPostCode()+"的上级岗位在excel中不存在|");
+                    resultMsg.append("编码为：" + post.getParentPostCode() + "的上级岗位在excel中不存在|");
                 }
             }
 

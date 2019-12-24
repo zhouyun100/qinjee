@@ -530,7 +530,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             for (OrganizationVO error : failCheckList) {
                 errorSb.append(error.getLineNumber() + "," + error.getResultMsg() + "\n");
             }
-            String errorInfoKey = "errorOrgData" + String.valueOf(filename.hashCode());
+            String errorInfoKey = "errorOrgData" + filename.hashCode();
             redisService.del(errorInfoKey);
             String errorStr = errorSb.toString();
             //去掉最后一个竖线
@@ -998,32 +998,32 @@ public class OrganizationServiceImpl implements OrganizationService {
             checkVo.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder();
             //验空
-            if (Objects.isNull(organizationVO.getOrgCode())) {
+            if (StringUtils.isBlank(organizationVO.getOrgCode())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("机构编码不能为空|");
             }
-            if (Objects.isNull(organizationVO.getOrgName())) {
+            if (StringUtils.isBlank(organizationVO.getOrgName())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("机构名称不能为空|");
             }
-            if (Objects.isNull(organizationVO.getOrgType())) {
+            if (StringUtils.isBlank(organizationVO.getOrgType())) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("机构类型不能为空|");
             }
-            if (Objects.isNull(organizationVO.getOrgParentCode()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
+            if (StringUtils.isBlank(organizationVO.getOrgParentCode()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("非集团类型机构的上级机构编码不能为空|");
             }
-            if (Objects.isNull(organizationVO.getOrgParentName()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
+            if (StringUtils.isBlank(organizationVO.getOrgParentName()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("非集团类型机构的上级机构名称不能为空|");
             }
-            if (Objects.nonNull(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
+            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
                 checkVo.setCheckResult(false);
                 resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在|");
             }
 
-            if (Objects.nonNull(organizationVO.getOrgType()) && organizationVO.getOrgType().equals("GROUP")) {
+            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && organizationVO.getOrgType().equals("GROUP")) {
                 groupCount++;
             }
             if (groupCount > 1) {
@@ -1032,7 +1032,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
 
 
-            if (null != organizationVO.getManagerEmployeeNumber() && !"".equals(organizationVO.getManagerEmployeeNumber())) {
+            if (StringUtils.isNotBlank(organizationVO.getManagerEmployeeNumber())) {
                 UserArchiveVo userArchive = userArchiveDao.selectArchiveByNumber(organizationVO.getManagerEmployeeNumber());
                 if (Objects.isNull(userArchive)) {
                     checkVo.setCheckResult(false);
@@ -1045,7 +1045,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 }
             }
             //根据上级机构编码查询数据库 判断上级机构是否存在
-            if (null != organizationVO.getOrgParentCode() && !"".equals(organizationVO.getOrgParentCode())) {
+            if (StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
 
                 //先判断上级机构在表中是否存在，如果表中不存就需要去查询数据库
                 String orgName = excelOrgNameMap.get(organizationVO.getOrgParentCode());
