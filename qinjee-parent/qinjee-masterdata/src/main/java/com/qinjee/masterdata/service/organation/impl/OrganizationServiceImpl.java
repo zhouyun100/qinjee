@@ -516,7 +516,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         //校验  校验前先根据行号进行排序
         List<OrganizationVO> checkResultList = checkExcel(orgList, userSession);
-        System.out.println(checkResultList);
         //过滤出错误校验列表
         List<OrganizationVO> failCheckList = checkResultList.stream().filter(check -> {
             if (!check.getCheckResult()) {
@@ -533,7 +532,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             String errorInfoKey = "errorOrgData" + String.valueOf(filename.hashCode());
             redisService.del(errorInfoKey);
-            redisService.setex(errorInfoKey, 30 * 60, errorSb.toString());
+            String errorStr = errorSb.toString();
+            //去掉最后一个竖线
+            errorStr = StringUtils.removeEnd(errorStr, "|");
+            redisService.setex(errorInfoKey, 30 * 60, errorStr);
             //将错误信息置入返回对象
             resultMap.put("failCheckList", failCheckList);
             resultMap.put("errorInfoKey", errorInfoKey);

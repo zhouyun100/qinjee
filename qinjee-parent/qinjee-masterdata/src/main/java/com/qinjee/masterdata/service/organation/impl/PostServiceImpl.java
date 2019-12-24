@@ -473,7 +473,11 @@ public class PostServiceImpl implements PostService {
             }
             String errorInfoKey = "errorPostData" + String.valueOf(filename.hashCode());
             redisService.del(errorInfoKey);
-            redisService.setex(errorInfoKey, 30 * 60, errorSb.toString());
+            String errorStr = errorSb.toString();
+            //去掉最后一个竖线
+            errorStr = StringUtils.removeEnd(errorStr, "|");
+            redisService.setex(errorInfoKey, 30 * 60, errorStr);
+
             resultMap.put("errorInfoKey", errorInfoKey);
             responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
             response.setHeader("errorInfoKey", errorInfoKey);
