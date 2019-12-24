@@ -1066,7 +1066,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                     resultMsg.append("编码为："+organizationVO.getOrgParentCode()+"的上级机构在excel中不存在|");
                 }
             }
-            resultMsg.deleteCharAt(resultMsg.length()-1);
+            if(resultMsg.length()>1){
+                resultMsg.deleteCharAt(resultMsg.length()-1);
+            }
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }

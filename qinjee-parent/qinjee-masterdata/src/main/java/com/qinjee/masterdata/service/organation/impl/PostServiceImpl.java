@@ -905,7 +905,9 @@ public class PostServiceImpl implements PostService {
                 checkVo.setCheckResult(false);
                 resultMsg.append("职位" + post.getPositionName() + "不存在|");
             }
-            resultMsg.deleteCharAt(resultMsg.length()-1);
+            if(resultMsg.length()>1){
+                resultMsg.deleteCharAt(resultMsg.length()-1);
+            }
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }
