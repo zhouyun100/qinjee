@@ -53,10 +53,10 @@ public interface UserArchiveDao {
     /**
      * 查询机构id下员工信息列表
      *
-     * @param userArchivePageVo
+     * @param orgIdList
      * @return
      */
-    List<UserArchive> getUserArchiveList(@Param("userArchivePageVo") UserArchivePageVo userArchivePageVo);
+    List<UserArchive> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList);
 
     Map<String,String> selectNameAndNumber(@Param("id") Integer id);
 

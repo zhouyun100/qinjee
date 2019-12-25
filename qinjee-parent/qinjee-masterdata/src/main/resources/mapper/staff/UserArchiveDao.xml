@@ -749,11 +749,12 @@
     LEFT JOIN t_organization torg ON torg.org_id = tua.business_unit_id
     LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
     WHERE tua.is_delete = 0 AND tua2.is_delete = 0
+    <if test="orgIdList != null and orgIdList.size > 0">
+      and torg.org_id in
+      <foreach collection="orgIdList" item="orgId" separator="," close=")" open="(">
+        #{orgId}
+      </foreach>
 
-    <if test="userArchivePageVo != null">
-        <if test="userArchivePageVo.orgId != null">
-          and tua.org_id =#{userArchivePageVo.orgId}
-        </if>
     </if>
 
   </select>
