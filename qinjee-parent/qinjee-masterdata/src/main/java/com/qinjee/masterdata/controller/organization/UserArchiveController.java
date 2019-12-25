@@ -63,7 +63,7 @@ public class UserArchiveController extends BaseController {
 
     @GetMapping("/deleteUserArchive")
     @ApiOperation(value = "删除员工档案信息")
-    public ResponseResult deleteUserArchive(@ApiParam(value = "员工档案Id", required = true, allowMultiple = true) List<Integer> archiveIds) throws Exception {
+    public ResponseResult deleteUserArchive( List<Integer> archiveIds) throws Exception {
         if (checkParam(archiveIds)) {
             staffArchiveService.deleteArchiveById(archiveIds);
         }
