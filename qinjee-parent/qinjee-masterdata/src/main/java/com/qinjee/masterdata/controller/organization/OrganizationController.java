@@ -3,10 +3,12 @@ package com.qinjee.masterdata.controller.organization;
 import com.github.liaochong.myexcel.core.DefaultExcelBuilder;
 import com.github.liaochong.myexcel.utils.AttachmentExportUtil;
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.OrganizationService;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author 高雄
@@ -41,6 +44,8 @@ public class OrganizationController extends BaseController {
     private OrganizationService organizationService;
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
+    @Autowired
+    private SysDictService sysDictService;
 
 
     private Boolean checkParam(Object... params) {
@@ -233,14 +238,13 @@ public class OrganizationController extends BaseController {
             }
             List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgId, orgIds, getUserSession().getArchiveId());
             List<OrganizationVO> dataList = new ArrayList<>();
-            //将部门类型转变为中文
+            // 导出时将"DEPT"转为“部门”
             for (OrganizationVO org : organizationVOList) {
-                if ("GROUP".equalsIgnoreCase(org.getOrgType())) {
-                    org.setOrgType("集团");
-                } else if ("UNIT".equalsIgnoreCase(org.getOrgType())) {
-                    org.setOrgType("单位");
-                } else if ("DEPT".equalsIgnoreCase(org.getOrgType())) {
-                    org.setOrgType("部门");
+                List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
+                for (SysDict dict : orgTypeDic) {
+                    if(null!=dict.getDictCode() && dict.getDictCode().equalsIgnoreCase(org.getOrgType())){
+                        org.setOrgType(dict.getDictValue());
+                    }
                 }
                 dataList.add(org);
             }

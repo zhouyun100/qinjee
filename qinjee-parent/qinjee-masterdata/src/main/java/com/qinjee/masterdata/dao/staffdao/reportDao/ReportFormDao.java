@@ -1,10 +1,8 @@
 package com.qinjee.masterdata.dao.staffdao.reportDao;
 
-import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.RegulationCountVo;
 import com.qinjee.masterdata.model.vo.staff.RegulationDetailVo;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

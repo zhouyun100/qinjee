@@ -44,12 +44,10 @@ public interface OrganizationDao {
      * 根据查询条件查询机构
      *
      * @param organizationPageVo
-     * @param sortFieldStr
      * @param archiveId
      * @return
      */
     List<OrganizationVO> listDirectOrganizationByCondition(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
-                                                           @Param("sortFieldStr") String sortFieldStr,
                                                            @Param("archiveId") Integer archiveId,
                                                            @Param("now") Date now);
 

@@ -13,12 +13,10 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
-import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
-import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -72,12 +70,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
-        String sortFieldStr = null;
 
-        if (Objects.nonNull(postPageVo.getQuerFieldVos())) {
-            Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
-            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Post.class);
-        }
         //TODO id重复无影响
         List<Integer> orgIdList = null;
         List<Integer> postIdList = null;
@@ -88,7 +81,7 @@ public class PostServiceImpl implements PostService {
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList, sortFieldStr);
+            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList);
             PageInfo<Post> pageInfo = new PageInfo<>(postList);
             PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
@@ -101,7 +94,7 @@ public class PostServiceImpl implements PostService {
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList, sortFieldStr);
+            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList);
             PageInfo<Post> pageInfo = new PageInfo<>(postList);
             PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
@@ -604,15 +597,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public PageResult<Post> listDirectPostPage(PostPageVo postPageVo) {
 
-        String sortFieldStr = "";
-        if (!CollectionUtils.isEmpty(postPageVo.getQuerFieldVos())) {
-            Optional<List<QueryField>> querFieldVos = Optional.of(postPageVo.getQuerFieldVos());
-            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
-        }
         if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
             PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
         }
-        List<Post> postList = postDao.listDirectPostPage(postPageVo, sortFieldStr);
+        List<Post> postList = postDao.listDirectPostPage(postPageVo);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());

@@ -154,16 +154,6 @@
       <if test="pageVo.positionGroupId != null">
             and tp.position_group_id = #{pageVo.positionGroupId}
       </if>
-      <if test="pageVo.querFieldVos != null and pageVo.querFieldVos.size > 0">
-        <foreach collection="pageVo.querFieldVos" item="querField">
-          <if test="querField.fieldName != null and querField.fieldName != ''">
-            ${querField.condition}
-          </if>
-          <if test="querField.isFilterNull">
-            and ${querField.fieldName} IS NULL
-          </if>
-        </foreach>
-      </if>
     </if>
     order by tp.sort_id ASC
   </select>

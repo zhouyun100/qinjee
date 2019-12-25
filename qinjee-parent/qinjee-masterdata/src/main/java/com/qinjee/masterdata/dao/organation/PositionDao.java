@@ -48,7 +48,7 @@ public interface PositionDao {
      * @param pageVo
      * @return
      */
-    List<Position> getPositionPage(@Param("pageVo") PositionPageVo pageVo,@Param("sortFieldStr")String sortFieldStr);
+    List<Position> getPositionPage(@Param("pageVo") PositionPageVo pageVo);
 
     Position getPositionByNameAndCompanyId(String positionName,Integer companyId);
 

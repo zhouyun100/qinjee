@@ -13,18 +13,17 @@ import com.qinjee.masterdata.aop.OrganizationTransferAnno;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
-import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
-import com.qinjee.masterdata.utils.QueryFieldUtil;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -72,6 +71,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private ApiAuthService apiAuthService;
 
+    @Autowired
+    private SysDictService sysDictService;
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
 
@@ -100,13 +101,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
             PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
         }
-        String sortFieldStr = "";
-        if (!CollectionUtils.isEmpty(organizationPageVo.getQuerFieldVos())) {
-            Optional<List<QueryField>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
-        }
-
-        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageVo, sortFieldStr, archiveId, new Date());
+        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageVo, archiveId, new Date());
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
         PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -397,8 +392,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
         }
         for (Map.Entry<String, List<OrganizationVO>> entry : multiValuedMap.entrySet()) {
-            List<OrganizationVO> orgLost = entry.getValue();
-            orgLost.sort(new Comparator() {
+            List<OrganizationVO> orgList = entry.getValue();
+            orgList.sort(new Comparator() {
                 @Override
                 public int compare(Object o1, Object o2) {
                     OrganizationVO org1 = (OrganizationVO) o1;
@@ -408,19 +403,20 @@ public class OrganizationServiceImpl implements OrganizationService {
                 }
             });
             int sortId = 1000;
-            for (OrganizationVO vo : orgLost) {
+            for (OrganizationVO vo : orgList) {
                 OrganizationVO ifExistVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
                 OrganizationVO parentOrg = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgParentCode(), userSession.getCompanyId());
                 Integer orgManagerId = userArchiveDao.selectArchiveIdByNumber(vo.getManagerEmployeeNumber());
                 vo.setOrgManagerId(orgManagerId);
-                //转换机构类型
-                if ("集团".equalsIgnoreCase(vo.getOrgType())) {
-                    vo.setOrgType("GROUP");
-                } else if ("单位".equalsIgnoreCase(vo.getOrgType())) {
-                    vo.setOrgType("UNIT");
-                } else if ("部门".equalsIgnoreCase(vo.getOrgType())) {
-                    vo.setOrgType("DEPT");
+
+                //导入时将“部门”转为"DEPT"
+                List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
+                for (SysDict dict : orgTypeDic) {
+                    if(null!=dict.getDictValue() && dict.getDictValue().equalsIgnoreCase(vo.getOrgType())){
+                        vo.setOrgType(dict.getDictCode());
+                    }
                 }
+
                 //已存在 则更新
                 if (Objects.nonNull(ifExistVo)) {
                     //根据机构编码进行更新
@@ -506,7 +502,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         });
         //将排序后的orgList存入redis
         //将orgList存入redis
-        String redisKey = "tempOrgData" + String.valueOf(filename.hashCode());
+        String redisKey = "tempOrgData" + filename.hashCode();
         redisService.del(redisKey);
         String json = JSON.toJSONString(orgList);
         redisService.setex(redisKey, 30 * 60, json);
@@ -1017,8 +1013,19 @@ public class OrganizationServiceImpl implements OrganizationService {
                 resultMsg.append("非集团类型机构的上级机构名称不能为空|");
             }
             if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在|");
+                boolean isExist=false;
+                List<SysDict> sysDicts = sysDictService.searchSysDictListByDictType("ORG_TYPE");
+                for (SysDict dict : sysDicts) {
+                    if(null != dict.getDictValue() && organizationVO.getOrgType().equalsIgnoreCase(dict.getDictValue())){
+                        //如果存在 直接结束
+                        isExist=true;
+                        break;
+                    }
+                }
+                if(!isExist){
+                    checkVo.setCheckResult(false);
+                    resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在|");
+                }
             }
 
             if (StringUtils.isNotBlank(organizationVO.getOrgType()) && organizationVO.getOrgType().equals("GROUP")) {
