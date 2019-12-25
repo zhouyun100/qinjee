@@ -1,9 +1,11 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -168,6 +170,8 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
+    @DateTimeFormat(pattern = "yyyy/MM/dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy/MM/dd ")//数据库导出页面时json格式化
     private Date hireDate;
 
     /**

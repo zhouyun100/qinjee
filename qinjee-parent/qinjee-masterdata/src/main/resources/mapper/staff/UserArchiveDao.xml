@@ -24,7 +24,7 @@
     <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
     <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
     <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
-    <result column="hire_date" jdbcType="DATE" property="hireDate" />
+    <result column="hire_date" jdbcType="DATE"  property="hireDate" />
     <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
     <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
     <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
