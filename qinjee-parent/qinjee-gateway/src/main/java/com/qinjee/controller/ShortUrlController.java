@@ -11,8 +11,11 @@
 package com.qinjee.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +28,9 @@ import java.util.Map;
  */
 @RestController
 public class ShortUrlController {
+
+
+    private static Logger logger = LogManager.getLogger(ShortUrlController.class);
 
     /**
      * 短链接
@@ -54,15 +60,16 @@ public class ShortUrlController {
      * @param echostr 随机字符串
      * @return
      */
-    @RequestMapping("/checkSignature")
-    public String checkSignature(@PathVariable("signature") String signature,@PathVariable("timestamp") String timestamp,@PathVariable("nonce") String nonce,@PathVariable("echostr") String echostr) {
+    @RequestMapping(value = "/checkSignature",method = RequestMethod.GET)
+    public String checkSignature(String signature, String timestamp, String nonce, String echostr) {
 
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,String> map = new HashMap<>();
         map.put("signature",signature);
         map.put("timestamp",timestamp);
         map.put("nonce",nonce);
         map.put("echostr",echostr);
-        System.out.println(map.toString());
+        logger.info("checkSignature request success param={}",map.toString());
+        System.out.println("checkSignature request success param：" + map.toString());
         return map.toString();
     }
 }
