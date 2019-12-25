@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 周赟
@@ -42,5 +44,25 @@ public class ShortUrlController {
             e.printStackTrace();
         }
         return shortUrlCode;
+    }
+
+    /**
+     * 验证来自微信服务器的消息
+     * @param signature 微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数、nonce参数。
+     * @param timestamp 时间戳
+     * @param nonce 随机数
+     * @param echostr 随机字符串
+     * @return
+     */
+    @RequestMapping("/checkSignature")
+    public String checkSignature(@PathVariable("signature") String signature,@PathVariable("timestamp") String timestamp,@PathVariable("nonce") String nonce,@PathVariable("echostr") String echostr) {
+
+        Map<String,String> map = new HashMap<String,String>();
+        map.put("signature",signature);
+        map.put("timestamp",timestamp);
+        map.put("nonce",nonce);
+        map.put("echostr",echostr);
+        System.out.println(map.toString());
+        return map.toString();
     }
 }
