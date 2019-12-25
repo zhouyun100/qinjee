@@ -28,7 +28,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_organization
-        where org_id = #{orgId,jdbcType=INTEGER} and is_enable =1
+        where org_id = #{orgId,jdbcType=INTEGER}
     </select>
     <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     update  t_organization set is_enable =0
@@ -296,22 +296,7 @@
             <if test="organizationPageVo.orgParentId != null">
                 and org.org_parent_id = #{organizationPageVo.orgParentId}
             </if>
-
-            <if test="organizationPageVo.querFieldVos != null and organizationPageVo.querFieldVos.size > 0">
-                <foreach collection="organizationPageVo.querFieldVos" item="querField">
-                    <if test="querField.fieldName != null and querField.fieldName != ''">
-                        ${querField.condition}
-                    </if>
-                    <if test="querField.isFilterNull">
-                        and ${querField.fieldName} IS NULL
-                    </if>
-                </foreach>
-            </if>
         </if>
-
-        <!-- <if test="sortFieldStr != null and sortFieldStr != ''">
-             ORDER BY ${sortFieldStr}
-         </if>-->
         order by org.sort_id asc
     </select>
 

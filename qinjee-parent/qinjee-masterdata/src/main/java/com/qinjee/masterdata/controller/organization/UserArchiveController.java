@@ -3,9 +3,10 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
-import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
-import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
+import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -27,27 +28,47 @@ import java.util.List;
 @RestController
 public class UserArchiveController extends BaseController {
 
-  @Autowired
-  private UserArchiveService userArchiveService;
+    @Autowired
+    private UserArchiveService userArchiveService;
 
-  @PostMapping("/getUserArchiveList")
-  @ApiOperation(value = "根据条件分页查询员工信息", notes = "高雄")
-  public ResponseResult<PageResult<UserArchive>> getUserArchiveList(@RequestBody UserArchivePageVo pageQueryVo) {
+    @Autowired
+    private IStaffArchiveService staffArchiveService;
 
-    return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
-  }
+    private Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (null == param || "".equals(param)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-  @PostMapping("/addUserArchive")
-  @ApiOperation(value = "新增员工档案信息", notes = "高雄")
-  public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo) {
-    return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
-  }
+    @PostMapping("/getUserArchiveList")
+    @ApiOperation(value = "根据条件分页查询员工信息")
+    public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(@RequestBody UserArchivePageVo pageQueryVo) {
+        if (checkParam(pageQueryVo)) {
+            return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
-  @GetMapping("/deleteUserArchive")
-  @ApiOperation(value = "删除员工档案信息", notes = "高雄")
-  public ResponseResult deleteUserArchive(@ApiParam(value = "员工档案Id", required = true, allowMultiple = true) List<Integer> archiveIds) {
-    return userArchiveService.deleteUserArchive(archiveIds);
-  }
+    @PostMapping("/addUserArchive")
+    @ApiOperation(value = "新增员工档案信息")
+    public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo) {
+        if (checkParam(userArchiveVo)) {
+            return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+    @GetMapping("/deleteUserArchive")
+    @ApiOperation(value = "删除员工档案信息")
+    public ResponseResult deleteUserArchive( List<Integer> archiveIds) throws Exception {
+        if (checkParam(archiveIds)) {
+            staffArchiveService.deleteArchiveById(archiveIds);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
 
 }

@@ -24,7 +24,7 @@
     <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
     <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
     <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
-    <result column="hire_date" jdbcType="DATE" property="hireDate" />
+    <result column="hire_date" jdbcType="DATE"  property="hireDate" />
     <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
     <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
     <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
@@ -731,13 +731,7 @@
     where is_delete=0
     AND  employee_number = #{employeeNumber,jdbcType=VARCHAR}
   </select>
-  <select id="getUserArchiveListByOrgId" resultMap="BaseResultMap">
-    select tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id, tua.post_id,
-    tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birthdate, tua.age, tua.nationality, tua.birthplace, tua.political_status, tua.marital_status,
-    tua.first_work_date, tua.hiredate, tua.serving_age, tua.working_period,tua.probation_due_date
-    from t_user_archive tua left join t_organization torg on torg.org_id = tua.org_id
-    where tua.is_delete = 0
-  </select>
+
   <select id="getUserArchiveList" resultMap="BaseResultMap">
     SELECT tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id,
     tua.post_id, tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birth_date, tua.age, tua.nationality, tua.birthplace,
@@ -752,21 +746,14 @@
     LEFT JOIN t_organization torg ON torg.org_id = tua.business_unit_id
     LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
     WHERE tua.is_delete = 0 AND tua2.is_delete = 0
+    <if test="orgIdList != null and orgIdList.size > 0">
+      and tua.org_id in
+      <foreach collection="orgIdList" item="orgId" separator="," close=")" open="(">
+        #{orgId}
+      </foreach>
 
-    <if test="pageQueryVo != null">
-        <if test="pageQueryVo.orgId != null">
-          and tua.org_id =#{pageQueryVo.orgId}
+    </if>
 
-        </if>
-      <if test="pageQueryVo.querFieldVos != null and  pageQueryVo.querFieldVos.size > 0">
-        <foreach collection="pageQueryVo.querFieldVos" item="querField">
-            ${querField.condition}
-        </foreach>
-      </if>
-    </if>
-    <if test="sortFieldStr != null and sortFieldStr != ''">
-      ORDER BY ${sortFieldStr}
-    </if>
   </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id

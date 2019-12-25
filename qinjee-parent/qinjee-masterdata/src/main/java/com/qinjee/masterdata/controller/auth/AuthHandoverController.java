@@ -246,7 +246,7 @@ public class AuthHandoverController extends BaseController{
                 return responseResult;
             }else{
                 archivePageVO.setCompanyId(userSession.getCompanyId());
-                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO,userSession.getArchiveId());
 
                 responseResult = ResponseResult.SUCCESS();
                 responseResult.setResult(pageResult);

@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.RegulationCountVo;
 import com.qinjee.masterdata.model.vo.staff.RegulationDetailVo;
 import com.qinjee.model.request.UserSession;

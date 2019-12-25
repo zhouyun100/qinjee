@@ -90,7 +90,7 @@ public class RoleSearchController extends BaseController{
                 return responseResult;
             }else{
                 archivePageVO.setCompanyId(userSession.getCompanyId());
-                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO);
+                PageResult<ArchiveInfoVO> pageResult = roleSearchService.searchArchiveListByUserName(archivePageVO,userSession.getArchiveId());
 
                 logger.info("searchArchiveListByUserName success！userName={},companyId={}",archivePageVO.getUserName(),userSession.getCompanyId());
                 responseResult = ResponseResult.SUCCESS();

@@ -84,7 +84,7 @@ public interface PostDao {
     List<Post> listPostByOrgIds(@Param("orgidList")List<Integer> orgidList);
 
 
-    List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList, @Param("sortFieldStr")String sortFieldStr);
+    List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList);
 
     Integer sortPorts(@Param("postIds")List<Integer> postIds);
 
@@ -98,7 +98,7 @@ public interface PostDao {
 
     List<Post> listPostByCompanyId(Integer companyId, Short isEnable);
 
-    List<Post> listDirectPostPage(PostPageVo postPageVo, String sortFieldStr);
+    List<Post> listDirectPostPage(PostPageVo postPageVo);
 
     Post getPostByPostCode(String postCode, Integer companyId);
 
