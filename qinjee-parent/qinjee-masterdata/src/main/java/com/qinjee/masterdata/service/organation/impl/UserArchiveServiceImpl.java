@@ -64,10 +64,10 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
     @Override
     public ResponseResult<PageResult<UserArchive>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
+        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
         List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList);
         PageInfo<UserArchive> pageInfo = new PageInfo<>(userArchiveList);
         PageResult<UserArchive> pageResult = new PageResult<>(pageInfo.getList());
