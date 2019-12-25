@@ -70,6 +70,6 @@ public class ShortUrlController {
         map.put("echostr",echostr);
         logger.info("checkSignature request success param={}",map.toString());
         System.out.println("checkSignature request success param：" + map.toString());
-        return map.toString();
+        return echostr;
     }
 }
