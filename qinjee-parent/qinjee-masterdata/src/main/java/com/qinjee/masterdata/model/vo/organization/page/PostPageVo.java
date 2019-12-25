@@ -1,10 +1,11 @@
 package com.qinjee.masterdata.model.vo.organization.page;
 
-import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * @author 高雄
@@ -15,8 +16,9 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "岗位分页实体Vo类")
 @Data
 @NoArgsConstructor
-public class PostPageVo extends PageQuery {
-
+public class PostPageVo implements Serializable {
+  private Integer currentPage;
+  private Integer pageSize;
   @ApiModelProperty(value = "机构ID", example = "1")
   private Integer orgId;
   @ApiModelProperty(value = "岗位ID", example = "1")

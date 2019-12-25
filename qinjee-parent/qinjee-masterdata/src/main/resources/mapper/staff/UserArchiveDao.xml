@@ -750,20 +750,12 @@
     LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
     WHERE tua.is_delete = 0 AND tua2.is_delete = 0
 
-    <if test="pageQueryVo != null">
-        <if test="pageQueryVo.orgId != null">
-          and tua.org_id =#{pageQueryVo.orgId}
-
+    <if test="userArchivePageVo != null">
+        <if test="userArchivePageVo.orgId != null">
+          and tua.org_id =#{userArchivePageVo.orgId}
         </if>
-      <if test="pageQueryVo.querFieldVos != null and  pageQueryVo.querFieldVos.size > 0">
-        <foreach collection="pageQueryVo.querFieldVos" item="querField">
-            ${querField.condition}
-        </foreach>
-      </if>
     </if>
-    <if test="sortFieldStr != null and sortFieldStr != ''">
-      ORDER BY ${sortFieldStr}
-    </if>
+
   </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id

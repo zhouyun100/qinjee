@@ -3,7 +3,6 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
-import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
 import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.response.PageResult;

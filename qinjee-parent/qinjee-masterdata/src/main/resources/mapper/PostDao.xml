@@ -361,20 +361,7 @@
         <if test="postPageVo.isEnable != null">
             and tp.is_enable = 1
         </if>
-        <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-            <foreach collection="postPageVo.querFieldVos" item="querField">
-                <if test="querField.fieldName != null and querField.fieldName != ''">
-                    ${querField.condition}
-                </if>
-                <if test="querField.isFilterNull">
-                    and ${querField.fieldName} IS NULL
-                </if>
-            </foreach>
-        </if>
-<!--
-        <if test="sortFieldStr != null and sortFieldStr != ''">
-            ORDER BY ${sortFieldStr}
-        </if>-->
+
         ORDER BY tp.sort_id asc
     </select>
 
@@ -489,17 +476,6 @@
                 </if>
                 <if test="postPageVo.parentPostId !=null and postPageVo.parentPostId !=0">
                     and tp.parent_post_id =#{postPageVo.parentPostId}
-                </if>
-
-                <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-                    <foreach collection="postPageVo.querFieldVos" item="querField">
-                        <if test="querField.fieldName != null and querField.fieldName != ''">
-                            ${querField.condition}
-                        </if>
-                        <if test="querField.isFilterNull">
-                            and ${querField.fieldName} IS NULL
-                        </if>
-                    </foreach>
                 </if>
             </if>
         </where>

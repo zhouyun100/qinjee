@@ -3,11 +3,9 @@ package com.qinjee.masterdata.service.organation.impl;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.query.PageQuery;
-import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
-import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -32,17 +30,11 @@ public class UserArchiveServiceImpl implements UserArchiveService {
     private UserArchiveDao userArchiveDao;
 
     @Override
-    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(PageQuery pageQueryVo, UserSession userSession) {
+    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
         if(pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null){
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        String sortFieldStr="";
-        if(Objects.nonNull(pageQueryVo.getQuerFieldVos())){
-            Optional<List<QueryField>> querFieldVos = Optional.of(pageQueryVo.getQuerFieldVos());
-            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, UserArchive.class);
-        }
-
-        List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveList(pageQueryVo, sortFieldStr);
+        List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveList(pageQueryVo);
         PageResult<UserArchive> pageResult = new PageResult<>(userArchiveList);
         return new ResponseResult<>(pageResult);
     }

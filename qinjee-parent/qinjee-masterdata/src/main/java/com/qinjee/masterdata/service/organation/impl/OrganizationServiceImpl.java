@@ -13,18 +13,15 @@ import com.qinjee.masterdata.aop.OrganizationTransferAnno;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
-import com.qinjee.masterdata.model.vo.organization.query.QueryField;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
-import com.qinjee.masterdata.utils.QueryFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -100,13 +97,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
             PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
         }
-        String sortFieldStr = "";
-        if (!CollectionUtils.isEmpty(organizationPageVo.getQuerFieldVos())) {
-            Optional<List<QueryField>> querFieldVos = Optional.of(organizationPageVo.getQuerFieldVos());
-            sortFieldStr = QueryFieldUtil.getSortFieldStr(querFieldVos, Organization.class);
-        }
-
-        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageVo, sortFieldStr, archiveId, new Date());
+        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageVo, archiveId, new Date());
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
         PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
