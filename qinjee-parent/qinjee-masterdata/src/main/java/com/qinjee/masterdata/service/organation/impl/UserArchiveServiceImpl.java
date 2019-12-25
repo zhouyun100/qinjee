@@ -6,8 +6,8 @@ import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -63,14 +63,14 @@ public class UserArchiveServiceImpl implements UserArchiveService {
     }
 
     @Override
-    public ResponseResult<PageResult<UserArchive>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
+    public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
         List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        List<UserArchive> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList);
-        PageInfo<UserArchive> pageInfo = new PageInfo<>(userArchiveList);
-        PageResult<UserArchive> pageResult = new PageResult<>(pageInfo.getList());
+        List<UserArchiveVo> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList);
+        PageInfo<UserArchiveVo> pageInfo = new PageInfo<>(userArchiveList);
+        PageResult<UserArchiveVo> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
         return new ResponseResult<>(pageResult);
     }

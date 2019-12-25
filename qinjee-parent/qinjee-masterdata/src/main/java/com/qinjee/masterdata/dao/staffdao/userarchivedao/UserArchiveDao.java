@@ -42,21 +42,13 @@ public interface UserArchiveDao {
 
     Integer resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
 
-    /**
-     * 根据机构id查询人员档案
-     *
-     * @param orgId
-     * @return
-     */
-    List<UserArchive> getUserArchiveListByOrgId(Integer orgId);
 
     /**
      * 查询机构id下员工信息列表
      *
-     * @param orgIdList
      * @return
      */
-    List<UserArchive> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList);
+    List<UserArchiveVo> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList);
 
     Map<String,String> selectNameAndNumber(@Param("id") Integer id);
 
