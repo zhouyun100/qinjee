@@ -12,6 +12,7 @@ package com.qinjee.masterdata.dao.staffdao.entryregistration;
 
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -66,4 +67,10 @@ public interface TemplateAttachmentGroupDao {
      * @return
      */
     int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList, Integer operatorId);
+
+    /**
+     * 批量新增附件
+     * @param list
+     */
+    void addTemplateAttachmentGroupBatch(@Param("list") List< TemplateAttachmentGroup> list);
 }

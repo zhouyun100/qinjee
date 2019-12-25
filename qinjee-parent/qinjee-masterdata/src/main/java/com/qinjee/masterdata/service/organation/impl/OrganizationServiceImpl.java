@@ -744,9 +744,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     //=====================================================================
     @Override
-    public List<UserArchiveVo> getUserArchiveListByUserName(String userName) {
+    public List<UserArchiveVo> getUserArchiveListByUserName(String userName,UserSession userSession) {
         //调用人员的接口
-        List<UserArchiveVo> userArchives = userArchiveDao.selectUserArchiveByName(userName);
+        List<UserArchiveVo> userArchives = userArchiveDao.selectUserArchiveByName(userName,userSession.getCompanyId ());
         if (org.apache.commons.collections4.CollectionUtils.isEmpty(userArchives)) {
 
         }

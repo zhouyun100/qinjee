@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -25,9 +26,8 @@ public interface UserArchivePostRelationDao {
 
     int updateByPrimaryKey(UserArchivePostRelation record);
 
-    Integer selectMaxPrimaryKey();
 
-    void deleteUserArchivePostRelation(List<Integer> list);
+    void deleteUserArchivePostRelation(@Param("list") List<Integer> list);
 
     /**
      * 通过岗位id查询员工档案岗位关系表
@@ -36,7 +36,7 @@ public interface UserArchivePostRelationDao {
      */
     List<UserArchivePostRelation> getUserArchivePostRelationList(@Param("postId") Integer postId);
 
-    List<UserArchivePostRelation> selectByPrimaryKeyList(@Param("list") List<Integer> list);
+    List< UserArchivePostRelationVo > selectByPrimaryKeyList(@Param("archiveId") Integer archiveId);
 
     UserArchivePostRelation selectByArcId(@Param("id") Integer id);
 

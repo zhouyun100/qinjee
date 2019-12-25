@@ -26,6 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * @author Administrator
+ */
 @RestController
 @RequestMapping("/staffTemp")
 @Api(tags = "【人员管理】预入职登记模板")
@@ -114,7 +117,7 @@ public class PreTemplateController extends BaseController {
                 return new ResponseResult<>(null, CommonCode.FAIL_VALUE_NULL);
             }
         }
-        return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -148,7 +151,7 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/createBackGraundPhoto", method = RequestMethod.GET)
-    @ApiOperation(value = "根据企业ID查询入职登记模板列表", notes = "hkt")
+    @ApiOperation(value = "生成logo背景图路径", notes = "hkt")
     public ResponseResult<String> getLogoPath(MultipartFile file)  {
         Boolean b = checkParam ( file,getUserSession () );
        if(b){
@@ -191,7 +194,7 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/deleteTemplateEntryRegistration", method = RequestMethod.GET)
-    @ApiOperation(value = "新增入职登记模板", notes = "hkt")
+    @ApiOperation(value = "删除入职登记模板", notes = "hkt")
     public ResponseResult deleteTemplateEntryRegistration(Integer templateId) {
         Boolean b = checkParam ( templateId, getUserSession () );
         if (b) {
@@ -214,7 +217,7 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/modifyTemplateEntryRegistration", method = RequestMethod.POST)
-    @ApiOperation(value = "新增入职登记模板", notes = "hkt")
+    @ApiOperation(value = "修改入职登记模板", notes = "hkt")
     public ResponseResult modifyTemplateEntryRegistration(@RequestBody TemplateEntryRegistration
                                                                   templateEntryRegistration) {
         Boolean b = checkParam ( templateEntryRegistration );
@@ -290,14 +293,15 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getTemplateAttachmentListByTagId", method = RequestMethod.GET)
-    @ApiOperation(value = "根据模板ID查询模板附件配置列表", notes = "hkt")
+    @ApiOperation(value = "根据模板附件ID查询模板附件详情", notes = "hkt")
     public ResponseResult<TemplateAttachmentGroupVO>  getTemplateAttachmentListByTagId(Integer tagId) {
         Boolean b = checkParam ( tagId );
         if (b) {
             try {
                 TemplateAttachmentGroupVO templateAttachmentListByTagId = entryRegistrationService.getTemplateAttachmentListByTagId ( tagId );
-                return new ResponseResult <> ( templateAttachmentListByTagId, CommonCode.FAIL_VALUE_NULL );
+                return new ResponseResult <> ( templateAttachmentListByTagId, CommonCode.SUCCESS );
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult ( "展示异常" );
             }
 
@@ -329,17 +333,17 @@ public class PreTemplateController extends BaseController {
     }
     /**
      * 新增模板附件信息
-     * @param templateAttachmentGroup
+     * @param list
      * @return
      */
     @CrossOrigin
     @RequestMapping(value = "/addTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增模板附件信息", notes = "hkt")
-    public ResponseResult addTemplateAttachmentGroup(@RequestBody TemplateAttachmentGroup templateAttachmentGroup) {
-        Boolean b = checkParam ( templateAttachmentGroup );
+    public ResponseResult addTemplateAttachmentGroup(@RequestBody List<TemplateAttachmentGroup> list) {
+        Boolean b = checkParam ( list );
         if (b) {
             try {
-                entryRegistrationService.addTemplateAttachmentGroup ( templateAttachmentGroup );
+                entryRegistrationService.addTemplateAttachmentGroup ( list );
                 return new ResponseResult <> ( null, CommonCode.SUCCESS );
 
             } catch (Exception e) {
@@ -378,7 +382,7 @@ public class PreTemplateController extends BaseController {
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/delTemplateAttachmentGroup", method = RequestMethod.POST)
+    @RequestMapping(value = "/sortTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "模板附件排序", notes = "hkt")
     public ResponseResult sortTemplateAttachmentGroup(@RequestBody List<TemplateAttachmentGroup> templateAttachmentGroupList) {
         Boolean b = checkParam ( templateAttachmentGroupList,getUserSession () );
@@ -404,7 +408,7 @@ public class PreTemplateController extends BaseController {
     @RequestMapping(value = "/searchTableListByCompanyIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId,Integer isAll) {
-        Boolean b = checkParam (templateId,isAll,getUserSession () );
+        Boolean b = checkParam (getUserSession () );
         if (b) {
             try {
                 List < TemplateCustomTableVO > templateCustomTableVOS =
@@ -420,6 +424,27 @@ public class PreTemplateController extends BaseController {
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
+
+    /**
+     * 设置模板下的自定义表
+     * @param list
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/setCustomTableForTemplate", method = RequestMethod.POST)
+    @ApiOperation(value = "设置模板下的自定义表", notes = "hkt")
+    public ResponseResult  searchTableListByCompanyIdAndTemplateId(@RequestBody List < TemplateCustomTableVO > list) {
+        Boolean b = checkParam ( list,getUserSession () );
+        if (b) {
+            try {
+                        templateCustomTableFieldService.setCustomTableForTemplate (list,getUserSession () );
+               return new ResponseResult ( null,CommonCode.SUCCESS );
+            } catch (Exception e) {
+                return failResponseResult ( "获取值异常" );
+            }
+        }
+        return failResponseResult ( "参数错误或者session错误" );
+    }
     /**
      * 根据模板ID查询所有表字段信息
      * @param templateId
@@ -427,7 +452,7 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/searchTableFieldListByTemplateId", method = RequestMethod.GET)
-    @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
+    @ApiOperation(value = "根据模板ID查询所有表字段信息", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableVO >> searchTableFieldListByTemplateId(Integer templateId) {
         Boolean b = checkParam (templateId );
         if (b) {
@@ -482,7 +507,7 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/saveTemplateTableField", method = RequestMethod.POST)
-    @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
+    @ApiOperation(value = "保存自定义表字段配置", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableFieldVO >> saveTemplateTableField(Integer templateId,
                                                                                                  @RequestBody List<TemplateCustomTableVO> templateCustomTableList) {
         Boolean b = checkParam (templateId,templateCustomTableList,getUserSession () );
@@ -496,19 +521,19 @@ public class PreTemplateController extends BaseController {
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
+
     /**
-     * 根据模板ID和预入职查询自定义表及字段信息
+     * 根据模板ID查询自定义表及字段信息
      * templateId：模板ID
      * preId：预入职ID
      * @param templateId 模板ID
-     * @param preId 预入职ID
      * @return
      */
     @CrossOrigin
     @RequestMapping(value = "/searchCustomTableListByTemplateIdAndArchiveId", method = RequestMethod.GET)
-    @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
-    public ResponseResult <List < EntryRegistrationTableVO >> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId,Integer preId) {
-        Boolean b = checkParam (templateId,preId );
+    @ApiOperation(value = "根据模板ID查询自定义表及字段信息", notes = "hkt")
+    public ResponseResult <List < EntryRegistrationTableVO >> searchCustomTableListByTemplateIdAndArchiveId(Integer templateId) {
+        Boolean b = checkParam (templateId );
         if (b) {
             try {
                 List < EntryRegistrationTableVO > entryRegistrationTableVOS =
@@ -524,6 +549,7 @@ public class PreTemplateController extends BaseController {
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
+
     /**
      * 处理自定义表字段数据回填
      * @param preId
@@ -531,7 +557,7 @@ public class PreTemplateController extends BaseController {
      */
     @CrossOrigin
     @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
-    @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
+    @ApiOperation(value = "处理自定义表字段数据回填", notes = "hkt")
     public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId ) {
         Boolean b = checkParam (getUserSession (),preId,templateId );
         if (b) {

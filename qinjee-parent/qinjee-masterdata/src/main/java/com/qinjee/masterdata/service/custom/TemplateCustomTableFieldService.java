@@ -13,6 +13,7 @@ package com.qinjee.masterdata.service.custom;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
+import com.qinjee.model.request.UserSession;
 
 import java.util.List;
 import java.util.Map;
@@ -73,4 +74,11 @@ public interface TemplateCustomTableFieldService {
      * @return
      */
     List<EntryRegistrationTableVO> handlerCustomTableGroupFieldList(List<EntryRegistrationTableVO> entryRegistrationTableList, Map<Integer,String> mapValue);
+
+    /**
+     * 模板设置自定义表
+     * @param list
+     * @return
+     */
+    void setCustomTableForTemplate(List< TemplateCustomTableVO> list, UserSession userSession);
 }

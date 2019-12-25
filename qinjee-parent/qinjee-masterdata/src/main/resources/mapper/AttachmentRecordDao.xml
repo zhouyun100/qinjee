@@ -267,9 +267,10 @@
     select group_name from
     t_attachment_group
   </select>
-  <select id="selectByList" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo" resultMap="BaseResultMap">
+  <select id="selectByList"  resultType="com.qinjee.masterdata.model.entity.AttachmentRecord" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
-    from t_attachment_group
+    from t_attachment_record
+    where
     attachment_id in
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}

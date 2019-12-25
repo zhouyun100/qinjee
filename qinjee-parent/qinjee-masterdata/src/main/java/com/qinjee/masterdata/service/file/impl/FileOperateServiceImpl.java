@@ -15,6 +15,7 @@ import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
+import com.qinjee.utils.CompressFileUtil;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.io.IOUtils;
@@ -27,6 +28,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -61,12 +63,12 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 int i1 = pathUrl.lastIndexOf ( "." );
                 String substring = pathUrl.substring ( i1 );
                 //根据层级拼接url
-                pathUrl=s+"/"+name+"/"+name+"("+i+")"+substring;
+                pathUrl=s+File.separator+name+File.separator+name+"("+i+")"+substring;
                 insertAttachment(files[i], userSession, pathUrl);
                 UpAndDownUtil.putFile(file1, pathUrl);
             } finally {
                 if(file1!=null) {
-                    file1.delete ();
+                    file1.deleteOnExit ();
                 }
             }
         }
@@ -74,24 +76,38 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
 
     @Override
-    public void downLoadFile(HttpServletResponse response, List<String> paths) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void downLoadFile(HttpServletResponse response, List<Integer> list) throws Exception {
+        List<File> files=new ArrayList <> (  );
+        File temp=null;
         try {
-            for (String path : paths) {
-                COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( path );
-                int i = path.lastIndexOf ( "#" );
-                String fileName = path.substring ( i + 1 );
-                // 将文件输入流写入response的输出流中
-                response.setHeader ( "content-disposition", "attachment;fileName=" + fileName );
-                response.setHeader ( "content-disposition", "attachment;fileName=" + URLEncoder.encode ( fileName, "UTF-8" ) );
-                if(cosObjectInputStream!=null) {
-                    IOUtils.copy ( cosObjectInputStream, response.getOutputStream () );
-                }else {
+            String fileName=null;
+            List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
+            for (int i = 0; i < attchmentRecordVos.size (); i++) {
+                String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
+                String attachmentName = attchmentRecordVos.get ( i ).getAttachmentName ();
+                int j =attachmentName.lastIndexOf ( "#" );
+                fileName= attachmentName.substring ( j + 1 );
+                COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( attatchmentUrl );
+                if (cosObjectInputStream != null) {
+                    String s = fileName.split ( "\\." )[1];
+                    temp = File.createTempFile(fileName, "."+s);
+                    IOUtils.copy ( cosObjectInputStream, new FileOutputStream ( temp ) );
+                    files.add ( temp );
+                } else {
                     ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
                 }
             }
+            // 将文件输入流写入response的输出流中
+            response.setHeader ( "content-disposition", "attachment;fileName=" + URLEncoder.encode ( fileName+".zip", "UTF-8" ) );
+            CompressFileUtil.toZip ( files,response.getOutputStream () );
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("下载失败!");
+        }finally {
+            if(temp!=null){
+              temp.deleteOnExit ();
+            }
         }
     }
 
@@ -143,9 +159,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteFile(List<Integer> id ,UserSession userSession) {
         attachmentRecordDao.deleteFile (id,userSession.getCompanyId ());
-        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectByList ( id );
-        for (AttchmentRecordVo attchmentRecordVo : attchmentRecordVos) {
-            UpAndDownUtil.delFile ( attchmentRecordVo.getAttatchmentUrl () );
+        List < AttachmentRecord > list = attachmentRecordDao.selectByList ( id );
+        for (AttachmentRecord attachmentRecord : list) {
+            UpAndDownUtil.delFile ( attachmentRecord.getAttachmentUrl ());
         }
     }
 

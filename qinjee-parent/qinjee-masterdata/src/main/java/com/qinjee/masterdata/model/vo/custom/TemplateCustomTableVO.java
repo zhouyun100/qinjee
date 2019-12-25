@@ -32,6 +32,10 @@ public class TemplateCustomTableVO{
     private Integer tableId;
 
     /**
+     * 是否内置
+     */
+    private Short isSyetemDefine;
+    /**
      * 表名
      */
     private String tableName;

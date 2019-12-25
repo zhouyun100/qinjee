@@ -68,7 +68,10 @@ public class TemplateCustomTableFieldVO {
      * 描述
      */
     private String placeholder;
-
+    /**
+     * 是否显示
+     */
+    private Integer isChecked;
     /**
      * 操作人ID
      */

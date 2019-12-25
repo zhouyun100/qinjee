@@ -59,11 +59,12 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/downLoadFile", method = RequestMethod.POST)
     @ApiOperation(value = "下载文件", notes = "hkt")
-    public ResponseResult downLoadFile(HttpServletResponse response, @RequestBody List<String> paths) {
-        Boolean b = checkParam(response,paths);
+    public ResponseResult downLoadFile(HttpServletResponse response, @RequestBody List<Integer> list) {
+        Boolean b = checkParam(response,list);
         if(b) {
             try {
-                fileOperateService.downLoadFile (response,paths );
+                //attachment_id
+                fileOperateService.downLoadFile (response,list );
                 return null;
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -125,10 +126,10 @@ public class FileController extends BaseController {
     @RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
     @ApiOperation(value = "删除文件", notes = "hkt")
     public ResponseResult deleteFile(@RequestBody List<Integer> id) {
-        Boolean b = checkParam(id,userSession);
+        Boolean b = checkParam(id,getUserSession ());
         if(b) {
             try {
-                fileOperateService.deleteFile (id,userSession );
+                fileOperateService.deleteFile (id,getUserSession () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();

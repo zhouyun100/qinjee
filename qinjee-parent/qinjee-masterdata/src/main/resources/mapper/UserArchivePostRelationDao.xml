@@ -209,15 +209,11 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
-    select MAX(id)
-    from  t_user_archive_post_relation
-  </select>
     <update id="deleteUserArchivePostRelation">
     update
       t_user_archive_post_relation
     set
-     is_delete = 0
+     is_delete = 1
      where id
      in
      <foreach collection="list" item="item" open="(" separator="," close=")">
@@ -235,15 +231,33 @@
     </if>
     and tua.is_delete = 0
   </select>
-  <select id="selectByPrimaryKeyList" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchivePostRelationVo">
     select
-    <include refid="Base_Column_List"/>
-    from t_user_archive_post_relation
+    relation.archive_id as archiveId,
+    relation.id as id,
+    relation.org_id as orgId,
+    relation.post_id as postId,
+    relation.supervisor_id as supervisorId,
+    arc.user_name as userName,
+    arc.employee_number as employeeNumber,
+    org.org_name as orgName,
+    orga.org_name as businessUnitName,
+    post.post_name as postName,
+    arch.user_name as supervisorUserName,
+    relation.employment_type as employmentType,
+    relation.employment_begin_date as employmentBeginDate,
+    relation.employment_end_date as employmentEndDate,
+    relation.appoint_dismissal_reason as appointDismissalReason
+    from t_user_archive_post_relation relation
+    left join t_user_archive arc on arc.archive_id=relation.archive_id and arc.is_delete=0
+    left join t_organization org on org.org_id=relation.org_id and org.is_enable=1
+    left join t_post post on post.post_id=relation.post_id and post.is_delete=0 and post.is_enable=1
+    left join t_organization orga on orga.org_id=arc.business_unit_id and orga.is_enable=1
+    left join t_user_archive arch on relation.supervisor_id=arch.archive_id and arch.is_delete=0
     where
-    archive_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
+    relation.archive_id =#{archiveId}
+    and relation.is_delete=0
+
   </select>
   <select id="selectByArcId" resultType="com.qinjee.masterdata.model.entity.UserArchivePostRelation">
     select

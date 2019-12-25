@@ -34,95 +34,110 @@
     <!-- 查询所有数据 -->
     <select id="selectCareerTrack" resultMap="t_archive_career_trackMap" >
         SELECT
-        <include refid="allColumns" />
-        FROM t_archive_career_track t_archive_career_track
-        where change_id=#{id}
-
+        arc.archive_id as archiveId,
+        arc.user_category as userCategory,
+        orga.org_name as businssUnitName,
+        org.org_name as orgName,
+        pos.position_name as positionName,
+        post.post_name as postName,
+        track.change_type as changeType,
+        track.change_date as changeDate,
+        track.change_reason as changeReason
+        FROM t_archive_career_track track
+        left join t_user_archive arc on arc.archive_id=track.archive_id and arc.is_delete=0
+        left join t_organization org on org.org_id = track.before_org_id and org.is_enable=1
+        left join t_organization orga on orga.org_id = track.before_business_unit_id and  orga.is_enable=1
+        left join t_post post on post.post_id = track.before_post_id and post.is_enable=1 and post.is_delete=0
+        left join t_position pos on pos.position_id = track.before_position_id and pos.is_delete=0
+        where track.archive_id=#{id}
     </select>
-
-    <!-- 根据条件查询数据 -->
-    <select id="findT_archive_career_trackByCondition" resultMap="t_archive_career_trackMap" parameterType="map">
-        SELECT
-        <include refid="allColumns" />
-        FROM t_archive_career_track t_archive_career_track WHERE 1 = 1
-        <if test="archive_id != null">
-            AND t_archive_career_track.archive_id = #{archive_id}
-        </if>
-        <if test="before_user_category != null and before_user_category != ''">
-            AND t_archive_career_track.before_user_category LIKE CONCAT('%',#{before_user_category},'%')
-        </if>
-        <if test="after_user_category != null and after_user_category != ''">
-            AND t_archive_career_track.after_user_category LIKE CONCAT('%',#{after_user_category},'%')
-        </if>
-        <if test="before_business_unit_id != null">
-            AND t_archive_career_track.before_business_unit_id = #{before_business_unit_id}
-        </if>
-        <if test="after_business_unit_id != null">
-            AND t_archive_career_track.after_business_unit_id = #{after_business_unit_id}
-        </if>
-        <if test="before_org_id != null">
-            AND t_archive_career_track.before_org_id = #{before_org_id}
-        </if>
-        <if test="after_org_id != null">
-            AND t_archive_career_track.after_org_id = #{after_org_id}
-        </if>
-        <if test="before_post_id != null">
-            AND t_archive_career_track.before_post_id = #{before_post_id}
-        </if>
-        <if test="after_post_id != null">
-            AND t_archive_career_track.after_post_id = #{after_post_id}
-        </if>
-        <if test="before_position_id != null">
-            AND t_archive_career_track.before_position_id = #{before_position_id}
-        </if>
-        <if test="after_position_id != null">
-            AND t_archive_career_track.after_position_id = #{after_position_id}
-        </if>
-        <if test="change_type != null and change_type != ''">
-            AND t_archive_career_track.change_type LIKE CONCAT('%',#{change_type},'%')
-        </if>
-        <if test="change_date != null">
-            AND t_archive_career_track.change_date = #{change_date}
-        </if>
-        <if test="change_reason != null and change_reason != ''">
-            AND t_archive_career_track.change_reason LIKE CONCAT('%',#{change_reason},'%')
-        </if>
-        <if test="operator_id != null">
-            AND t_archive_career_track.operator_id = #{operator_id}
-        </if>
-        <if test="create_time != null">
-            AND t_archive_career_track.create_time = #{create_time}
-        </if>
-    </select>
-
 
     <!-- 插入数据 -->
-    <insert id="insertArchiveCareerTrack" parameterType="map">
-        INSERT INTO t_archive_career_track (
-            change_id, archive_id, before_user_category, after_user_category, before_business_unit_id, after_business_unit_id,
-            before_org_id, after_org_id, before_post_id, after_post_id, before_position_id, after_position_id,
-            change_type, change_date, change_reason, operator_id, create_time
-        ) VALUES (
-            #{change_id},
-            #{archive_id},
-            #{before_user_category},
-            #{after_user_category},
-            #{before_business_unit_id},
-            #{after_business_unit_id},
-            #{before_org_id},
-            #{after_org_id},
-            #{before_post_id},
-            #{after_post_id},
-            #{before_position_id},
-            #{after_position_id},
-            #{change_type},
-            #{change_date},
-            #{change_reason},
-            #{operator_id},
-            #{create_time}
-        )
+    <insert id="insertArchiveCareerTrack" keyColumn="change_id" keyProperty="change_id" parameterType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack" useGeneratedKeys="true">
+        insert into t_archive_career_track
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="changeId != null">
+                change_id,
+            </if>
+            <if test="archiveId != null">
+                post_id,
+            </if>
+            <if test="beforeUserCategory!= null">
+                before_user_category,
+            </if>
+            <if test="afterUserCategory!= null">
+                after_user_category,
+            </if>
+            <if test="afterBusinessUnitId != null">
+                after_business_unit_id,
+            </if>
+            <if test="beforeOrgId != null">
+                before_orgId,
+            </if>
+            <if test="afterPostId != null">
+                after_post_id,
+            </if>
+            <if test="beforePositionId != null">
+                before_position_id,
+            </if>
+            <if test="afterPositionId != null">
+                after_position_id,
+            </if>
+            <if test="changeType != null">
+                change_type,
+            </if>
+            <if test="changeDate != null">
+                change_date,
+            </if>
+            <if test="changeReason != null">
+                change_reason,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="changeId != null">
+                #{changeId}
+            </if>
+            <if test="postId != null">
+                #{postId},
+            </if>
+            <if test="beforeUserCategory!= null">
+                #{beforeUserCategory},
+            </if>
+            <if test="afterUserCategory!= null">
+                #{afterUserCategory},
+            </if>
+            <if test="afterBusinessUnitId != null">
+                #{afterBusinessUnitId},
+            </if>
+            <if test="beforeOrgId != null">
+                #{beforeOrgId},
+            </if>
+            <if test="afterPostId != null">
+                #{afterPostId},
+            </if>
+            <if test="beforePositionId != null">
+                #{beforePositionId},
+            </if>
+            <if test="afterPositionId != null">
+                #{afterPositionId},
+            </if>
+            <if test="changeType != null">
+                #{changeType},
+            </if>
+            <if test="changeDate != null">
+                #{changeDate},
+            </if>
+            <if test="changeReason != null">
+                #{changeReason},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId}
+            </if>
+        </trim>
     </insert>
-
 <!--    &lt;!&ndash; 批量插入数据 &ndash;&gt;-->
 <!--    <insert id="insertT_archive_career_tracks" parameterType="list">-->
 <!--        INSERT INTO t_archive_career_track (-->

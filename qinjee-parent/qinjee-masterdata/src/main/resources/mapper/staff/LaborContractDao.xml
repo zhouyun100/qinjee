@@ -487,6 +487,8 @@
     arch.employee_number as employeeNumber,
     arch.id_number as idNumber,
     arch.user_name as userName,
+    contract.archive_id as archiveId,
+    contract.contract_id as contractId,
     contract.contract_number as contractNumber,
     contract.contract_begin_date as contractBeginDate,
     contract.contract_sign_date as contractSignDate,

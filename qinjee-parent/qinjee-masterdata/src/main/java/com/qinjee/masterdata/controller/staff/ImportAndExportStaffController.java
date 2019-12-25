@@ -1,9 +1,10 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.staff.CheckImportVo;
-import com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo;
-import com.qinjee.masterdata.model.vo.staff.ExportRequest;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
+import com.qinjee.masterdata.model.entity.QueryScheme;
+import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.service.staff.impl.StaffContractServiceImpl;
 import com.qinjee.model.response.CommonCode;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +35,10 @@ public class ImportAndExportStaffController extends BaseController {
     private IStaffImportAndExportService staffImportAndExportService;
     @Autowired
     private StaffContractServiceImpl staffContractService;
+    @Autowired
+    private QuerySchemeDao querySchemeDao;
+    @Autowired
+    private IStaffArchiveService staffArchiveService;
 
 
     /**
@@ -243,11 +249,20 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFile(@RequestParam List<Integer> list, HttpServletResponse response) {
-        Boolean b = checkParam(response,getUserSession ());
+    public ResponseResult exportArcFile(@RequestBody ExportArcParamVo exportArcParamVo,HttpServletResponse response) {
+        Boolean b = checkParam(getUserSession (),exportArcParamVo,response);
         if(b){
             try {
-                staffImportAndExportService.exportArcFile(list,response,getUserSession ());
+                if(!CollectionUtils.isEmpty ( exportArcParamVo.getList () )){
+                    staffImportAndExportService.exportArcFile(exportArcParamVo.getList (),response,getUserSession (),exportArcParamVo.getQuerySchemaId ());
+                }else{
+                    List < UserArchiveVo > list1 = staffArchiveService.selectByOrgList ( exportArcParamVo.getOrgIdList (), getUserSession () );
+                    List < Integer > integers = new ArrayList <> ();
+                    for (UserArchiveVo userArchiveVo : list1) {
+                        integers.add ( userArchiveVo.getArchiveId () );
+                    }
+                    staffImportAndExportService.exportArcFile(integers,response,getUserSession (),exportArcParamVo.getQuerySchemaId ());
+                }
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -272,11 +287,16 @@ public class ImportAndExportStaffController extends BaseController {
                                             @RequestBody List < ContractWithArchiveVo > list,
                                             @RequestParam List<Integer> orgIdList,
                                             @RequestParam List<String> status) {
-        Boolean b = checkParam(response,getUserSession (),orgIdList,status);
+        Boolean b = checkParam(response,getUserSession (),list);
         if(b){
             try {
                 if(CollectionUtils.isEmpty ( list )){
-                   list = staffContractService.selectLaborContractserUserAll ( orgIdList, status );
+                    Boolean aBoolean = checkParam ( orgIdList, status );
+                    if(aBoolean) {
+                        list = staffContractService.selectLaborContractserUserAll ( orgIdList, status );
+                    }else{
+                        return  failResponseResult("参数错误");
+                    }
                 }
                 //导出文件
                 staffImportAndExportService.exportContractWithArc(list,response,getUserSession ());
@@ -302,16 +322,26 @@ public class ImportAndExportStaffController extends BaseController {
     //导出的文件应该是以.xls结尾
     public ResponseResult exportArcFileNoCon(@RequestBody List<Integer> list, HttpServletResponse response,@RequestParam
                                              List<Integer> orgIdList) {
-        Boolean b = checkParam(response,getUserSession (),list,orgIdList);
+        Boolean b = checkParam(response,getUserSession (),list);
         if(b){
             try {
+                Integer querySchemaId=0;
                 if(!CollectionUtils.isEmpty ( list )){
-                    staffImportAndExportService.exportArcFile(list,response,getUserSession ());
+                    List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( getUserSession ().getArchiveId () );
+                    for (QueryScheme queryScheme : list1) {
+                        if(queryScheme.getIsDefault ()==1){
+                            querySchemaId=queryScheme.getQuerySchemeId ();                        }
+                    }
+                    staffImportAndExportService.exportArcFile(list,response,getUserSession (),querySchemaId);
                 }else{
-                    List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList );
-                    staffImportAndExportService.exportArcFile(list1,response,getUserSession ());
+                    Boolean aBoolean = checkParam ( orgIdList );
+                    if(aBoolean) {
+                        List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList );
+                        staffImportAndExportService.exportArcFile ( list1, response, getUserSession (), querySchemaId );
+                    }else {
+                        return  failResponseResult("参数错误");
+                    }
                 }
-                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return failResponseResult("导出失败");

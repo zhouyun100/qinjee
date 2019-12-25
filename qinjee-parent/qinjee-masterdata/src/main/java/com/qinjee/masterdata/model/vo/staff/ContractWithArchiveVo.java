@@ -9,6 +9,8 @@ import java.util.Date;
 @Data
 @JsonInclude
 public class ContractWithArchiveVo implements Serializable {
+    private Integer archiveId;
+    private String contractId;
     private String userName;
     private String orgName;
     private String businessUnitName;

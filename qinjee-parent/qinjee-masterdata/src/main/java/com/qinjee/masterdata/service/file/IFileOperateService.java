@@ -21,7 +21,7 @@ public interface IFileOperateService {
     /**
      * 下载文件
      */
-    void downLoadFile(HttpServletResponse response, List<String> paths) throws Exception;
+    void downLoadFile(HttpServletResponse response, List<Integer> list) throws Exception;
 
     /**
      * 获取文件路径

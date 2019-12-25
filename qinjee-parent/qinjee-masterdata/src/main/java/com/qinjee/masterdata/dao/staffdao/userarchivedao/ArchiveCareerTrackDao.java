@@ -13,7 +13,7 @@ public interface ArchiveCareerTrackDao {
 
     void updateArchiveCareerTrack(Map< String, Object> map);
 
-    void insertArchiveCareerTrack(Map< String, Object> map);
+    void insertArchiveCareerTrack(ArchiveCareerTrack archiveCareerTrack);
 
     void deleteCareerTrack(@Param("id") Integer id);
 }

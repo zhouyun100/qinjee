@@ -369,10 +369,8 @@
         AND field.field_code = 'org_id'
         AND org.is_enable = 1
         AND field.is_delete = 0)t
-        left join t_custom_archive_table tab on t.table_id = tab.table_id
+        left join t_custom_archive_table tab on t.table_id = tab.table_id AND tab.is_delete = 0 AND tab.is_enable = 1
         where  tab.company_id =#{companyId}
-         AND tab.is_delete = 0
-         AND tab.is_enable = 1
          AND tab.func_code =#{funcCode}
     </select>
     <select id="transSupiorId" resultType="java.util.Map">

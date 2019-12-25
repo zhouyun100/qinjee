@@ -17,10 +17,11 @@ import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
+import com.qinjee.model.request.UserSession;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<EntryRegistrationTableVO> searchCustomTableListByTemplateId(Integer templateId) {
         List<EntryRegistrationTableVO> entryRegistrationTableList = templateCustomTableFieldDao.searchEntryRegistrationTableListByTemplateId(templateId);
 
@@ -146,6 +148,7 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<EntryRegistrationTableVO> handlerCustomTableGroupFieldList(List<EntryRegistrationTableVO> entryRegistrationTableList, Map<Integer, String> mapValue) {
         if(CollectionUtils.isNotEmpty(entryRegistrationTableList)){
             for(EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableList){
@@ -157,5 +160,21 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
             }
         }
         return entryRegistrationTableList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void setCustomTableForTemplate(List < TemplateCustomTableVO > list, UserSession userSession) {
+        //先将模板下的表全部清除
+        Integer templateId=0;
+        for (TemplateCustomTableVO templateCustomTableVO : list) {
+             templateId = templateCustomTableVO.getTemplateId ();
+        }
+        List < TemplateCustomTableVO > voList = searchTableFieldListByTemplateId ( templateId );
+        //删除DB中原有模板表的所有字段(单表全量字段操作)
+           templateCustomTableFieldDao.deleteTemplateTable(templateId,voList,userSession.getArchiveId ());
+
+        //新增表数据
+        templateCustomTableFieldDao.addTemplateTable(templateId,list,userSession.getArchiveId ());
     }
 }

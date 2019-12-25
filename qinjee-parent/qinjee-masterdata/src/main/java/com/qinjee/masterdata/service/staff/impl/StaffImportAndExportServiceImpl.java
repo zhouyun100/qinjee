@@ -12,7 +12,6 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
-import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
@@ -61,7 +60,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private final static String ORGCODE = "部门编码";
     private final static String POSTCODE = "岗位编码";
     private final static String SUPORCODE = "直接上级编码";
-    private final static String BUSINESSUNITCODE = "机构编码编码";
+    private final static String BUSINESSUNITCODE = "机构编码";
     private static final String ORGNAME = "部门";
     private static final String BUSINESSUNITNAME ="单位" ;
     private static final String POSTNAME ="岗位" ;
@@ -398,27 +397,20 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession,Integer querySchemaId) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         List<String> headsByArc;
         Map<String,Object> map;
-        ExportFile exportFile = staffArchiveService.selectArchiveByQueryScheme ( userSession, list );
+        ExportFile exportFile = staffArchiveService.selectArchiveByQueryScheme ( userSession, list,querySchemaId );
         for (Map.Entry < Integer, Map < String, Object > > integerMapEntry : exportFile.getMap ().entrySet ()) {
              map=userArchiveDao.selectTransMessage ( integerMapEntry.getKey () );
              map.putAll ( integerMapEntry.getValue () );
             integerMapEntry.setValue ( map );
         }
-        List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
-        Integer j=0;
-        for (QueryScheme queryScheme :list1 ) {
-            if(queryScheme.getIsDefault ()==1){
-                j++;
+            if(querySchemaId!=null || querySchemaId!=0) {
+                headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );
+            }else {
+                headsByArc = HeadMapUtil.getHeadForArc ();
             }
-        }
-        if(j>0){
-            headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );
-        }else{
-            headsByArc=HeadMapUtil.getHeadForArc ();
-        }
         ExcelUtil.download ( response, exportFile.getTittle (),
                 headsByArc,
                 getDates ( exportFile, headsByArc, "ARC", userSession.getCompanyId () ),
@@ -604,22 +596,27 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
  * 根据fieldName与funcode找到对应的fieldId
  */
 private Map<Integer,String> transField(String funcCode,Integer companyId,String value,String fieldName){
-    Map<Integer,String> map=new HashMap <> (  );
-    if(ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName )||
-     ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName ) ){
-        Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
-        map.put ( map1.get("field_id"),String.valueOf (map1.get ( "org_id" )) );
-    }else if(SUPORCODE.equals ( fieldName )||SUPVISORUSERNAME.equals ( fieldName ) ){
-        Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
-        map.put ( map1.get("field_id"),String.valueOf (map1.get ( "supervisor_id" ) ));
-    } else if(POSTCODE.equals ( fieldName )|| POSTNAME.equals ( fieldName ) ){
-        Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
-        map.put ( map1.get("field_id"),String.valueOf (map1.get ( "post_id" )) );
-    } else {
-        Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
-        if(integer!=null && integer!=0) {
-            map.put(integer, value);
+    Map<Integer,String> map= null;
+    try {
+        map = new HashMap <> (  );
+        if(ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName )||
+         ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName ) ){
+            Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+            map.put ( map1.get("field_id"),String.valueOf (map1.get ( "org_id" )) );
+        }else if(SUPORCODE.equals ( fieldName )||SUPVISORUSERNAME.equals ( fieldName ) ){
+            Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
+            map.put ( map1.get("field_id"),String.valueOf (map1.get ( "supervisor_id" ) ));
+        } else if(POSTCODE.equals ( fieldName )|| POSTNAME.equals ( fieldName ) ){
+            Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
+            map.put ( map1.get("field_id"),String.valueOf (map1.get ( "post_id" )) );
+        } else {
+            Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
+            if(integer!=null && integer!=0) {
+                map.put(integer, value);
+            }
         }
+    } catch (Exception e) {
+       ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
     }
     return map;
 }

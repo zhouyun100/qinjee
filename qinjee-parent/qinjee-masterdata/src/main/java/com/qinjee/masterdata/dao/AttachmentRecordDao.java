@@ -35,5 +35,5 @@ public interface AttachmentRecordDao {
 
     List< String> selectGroup();
 
-    List< AttchmentRecordVo> selectByList(@Param("list") List< Integer> id);
+    List< AttachmentRecord> selectByList(@Param("list") List< Integer> id);
 }

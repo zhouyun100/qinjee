@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 /**
@@ -53,6 +52,21 @@ public class UserArchivePostRelationVo implements Serializable {
     private Integer postId;
 
     /**
+     * 单位名称
+     */
+    @ApiModelProperty("单位ID")
+    private String businessUnitName;
+    /**
+     * 部门ID
+     */
+    private String orgName;
+    /**
+     * 岗位ID
+     */
+    @ApiModelProperty("岗位ID")
+    private String postName;
+
+    /**
      * 职级ID
      */
     @ApiModelProperty("职级ID")
@@ -67,14 +81,15 @@ public class UserArchivePostRelationVo implements Serializable {
     /**
      * 任职开始时间
      */
-    @ApiModelProperty("任职开始时间")
-    private Date employmentBeginDate;
+
+    private String employmentBeginDate;
 
     /**
      * 任职结束时间
      */
+
     @ApiModelProperty("任职结束时间")
-    private Date employmentEndDate;
+    private String employmentEndDate;
 
     /**
      * 任职类型
@@ -93,5 +108,11 @@ public class UserArchivePostRelationVo implements Serializable {
      */
     @ApiModelProperty("上级领导ID")
     private Integer supervisorId;
+
+    /**
+     * 上级领导ID
+     */
+    @ApiModelProperty("上级领导ID")
+    private String supervisorUserName;
     private static final long serialVersionUID = 1L;
 }
