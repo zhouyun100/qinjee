@@ -295,7 +295,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
             laborContract.setContractState ( LOOSEMARK );
             laborContractDao.updateByPrimaryKeySelective ( laborContract );
             //新增变更表
-            change ( contractVo.getLaborContractChangeVo (), COMMONCHANGE, integer, userSession.getArchiveId () );
+            change ( contractVo.getLaborContractChangeVo (), LOOSECHANGE, integer, userSession.getArchiveId () );
         }
     }
 

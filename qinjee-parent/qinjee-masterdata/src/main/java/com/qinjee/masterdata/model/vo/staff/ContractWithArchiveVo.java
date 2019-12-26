@@ -26,4 +26,5 @@ public class ContractWithArchiveVo implements Serializable {
     private String  contractSubject;
     private Short   isEnable;
     private String  contractState;
+    private String contractRemark;
 }

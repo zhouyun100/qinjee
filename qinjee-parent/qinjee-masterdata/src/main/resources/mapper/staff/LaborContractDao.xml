@@ -497,7 +497,8 @@
     contract.contract_period_month as contractPeriodMonth,
     contract.sign_number as signNumber,
     contract.contract_subject as contractSubject,
-    contract.contract_state as contractState
+    contract.contract_state as contractState,
+    contract.contract_remark as contractRemark
     from t_labor_contract contract
     left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
     left join t_organization org on arch.org_id=org.org_id and org.is_enable=1

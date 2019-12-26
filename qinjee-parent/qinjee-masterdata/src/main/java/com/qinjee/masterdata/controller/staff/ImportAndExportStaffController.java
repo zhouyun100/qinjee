@@ -275,7 +275,7 @@ public class ImportAndExportStaffController extends BaseController {
      * 导出已签合同人员
      */
     @RequestMapping(value = "/exportArcFileCon", method = RequestMethod.POST)
-    @ApiOperation(value = "导出已签合同人员", notes = "hkt")
+    @ApiOperation(value = "导出已签合同人员", notes ="hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
@@ -284,22 +284,22 @@ public class ImportAndExportStaffController extends BaseController {
 //    })
     //导出的文件应该是以.xls结尾
     public ResponseResult exportArcFileCon( HttpServletResponse response,
-                                            @RequestBody List < ContractWithArchiveVo > list,
-                                            @RequestParam List<Integer> orgIdList,
-                                            @RequestParam List<String> status) {
-        Boolean b = checkParam(response,getUserSession (),list);
+                                            @RequestBody ExportReadyConVo exportReadyConVo) {
+        Boolean b = checkParam(response,getUserSession ());
         if(b){
             try {
-                if(CollectionUtils.isEmpty ( list )){
-                    Boolean aBoolean = checkParam ( orgIdList, status );
+                List < ContractWithArchiveVo > list = exportReadyConVo.getList ();
+                if(CollectionUtils.isEmpty ( list)){
+                    Boolean aBoolean = checkParam ( exportReadyConVo.getOrgIdList (), exportReadyConVo.getStatus ());
                     if(aBoolean) {
-                        list = staffContractService.selectLaborContractserUserAll ( orgIdList, status );
+                        list= staffContractService.selectLaborContractserUserAll ( exportReadyConVo.getOrgIdList (),
+                                exportReadyConVo.getStatus () );
                     }else{
                         return  failResponseResult("参数错误");
                     }
                 }
                 //导出文件
-                staffImportAndExportService.exportContractWithArc(list,response,getUserSession ());
+                staffImportAndExportService.exportContractWithArc( list,response,getUserSession ());
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();
