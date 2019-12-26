@@ -73,7 +73,7 @@ public interface OrganizationService  {
    * @param userName
    * @return
    */
-  List< UserArchiveVo > getUserArchiveListByUserName(String userName);
+  List< UserArchiveVo > getUserArchiveListByUserName(String userName,UserSession userSession);
 
   /**
    * 机构排序

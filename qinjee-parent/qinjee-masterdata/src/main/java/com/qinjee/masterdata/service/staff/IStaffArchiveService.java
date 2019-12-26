@@ -2,13 +2,13 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.QueryScheme;
-import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public interface IStaffArchiveService {
      * @return
      */
 
-    void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession);
+    void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) throws ParseException;
 
     /**
      * 逻辑删除人员岗位关系表
@@ -33,20 +33,17 @@ public interface IStaffArchiveService {
 
     /**
      * 更新人员岗位关系表
-     * @param userArchivePostRelation
+     * @param userArchivePostRelationVo
      * @return
      */
-    void updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation);
+    void updateUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,UserSession userSession) throws ParseException;
 
     /**
      * 分页查询人员岗位关系表
-     * @param currentPage
-     * @param pageSize
-     * @param list
+     * @param archiveId
      * @return
      */
-   PageResult<UserArchivePostRelation> selectUserArchivePostRelation(Integer currentPage, Integer pageSize,
-                                                                     List<Integer> list);
+    List < UserArchivePostRelationVo > selectUserArchivePostRelation(Integer archiveId);
 
     /**
      * 逻辑删除查询方案
@@ -76,7 +73,7 @@ public interface IStaffArchiveService {
      * @param archiveid
      * @return
      */
-   void resumeDeleteArchiveById(Integer archiveid) throws Exception;
+   void resumeDeleteArchiveById(List<Integer> archiveid) throws Exception;
 
     /**
      * 更新档案
@@ -105,7 +102,7 @@ public interface IStaffArchiveService {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, Integer companyId, Integer pageSize, Integer currentPage);
+    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, List<Integer> orgId, Integer pageSize, Integer currentPage);
     /**
      * 通过id找到人员姓名与工号
      */
@@ -119,7 +116,7 @@ public interface IStaffArchiveService {
      * 根据显示方案展示人员信息
      * @return
      */
-    ExportFile selectArchiveByQueryScheme( UserSession userSession, List<Integer> archiveIdList) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    ExportFile selectArchiveByQueryScheme( UserSession userSession, List<Integer> archiveIdList,Integer querySchema) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 显示权限下，对应表的字段
@@ -142,11 +139,6 @@ public interface IStaffArchiveService {
      */
     List<ArchiveCareerTrack> selectCareerTrack(Integer id);
 
-    /**
-     * @param archiveCareerTrackVo
-     * @param userSession
-     */
-    void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException;
 
     /**
      *
@@ -155,15 +147,10 @@ public interface IStaffArchiveService {
      */
     void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException;
 
-    /**
-     *
-     * @param id
-     */
-    void deleteCareerTrack(Integer id);
 
     PageResult<UserArchiveVo> selectArchiveSingle(Integer id,UserSession userSession);
 
-    List<UserArchiveVo> selectUserArchiveByName(String name);
+    List<UserArchiveVo> selectUserArchiveByName(String name,UserSession userSession);
 
     void setDefaultQuerySchme(Integer querySchmeId,UserSession userSession);
 
@@ -172,4 +159,7 @@ public interface IStaffArchiveService {
      QuerySchemeList selectQuerySchemeMessage(Integer id);
 
 
+    PageResult< UserArchiveVo> selectArchiveDelete(List<Integer> orgId, Integer pageSize, Integer currentPage);
+
+    List<UserArchiveVo> selectByOrgList(List<Integer> list,UserSession userSession);
 }

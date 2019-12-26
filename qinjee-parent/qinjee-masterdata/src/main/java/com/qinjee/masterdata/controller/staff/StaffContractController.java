@@ -182,7 +182,7 @@ public class StaffContractController extends BaseController {
      */
     @RequestMapping(value = "/SaveLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "保存合同", notes = "hkt")
-    public ResponseResult SaveLaborContract(@RequestBody @Valid ContractVo contractVo) {
+    public ResponseResult saveLaborContract(@RequestBody @Valid ContractVo contractVo) {
         Boolean b = checkParam(contractVo,getUserSession());
         if(b){
             try {
@@ -306,7 +306,6 @@ public class StaffContractController extends BaseController {
             } catch (Exception e) {
                 return failResponseResult("获得签订次数失败");
             }
-
         }
         return  failResponseResult("参数错误");
     }
@@ -343,11 +342,11 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "合同id集合", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult endlaborContract(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo,@RequestParam List<Integer> list) {
-        Boolean b = checkParam(laborContractChangeVo,list,getUserSession());
+    public ResponseResult endlaborContract(@RequestBody @Valid ContractVo contractVo) {
+        Boolean b = checkParam(contractVo,getUserSession());
         if(b){
             try {
-                staffContractService.endlaborContractBatch(laborContractChangeVo, list, getUserSession());
+                staffContractService.endlaborContractBatch(contractVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("批量终止合同失败");
@@ -365,11 +364,11 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractId", value = "合同id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult looselaborContract(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo, Integer id) {
-        Boolean b = checkParam(laborContractChangeVo,id,getUserSession());
+    public ResponseResult looselaborContract(@RequestBody @Valid ContractVo contractVo) {
+        Boolean b = checkParam(contractVo,getUserSession());
         if(b){
             try {
-                staffContractService.looselaborContract(laborContractChangeVo, id, getUserSession());
+                staffContractService.looselaborContract(contractVo.getLaborContractChangeVo (),contractVo.getList ().get ( 0 ), getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
                 return failResponseResult("解除合同失败");

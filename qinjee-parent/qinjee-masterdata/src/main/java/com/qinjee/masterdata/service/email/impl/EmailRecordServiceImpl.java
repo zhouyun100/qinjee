@@ -61,12 +61,12 @@ public class EmailRecordServiceImpl implements EmailRecordService {
             List < String > objects = new ArrayList <> (1);
             objects.add ( preEmploymentVo.getEmail () );
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex ( baseShortUrl +ShortUrl.shortUrl (  "?preId=" + preEmploymentVo.getEmploymentId () +"?templateId="+ templateId ),
-                    2*60*60,"?preId=" +preEmploymentVo.getEmploymentId () +"?templateId="+ templateId);
+            redisClusterService.setex ( ShortUrl.shortUrl (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId ),
+                    2*60*60,"?preId=" +preEmploymentVo.getEmploymentId () +"&templateId="+ templateId);
             //模板设置
             MessageFormat messageFormat = new MessageFormat(template);
             String[] paramArr = {preEmploymentVo.getUserName (),preEmploymentVo.getApplicationPosition (),
-                    ShortUrl.shortUrl (  "?preId=" + preEmploymentVo.getEmploymentId () +"?templateId="+ templateId ) };
+                    ShortUrl.shortUrl (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId ) };
             //发送邮件
             template = messageFormat.format ( paramArr );
             SendManyMailsUtil.sendMail (mailConfig,objects,null,"预入职登记",template,null);

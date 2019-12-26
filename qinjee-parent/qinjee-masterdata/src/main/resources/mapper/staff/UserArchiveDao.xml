@@ -707,8 +707,11 @@
   <update id="resumeDeleteArchiveById" >
     update t_user_archive
     set
-    is_delete=1
-    where  archive_id = #{archiveId,jdbcType=INTEGER}
+    is_delete=0
+    where  archive_id in
+     <foreach collection="archiveid" item="item" separator="," open="(" close=")">
+    #{item}
+   </foreach>
   </update>
   <select id="selectNameAndNumber" resultType="java.util.Map">
     select user_name,employee_number
@@ -893,7 +896,10 @@
     AND post.is_delete = 0
     AND orga.is_enable = 1
     and orga.company_id=#{companyId}
-    and arc.org_id=#{orgId}
+    and arc.org_id in
+    <foreach collection="orgId" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
     and arc.org_id in(
     -- 查询人员机构权限
     select org_id from t_user_org_auth oa where oa.archive_id = 1-- 操作人档案ID
@@ -987,6 +993,7 @@
        CONCAT(CONCAT('%', #{name}), '%')
       </if>
     and is_delete=0
+    and company_id=#{companyId}
   </select>
 
 
@@ -1031,6 +1038,15 @@
     from t_user_archive
     where id_number=#{s}
     and is_delete=0
+  </select>
+  <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from t_user_archive
+    where org_id in
+    <foreach collection="orgId" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and is_delete=1
   </select>
 </mapper>
 

@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -68,11 +70,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void resumeDeleteArchiveById(Integer archiveid) {
+    @Transactional(rollbackFor = Exception.class)
+    public void resumeDeleteArchiveById(List<Integer> archiveid) {
         userArchiveDao.resumeDeleteArchiveById ( archiveid );
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
         UserArchive userArchive = new UserArchive ();
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
@@ -82,6 +86,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PageResult<UserArchiveVo> selectArchive(UserSession userSession) {
         UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( userSession.getArchiveId () );
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
@@ -130,7 +135,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, Integer orgId, Integer pageSize, Integer currentPage) {
+    public PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, List<Integer> orgId, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId () );
         return new PageResult <> ( list );
@@ -181,14 +186,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) {
-        UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation ();
-        BeanUtils.copyProperties ( userArchivePostRelationVo, userArchivePostRelation );
-        //通过工号查询档案id
-        Integer id = userArchiveDao.selectArchiveIdByNumber ( userArchivePostRelationVo.getEmployeeNumber () );
-        userArchivePostRelation.setArchiveId ( id );
-        userArchivePostRelation.setOperatorId ( userSession.getArchiveId () );
-        userArchivePostRelation.setIsDelete ( ( short ) 1 );
+    public void insertUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) throws ParseException {
+        UserArchivePostRelation userArchivePostRelation = getUserArchivePostRelation ( userArchivePostRelationVo, userSession );
         userArchivePostRelationDao.insertSelective ( userArchivePostRelation );
     }
 
@@ -204,30 +203,23 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ExportFile selectArchiveByQueryScheme( UserSession userSession, List < Integer > archiveIdList) throws IllegalAccessException {
+    public ExportFile selectArchiveByQueryScheme( UserSession userSession, List < Integer > archiveIdList,Integer querySchemaId) throws IllegalAccessException {
         ExportFile exportFile = new ExportFile ();
-        Integer j=0;
         List < CustomFieldVO > orderNotIn = new ArrayList <> ();
         Map < Integer, Map < String, Object > > userArchiveListCustom;
-        List < QueryScheme > list = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
-        for (QueryScheme queryScheme : list) {
-            if (queryScheme.getIsDefault () == 1) {
-                j++;
-                return getExportFile ( userSession, archiveIdList, exportFile, orderNotIn, queryScheme.getQuerySchemeId () );
-            }
+        if(querySchemaId!=null && querySchemaId!=0){
+            return getExportFile ( userSession, archiveIdList, exportFile, orderNotIn, querySchemaId );
+        }else {
+            List < ExportArcVo > exportArcVoList;
+            exportArcVoList = userArchiveDao.selectDownLoadVoList ( archiveIdList );
+            userArchiveListCustom = getMap ( archiveIdList, exportArcVoList );
+            exportFile.setMap ( userArchiveListCustom );
+            exportFile.setTittle ( "ARC" );
+            return exportFile;
         }
-        if(j==0){
-                List < ExportArcVo > exportArcVoList;
-                exportArcVoList = userArchiveDao.selectDownLoadVoList ( archiveIdList );
-                userArchiveListCustom = getMap ( archiveIdList, exportArcVoList );
-                exportFile.setMap ( userArchiveListCustom );
-                exportFile.setTittle ( "ARC" );
-                return exportFile;
-        }
-        return null;
     }
 
-    public ExportFile getExportFile(UserSession userSession, List < Integer > archiveIdList, ExportFile exportFile, List < CustomFieldVO > orderNotIn,Integer schemaId) {
+    private ExportFile getExportFile(UserSession userSession, List < Integer > archiveIdList, ExportFile exportFile, List < CustomFieldVO > orderNotIn,Integer schemaId) {
         Map < Integer, Map < String, Object > > userArchiveListCustom;
         StringBuilder stringBuffer = new StringBuilder ();
         String order = null;
@@ -285,22 +277,21 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return archiveCareerTrackdao.selectCareerTrack ( id );
     }
 
-    @Override
-    public void updateCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
-        Map < String, Object > map = getParamMap ( archiveCareerTrackVo, userSession );
-        archiveCareerTrackdao.updateArchiveCareerTrack ( map );
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
-        Map < String, Object > map = getParamMap ( archiveCareerTrackVo, userSession );
-        archiveCareerTrackdao.insertArchiveCareerTrack ( map );
-    }
-
-    @Override
-    public void deleteCareerTrack(Integer id) {
-        archiveCareerTrackdao.deleteCareerTrack ( id );
+       ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack ();
+       BeanUtils.copyProperties ( archiveCareerTrackVo,archiveCareerTrack );
+       archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
+        archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
+        BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId (
+                archiveCareerTrackVo.getBusinessUnitName (), archiveCareerTrackVo.getOrgName (),
+                archiveCareerTrackVo.getPostName (), archiveCareerTrackVo.getPositionName () );
+        archiveCareerTrack.setBeforeBusinessUnitId ( businessOrgPostPos.getBusinessUnitId () );
+        archiveCareerTrack.setBeforeOrgId ( businessOrgPostPos.getOrgId () );
+        archiveCareerTrack.setBeforePostId ( businessOrgPostPos.getPostId () );
+        archiveCareerTrack.setBeforePositionId ( businessOrgPostPos.getPositionId () );
+        archiveCareerTrackdao.insertArchiveCareerTrack ( archiveCareerTrack );
     }
 
     @Override
@@ -310,13 +301,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
         return new PageResult <> ( userArchiveVos );
-
-
     }
 
     @Override
-    public List < UserArchiveVo > selectUserArchiveByName(String name) {
-        return userArchiveDao.selectUserArchiveByName ( name );
+    public List < UserArchiveVo > selectUserArchiveByName(String name,UserSession userSession) {
+        return userArchiveDao.selectUserArchiveByName ( name ,userSession.getCompanyId ());
     }
 
     @Override
@@ -342,29 +331,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //组装默认显示方案表头
        return getHeadList ( userSession, list1 );
     }
-
-
-
-    private Map < String, Object > getParamMap(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
-        ArchiveCareerTrack archiveCareerTrack = new ArchiveCareerTrack ();
-        BeanUtils.copyProperties ( archiveCareerTrackVo, archiveCareerTrack );
-        archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
-        BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId (
-                archiveCareerTrackVo.getBusinessUnitName (), archiveCareerTrackVo.getOrgName (),
-                archiveCareerTrackVo.getPostName (), archiveCareerTrackVo.getPositionName () );
-        BeanUtils.copyProperties ( businessOrgPostPos, archiveCareerTrack );
-        archiveCareerTrack.setCreateTime ( new Date () );
-        Class clazz = archiveCareerTrack.getClass ();
-        Map < String, Object > map = new HashMap <> ();
-        Field[] fields = clazz.getDeclaredFields ();
-        for (Field field : fields) {
-            field.setAccessible ( true );
-            map.put ( field.getName (), field.get ( archiveCareerTrack ) );
-        }
-        return map;
-    }
-
-
     private Map < Integer, Map < String, Object > > getMap(List < Integer > archiveIdList, List < ExportArcVo > exportArcVoList) throws IllegalAccessException {
         Map < Integer, Map < String, Object > > userArchiveListCustom = new HashMap <> ();
         for (int i = 0; i < archiveIdList.size (); i++) {
@@ -441,16 +407,30 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void updateUserArchivePostRelation(UserArchivePostRelation userArchivePostRelation) {
+    public void updateUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo,UserSession userSession) throws ParseException {
+        UserArchivePostRelation userArchivePostRelation = getUserArchivePostRelation ( userArchivePostRelationVo, userSession );
         userArchivePostRelationDao.updateByPrimaryKeySelective ( userArchivePostRelation );
     }
 
+    private UserArchivePostRelation getUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) throws ParseException {
+        UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation ();
+        BeanUtils.copyProperties ( userArchivePostRelationVo, userArchivePostRelation );
+        //通过工号查询档案id
+        SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy-MM-dd" );
+        userArchivePostRelation.setEmploymentBeginDate ( sdf.parse ( userArchivePostRelationVo.getEmploymentBeginDate () ) );
+        userArchivePostRelation.setEmploymentEndDate ( sdf.parse ( userArchivePostRelationVo.getEmploymentEndDate () ) );
+        Integer id = userArchiveDao.selectArchiveIdByNumber ( userArchivePostRelationVo.getEmployeeNumber () );
+        userArchivePostRelation.setArchiveId ( id );
+        userArchivePostRelation.setOperatorId ( userSession.getArchiveId () );
+        userArchivePostRelation.setIsDelete ( ( short ) 0 );
+        return userArchivePostRelation;
+    }
+
     @Override
-    public PageResult < UserArchivePostRelation > selectUserArchivePostRelation(Integer currentPage, Integer pageSize,
-                                                                                List < Integer > list) {
-        PageHelper.startPage ( currentPage, pageSize );
-        List < UserArchivePostRelation > relationList = userArchivePostRelationDao.selectByPrimaryKeyList ( list );
-        return new PageResult <> ( relationList );
+    public  List < UserArchivePostRelationVo > selectUserArchivePostRelation(Integer archiveId) {
+
+      return userArchivePostRelationDao.selectByPrimaryKeyList ( archiveId );
+
     }
 
     @Override
@@ -508,6 +488,18 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return querySchemeList;
     }
 
+    @Override
+    public PageResult < UserArchiveVo > selectArchiveDelete(List<Integer> orgId, Integer pageSize, Integer currentPage) {
+        PageHelper.startPage ( currentPage,pageSize );
+        List<UserArchiveVo> list=userArchiveDao.selectArchiveDelete(orgId);
+        return new PageResult <> ( list );
+    }
+
+    @Override
+    public List < UserArchiveVo > selectByOrgList(List < Integer > list,UserSession userSession) {
+       return userArchiveDao.selectByOrgAndAuth ( list, userSession.getArchiveId (), userSession.getCompanyId () );
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public Integer insertQueryScheme(QuerySchemaVo querySchemaVo) {
         if(querySchemaVo.getQuerySchemeId ()==null || querySchemaVo.getQuerySchemeId (  )==0 ) {
@@ -537,7 +529,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         Integer integer = insertQueryScheme ( querySchemaVo );
         List<QuerySchemeField> fieldList=new ArrayList <> (  );
         List<QuerySchemeSort>  sortList=new ArrayList <> (  );
-        OperateFieldAndSort(querySchemaVo,fieldList,sortList,integer);
+        operateFieldAndSort (querySchemaVo,fieldList,sortList,integer);
         if(fieldList.size ()>0){
             querySchemeFieldDao.insertBatch ( fieldList );
         }
@@ -546,7 +538,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
     }
 
-    private void OperateFieldAndSort(QuerySchemaVo querySchemaVo, List < QuerySchemeField > fieldList, List < QuerySchemeSort > sortList,Integer integer) {
+    private void operateFieldAndSort(QuerySchemaVo querySchemaVo, List < QuerySchemeField > fieldList, List < QuerySchemeSort > sortList, Integer integer) {
         if(querySchemaVo.getFieldId ().size ()>0) {
             for (int i = 0; i < querySchemaVo.getFieldId ().size (); i++) {
                 QuerySchemeField querySchemeField = new QuerySchemeField ();

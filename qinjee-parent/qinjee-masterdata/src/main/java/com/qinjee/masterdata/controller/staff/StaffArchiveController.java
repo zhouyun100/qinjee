@@ -3,10 +3,10 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.QueryScheme;
-import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.masterdata.service.staff.impl.StaffArchiveServiceImpl;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -17,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -37,6 +34,9 @@ public class StaffArchiveController extends BaseController {
     @Autowired
     private IStaffArchiveService staffArchiveService;
 
+    @Autowired
+    private StaffArchiveServiceImpl archiveService;
+
     /**
      * 新增档案表
      */
@@ -52,7 +52,6 @@ public class StaffArchiveController extends BaseController {
             } catch (Exception e) {
                 return failResponseResult("新增档案表失败");
             }
-
         }
         return  failResponseResult("档案表参数错误");
 
@@ -78,18 +77,40 @@ public class StaffArchiveController extends BaseController {
         return  failResponseResult("档案表id错误");
     }
     /**
+     *展示部门下已经删除的档案
+     */
+    @RequestMapping(value = "/selectArchiveDelete", method = RequestMethod.GET)
+    @ApiOperation(value = "展示部门下已经删除的档案", notes = "hkt")
+    public ResponseResult<PageResult<UserArchiveVo>> selectArchiveDelete(@RequestParam List<Integer> orgId,
+                                                                         @RequestParam Integer pageSize,
+                                                                         @RequestParam Integer currentPage) {
+        Boolean b = checkParam(orgId,pageSize,currentPage);
+        if(b){
+            try {
+                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveDelete ( orgId,pageSize,currentPage );
+                if(userArchiveVoPageResult!=null) {
+                    return new ResponseResult <> ( userArchiveVoPageResult, CommonCode.SUCCESS );
+                }
+            } catch (Exception e) {
+                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
      * 删除恢复
      */
-    @RequestMapping(value = "/resumeDeleteArchiveById", method = RequestMethod.GET)
+    @RequestMapping(value = "/resumeDeleteArchiveById", method = RequestMethod.POST)
     @ApiOperation(value = "恢复删除档案", notes = "hkt")
 //    @ApiImplicitParam(name = "Archiveid", value = "人员档案id", paramType = "query", required = true)
-    public ResponseResult resumeDeleteArchiveById(Integer archiveid) {
+    public ResponseResult resumeDeleteArchiveById(@RequestBody  List<Integer> archiveid) {
         Boolean b = checkParam(archiveid);
         if(b){
             try {
                 staffArchiveService.resumeDeleteArchiveById(archiveid);
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult("恢复删除档案失败");
             }
         }
@@ -142,14 +163,14 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchive", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案(查询当前登陆人的档案)", notes = "hkt")
-    public ResponseResult<UserArchiveVoAndHeader> selectArchiveAtOnce() {
+    public ResponseResult<UserArchiveVoAndHeader> selectArchiveAtOnce(Integer querySchemaId) {
         Boolean b = checkParam(getUserSession());
         if(b){
             try {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchive ( getUserSession () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( userSession));
+                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -163,14 +184,14 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchiveSingle", method = RequestMethod.GET)
     @ApiOperation(value = "查看档案", notes = "hkt")
-    public ResponseResult<UserArchiveVoAndHeader> selectArchiveSingle(Integer id ) {
-        Boolean b = checkParam(id);
+    public ResponseResult<UserArchiveVoAndHeader> selectArchiveSingle(Integer id,Integer querySchemaId) {
+        Boolean b = checkParam(id,querySchemaId);
         if(b){
             try {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveSingle ( id, getUserSession () );
                 userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult  );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession () ) );
+                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
@@ -203,14 +224,18 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.GET)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
 //    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
-    public ResponseResult<UserArchiveVoAndHeader>  selectArchivebatch(Integer orgId,Integer pageSize,Integer currentPage) {
-        Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage);
+    public ResponseResult<UserArchiveVoAndHeader>  selectArchivebatch(@RequestParam List<Integer> orgId,
+                                                                      @RequestParam Integer pageSize,
+                                                                      @RequestParam Integer currentPage,
+                                                                      @RequestParam Integer querySchemaId
+    ) {
+        Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage,querySchemaId);
         if(b){
             try {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), orgId, pageSize, currentPage );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads ( staffArchiveService.getHeadList ( getUserSession ()) );
+                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
                 if(userArchiveVoAndHeader!=null) {
                     return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
                 }
@@ -237,6 +262,7 @@ public class StaffArchiveController extends BaseController {
                 staffArchiveService.insertUserArchivePostRelation(userArchivePostRelationVo, getUserSession());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult("新增人员岗位关系失败");
             }
         }
@@ -268,13 +294,14 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/updateUserArchivePostRelation", method = RequestMethod.POST)
     @ApiOperation(value = "修改人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
 //    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
-    public ResponseResult updateUserArchivePostRelation(@RequestBody @Valid UserArchivePostRelation userArchivePostRelation) {
-        Boolean b = checkParam(userArchivePostRelation);
+    public ResponseResult updateUserArchivePostRelation(@RequestBody @Valid UserArchivePostRelationVo userArchivePostRelationVo) {
+        Boolean b = checkParam(userArchivePostRelationVo,getUserSession ());
         if(b){
             try {
-                staffArchiveService.updateUserArchivePostRelation(userArchivePostRelation);
+                staffArchiveService.updateUserArchivePostRelation(userArchivePostRelationVo,getUserSession ());
                 return ResponseResult.SUCCESS();
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult("修改人员岗位关系，初期只涉及任职状态是否兼职失败");
             }
         }
@@ -284,31 +311,28 @@ public class StaffArchiveController extends BaseController {
     /**
      * 展示人员岗位关系，初期只涉及到是否兼职
      */
-    @RequestMapping(value = "/selectUserArchivePostRelation", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectUserArchivePostRelation", method = RequestMethod.GET)
     @ApiOperation(value = "展示人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true),
 //            @ApiImplicitParam(name = "list", value = "员工档案id集合", paramType = "query", required = true)
 //    })
-    public ResponseResult<PageResult<UserArchivePostRelation>> selectUserArchivePostRelation(Integer currentPage,
-                                                                                             Integer pageSize,
-                                                                                            @RequestBody List<Integer> list) {
-        Boolean b = checkParam(currentPage,pageSize,list);
+    public ResponseResult selectUserArchivePostRelation(@RequestParam Integer archiveId) {
+        Boolean b = checkParam(archiveId);
         if(b){
             try {
-                PageResult<UserArchivePostRelation> pageResult =
-                        staffArchiveService.selectUserArchivePostRelation(currentPage, pageSize, list);
-                if(pageResult!=null) {
-                    return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+                List < UserArchivePostRelationVo > list = staffArchiveService.selectUserArchivePostRelation ( archiveId );
+                if(!CollectionUtils.isEmpty ( list )) {
+                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                }else{
+                    return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
                 }
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
             } catch (Exception e) {
                 return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
             }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-
     }
     /**
      * 通过id查询到对应机构名称
@@ -443,7 +467,7 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectQueryScheme", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
-    public ResponseResult<List<QueryScheme>> selectUserArchivePostRelation() {
+    public ResponseResult<List<QueryScheme>> selectUserArchiveQuerySchema() {
         Boolean b = checkParam(getUserSession ());
         if(b){
             try {
@@ -465,7 +489,7 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectQuerySchemeMessage", method = RequestMethod.POST)
     @ApiOperation(value = "展示查询方案信息", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "查询方案id", paramType = "query", required = true)
-    public ResponseResult<QuerySchemeList> selectUserArchivePostRelation(Integer id) {
+    public ResponseResult<QuerySchemeList> selectUserArchiveQuery(Integer id) {
         Boolean b = checkParam();
         if(b){
             try {
@@ -491,12 +515,12 @@ public class StaffArchiveController extends BaseController {
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true)
 //    })
-    public ResponseResult< ExportFile > selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList) {
+    public ResponseResult< ExportFile > selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList, Integer queryschemaId) {
         Boolean b = checkParam(getUserSession(),archiveIdList);
         if(b){
             try {
                 ExportFile exportFile =
-                        staffArchiveService.selectArchiveByQueryScheme( getUserSession(), archiveIdList);
+                        staffArchiveService.selectArchiveByQueryScheme( getUserSession(), archiveIdList,queryschemaId);
                 if(exportFile!=null){
                     return new ResponseResult<>(exportFile,CommonCode.SUCCESS);
                 }
@@ -550,45 +574,7 @@ public class StaffArchiveController extends BaseController {
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
-    /**
-     * 修改员工轨迹
-     */
-    @RequestMapping(value = "/updateCareerTrack", method = RequestMethod.POST)
-    @ApiOperation(value = "修改员工轨迹", notes = "hkt")
-//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult updateCareerTrack(@RequestBody @Valid ArchiveCareerTrackVo archiveCareerTrackVo) {
-        Boolean b = checkParam(archiveCareerTrackVo,getUserSession());
-        if(b){
-            try {
-                staffArchiveService. updateCareerTrack( archiveCareerTrackVo,getUserSession());
-               return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-    }
-    /**
-     * 删除员工轨迹
-     */
-    @RequestMapping(value = "/deleteCareerTrack", method = RequestMethod.GET)
-    @ApiOperation(value = "修改员工轨迹", notes = "hkt")
-//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult deleteCareerTrack(Integer id) {
-        //TODO 表里没有删除字段
-        Boolean b = checkParam(id);
-        if(b){
-            try {
-                staffArchiveService. deleteCareerTrack(id);
-                return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
-        }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-    }
+
 
     /**
      * 根据姓名返回UserArchive
@@ -599,10 +585,10 @@ public class StaffArchiveController extends BaseController {
     @ApiOperation(value = "根据姓名返回UserArchive", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult<List<UserArchiveVo>> selectUserArchiveByName(String name) {
-        Boolean b = checkParam(name);
+        Boolean b = checkParam(name,getUserSession ());
         if(b){
             try {
-                List<UserArchiveVo> userArchiveList=staffArchiveService. selectUserArchiveByName(name);
+                List<UserArchiveVo> userArchiveList=staffArchiveService. selectUserArchiveByName(name,getUserSession ());
                return new ResponseResult <> ( userArchiveList,CommonCode.SUCCESS );
             } catch (Exception e) {
                 e.printStackTrace();
@@ -611,7 +597,6 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
 
 
     private Boolean checkParam(Object... params) {

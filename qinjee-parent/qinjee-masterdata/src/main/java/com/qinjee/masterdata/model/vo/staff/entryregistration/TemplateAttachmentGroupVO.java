@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.staff.entryregistration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.masterdata.model.entity.AttachmentGroup;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ import lombok.Data;
  * @date 2019/12/10
  */
 @Data
+@JsonInclude
 public class TemplateAttachmentGroupVO extends AttachmentGroup {
 
     /**

@@ -87,9 +87,10 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     }
 
     @Override
-    public int addTemplateAttachmentGroup(TemplateAttachmentGroup templateAttachmentGroup) {
+    public int addTemplateAttachmentGroup(List<TemplateAttachmentGroup> list) {
         int resultCount = 0;
-        resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroup(templateAttachmentGroup);
+//        resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroup(templateAttachmentGroup);
+        templateAttachmentGroupDao.addTemplateAttachmentGroupBatch ( list );
         return resultCount;
     }
 

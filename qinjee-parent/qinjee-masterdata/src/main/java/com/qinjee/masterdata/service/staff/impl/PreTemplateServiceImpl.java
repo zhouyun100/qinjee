@@ -141,8 +141,8 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     public List < EntryRegistrationTableVO > handlerCustomTableGroupFieldList(Integer companyId, Integer preId,Integer templateId)
             throws IllegalAccessException {
         Map < Integer, String > map =new HashMap <> (  );
-        //根据模板id与预入职id获取模板数据
-        List < EntryRegistrationTableVO > entryRegistrationTableVOS1 =
+        //根据模板id获取模板数据
+        List < EntryRegistrationTableVO > entryRegistrationTableVOList =
                 templateCustomTableFieldService.searchCustomTableListByTemplateId ( templateId );
         //根据企业id找到tableId
        List<Integer> list=customTableFieldDao.selectTableIdByCompanyIdAndFuncCode(companyId,"PRE");
@@ -155,8 +155,8 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                 }
             }
         }
-        List < EntryRegistrationTableVO > entryRegistrationTableVOS =
-                templateCustomTableFieldService.handlerCustomTableGroupFieldList ( entryRegistrationTableVOS1, map );
-        return entryRegistrationTableVOS;
+        List < EntryRegistrationTableVO > entryRegistrationTableVos =
+                templateCustomTableFieldService.handlerCustomTableGroupFieldList ( entryRegistrationTableVOList, map );
+        return entryRegistrationTableVos;
     }
 }

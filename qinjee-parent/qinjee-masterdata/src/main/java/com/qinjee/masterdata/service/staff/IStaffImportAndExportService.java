@@ -18,7 +18,7 @@ public interface IStaffImportAndExportService {
      * 模板导出档案
      * @return
      */
-    void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    void exportArcFile(List<Integer> list, HttpServletResponse response, UserSession userSession,Integer querySchemaId) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
     /**
      * 导出预入职

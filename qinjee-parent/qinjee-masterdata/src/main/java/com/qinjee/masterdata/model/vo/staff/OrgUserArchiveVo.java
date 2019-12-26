@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class UserArchiveVo implements Serializable {
+@JsonInclude
+public class OrgUserArchiveVo implements Serializable {
     /**
      * 档案ID
      */
@@ -124,8 +124,6 @@ public class UserArchiveVo implements Serializable {
      */
     @NotNull
     @ApiModelProperty("出生日期")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date birthDate;
 
     /**
@@ -165,8 +163,6 @@ public class UserArchiveVo implements Serializable {
      * 参加工作时间
      */
     @ApiModelProperty("参加工作时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date firstWorkDate;
 
     /**
@@ -174,8 +170,8 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy/MM/dd" )//页面写入数据库时格式化
+    @JSONField(format = "yyyy/MM/dd ")//数据库导出页面时json格式化
     private Date hireDate;
 
     /**
@@ -194,8 +190,6 @@ public class UserArchiveVo implements Serializable {
      * 试用到期时间
      */
     @ApiModelProperty("试用到期时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date probationDueDate;
 
     /**
@@ -208,8 +202,6 @@ public class UserArchiveVo implements Serializable {
      * 转正时间
      */
     @ApiModelProperty("转正时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date converseDate;
 
     /**
@@ -270,8 +262,6 @@ public class UserArchiveVo implements Serializable {
      * 减员时间
      */
     @ApiModelProperty("减员时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date attritionDate;
 
     /**

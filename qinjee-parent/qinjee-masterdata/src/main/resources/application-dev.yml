@@ -151,6 +151,7 @@ pagehelper:
   pageSizeZero: true
   params: count=countSql
 
-
-
+jackson:
+  date_format: yyyy-MM-dd HH:mm:ss
+  time-zone: GMT+8
 

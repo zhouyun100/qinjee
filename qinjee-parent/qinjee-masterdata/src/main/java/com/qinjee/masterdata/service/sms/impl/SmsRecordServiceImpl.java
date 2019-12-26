@@ -77,14 +77,14 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add (baseShortUrl+ ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"?templateId="+ templateId ) );
+            params.add (baseShortUrl+"?shortUrlCode="+ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId ) );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex (ShortUrl.shortUrl (  "?preId=" + integerMapEntry.getKey () +"?templateId="+ templateId ),
-                    2*60*60, "?preId=" + integerMapEntry.getKey () +"?templateId="+ templateId);
+            redisClusterService.setex (  ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId ),
+                    2*60*60, "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId);
         }
     }
 

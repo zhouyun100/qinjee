@@ -51,7 +51,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void updatelaborContract(ContractVo contractVo,   UserSession userSession);
+    void updatelaborContract(ContractVo contractVo,   UserSession userSession) throws ParseException;
 
     /**
      *查询一个合同的变更历史
@@ -110,16 +110,15 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession);
+    void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession) throws ParseException;
 
     /**
      * 批量终止合同
-     * @param laborContractChangeVo
-     * @param list
+     * @param contractVo
      * @param userSession
      * @return
      */
-    void endlaborContractBatch(LaborContractChangeVo laborContractChangeVo, List<Integer> list, UserSession userSession);
+    void endlaborContractBatch(ContractVo contractVo, UserSession userSession) throws ParseException;
 
     /**
      * 解除合同
@@ -128,7 +127,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void looselaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession);
+    void looselaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession) throws ParseException;
 
     /**
      * 批量解除合同
@@ -137,7 +136,7 @@ public interface IStaffContractService {
      * @return
      */
     void looselaborContractBatch(ContractVo contractVo,
-                                 UserSession userSession);
+                                 UserSession userSession) throws ParseException;
 
     /**
      * 发送续签意向

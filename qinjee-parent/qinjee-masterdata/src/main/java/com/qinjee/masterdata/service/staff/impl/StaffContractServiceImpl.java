@@ -187,7 +187,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updatelaborContract(ContractVo contractVo, UserSession userSession) {
+    public void updatelaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
         //更新合同表
         LaborContract laborContract = new LaborContract ();
         BeanUtils.copyProperties ( contractVo.getLaborContractVo (), laborContract );
@@ -255,7 +255,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession) {
+    public void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession) throws ParseException {
         //将合同状态设置为终止
         LaborContract laborContract = laborContractDao.selectByPrimaryKey ( id );
         laborContract.setContractState ( ENDEMARK );
@@ -266,21 +266,20 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void endlaborContractBatch(LaborContractChangeVo laborContractChangeVo,
-                                      List < Integer > list, UserSession userSession) {
+    public void endlaborContractBatch(ContractVo contractVo, UserSession userSession) throws ParseException {
         //将合同状态设置为终止
-        for (Integer integer : list) {
+        for (Integer integer : contractVo.getList ()) {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey ( integer );
             laborContract.setContractState ( ENDEMARK );
             laborContractDao.updateByPrimaryKeySelective ( laborContract );
             //新增变更表
-            change ( laborContractChangeVo, ENDCHANGE, integer, userSession.getArchiveId () );
+            change ( contractVo.getLaborContractChangeVo (), ENDCHANGE, integer, userSession.getArchiveId () );
         }
     }
 
     @Override
     public void looselaborContract(LaborContractChangeVo laborContractChangeVo,
-                                   Integer id, UserSession userSession) {
+                                   Integer id, UserSession userSession) throws ParseException {
         LaborContract laborContract = laborContractDao.selectByPrimaryKey ( id );
         //将合同状态设置为解除
         laborContract.setContractState ( LOOSEMARK );
@@ -290,13 +289,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public void looselaborContractBatch(ContractVo contractVo, UserSession userSession) {
+    public void looselaborContractBatch(ContractVo contractVo, UserSession userSession) throws ParseException {
         for (Integer integer : contractVo.getList ()) {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey ( integer );
             laborContract.setContractState ( LOOSEMARK );
             laborContractDao.updateByPrimaryKeySelective ( laborContract );
             //新增变更表
-            change ( contractVo.getLaborContractChangeVo (), COMMONCHANGE, integer, userSession.getArchiveId () );
+            change ( contractVo.getLaborContractChangeVo (), LOOSECHANGE, integer, userSession.getArchiveId () );
         }
     }
 
@@ -366,10 +365,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
         LaborContract laborContract = new LaborContract ();
         //设置其余字段
         BeanUtils.copyProperties ( laborContractVo, laborContract );
+        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy-MM-dd" );
+        laborContract.setContractSignDate ( formatter.parse ( laborContractVo.getContractSignDate () ) );
         if ("固定期限".equals ( laborContractVo.getContractPeriodType () )) {
             UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( archiveId );
             laborContract.setContractBeginDate ( userArchiveVo.getHireDate () );
-            SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy-MM-dd" );
             String dateString = formatter.format ( userArchiveVo.getHireDate () );
             laborContract.setContractEndDate ( formatter.parse ( addMonth ( dateString, "yyyy-MM-dd", laborContractVo.getContractPeriodMonth () ) ) );
         }
@@ -379,9 +379,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
         laborContractDao.insertSelective ( laborContract );
     }
 
-    private void change(LaborContractChangeVo laborContractChangeVo, String type, Integer id, Integer achiveId) {
+    private void change(LaborContractChangeVo laborContractChangeVo, String type, Integer id, Integer achiveId) throws ParseException {
         LaborContractChange laborContractChange = new LaborContractChange ();
         BeanUtils.copyProperties ( laborContractChangeVo, laborContractChange );
+        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy-MM-dd" );
+        laborContractChange.setChangeDate (formatter.parse (laborContractChangeVo.getChangeDate ()) );
         laborContractChange.setChangeType ( type );
         laborContractChange.setContractId ( id );
         laborContractChange.setOperatorId ( achiveId );

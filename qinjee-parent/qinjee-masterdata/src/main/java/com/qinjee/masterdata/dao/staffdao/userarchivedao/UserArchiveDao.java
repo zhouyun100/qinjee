@@ -40,7 +40,7 @@ public interface UserArchiveDao {
 
 
 
-    Integer resumeDeleteArchiveById(@Param("archiveid") Integer archiveid);
+    Integer resumeDeleteArchiveById(@Param("archiveid") List<Integer> archiveid);
 
 
     /**
@@ -83,7 +83,7 @@ public interface UserArchiveDao {
 
     Date selectDateByStatus(@Param("string") String string);
 
-    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") Integer orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
+    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") List<Integer> orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
@@ -97,7 +97,7 @@ public interface UserArchiveDao {
 
     List< UserArchiveVo> selectBeforeFilter(@Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
 
-    List< UserArchiveVo> selectUserArchiveByName(@Param("name") String name);
+    List< UserArchiveVo> selectUserArchiveByName(@Param("name") String name, @Param("companyId") Integer companyId);
 
     List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
@@ -108,4 +108,6 @@ public interface UserArchiveDao {
     Map< String, Object> selectTransMessage(@Param("key") Integer key);
 
     UserArchiveVo selectByIdNumber(@Param("s") String s);
+
+    List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
 }

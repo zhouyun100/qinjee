@@ -8,6 +8,7 @@
         <result column="table_id" jdbcType="INTEGER" property="tableId" />
         <result column="table_name" jdbcType="VARCHAR" property="tableName" />
         <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="is_system_define" jdbcType="INTEGER" property="isSyetemDefine" />
     </resultMap>
 
     <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO">
@@ -21,6 +22,8 @@
         <result column="placeholder" jdbcType="VARCHAR" property="placeholder" />
         <result column="template_id" jdbcType="INTEGER" property="templateId" />
         <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="is_checked" jdbcType="INTEGER" property="isChecked" />
+
     </resultMap>
 
     <resultMap id="EntryRegistrationTableResultMap" type="com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO">
@@ -59,20 +62,20 @@
 
     <!-- 根据企业ID和模板ID查询自定义表列表 -->
     <select id="searchTableListByCompanyIdAndTemplateId" resultMap="TableResultMap">
-        SELECT cat.table_id,cat.table_name,tct.sort,tct.template_id,tct.tct_id
+        SELECT cat.table_id,cat.table_name,tct.sort,tct.template_id,tct.tct_id,cat.is_system_define
         FROM t_custom_archive_table cat
         LEFT JOIN t_template_custom_table tct
         ON cat.table_id = tct.table_id
         AND tct.template_id = #{templateId,jdbcType=INTEGER}
         WHERE cat.company_id = #{companyId,jdbcType=INTEGER}
         AND cat.func_code = 'PRE'
-        AND cat.is_delete = 0
         AND cat.is_enable = 1
       <if test="isAll != null and isAll == 1">
           ORDER BY cat.sort
       </if>
       <if test="isAll == null or isAll == 0">
           AND tct.template_id IS NOT NULL
+          AND cat.is_delete = 0
           ORDER BY tct.sort
       </if>
     </select>
@@ -80,7 +83,7 @@
 
     <!-- 根据企业ID和模板ID查询自定义表列表 -->
     <select id="searchTableListByTemplateId" resultMap="TableResultMap">
-        SELECT tct.tct_id,cat.table_id,cat.table_name,tct.sort,tct.template_id,tct.tct_id
+        SELECT tct.tct_id,cat.table_id,cat.table_name,tct.sort,tct.template_id,tct.tct_id,cat.is_system_define
         FROM t_custom_archive_table cat,t_template_custom_table tct
         WHERE tct.template_id = #{templateId,jdbcType=INTEGER}
         AND tct.table_id = cat.table_id
@@ -89,23 +92,60 @@
         ORDER BY tct.sort
     </select>
 
-    <!-- 根据模板ID查询所有表字段信息 -->
+<!--    &lt;!&ndash; 根据模板ID查询所有表字段信息 &ndash;&gt;-->
+<!--    <select id="searchTableFieldListByTemplateId" resultMap="FieldResultMap">-->
+<!--        select tctf.tctf_id,cat.table_id,cat.table_name,caf.field_id,caf.field_name,caf.field_type,tctf.is_must,tctf.placeholder,tctf.sort-->
+<!--        from t_template_custom_table tct,t_custom_archive_table cat,t_template_custom_table_field tctf,t_custom_archive_field caf-->
+<!--        where tct.template_id = #{templateId,jdbcType=INTEGER}-->
+<!--        and tct.template_id = tctf.template_id-->
+<!--        and tct.table_id = cat.table_id-->
+<!--        and tct.table_id = tctf.table_id-->
+<!--        and tctf.field_id = caf.field_id-->
+<!--        and cat.is_enable = 1-->
+<!--        and tct.is_delete = 0-->
+<!--        and cat.is_delete = 0-->
+<!--        and tctf.is_delete = 0-->
+<!--        and caf.is_delete = 0-->
+<!--        ORDER BY tct.sort,tctf.sort-->
+<!--  </select>-->
     <select id="searchTableFieldListByTemplateId" resultMap="FieldResultMap">
-        select tctf.tctf_id,cat.table_id,cat.table_name,caf.field_id,caf.field_name,caf.field_type,tctf.is_must,tctf.placeholder,tctf.sort
-        from t_template_custom_table tct,t_custom_archive_table cat,t_template_custom_table_field tctf,t_custom_archive_field caf
-        where tct.template_id = #{templateId,jdbcType=INTEGER}
-        and tct.template_id = tctf.template_id
-        and tct.table_id = cat.table_id
-        and tct.table_id = tctf.table_id
-        and tctf.field_id = caf.field_id
-        and cat.is_enable = 1
-        and tct.is_delete = 0
-        and cat.is_delete = 0
-        and tctf.is_delete = 0
-        and caf.is_delete = 0
-        ORDER BY tct.sort,tctf.sort
-  </select>
+select
+            t.is_must,
+            t.placeholder,
+            t.sort,
+            tctf.tctf_id,
+            t.table_id,
+            t.table_name,
+            t.field_id,
+            t.field_name,
+            t.field_type,
+          CASE WHEN
+          tctf.template_id is null
+          then 0
+          else 1
+          end as 'is_checked'
+        from
+        (SELECT
+            cat.table_id,
+            cat.table_name,
+            caf.field_id,
+            caf.field_name,
+            caf.field_type,
+            caf.is_must,
+            caf.placeholder,
+            caf.sort
+        FROM
+        t_custom_archive_field caf
+        LEFT JOIN t_template_custom_table tct ON caf.table_id = tct.table_id AND tct.is_delete = 0
+        LEFT JOIN t_custom_archive_table cat ON tct.table_id = cat.table_id and cat.is_delete = 0 and cat.is_enable = 1
+        WHERE
+        caf.is_delete=0
+        and tct.template_id =#{templateId}
+        ORDER BY tct.sort)t
+        LEFT JOIN t_template_custom_table_field tctf ON tctf.field_id = t.field_id and tctf.is_delete=0
+        order by tctf.sort
 
+    </select>
     <!-- 根据表ID和模板ID查询对应表字段配置信息 -->
     <select id="searchFieldListByTableIdAndTemplateId" resultMap="FieldResultMap">
         SELECT caf.field_id,caf.field_name,caf.field_type,
@@ -126,7 +166,8 @@
 
     <!-- 根据模板ID和自定义表ID删除表数据 -->
     <update id="deleteTemplateTable">
-        update t_template_custom_table set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        update t_template_custom_table set is_delete = 1,
+        operator_id = #{operatorId,jdbcType=INTEGER}
         where template_id = #{templateId,jdbcType=INTEGER}
         and table_id in
         <foreach collection="templateCustomTableList" item="customTable" open="(" separator="," close=")">
@@ -148,7 +189,9 @@
 
     <!-- 根据模板ID和自定义表ID删除表字段数据 -->
     <update id="deleteTemplateTableFieldByTemplateIdAndTableId">
-        update t_template_custom_table_field set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        update t_template_custom_table_field
+        set is_delete = 1,
+        operator_id = #{operatorId,jdbcType=INTEGER}
         where template_id = #{templateId,jdbcType=INTEGER}
         and table_id = #{tableId,jdbcType=INTEGER}
         and is_delete = 0

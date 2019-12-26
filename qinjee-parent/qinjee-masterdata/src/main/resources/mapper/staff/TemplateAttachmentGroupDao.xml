@@ -24,6 +24,7 @@
         <if test="isAll == null or isAll == 0">
             AND tag.tag_id IS NOT NULL
         </if>
+        and tag.is_delete=0
         ORDER BY tag.sort
     </select>
 
@@ -117,4 +118,49 @@
             and is_delete = 0
         </foreach>
     </update>
+    <insert id="addTemplateAttachmentGroupBatch">
+        <foreach collection="list" item="item" separator=";" open="(" close=")">
+        INSERT INTO t_template_attachment_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="item.templateId != null">
+                template_id,
+            </if>
+            <if test="item.groupId != null">
+                group_id,
+            </if>
+            <if test="item.description != null">
+                description,
+            </if>
+            <if test="item.isMust != null">
+                is_must,
+            </if>
+            <if test="item.sort != null">
+                sort,
+            </if>
+            <if test="item.operatorId != null">
+                operator_id
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="item.templateId != null">
+                #{item.templateId,jdbcType=INTEGER},
+            </if>
+            <if test="item.groupId != null">
+                #{item.groupId,jdbcType=INTEGER},
+            </if>
+            <if test="item.description != null">
+                #{item.description,jdbcType=VARCHAR},
+            </if>
+            <if test="item.isMust != null">
+                #{item.isMust,jdbcType=INTEGER},
+            </if>
+            <if test="item.sort != null">
+            #{item.sort,jdbcType=INTEGER},
+           </if>
+            <if test="item.operaorId != null">
+            #{item.operatorId,jdbcType=INTEGER}
+            </if>
+        </trim>
+        </foreach>
+    </insert>
 </mapper>
