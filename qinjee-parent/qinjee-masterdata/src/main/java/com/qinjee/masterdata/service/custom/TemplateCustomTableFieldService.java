@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.custom;
 
+import com.qinjee.masterdata.model.vo.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
@@ -80,4 +81,6 @@ public interface TemplateCustomTableFieldService {
      * @return
      */
     void setCustomTableForTemplate(List< TemplateCustomTableVO> list, UserSession userSession);
+
+    void saveTemplate(Integer archiveId, SaveTemplateVo saveTemplateVo);
 }

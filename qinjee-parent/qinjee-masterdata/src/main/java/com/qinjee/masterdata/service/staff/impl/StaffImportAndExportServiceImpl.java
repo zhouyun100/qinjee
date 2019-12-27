@@ -648,15 +648,15 @@ private Map<Integer,String> transField(String funcCode,Integer companyId,String 
                 } if ("直接领导" .equals(head) ) {
                     stringMap.put ( head,String.valueOf (stringObjectMap.get ( "supervisor_name" )) );
                 }
-                if ("任职类型" .equals(head) ) {
-                    stringMap.put ( head, "在职" );
-                }
                 Object o = stringObjectMap.get ( s );
                 String date = isDate ( String.valueOf ( o ) );
                 if (date != null) {
                     o = date;
                 }
                 stringMap.put ( head, String.valueOf ( o ) );
+                if ("任职类型" .equals(head) ) {
+                    stringMap.put ( head, "在职" );
+                }
             }
             mapList.add ( stringMap );
         }

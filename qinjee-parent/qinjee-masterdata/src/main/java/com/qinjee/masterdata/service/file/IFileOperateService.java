@@ -41,4 +41,6 @@ public interface IFileOperateService {
     String checkFielName(List<String> fileName, UserSession userSession);
 
     void exportCheckFile(UserSession userSession,HttpServletResponse response) throws  IOException;
+
+    String checkImg(MultipartFile[] files, UserSession userSession) throws Exception;
 }

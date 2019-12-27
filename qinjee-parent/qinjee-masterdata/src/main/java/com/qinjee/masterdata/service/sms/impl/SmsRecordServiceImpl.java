@@ -72,36 +72,24 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             String phone = value.get ( "phone" );
             List<String> phoneNumbers = new ArrayList<>();
             phoneNumbers.add(phone);
-
-            /////////////
-
+            //拼接短链接
             String keyValue = "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ();
             String key = ShortEncryptUtils.shortEncrypt ( keyValue );
-
             Map<String,Integer> stringMap = new HashMap <> (  );
             stringMap.put ( "preId",  integerMapEntry.getKey ());
             stringMap.put ( "templateId",  templateId);
             stringMap.put ( "companyId",  userSession.getCompanyId ());
             redisClusterService.setex(key,2*60*60,JSON.toJSONString ( stringMap));
-
             String url = baseShortUrl + key;
-
-            /////////////
-
             List < String > params = new ArrayList <> ( 3 );
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add (baseShortUrl+ShortEncryptUtils.shortEncrypt ( "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId +"&companyId="+userSession.getCompanyId ()) );
+            params.add ( url );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
-            //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex (  ShortEncryptUtils.shortEncrypt ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
-                    2*60*60, "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ());
-
-
         }
     }
 

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
+import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
@@ -324,7 +325,14 @@ public class ImportAndExportStaffController extends BaseController {
         if(b){
             try {
                 List < Integer > list = exportArcParamVo.getList ();
-                Integer querySchemaId = exportArcParamVo.getQuerySchemaId ();
+                Integer querySchemaId=0;
+                List < QueryScheme > list2 = querySchemeDao.selectQueryByArchiveId ( getUserSession ().getArchiveId () );
+                for (QueryScheme queryScheme : list2) {
+                    if(1==queryScheme.getIsDefault ()){
+                       querySchemaId=queryScheme.getQuerySchemeId ();
+                       break;
+                    }
+                }
                 List < Integer > orgIdList = exportArcParamVo.getOrgIdList ();
                 if(!CollectionUtils.isEmpty ( list )){
                     staffImportAndExportService.exportArcFile( list,response,getUserSession (),querySchemaId);

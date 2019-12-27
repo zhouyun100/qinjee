@@ -164,6 +164,30 @@ public class FileController extends BaseController {
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
     /**
+     * 验证图片比例关系
+     * @param files
+     * @return
+     */
+    @RequestMapping(value = "/checkImg", method = RequestMethod.POST)
+    @ApiOperation(value = "验证图片比例关系", notes = "hkt")
+    public ResponseResult checkImg(@RequestParam MultipartFile[] files) {
+        Boolean b = checkParam( files );
+        if(b) {
+            try {
+                String s = fileOperateService.checkImg ( files, getUserSession () );
+                if(StringUtils.isNotBlank ( s )){
+                    return new ResponseResult <> (s, CommonCode.SUCCESS);
+                }else{
+                    return new ResponseResult <> ( null,CommonCode.CHECK_FALSE );
+                }
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode. FAIL);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
      * 导出校验文件
      * @return
      */
@@ -173,7 +197,7 @@ public class FileController extends BaseController {
         Boolean b = checkParam(getUserSession (),response);
         if(b) {
             try {
-                 fileOperateService.exportCheckFile ( getUserSession (),response );
+                 fileOperateService.exportCheckFile ( getUserSession (),response);
                  return null;
             } catch (Exception e) {
                 e.printStackTrace ();

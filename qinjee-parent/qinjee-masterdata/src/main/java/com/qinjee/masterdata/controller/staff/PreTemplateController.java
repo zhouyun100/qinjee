@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
+import com.qinjee.masterdata.model.vo.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
@@ -345,8 +346,8 @@ public class PreTemplateController extends BaseController {
             try {
                 entryRegistrationService.addTemplateAttachmentGroup ( list );
                 return new ResponseResult <> ( null, CommonCode.SUCCESS );
-
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult ( "新增异常" );
             }
         }
@@ -508,20 +509,18 @@ public class PreTemplateController extends BaseController {
     }
 
     /**
-     * 保存自定义表字段配置
-     * @param templateId
-     * @param templateCustomTableList
+     * 保存模板信息以及欢迎页信息
+     * @param saveTemplateVo
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/saveTemplateTableField", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveTemplate", method = RequestMethod.POST)
     @ApiOperation(value = "保存自定义表字段配置", notes = "hkt")
-    public ResponseResult <List < TemplateCustomTableFieldVO >> saveTemplateTableField(Integer templateId,
-                                                                                                 @RequestBody List<TemplateCustomTableVO> templateCustomTableList) {
-        Boolean b = checkParam (templateId,templateCustomTableList,getUserSession () );
+    public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo) {
+        Boolean b = checkParam (getUserSession (),saveTemplateVo );
         if (b) {
             try {
-                templateCustomTableFieldService.saveTemplateTableField ( templateId,templateCustomTableList,userSession.getArchiveId () );
+                templateCustomTableFieldService.saveTemplate ( getUserSession ().getArchiveId (),saveTemplateVo );
                     return new ResponseResult <> ( null, CommonCode.BUSINESS_EXCEPTION );
             } catch (Exception e) {
                 return failResponseResult ( "更改异常" );
@@ -564,7 +563,7 @@ public class PreTemplateController extends BaseController {
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
+    @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.POST)
     @ApiOperation(value = "处理自定义表字段数据回填", notes = "hkt")
     public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId ) {
         Boolean b = checkParam (getUserSession (),preId,templateId );

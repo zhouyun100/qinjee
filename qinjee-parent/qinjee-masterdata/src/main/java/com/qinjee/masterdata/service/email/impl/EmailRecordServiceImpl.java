@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.email.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.qinjee.masterdata.dao.email.EmailConfigDao;
 import com.qinjee.masterdata.dao.email.EmailRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -20,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 /**
  * @author Administrator
  */
@@ -60,13 +64,19 @@ public class EmailRecordServiceImpl implements EmailRecordService {
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById ( integer );
             List < String > objects = new ArrayList <> (1);
             objects.add ( preEmploymentVo.getEmail () );
+            String keyValue = "preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ();
+            String key = ShortEncryptUtils.shortEncrypt ( keyValue );
+            Map <String,Integer> stringMap = new HashMap <> (  );
+            stringMap.put ( "preId", preEmploymentVo.getEmploymentId ());
+            stringMap.put ( "templateId",  templateId);
+            stringMap.put ( "companyId",  userSession.getCompanyId ());
+            String url = baseShortUrl + key;
+
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex ( ShortEncryptUtils.shortEncrypt (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
-                    2*60*60,"?preId=" +preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ());
+            redisClusterService.setex(key,2*60*60, JSON.toJSONString ( stringMap));
             //模板设置
             MessageFormat messageFormat = new MessageFormat(template);
-            String[] paramArr = {preEmploymentVo.getUserName (),preEmploymentVo.getApplicationPosition (),
-                    ShortEncryptUtils.shortEncrypt (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ) };
+            String[] paramArr = {preEmploymentVo.getUserName (),preEmploymentVo.getApplicationPosition (), url};
             //发送邮件
             template = messageFormat.format ( paramArr );
             SendManyMailsUtil.sendMail (mailConfig,objects,null,"预入职登记",template,null);

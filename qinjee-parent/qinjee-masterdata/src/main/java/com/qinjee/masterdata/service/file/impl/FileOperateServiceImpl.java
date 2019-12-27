@@ -24,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -192,18 +194,23 @@ public class FileOperateServiceImpl implements IFileOperateService {
             } else {
                flag=false;
             }
-            if(!flag){
-                map.put ( fileName.get ( i ),"验证不通过" );
+            if(!flag) {
+                map.put ( fileName.get ( i ), "验证不通过" );
+            }else{
+                map.put ( fileName.get ( i ),"验证通过！" );
+            }
                 redisClusterService.setex ( userSession.getCompanyId ()+"证件号验证"+userSession.getArchiveId (),2*60*60,
                         JSON.toJSONString (map));
-            }
         }
         if(map.size ()>0){
+            map.put ( "flag","false" );
             return JSON.toJSONString ( map );
         }else {
-            return "验证通过！";
+            map.put ( "flag","true" );
+            return JSON.toJSONString ( map );
         }
     }
+
 
     @Override
     public void exportCheckFile(UserSession userSession,HttpServletResponse response) throws IOException {
@@ -222,6 +229,33 @@ public class FileOperateServiceImpl implements IFileOperateService {
         creatCheckResponse ( response, parse );
     }
 
+    @Override
+    public String checkImg(MultipartFile[] files, UserSession userSession) throws Exception {
+        File file1 = null;
+        Map<String,String> map=new HashMap <> (  );
+        try {
+            for (int i = 0; i < files.length; i++) {
+                    file1 = FileUploadUtils.multipartFileToFile ( files[i] );
+                    boolean b = checkImageScale ( file1 );
+                    if(!b){
+                        map.put ( files[i].getOriginalFilename (),"图片校验不通过" );
+                }
+            }
+            if(map.size ()>0){
+                redisClusterService.setex ( userSession.getCompanyId ()+"图片验证"+userSession.getArchiveId (),2*60*60,
+                        JSON.toJSONString (map));
+                return JSON.toJSONString ( map );
+            }
+            else {
+                return "校验通过！";
+            }
+        } finally {
+            if(file1!=null) {
+                file1.deleteOnExit ();
+            }
+        }
+    }
+
     private void creatCheckResponse(HttpServletResponse response, Map < String, String > parse) throws IOException {
         StringBuffer stringBuffer=new StringBuffer (  );
         ServletOutputStream outputStream = response.getOutputStream ();
@@ -233,6 +267,20 @@ public class FileOperateServiceImpl implements IFileOperateService {
         bufferedOutputStream.write ( stringBuffer.toString ().getBytes ("UTF-8") );
         bufferedOutputStream.flush ();
         bufferedOutputStream.close ();
+    }
+    public static boolean checkImageScale(File file) throws IOException {
+        Boolean result = false;
+        if (!file.exists()) {
+            return false;
+        }
+        BufferedImage bufferedImage = ImageIO.read(file);
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        if(width>0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }
