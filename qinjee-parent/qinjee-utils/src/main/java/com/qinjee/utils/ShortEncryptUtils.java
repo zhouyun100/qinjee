@@ -5,23 +5,18 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.Random;
 
 /**
- * @author 高雄
+ * @author 周赟
  * @version 1.0.0
- * @Description TODO
- * @createTime 2019年08月20日 09:48:00
+ * @createTime 2019年12月27日
  */
-public class ShortUrl {
+public class ShortEncryptUtils {
 
-    public static void main(String[] args) {
-        // 长连接
-        String longUrl = "http://data.13322.com/basket/team/27_0_1.html";
-        // 转换成的短链接后6位码
-        String shortCode = shortUrl(longUrl);
-
-        System.out.println(shortCode);
-    }
-
-    public static String shortUrl(String url) {
+    /**
+     * 短密文
+     * @param paramStr 待加密的请求参数(确保唯一)
+     * @return 6位的随机密文
+     */
+    public static String shortEncrypt(String paramStr) {
         // 可以自定义生成 MD5 加密字符传前的混合 KEY
         String key = "my_char_key";
         // 要使用生成 URL 的字符
@@ -33,8 +28,7 @@ public class ShortUrl {
                 "U", "V", "W", "X", "Y", "Z" };
 
         // 对传入网址进行 MD5 加密
-        String sMD5EncryptResult = DigestUtils.md5Hex(key + url);
-        System.out.println(sMD5EncryptResult);
+        String sMD5EncryptResult = DigestUtils.md5Hex(key + paramStr);
         String hex = sMD5EncryptResult;
         String[] resUrl = new String[4];
         for (int i = 0; i < 4; i++) {
@@ -57,8 +51,15 @@ public class ShortUrl {
             resUrl[i] = outChars;
         }
         int nextInt = new Random().nextInt(4);
-
         return resUrl[nextInt];
+    }
+
+    public static void main(String[] args) {
+        // 待加密的请求参数
+        String paramStr = "abcdefghijklmnopqrstuvwxyz";
+        // 加密key
+        String encrypt = shortEncrypt(paramStr);
+        System.out.println(encrypt);
     }
 
 }
