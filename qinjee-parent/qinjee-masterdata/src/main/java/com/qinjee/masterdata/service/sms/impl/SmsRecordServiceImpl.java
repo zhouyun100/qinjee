@@ -22,7 +22,7 @@ import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
-import com.qinjee.utils.ShortUrl;
+import com.qinjee.utils.ShortEncryptUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,7 +76,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             /////////////
 
             String keyValue = "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ();
-            String key = ShortUrl.shortUrl ( keyValue );
+            String key = ShortEncryptUtils.shortEncrypt ( keyValue );
 
             Map<String,Integer> stringMap = new HashMap <> (  );
             stringMap.put ( "preId",  integerMapEntry.getKey ());
@@ -92,13 +92,13 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add (baseShortUrl+ShortUrl.shortUrl ( "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId +"&companyId="+userSession.getCompanyId ()) );
+            params.add (baseShortUrl+ShortEncryptUtils.shortEncrypt ( "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId +"&companyId="+userSession.getCompanyId ()) );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex (  ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
+            redisClusterService.setex (  ShortEncryptUtils.shortEncrypt ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
                     2*60*60, "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ());
 
 

@@ -12,7 +12,7 @@ import com.qinjee.masterdata.service.email.EmailRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.SendManyMailsUtil;
-import com.qinjee.utils.ShortUrl;
+import com.qinjee.utils.ShortEncryptUtils;
 import entity.MailConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,12 +61,12 @@ public class EmailRecordServiceImpl implements EmailRecordService {
             List < String > objects = new ArrayList <> (1);
             objects.add ( preEmploymentVo.getEmail () );
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex ( ShortUrl.shortUrl (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
+            redisClusterService.setex ( ShortEncryptUtils.shortEncrypt (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
                     2*60*60,"?preId=" +preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ());
             //模板设置
             MessageFormat messageFormat = new MessageFormat(template);
             String[] paramArr = {preEmploymentVo.getUserName (),preEmploymentVo.getApplicationPosition (),
-                    ShortUrl.shortUrl (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ) };
+                    ShortEncryptUtils.shortEncrypt (  "?preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ) };
             //发送邮件
             template = messageFormat.format ( paramArr );
             SendManyMailsUtil.sendMail (mailConfig,objects,null,"预入职登记",template,null);
