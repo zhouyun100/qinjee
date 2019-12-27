@@ -111,4 +111,6 @@ public interface PostService {
   void cancelImport(String redisKey, String errorInfoKey);
 
     String generatePostCode(Integer orgId,Integer parentPostId);
+
+    Post getPostById( String postId);
 }

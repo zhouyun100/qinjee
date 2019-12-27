@@ -105,5 +105,8 @@ public interface PostDao {
     void batchDelete(@Param("idList") List<Integer> idList);
 
     List<Post> listPostByPisitionId(@Param("positionIds")List<Integer> positionIds);
+
+    Post getPostById(String postId);
+
 }
 

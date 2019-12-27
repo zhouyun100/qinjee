@@ -63,6 +63,19 @@ public class PostController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+     @GetMapping("/getPostById")
+    @ApiOperation(value = "ok，根据岗位id查询", notes = "ok")
+    public ResponseResult<Post> getPostById( String postId) {
+        if (checkParam(postId)) {
+
+            Post post = postService.getPostById( postId);
+            return new ResponseResult<>(post);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+
+
 
     @ApiImplicitParams({
         @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")

@@ -65,3 +65,7 @@ server:
 #      enabled: false # 关闭 httpclient 支持
 #  okhttp:
 #    enabled: true # 开启 okhttp 支持
+
+
+logging:
+  config: classpath:log4j/log4j2_test.xml

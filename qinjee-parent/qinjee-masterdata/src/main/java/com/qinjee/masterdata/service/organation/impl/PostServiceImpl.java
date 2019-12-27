@@ -60,8 +60,6 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private RedisClusterService redisService;
     @Autowired
-    private OrganizationService organizationService;
-    @Autowired
     private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
     private UserArchiveDao userArchiveDao;
@@ -231,6 +229,12 @@ public class PostServiceImpl implements PostService {
                 return postCode;
             }
         }
+    }
+
+    @Override
+    public Post getPostById( String postId) {
+        return postDao.getPostById(postId);
+
     }
 
 
