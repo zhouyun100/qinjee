@@ -1,9 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
-import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
-import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.BigDataVo;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
@@ -188,4 +186,8 @@ public interface IStaffCommonService {
     Map< String, String> getNameForOrganzition(Integer orgId, UserSession userSession,Integer postId);
 
     void deleteCustomArchiveTableData(List< Integer> list);
+
+    OrganizationVO getOrgById(Integer orgId, UserSession userSession);
+
+    Post getPostById(Integer postId,UserSession userSession);
 }

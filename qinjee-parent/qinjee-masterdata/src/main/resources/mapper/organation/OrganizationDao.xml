@@ -639,4 +639,11 @@
         and orga.is_enable=1
         and post.is_delete=0
     </select>
+    <select id="getOrgById" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_organization
+        where org_id=#{orgId}
+        and company_id=#{companyId}
+        and is_enable=1
+    </select>
 </mapper>

@@ -29,10 +29,9 @@ public interface TemplateCustomTableFieldService {
      * 根据企业ID和模板ID查询自定义表列表
      * @param companyId 企业ID
      * @param templateId 模板ID
-     * @param isAll 是否显示全部表(1:显示全部自定义表,0:显示模板对应的自定义表)
      * @return
      */
-    List<TemplateCustomTableVO> searchTableListByCompanyIdAndTemplateId(Integer companyId, Integer templateId, Integer isAll);
+    List<TemplateCustomTableVO> searchTableListByCompanyIdAndTemplateId(Integer companyId, Integer templateId);
 
     /**
      * 根据模板ID查询所有表字段信息

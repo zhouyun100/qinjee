@@ -25,12 +25,10 @@ public class EntryRegistrationTableVO {
      * 表ID
      */
     private Integer tableId;
-
     /**
      * 表名
      */
     private String tableName;
-
     /**
      * 自定义字段列表
      */

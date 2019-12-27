@@ -42,8 +42,20 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     private CustomTableFieldService customTableFieldService;
 
     @Override
-    public List<TemplateCustomTableVO> searchTableListByCompanyIdAndTemplateId(Integer companyId, Integer templateId, Integer isAll) {
-        List<TemplateCustomTableVO> templateCustomTableList = templateCustomTableFieldDao.searchTableListByCompanyIdAndTemplateId(companyId,templateId,isAll);
+    public List<TemplateCustomTableVO> searchTableListByCompanyIdAndTemplateId(Integer companyId, Integer templateId) {
+        List<TemplateCustomTableVO> templateCustomTableList = templateCustomTableFieldDao.searchTableListByCompanyIdAndTemplateId(companyId,templateId);
+        if(CollectionUtils.isNotEmpty(templateCustomTableList)){
+            List<TemplateCustomTableFieldVO> templateCustomTableFieldList = templateCustomTableFieldDao.searchTableFieldListByTemplateId(templateId);
+            for (TemplateCustomTableVO templateCustomTableVO : templateCustomTableList) {
+                List < TemplateCustomTableFieldVO > templateCustomTableFieldVOS = new ArrayList <> ();
+                for (TemplateCustomTableFieldVO templateCustomTableFieldVO : templateCustomTableFieldList) {
+                    if(templateCustomTableVO.getTableId ().equals ( templateCustomTableFieldVO.getTableId () )){
+                        templateCustomTableFieldVOS.add ( templateCustomTableFieldVO );
+                    }
+                }
+                templateCustomTableVO.setFieldList ( templateCustomTableFieldVOS );
+            }
+        }
         return templateCustomTableList;
     }
 
@@ -53,7 +65,6 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     @Override
     public List<TemplateCustomTableVO> searchTableFieldListByTemplateId(Integer templateId) {
         List<TemplateCustomTableVO> templateCustomTableList = templateCustomTableFieldDao.searchTableListByTemplateId(templateId);
-
         if(CollectionUtils.isNotEmpty(templateCustomTableList)){
             List<TemplateCustomTableFieldVO> templateCustomTableFieldList = templateCustomTableFieldDao.searchTableFieldListByTemplateId(templateId);
             for(TemplateCustomTableVO templateCustomTable : templateCustomTableList){
@@ -173,7 +184,6 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
         List < TemplateCustomTableVO > voList = searchTableFieldListByTemplateId ( templateId );
         //删除DB中原有模板表的所有字段(单表全量字段操作)
            templateCustomTableFieldDao.deleteTemplateTable(templateId,voList,userSession.getArchiveId ());
-
         //新增表数据
         templateCustomTableFieldDao.addTemplateTable(templateId,list,userSession.getArchiveId ());
     }

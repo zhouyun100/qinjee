@@ -60,25 +60,56 @@ public class ExcelUtil {
         // 添加一个sheet名称
         HSSFSheet hssfSheet = hssfWorkbook.createSheet ( title );
         HSSFCellStyle style = hssfWorkbook.createCellStyle ();
-        style.setAlignment ( HorizontalAlignment.CENTER );
         //设置垂直对齐的样式为居中对齐;
-        style.setVerticalAlignment ( VerticalAlignment.CENTER );
+        style.setAlignment ( HorizontalAlignment.CENTER );
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        //设置边框样式
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        // 设置边框颜色
+        style.setBottomBorderColor(IndexedColors.BLACK.index);
+        style.setTopBorderColor(IndexedColors.BLACK.index);
+        style.setLeftBorderColor(IndexedColors.BLACK.index);
+        style.setRightBorderColor(IndexedColors.BLACK.index);
+        //设置列宽
+        for (int i = 0; i < heads.size (); i++) {
+            hssfSheet.setColumnWidth ( i, 30 * 256 );
+        }
         HSSFRow hssfRow = hssfSheet.createRow ( 0 );
         for (int i = 0; i < heads.size (); i++) {
             HSSFCell hssfCell = hssfRow.createCell ( i );
+            hssfRow.setHeightInPoints(40);
+            // 设置前景颜色
+//            style.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.index);
+            //设置颜色填充规则
+//            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             //先设定类型，再设定值
+            HSSFFont font = hssfWorkbook.createFont();
+            //设置字体类型
+            font.setFontName("宋体");
+            //设置字体是否加粗
+            font.setBold(true);
+           //设置字体是否倾斜
+            font.setItalic(false);
+            //设置字号
+            font.setFontHeightInPoints( ( short ) 11 );
+            style.setFont(font);
+            hssfCell.setCellStyle(style);
             hssfCell.setCellType ( getCellType ( map.get ( heads.get ( i ) ) ) );
             hssfCell.setCellValue ( heads.get ( i ) );
         }
-
         // 循环将list里面的值取出来放进excel中
         for (int i = 0; i < dates.size (); i++) {
             HSSFRow hssfRow1 = hssfSheet.createRow ( i + 1 );
+            hssfRow1.setHeightInPoints(30);
             int j = 0;
             Iterator < Map.Entry < String, String > > it = dates.get ( i ).entrySet ().iterator ();
             while (it.hasNext ()) {
                 Map.Entry < String, String > entry = it.next ();
                 HSSFCell hssfCell = hssfRow1.createCell ( j );
+                hssfCell.setCellStyle ( style );
                 hssfCell.setCellValue ( entry.getValue () );
                 j++;
             }

@@ -2,7 +2,6 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
-import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
@@ -320,24 +319,21 @@ public class ImportAndExportStaffController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
 //    })
     //导出的文件应该是以.xls结尾
-    public ResponseResult exportArcFileNoCon(@RequestBody List<Integer> list, HttpServletResponse response,@RequestParam
-                                             List<Integer> orgIdList) {
-        Boolean b = checkParam(response,getUserSession (),list);
+    public ResponseResult exportArcFileNoCon(@RequestBody ExportArcParamVo exportArcParamVo, HttpServletResponse response) {
+        Boolean b = checkParam(response,getUserSession (),exportArcParamVo);
         if(b){
             try {
-                Integer querySchemaId=0;
+                List < Integer > list = exportArcParamVo.getList ();
+                Integer querySchemaId = exportArcParamVo.getQuerySchemaId ();
+                List < Integer > orgIdList = exportArcParamVo.getOrgIdList ();
                 if(!CollectionUtils.isEmpty ( list )){
-                    List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( getUserSession ().getArchiveId () );
-                    for (QueryScheme queryScheme : list1) {
-                        if(queryScheme.getIsDefault ()==1){
-                            querySchemaId=queryScheme.getQuerySchemeId ();                        }
-                    }
-                    staffImportAndExportService.exportArcFile(list,response,getUserSession (),querySchemaId);
+                    staffImportAndExportService.exportArcFile( list,response,getUserSession (),querySchemaId);
                 }else{
                     Boolean aBoolean = checkParam ( orgIdList );
                     if(aBoolean) {
                         List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList );
                         staffImportAndExportService.exportArcFile ( list1, response, getUserSession (), querySchemaId );
+                        return null;
                     }else {
                         return  failResponseResult("参数错误");
                     }

@@ -113,7 +113,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 //        }
         if(1==preRegistVo.getSendWay ()){
             //短信发送
-          smsRecordService.sendMessageSms ( preRegistVo.getList (),preRegistVo.getTemplateId () );
+          smsRecordService.sendMessageSms ( preRegistVo.getList (),preRegistVo.getTemplateId (),userSession );
         }
         if(2==preRegistVo.getSendWay ()){
             //邮件发送

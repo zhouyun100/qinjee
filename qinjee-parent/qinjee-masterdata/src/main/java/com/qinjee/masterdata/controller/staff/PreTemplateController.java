@@ -401,28 +401,36 @@ public class PreTemplateController extends BaseController {
      * 根据企业ID和模板ID查询自定义表列表
      * 根据模板id或者全量查询企业下的自定义表，新增展示自定义表名时可复用此接口全量查询
      * @param templateId 模板ID
-     * @param isAll 是否显示全部表(1:显示全部自定义表,0:显示模板对应的自定义表)
-     * @return
      */
     @CrossOrigin
     @RequestMapping(value = "/searchTableListByCompanyIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
-    public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId,Integer isAll) {
-        Boolean b = checkParam (getUserSession () );
-        if (b) {
+    public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId,Integer companyId) {
             try {
-                List < TemplateCustomTableVO > templateCustomTableVOS =
-                        templateCustomTableFieldService.searchTableListByCompanyIdAndTemplateId ( getUserSession ().getCompanyId (), templateId, isAll );
-                if(!CollectionUtils.isEmpty ( templateCustomTableVOS )){
-                    return new ResponseResult <> ( templateCustomTableVOS,CommonCode.SUCCESS );
-                }else {
-                    return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
+                if (checkParam (getUserSession () )) {
+                    List < TemplateCustomTableVO > templateCustomTableVOS =
+                            templateCustomTableFieldService.searchTableListByCompanyIdAndTemplateId ( getUserSession ().getCompanyId (), templateId );
+                    if (!CollectionUtils.isEmpty ( templateCustomTableVOS )) {
+                        return new ResponseResult <> ( templateCustomTableVOS, CommonCode.SUCCESS );
+                    } else {
+                        return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
+                    }
+                }else if(checkParam (companyId )){
+                    List < TemplateCustomTableVO > templateCustomTableVOS =
+                            templateCustomTableFieldService.searchTableListByCompanyIdAndTemplateId (companyId, templateId );
+                    if (!CollectionUtils.isEmpty ( templateCustomTableVOS )) {
+                        return new ResponseResult <> ( templateCustomTableVOS, CommonCode.SUCCESS );
+                    } else {
+                        return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
+                    }
+                } else{
+                    return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
                 }
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult ( "获取值异常" );
             }
-        }
-        return failResponseResult ( "参数错误或者session错误" );
+
     }
 
     /**

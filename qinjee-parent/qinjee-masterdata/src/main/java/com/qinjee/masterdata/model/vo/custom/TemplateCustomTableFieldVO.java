@@ -17,7 +17,7 @@ import lombok.Data;
  * @date 2019/12/09
  */
 @Data
-public class TemplateCustomTableFieldVO {
+public class    TemplateCustomTableFieldVO {
 
     /**
      * 模板自定义字段主键ID

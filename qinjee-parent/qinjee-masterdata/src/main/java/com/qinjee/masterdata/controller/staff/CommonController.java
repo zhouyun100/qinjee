@@ -1,12 +1,10 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.CustomArchiveField;
-import com.qinjee.masterdata.model.entity.CustomArchiveGroup;
-import com.qinjee.masterdata.model.entity.CustomArchiveTable;
-import com.qinjee.masterdata.model.entity.CustomArchiveTableData;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
@@ -662,6 +660,46 @@ public class CommonController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
+    /**
+     * 根据orgId获得org对象
+     * @param orgId
+     * @return
+     */
+    @RequestMapping(value = "/getOrgById", method = RequestMethod.GET)
+    @ApiOperation(value = "根据orgId获得org对象", notes = "hkt")
+    public  ResponseResult getNameForOrganzition(Integer orgId){
+        Boolean b = checkParam(orgId,getUserSession ());
+        if (b) {
+            try {
+                OrganizationVO orgById = staffCommonService.getOrgById ( orgId, getUserSession () );
+                return new ResponseResult<>(orgById, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 根据PostId获得Post对象
+     * @param postId
+     * @return
+     */
+    @RequestMapping(value = "/getPostById", method = RequestMethod.GET)
+    @ApiOperation(value = "根据PostId获得Post对象", notes = "hkt")
+    public  ResponseResult getPostById(Integer postId){
+        Boolean b = checkParam(postId,getUserSession ());
+        if (b) {
+            try {
+                Post postById = staffCommonService.getPostById ( postId, getUserSession () );
+                return new ResponseResult<>(postById, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.BUSINESS_EXCEPTION);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {

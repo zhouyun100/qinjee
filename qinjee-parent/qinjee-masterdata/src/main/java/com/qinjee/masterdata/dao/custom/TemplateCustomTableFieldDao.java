@@ -14,6 +14,7 @@ import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,10 +29,9 @@ public interface TemplateCustomTableFieldDao {
      * 根据企业ID和模板ID查询自定义表列表
      * @param companyId 企业ID
      * @param templateId 模板ID
-     * @param isAll 是否显示全部表(1:显示全部自定义表,0:显示模板对应的自定义表)
      * @return
      */
-    List<TemplateCustomTableVO> searchTableListByCompanyIdAndTemplateId(Integer companyId, Integer templateId, Integer isAll);
+    List<TemplateCustomTableVO> searchTableListByCompanyIdAndTemplateId(@Param("companyId") Integer companyId, @Param("templateId") Integer templateId);
 
     /**
      * 根据模板ID查询自定义表列表
@@ -45,7 +45,7 @@ public interface TemplateCustomTableFieldDao {
      * @param templateId
      * @return
      */
-    List<TemplateCustomTableFieldVO> searchTableFieldListByTemplateId(Integer templateId);
+    List<TemplateCustomTableFieldVO> searchTableFieldListByTemplateId(@Param("templateId") Integer templateId);
 
     /**
      * 根据表ID和模板ID查询对应表字段配置信息

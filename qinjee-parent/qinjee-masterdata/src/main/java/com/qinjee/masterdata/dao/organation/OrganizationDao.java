@@ -119,4 +119,6 @@ public interface OrganizationDao {
     Map<String, Integer> selectOrgIdByNameAndCompanyId(@Param("orgName") String orgName, @Param("CompanyId") Integer CompanyId, @Param("postName") String postName);
 
     Map<String, String> getNameForOrganzition(@Param("companyId") Integer companyId, @Param("orgId") Integer orgId, @Param("postId") Integer postId);
+
+    OrganizationVO getOrgById(@Param("orgId") Integer orgId, @Param("companyId") Integer companyId);
 }

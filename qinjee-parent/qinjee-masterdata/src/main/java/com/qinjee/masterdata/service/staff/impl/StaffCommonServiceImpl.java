@@ -15,6 +15,7 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
@@ -562,6 +563,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void deleteCustomArchiveTableData(List < Integer > list) {
         customArchiveTableDataDao.deleteByPrimaryKeyList (list  );
+    }
+
+    @Override
+    public OrganizationVO getOrgById(Integer orgId, UserSession userSession) {
+        return organizationDao.getOrgById(orgId,userSession.getCompanyId ());
+    }
+
+    @Override
+    public Post getPostById(Integer postId,UserSession userSession) {
+        return postDao.selectByPrimaryKey ( postId );
     }
 
 }

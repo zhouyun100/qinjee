@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.sms.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.SmsConfig;
@@ -18,6 +19,7 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
 import com.qinjee.utils.ShortUrl;
@@ -27,10 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 周赟
@@ -60,7 +59,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void sendMessageSms(List<Integer> list,Integer templateId) {
+    public void sendMessageSms(List<Integer> list, Integer templateId, UserSession userSession) {
         SmsConfig smsConfig = smsConfigService.selectEntryRegistrationSmsConfig ();
         //获取预入职的信息
         Map < Integer, Map < String, String > > integerMapMap = preEmploymentDao.selectNameAndOrg ( list );
@@ -73,18 +72,36 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             String phone = value.get ( "phone" );
             List<String> phoneNumbers = new ArrayList<>();
             phoneNumbers.add(phone);
+
+            /////////////
+
+            String keyValue = "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ();
+            String key = ShortUrl.shortUrl ( keyValue );
+
+            Map<String,Integer> stringMap = new HashMap <> (  );
+            stringMap.put ( "preId",  integerMapEntry.getKey ());
+            stringMap.put ( "templateId",  templateId);
+            stringMap.put ( "companyId",  userSession.getCompanyId ());
+            redisClusterService.setex(key,2*60*60,JSON.toJSONString ( stringMap));
+
+            String url = baseShortUrl + key;
+
+            /////////////
+
             List < String > params = new ArrayList <> ( 3 );
             //拼接参数
             params.add ( userName );
             params.add ( applicationPosition );
-            params.add (baseShortUrl+"?shortUrlCode="+ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId ) );
+            params.add (baseShortUrl+ShortUrl.shortUrl ( "preId=" + integerMapEntry.getKey () +"&templateId="+ templateId +"&companyId="+userSession.getCompanyId ()) );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
-            redisClusterService.setex (  ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId ),
-                    2*60*60, "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId);
+            redisClusterService.setex (  ShortUrl.shortUrl ( "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId () ),
+                    2*60*60, "?preId=" + integerMapEntry.getKey () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ());
+
+
         }
     }
 

@@ -10,6 +10,8 @@
  */
 package com.qinjee.masterdata.service.sms;
 
+import com.qinjee.model.request.UserSession;
+
 import java.util.List;
 
 /**
@@ -21,7 +23,7 @@ public interface SmsRecordService {
     /**
      * 发送预入职登记短信
      */
-    void sendMessageSms(List <Integer> list,Integer templateId) throws Exception;
+    void sendMessageSms(List <Integer> list, Integer templateId, UserSession userSession) throws Exception;
 
     /**
      * 发送短信登录验证码
