@@ -242,9 +242,12 @@
         SELECT cat.table_id,cat.table_name
         FROM t_custom_archive_table cat,t_template_custom_table tct
         WHERE tct.template_id = #{templateId,jdbcType=INTEGER}
+        and cat.func_code='pre'
+        and tct.template_id =#{templateId}
         AND cat.table_id = tct.table_id
         AND cat.is_delete = 0
         AND cat.is_enable = 1
+        and tct.is_delete=0
         ORDER BY tct.sort
     </select>
 
@@ -254,14 +257,19 @@
         caf.placeholder,caf.max_length,caf.min_length,caf.max_number,caf.min_number,caf.float_length,
         caf.is_time_range,caf.min_time,caf.max_time,caf.format_time,caf.is_must,caf.rule,caf.is_only_read,
         caf.table_id,caf.group_id,caf.is_show,caf.is_system_define,caf.sort
-        from t_custom_archive_field caf,t_template_custom_table_field tctf
-        where tctf.template_id = #{templateId,jdbcType=INTEGER}
-        and tctf.table_id = #{tableId,jdbcType=INTEGER}
-        and tctf.table_id = caf.table_id
-        and caf.is_show = 1
-        and tctf.is_delete = 0
-        and caf.is_delete = 0
+        FROM
+        t_custom_archive_field caf
+        where caf.field_id in
+        (select field_id from t_template_custom_table_field
+         where table_id=#{tableId}
+         and  template_id=#{templateId}
+         and is_delete=0
+        )
+        and
+        caf.is_delete=0
+
     </select>
+
     <select id="searchFieldListByTableIdAndTemplateId"
             resultType="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO">
 

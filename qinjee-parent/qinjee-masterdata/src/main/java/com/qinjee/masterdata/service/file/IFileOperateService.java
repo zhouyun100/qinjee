@@ -32,7 +32,7 @@ public interface IFileOperateService {
     /**
      * 删除文件(逻辑删除)
      */
-    void deleteFile(List<Integer> id,UserSession userSession);
+    void deleteFile(List<Integer> id,Integer companyId);
     /**
      * 展示附件列表
      */
@@ -43,4 +43,8 @@ public interface IFileOperateService {
     void exportCheckFile(UserSession userSession,HttpServletResponse response) throws  IOException;
 
     String checkImg(MultipartFile[] files, UserSession userSession) throws Exception;
+
+    void putPreFile(MultipartFile file, Integer preId, String groupName, Integer companyId) throws Exception;
+
+    List< AttchmentRecordVo> selectPreAttach(Integer companyId, Integer preId);
 }

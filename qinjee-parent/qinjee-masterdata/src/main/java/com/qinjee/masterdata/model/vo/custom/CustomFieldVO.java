@@ -182,4 +182,8 @@ public class CustomFieldVO {
      * 代码型集合
      */
     private List<SysDict> dictList;
+    /**
+     * 读写权限
+     */
+    private String  readWriteCode;
 }

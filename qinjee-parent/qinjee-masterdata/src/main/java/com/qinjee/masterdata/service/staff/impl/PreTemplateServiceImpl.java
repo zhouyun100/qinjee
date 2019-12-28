@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,28 +136,33 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     }
 
 
-
-
     @Override
     public List < EntryRegistrationTableVO > handlerCustomTableGroupFieldList(Integer companyId, Integer preId,Integer templateId)
             throws IllegalAccessException {
         Map < Integer, String > map =new HashMap <> (  );
+        List < Integer > integers = new ArrayList <> ();
         //根据模板id获取模板数据
         List < EntryRegistrationTableVO > entryRegistrationTableVOList =
                 templateCustomTableFieldService.searchCustomTableListByTemplateId ( templateId );
-        //根据企业id找到tableId
-       List<Integer> list=customTableFieldDao.selectTableIdByCompanyIdAndFuncCode(companyId,"PRE");
+        //筛选出tableId
+        for (EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableVOList) {
+            integers.add ( entryRegistrationTableVO.getTableId () );
+        }
        //找到对应的值
-        for (Integer integer : list) {
+        for (Integer integer : integers) {
             List < Map < Integer, String > > mapList = staffCommonService.selectValue ( integer, preId );
             for (Map < Integer, String > integerStringMap : mapList) {
                 for (Map.Entry < Integer, String > integerStringEntry : integerStringMap.entrySet ()) {
                     map.put ( integerStringEntry.getKey (),integerStringEntry.getValue () );
                 }
             }
+            for (EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableVOList) {
+                if(entryRegistrationTableVO.getTableId ().equals ( integer )){
+                    entryRegistrationTableVOList =
+                            templateCustomTableFieldService.handlerCustomTableGroupFieldList ( entryRegistrationTableVOList, map );
+                }
+            }
         }
-        List < EntryRegistrationTableVO > entryRegistrationTableVos =
-                templateCustomTableFieldService.handlerCustomTableGroupFieldList ( entryRegistrationTableVOList, map );
-        return entryRegistrationTableVos;
+        return entryRegistrationTableVOList;
     }
 }

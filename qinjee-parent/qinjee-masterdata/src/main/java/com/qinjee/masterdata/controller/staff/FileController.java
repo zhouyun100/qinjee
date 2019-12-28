@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,7 +54,7 @@ public class FileController extends BaseController {
     }
 
     /**
-     * 下载文件
+     * 下载档案文件
      * @param response
      * @return
      */
@@ -124,12 +125,16 @@ public class FileController extends BaseController {
      * 删除文件
      */
     @RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
-    @ApiOperation(value = "删除文件", notes = "hkt")
-    public ResponseResult deleteFile(@RequestBody List<Integer> id) {
-        Boolean b = checkParam(id,getUserSession ());
+    @ApiOperation(value = "删除文件,预入职也调用此接口", notes = "hkt")
+    public ResponseResult deleteFile(@RequestBody List<Integer> id,Integer companyId) {
+        Boolean b = checkParam(id);
         if(b) {
             try {
-                fileOperateService.deleteFile (id,getUserSession () );
+                if(checkParam ( companyId )){
+                    fileOperateService.deleteFile (id,companyId );
+                }else{
+                    fileOperateService.deleteFile ( id,getUserSession ().getCompanyId () );
+                }
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -199,6 +204,55 @@ public class FileController extends BaseController {
             try {
                  fileOperateService.exportCheckFile ( getUserSession (),response);
                  return null;
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode. FAIL);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+
+    /**
+     * 预入职模板上传文件
+     * @param file
+     * @return
+     */
+    @RequestMapping(value = "/uploadPreFile", method = RequestMethod.POST)
+    @ApiOperation(value = "上传文件", notes = "hkt")
+    public ResponseResult uploadPreFile( @RequestParam MultipartFile file,Integer preId,String groupName,Integer companyId,HttpServletResponse response) {
+        Boolean b = checkParam(file,preId,groupName,companyId,response);
+        if(b) {
+            try {
+                response.setHeader ( "Access-Control-Allow-Origin","*" );
+                fileOperateService.putPreFile (file,preId,groupName,companyId );
+                return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> (null, CommonCode. FAIL);
+            }
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+
+    /**
+     *展示预入职文件
+     * @param companyId
+     * @param preId
+     * @return
+     */
+    @RequestMapping(value = "/showPreFile", method = RequestMethod.GET)
+    @ApiOperation(value = "展示预入职的文件", notes = "hkt")
+    public ResponseResult< List<AttchmentRecordVo>> showPreFile(@RequestParam Integer companyId,Integer preId,HttpServletResponse response) {
+        Boolean b = checkParam(companyId,preId);
+        if(b) {
+            try {
+                response.setHeader ( "Access-Control-Allow-Origin","*" );
+                List < AttchmentRecordVo> list  = fileOperateService.selectPreAttach (companyId,preId );
+                if(!CollectionUtils.isEmpty (list  )){
+                    return new ResponseResult<>  (list, CommonCode.SUCCESS);
+                }else{
+                    return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
+                }
             } catch (Exception e) {
                 e.printStackTrace ();
                 return new ResponseResult <> (null, CommonCode. FAIL);

@@ -146,7 +146,7 @@ public interface IStaffCommonService {
      * @param companyId
      * @return
      */
-    OrganzitionVo getOrgIdByCompanyId(Integer companyId, UserSession userSession);
+    List<OrganzitionVo> getOrgIdByCompanyId(Integer companyId, UserSession userSession);
 
     /**
      * 显示部门下的岗位

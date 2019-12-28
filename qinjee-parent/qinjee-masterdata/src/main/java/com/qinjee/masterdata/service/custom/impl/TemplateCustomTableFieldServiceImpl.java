@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.qinjee.masterdata.dao.custom.TemplateCustomTableFieldDao;
+import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
@@ -153,9 +154,8 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     @Transactional(rollbackFor = Exception.class)
     public List < EntryRegistrationTableVO > searchCustomTableListByTemplateId(Integer templateId) {
         List < EntryRegistrationTableVO > entryRegistrationTableList = templateCustomTableFieldDao.searchEntryRegistrationTableListByTemplateId ( templateId );
-
         for (EntryRegistrationTableVO tableVO : entryRegistrationTableList) {
-            List < CustomFieldVO > customFieldList = templateCustomTableFieldDao.searchCustomFieldListByTemplateIdAndTableId ( templateId, tableVO.getTableId () );
+            List < CustomFieldVO > customFieldList = templateCustomTableFieldDao.searchCustomFieldListByTemplateIdAndTableId ( tableVO.getTableId (),templateId );
             tableVO.setCustomFieldVOList ( customFieldList );
         }
         return entryRegistrationTableList;
@@ -194,7 +194,13 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTemplate(Integer archiveId, SaveTemplateVo saveTemplateVo) {
+        TemplateEntryRegistration templateEntryRegistration = saveTemplateVo.getTemplateEntryRegistration ();
+        //删除外层
+        entryRegistrationService.deleteTemplateEntryRegistration ( templateEntryRegistration.getTemplateId (),archiveId );
+        //添加外层
+        entryRegistrationService.addTemplateEntryRegistration ( templateEntryRegistration );
+        //新增表与里面字段
         saveTemplateTableField ( saveTemplateVo.getTemplateId (),saveTemplateVo.getTemplateCustomTableList (), archiveId );
-        entryRegistrationService.addTemplateEntryRegistration ( saveTemplateVo.getTemplateEntryRegistration () );
     }
+
 }

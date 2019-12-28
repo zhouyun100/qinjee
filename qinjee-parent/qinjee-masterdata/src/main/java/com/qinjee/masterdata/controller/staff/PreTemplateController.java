@@ -406,33 +406,20 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/searchTableListByCompanyIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID和模板ID查询自定义表列表", notes = "hkt")
-    public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId,Integer companyId) {
-            try {
-                if (checkParam (getUserSession () )) {
-                    List < TemplateCustomTableVO > templateCustomTableVOS =
-                            templateCustomTableFieldService.searchTableListByCompanyIdAndTemplateId ( getUserSession ().getCompanyId (), templateId );
-                    if (!CollectionUtils.isEmpty ( templateCustomTableVOS )) {
-                        return new ResponseResult <> ( templateCustomTableVOS, CommonCode.SUCCESS );
-                    } else {
-                        return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
-                    }
-                }else if(checkParam (companyId )){
-                    List < TemplateCustomTableVO > templateCustomTableVOS =
-                            templateCustomTableFieldService.searchTableListByCompanyIdAndTemplateId (companyId, templateId );
-                    if (!CollectionUtils.isEmpty ( templateCustomTableVOS )) {
-                        return new ResponseResult <> ( templateCustomTableVOS, CommonCode.SUCCESS );
-                    } else {
-                        return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
-                    }
-                } else{
-                    return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
-                }
-            } catch (Exception e) {
-                e.printStackTrace ();
-                return failResponseResult ( "获取值异常" );
+    public ResponseResult <List < TemplateCustomTableVO >> searchTableListByCompanyIdAndTemplateId(Integer templateId) {
+        Boolean b = checkParam ( templateId, getUserSession () );
+        if (b) {
+            List < TemplateCustomTableVO > templateCustomTableVOS =
+                    templateCustomTableFieldService.searchTableListByCompanyIdAndTemplateId ( getUserSession ().getCompanyId (), templateId );
+            if (!CollectionUtils.isEmpty ( templateCustomTableVOS )) {
+                return new ResponseResult <> ( templateCustomTableVOS, CommonCode.SUCCESS );
+            } else {
+                return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
             }
-
+        }
+        return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
+
 
     /**
      * 设置模板下的自定义表
@@ -517,7 +504,7 @@ public class PreTemplateController extends BaseController {
     @RequestMapping(value = "/saveTemplate", method = RequestMethod.POST)
     @ApiOperation(value = "保存自定义表字段配置", notes = "hkt")
     public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo) {
-        Boolean b = checkParam (getUserSession (),saveTemplateVo );
+        Boolean b = checkParam (getUserSession (),saveTemplateVo ,getUserSession ());
         if (b) {
             try {
                 templateCustomTableFieldService.saveTemplate ( getUserSession ().getArchiveId (),saveTemplateVo );
@@ -563,20 +550,22 @@ public class PreTemplateController extends BaseController {
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.POST)
+    @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
     @ApiOperation(value = "处理自定义表字段数据回填", notes = "hkt")
-    public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId ) {
-        Boolean b = checkParam (getUserSession (),preId,templateId );
+    public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId,Integer companyId,HttpServletResponse response ) {
+        Boolean b = checkParam (preId,templateId,companyId,response);
         if (b) {
             try {
+                response.setHeader ( "Access-Control-Allow-Origin","*" );
                 List < EntryRegistrationTableVO > list =
-                        preTemplateService.handlerCustomTableGroupFieldList ( getUserSession ().getCompanyId (), preId,templateId );
-                if(CollectionUtils.isEmpty ( list )){
+                        preTemplateService.handlerCustomTableGroupFieldList ( companyId, preId,templateId );
+                if(!CollectionUtils.isEmpty ( list )){
                     return new ResponseResult <> ( list, CommonCode.SUCCESS);
                 }else{
                     return new ResponseResult <> ( null, CommonCode.FAIL_VALUE_NULL );
                 }
             } catch (Exception e) {
+                e.printStackTrace ();
                 return failResponseResult ( "更改异常" );
             }
         }

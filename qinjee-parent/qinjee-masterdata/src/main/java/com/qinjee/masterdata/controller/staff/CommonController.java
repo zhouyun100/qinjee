@@ -9,7 +9,6 @@ import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
-import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -39,8 +38,6 @@ public class CommonController extends BaseController {
 
     @Autowired
     private IStaffCommonService staffCommonService;
-    @Autowired
-    private IFileOperateService fileOperateService;
     @Autowired
     private CustomTableFieldService customTableFieldService;
 
@@ -179,7 +176,7 @@ public class CommonController extends BaseController {
         if (b) {
             try {
                 String tableCode="t_user_archive";
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession ().getCompanyId (), tableCode );
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession (), tableCode );
                 return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
             } catch (Exception e) {
                 return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
@@ -197,7 +194,7 @@ public class CommonController extends BaseController {
         if (b) {
             try {
                 String tableCode="t_pre_employment";
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession ().getCompanyId (), tableCode );
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableCode ( getUserSession (), tableCode );
                 return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
             } catch (Exception e) {
                 return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
@@ -211,10 +208,10 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/searchCustomTableGroupFieldListByTableId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID查询自定义组字段", notes = "hkt")
     public ResponseResult< CustomTableVO > searchCustomTableGroupFieldListByTableId( Integer tableId) {
-        Boolean b = checkParam(tableId);
+        Boolean b = checkParam(tableId,getUserSession ());
         if (b) {
             try {
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId );
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId ,getUserSession ());
                 return new ResponseResult<>  ( customTableVO, CommonCode.SUCCESS );
             } catch (Exception e) {
                 return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
@@ -453,7 +450,7 @@ public class CommonController extends BaseController {
         if(b) {
             try {
                 List<CustomTableVO> list=new ArrayList <> (  );
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId);
+                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId,getUserSession ());
                 List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
                 for (Map < Integer, String > map : mapList) {
                     list.add (customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map ));
@@ -595,11 +592,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门与岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult< OrganzitionVo > getOrgIdByCompanyId(Integer companyId) {
+    public ResponseResult< List < OrganzitionVo > > getOrgIdByCompanyId(Integer companyId) {
         Boolean b = checkParam(companyId,getUserSession ());
         if (b) {
             try {
-                OrganzitionVo orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId ( companyId, getUserSession () );
+                List < OrganzitionVo > orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId ( companyId, getUserSession () );
                 if (orgIdByCompanyId!=null) {
                     return new ResponseResult<>(orgIdByCompanyId, CommonCode.SUCCESS);
                 }

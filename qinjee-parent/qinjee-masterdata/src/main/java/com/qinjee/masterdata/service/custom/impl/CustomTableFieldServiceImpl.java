@@ -17,6 +17,7 @@ import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.RegexpUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -341,11 +342,11 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public CustomTableVO searchCustomTableGroupFieldListByTableCode(Integer companyId, String tableCode) {
+    public CustomTableVO searchCustomTableGroupFieldListByTableCode(UserSession userSession, String tableCode) {
 
-        List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(companyId,tableCode,null);
+        List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(userSession.getCompanyId (),tableCode,null);
 
-        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(companyId,tableCode,null);
+        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(userSession.getCompanyId (),userSession.getArchiveId (),tableCode,null);
 
         CustomTableVO customTable = handlerGroupFieldToTable(customGroupList,customFieldList);
 
@@ -353,10 +354,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId) {
+    public CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId,UserSession userSession) {
         List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(null,null, tableId);
 
-        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(null,null,tableId);
+        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(userSession.getCompanyId (),userSession.getArchiveId (),null,tableId);
 
         CustomTableVO customTable = handlerGroupFieldToTable(customGroupList,customFieldList);
 
@@ -365,7 +366,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     private CustomTableVO handlerGroupFieldToTable(List<CustomGroupVO> customGroupList, List<CustomFieldVO> customFieldList){
         CustomTableVO customTable = new CustomTableVO();
-
         //如果没有自定义组，则设置一个groupId为0的空组
         if(CollectionUtils.isEmpty(customGroupList)){
             customGroupList = new ArrayList<>();
@@ -381,7 +381,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         String textType = customFieldVO.getTextType();
                         String code = customFieldVO.getCode();
                         if(StringUtils.isNoneBlank(textType) && textType.equals("code") && StringUtils.isNoneBlank(code)){
-
                             List<SysDict> dictList = sysDictService.searchSysDictListByDictType(code);
                             customFieldVO.setDictList(dictList);
                         }
@@ -390,8 +389,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         return false;
                     }
                 }).collect(Collectors.toList());
-
                 customFieldList.removeAll(fieldList);
+
                 groupVO.setCustomFieldVOList(fieldList);
 
             }
@@ -437,7 +436,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         if(CollectionUtils.isNotEmpty(customFieldList)){
             SysDict sysDict;
             for(CustomFieldVO fieldVO : customFieldList){
-                if(StringUtils.isNoneBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNoneBlank(fieldVO.getCode())){
+                if(StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())){
                     sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
                     if(sysDict != null){
                         fieldVO.setDefaultValue(sysDict.getDictValue());

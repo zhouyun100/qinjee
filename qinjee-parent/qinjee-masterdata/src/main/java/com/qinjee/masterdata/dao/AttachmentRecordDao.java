@@ -36,4 +36,6 @@ public interface AttachmentRecordDao {
     List< String> selectGroup();
 
     List< AttachmentRecord> selectByList(@Param("list") List< Integer> id);
+
+    List< AttchmentRecordVo> selectByPreIdAndCompanyId(@Param("companyId") Integer companyId, @Param("preId") Integer preId, @Param("businessType") String businessType);
 }

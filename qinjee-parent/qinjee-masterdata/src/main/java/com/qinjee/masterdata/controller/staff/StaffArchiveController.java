@@ -229,7 +229,7 @@ public class StaffArchiveController extends BaseController {
                                                                       @RequestParam Integer currentPage,
                                                                       @RequestParam Integer querySchemaId
     ) {
-        Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage,querySchemaId);
+        Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage);
         if(b){
             try {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();

@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
+import com.qinjee.model.request.UserSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -61,18 +62,18 @@ public interface CustomTableFieldService {
 
     /**
      * 根据企业ID和物理表名查询自定义组字段
-     * @param companyId
+     * @param userSession
      * @param tableCode
      * @return
      */
-    CustomTableVO searchCustomTableGroupFieldListByTableCode(Integer companyId, String tableCode);
+    CustomTableVO searchCustomTableGroupFieldListByTableCode(UserSession userSession, String tableCode);
 
     /**
      * 根据表ID查询自定义组字段
      * @param tableId
      * @return
      */
-    CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId);
+    CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId,UserSession userSession);
 
 
     /**

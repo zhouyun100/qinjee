@@ -118,9 +118,8 @@ public interface TemplateCustomTableFieldDao {
 
     /**
      * 根据模板ID和表ID查询所有字段列表
-     * @param templateId
      * @param tableId
      * @return
      */
-    List<CustomFieldVO> searchCustomFieldListByTemplateIdAndTableId(Integer templateId,Integer tableId);
+    List<CustomFieldVO> searchCustomFieldListByTemplateIdAndTableId(@Param("tableId") Integer tableId, @Param("templateId") Integer templateId);
 }

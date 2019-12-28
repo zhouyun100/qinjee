@@ -75,8 +75,38 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
         }
     }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void putPreFile(MultipartFile file, Integer preId, String groupName, Integer companyId) throws Exception {
+           File file1 = null;
+        try {
+            String puthUrl=companyId+File.separator+preId+File.separator+groupName+File.separator+file.getOriginalFilename ();
+            file1=FileUploadUtils.multipartFileToFile ( file );
+            //新增上传记录
+            insertPreAttachment ( file,preId,groupName,companyId,puthUrl );
+            UpAndDownUtil.putFile ( file1,puthUrl );
+        } finally {
+            if(file1!=null) {
+                file1.deleteOnExit ();
+            }
+        }
+    }
 
 
+
+
+    /**
+     * 新增预入职模板上传附件记录
+     */
+    public void insertPreAttachment(MultipartFile file,Integer preId,String groupName,Integer companyId,String pathUrl){
+        AttachmentRecord attachmentRecord = getAttachmentRecord ( file, groupName, companyId );
+        attachmentRecord.setBusinessId ( preId );
+        attachmentRecord.setBusinessType ( "employment" );
+        attachmentRecord.setAttachmentUrl(pathUrl);
+        attachmentRecord.setAttachmentSize((int)(file.getSize())/1024);
+        attachmentRecord.setOperatorId(preId);
+        attachmentRecordDao.insertSelective(attachmentRecord);
+    }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void downLoadFile(HttpServletResponse response, List<Integer> list) throws Exception {
@@ -87,9 +117,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
             List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
             for (int i = 0; i < attchmentRecordVos.size (); i++) {
                 String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
-                String attachmentName = attchmentRecordVos.get ( i ).getAttachmentName ();
-                int j =attachmentName.lastIndexOf ( "#" );
-                fileName= attachmentName.substring ( j + 1 );
+                int j =attatchmentUrl.lastIndexOf ( "/" );
+                fileName= attatchmentUrl.substring ( j + 1 );
                 COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( attatchmentUrl );
                 if (cosObjectInputStream != null) {
                     String s = fileName.split ( "\\." )[1];
@@ -122,6 +151,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
         }
         return stringList;
     }
+
     @Transactional(rollbackFor = Exception.class)
     public void insertAttachment(MultipartFile multipartFile, UserSession userSession,String pathUrl) {
         String s = getName ( pathUrl );
@@ -131,23 +161,27 @@ public class FileOperateServiceImpl implements IFileOperateService {
 //        if(filePath.size ()>=fileSize){
 //            ExceptionCast.cast ( CommonCode.File_NUMBER_WRONG );
 //        }
-        AttachmentRecord attachmentRecord=new AttachmentRecord();
-        //通过groupName找到id
-        Integer groupId=attachmentRecordDao.selectGroupId(s);
-        attachmentRecord.setGroupId ( groupId );
-        attachmentRecord.setCompanyId(userSession.getCompanyId());
-        attachmentRecord.setAttachmentName(multipartFile.getOriginalFilename());
-        attachmentRecord.setIsDelete((short) 0);
-        attachmentRecord.setBusinessModule ( "ARC" );
+        AttachmentRecord attachmentRecord = getAttachmentRecord ( multipartFile, s, userSession.getCompanyId () );
         String idnumber = multipartFile.getOriginalFilename ().split ( "#" )[0];
         UserArchiveVo userArchiveVo = userArchiveDao.selectByIdNumber ( idnumber );
         attachmentRecord.setBusinessId ( userArchiveVo.getArchiveId () );
         attachmentRecord.setBusinessType ( "archive" );
-        attachmentRecord.setBusinessId ( userSession.getArchiveId () );
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)(multipartFile.getSize())/1024);
         attachmentRecord.setOperatorId(userSession.getArchiveId());
         attachmentRecordDao.insertSelective(attachmentRecord);
+    }
+
+    private AttachmentRecord getAttachmentRecord(MultipartFile multipartFile, String s, Integer companyId) {
+        AttachmentRecord attachmentRecord = new AttachmentRecord ();
+        //通过groupName找到id
+        Integer groupId = attachmentRecordDao.selectGroupId ( s );
+        attachmentRecord.setGroupId ( groupId );
+        attachmentRecord.setCompanyId ( companyId );
+        attachmentRecord.setAttachmentName ( multipartFile.getOriginalFilename () );
+        attachmentRecord.setIsDelete ( ( short ) 0 );
+        attachmentRecord.setBusinessModule ( "ARC" );
+        return attachmentRecord;
     }
 
     private String getName(String pathUrl) {
@@ -159,12 +193,14 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteFile(List<Integer> id ,UserSession userSession) {
-        attachmentRecordDao.deleteFile (id,userSession.getCompanyId ());
+    public void deleteFile(List<Integer> id ,Integer companyId) {
+        //删除文件
         List < AttachmentRecord > list = attachmentRecordDao.selectByList ( id );
         for (AttachmentRecord attachmentRecord : list) {
             UpAndDownUtil.delFile ( attachmentRecord.getAttachmentUrl ());
         }
+        //删除记录
+        attachmentRecordDao.deleteFile (id,companyId);
     }
 
     @Override
@@ -173,10 +209,15 @@ public class FileOperateServiceImpl implements IFileOperateService {
         List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectAttach ( orgIdList, userSession.getCompanyId () );
         return new PageResult <> ( attchmentRecordVos );
     }
+    @Override
+    public List < AttchmentRecordVo > selectPreAttach(Integer companyId, Integer preId) {
+        return attachmentRecordDao.selectByPreIdAndCompanyId(companyId,preId,"employment");
+    }
 
     @Override
     public String checkFielName(List<String> fileName, UserSession userSession) {
         Map<String,String> map=new HashMap <> (  );
+        Integer j=0;
         for (int i = 0; i < fileName.size (); i++) {
             Boolean flag=false;
             String s =fileName.get ( i ).split ( "#" )[0];
@@ -196,17 +237,17 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
             if(!flag) {
                 map.put ( fileName.get ( i ), "验证不通过" );
+                j++;
             }else{
                 map.put ( fileName.get ( i ),"验证通过！" );
             }
-                redisClusterService.setex ( userSession.getCompanyId ()+"证件号验证"+userSession.getArchiveId (),2*60*60,
-                        JSON.toJSONString (map));
         }
-        if(map.size ()>0){
+        redisClusterService.setex ( userSession.getCompanyId ()+"证件号验证"+userSession.getArchiveId (),2*60*60,
+                JSON.toJSONString (map));
+        if(j>0){
             map.put ( "flag","false" );
             return JSON.toJSONString ( map );
-        }else {
-            map.put ( "flag","true" );
+        }else{
             return JSON.toJSONString ( map );
         }
     }
@@ -255,6 +296,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
         }
     }
+
+
 
     private void creatCheckResponse(HttpServletResponse response, Map < String, String > parse) throws IOException {
         StringBuffer stringBuffer=new StringBuffer (  );

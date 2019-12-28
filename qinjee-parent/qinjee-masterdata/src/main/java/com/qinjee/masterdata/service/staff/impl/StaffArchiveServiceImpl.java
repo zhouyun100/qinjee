@@ -418,7 +418,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //通过工号查询档案id
         SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy-MM-dd" );
         userArchivePostRelation.setEmploymentBeginDate ( sdf.parse ( userArchivePostRelationVo.getEmploymentBeginDate () ) );
-        userArchivePostRelation.setEmploymentEndDate ( sdf.parse ( userArchivePostRelationVo.getEmploymentEndDate () ) );
+        String employmentEndDate = userArchivePostRelationVo.getEmploymentEndDate ();
+        if(employmentEndDate!=null) {
+            userArchivePostRelation.setEmploymentEndDate ( sdf.parse (employmentEndDate) );
+        }
         Integer id = userArchiveDao.selectArchiveIdByNumber ( userArchivePostRelationVo.getEmployeeNumber () );
         userArchivePostRelation.setArchiveId ( id );
         userArchivePostRelation.setOperatorId ( userSession.getArchiveId () );
@@ -428,9 +431,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public  List < UserArchivePostRelationVo > selectUserArchivePostRelation(Integer archiveId) {
-
       return userArchivePostRelationDao.selectByPrimaryKeyList ( archiveId );
-
     }
 
     @Override
