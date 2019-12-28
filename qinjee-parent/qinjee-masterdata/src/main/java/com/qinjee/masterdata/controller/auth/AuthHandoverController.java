@@ -267,7 +267,7 @@ public class AuthHandoverController extends BaseController{
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleListByArchiveId",method = RequestMethod.POST)
-    public ResponseResult<Role> searchRoleListByArchiveId(Integer archiveId) {
+    public ResponseResult<UserRoleVO> searchRoleListByArchiveId(Integer archiveId) {
         if(archiveId == null){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案ID不能为空!");

@@ -110,7 +110,7 @@ public class RoleSearchController extends BaseController{
             @ApiImplicitParam(name = "archiveId", value = "档案ID", required = true, dataType = "int")
     })
     @RequestMapping(value = "/searchRoleTreeByArchiveId",method = RequestMethod.POST)
-    public ResponseResult<Role> searchRoleListByArchiveId(Integer archiveId) {
+    public ResponseResult<RoleGroupVO> searchRoleListByArchiveId(Integer archiveId) {
         if(null == archiveId){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("档案ID不能为空!");
