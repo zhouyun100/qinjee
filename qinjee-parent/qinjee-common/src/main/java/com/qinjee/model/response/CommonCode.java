@@ -9,7 +9,7 @@ import lombok.ToString;
  */
 @ToString
 public enum CommonCode implements ResultCode{
-    INVALID_PARAM(false,10003,"非法参数！"),
+    INVALID_PARAM(false,10003,"非法参数或者长时间未登录请重新登陆！"),
     SUCCESS(true,10000,"操作成功！"),
     FAIL(false,10002,"操作失败！"),
     CODE_GENER_FAIL(false,10007,"机构/岗位编码生成失败（可能由于存在字符）！"),

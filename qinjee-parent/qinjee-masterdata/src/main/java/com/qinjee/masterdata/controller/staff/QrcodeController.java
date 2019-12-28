@@ -30,11 +30,7 @@ public class QrcodeController extends BaseController {
         //companyId, funcCode
         Boolean b = checkParam(date,templateId,companyId);
         if (b) {
-            try {
                 qrcodeService.dealQrcodeRequest(date,templateId,companyId);
-            } catch (Exception e) {
-                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
-            }
         }
         return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
@@ -47,11 +43,7 @@ public class QrcodeController extends BaseController {
         //companyId, funcCode
         Boolean b = checkParam(phone);
         if (b) {
-            try {
                 qrcodeService.sendPreCheckCode(phone);
-            } catch (Exception e) {
-                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
-            }
         }
         return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
@@ -60,15 +52,11 @@ public class QrcodeController extends BaseController {
      */
     @RequestMapping(value = "/checkPreCodeAndRedirect", method = RequestMethod.GET)
     @ApiOperation(value = "检验是否登陆成功并跳转到数据页面", notes = "hkt")
-    public ResponseResult checkPreCodeAndRedirect( String phone,String code,HttpServletResponse response,Integer templateId,Integer companyId ) {
+    public ResponseResult checkPreCodeAndRedirect( String phone,String code,HttpServletResponse response,Integer templateId,Integer companyId ) throws Exception {
         //companyId, funcCode
         Boolean b = checkParam(phone,code,response,templateId,companyId);
         if (b) {
-            try {
                 qrcodeService.checkPreCodeAndRedirect(phone,code,response,templateId,companyId);
-            } catch (Exception e) {
-                return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
-            }
         }
         return new ResponseResult <> ( null,CommonCode.INVALID_PARAM );
     }
@@ -80,12 +68,5 @@ public class QrcodeController extends BaseController {
             }
         }
         return true;
-    }
-
-    private ResponseResult failResponseResult(String message){
-        ResponseResult fail = ResponseResult.FAIL();
-        fail.setMessage(message);
-        logger.error(message);
-        return fail;
     }
 }

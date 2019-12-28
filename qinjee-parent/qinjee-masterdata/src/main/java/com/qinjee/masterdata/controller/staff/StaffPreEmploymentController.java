@@ -42,16 +42,11 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/insertPreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "新增预入职", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form", required = true)
-    public ResponseResult insertPreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo ){
+    public ResponseResult insertPreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo ) throws Exception {
         Boolean b = checkParam(preEmploymentVo,getUserSession());
         if(b){
-            try {
                 staffPreEmploymentService.insertPreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("新增预入职失败");
-            }
         }
         return  failResponseResult("参数错误");
     }
@@ -62,16 +57,12 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/deletePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "删除预入职", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "预入职id集合", paramType = "query", required = true)
-    public ResponseResult deletePreEmployment(@RequestBody List<Integer> list ){
+    public ResponseResult deletePreEmployment(@RequestBody List<Integer> list ) throws Exception {
         Boolean b = checkParam(list);
         if(b){
-            try {
                 staffPreEmploymentService.deletePreEmployment(list);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("删除预入职失败");
-            }
+
         }
         return  failResponseResult("参数错误");
     }
@@ -84,13 +75,8 @@ public class StaffPreEmploymentController extends BaseController {
     public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo){
         Boolean b = checkParam(preEmploymentVo,getUserSession());
         if(b){
-            try {
                 staffPreEmploymentService.updatePreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("修改预入职信息失败");
-            }
         }
         return  failResponseResult("参数错误");
     }
@@ -100,16 +86,11 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmploymentField", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map){
+    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map) throws Exception {
         Boolean b = checkParam(map);
         if(b){
-            try {
                 staffPreEmploymentService.updatePreEmploymentField(map);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("修改预入职信息失败");
-            }
         }
         return  failResponseResult("参数错误");
     }
@@ -122,13 +103,8 @@ public class StaffPreEmploymentController extends BaseController {
     public ResponseResult<Map<String,String>> selectPreEmploymentField(){
         Boolean b = checkParam(getUserSession());
         if(b){
-            try {
                 Map<String, String> stringStringMap = staffPreEmploymentService.selectPreEmploymentField(getUserSession());
                 return new ResponseResult<>(stringStringMap,CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-               return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -140,13 +116,8 @@ public class StaffPreEmploymentController extends BaseController {
     public ResponseResult< PreEmployment > selectPreEmploymentSingle(Integer employeeId){
         Boolean b = checkParam(employeeId);
         if(b){
-            try {
                 PreEmployment preEmployment=staffPreEmploymentService.selectPreEmploymentSingle((employeeId));
                 return new ResponseResult<>(preEmployment,CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -166,17 +137,10 @@ public class StaffPreEmploymentController extends BaseController {
                                                                          Integer pageSize){
         Boolean b = checkParam(getUserSession (),currentPage,pageSize);
         if(b){
-            try {
+
                 PageResult<PreEmploymentVo> pageResult =
                         staffPreEmploymentService.selectPreEmployment(getUserSession (),currentPage, pageSize);
-                if(pageResult.getList().size()>0){
                     return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -193,16 +157,11 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult updatePreEmploymentChange(@RequestBody @Valid StatusChangeVo statusChangeVo) {
+    public ResponseResult updatePreEmploymentChange(@RequestBody @Valid StatusChangeVo statusChangeVo) throws Exception {
         Boolean b = checkParam(statusChangeVo,getUserSession());
         if(b){
-            try {
                 staffPreEmploymentService.insertStatusChange(getUserSession(), statusChangeVo);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("延期入职以及放弃入职失败");
-            }
         }
         return  failResponseResult("参数错误");
     }
@@ -216,10 +175,9 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult confirmPreemployment( ConfirmId confirmId) {
+    public ResponseResult confirmPreemployment( ConfirmId confirmId) throws Exception {
         Boolean b = checkParam ( confirmId, getUserSession () );
         if (b) {
-            try {
                 StatusChangeVo statusChangeVo = new StatusChangeVo ();
                 statusChangeVo.setAbandonReason ( "" );
                 statusChangeVo.setChangeState ( CHANGSTATUS_READY );
@@ -227,10 +185,6 @@ public class StaffPreEmploymentController extends BaseController {
                 statusChangeVo.setRuleId ( confirmId.getRuleId () );
                 staffPreEmploymentService.insertStatusChange ( getUserSession (), statusChangeVo );
                 return ResponseResult.SUCCESS ();
-            } catch (Exception e) {
-                e.printStackTrace ();
-                return failResponseResult ( "确认入职失败" );
-            }
         }
         return failResponseResult ( "参数错误" );
     }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -45,12 +46,8 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult insertBlackList(@RequestBody List<BlackListVo> blacklists) {
         Boolean b = checkParam(blacklists,  getUserSession());
         if (b) {
-            try {
                 staffStandingBookService.insertBlackList(blacklists,  getUserSession());
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("加入黑名单表失败");
-            }
 
         }
         return failResponseResult("参数错误");
@@ -61,15 +58,11 @@ public class StaffStandingBookController extends BaseController {
     @RequestMapping(value = "/deleteBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "删除黑名单表", notes = "hkt")
 //    @ApiImplicitParam(name = "list", value = "黑名单表id集合", paramType = "query", required = true, example = "{1，2}")
-    public ResponseResult deleteBalckList(@RequestBody List<Integer> list) {
+    public ResponseResult deleteBalckList(@RequestBody List<Integer> list) throws Exception {
         Boolean b = checkParam(list);
         if (b) {
-            try {
                 staffStandingBookService.deleteBlackList(list);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("删除黑名单表失败");
-            }
         }
         return failResponseResult("参数错误");
     }
@@ -85,12 +78,8 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult updateBalckList(@RequestBody @Valid Blacklist blacklist) {
         Boolean b = checkParam(blacklist);
         if (b) {
-            try {
                 staffStandingBookService.updateBalckList(blacklist);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("修改黑名单表失败");
-            }
         }
         return failResponseResult("参数错误");
     }
@@ -108,15 +97,9 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult<List<Blacklist>> selectBalckList() {
         Boolean b = checkParam(getUserSession ());
         if (b) {
-            try {
                 List < Blacklist > blacklistList = staffStandingBookService.selectBalckList ( getUserSession () );
-                if(blacklistList.size()>0){
                     return new ResponseResult<>(blacklistList, CommonCode.SUCCESS);
-                }
-                    return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
+
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -132,12 +115,9 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult deleteStandingBook(Integer standingBookId) {
         Boolean b = checkParam(standingBookId);
         if (b) {
-            try {
                 staffStandingBookService.deleteStandingBook(standingBookId);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("删除台账失败");
-            }
+
         }
         return failResponseResult("参数错误");
     }
@@ -155,13 +135,9 @@ public class StaffStandingBookController extends BaseController {
         //如果没有，证明是新增。做两个新增操作。
         Boolean b = checkParam(standingBookInfoVo,getUserSession());
         if (b) {
-            try {
                 staffStandingBookService.saveStandingBook(getUserSession(), standingBookInfoVo);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("查询台账失败");
-            }
+
         }
         return failResponseResult("参数错误");
     }
@@ -174,13 +150,8 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult updateStandingBook(Integer standingBookId,String name) {
         Boolean b = checkParam(standingBookId,name);
         if (b) {
-            try {
                 staffStandingBookService.updateStandingBook(standingBookId,name);
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return failResponseResult("查询台账失败");
-            }
         }
         return failResponseResult("参数错误");
     }
@@ -194,16 +165,8 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult<StandingBookInfo> selectStandingBook(Integer id) {
         Boolean b = checkParam(id);
         if (b) {
-            try {
                 StandingBookInfo standingBookInfo = staffStandingBookService.selectStandingBook(id);
-                if(standingBookInfo !=null){
                     return new ResponseResult<>(standingBookInfo,CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -215,15 +178,8 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult<List<StandingBook>> selectMyStandingBook() {
         Boolean b = checkParam(getUserSession());
         if (b) {
-            try {
                 List<StandingBook> list = staffStandingBookService.selectMyStandingBook(userSession);
-                if(list!=null){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
-                }
-                return new ResponseResult<>(null,CommonCode.FAIL_VALUE_NULL);
-            } catch (Exception e) {
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -236,15 +192,8 @@ public class StaffStandingBookController extends BaseController {
     public ResponseResult selectMyStandingBookShare() {
         Boolean b = checkParam(getUserSession());
         if (b) {
-            try {
                 List<StandingBook> list = staffStandingBookService.selectMyStandingBookShare(getUserSession());
-                if(list!=null){
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
-                }
-                return failResponseResult("台账为空");
-            } catch (Exception e) {
-                return failResponseResult("查询台账失败");
-            }
         }
         return failResponseResult("参数错误");
     }
@@ -266,10 +215,9 @@ public class StaffStandingBookController extends BaseController {
 //            @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<UserArchiveVoAndHeader> selectStaff(@RequestBody StandingBookReturnVo standingBookReturnVo){
+    public ResponseResult<UserArchiveVoAndHeader> selectStaff(@RequestBody StandingBookReturnVo standingBookReturnVo) throws ParseException {
         Boolean b = checkParam(standingBookReturnVo,getUserSession());
         if (b) {
-            try {
                 List < UserArchiveVo > list = staffStandingBookService.selectStaff ( standingBookReturnVo, getUserSession () );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( list );
@@ -277,10 +225,6 @@ public class StaffStandingBookController extends BaseController {
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),standingBookReturnVo.getQuerySchemaId () ));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseResult<>(null,CommonCode.BUSINESS_EXCEPTION);
-            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
