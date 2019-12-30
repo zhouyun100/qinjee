@@ -75,7 +75,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 UpAndDownUtil.putFile(file1, pathUrl);
             } finally {
                 if(file1!=null) {
-                    file1.deleteOnExit ();
+                    file1.delete ();
                 }
             }
         }
@@ -92,7 +92,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
             UpAndDownUtil.putFile ( file1,puthUrl );
         } finally {
             if(file1!=null) {
-                file1.deleteOnExit ();
+                file1.delete ();
             }
         }
     }
@@ -122,7 +122,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
             List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
             for (int i = 0; i < attchmentRecordVos.size (); i++) {
                 String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
-                int j =attatchmentUrl.lastIndexOf ( "/" );
+                int j =attatchmentUrl.lastIndexOf ( "\\" );
                 fileName= attatchmentUrl.substring ( j + 1 );
                 COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( attatchmentUrl );
                 if (cosObjectInputStream != null) {
@@ -174,6 +174,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)(multipartFile.getSize())/1024);
         attachmentRecord.setOperatorId(userSession.getArchiveId());
+        attachmentRecord.setGroupId ( attachmentRecordDao.selectGroupId ( s ) );
         attachmentRecordDao.insertSelective(attachmentRecord);
     }
 
@@ -190,10 +191,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     private String getName(String pathUrl) {
-        int i = pathUrl.lastIndexOf ( "#" );
+        int i = pathUrl.lastIndexOf ( "\\");
         String substring = pathUrl.substring ( i+1  );
-        int i1 = substring.lastIndexOf ( "." );
-        return substring.substring ( 0, i1 );
+        int i2 = substring.lastIndexOf ( "\\");
+        String substring1 = substring.substring ( i2 + 1 );
+        return substring1;
     }
 
     @Override
@@ -238,13 +240,18 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List < AttchmentRecordVo > selectMyFileContent(Integer businessId, String groupName,String businessType,Integer companyId) {
-       return attachmentRecordDao.selectByBusinessIdAndGroupNameAndBusinessType(businessId,groupName,businessType,companyId);
+    public List < AttchmentRecordVo > selectMyFileContent(Integer businessId, String groupName,Integer companyId) {
+       return attachmentRecordDao.selectByBusinessIdAndGroupNameAndBusinessType(businessId,groupName,companyId);
     }
 
     @Override
     public void moveFile(Integer attachmentId, Integer groupId,Integer companyId) {
-//      attachmentRecordDao.
+      attachmentRecordDao.moveFile(attachmentId,groupId,companyId);
+    }
+
+    @Override
+    public List < AttchmentRecordVo > selectMyFileContents(Integer businessId, String groupName, Integer companyId) {
+        return attachmentRecordDao.selectFileFromPackage(businessId,groupName,companyId);
     }
 
     @Override
@@ -258,7 +265,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
             List < String > list = attachmentRecordDao.selectGroup ();
             String name = getName ( fileName.get ( i ) );
             for (String s1 : list) {
-                if (s1.contains ( name )) {
+                if (name.contains ( s1 )) {
                     flag = true;
                     break;
                 }
@@ -325,7 +332,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
         } finally {
             if(file1!=null) {
-                file1.deleteOnExit ();
+                file1.delete ();
             }
         }
     }

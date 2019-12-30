@@ -288,7 +288,6 @@ public class CommonController extends BaseController {
     /**
      * 修改自定义字段类型
      */
-
 //    @RequestMapping(value = "/updateCustomArchiveField", method = RequestMethod.POST)
 //    @ApiOperation(value = "修改自定义字段", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveField", value = "自定义字段表", paramType = "form", required = true)

@@ -343,6 +343,7 @@
       #{item}
     </foreach>
     and  field_code = "id_number"
+    and is_delete=0
   </select>
   <select id="selectTableIdByFieldId" resultType="java.lang.Integer">
     select table_id from t_custom_archive_field where field_id=#{integer1} and is_delete=0

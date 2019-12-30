@@ -155,7 +155,7 @@ public class FileController extends BaseController {
      * @param file 文件
      */
     @RequestMapping(value = "/uploadPreFile", method = RequestMethod.POST)
-    @ApiOperation(value = "上传文件", notes = "hkt")
+    @ApiOperation(value = "上传预入职文件", notes = "hkt")
     public ResponseResult uploadPreFile( @RequestParam MultipartFile file,Integer preId,String groupName,Integer companyId,HttpServletResponse response) throws Exception {
         Boolean b = checkParam(file,preId,groupName,companyId,response);
         if(b) {
@@ -193,17 +193,29 @@ public class FileController extends BaseController {
     public ResponseResult<List<ShowAttatchementVo >> selectMyFile() {
            List<ShowAttatchementVo> list =fileOperateService.selectMyFile ();
             return new ResponseResult<>  (list, CommonCode.SUCCESS);
-
     }
     /**
      * 根据业务id与文件夹名显示内容
      */
     @RequestMapping(value = "/selectMyFileContent", method = RequestMethod.GET)
     @ApiOperation(value = "根据业务id与文件夹名显示内容", notes = "hkt")
-    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContent(Integer businessId,String groupName,String businessType) {
-        Boolean b = checkParam(businessId,groupName,businessType,getUserSession ());
+    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContents(Integer businessId,String groupName) {
+        Boolean b = checkParam(businessId,groupName,getUserSession ());
         if(b) {
-            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContent ( businessId, groupName,businessType,getUserSession ().getCompanyId () );
+            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContents ( businessId, groupName,getUserSession ().getCompanyId () );
+            return new ResponseResult<> (list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 根据业务id与预入职文件夹名显示内容
+     */
+    @RequestMapping(value = "/selectMyPreFileContent", method = RequestMethod.GET)
+    @ApiOperation(value = "根据业务id与预入职文件夹名显示内容", notes = "hkt")
+    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContent(Integer businessId,String groupName) {
+        Boolean b = checkParam(businessId,groupName,getUserSession ());
+        if(b) {
+            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContent ( businessId, groupName,getUserSession ().getCompanyId () );
             return new ResponseResult<> (list, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
@@ -232,6 +244,7 @@ public class FileController extends BaseController {
         Boolean b = checkParam(name,attahmentId);
         if(b) {
             fileOperateService.updateFileName (name,attahmentId);
+            return new ResponseResult <> (null, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }

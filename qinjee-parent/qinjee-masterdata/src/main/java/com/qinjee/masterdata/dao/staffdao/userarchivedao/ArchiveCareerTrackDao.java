@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
+import com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 
 @Repository
 public interface ArchiveCareerTrackDao {
-    List< ArchiveCareerTrack> selectCareerTrack(@Param("id") Integer id);
+    List< ArchiveCareerTrackVo > selectCareerTrack(@Param("id") Integer id);
 
     void updateArchiveCareerTrack(Map< String, Object> map);
 

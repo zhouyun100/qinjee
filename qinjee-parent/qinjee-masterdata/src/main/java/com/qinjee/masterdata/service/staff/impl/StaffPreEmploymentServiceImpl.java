@@ -56,6 +56,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
 
+
     /**
      * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
      * 梳理：预入职状态分为未入职，已入职，延期入职，放弃入职，黑名单。
@@ -263,6 +264,16 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public PreEmployment selectPreEmploymentSingle(Integer employeeId) {
        return preEmploymentDao.selectByPrimaryKey ( employeeId );
+    }
+
+    @Override
+    public void confirmEmployment(List<Integer> list,UserSession userSession) {
+        StatusChangeVo statusChangeVo = new StatusChangeVo ();
+        statusChangeVo.setAbandonReason ( "" );
+        statusChangeVo.setChangeState ( CHANGSTATUS_READY );
+        statusChangeVo.setPreEmploymentList ( list );
+        statusChangeVo.setRuleId ( 1 );
+        confirmEmployment (list,userSession);
     }
 
 }

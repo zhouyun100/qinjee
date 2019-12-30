@@ -289,7 +289,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         } else {
                             userArchive.setOperatorId ( userSession.getArchiveId () );
                             userArchive.setCompanyId ( userSession.getCompanyId () );
-                            setUserIdByPhone ( userSession, userArchive );
+                            if (userArchive.getPhone () != null) {
+                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
+                                if(id!=null){
+                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+                                }else {
+                                    userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
+                                }
+                            }
                             userArchiveDao.insertSelective ( userArchive );
                         }
                             list.add ( userArchive.getArchiveId () );

@@ -32,7 +32,7 @@
     </sql>
 
     <!-- 查询所有数据 -->
-    <select id="selectCareerTrack" resultMap="t_archive_career_trackMap" >
+    <select id="selectCareerTrack"  resultType="com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo" >
         SELECT
         arc.archive_id as archiveId,
         arc.user_category as userCategory,

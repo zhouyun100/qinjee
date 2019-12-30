@@ -1,7 +1,10 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -11,6 +14,7 @@ import java.util.Date;
  */
 @Data
 @JsonInclude
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ArchiveCareerTrackVo implements Serializable {
     /** 变更ID */
     private Integer changeId;
@@ -21,19 +25,23 @@ public class ArchiveCareerTrackVo implements Serializable {
 
     /** 人员分类 */
     private String userCategory;
-
+    /** 单位 */
+    private Integer businessUnitId;
     /** 单位 */
     @NotNull
     private String businessUnitName;
-
     /** 部门 */
     @NotNull
+    private Integer orgId;
+    /** 部门 */
     private String orgName;
-
     /** 岗位 */
     @NotNull
+    private Integer postId;
+    /** 岗位 */
     private String postName;
-
+    /** 职位 */
+    private Integer positionId;
     /** 职位 */
     private String positionName;
 
@@ -42,6 +50,8 @@ public class ArchiveCareerTrackVo implements Serializable {
     private String changeType;
 
     /** 变更日期 */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date changeDate;
 
     /** 变更原因 */

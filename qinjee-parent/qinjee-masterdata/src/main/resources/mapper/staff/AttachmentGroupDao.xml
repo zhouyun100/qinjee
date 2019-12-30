@@ -43,10 +43,10 @@
         select group_name
         from t_attachment_group
         where parent_group_id in
-        ( select group_name
+        ( select group_id
           from t_attachment_group
           where group_name=#{string})
-          and is_delete==0
+          and is_delete=0
     </select>
 
 

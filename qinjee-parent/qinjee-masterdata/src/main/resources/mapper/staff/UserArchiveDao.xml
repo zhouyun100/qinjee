@@ -875,7 +875,7 @@
   <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     SELECT
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, arc.id_type, arc.id_number, arc.gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
+    arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
     arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
     arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
     arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
@@ -887,22 +887,19 @@
 
     FROM
     t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
     left join t_organization org on org.org_id=arc.business_unit_id
-    LEFT JOIN t_post post ON post.post_id = arc.post_id
-    left join t_user_archive arch on arc.supervisor_id=arch.archive_id
+    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+    left join t_sys_dict dict on dict_code=arc.gender AND dict.is_delete=0
     WHERE arc.is_delete = 0
-    AND arch.is_delete = 0
-    AND post.is_delete = 0
-    AND orga.is_enable = 1
-    and orga.company_id=#{companyId}
     and arc.org_id in
     <foreach collection="orgId" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
     and arc.org_id in(
     -- 查询人员机构权限
-    select org_id from t_user_org_auth oa where oa.archive_id = 1-- 操作人档案ID
+    select org_id from t_user_org_auth oa where oa.archive_id = #{archiveId}-- 操作人档案ID
     and (oa.is_trusteeship = 0
     or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
     )
@@ -1033,7 +1030,7 @@
     AND arc.is_delete = 0
     where arc.archive_id = #{key}
   </select>
-  <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+  <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from t_user_archive
     where id_number=#{s}

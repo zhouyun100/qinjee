@@ -53,7 +53,9 @@ public interface IFileOperateService {
 
     List<ShowAttatchementVo>  selectMyFile();
 
-    List< AttchmentRecordVo> selectMyFileContent(Integer businessId, String groupName,String businessType,Integer companyId);
+    List< AttchmentRecordVo> selectMyFileContent(Integer businessId, String groupName,Integer companyId);
 
     void moveFile(Integer attachmentId, Integer groupId,Integer companyId);
+
+    List< AttchmentRecordVo> selectMyFileContents(Integer businessId, String groupName, Integer companyId);
 }

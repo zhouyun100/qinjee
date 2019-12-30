@@ -62,4 +62,6 @@ public interface IStaffPreEmploymentService {
     Map<String,String> selectPreEmploymentField(UserSession userSession);
 
     PreEmployment selectPreEmploymentSingle(Integer employeeId);
+
+    void confirmEmployment(List<Integer> list,UserSession userSession);
 }

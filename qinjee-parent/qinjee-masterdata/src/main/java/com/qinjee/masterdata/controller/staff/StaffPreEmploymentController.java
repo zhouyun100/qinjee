@@ -2,7 +2,6 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.vo.staff.ConfirmId;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -14,10 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -175,15 +171,10 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult confirmPreemployment( ConfirmId confirmId) throws Exception {
-        Boolean b = checkParam ( confirmId, getUserSession () );
+    public ResponseResult confirmPreemployment(@RequestParam List<Integer> list)  {
+        Boolean b = checkParam ( list, getUserSession () );
         if (b) {
-                StatusChangeVo statusChangeVo = new StatusChangeVo ();
-                statusChangeVo.setAbandonReason ( "" );
-                statusChangeVo.setChangeState ( CHANGSTATUS_READY );
-                statusChangeVo.setPreEmploymentList ( confirmId.getList () );
-                statusChangeVo.setRuleId ( confirmId.getRuleId () );
-                staffPreEmploymentService.insertStatusChange ( getUserSession (), statusChangeVo );
+                staffPreEmploymentService.confirmEmployment ( list,getUserSession ());
                 return ResponseResult.SUCCESS ();
         }
         return failResponseResult ( "参数错误" );

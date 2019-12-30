@@ -109,11 +109,11 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/searchTemplateEntryRegistrationList", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID查询入职登记模板列表", notes = "hkt")
-    public ResponseResult < List < TemplateEntryRegistration > > searchTemplateEntryRegistrationList(Integer companyId) {
-        Boolean b = checkParam ( companyId );
+    public ResponseResult < List < TemplateEntryRegistration > > searchTemplateEntryRegistrationList() {
+        Boolean b = checkParam ( getUserSession () );
         if (b) {
                 List < TemplateEntryRegistration > templateEntryRegistrations =
-                        entryRegistrationService.searchTemplateEntryRegistrationList ( companyId );
+                        entryRegistrationService.searchTemplateEntryRegistrationList ( getUserSession ().getCompanyId () );
                     return new ResponseResult <> ( templateEntryRegistrations, CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

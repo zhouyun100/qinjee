@@ -1,7 +1,10 @@
 package com.qinjee.masterdata.model.vo.staff;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -10,6 +13,7 @@ import java.util.Date;
 
 @Data
 @JsonInclude
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PreEmploymentVo implements Serializable {
     /**
      * 版本号
@@ -66,6 +70,8 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 参加工作时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date firstWorkDate;
 
     /**
@@ -126,6 +132,8 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 出生日期
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date birthDate;
 
     /**
@@ -151,6 +159,8 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 入职日期
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date hireDate;
 
     /**
@@ -222,6 +232,8 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 延期入职时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date delayDate;
     /**
      * 部门编码

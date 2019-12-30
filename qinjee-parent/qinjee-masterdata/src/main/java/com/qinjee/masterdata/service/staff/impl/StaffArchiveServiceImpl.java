@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.masterdata.dao.organation.PositionDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
@@ -56,6 +57,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private OrganizationDao organizationDao;
     @Autowired
     private UserLoginService userLoginService;
+    @Autowired
+    private PositionDao positionDao;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
@@ -270,30 +273,28 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return customTableFieldDao.selectFieldByArcAndAuth ( userSession.getArchiveId (), userSession.getCompanyId () );
     }
     @Override
-    public List < ArchiveCareerTrack > selectCareerTrack(Integer id) {
+    public List < ArchiveCareerTrackVo > selectCareerTrack(Integer id) {
         return archiveCareerTrackdao.selectCareerTrack ( id );
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) throws IllegalAccessException {
+    public void insertCareerTrack(ArchiveCareerTrackVo archiveCareerTrackVo, UserSession userSession) {
        ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack ();
        BeanUtils.copyProperties ( archiveCareerTrackVo,archiveCareerTrack );
-       archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
         archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
         BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId (
                 archiveCareerTrackVo.getBusinessUnitName (), archiveCareerTrackVo.getOrgName (),
                 archiveCareerTrackVo.getPostName (), archiveCareerTrackVo.getPositionName () );
-        archiveCareerTrack.setBeforeBusinessUnitId ( businessOrgPostPos.getBusinessUnitId () );
-        archiveCareerTrack.setBeforeOrgId ( businessOrgPostPos.getOrgId () );
-        archiveCareerTrack.setBeforePostId ( businessOrgPostPos.getPostId () );
-        archiveCareerTrack.setBeforePositionId ( businessOrgPostPos.getPositionId () );
+        archiveCareerTrack.setAfterBusinessUnitId( businessOrgPostPos.getBusinessUnitId () );
+        archiveCareerTrack.setAfterOrgId ( businessOrgPostPos.getOrgId () );
+        archiveCareerTrack.setAfterPostId ( businessOrgPostPos.getPostId () );
+        archiveCareerTrack.setAfterPositionId ( businessOrgPostPos.getPositionId () );
         archiveCareerTrackdao.insertArchiveCareerTrack ( archiveCareerTrack );
     }
 
     @Override
     public PageResult<UserArchiveVo> selectArchiveSingle(Integer id,UserSession userSession) {
-
         UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( id );
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
@@ -496,6 +497,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public List < UserArchiveVo > selectByOrgList(List < Integer > list,UserSession userSession) {
        return userArchiveDao.selectByOrgAndAuth ( list, userSession.getArchiveId (), userSession.getCompanyId () );
+    }
+
+    @Override
+    public UserArchiveVo selectById(Integer id) {
+        return userArchiveDao.selectByPrimaryKey ( id );
     }
 
     @Transactional(rollbackFor = Exception.class)

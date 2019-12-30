@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -158,6 +157,19 @@ public class StaffArchiveController extends BaseController {
                 userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult  );
                 userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 根据id查询人员信息
+     */
+    @RequestMapping(value = "/selectById", method = RequestMethod.GET)
+    @ApiOperation(value = "根据id查询人员信息", notes = "hkt")
+    public ResponseResult<UserArchiveVo> selectArchiveSingle(Integer id) {
+        Boolean b = checkParam(id);
+        if(b){
+            UserArchiveVo userArchiveVo = staffArchiveService.selectById ( id );
+            return new ResponseResult <> ( userArchiveVo,CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -428,10 +440,10 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/selectCareerTrack", method = RequestMethod.POST)
     @ApiOperation(value = "展示员工轨迹", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    public ResponseResult<List<ArchiveCareerTrack>> selectCareerTrack(Integer id) {
+    public ResponseResult<List<ArchiveCareerTrackVo>> selectCareerTrack(Integer id) {
         Boolean b = checkParam(id);
         if(b){
-                List<ArchiveCareerTrack> list=staffArchiveService.selectCareerTrack(id);
+                List<ArchiveCareerTrackVo> list=staffArchiveService.selectCareerTrack(id);
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

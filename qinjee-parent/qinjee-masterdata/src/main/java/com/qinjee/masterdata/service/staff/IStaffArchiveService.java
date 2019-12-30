@@ -1,6 +1,5 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.entity.ArchiveCareerTrack;
 import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -137,7 +136,7 @@ public interface IStaffArchiveService {
      * @param id
      * @return
      */
-    List<ArchiveCareerTrack> selectCareerTrack(Integer id);
+    List<ArchiveCareerTrackVo> selectCareerTrack(Integer id);
 
 
     /**
@@ -162,4 +161,6 @@ public interface IStaffArchiveService {
     PageResult< UserArchiveVo> selectArchiveDelete(List<Integer> orgId, Integer pageSize, Integer currentPage);
 
     List<UserArchiveVo> selectByOrgList(List<Integer> list,UserSession userSession);
+
+    UserArchiveVo selectById(Integer id);
 }
