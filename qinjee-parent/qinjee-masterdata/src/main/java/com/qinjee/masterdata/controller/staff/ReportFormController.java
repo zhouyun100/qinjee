@@ -156,8 +156,10 @@ public class ReportFormController extends BaseController {
 
     @PostMapping(value = "/exportRegulation")
     @ApiOperation(value = "导出 ", notes = "彭洪思")
-    public ResponseResult exportRegulation(String htmlContent, HttpServletResponse response){
+    public ResponseResult exportRegulation(@RequestBody  Map<String,String> paramMap, HttpServletResponse response){
         //参数校验 List<Integer> orgIds, Date startDate, Date endDate,Integer layer
+        String htmlContent = paramMap.get("htmlContent");
+
         if (checkParam(htmlContent)) {
             try {
                 File tempFile = File.createTempFile("tempFile", ".html");

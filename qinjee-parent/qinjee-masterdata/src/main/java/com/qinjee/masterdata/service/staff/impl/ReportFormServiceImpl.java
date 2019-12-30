@@ -70,7 +70,7 @@ public class ReportFormServiceImpl implements ReportFormService {
         //查询所有机构节点
         //List<RegulationCountVo> allRegulationList = reportFormDao.selectOrgRegulationCount(orgIds, startDate, endDate);
         //倒叙查询
-        List<RegulationCountVo> allRegulationList = reportFormDao.selectOrgRegulationCount2(startDate, endDate);
+        List<RegulationCountVo> allRegulationList = reportFormDao.selectOrgRegulationCount(orgIds,startDate, endDate);
         RegulationCountVo tempVo = null;
         for (RegulationCountVo regulationCountVo : allRegulationList) {
             if (Objects.nonNull(tempVo)) {
@@ -91,16 +91,10 @@ public class ReportFormServiceImpl implements ReportFormService {
             }
             tempVo = regulationCountVo;
         }
-        //筛选出勾选的
-        List<RegulationCountVo> regulationList = allRegulationList.stream().filter(reg -> {
-            if (orgIds.contains(reg.getOrgId())) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+
 
         //再次筛选出顶层机构
-        List<RegulationCountVo> topRegulationList = regulationList.stream().filter(regulation -> {
+        List<RegulationCountVo> topRegulationList = allRegulationList.stream().filter(regulation -> {
             if (regulation.getOrgParentId() != null && regulation.getOrgParentId() == 0) {
                 return true;
             } else {
@@ -108,8 +102,8 @@ public class ReportFormServiceImpl implements ReportFormService {
             }
         }).collect(Collectors.toList());
 
-        handler(regulationList, topRegulationList,layer);
-        return regulationList;
+        handler(allRegulationList, topRegulationList,layer);
+        return allRegulationList;
     }
 
 
