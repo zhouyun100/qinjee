@@ -366,6 +366,13 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     private CustomTableVO handlerGroupFieldToTable(List<CustomGroupVO> customGroupList, List<CustomFieldVO> customFieldList){
         CustomTableVO customTable = new CustomTableVO();
+
+        if(CollectionUtils.isNotEmpty(customFieldList)){
+            for(CustomFieldVO customFieldVO : customFieldList){
+                handlerCustomFieldDict(customFieldVO);
+            }
+        }
+
         //如果没有自定义组，则设置一个groupId为0的空组
         if(CollectionUtils.isEmpty(customGroupList)){
             customGroupList = new ArrayList<>();
@@ -378,12 +385,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
                 List<CustomFieldVO> fieldList = customFieldList.stream().filter(customFieldVO -> {
                     if(customFieldVO.getGroupId().equals(groupVO.getGroupId())){
-                        String textType = customFieldVO.getTextType();
-                        String code = customFieldVO.getCode();
-                        if(StringUtils.isNoneBlank(textType) && textType.equals("code") && StringUtils.isNoneBlank(code)){
-                            List<SysDict> dictList = sysDictService.searchSysDictListByDictType(code);
-                            customFieldVO.setDictList(dictList);
-                        }
                         return true;
                     }else{
                         return false;
@@ -398,6 +399,19 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         }
 
         return customTable;
+    }
+
+    /**
+     * 自定义表字段设置code下拉数据
+     * @param customFieldVO
+     */
+    private void handlerCustomFieldDict(CustomFieldVO customFieldVO){
+        String textType = customFieldVO.getTextType();
+        String code = customFieldVO.getCode();
+        if(StringUtils.isNoneBlank(textType) && textType.equals("code") && StringUtils.isNoneBlank(code)){
+            List<SysDict> dictList = sysDictService.searchSysDictListByDictType(code);
+            customFieldVO.setDictList(dictList);
+        }
     }
 
     @Override
