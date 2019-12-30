@@ -378,7 +378,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     return false;
                 }).collect(Collectors.toList());
                 if(CollectionUtils.isNotEmpty(childList)){
-                    allRoleGroupList.remove(childList);
+                    allRoleGroupList.removeAll(childList);
                     roleGroupVO.setChildRoleGroupList(childList);
                 }else{
                     roleGroupVO.setChildRoleGroupList(new ArrayList<>());
