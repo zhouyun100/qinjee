@@ -24,21 +24,18 @@ public class UserArchiveVo implements Serializable {
     /**
      * 人员ID
      */
-    @NotNull
     @ApiModelProperty("人员ID")
     private Integer userId;
 
     /**
      * 工号
      */
-    @NotNull
     @ApiModelProperty("工号")
     private String employeeNumber;
 
     /**
      * 企业ID
      */
-    @NotNull
     @ApiModelProperty("企业ID")
     private Integer companyId;
 
@@ -114,7 +111,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 性别
      */
-    @NotNull
     @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
     private String gender;
@@ -122,7 +118,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 出生日期
      */
-    @NotNull
     @ApiModelProperty("出生日期")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
@@ -138,14 +133,12 @@ public class UserArchiveVo implements Serializable {
     /**
      * 民族
      */
-    @NotNull
     @ApiModelProperty("民族")
     private Integer nationality;
 
     /**
      * 籍贯
      */
-    @NotNull
     @ApiModelProperty("籍贯")
     private String birthplace;
 
@@ -215,7 +208,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 第一学历
      */
-    @NotNull
     @ApiModelProperty("第一学历")
     private String firstDegree;
 
@@ -228,7 +220,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 联系电话
      */
-    @NotNull
     @QueryColumn("tua.phone")
     @ApiModelProperty("联系电话")
     private String phone;
@@ -236,7 +227,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 电子邮箱
      */
-    @NotNull
     @QueryColumn("tua.email")
     @ApiModelProperty("电子邮箱")
     private String email;
@@ -244,7 +234,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 现住址
      */
-    @NotNull
     @ApiModelProperty("现住址")
     private String address;
 

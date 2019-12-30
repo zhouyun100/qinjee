@@ -38,4 +38,8 @@ public interface AttachmentRecordDao {
     List< AttachmentRecord> selectByList(@Param("list") List< Integer> id);
 
     List< AttchmentRecordVo> selectByPreIdAndCompanyId(@Param("companyId") Integer companyId, @Param("preId") Integer preId, @Param("businessType") String businessType);
+
+    void updateFileName(@Param("name") String name, @Param("attahmentId") Integer attahmentId);
+
+    List < AttchmentRecordVo > selectByBusinessIdAndGroupNameAndBusinessType(@Param("businessId") Integer businessId, @Param("groupName") String groupName, @Param("businessType") String businessType, @Param("companyId") Integer companyId);
 }

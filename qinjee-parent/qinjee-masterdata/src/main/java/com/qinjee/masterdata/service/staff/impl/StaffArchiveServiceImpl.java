@@ -92,8 +92,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<UserArchiveVo> userArchiveVos=new ArrayList <> (  );
         userArchiveVos.add ( userArchiveVo );
         return new PageResult <> (  userArchiveVos );
-
-
     }
 
     private  List < TableHead >  getHeadList(UserSession userSession, List < QueryScheme > list1) {

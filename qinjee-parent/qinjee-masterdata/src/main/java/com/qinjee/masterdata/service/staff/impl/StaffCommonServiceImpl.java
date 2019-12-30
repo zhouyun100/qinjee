@@ -226,7 +226,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws Exception {
+    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws Exception {
+        List<Integer> list=new ArrayList <> (  );
         List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
         Set < Integer > isSystemDefineSet = new HashSet <> ();
         List < Integer > isSystemDefineList = new ArrayList <> ();
@@ -262,18 +263,17 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                     for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                         for (Integer integer : integerListEntry.getValue ()) {
                             Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
-
                             Field[] declaredFields = userArchive.getClass ().getDeclaredFields ();
                             for (Field declaredField : declaredFields) {
                                 declaredField.setAccessible ( true );
                                 if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
                                     if (map1.get ( "text_type" ).equals ( "text" )) {
                                         declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
-                                    }
-                                    if (map1.get ( "text_type" ).equals ( "number" )) {
+                                    } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                        declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
+                                    } else if (map1.get ( "text_type" ).equals ( "number" )) {
                                         declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
-                                    }
-                                    if (map1.get ( "text_type" ).equals ( "date" )) {
+                                    } else if (map1.get ( "text_type" ).equals ( "date" )) {
                                         SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
                                         Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );
                                         declaredField.set ( userArchive, parse );
@@ -282,15 +282,18 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             }
                         }
                         if (archiveId != null && archiveId != 0) {
+                            userArchive.setOperatorId ( userSession.getArchiveId () );
                             userArchive.setArchiveId ( archiveId );
+                            setUserIdByPhone ( userSession, userArchive );
                             userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                         } else {
+                            userArchive.setOperatorId ( userSession.getArchiveId () );
                             userArchive.setCompanyId ( userSession.getCompanyId () );
-                            userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
+                            setUserIdByPhone ( userSession, userArchive );
                             userArchiveDao.insertSelective ( userArchive );
                         }
+                            list.add ( userArchive.getArchiveId () );
                     }
-
                 }
                 if (archiveId != null && archiveId != 0) {
                     if (checkMap ( notMap )) {
@@ -306,9 +309,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 customArchiveTableData.setBigData ( stringBuilder.toString () );
                             }
                             customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                            list.add ( customArchiveTableData.getBusinessId () );
                         }
                     }
                 }
+
             }
 
         } else if ("PRE".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
@@ -348,7 +353,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             preEmploymentDao.updateByPrimaryKey ( preEmployment );
                         } else {
                             preEmploymentDao.insert ( preEmployment );
+                            preemploymentId=preEmployment.getEmploymentId (  );
                         }
+                        list.add ( preemploymentId );
                     }
                 }
                 if (preemploymentId != null && preemploymentId != 0) {
@@ -365,12 +372,26 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 customArchiveTableData.setBigData ( stringBuilder.toString () );
                             }
                             customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                            list.add ( customArchiveTableData.getBusinessId () );
                         }
                     }
                 }
             }
         } else {
             ExceptionCast.cast ( CommonCode.INVALID_PARAM );
+            return null;
+        }
+        return list;
+    }
+
+    private void setUserIdByPhone(UserSession userSession, UserArchive userArchive) {
+        if (userArchive.getPhone () != null) {
+            Integer id = userArchiveDao.selectByPhoneAndCompanyId ( userArchive.getPhone (), userSession.getCompanyId () );
+            if (id != null) {
+                ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+            } else {
+                userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
+            }
         }
     }
 
@@ -487,7 +508,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         Map < Integer, String > map = new HashMap <> ();
         Map < String, String > stringStringMap = customArchiveTableDao.selectIsSysAndFuncCode ( tableId );
         List < Map < String, String > > mapList = customTableFieldDao.selectCodAndIdByTableId ( tableId );
-
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "ARC" )) {
             UserArchiveVo userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
             for (Field declaredField : userArchive.getClass ().getDeclaredFields ()) {

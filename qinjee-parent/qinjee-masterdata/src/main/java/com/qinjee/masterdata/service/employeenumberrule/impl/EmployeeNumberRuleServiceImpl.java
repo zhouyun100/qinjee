@@ -79,9 +79,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
 
     @Override
     public List < ContractParam >  showCreateConRule(UserSession userSession) {
-        List < ContractParam > contractParamByCompanyId = contractParamDao.findContractParamByCompanyId ( userSession.getCompanyId () );
-
-        return contractParamByCompanyId;
+        return  contractParamDao.findContractParamByCompanyId ( userSession.getCompanyId () );
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -11,6 +14,7 @@ import java.util.Date;
  * @version 2019-12-10
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TemplateEntryRegistration implements java.io.Serializable {
 
     /**
@@ -76,11 +80,15 @@ public class TemplateEntryRegistration implements java.io.Serializable {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updateTime;
 
     /**

@@ -1048,5 +1048,12 @@
     </foreach>
     and is_delete=1
   </select>
+  <select id="selectByPhoneAndCompanyId" resultType="java.lang.Integer">
+    select archive_id
+    from t_user_archive
+    where phone=#{phone}
+    and company_id=#{companyId}
+    and is_delete=0
+  </select>
 </mapper>
 

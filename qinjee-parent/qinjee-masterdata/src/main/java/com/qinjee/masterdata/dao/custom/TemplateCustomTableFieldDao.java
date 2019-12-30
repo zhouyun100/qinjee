@@ -89,7 +89,7 @@ public interface TemplateCustomTableFieldDao {
      * @param operatorId
      * @return
      */
-    int addTemplateTable(Integer templateId, List<TemplateCustomTableVO> templateCustomTableList, Integer operatorId);
+    int addTemplateTable(@Param("templateId") Integer templateId, @Param("templateCustomTableList") List<TemplateCustomTableVO> templateCustomTableList, @Param("operatorId") Integer operatorId);
 
     /**
      * 添加模板自定义字段
@@ -98,7 +98,7 @@ public interface TemplateCustomTableFieldDao {
      * @param operatorId
      * @return
      */
-    int addTemplateTableField(Integer templateId, List<TemplateCustomTableFieldVO> templateCustomTableFieldList, Integer operatorId);
+    int addTemplateTableField(@Param("templateId") Integer templateId, @Param("templateCustomTableFieldList") List<TemplateCustomTableFieldVO> templateCustomTableFieldList, @Param("operatorId") Integer operatorId);
 
     /**
      * 修改模板自定义表信息
@@ -122,4 +122,8 @@ public interface TemplateCustomTableFieldDao {
      * @return
      */
     List<CustomFieldVO> searchCustomFieldListByTemplateIdAndTableId(@Param("tableId") Integer tableId, @Param("templateId") Integer templateId);
+
+    void deleteTemplateTableByKt(@Param("templateId") Integer templateId, @Param("archiveId") Integer archiveId);
+
+    void deleteTemplateTableFieldByKt(@Param("templateId") Integer templateId, @Param("archiveId") Integer archiveId);
 }

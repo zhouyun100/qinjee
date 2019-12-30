@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import org.apache.ibatis.annotations.MapKey;
@@ -37,8 +36,6 @@ public interface UserArchiveDao {
     List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
 
    Integer deleteArchiveByIdList(@Param("archiveid") List<Integer> archiveid);
-
-
 
     Integer resumeDeleteArchiveById(@Param("archiveid") List<Integer> archiveid);
 
@@ -110,4 +107,6 @@ public interface UserArchiveDao {
     UserArchiveVo selectByIdNumber(@Param("s") String s);
 
     List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
+
+    Integer selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 }

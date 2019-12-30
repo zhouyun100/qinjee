@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -454,6 +453,7 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
 
 
     private Boolean checkParam(Object... params) {

@@ -536,7 +536,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             //
             response.setHeader("errorInfoKey", errorInfoKey);
             //文件解析失败
-            responseResult.setResultCode(CommonCode.FILE_PARSE_FAILED);
+            responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
         } else {
             responseResult.setResultCode(CommonCode.SUCCESS);
             responseResult.setMessage("文件校验成功");

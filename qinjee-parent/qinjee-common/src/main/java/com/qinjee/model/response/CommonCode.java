@@ -30,8 +30,8 @@ public enum CommonCode implements ResultCode{
     POST_DOES_NOT_EXIST(false,10308, "此岗位不存在,导入失败!"),
     TIME_FORMAT_ERROR(false,10310, "时间格式错误!"),
     FILE_EXPORT_FAILED(false,10311, "文件导出失败!"),
-    FILE_PARSE_FAILED(false,10312, "文件解析失败!"),
-    FAIL_VALUE_NULL(false,10313, "结果不存在，请检查或联系开发!"),
+    PRE_ALREADY_EXIST(false,10312, "文件解析失败!"),
+    FAIL_VALUE_NULL(false,10313, "此员工已经存在!"),
     FILE_EMPTY(false,10314, "文件为空!"),
     REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!"),
     TARGET_NOT_EXIST(false,10316, "目标对象不存在!"),
@@ -48,7 +48,8 @@ public enum CommonCode implements ResultCode{
     POSITION_USED_NY_POST(false,10321, "职位已被岗位引用，不许删除!"),
     WECHAT_NO_BIND(false,10322, "微信未绑定用户账号"),
     WECHAT_ACCESS_TOKEN(false,40029, "invalid code"),
-    CHECK_FALSE(false,10323, "验证失败");
+    CHECK_FALSE(false,10323, "验证失败"),
+    PHONE_ALREADY_EXIST(false,10324, "手机号已存在");
 
     /**
      * 操作是否成功

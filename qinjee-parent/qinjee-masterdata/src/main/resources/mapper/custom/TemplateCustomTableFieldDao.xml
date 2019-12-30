@@ -213,8 +213,8 @@
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
                 #{templateId,jdbcType=INTEGER},
-                #{customTable.tableId,jdbcType=INTEGER},
-                #{customTable.fieldId,jdbcType=INTEGER},
+                #{customField.tableId,jdbcType=INTEGER},
+                #{customField.fieldId,jdbcType=INTEGER},
                 <if test="customField.isMust != null">
                     #{customField.isMust,jdbcType=INTEGER},
                 </if>
@@ -274,4 +274,18 @@
             resultType="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO">
 
     </select>
+    <update id="deleteTemplateTableByKt">
+        update  t_template_custom_table
+        set
+        is_delete=1,
+        operator_id=#{archiveId}
+        where template_id=#{templateId}
+    </update>
+    <update id="deleteTemplateTableFieldByKt">
+         update t_template_custom_table_field
+        set
+        is_delete=1,
+        operator_id=#{archiveId}
+        where template_id=#{templateId}
+    </update>
 </mapper>

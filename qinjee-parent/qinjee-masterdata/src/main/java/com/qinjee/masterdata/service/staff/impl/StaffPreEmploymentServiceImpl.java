@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -13,6 +14,7 @@ import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,6 +173,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) throws Exception {
+        Integer integer = preEmploymentDao.selectIdByNumber ( preEmploymentVo.getPhone (), userSession.getCompanyId () );
+        if(integer==null || integer==0){
+            ExceptionCast.cast ( CommonCode.PRE_ALREADY_EXIST );
+        }
         PreEmployment preEmployment = new PreEmployment ();
 //        if(RegexpUtils.checkPhone (preEmployment.getPhone ())){
 //            throw new Exception ( "电话格式有误！" );
@@ -178,6 +184,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 //        if(RegexpUtils.checkEmail ( preEmployment.getEmail () )){
 //            throw new Exception ( "邮箱格式有误！" );
 //        }
+
         BeanUtils.copyProperties ( preEmploymentVo, preEmployment );
         preEmployment.setCompanyId ( userSession.getCompanyId () );
         preEmployment.setOperatorId ( userSession.getArchiveId () );

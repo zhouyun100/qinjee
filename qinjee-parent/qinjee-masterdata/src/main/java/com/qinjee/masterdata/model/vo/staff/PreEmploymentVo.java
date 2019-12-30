@@ -46,6 +46,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 证件类型
      */
+    @NotNull
     private String idType;
     /**
      * 证件类型名称
@@ -54,6 +55,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 证件号码
      */
+    @NotNull
     private String idNumber;
 
     /**
@@ -149,7 +151,6 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 入职日期
      */
-    @NotNull
     private Date hireDate;
 
     /**
@@ -165,13 +166,11 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 入职状态
      */
-    @NotNull
     private String employmentState;
 
     /**
      * 入职登记
      */
-    @NotNull
     private String employmentRegister;
 
     /**
@@ -182,7 +181,6 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 数据来源
      */
-    @NotNull
     private String dataSource;
 
     /**

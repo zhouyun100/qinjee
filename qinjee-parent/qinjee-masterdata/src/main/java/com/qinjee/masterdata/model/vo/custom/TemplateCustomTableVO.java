@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.model.vo.custom;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  * @date 2019/12/9
  */
 @Data
+
 public class TemplateCustomTableVO{
 
     /**

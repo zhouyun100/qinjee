@@ -199,8 +199,17 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
         entryRegistrationService.deleteTemplateEntryRegistration ( templateEntryRegistration.getTemplateId (),archiveId );
         //添加外层
         entryRegistrationService.addTemplateEntryRegistration ( templateEntryRegistration );
-        //新增表与里面字段
-        saveTemplateTableField ( saveTemplateVo.getTemplateId (),saveTemplateVo.getTemplateCustomTableList (), archiveId );
+        //删除模板中的表
+        templateCustomTableFieldDao.deleteTemplateTableByKt (saveTemplateVo.getTemplateId (),archiveId);
+        //删除模板中的字段
+        templateCustomTableFieldDao.deleteTemplateTableFieldByKt (saveTemplateVo.getTemplateId (),archiveId);
+        //新增表
+        templateCustomTableFieldDao.addTemplateTable ( saveTemplateVo.getTemplateId (),saveTemplateVo.getTemplateCustomTableList (),archiveId );
+        //新增表字段
+        for (TemplateCustomTableVO templateCustomTableVO : saveTemplateVo.getTemplateCustomTableList ()) {
+            templateCustomTableFieldDao.addTemplateTableField ( saveTemplateVo.getTemplateId (),
+                    templateCustomTableVO.getFieldList (),archiveId );
+        }
     }
 
 }

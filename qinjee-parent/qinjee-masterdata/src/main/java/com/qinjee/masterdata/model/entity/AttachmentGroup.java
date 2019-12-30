@@ -1,19 +1,30 @@
+/*
+ * Welcome to use the TableGo Tools.
+ * 
+ * http://vipbooks.iteye.com
+ * http://blog.csdn.net/vipbooks
+ * http://www.cnblogs.com/vipbooks
+ * 
+ * Author:bianj
+ * Email:edinsker@163.com
+ * Version:5.8.0
+ */
+
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * 附件组表(t_attachment_group)
- * 
- * @author 周赟
- * @version 2019-12-10
+ * @author Administrator
  */
 @Data
-public class AttachmentGroup implements java.io.Serializable {
-    /** 版本号 */
-    private static final long serialVersionUID = 7343668129572052862L;
+@JsonInclude
+public class AttachmentGroup implements Serializable {
+
 
     /** 组ID */
     private Integer groupId;
@@ -41,5 +52,6 @@ public class AttachmentGroup implements java.io.Serializable {
 
     /** 是否删除 */
     private Integer isDelete;
+
 
 }

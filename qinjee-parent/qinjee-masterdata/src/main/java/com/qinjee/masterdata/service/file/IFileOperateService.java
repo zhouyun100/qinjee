@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.file;
 
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
+import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,4 +48,12 @@ public interface IFileOperateService {
     void putPreFile(MultipartFile file, Integer preId, String groupName, Integer companyId) throws Exception;
 
     List< AttchmentRecordVo> selectPreAttach(Integer companyId, Integer preId);
+
+    void updateFileName(String name, Integer attahmentId);
+
+    List<ShowAttatchementVo>  selectMyFile();
+
+    List< AttchmentRecordVo> selectMyFileContent(Integer businessId, String groupName,String businessType,Integer companyId);
+
+    void moveFile(Integer attachmentId, Integer groupId,Integer companyId);
 }

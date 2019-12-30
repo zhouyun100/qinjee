@@ -68,6 +68,9 @@
             <if test="backgroundImgUrl != null">
                 background_img_url,
             </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
             <if test="isEnable != null">
                 is_enable,
             </if>
@@ -94,6 +97,9 @@
             </if>
             <if test="backgroundImgUrl != null">
                 #{backgroundImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null">
+                #{companyId,jdbcType=INTEGER},
             </if>
             <if test="isEnable != null">
                 #{isEnable,jdbcType=INTEGER},

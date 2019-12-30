@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
+import com.qinjee.masterdata.model.vo.custom.CustomGroupVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
@@ -10,6 +11,7 @@ import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
+import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -18,8 +20,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -348,11 +348,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/SaveFieldAndValue", method = RequestMethod.POST)
     @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
 
-    public ResponseResult saveFieldAndValue(@RequestBody InsertDataVo insertDataVo) throws Exception {
+    public ResponseResult<List<Integer>> saveFieldAndValue(@RequestBody InsertDataVo insertDataVo) throws Exception {
         Boolean b = checkParam(insertDataVo,getUserSession ());
         if(b) {
-                staffCommonService.saveFieldAndValue (getUserSession (),insertDataVo );
-                return new ResponseResult <> (null, CommonCode.SUCCESS);
+                List<Integer> businessId=staffCommonService.saveFieldAndValue (getUserSession (),insertDataVo );
+                return new ResponseResult <> (businessId, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
@@ -374,6 +374,16 @@ public class CommonController extends BaseController {
                 for (Map < Integer, String > map : mapList) {
                     list.add (customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map ));
                 }
+             for (CustomTableVO tableVO : list) {
+                    List < CustomGroupVO > customGroupVOList = tableVO.getCustomGroupVOList ();
+                    for (CustomGroupVO customGroupVO : customGroupVOList) {
+                        for (CustomFieldVO customFieldVO : customGroupVO.getCustomFieldVOList ()) {
+                            if(customFieldVO.getIsSystemDefine ()==1){
+                            customFieldVO.setFieldCode ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
+                            }
+                        }
+                    }
+             }
                 return new ResponseResult <> (list, CommonCode.SUCCESS);
         }
             return new ResponseResult <> (null, CommonCode.INVALID_PARAM);

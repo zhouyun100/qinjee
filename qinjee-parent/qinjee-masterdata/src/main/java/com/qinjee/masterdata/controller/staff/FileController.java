@@ -2,17 +2,16 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
+import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,6 +76,7 @@ public class FileController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+
     /**
      * 展示文件路径
      */
@@ -180,6 +180,58 @@ public class FileController extends BaseController {
                 response.setHeader ( "Access-Control-Allow-Origin","*" );
                 List < AttchmentRecordVo> list  = fileOperateService.selectPreAttach (companyId,preId );
                     return new ResponseResult<>  (list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+
+    /**
+     * 根据层级显示附件信息
+     * @return
+     */
+    @RequestMapping(value = "/showMyFile", method = RequestMethod.GET)
+    @ApiOperation(value = "根据层级显示附件信息", notes = "hkt")
+    public ResponseResult<List<ShowAttatchementVo >> selectMyFile() {
+           List<ShowAttatchementVo> list =fileOperateService.selectMyFile ();
+            return new ResponseResult<>  (list, CommonCode.SUCCESS);
+
+    }
+    /**
+     * 根据业务id与文件夹名显示内容
+     */
+    @RequestMapping(value = "/selectMyFileContent", method = RequestMethod.GET)
+    @ApiOperation(value = "根据业务id与文件夹名显示内容", notes = "hkt")
+    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContent(Integer businessId,String groupName,String businessType) {
+        Boolean b = checkParam(businessId,groupName,businessType,getUserSession ());
+        if(b) {
+            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContent ( businessId, groupName,businessType,getUserSession ().getCompanyId () );
+            return new ResponseResult<> (list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 移动文件到其它文件夹
+     */
+    @RequestMapping(value = "/moveFile", method = RequestMethod.GET)
+    @ApiOperation(value = "移动文件到其它文件夹", notes = "hkt")
+    public ResponseResult moveFile(Integer attachmentId,Integer groupId) {
+        Boolean b = checkParam(attachmentId,groupId,getUserSession ());
+        if(b) {
+             fileOperateService.moveFile (attachmentId,groupId,getUserSession ().getCompanyId () );
+            return new ResponseResult<> (null, CommonCode.SUCCESS);
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 修改文件名称
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/updateFileName", method = RequestMethod.GET)
+    @ApiOperation(value = "修改文件名称", notes = "hkt")
+    public ResponseResult< List<AttchmentRecordVo>> showPreFile(String name,  Integer attahmentId) {
+        Boolean b = checkParam(name,attahmentId);
+        if(b) {
+            fileOperateService.updateFileName (name,attahmentId);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }

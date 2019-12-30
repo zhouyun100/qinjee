@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageHelper;
 import com.qcloud.cos.model.COSObjectInputStream;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.AttachmentGroupDao;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
+import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.file.IFileOperateService;
@@ -50,6 +52,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private RedisClusterService redisClusterService;
+
+    @Autowired
+    private AttachmentGroupDao attachmentGroupDao;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -212,6 +217,34 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Override
     public List < AttchmentRecordVo > selectPreAttach(Integer companyId, Integer preId) {
         return attachmentRecordDao.selectByPreIdAndCompanyId(companyId,preId,"employment");
+    }
+
+    @Override
+    public void updateFileName(String name, Integer attahmentId) {
+        attachmentRecordDao.updateFileName(name,attahmentId);
+    }
+
+    @Override
+    public  List<ShowAttatchementVo> selectMyFile() {
+        List<ShowAttatchementVo> list=new ArrayList <> (  );
+        List<String> strings=attachmentGroupDao.selectGroupTop();
+        for (String string : strings) {
+            ShowAttatchementVo showAttatchementVo=new ShowAttatchementVo ();
+            showAttatchementVo.setGroup ( string );
+            showAttatchementVo.setGroupName (attachmentGroupDao.selectGroup(string));
+            list.add ( showAttatchementVo );
+       }
+        return list;
+    }
+
+    @Override
+    public List < AttchmentRecordVo > selectMyFileContent(Integer businessId, String groupName,String businessType,Integer companyId) {
+       return attachmentRecordDao.selectByBusinessIdAndGroupNameAndBusinessType(businessId,groupName,businessType,companyId);
+    }
+
+    @Override
+    public void moveFile(Integer attachmentId, Integer groupId,Integer companyId) {
+//      attachmentRecordDao.
     }
 
     @Override

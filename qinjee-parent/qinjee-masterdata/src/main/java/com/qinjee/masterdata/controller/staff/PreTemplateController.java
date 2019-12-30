@@ -19,7 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -388,11 +387,16 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/saveTemplate", method = RequestMethod.POST)
     @ApiOperation(value = "保存自定义表字段配置", notes = "hkt")
-    public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo) {
-        Boolean b = checkParam (getUserSession (),saveTemplateVo ,getUserSession ());
+    public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo,HttpServletResponse response) {
+        Boolean b = checkParam (getUserSession (),saveTemplateVo ,response);
+        response.setHeader ( "Access-Control-Allow-Origin","*" );
         if (b) {
+            try {
                 templateCustomTableFieldService.saveTemplate ( getUserSession ().getArchiveId (),saveTemplateVo );
-                    return new ResponseResult <> ( null, CommonCode.SUCCESS );
+                return new ResponseResult <> ( null, CommonCode.SUCCESS );
+            } catch (Exception e) {
+                e.printStackTrace ();
+            }
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
