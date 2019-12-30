@@ -76,7 +76,7 @@
         <foreach collection="orgIdList" open="(" close=")" item="item" separator=",">
             #{item}
         </foreach>
-        ORDER BY org2.org_id
+        ORDER BY org2.org_id DESC,org2.sort_id DESC
   </select>
     <select id="selectOrgRegulationCount2" resultMap="RegulationCountMap">
         SELECT

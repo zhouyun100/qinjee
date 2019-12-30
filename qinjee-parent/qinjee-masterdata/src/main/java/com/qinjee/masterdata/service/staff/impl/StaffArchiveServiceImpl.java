@@ -269,7 +269,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public List < String > selectFieldByArcAndAuth(UserSession userSession) {
         return customTableFieldDao.selectFieldByArcAndAuth ( userSession.getArchiveId (), userSession.getCompanyId () );
     }
-
     @Override
     public List < ArchiveCareerTrack > selectCareerTrack(Integer id) {
         return archiveCareerTrackdao.selectCareerTrack ( id );

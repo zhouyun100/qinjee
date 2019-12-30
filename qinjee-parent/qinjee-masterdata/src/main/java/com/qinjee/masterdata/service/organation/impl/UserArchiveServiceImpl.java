@@ -2,9 +2,13 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.qinjee.masterdata.dao.UserCompanyDao;
+import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.entity.UserCompany;
+import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
@@ -18,6 +22,7 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -32,6 +37,10 @@ import java.util.*;
 public class UserArchiveServiceImpl implements UserArchiveService {
     @Autowired
     private UserArchiveDao userArchiveDao;
+    @Autowired
+    private UserInfoDao userInfoDao;
+    @Autowired
+    private UserCompanyDao userCompanyDao;
 
     @Autowired
     private OrganizationDao organizationDao;
@@ -77,10 +86,32 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
 
     @Override
+    @Transactional
     public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+
+
+        //构建userInfo对象
+        UserInfo userInfo=new UserInfo();
+        userInfo.setUserName(userArchiveVo.getUserName());
+        userInfo.setPhone(userArchiveVo.getPhone());
+        userInfo.setEmail(userArchiveVo.getEmail());
+        userInfo.setCreateTime(new Date());
+        userInfoDao.insertSelective(userInfo);
+        //维护员工企业关系表
+
+        UserCompany userCompany=new UserCompany();
+        userCompany.setCreateTime(new Date());
+        userCompany.setUserId(userInfo.getUserId());
+        userCompany.setCompanyId(userSession.getCompanyId());
+        userCompany.setIsEnable((short) 0);
+        userCompanyDao.insertSelective(userCompany);
+
+
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
         userArchive.setOperatorId(userSession.getArchiveId());
+        userArchive.setCompanyId(userSession.getCompanyId());
+        userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
         return new ResponseResult(userArchive.getArchiveId());

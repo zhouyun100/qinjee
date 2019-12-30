@@ -10,6 +10,7 @@ public interface UserInfoDao {
 
     int insert(UserInfo record);
 
+
     int insertSelective(UserInfo record);
 
     UserInfo selectByPrimaryKey(Integer userId);

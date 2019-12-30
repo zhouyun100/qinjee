@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.UserCompany;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserCompanyDao {
     int deleteByPrimaryKey(Integer id);
 
