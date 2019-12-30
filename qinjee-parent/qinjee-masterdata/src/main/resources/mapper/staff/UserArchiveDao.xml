@@ -14,6 +14,7 @@
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
+    <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
     <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
     <result column="gender" jdbcType="VARCHAR" property="gender" />
@@ -738,8 +739,8 @@
     tua.political_status, tua.marital_status, tua.first_work_date, tua.hire_date, tua.serving_age, tua.working_period,
     tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.phone, tua.email,
     tua.address, tua.professional_certification, tua.professional_title, tua.professional_level, tua.attrition_date, tua.attrition_type,
-    tua.increase_type, tua.archive_status, tua.supervisor_id,tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name businessUnitName,
-    dept.org_name orgName, tp.post_name postName, tua2.user_name supervisorUserName
+    tua.increase_type, tua.archive_status, tua.supervisor_id,tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name business_unit_name,
+    dept.org_name org_name, tp.post_name post_name, tua2.user_name supervisor_user_name
     FROM t_user_archive tua
     LEFT JOIN t_post tp ON tua.post_id = tp.post_id
     LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id
