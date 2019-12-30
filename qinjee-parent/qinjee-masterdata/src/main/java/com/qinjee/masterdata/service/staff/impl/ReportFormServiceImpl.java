@@ -107,10 +107,7 @@ public class ReportFormServiceImpl implements ReportFormService {
                 return false;
             }
         }).collect(Collectors.toList());
-        MultiValueMap<Object, Integer> multiMap = new LinkedMultiValueMap<>();
-        for (RegulationCountVo regulationCountVo : allRegulationList) {
-            multiMap.add(regulationCountVo.getOrgParentId(), regulationCountVo.getOrgId());
-        }
+
         handler(regulationList, topRegulationList,layer);
         return regulationList;
     }

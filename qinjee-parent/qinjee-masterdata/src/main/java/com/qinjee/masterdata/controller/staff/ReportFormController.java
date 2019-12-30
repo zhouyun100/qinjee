@@ -156,7 +156,7 @@ public class ReportFormController extends BaseController {
 
     @PostMapping(value = "/exportRegulation")
     @ApiOperation(value = "导出 ", notes = "彭洪思")
-    public ResponseResult exportRegulation(@RequestBody  String htmlContent, HttpServletResponse response){
+    public ResponseResult exportRegulation(String htmlContent, HttpServletResponse response){
         //参数校验 List<Integer> orgIds, Date startDate, Date endDate,Integer layer
         if (checkParam(htmlContent)) {
             try {
