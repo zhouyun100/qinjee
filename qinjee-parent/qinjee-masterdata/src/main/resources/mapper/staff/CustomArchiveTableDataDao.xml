@@ -128,7 +128,8 @@
     set
       business_id = #{businessId,jdbcType=INTEGER},
       operator_id = #{operatorId,jdbcType=INTEGER},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      big_data=#{bigData}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectCustomArchiveTableId" resultType="java.lang.Integer">
@@ -230,4 +231,16 @@
      #{item}
    </foreach>
 </update>
+  <update id="deleteByBusinessIdAndTableId">
+    UPDATE t_custom_archive_table_data
+     SET is_delete = 1
+     where business_id=#{id}
+     and table_id=#{tableId}
+  </update>
+  <update id="deleteById">
+    UPDATE t_custom_archive_table_data
+     SET is_delete = 1
+     where id=#{id}
+
+  </update>
 </mapper>

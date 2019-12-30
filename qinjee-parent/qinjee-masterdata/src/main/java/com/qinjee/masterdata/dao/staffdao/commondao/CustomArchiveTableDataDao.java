@@ -44,4 +44,8 @@ public interface CustomArchiveTableDataDao {
     void deleteByBusinessIdAndFuncode(@Param("CompanyId") Integer CompanyId, @Param("id") Integer id, @Param("funcCode") String funcCode);
 
     void deleteByPrimaryKeyList(@Param("list") List< Integer> list);
+
+    void deleteByBusinessIdAndTableId(@Param("businessId") Integer businessId, @Param("tableId") Integer tableId);
+
+    void deleteById(@Param("id") Integer id);
 }

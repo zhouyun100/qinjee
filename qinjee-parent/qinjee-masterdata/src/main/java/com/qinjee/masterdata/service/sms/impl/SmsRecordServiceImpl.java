@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.sms.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.model.entity.SmsConfig;
@@ -55,6 +56,8 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     private  PreEmploymentDao preEmploymentDao;
     @Autowired
     private SysDictService sysDictService;
+    @Autowired
+    private CompanyInfoDao companyInfoDao;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -67,7 +70,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
         for (Map.Entry < Integer, Map < String, String > > integerMapEntry : integerMapMap.entrySet ()) {
             Map < String, String > value = integerMapEntry.getValue ();
             String userName = value.get ( "user_name" );
-            String applicationPosition = value.get ( "application_position" );
+            String companyName=companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () ).getCompanyName ();
 //            String companyId = String.valueOf (value.get ( "company_id" ));
             String phone = value.get ( "phone" );
             List<String> phoneNumbers = new ArrayList<>();
@@ -84,7 +87,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             List < String > params = new ArrayList <> ( 3 );
             //拼接参数
             params.add ( userName );
-            params.add ( applicationPosition );
+            params.add ( companyName );
             params.add ( url );
             //发送短信
             SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
@@ -155,7 +158,6 @@ public class SmsRecordServiceImpl implements SmsRecordService {
 
     private void insertSmsRecord(SmsConfig smsConfig, String phone, List<String> params){
         SmsRecord smsRecord = new SmsRecord();
-
         smsRecord.setPhone(phone);
         /**
          * 根据短信模板内容替换相应的参数内容

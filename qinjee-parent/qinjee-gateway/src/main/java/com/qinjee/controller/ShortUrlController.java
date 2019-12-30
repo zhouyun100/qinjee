@@ -45,7 +45,7 @@ public class ShortUrlController {
     public String shortUrl(HttpServletResponse response, @PathVariable("shortUrlCode") String shortUrlCode) {
 
         try{
-            if(StringUtils.isNotBlank(shortUrlCode) && shortUrlCode.equals("qinjee")){
+            if(StringUtils.isNotBlank(shortUrlCode) ){
                if(redisClusterService.exists ( shortUrlCode ) ){
                    String s = redisClusterService.get ( shortUrlCode );
                     Map < String, Integer >  map = (  Map < String, Integer>  ) JSONArray.parse ( s );

@@ -223,7 +223,7 @@
             orga.org_name as businessUnitName,
             record.create_time as  creatTime,
             record.attachment_url as attatchmentUrl,
-            substring_index(substring_index(record.attachment_url,'/',2) , '/', -1) as fileType,
+            substring_index(record.attachment_url,'.',-1 ) as fileType,
             concat(substring_index(record.attachment_url, '/', 1),'#',substring_index(record.attachment_url, '/', -1)) as fileName
             FROM
             t_user_archive  arc
@@ -287,7 +287,7 @@
           orga.org_name as businessUnitName,
           record.create_time as  creatTime,
           record.attachment_url as attatchmentUrl,
-          substring_index(substring_index(record.attachment_url,'/',2) , '/', -1) as fileType,
+          substring_index(record.attachment_url,'.',-1 ) as fileType,
           record.attachment_name as fileName
           FROM
           t_user_archive  arc
@@ -316,7 +316,7 @@
           orga.org_name as businessUnitName,
           record.create_time as  creatTime,
           record.attachment_url as attatchmentUrl,
-          substring_index(substring_index(record.attachment_url,'/',2) , '/', -1) as fileType,
+          substring_index(record.attachment_url,'.',-1 ) as fileType,
           record.attachment_name as fileName
           FROM
           t_user_archive  arc
@@ -325,12 +325,7 @@
           left join t_organization orga on arc.business_unit_id = arc.org_id and orga.is_enable=1
           WHERE
           business_id=#{businessId}
-          and record.group_id in
-          (
-          select group_id from t_attachment_group
-          where group_name=#{groupName}
-          and is_delete=0
-          )
+          and record.group_id = #{groupId}
           AND record.company_id = #{companyId}
           AND record.business_type = 'employment'
           AND record.is_delete = 0
@@ -345,8 +340,8 @@
         orga.org_name as businessUnitName,
         record.create_time as  creatTime,
         record.attachment_url as attatchmentUrl,
-        substring_index(substring_index(record.attachment_url,'/',2) , '/', -1) as fileType,
-        concat(substring_index(record.attachment_url, '/', 1),'#',substring_index(record.attachment_url, '/', -1)) as fileName
+        substring_index(record.attachment_url,'.',-1 ) as fileType,
+        record.attachment_name as  fileName
         FROM
         t_user_archive  arc
         left join t_attachment_record record on record.business_id=arc.archive_id and arc.is_delete=0
@@ -354,12 +349,7 @@
         left join t_organization orga on arc.business_unit_id = arc.org_id and orga.is_enable=1
         WHERE
         record.business_id = #{businessId}
-        and record.group_id in
-        (
-          select group_id from t_attachment_group
-          where group_name=#{groupName}
-          and is_delete=0
-        )
+        and record.group_id =#{groupId}
         and business_type='archive'
         AND record.company_id = #{companyId}
         AND record.is_delete = 0
@@ -368,7 +358,7 @@
     <update id="moveFile">
         update t_attachment_record
         set
-         group_id=#{groupId}
+         group_id =#{groupId}
         where  company_id=#{companyId}
         and  attachment_id=#{attachmentId}
     </update>

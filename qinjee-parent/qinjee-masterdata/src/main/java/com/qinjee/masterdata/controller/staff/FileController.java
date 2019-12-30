@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 
@@ -93,9 +94,9 @@ public class FileController extends BaseController {
     /**
      * 删除文件
      */
-    @RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteFile", method = RequestMethod.GET)
     @ApiOperation(value = "删除文件,预入职也调用此接口", notes = "hkt")
-    public ResponseResult deleteFile(@RequestBody List<Integer> id,Integer companyId) {
+    public ResponseResult deleteFile(@RequestParam List<Integer> id,Integer companyId) {
         Boolean b = checkParam(id);
         if(b) {
                 if(checkParam ( companyId )){
@@ -122,6 +123,8 @@ public class FileController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 验证图片比例关系
      * @param files 图片文件数组
@@ -136,6 +139,8 @@ public class FileController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 导出校验文件
      */
@@ -156,11 +161,11 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/uploadPreFile", method = RequestMethod.POST)
     @ApiOperation(value = "上传预入职文件", notes = "hkt")
-    public ResponseResult uploadPreFile( @RequestParam MultipartFile file,Integer preId,String groupName,Integer companyId,HttpServletResponse response) throws Exception {
-        Boolean b = checkParam(file,preId,groupName,companyId,response);
+    public ResponseResult uploadPreFile( @RequestParam MultipartFile file,Integer preId,Integer groupId,Integer companyId,HttpServletResponse response) throws Exception {
+        Boolean b = checkParam(file,preId,groupId,companyId,response);
         if(b) {
                 response.setHeader ( "Access-Control-Allow-Origin","*" );
-                fileOperateService.putPreFile (file,preId,groupName,companyId );
+                fileOperateService.putPreFile (file,preId,groupId,companyId );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
@@ -190,19 +195,19 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showMyFile", method = RequestMethod.GET)
     @ApiOperation(value = "根据层级显示附件信息", notes = "hkt")
-    public ResponseResult<List<ShowAttatchementVo >> selectMyFile() {
-           List<ShowAttatchementVo> list =fileOperateService.selectMyFile ();
-            return new ResponseResult<>  (list, CommonCode.SUCCESS);
+    public ResponseResult<List<ShowAttatchementVo> > selectMyFile() {
+        List<ShowAttatchementVo> list = fileOperateService.selectMyFile ();
+        return new ResponseResult<>  (list, CommonCode.SUCCESS);
     }
     /**
      * 根据业务id与文件夹名显示内容
      */
     @RequestMapping(value = "/selectMyFileContent", method = RequestMethod.GET)
     @ApiOperation(value = "根据业务id与文件夹名显示内容", notes = "hkt")
-    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContents(Integer businessId,String groupName) {
-        Boolean b = checkParam(businessId,groupName,getUserSession ());
+    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContents(Integer businessId,Integer groupId) throws UnsupportedEncodingException {
+        Boolean b = checkParam(businessId,groupId,getUserSession ());
         if(b) {
-            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContents ( businessId, groupName,getUserSession ().getCompanyId () );
+            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContents ( businessId, groupId,getUserSession ().getCompanyId () );
             return new ResponseResult<> (list, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
@@ -212,14 +217,16 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/selectMyPreFileContent", method = RequestMethod.GET)
     @ApiOperation(value = "根据业务id与预入职文件夹名显示内容", notes = "hkt")
-    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContent(Integer businessId,String groupName) {
-        Boolean b = checkParam(businessId,groupName,getUserSession ());
+    public ResponseResult<List<AttchmentRecordVo >> selectMyFileContent(Integer businessId,Integer groupId) {
+        Boolean b = checkParam(businessId,groupId,getUserSession ());
         if(b) {
-            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContent ( businessId, groupName,getUserSession ().getCompanyId () );
+            List < AttchmentRecordVo > list = fileOperateService.selectMyFileContent ( businessId, groupId,getUserSession ().getCompanyId () );
             return new ResponseResult<> (list, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 移动文件到其它文件夹
      */
@@ -233,6 +240,8 @@ public class FileController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 修改文件名称
      * @param
@@ -240,10 +249,10 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/updateFileName", method = RequestMethod.GET)
     @ApiOperation(value = "修改文件名称", notes = "hkt")
-    public ResponseResult< List<AttchmentRecordVo>> showPreFile(String name,  Integer attahmentId) {
-        Boolean b = checkParam(name,attahmentId);
+    public ResponseResult< List<AttchmentRecordVo>> showPreFile(String name,  Integer attachmentId) {
+        Boolean b = checkParam(name,attachmentId);
         if(b) {
-            fileOperateService.updateFileName (name,attahmentId);
+            fileOperateService.updateFileName (name,attachmentId);
             return new ResponseResult <> (null, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);

@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.email.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.email.EmailConfigDao;
 import com.qinjee.masterdata.dao.email.EmailRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -49,6 +50,9 @@ public class EmailRecordServiceImpl implements EmailRecordService {
     @Autowired
     private EmailRecordDao emailRecordDao;
 
+    @Autowired
+    private CompanyInfoDao companyInfoDao;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void SendMailForPreRegist(UserSession userSession, List <Integer> list,Integer templateId) throws Exception {
@@ -71,12 +75,13 @@ public class EmailRecordServiceImpl implements EmailRecordService {
             stringMap.put ( "templateId",  templateId);
             stringMap.put ( "companyId",  userSession.getCompanyId ());
             String url = baseShortUrl + key;
-
+            String companyName = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () ).getCompanyName ();
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
             redisClusterService.setex(key,2*60*60, JSON.toJSONString ( stringMap));
             //模板设置
             MessageFormat messageFormat = new MessageFormat(template);
-            String[] paramArr = {preEmploymentVo.getUserName (),preEmploymentVo.getApplicationPosition (), url};
+
+            String[] paramArr = {preEmploymentVo.getUserName (),companyName, url};
             //发送邮件
             template = messageFormat.format ( paramArr );
             SendManyMailsUtil.sendMail (mailConfig,objects,null,"预入职登记",template,null);

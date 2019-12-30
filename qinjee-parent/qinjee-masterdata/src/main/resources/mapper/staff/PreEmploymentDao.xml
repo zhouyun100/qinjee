@@ -1019,7 +1019,7 @@
     </select>
     <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
         select
-        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
+        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, dict3.dict_value as gender, t_pre_employment.email, t_pre_employment.id_type,
         t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
@@ -1032,6 +1032,7 @@
         left join t_sys_dict dict on dict.dict_code = t_pre_employment.id_type
         left join t_sys_dict dict1 on dict1.dict_code = t_pre_employment.marital_status
         left join t_sys_dict dict2 on dict2.dict_code = t_pre_employment.highest_degree
+        left join t_sys_dict dict3 on dict3.dict_code = t_pre_employment.gender
         where
         t_pre_employment.is_delete=0
         and t_pre_employment.company_id=#{companyId}
@@ -1059,7 +1060,7 @@
     </select>
     <select id="selectNameAndOrg" resultType="java.util.Map">
         select user_name,application_position,company_id,phone
-        from t_pre_employment
+        from t_pre_employment pre
         where employment_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}

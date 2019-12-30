@@ -343,16 +343,23 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
                                     if (map1.get ( "text_type" ).equals ( "text" )) {
                                         declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
+                                    }else if(map1.get ( "text_type" ).equals ( "code" )){
+                                        declaredField.set ( preEmployment,selectValueById (integerStringMap,integer  ) );
                                     }
-                                    if (map1.get ( "text_type" ).equals ( "number" )) {
-                                        declaredField.set ( preEmployment, new Double ( selectValueById ( integerStringMap, integer ) ).intValue () );
-                                    }
-                                    if (map1.get ( "text_type" ).equals ( "date" )) {
+                                    else if (map1.get ( "text_type" ).equals ( "number" )) {
+                                            declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
+                                    }else if (map1.get ( "text_type" ).equals ( "date" )) {
                                         SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
                                         Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );
                                         declaredField.set ( preEmployment, parse );
                                     }
                                 }
+                            }
+                        }
+                        if(preEmployment.getPhone ()!=null){
+                            Integer integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
+                            if(integer!=null){
+                                ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
                             }
                         }
                         if (preemploymentId != null && preemploymentId != 0) {
@@ -590,6 +597,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public Post getPostById(Integer postId,UserSession userSession) {
         return postDao.selectByPrimaryKey ( postId );
+    }
+
+    @Override
+    public void deleteCustomTableData(Integer id) {
+        customArchiveTableDataDao.deleteById ( id );
     }
 
 }

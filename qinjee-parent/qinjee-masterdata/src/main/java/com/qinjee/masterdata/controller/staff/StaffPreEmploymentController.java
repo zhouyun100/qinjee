@@ -58,7 +58,6 @@ public class StaffPreEmploymentController extends BaseController {
         if(b){
                 staffPreEmploymentService.deletePreEmployment(list);
                 return ResponseResult.SUCCESS();
-
         }
         return  failResponseResult("参数错误");
     }

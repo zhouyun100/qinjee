@@ -646,4 +646,11 @@
         and company_id=#{companyId}
         and is_enable=1
     </select>
+    <select id="selectBusinessUnitIdByName" resultType="java.lang.Integer">
+        select org_id
+        from t_organization
+        where org_name = #{businessName}
+        and company_id = #{companyId}
+        and is_enable=1
+    </select>
 </mapper>

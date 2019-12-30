@@ -366,7 +366,6 @@ public class CommonController extends BaseController {
     public ResponseResult<List<CustomTableVO>> selectValue(Integer tableId,Integer businessId) throws IllegalAccessException {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
-
                 List<CustomTableVO> list=new ArrayList <> (  );
                 CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId,getUserSession ());
                 List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
@@ -554,6 +553,22 @@ public class CommonController extends BaseController {
         if (b) {
                 Post postById = staffCommonService.getPostById ( postId, getUserSession () );
                 return new ResponseResult<>(postById, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+    /**
+     * 删除自定义表数据
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/deleteCustomTableData", method = RequestMethod.GET)
+    @ApiOperation(value = "删除自定义表数据", notes = "hkt")
+    public  ResponseResult deleteCustomTableData(Integer id){
+        Boolean b = checkParam(id);
+        if (b) {
+            staffCommonService.deleteCustomTableData (id );
+            return new ResponseResult<>(null, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }

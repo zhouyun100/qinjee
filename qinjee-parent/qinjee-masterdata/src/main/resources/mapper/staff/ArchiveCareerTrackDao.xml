@@ -22,6 +22,8 @@
         <result column="change_reason" property="changeReason" jdbcType="VARCHAR" />
         <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
         <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     </resultMap>
 
     <!-- 表所有字段 -->
@@ -53,14 +55,14 @@
     </select>
 
     <!-- 插入数据 -->
-    <insert id="insertArchiveCareerTrack" keyColumn="change_id" keyProperty="change_id" parameterType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack" useGeneratedKeys="true">
+    <insert id="insertArchiveCareerTrack" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack" useGeneratedKeys="true">
         insert into t_archive_career_track
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="changeId != null">
                 change_id,
             </if>
             <if test="archiveId != null">
-                post_id,
+                archive_id,
             </if>
             <if test="beforeUserCategory!= null">
                 before_user_category,
@@ -98,10 +100,10 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="changeId != null">
-                #{changeId}
+                #{changeId},
             </if>
-            <if test="postId != null">
-                #{postId},
+            <if test="archiveId != null">
+                #{archiveId},
             </if>
             <if test="beforeUserCategory!= null">
                 #{beforeUserCategory},

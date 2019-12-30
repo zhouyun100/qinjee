@@ -190,4 +190,6 @@ public interface IStaffCommonService {
     OrganizationVO getOrgById(Integer orgId, UserSession userSession);
 
     Post getPostById(Integer postId,UserSession userSession);
+
+    void deleteCustomTableData(Integer id);
 }

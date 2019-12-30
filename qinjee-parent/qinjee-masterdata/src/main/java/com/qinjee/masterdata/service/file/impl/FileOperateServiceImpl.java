@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -66,7 +67,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 String pathUrl=files[i].getOriginalFilename ();
                 String s = pathUrl.split ( "#" )[0];
                 file1 = FileUploadUtils.multipartFileToFile ( files[i] );
-                String name = getName ( pathUrl );
+                String name = getName ( files[i].getOriginalFilename () );
                 int i1 = pathUrl.lastIndexOf ( "." );
                 String substring = pathUrl.substring ( i1 );
                 //根据层级拼接url
@@ -80,10 +81,15 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
         }
     }
+
+
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void putPreFile(MultipartFile file, Integer preId, String groupName, Integer companyId) throws Exception {
+    public void putPreFile(MultipartFile file, Integer preId, Integer groupId, Integer companyId) throws Exception {
            File file1 = null;
+          String groupName= attachmentGroupDao.selectGroupName(groupId);
         try {
             String puthUrl=companyId+File.separator+preId+File.separator+groupName+File.separator+file.getOriginalFilename ();
             file1=FileUploadUtils.multipartFileToFile ( file );
@@ -112,6 +118,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
         attachmentRecord.setOperatorId(preId);
         attachmentRecordDao.insertSelective(attachmentRecord);
     }
+
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void downLoadFile(HttpServletResponse response, List<Integer> list) throws Exception {
@@ -135,7 +144,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 }
             }
             // 将文件输入流写入response的输出流中
-            response.setHeader ( "content-disposition", "attachment;fileName=" + URLEncoder.encode ( fileName+".zip", "UTF-8" ) );
+            response.setHeader ( "content-disposition", "attachment;filename=" + URLEncoder.encode ( fileName+".zip", "UTF-8" ) );
             CompressFileUtil.toZip ( files,response.getOutputStream () );
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,7 +168,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
     @Transactional(rollbackFor = Exception.class)
     public void insertAttachment(MultipartFile multipartFile, UserSession userSession,String pathUrl) {
-        String s = getName ( pathUrl );
+        String s = getName ( multipartFile.getOriginalFilename () );
         List < URL > filePath = getFilePath (userSession,s,userSession.getArchiveId () );
 //        //找到应该上传文件的个数
 //        Integer fileSize=attachmentRecordDao.selectFileSize(s);
@@ -190,12 +199,10 @@ public class FileOperateServiceImpl implements IFileOperateService {
         return attachmentRecord;
     }
 
-    private String getName(String pathUrl) {
-        int i = pathUrl.lastIndexOf ( "\\");
-        String substring = pathUrl.substring ( i+1  );
-        int i2 = substring.lastIndexOf ( "\\");
-        String substring1 = substring.substring ( i2 + 1 );
-        return substring1;
+    private String getName(String filename) {
+        String s = filename.split ( "#" )[1];
+        String s1 = s.split ( "\\." )[0];
+        return s1;
     }
 
     @Override
@@ -226,22 +233,40 @@ public class FileOperateServiceImpl implements IFileOperateService {
         attachmentRecordDao.updateFileName(name,attahmentId);
     }
 
-    @Override
-    public  List<ShowAttatchementVo> selectMyFile() {
-        List<ShowAttatchementVo> list=new ArrayList <> (  );
-        List<String> strings=attachmentGroupDao.selectGroupTop();
-        for (String string : strings) {
-            ShowAttatchementVo showAttatchementVo=new ShowAttatchementVo ();
-            showAttatchementVo.setGroup ( string );
-            showAttatchementVo.setGroupName (attachmentGroupDao.selectGroup(string));
-            list.add ( showAttatchementVo );
-       }
-        return list;
-    }
+        @Override
+        public  List<ShowAttatchementVo> selectMyFile() {
+            List<ShowAttatchementVo> attatchementVoList =attachmentGroupDao.selectGroupTop();
+            List<ShowAttatchementVo> firstAttatchementList = attatchementVoList.stream().filter(attatchement ->{
+                if(attatchement.getParentGroupId() == 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            }).collect( Collectors.toList());
+            handlerAttatchementGroup(attatchementVoList,firstAttatchementList);
+            return firstAttatchementList;
+        }
+
+        private void handlerAttatchementGroup(List<ShowAttatchementVo> allList,List<ShowAttatchementVo> firstList){
+            for(ShowAttatchementVo showAttatchementVo : firstList){
+                List<ShowAttatchementVo> tempAttatchement = allList.stream().filter(attatchement ->{
+                    if(attatchement.getParentGroupId().equals(showAttatchementVo.getGroupId())){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }).collect(Collectors.toList());
+
+//                allList.removeAll(tempAttatchement);
+                showAttatchementVo.setList(tempAttatchement);
+            }
+        }
+
+
 
     @Override
-    public List < AttchmentRecordVo > selectMyFileContent(Integer businessId, String groupName,Integer companyId) {
-       return attachmentRecordDao.selectByBusinessIdAndGroupNameAndBusinessType(businessId,groupName,companyId);
+    public List < AttchmentRecordVo > selectMyFileContent(Integer businessId, Integer groupId,Integer companyId) {
+       return attachmentRecordDao.selectByBusinessIdAndGroupNameAndBusinessType(businessId,groupId,companyId);
     }
 
     @Override
@@ -250,8 +275,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List < AttchmentRecordVo > selectMyFileContents(Integer businessId, String groupName, Integer companyId) {
-        return attachmentRecordDao.selectFileFromPackage(businessId,groupName,companyId);
+    public List < AttchmentRecordVo > selectMyFileContents(Integer businessId, Integer groupId, Integer companyId)  {
+        return attachmentRecordDao.selectFileFromPackage(businessId, groupId,companyId);
     }
 
     @Override
@@ -263,11 +288,18 @@ public class FileOperateServiceImpl implements IFileOperateService {
             String s =fileName.get ( i ).split ( "#" )[0];
             UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber(s);
             List < String > list = attachmentRecordDao.selectGroup ();
-            String name = getName ( fileName.get ( i ) );
+            String name = null;
+            try {
+                name = getName ( fileName.get ( i ) );
+            } catch (Exception e) {
+                map.put ( fileName.get ( i ),"验证不通过" );
+            }
             for (String s1 : list) {
-                if (name.contains ( s1 )) {
-                    flag = true;
-                    break;
+                if(null!=name && !"".equals (name )) {
+                    if (name.equals ( s1 )) {
+                        flag = true;
+                        break;
+                    }
                 }
             }
             if (userArchiveVo != null && flag ) {

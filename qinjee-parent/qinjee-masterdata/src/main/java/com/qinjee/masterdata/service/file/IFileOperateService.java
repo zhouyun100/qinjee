@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public interface IFileOperateService {
 
     String checkImg(MultipartFile[] files, UserSession userSession) throws Exception;
 
-    void putPreFile(MultipartFile file, Integer preId, String groupName, Integer companyId) throws Exception;
+    void putPreFile(MultipartFile file, Integer preId,Integer groupId, Integer companyId) throws Exception;
 
     List< AttchmentRecordVo> selectPreAttach(Integer companyId, Integer preId);
 
@@ -53,9 +54,9 @@ public interface IFileOperateService {
 
     List<ShowAttatchementVo>  selectMyFile();
 
-    List< AttchmentRecordVo> selectMyFileContent(Integer businessId, String groupName,Integer companyId);
+    List< AttchmentRecordVo> selectMyFileContent(Integer businessId,Integer groupId,Integer companyId);
 
     void moveFile(Integer attachmentId, Integer groupId,Integer companyId);
 
-    List< AttchmentRecordVo> selectMyFileContents(Integer businessId, String groupName, Integer companyId);
+    List< AttchmentRecordVo> selectMyFileContents(Integer businessId, Integer groupId, Integer companyId) throws UnsupportedEncodingException;
 }

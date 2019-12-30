@@ -283,13 +283,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
        ArchiveCareerTrack archiveCareerTrack=new ArchiveCareerTrack ();
        BeanUtils.copyProperties ( archiveCareerTrackVo,archiveCareerTrack );
         archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
-        BusinessOrgPostPos businessOrgPostPos = organizationDao.selectManyId (
-                archiveCareerTrackVo.getBusinessUnitName (), archiveCareerTrackVo.getOrgName (),
-                archiveCareerTrackVo.getPostName (), archiveCareerTrackVo.getPositionName () );
-        archiveCareerTrack.setAfterBusinessUnitId( businessOrgPostPos.getBusinessUnitId () );
-        archiveCareerTrack.setAfterOrgId ( businessOrgPostPos.getOrgId () );
-        archiveCareerTrack.setAfterPostId ( businessOrgPostPos.getPostId () );
-        archiveCareerTrack.setAfterPositionId ( businessOrgPostPos.getPositionId () );
+        Integer unitId=organizationDao.selectBusinessUnitIdByName ( archiveCareerTrackVo.getBusinessUnitName (),userSession.getCompanyId ());
+        archiveCareerTrack.setAfterBusinessUnitId( unitId);
+        archiveCareerTrack.setAfterOrgId ( archiveCareerTrackVo.getOrgId () );
+        archiveCareerTrack.setAfterPostId ( archiveCareerTrackVo.getPostId () );
+        archiveCareerTrack.setAfterPositionId ( archiveCareerTrackVo.getPositionId () );
         archiveCareerTrackdao.insertArchiveCareerTrack ( archiveCareerTrack );
     }
 
