@@ -21,7 +21,7 @@
     select
     <include refid="Base_Column_List" />
     from t_sys_dict
-    where dict_type = #{dictType,jdbcType=VARCHAR} and is_delete = 0
+    where dict_type = #{dictType,jdbcType=VARCHAR} and is_delete = 0 ORDER BY id
   </select>
 
   <!-- 根据字典类型查询字典列表 -->
