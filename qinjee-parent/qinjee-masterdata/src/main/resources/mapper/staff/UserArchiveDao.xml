@@ -746,7 +746,7 @@
     LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id
     LEFT JOIN t_organization torg ON torg.org_id = tua.business_unit_id
     LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
-    WHERE tua.is_delete = 0 AND tua2.is_delete = 0
+    WHERE tua.is_delete = 0
     <if test="orgIdList != null and orgIdList.size > 0">
       and tua.org_id in
       <foreach collection="orgIdList" item="orgId" separator="," close=")" open="(">
