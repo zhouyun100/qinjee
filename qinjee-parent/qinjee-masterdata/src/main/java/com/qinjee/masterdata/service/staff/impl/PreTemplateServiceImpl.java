@@ -104,8 +104,8 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     @Transactional(rollbackFor = Exception.class)
     public void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) throws Exception {
 
-        List < Integer > list = preRegistVo.getPreIdList();
-        for(Integer sendWay : preRegistVo.getSendWayList()){
+        List < Integer > list = preRegistVo.getList();
+        for(Integer sendWay : preRegistVo.getSendWay()){
             if(sendWay.equals(1)){
                 //短信发送
                 smsRecordService.sendMessageSms(list, preRegistVo.getTemplateId(), userSession);

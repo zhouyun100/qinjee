@@ -12,8 +12,8 @@ import java.util.List;
 @Data
 public class PreRegistVo implements Serializable {
 
-    private List <Integer> preIdList;
+    private List <Integer> list;
     private Integer templateId;
-    private List<Integer> sendWayList;
+    private List<Integer> sendWay;
 
 }
