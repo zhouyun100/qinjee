@@ -87,6 +87,9 @@ public class RoleSearchServiceImpl implements RoleSearchService {
         if(null == archiveId || null == companyId){
             return null;
         }
+
+        List<RoleGroupVO> firstRoleList = null;
+
         List<RoleGroupVO> roleList = roleSearchDao.searchRoleListByArchiveId(archiveId,companyId);
 
         /**
@@ -96,7 +99,7 @@ public class RoleSearchServiceImpl implements RoleSearchService {
             /**
              * 提取当前角色树的一级节点
              */
-            List<RoleGroupVO> firstRoleList = roleList.stream().filter(roleGroupVO -> {
+            firstRoleList = roleList.stream().filter(roleGroupVO -> {
                 if(roleGroupVO.getParentRoleGroupId() == null || roleGroupVO.getParentRoleGroupId() == 0){
                     return true;
                 }else{
@@ -105,10 +108,8 @@ public class RoleSearchServiceImpl implements RoleSearchService {
             }).collect(Collectors.toList());
 
             roleAuthService.handlerRoleToTree(roleList,firstRoleList);
-        }else{
-            return null;
         }
-        return roleList;
+        return firstRoleList;
     }
 
     @Transactional(rollbackFor = Exception.class)

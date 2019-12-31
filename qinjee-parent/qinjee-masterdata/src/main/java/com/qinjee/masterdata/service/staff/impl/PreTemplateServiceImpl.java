@@ -103,27 +103,18 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) throws Exception {
-        //判断是否可以发短信
-//        for (Integer integer : preRegistVo.getList ()) {
-//            PreEmployment preEmployment = preEmploymentDao.getOrganizationById ( integer );
-//            if(CHANGSTATUS_BLACKLIST.equals (preEmployment.getEmploymentState ()) ||
-//              CHANGSTATUS_GIVEUP.equals (preEmployment.getEmploymentState ()) || CHANGSTATUS_READY.equals ( preEmployment.getEmploymentState ()
-//            )){
-//                ExceptionCast.cast ( CommonCode.CAN_NOT_SEND_PREREGIST );
-//            }
-//        }
-        List < Integer > list = preRegistVo.getList ();
-        for (Integer integer : list) {
-            if(1==integer){
+
+        List < Integer > list = preRegistVo.getPreIdList();
+        for(Integer sendWay : preRegistVo.getSendWayList()){
+            if(sendWay.equals(1)){
                 //短信发送
-                smsRecordService.sendMessageSms ( list,preRegistVo.getTemplateId (),userSession );
-            }
-            if(2==integer){
+                smsRecordService.sendMessageSms(list, preRegistVo.getTemplateId(), userSession);
+            }else if(sendWay.equals(2)){
                 //邮件发送
-                emailRecordService.SendMailForPreRegist (userSession , list,preRegistVo.getTemplateId () );
+                emailRecordService.SendMailForPreRegist(userSession, list, preRegistVo.getTemplateId());
+            }
         }
 
-        }
         for (Integer integer : list) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( integer );
             preEmployment.setEmploymentRegister ( "已发送" );

@@ -91,16 +91,12 @@ public class PreTemplateController extends BaseController {
     /**
      * 发送预入职登记
      */
-    @CrossOrigin
+//    @CrossOrigin
     @RequestMapping(value = "/sendPreRegist", method = RequestMethod.POST)
     @ApiOperation(value = "发送预入职登记", notes = "hkt")
-    public ResponseResult sendPreRegist(@RequestBody @Valid PreRegistVo preRegistVo) throws Exception {
-        Boolean b = checkParam(preRegistVo,getUserSession ());
-        if (b) {
-                preTemplateService.sendRegisterMessage(preRegistVo,getUserSession ());
-                return new ResponseResult<>(null, CommonCode.SUCCESS);
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    public ResponseResult sendPreRegist(@RequestBody PreRegistVo preRegistVo) throws Exception {
+        preTemplateService.sendRegisterMessage(preRegistVo,getUserSession ());
+        return new ResponseResult<>(null, CommonCode.SUCCESS);
     }
 
     /**
@@ -366,7 +362,7 @@ public class PreTemplateController extends BaseController {
      * @param templateId 模板id
      * @return
      */
-    @CrossOrigin
+//    @CrossOrigin
     @RequestMapping(value = "/searchFieldListByTableIdAndTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据表ID和模板ID查询对应表字段配置信息", notes = "hkt")
     public ResponseResult <List < TemplateCustomTableFieldVO >> searchTableFieldListByTemplateId(Integer tableId,Integer templateId) {
