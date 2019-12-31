@@ -113,6 +113,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
+        System.out.println("新增用户档案："+userArchive);
         userArchiveDao.insertSelective(userArchive);
         return new ResponseResult(userArchive.getArchiveId());
     }
