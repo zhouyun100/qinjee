@@ -828,107 +828,107 @@
     <foreach collection="list" index="index" item="item" separator=";">
         UPDATE  t_pre_employment
         <set>
-        <if test="userName != null">
-            user_name = #{userName},
+        <if test="item.userName != null">
+            user_name = #{item.userName},
         </if>
-        <if test="phone != null">
-            phone = #{phone},
+        <if test="item.phone != null">
+            phone = #{item.phone},
         </if>
-        <if test="gender != null">
-            gender = #{gender},
+        <if test="item.gender != null">
+            gender = #{item.gender},
         </if>
-        <if test="email != null">
-            email = #{email},
+        <if test="item.email != null">
+            email = #{item.email},
         </if>
-        <if test="idType != null">
-            id_type = #{idType},
+        <if test="item.idType != null">
+            id_type = #{item.idType},
         </if>
-        <if test="idNumber != null">
-            id_number = #{idNumber},
+        <if test="item.idNumber != null">
+            id_number = #{item.idNumber},
         </if>
-        <if test="age != null">
-            age = #{age},
+        <if test="item.age != null">
+            age = #{item.age},
         </if>
-        <if test="firstWorkDate != null">
-            first_work_date = #{firstWorkDate},
+        <if test="item.firstWorkDate != null">
+            first_work_date = #{item.firstWorkDate},
         </if>
-        <if test="maritalStatus != null">
-            marital_status = #{maritalStatus},
+        <if test="item.maritalStatus != null">
+            marital_status = #{item.maritalStatus},
         </if>
-        <if test="highestDegree != null">
-            highest_degree = #{highestDegree},
+        <if test="item.highestDegree != null">
+            highest_degree = #{item.highestDegree},
         </if>
-        <if test="graduatedSchool != null">
-            graduated_school = #{graduatedSchool},
+        <if test="item.graduatedSchool != null">
+            graduated_school = #{item.graduatedSchool},
         </if>
-        <if test="graduatedSpeciality != null">
-            graduated_speciality = #{graduatedSpeciality},
+        <if test="item.graduatedSpeciality != null">
+            graduated_speciality = #{item.graduatedSpeciality},
         </if>
-        <if test="lastWorkCompany != null">
-            last_work_company = #{lastWorkCompany},
+        <if test="item.lastWorkCompany != null">
+            last_work_company = #{item.lastWorkCompany},
         </if>
-        <if test="isGiveBirth != null">
-            is_give_birth = #{isGiveBirth},
+        <if test="item.isGiveBirth != null">
+            is_give_birth = #{item.isGiveBirth},
         </if>
-        <if test="residentCharacter != null">
-            resident_character = #{residentCharacter},
+        <if test="item.residentCharacter != null">
+            resident_character = #{item.residentCharacter},
         </if>
-        <if test="height != null">
-            height = #{height},
+        <if test="item.height != null">
+            height = #{item.height},
         </if>
-        <if test="bloodType != null">
-            blood_type = #{bloodType},
+        <if test="item.bloodType != null">
+            blood_type = #{item.bloodType},
         </if>
-        <if test="englishName != null">
-            english_name = #{englishName},
+        <if test="item.englishName != null">
+            english_name = #{item.englishName},
         </if>
-        <if test="nationality != null">
-            nationality = #{nationality},
+        <if test="item.nationality != null">
+            nationality = #{item.nationality},
         </if>
-        <if test="birthDate != null">
-            birth_date = #{birthDate},
+        <if test="item.birthDate != null">
+            birth_date = #{item.birthDate},
         </if>
-        <if test="politicalStatus != null">
-            political_status = #{politicalStatus},
+        <if test="item.politicalStatus != null">
+            political_status = #{item.politicalStatus},
         </if>
-        <if test="birthplace != null">
-            birthplace = #{birthplace},
+        <if test="item.birthplace != null">
+            birthplace = #{item.birthplace},
         </if>
-        <if test="applicationPosition != null">
-            application_position = #{applicationPosition},
+        <if test="item.applicationPosition != null">
+            application_position = #{item.applicationPosition},
         </if>
-        <if test="probationPeriod != null">
-            probation_period = #{probationPeriod},
+        <if test="item.probationPeriod != null">
+            probation_period = #{item.probationPeriod},
         </if>
-        <if test="hireDate != null">
-            hire_date = #{hireDate},
+        <if test="item.hireDate != null">
+            hire_date = #{item.hireDate},
         </if>
-        <if test="orgId != null">
-            org_id = #{orgId},
+        <if test="item.orgId != null">
+            org_id = #{item.orgId},
         </if>
-        <if test="postId != null">
-            post_id = #{postId},
+        <if test="item.postId != null">
+            post_id = #{item.postId},
         </if>
-        <if test="employmentState != null">
-            employment_state = #{employmentState},
+        <if test="item.employmentState != null">
+            employment_state = #{item.employmentState},
         </if>
-        <if test="employmentRegister != null">
-            employment_register = #{employmentRegister},
+        <if test="item.employmentRegister != null">
+            employment_register = #{item.employmentRegister},
         </if>
-        <if test="description != null">
-            description = #{description},
+        <if test="item.description != null">
+            description = #{item.description},
         </if>
-        <if test="dataSource != null">
-            data_source = #{dataSource},
+        <if test="item.dataSource != null">
+            data_source = #{item.dataSource},
         </if>
-        <if test="operatorId != null">
-            operator_id = #{operatorId},
+        <if test="item.operatorId != null">
+            operator_id = #{item.operatorId},
         </if>
-        <if test="isDelete != null">
-            is_delete = #{isDelete}
+        <if test="item.isDelete != null">
+            is_delete = #{item.isDelete}
         </if>
         </set>
-        WHERE employment_id = #{employmentId}
+        WHERE employment_id = #{item.employmentId}
     </foreach>
   </update>
   <select id="selectMaxId" resultType="java.lang.Integer">

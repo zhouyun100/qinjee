@@ -218,8 +218,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     public PageResult < PreEmploymentVo > selectPreEmployment(UserSession userSession, Integer currentPage, Integer pageSize) {
-
-
         //通过部门找到预入职Vo
         PageHelper.startPage ( currentPage, pageSize );
         List < PreEmploymentVo > preEmploymentList = preEmploymentDao.selectPreEmploymentVo ( userSession.getCompanyId () );
@@ -267,13 +265,23 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void confirmEmployment(List<Integer> list,UserSession userSession) {
+        List < PreEmployment > preEmploymentList = preEmploymentDao.selectByPrimaryKeyList ( list );
+        for (PreEmployment preEmployment : preEmploymentList) {
+            preEmployment.setEmploymentState("CONFIRM");
+        }
+        preEmploymentDao.updateBatch ( preEmploymentList );
+
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
+        statusChangeVo.setChangeState ( "CONFIRM" );
         statusChangeVo.setAbandonReason ( "" );
-        statusChangeVo.setChangeState ( CHANGSTATUS_READY );
-        statusChangeVo.setPreEmploymentList ( list );
         statusChangeVo.setRuleId ( 1 );
-        confirmEmployment (list,userSession);
+        //新增变更记录
+        for (Integer integer : list) {
+            getPreEmploymentChange(userSession.getArchiveId (),integer,statusChangeVo);
+        }
+
     }
 
 }
