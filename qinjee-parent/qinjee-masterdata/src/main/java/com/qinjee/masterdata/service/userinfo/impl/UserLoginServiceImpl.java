@@ -137,10 +137,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         int userId = 0;
         UserInfo userInfo = userLoginDao.searchUserInfoDetailByPhone(phone);
         if(userInfo != null && userInfo.getUserId() != null){
-            RequestLoginVO requestLoginVO = new RequestLoginVO();
-            requestLoginVO.setUserId(userInfo.getUserId());
-            requestLoginVO.setCompanyId(companyId);
-            UserInfoVO userInfoVO = userLoginDao.searchUserInfoByUserIdAndCompanyId(requestLoginVO);
+            UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(companyId, userInfo.getUserId());
             if(userInfoVO == null){
                 userLoginDao.addCompanyUserInfo(companyId,userInfo.getUserId());
             }
@@ -155,10 +152,9 @@ public class UserLoginServiceImpl implements UserLoginService {
                 int resultCount = userLoginDao.addUserInfo(userInfo);
                 if(resultCount > 0){
                     userId = userInfo.getUserId();
+                    userLoginDao.addCompanyUserInfo(companyId,userId);
                 }
-                userLoginDao.addCompanyUserInfo(companyId,userId);
             }
-
         }
         return userId;
     }
