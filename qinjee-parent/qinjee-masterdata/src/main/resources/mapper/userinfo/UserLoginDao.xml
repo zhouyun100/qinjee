@@ -43,6 +43,7 @@
     and t_user_company.company_id = t_user_archive.company_id
     and t_user_company.is_enable = 1
     and t_company_info.is_enable = 1
+    and t_user_archive.is_delete = 0
   </select>
 
   <select id="searchUserInfoByPhone" parameterType="java.lang.String" resultMap="UserInfoResultMap">
@@ -56,6 +57,7 @@
     and t_user_company.company_id = t_user_archive.company_id
     and t_user_company.is_enable = 1
     and t_company_info.is_enable = 1
+    and t_user_archive.is_delete = 0
   </select>
 
   <select id="searchUserInfoByUserIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
@@ -70,6 +72,7 @@
     and t_user_company.company_id = t_user_archive.company_id
     and t_user_company.is_enable = 1
     and t_company_info.is_enable = 1
+    and t_user_archive.is_delete = 0
   </select>
 
   <update id="updateUserPasswordByUserIdAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO">

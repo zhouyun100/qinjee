@@ -165,9 +165,9 @@
     LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
     LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE'
     AND t_user_archive.gender = t_sys_dict.dict_code
-    WHERE
-        t_user_archive.company_id = #{companyId}
+    WHERE t_user_archive.company_id = #{companyId}
     AND t_user_archive.archive_status = 'SERVICE'
+    and t_user_archive.is_delete = 0
   </select>
 
 
