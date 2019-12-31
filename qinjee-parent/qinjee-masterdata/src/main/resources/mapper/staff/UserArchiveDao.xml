@@ -124,6 +124,15 @@
       <if test="businessUnitId != null">
         business_unit_id,
       </if>
+      <if test="supervisorId != null">
+        supervisor_id,
+      </if>
+      <if test="orgId != null">
+        org_id,
+      </if>
+      <if test="postId != null">
+        post_id,
+      </if>
       <if test="userName != null">
         user_name,
       </if>
@@ -225,6 +234,17 @@
       <if test="businessUnitId != null">
         #{businessUnitId,jdbcType=INTEGER},
       </if>
+
+      <if test="supervisorId != null">
+        #{supervisorId,jdbcType=INTEGER},
+      </if>
+      <if test="orgId != null">
+        #{orgId,jdbcType=INTEGER},
+      </if>
+      <if test="postId != null">
+        #{postId,jdbcType=INTEGER},
+      </if>
+
       <if test="userName != null">
         #{userName,jdbcType=VARCHAR},
       </if>
@@ -806,17 +826,14 @@
     where arc.user_category=#{archiveType}
     and arc.is_delete=0
     and  arc.archive_id in
-   (select archive_id from t_user_archive_post_relation
+   (
+   select archive_id from t_user_archive_post_relation
 		where `employment_type`=#{type}
-    and is_delete=0)
+    and is_delete=0
+  )
     and arc.archive_id in(
-    ${sql})
-    and arc.archive_id in (
-    select archive_id from t_user_archive
-    where org_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")" >
-      #{item}
-    </foreach> )
+    ${sql}
+    )
   </select>
   <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
         <if test="baseSql != null">
