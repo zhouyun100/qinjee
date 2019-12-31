@@ -59,12 +59,14 @@ server:
       enabled: false
 
 
-#ribbon:
-#  http:
-#    client:
-#      enabled: false # 关闭 httpclient 支持
-#  okhttp:
-#    enabled: true # 开启 okhttp 支持
+ribbon:
+  ReadTimeout: 3000
+  SocketTimeout: 3000
+  http:
+    client:
+      enabled: false # 关闭 httpclient 支持
+  okhttp:
+    enabled: true # 开启 okhttp 支持
 
 
 logging:

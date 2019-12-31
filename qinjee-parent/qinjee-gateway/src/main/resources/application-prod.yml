@@ -60,6 +60,8 @@ server:
 
 
 ribbon:
+  ReadTimeout: 3000
+  SocketTimeout: 3000
   http:
     client:
       enabled: false # 关闭 httpclient 支持
