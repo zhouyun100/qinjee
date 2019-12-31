@@ -143,10 +143,9 @@ public interface IStaffCommonService {
     Integer getCompanyId(UserSession userSession);
     /**
      * 根据档案id显示对应权限下的子集部门
-     * @param companyId
      * @return
      */
-    List<OrganzitionVo> getOrgIdByCompanyId(Integer companyId, UserSession userSession);
+    List<OrganzitionVo> getOrgIdByCompanyId( UserSession userSession);
 
     /**
      * 显示部门下的岗位

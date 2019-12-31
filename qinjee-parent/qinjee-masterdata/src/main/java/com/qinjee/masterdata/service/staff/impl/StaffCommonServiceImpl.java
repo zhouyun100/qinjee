@@ -167,8 +167,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public List<OrganzitionVo> getOrgIdByCompanyId(Integer companyId, UserSession userSession) {
-        return getOrganTree ( companyId, userSession.getArchiveId () );
+    public List<OrganzitionVo> getOrgIdByCompanyId( UserSession userSession) {
+        return getOrganTree ( userSession.getCompanyId (), userSession.getArchiveId () );
     }
 
     private List<OrganzitionVo> getOrganTree(Integer companyId, Integer archiveId) {

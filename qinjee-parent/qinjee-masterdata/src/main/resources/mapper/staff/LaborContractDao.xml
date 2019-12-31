@@ -503,10 +503,12 @@
     left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
     left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
     left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=0
-    where  contract.org_id in
+    where  contract.archive_id in
+    (select archive_id from t_user_archive where org_id in
     <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
+    )
     and contract.contract_state in
     <foreach collection="status" item="item" open="(" separator="," close=")">
       #{item}

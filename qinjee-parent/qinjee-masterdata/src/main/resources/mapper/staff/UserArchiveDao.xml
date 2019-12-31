@@ -806,14 +806,17 @@
     where arc.user_category=#{archiveType}
     and arc.is_delete=0
     and  arc.archive_id in
-   (
-   select archive_id from t_user_archive_post_relation
+   (select archive_id from t_user_archive_post_relation
 		where `employment_type`=#{type}
-    and is_delete=0
-  )
+    and is_delete=0)
     and arc.archive_id in(
-    ${sql}
-    )
+    ${sql})
+    and arc.archive_id in (
+    select archive_id from t_user_archive
+    where org_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")" >
+      #{item}
+    </foreach> )
   </select>
   <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
         <if test="baseSql != null">

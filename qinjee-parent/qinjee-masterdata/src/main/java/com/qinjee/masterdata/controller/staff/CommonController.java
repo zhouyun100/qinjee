@@ -485,10 +485,10 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getOrgIdByCompanyId", method = RequestMethod.GET)
     @ApiOperation(value = "根据档案id显示对应权限下的子集部门与岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult< List < OrganzitionVo > > getOrgIdByCompanyId(Integer companyId) {
-        Boolean b = checkParam(companyId,getUserSession ());
+    public ResponseResult< List < OrganzitionVo > > getOrgIdByCompanyId() {
+        Boolean b = checkParam(getUserSession ());
         if (b) {
-                List < OrganzitionVo > orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId ( companyId, getUserSession () );
+                List < OrganzitionVo > orgIdByCompanyId = staffCommonService.getOrgIdByCompanyId (  getUserSession () );
                     return new ResponseResult<>(orgIdByCompanyId, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

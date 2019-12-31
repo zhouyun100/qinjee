@@ -55,7 +55,7 @@ public class EmailRecordServiceImpl implements EmailRecordService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void SendMailForPreRegist(UserSession userSession, List <Integer> list,Integer templateId) throws Exception {
+    public void SendMailForPreRegist(UserSession userSession, List <Integer> list,Integer templateId)  {
         //获取邮件配置类
         EmailConfig emailConfigByCompanyId = emailConfigService.getEmailConfigByCompanyId ( userSession.getCompanyId () );
         MailConfig mailConfig = emailConfigService.handlerEmailtoMail ( emailConfigByCompanyId );

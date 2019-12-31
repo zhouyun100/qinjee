@@ -67,7 +67,7 @@ public interface UserArchiveDao {
 
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
-    List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") String archiveType, @Param("orgId") Integer orgId, @Param("type") String type);
+    List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") String archiveType, @Param("list") List<Integer> list, @Param("type") String type);
 
      @MapKey("archive_id")
      Map<Integer,Map<String,Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order);

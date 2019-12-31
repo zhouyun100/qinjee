@@ -196,7 +196,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String sql=getBaseSql ( userSession.getCompanyId (),fieldVoList,customTableVOS )+stringBuffer.toString();
         PageHelper.startPage ( standingBookReturnVo.getCurrentPage (),standingBookReturnVo.getPageSize () );
         List<Integer> integerList=userArchiveDao.selectStaff(sql,standingBookReturnVo.getArchiveType (),
-                standingBookReturnVo.getOrgId (),standingBookReturnVo.getType ());
+                standingBookReturnVo.getOrgIdList (),standingBookReturnVo.getType ());
         standingBookReturnVo.setTotal ( integerList.size () );
         return userArchiveDao.selectByPrimaryKeyList ( integerList );
 

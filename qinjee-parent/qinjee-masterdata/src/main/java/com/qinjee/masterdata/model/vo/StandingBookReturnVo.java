@@ -3,6 +3,8 @@ package com.qinjee.masterdata.model.vo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.util.List;
+
 @JsonInclude
 @Data
 public class StandingBookReturnVo {
@@ -17,7 +19,7 @@ public class StandingBookReturnVo {
     /**
      * 企业id
      */
-    private Integer orgId;
+    private List <Integer> orgIdList;
     /**
      * 兼职类型
      */

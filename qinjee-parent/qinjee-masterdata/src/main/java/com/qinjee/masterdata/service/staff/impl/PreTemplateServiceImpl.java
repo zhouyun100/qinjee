@@ -112,15 +112,19 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 //                ExceptionCast.cast ( CommonCode.CAN_NOT_SEND_PREREGIST );
 //            }
 //        }
-        if(1==preRegistVo.getSendWay ()){
-            //短信发送
-          smsRecordService.sendMessageSms ( preRegistVo.getList (),preRegistVo.getTemplateId (),userSession );
+        List < Integer > list = preRegistVo.getList ();
+        for (Integer integer : list) {
+            if(1==integer){
+                //短信发送
+                smsRecordService.sendMessageSms ( list,preRegistVo.getTemplateId (),userSession );
+            }
+            if(2==integer){
+                //邮件发送
+                emailRecordService.SendMailForPreRegist (userSession , list,preRegistVo.getTemplateId () );
         }
-        if(2==preRegistVo.getSendWay ()){
-            //邮件发送
-        emailRecordService.SendMailForPreRegist (userSession ,preRegistVo.getList (),preRegistVo.getTemplateId () );
+
         }
-        for (Integer integer : preRegistVo.getList ()) {
+        for (Integer integer : list) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( integer );
             preEmployment.setEmploymentRegister ( "已发送" );
             preEmploymentDao.updateByPrimaryKey ( preEmployment );
