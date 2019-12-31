@@ -136,7 +136,7 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
 
             //筛选子集人员
             List<ArchiveInfoVO> childArchiveList = archiveInfoList.stream().filter(archiveInfoVO -> {
-                if(archiveInfoVO.getOrgId().equals(orgArchive.getOrgId())){
+                if(archiveInfoVO.getOrgId() != null && archiveInfoVO.getOrgId().equals(orgArchive.getOrgId())){
                     return true;
                 }else{
                     return false;
