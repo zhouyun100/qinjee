@@ -270,7 +270,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     if (map1.get ( "text_type" ).equals ( "text" )) {
                                         declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
                                     } else if (map1.get ( "text_type" ).equals ( "code" )) {
-                                        declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
+                                        String s = declaredField.getType ().toString ();
+                                        int i = s.lastIndexOf ( "." );
+                                        s.substring ( i+1 );
+                                        if("Integer".equals ( s )) {
+                                            declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
+                                        }else if("String".equals ( s )){
+                                            declaredField.set (userArchive,selectValueById ( integerStringMap, integer )  );
+                                        }
                                     } else if (map1.get ( "text_type" ).equals ( "number" )) {
                                         declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
                                     } else if (map1.get ( "text_type" ).equals ( "date" )) {
@@ -344,10 +351,18 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     if (map1.get ( "text_type" ).equals ( "text" )) {
                                         declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
                                     }else if(map1.get ( "text_type" ).equals ( "code" )){
-                                        declaredField.set ( preEmployment,selectValueById (integerStringMap,integer  ) );
+                                        String s = declaredField.getType ().toString ();
+                                        int i = s.lastIndexOf ( "." );
+                                        s.substring ( i+1 );
+                                        if("Integer".equals ( s )) {
+                                            declaredField.set ( preEmployment, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
+                                        }else if("String".equals ( s )){
+                                            declaredField.set (preEmployment,selectValueById ( integerStringMap, integer )  );
+                                        }
+
                                     }
                                     else if (map1.get ( "text_type" ).equals ( "number" )) {
-                                            declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
+                                            declaredField.set ( preEmployment, Integer.parseInt (selectValueById ( integerStringMap, integer )) );
                                     }else if (map1.get ( "text_type" ).equals ( "date" )) {
                                         SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
                                         Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );

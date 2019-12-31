@@ -983,7 +983,7 @@
     <select id="selectIdByNumber" resultType="java.lang.Integer">
     select employment_id
     from  t_pre_employment
-    where   phone = #{phone,jdbcType=VARCHAR}
+    where   phone = #{phoneNumber,jdbcType=VARCHAR}
     and company_id=#{companyId}
     AND is_delete = 0
   </select>

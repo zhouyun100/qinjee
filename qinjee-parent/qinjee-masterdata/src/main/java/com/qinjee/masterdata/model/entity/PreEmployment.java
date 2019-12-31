@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
@@ -16,6 +17,7 @@ import java.util.Date;
 @Data
 @ToString
 @JsonInclude
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PreEmployment implements Serializable {
 
         /**
@@ -61,8 +63,8 @@ public class PreEmployment implements Serializable {
         /**
          * 参加工作时间
          */
-        @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-        @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+        @JsonFormat(pattern="yyyy-MM-dd")
+        @DateTimeFormat(pattern="yyyy-MM-dd")
         private Date firstWorkDate;
 
         /**
@@ -123,8 +125,8 @@ public class PreEmployment implements Serializable {
         /**
          * 出生日期
          */
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
+        @JsonFormat(pattern="yyyy-MM-dd")
+        @DateTimeFormat(pattern="yyyy-MM-dd")
         private Date birthDate;
 
         /**
@@ -150,8 +152,8 @@ public class PreEmployment implements Serializable {
         /**
          * 入职日期
          */
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
+        @JsonFormat(pattern="yyyy-MM-dd")
+        @DateTimeFormat(pattern="yyyy-MM-dd")
         private Date hireDate;
 
         /**
@@ -197,15 +199,15 @@ public class PreEmployment implements Serializable {
         /**
          * 创建时间
          */
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
+        @JsonFormat(pattern="yyyy-MM-dd")
+        @DateTimeFormat(pattern="yyyy-MM-dd")
         private Date createTime;
 
         /**
          * 更新时间
          */
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
+        @JsonFormat(pattern="yyyy-MM-dd")
+        @DateTimeFormat(pattern="yyyy-MM-dd")
         private Date updateTime;
 
         /**

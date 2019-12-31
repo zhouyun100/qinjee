@@ -332,7 +332,7 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
-    and  field_code="employee_number"
+    and  field_code='employee_number'
   </select>
   <select id="selectSymbolForArcIdNumber" resultType="java.lang.Integer">
     select
@@ -342,7 +342,7 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
-    and  field_code = "id_number"
+    and  field_code = 'id_number'
     and is_delete=0
   </select>
   <select id="selectTableIdByFieldId" resultType="java.lang.Integer">
