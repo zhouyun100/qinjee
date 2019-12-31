@@ -468,7 +468,7 @@
     AND (SELECT
     remember_days
     FROM
-    t_contract_param WHERE company_id = #{companyId}) > DATEDIFF(
+    t_contract_param WHERE company_id = #{companyId} limit 1) > DATEDIFF(
     deline_contract.contract_end_date,
     CURDATE())
     WHERE org.org_id = arc.org_id

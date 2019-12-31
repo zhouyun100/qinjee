@@ -103,6 +103,7 @@ public class ReportFormServiceImpl implements ReportFormService {
         }).collect(Collectors.toList());
 
         handler(allRegulationList, topRegulationList,layer);
+
         return allRegulationList;
     }
 
