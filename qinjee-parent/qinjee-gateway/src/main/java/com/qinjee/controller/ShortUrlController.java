@@ -56,7 +56,7 @@ public class ShortUrlController {
                     stringBuffer.append ( "=" );
                     stringBuffer.append ( integerStringEntry.getValue () );
                    }
-                   response.sendRedirect(""+stringBuffer.toString ());
+                   response.sendRedirect("http://www.dhr360.com/file/pre/index.html?"+stringBuffer.toString ());
                }
             }
 
