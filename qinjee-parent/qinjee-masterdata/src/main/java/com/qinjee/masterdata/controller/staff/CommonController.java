@@ -500,13 +500,10 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/getPostByOrgId", method = RequestMethod.GET)
     @ApiOperation(value = "显示部门下的岗位", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "部门id", paramType = "query", required = true)
-    public ResponseResult<String> getPostByOrgId(Integer orgId) {
-        Boolean b = checkParam(orgId,getUserSession ());
-        if (b) {
-                String postByOrgId = staffCommonService.getPostByOrgId ( orgId,getUserSession () );
-                    return new ResponseResult<>(postByOrgId, CommonCode.SUCCESS);
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    public ResponseResult<List<Post>> getPostByOrgId(Integer orgId) {
+                 List<Post> list=staffCommonService.getPostListByOrgId ( orgId,getUserSession ().getCompanyId () );
+                return new ResponseResult<>(list, CommonCode.SUCCESS);
+
 
     }
 

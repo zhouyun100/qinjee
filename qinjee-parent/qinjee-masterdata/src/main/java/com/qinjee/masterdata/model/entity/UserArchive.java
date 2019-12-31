@@ -35,15 +35,13 @@ public class UserArchive implements Serializable {
 
     /**
      * 工号
-     */
-    @NotNull
+     */ @NotNull
     @ApiModelProperty("工号")
     private String employeeNumber;
 
     /**
      * 企业ID
      */
-    @NotNull
     @ApiModelProperty("企业ID")
     private Integer companyId;
 
@@ -95,7 +93,6 @@ public class UserArchive implements Serializable {
     /**
      * 姓名
      */
-    @NotNull
     @QueryColumn("tua.user_name")
     @ApiModelProperty("姓名")
     private String userName;
@@ -103,21 +100,18 @@ public class UserArchive implements Serializable {
     /**
      * 证件类型
      */
-    @NotNull
     @ApiModelProperty("证件类型")
     private String idType;
 
     /**
      * 证件号码
      */
-    @NotNull
     @ApiModelProperty("证件号码")
     private String idNumber;
 
     /**
      * 性别
      */
-    @NotNull
     @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
     private String gender;
@@ -140,7 +134,7 @@ public class UserArchive implements Serializable {
      * 民族
      */
     @ApiModelProperty("民族")
-    private Integer nationality;
+    private String nationality;
 
     /**
      * 籍贯
@@ -152,7 +146,7 @@ public class UserArchive implements Serializable {
      * 政治面貌
      */
     @ApiModelProperty("政治面貌")
-    private Integer politicalStatus;
+    private String politicalStatus;
 
     /**
      * 婚姻状况
@@ -226,7 +220,7 @@ public class UserArchive implements Serializable {
     /**
      * 联系电话
      */
-    @NotNull
+
     @QueryColumn("tua.tel")
     @ApiModelProperty("联系电话")
     private String phone;
@@ -234,7 +228,6 @@ public class UserArchive implements Serializable {
     /**
      * 电子邮箱
      */
-    @NotNull
     @QueryColumn("tua.email")
     @ApiModelProperty("电子邮箱")
     private String email;
@@ -242,7 +235,7 @@ public class UserArchive implements Serializable {
     /**
      * 现住址
      */
-    @NotNull
+
     @ApiModelProperty("现住址")
     private String address;
 

@@ -120,7 +120,7 @@ public class PreEmployment implements Serializable {
         /**
          * 民族
          */
-        private Integer nationality;
+        private String nationality;
 
         /**
          * 出生日期
@@ -132,7 +132,7 @@ public class PreEmployment implements Serializable {
         /**
          * 政治面貌
          */
-        private Integer politicalStatus;
+        private String politicalStatus;
 
         /**
          * 藉贯

@@ -191,4 +191,6 @@ public interface IStaffCommonService {
     Post getPostById(Integer postId,UserSession userSession);
 
     void deleteCustomTableData(Integer id);
+
+    List< Post> getPostListByOrgId(Integer orgId,Integer companyId);
 }

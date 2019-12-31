@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -89,7 +88,7 @@ public class UserArchiveVo implements Serializable {
     /**
      * 姓名
      */
-    @NotNull
+
     @QueryColumn("tua.user_name")
     @ApiModelProperty("姓名")
     private String userName;
@@ -97,14 +96,14 @@ public class UserArchiveVo implements Serializable {
     /**
      * 证件类型
      */
-    @NotNull
+
     @ApiModelProperty("证件类型")
     private String idType;
 
     /**
      * 证件号码
      */
-    @NotNull
+
     @ApiModelProperty("证件号码")
     private String idNumber;
 
@@ -126,7 +125,6 @@ public class UserArchiveVo implements Serializable {
     /**
      * 年龄
      */
-    @NotNull
     @ApiModelProperty("年龄")
     private Short age;
 
@@ -134,7 +132,7 @@ public class UserArchiveVo implements Serializable {
      * 民族
      */
     @ApiModelProperty("民族")
-    private Integer nationality;
+    private String nationality;
 
     /**
      * 籍贯
@@ -146,7 +144,7 @@ public class UserArchiveVo implements Serializable {
      * 政治面貌
      */
     @ApiModelProperty("政治面貌")
-    private Integer politicalStatus;
+    private String politicalStatus;
 
     /**
      * 婚姻状况

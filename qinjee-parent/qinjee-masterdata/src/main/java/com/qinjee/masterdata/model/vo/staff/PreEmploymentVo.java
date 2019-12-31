@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -28,13 +27,13 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 用户姓名
      */
-    @NotNull
+
     private String userName;
 
     /**
      * 电话
      */
-    @NotNull
+
     private String phone;
 
     /**
@@ -50,7 +49,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 证件类型
      */
-    @NotNull
+
     private String idType;
     /**
      * 证件类型名称
@@ -59,7 +58,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 证件号码
      */
-    @NotNull
+
     private String idNumber;
 
     /**
@@ -127,7 +126,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 民族
      */
-    private Integer nationality;
+    private String nationality;
 
     /**
      * 出生日期
@@ -139,7 +138,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 政治面貌
      */
-    private Integer politicalStatus;
+    private String politicalStatus;
 
     /**
      * 藉贯

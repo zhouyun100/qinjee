@@ -268,7 +268,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 declaredField.setAccessible ( true );
                                 if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
                                     if (map1.get ( "text_type" ).equals ( "text" )) {
-                                        declaredField.set ( userArchive, selectValueById ( integerStringMap, integer ) );
+                                        declaredField.set ( userArchive, String.valueOf (selectValueById ( integerStringMap, integer ) ));
                                     } else if (map1.get ( "text_type" ).equals ( "code" )) {
                                         String s = declaredField.getType ().toString ();
                                         int i = s.lastIndexOf ( "." );
@@ -298,7 +298,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             userArchive.setCompanyId ( userSession.getCompanyId () );
                             if (userArchive.getPhone () != null) {
                                 Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
-                                if(id!=null){
+                                if(id!=null && !id.equals (archiveId)){
                                     ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
                                 }else {
                                     userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
@@ -308,34 +308,34 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         }
                             list.add ( userArchive.getArchiveId () );
                     }
-                }
-                if (archiveId != null && archiveId != 0) {
-                    if (checkMap ( notMap )) {
-                        for (Map.Entry < Integer, List < Integer > > integerListEntry : notMap.entrySet ()) {
-                            CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
-                            customArchiveTableData.setTableId ( integerListEntry.getKey () );
-                            customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
-                            customArchiveTableData.setBusinessId ( archiveId );
-                            StringBuilder stringBuilder = new StringBuilder ();
-                            for (Integer integer : integerListEntry.getValue ()) {
-                                Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                                stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( selectValueById ( integerStringMap, integer ) );
-                                customArchiveTableData.setBigData ( stringBuilder.toString () );
+                }else {
+                    if (archiveId != null && archiveId != 0) {
+                        if (checkMap ( notMap )) {
+                            for (Map.Entry < Integer, List < Integer > > integerListEntry : notMap.entrySet ()) {
+                                CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
+                                customArchiveTableData.setTableId ( integerListEntry.getKey () );
+                                customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
+                                customArchiveTableData.setBusinessId ( archiveId );
+                                StringBuilder stringBuilder = new StringBuilder ();
+                                for (Integer integer : integerListEntry.getValue ()) {
+                                    Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                    stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( selectValueById ( integerStringMap, integer ) );
+                                    customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                }
+                                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                                list.add ( customArchiveTableData.getBusinessId () );
                             }
-                            customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                            list.add ( customArchiveTableData.getBusinessId () );
                         }
                     }
                 }
-
             }
 
         } else if ("PRE".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
             for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                 PreEmployment preEmployment = new PreEmployment ();
                 Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
+                if (checkMap ( map )) {
                 for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
-                    if (checkMap ( map )) {
                         for (Integer integer : integerListEntry.getValue ()) {
                             Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
                             preEmployment.setEmploymentState ( "未入职" );
@@ -359,7 +359,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         }else if("String".equals ( s )){
                                             declaredField.set (preEmployment,selectValueById ( integerStringMap, integer )  );
                                         }
-
                                     }
                                     else if (map1.get ( "text_type" ).equals ( "number" )) {
                                             declaredField.set ( preEmployment, Integer.parseInt (selectValueById ( integerStringMap, integer )) );
@@ -386,22 +385,23 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         }
                         list.add ( preemploymentId );
                     }
-                }
-                if (preemploymentId != null && preemploymentId != 0) {
-                    if (checkMap ( map )) {
-                        for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
-                            CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
-                            customArchiveTableData.setTableId ( integerListEntry.getKey () );
-                            customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
-                            customArchiveTableData.setBusinessId ( preemploymentId );
-                            StringBuilder stringBuilder = new StringBuilder ();
-                            for (Integer integer : integerListEntry.getValue ()) {
-                                Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                                stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( selectValueById ( integerStringMap, integer ) );
-                                customArchiveTableData.setBigData ( stringBuilder.toString () );
+                }else {
+                    if (preemploymentId != null && preemploymentId != 0) {
+                        if (checkMap ( map )) {
+                            for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
+                                CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
+                                customArchiveTableData.setTableId ( integerListEntry.getKey () );
+                                customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
+                                customArchiveTableData.setBusinessId ( preemploymentId );
+                                StringBuilder stringBuilder = new StringBuilder ();
+                                for (Integer integer : integerListEntry.getValue ()) {
+                                    Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                    stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( selectValueById ( integerStringMap, integer ) );
+                                    customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                }
+                                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                                list.add ( customArchiveTableData.getBusinessId () );
                             }
-                            customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                            list.add ( customArchiveTableData.getBusinessId () );
                         }
                     }
                 }
@@ -617,6 +617,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public void deleteCustomTableData(Integer id) {
         customArchiveTableDataDao.deleteById ( id );
+    }
+
+    @Override
+    public List < Post > getPostListByOrgId(Integer orgId,Integer companyId) {
+       return postDao.selectPostByOrgId(orgId,companyId);
     }
 
 }

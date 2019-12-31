@@ -10,7 +10,6 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +100,7 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/updateArchive", method = RequestMethod.POST)
     @ApiOperation(value = "更新档案表", notes = "hkt")
-    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
+//    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
     public ResponseResult updateArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) {
         Boolean b = checkParam(userArchiveVo,getUserSession());
         if(b){

@@ -371,7 +371,7 @@
         <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"></result>
         <result column="user_name" jdbcType="VARCHAR" property="userName"></result>
         <result column="post_id" jdbcType="INTEGER" property="postId"></result>
-        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>
+<!--        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>-->
         <result column="employment_begin_date" jdbcType="TIMESTAMP" property="employmentBeginDate"></result>
         <result column="employment_end_date" jdbcType="TIMESTAMP" property="employmentEndDate"></result>
         <result column="employment_type" jdbcType="VARCHAR" property="employmentType"></result>
@@ -533,5 +533,14 @@
             tp.post_id =#{postId}
             and tp.is_delete = 0
             and tp.is_enable = 1
+    </select>
+    <select id="selectPostByOrgId" resultType="com.qinjee.masterdata.model.entity.Post" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_post
+        where company_id=#{companyId}
+        <if test="orgId !=0">
+        and org_id=#{orgId}
+        </if>
+        and is_delete=0 and is_enable=1
     </select>
 </mapper>
