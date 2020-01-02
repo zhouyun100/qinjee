@@ -266,4 +266,10 @@
             #{contractParamId}
         </foreach>
     </delete>
+    <select id="selectRuleIdByCompanyId" resultType="java.lang.Integer">
+        select  contract_param_id
+        from t_contract_param
+        where company_id=#{companyId}
+        and is_delete=0
+    </select>
 </mapper>

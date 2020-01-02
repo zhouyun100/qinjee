@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -56,6 +57,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private UserInfoDao userInfoDao;
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
+    @Autowired
+    private ContractParamDao contractParamDao;
 
 
     /**
@@ -105,7 +108,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     userInfoDao.insertSelective ( userInfo );
                     userArchive.setUserId ( userInfo.getUserId () );
                 }
-                String empNumber = employeeNumberRuleService.createEmpNumber ( statusChangeVo.getRuleId (), userSession );
+                //目前一家公司只有一个参数表
+                List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+                String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession );
                 userArchive.setEmployeeNumber ( empNumber );
                 userArchiveDao.insertSelective ( userArchive );
                 //删除预入职表
@@ -271,6 +276,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     public void confirmEmployment(List < Integer > list, UserSession userSession) throws Exception {
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
         statusChangeVo.setPreEmploymentList ( list );
+        statusChangeVo.setAbandonReason ( "" );
         statusChangeVo.setChangeState ( CHANGSTATUS_READY );
         insertStatusChange ( userSession, statusChangeVo );
     }

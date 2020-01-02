@@ -40,9 +40,6 @@ public class StatusChangeVo {
      * 变更描述
      */
     private String changeRemark;
-    /**
-     * 工号规则表id
-     */
-    private Integer ruleId;
+
 
 }

@@ -1,10 +1,11 @@
 package com.qinjee.masterdata.model.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -15,8 +16,9 @@ import java.util.Date;
  * @author
  */
 @Data
-@NoArgsConstructor
+@JsonInclude
 @ApiModel(description = "工号规则表实体类")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EmployeeNumberRule implements Serializable {
     /**
      * 工号规则ID
@@ -87,99 +89,4 @@ public class EmployeeNumberRule implements Serializable {
      */
     @ApiModelProperty("是否删除")
     private Short isDelete;
-
-    public Integer getEnRuleId() {
-        return enRuleId;
-    }
-
-    public void setEnRuleId(Integer enRuleId) {
-        this.enRuleId = enRuleId;
-    }
-
-    public String getEmployeeNumberPrefix() {
-        return employeeNumberPrefix;
-    }
-
-    public void setEmployeeNumberPrefix(String employeeNumberPrefix) {
-        this.employeeNumberPrefix = employeeNumberPrefix;
-    }
-
-    public String getDateRule() {
-        return dateRule;
-    }
-
-    public void setDateRule(String dateRule) {
-        this.dateRule = dateRule;
-    }
-
-    public String getEmployeeNumberInfix() {
-        return employeeNumberInfix;
-    }
-
-    public void setEmployeeNumberInfix(String employeeNumberInfix) {
-        this.employeeNumberInfix = employeeNumberInfix;
-    }
-
-    public Short getDigitCapacity() {
-        return digitCapacity;
-    }
-
-    public void setDigitCapacity(Short digitCapacity) {
-        this.digitCapacity = digitCapacity;
-    }
-
-    public String getEmployeeNumberSuffix() {
-        return employeeNumberSuffix;
-    }
-
-    public void setEmployeeNumberSuffix(String employeeNumberSuffix) {
-        this.employeeNumberSuffix = employeeNumberSuffix;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    private static final long serialVersionUID = 1L;
-
 }

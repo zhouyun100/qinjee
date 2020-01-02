@@ -49,7 +49,8 @@ public enum CommonCode implements ResultCode{
     WECHAT_NO_BIND(false,10322, "微信未绑定用户账号"),
     WECHAT_ACCESS_TOKEN(false,40029, "invalid code"),
     CHECK_FALSE(false,10323, "验证失败"),
-    PHONE_ALREADY_EXIST(false,10324, "手机号已存在");
+    PHONE_ALREADY_EXIST(false,10324, "手机号已存在"),
+    PARAM_IS_NULL(false,10325, "参数表为空不能进行生成工号");
 
     /**
      * 操作是否成功

@@ -1033,7 +1033,7 @@
         left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status
         left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree
         left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender
-        where t_pre_employment.company_id = 1
+        where t_pre_employment.company_id = #{companyId}
         and t_pre_employment.is_delete = 0
     </select>
     <select id="selectPreEmploymentVoById" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">

@@ -39,4 +39,5 @@ public interface ContractParamDao {
     int deleteContractParamByIds(@Param("list")List<Integer> list);
 
 
+    List< Integer> selectRuleIdByCompanyId(@Param("companyId") Integer companyId);
 }

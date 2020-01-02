@@ -147,13 +147,14 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 }
                 // 将文件输入流写入response的输出流中
                 response.setHeader ( "content-disposition", "attachment;filename=" + URLEncoder.encode ( fileName + ".zip", "UTF-8" ) );
+                response.setContentType ( "application/zip" );
                 CompressFileUtil.toZip ( files, response.getOutputStream () );
             }else{
                 ExceptionCast.cast ( CommonCode.FILE_EMPTY );
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("下载失败!");
+           ExceptionCast.cast ( CommonCode.FILE_EMPTY);
         }finally {
             if(temp!=null){
               temp.deleteOnExit ();

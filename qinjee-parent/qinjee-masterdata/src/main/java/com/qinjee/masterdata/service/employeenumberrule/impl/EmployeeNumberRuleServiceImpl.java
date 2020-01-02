@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.employeenumberrule.impl;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.EmployeeNumberRuleDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.model.entity.ContractParam;
@@ -9,6 +10,7 @@ import com.qinjee.masterdata.model.vo.staff.CreatNumberVo;
 import com.qinjee.masterdata.model.vo.staff.EmployeeNumberRuleVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +64,19 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     @Override
     public String createEmpNumber(Integer id, UserSession userSession) throws Exception {
         EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey ( id );
-        CreatNumberVo creatNumberVo=new CreatNumberVo ();
-        BeanUtils.copyProperties (employeeNumberRule,creatNumberVo);
-        String employeeNumberPrefix = creatNumberVo.getEmployeeNumberPrefix ();
-        String dateModel = getDateModel(creatNumberVo.getDateRule());
-        String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
-        String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
-        String digtaNumber = getDigtaNumber(creatNumberVo.getDigitCapacity(), userSession.getArchiveId());
-        return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
+        if(employeeNumberRule!=null) {
+            CreatNumberVo creatNumberVo = new CreatNumberVo ();
+            BeanUtils.copyProperties ( employeeNumberRule, creatNumberVo );
+            String employeeNumberPrefix = creatNumberVo.getEmployeeNumberPrefix ();
+            String dateModel = getDateModel ( creatNumberVo.getDateRule () );
+            String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
+            String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
+            String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (), userSession.getArchiveId () );
+            return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
+        }else {
+            ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
+            return null;
+        }
     }
 
     @Override
