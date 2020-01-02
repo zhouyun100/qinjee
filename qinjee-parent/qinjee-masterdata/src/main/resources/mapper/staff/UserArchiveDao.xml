@@ -1055,6 +1055,7 @@
     select <include refid="Base_Column_List"/>
     from t_user_archive
     where id_number=#{s}
+    and company_id = #{companyId}
     and is_delete=0
   </select>
   <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">

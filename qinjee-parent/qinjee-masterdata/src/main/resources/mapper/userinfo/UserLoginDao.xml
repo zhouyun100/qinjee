@@ -120,7 +120,7 @@
 
   <!-- 根据userId和companyId查询用户企业关联记录 -->
   <select id="searchUserCompanyByUserIdAndCompanyId" resultMap="UserInfoResultMap">
-    select t_company_info.company_id,t_company_info.user_id
+    select t_user_company.company_id,t_user_company.user_id
     from t_user_company
     where t_user_company.user_id = #{userId,jdbcType=INTEGER}
     and t_user_company.company_id = #{companyId,jdbcType=INTEGER}
@@ -133,7 +133,7 @@
       value (#{userId,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, 1)
   </insert>
 
-  <select id="searchUserInfoByOpenId" resultMap="UserInfoResultMap">
+  <select id="searchUserInfoByOpenId" resultMap="UserInfoResultMap" >
     select t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
     from t_user_info,t_user_company,t_company_info,t_user_archive
     where t_user_info.open_id = #{openId,jdbcType=VARCHAR}

@@ -352,11 +352,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
                                     }else if(map1.get ( "text_type" ).equals ( "code" )){
                                         String s = declaredField.getType ().toString ();
-                                        int i = s.lastIndexOf ( "." );
-                                        s.substring ( i+1 );
-                                        if("Integer".equals ( s )) {
+                                        if(s.contains ( "Integer" )) {
                                             declaredField.set ( preEmployment, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
-                                        }else if("String".equals ( s )){
+                                        }else if(s.contains ( "String" )){
                                             declaredField.set (preEmployment,selectValueById ( integerStringMap, integer )  );
                                         }
                                     }

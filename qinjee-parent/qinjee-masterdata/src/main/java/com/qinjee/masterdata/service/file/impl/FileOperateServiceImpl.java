@@ -183,7 +183,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
 //        }
         AttachmentRecord attachmentRecord = getAttachmentRecord ( multipartFile, s, userSession.getCompanyId () );
         String idnumber = multipartFile.getOriginalFilename ().split ( "#" )[0];
-        UserArchiveVo userArchiveVo = userArchiveDao.selectByIdNumber ( idnumber );
+        UserArchiveVo userArchiveVo = userArchiveDao.selectByIdNumber ( idnumber,userSession.getCompanyId () );
         attachmentRecord.setBusinessId ( userArchiveVo.getArchiveId () );
         attachmentRecord.setBusinessType ( "archive" );
         attachmentRecord.setAttachmentUrl(pathUrl);
@@ -294,7 +294,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
         for (int i = 0; i < fileName.size (); i++) {
             Boolean flag=false;
             String s =fileName.get ( i ).split ( "#" )[0];
-            UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber(s);
+            UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber(s,userSession.getCompanyId ());
             List < String > list = attachmentRecordDao.selectGroup ();
             String name = null;
             try {

@@ -2,7 +2,6 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -12,8 +11,10 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
+import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -54,7 +55,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
-    private UserInfoDao userInfoDao;
+    private UserLoginService userLoginService;
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
     @Autowired
@@ -86,35 +87,36 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     //新增变更表
                     getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
                 }
+                preEmployment.setEmploymentState ( CHANGSTATUS_READY );
+                preEmploymentDao.updateByPrimaryKey ( preEmployment );
                 //根据预入职id查找预入职对象
                 //预入职信息转化为档案信息
                 //新增档案表
-                UserArchive userArchive = new UserArchive ();
-                preEmployment.setEmploymentState ( CHANGSTATUS_READY );
-                BeanUtils.copyProperties ( preEmployment, userArchive );
-                if (preEmployment.getPhone () != null) {
-                    Integer userId = userInfoDao.selectUserIdByPhone ( preEmployment.getPhone () );
-                    if (userId == null || userId == 0) {
-                        UserInfo userInfo = new UserInfo ();
-                        BeanUtils.copyProperties ( preEmployment, userInfo );
-                        userInfoDao.insertSelective ( userInfo );
-                        userArchive.setUserId ( userInfo.getUserId () );
-                    } else {
-                        userArchive.setUserId ( userId );
-                    }
-                } else {
-                    UserInfo userInfo = new UserInfo ();
-                    BeanUtils.copyProperties ( preEmployment, userInfo );
-                    userInfoDao.insertSelective ( userInfo );
-                    userArchive.setUserId ( userInfo.getUserId () );
-                }
-                //目前一家公司只有一个参数表
-                List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-                String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession );
-                userArchive.setEmployeeNumber ( empNumber );
-                userArchiveDao.insertSelective ( userArchive );
-                //删除预入职表
+                String phone = preEmployment.getPhone ();
+                Integer integer = userArchiveDao.selectByPhoneAndCompanyId ( phone, userSession.getCompanyId () );
+                if(null!=integer && 0!=integer){
+                    ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
+                }else{
+                  UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber ( preEmployment.getIdNumber (),userSession.getCompanyId () );
+                  if(userArchiveVo!=null){
+                      ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
+                  }else{
+                      UserArchive userArchive = new UserArchive ();
+                      preEmployment.setEmploymentState ( CHANGSTATUS_READY );
+                      BeanUtils.copyProperties ( preEmployment, userArchive );
+                      Integer userId = userLoginService.getUserIdByPhone ( phone,userSession.getCompanyId () );
+                      //目前一家公司只有一个参数表
+                      userArchive.setUserId ( userId );
+                      List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+                      String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession );
+                      userArchive.setEmployeeNumber ( empNumber );
+                      userArchiveDao.insertSelective ( userArchive );
+                      //删除预入职表
 //                preEmploymentDao.deletePreEmployment ( preEmploymentId );
+                  }
+                }
+
+
             }
             if (CHANGSTATUS_DELAY.equals ( changeState )) {
 
@@ -179,7 +181,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) throws Exception {
+    public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession)  {
         Integer integer = preEmploymentDao.selectIdByNumber ( preEmploymentVo.getPhone (), userSession.getCompanyId () );
         if (integer == null || integer == 0) {
             ExceptionCast.cast ( CommonCode.PRE_ALREADY_EXIST );

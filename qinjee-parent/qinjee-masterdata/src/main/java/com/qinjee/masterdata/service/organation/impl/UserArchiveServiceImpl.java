@@ -3,9 +3,9 @@ package com.qinjee.masterdata.service.organation.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.masterdata.dao.UserCompanyDao;
-import com.qinjee.masterdata.dao.UserInfoDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserCompany;
 import com.qinjee.masterdata.model.entity.UserInfo;
@@ -37,8 +37,9 @@ import java.util.*;
 public class UserArchiveServiceImpl implements UserArchiveService {
     @Autowired
     private UserArchiveDao userArchiveDao;
+
     @Autowired
-    private UserInfoDao userInfoDao;
+    private UserLoginDao userLoginDao;
     @Autowired
     private UserCompanyDao userCompanyDao;
 
@@ -96,7 +97,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userInfo.setPhone(userArchiveVo.getPhone());
         userInfo.setEmail(userArchiveVo.getEmail());
         userInfo.setCreateTime(new Date());
-        userInfoDao.insertSelective(userInfo);
+        userLoginDao.addUserInfo ( userInfo );
         //维护员工企业关系表
 
         UserCompany userCompany=new UserCompany();

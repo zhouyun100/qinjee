@@ -104,11 +104,13 @@ public interface UserArchiveDao {
 
     Map< String, Object> selectTransMessage(@Param("key") Integer key);
 
-    UserArchiveVo selectByIdNumber(@Param("s") String s);
+    UserArchiveVo selectByIdNumber(@Param("s") String s, @Param("companyId") Integer companyId);
 
     List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
 
     Integer selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 
     List< UserArchiveVo> selectUserArchiveVo(@Param("companyId") Integer companyId);
+
+
 }
