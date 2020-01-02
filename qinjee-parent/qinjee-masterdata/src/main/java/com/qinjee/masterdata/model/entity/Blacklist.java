@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +15,7 @@ import java.util.Date;
  */
 @Data
 @JsonInclude
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Blacklist implements Serializable {
     /**
      * 黑名单ID
@@ -74,8 +76,8 @@ public class Blacklist implements Serializable {
     /**
      * 拉黑时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date blockTime;
 
     /**
@@ -96,8 +98,8 @@ public class Blacklist implements Serializable {
     /**
      * 修改时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updateTime;
 
     /**

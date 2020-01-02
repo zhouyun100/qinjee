@@ -109,4 +109,6 @@ public interface UserArchiveDao {
     List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
 
     Integer selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
+
+    List< UserArchiveVo> selectUserArchiveVo(@Param("companyId") Integer companyId);
 }

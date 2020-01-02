@@ -13,7 +13,7 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, table_id, business_id, operator_id, create_time, update_time,is_delete,big_data
+    id, table_id, business_id, operator_id, create_time, update_time,is_delete,CONVERT(big_data USING utf8) as big_data
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">

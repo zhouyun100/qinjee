@@ -9,6 +9,7 @@ import com.qinjee.masterdata.model.vo.staff.CreatNumberVo;
 import com.qinjee.masterdata.model.vo.staff.EmployeeNumberRuleVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.model.request.UserSession;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,10 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         StringBuilder stringBuilder=new StringBuilder (  );
         ContractParam contractParam=new ContractParam();
         List < String > applicationScopeCode = contractParamVo.getApplicationScopeCode ();
-        for (String s : applicationScopeCode) {
-            stringBuilder.append ( s ).append ( "," );
+        if(CollectionUtils.isNotEmpty ( applicationScopeCode )) {
+            for (String s : applicationScopeCode) {
+                stringBuilder.append ( s ).append ( "," );
+            }
         }
         contractParam.setApplicationScopeCode ( stringBuilder.toString () );
         BeanUtils.copyProperties(contractParamVo,contractParam);

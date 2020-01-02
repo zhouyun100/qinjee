@@ -16,6 +16,7 @@ import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -66,21 +67,21 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession,StatusChangeVo statusChangeVo) throws Exception {
+    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo) throws Exception {
         String changeState = statusChangeVo.getChangeState ();
         List < Integer > preEmploymentList = statusChangeVo.getPreEmploymentList ();
         for (Integer preEmploymentId : preEmploymentList) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( preEmploymentId );
             List < PreEmploymentChange > preEmploymentChanges = preEmploymentChangeDao.selectByPreId ( preEmploymentId );
             if (CHANGSTATUS_READY.equals ( changeState )) {
-                PreEmploymentChange existPreChange = isExistPreChange (CHANGSTATUS_READY, preEmploymentChanges );
+                PreEmploymentChange existPreChange = isExistPreChange ( CHANGSTATUS_READY, preEmploymentChanges );
                 //如果存在就更新
                 if (existPreChange != null) {
                     BeanUtils.copyProperties ( statusChangeVo, existPreChange );
                     preEmploymentChangeDao.updateByPrimaryKeySelective ( existPreChange );
                 } else {
                     //新增变更表
-                    getPreEmploymentChange ( userSession.getArchiveId (),preEmploymentId, statusChangeVo );
+                    getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
                 }
                 //根据预入职id查找预入职对象
                 //预入职信息转化为档案信息
@@ -88,25 +89,25 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 UserArchive userArchive = new UserArchive ();
                 preEmployment.setEmploymentState ( CHANGSTATUS_READY );
                 BeanUtils.copyProperties ( preEmployment, userArchive );
-                if(preEmployment.getPhone ()!=null){
-                    Integer userId=userInfoDao.selectUserIdByPhone(preEmployment.getPhone ());
-                    if(userId==null || userId==0){
-                        UserInfo userInfo=new UserInfo ();
-                        BeanUtils.copyProperties ( preEmployment,userInfo );
+                if (preEmployment.getPhone () != null) {
+                    Integer userId = userInfoDao.selectUserIdByPhone ( preEmployment.getPhone () );
+                    if (userId == null || userId == 0) {
+                        UserInfo userInfo = new UserInfo ();
+                        BeanUtils.copyProperties ( preEmployment, userInfo );
                         userInfoDao.insertSelective ( userInfo );
-                        userArchive.setUserId ( userInfo.getUserId ());
-                    }else{
-                        userArchive.setUserId ( userId);
+                        userArchive.setUserId ( userInfo.getUserId () );
+                    } else {
+                        userArchive.setUserId ( userId );
                     }
-                }else{
-                    UserInfo userInfo=new UserInfo ();
-                    BeanUtils.copyProperties ( preEmployment,userInfo );
+                } else {
+                    UserInfo userInfo = new UserInfo ();
+                    BeanUtils.copyProperties ( preEmployment, userInfo );
                     userInfoDao.insertSelective ( userInfo );
-                    userArchive.setUserId ( userInfo.getUserId ());
+                    userArchive.setUserId ( userInfo.getUserId () );
                 }
                 String empNumber = employeeNumberRuleService.createEmpNumber ( statusChangeVo.getRuleId (), userSession );
                 userArchive.setEmployeeNumber ( empNumber );
-                userArchiveDao.insertSelective(userArchive);
+                userArchiveDao.insertSelective ( userArchive );
                 //删除预入职表
 //                preEmploymentDao.deletePreEmployment ( preEmploymentId );
             }
@@ -115,16 +116,16 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 PreEmploymentChange existPreChange1 = isExistPreChange ( CHANGSTATUS_DELAY, preEmploymentChanges );
                 if (existPreChange1 != null) {
                     BeanUtils.copyProperties ( statusChangeVo, existPreChange1 );
-                    preEmploymentChangeDao.updateByPrimaryKeySelective( existPreChange1 );
+                    preEmploymentChangeDao.updateByPrimaryKeySelective ( existPreChange1 );
                 } else {
                     //新增变更表
-                    getPreEmploymentChange ( userSession.getArchiveId (),preEmploymentId, statusChangeVo );
+                    getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
                 }
                 //将预入职的入职时间重新设置
-                preEmployment.setHireDate ( statusChangeVo.getDelayDate() );
+                preEmployment.setHireDate ( statusChangeVo.getDelayDate () );
                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
                 preEmployment.setEmploymentState ( CHANGSTATUS_DELAY );
-                preEmploymentDao.updateByPrimaryKey(preEmployment );
+                preEmploymentDao.updateByPrimaryKey ( preEmployment );
             }
             if (CHANGSTATUS_GIVEUP.equals ( changeState )) {
                 operatePro ( userSession, statusChangeVo, preEmployment, preEmploymentChanges, preEmploymentId, CHANGSTATUS_GIVEUP );
@@ -149,7 +150,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             preEmploymentChangeDao.updateByPrimaryKey ( existPreChange );
         } else {
             //新增变更表
-            getPreEmploymentChange ( userSession.getArchiveId (),preEmploymentId, statusChangeVo );
+            getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
         }
         preEmployment.setEmploymentState ( changstatusBlacklist );
         preEmploymentDao.updateByPrimaryKey ( preEmployment );
@@ -164,18 +165,18 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         return null;
     }
 
-    private void getPreEmploymentChange(Integer archiveId, Integer preEmploymentId,StatusChangeVo statusChangeVo ) {
+    private void getPreEmploymentChange(Integer archiveId, Integer preEmploymentId, StatusChangeVo statusChangeVo) {
         PreEmploymentChange preEmploymentChange = new PreEmploymentChange ();
         BeanUtils.copyProperties ( statusChangeVo, preEmploymentChange );
-        preEmploymentChange.setEmploymentId (preEmploymentId);
+        preEmploymentChange.setEmploymentId ( preEmploymentId );
         preEmploymentChange.setOperatorId ( archiveId );
-        preEmploymentChangeDao.insertSelective ( preEmploymentChange);
+        preEmploymentChangeDao.insertSelective ( preEmploymentChange );
     }
 
     @Override
     public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) throws Exception {
         Integer integer = preEmploymentDao.selectIdByNumber ( preEmploymentVo.getPhone (), userSession.getCompanyId () );
-        if(integer==null || integer==0){
+        if (integer == null || integer == 0) {
             ExceptionCast.cast ( CommonCode.PRE_ALREADY_EXIST );
         }
         PreEmployment preEmployment = new PreEmployment ();
@@ -227,32 +228,33 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             integers.add ( preEmploymentVo.getEmploymentId () );
         }
         //通过预入职id找到更改记录
-        List < PreEmploymentChange > preEmploymentChanges = preEmploymentChangeDao.selectByPreIdList ( integers );
-        //通过匹配设值
-        for (PreEmploymentVo preEmploymentVo : preEmploymentList) {
-            for (PreEmploymentChange preEmploymentChange : preEmploymentChanges) {
-                if (preEmploymentChange.getEmploymentId ().equals ( preEmploymentVo.getEmploymentId () )) {
-                    if (CHANGSTATUS_DELAY.equals ( preEmploymentChange.getChangeState () )) {
-                        preEmploymentVo.setDelayDate ( preEmploymentChange.getDelayDate () );
-                        preEmploymentVo.setDelayReson ( preEmploymentChange.getChangeRemark () );
-                    }
-                    if (CHANGSTATUS_GIVEUP.equals ( preEmploymentChange.getChangeState () )) {
-                        preEmploymentVo.setAbandonReason ( preEmploymentChange.getAbandonReason () );
-                    }
-                    if (CHANGSTATUS_BLACKLIST.equals ( preEmploymentChange.getChangeState () )) {
-                        preEmploymentVo.setBlockReson ( preEmploymentChange.getChangeRemark () );
+        if(CollectionUtils.isNotEmpty ( integers )){
+            List < PreEmploymentChange > preEmploymentChanges = preEmploymentChangeDao.selectByPreIdList ( integers );
+            //通过匹配设值
+            for (PreEmploymentVo preEmploymentVo : preEmploymentList) {
+                for (PreEmploymentChange preEmploymentChange : preEmploymentChanges) {
+                    if (preEmploymentChange.getEmploymentId ().equals ( preEmploymentVo.getEmploymentId () )) {
+                        if (CHANGSTATUS_DELAY.equals ( preEmploymentChange.getChangeState () )) {
+                            preEmploymentVo.setDelayDate ( preEmploymentChange.getDelayDate () );
+                            preEmploymentVo.setDelayReson ( preEmploymentChange.getChangeRemark () );
+                        }
+                        if (CHANGSTATUS_GIVEUP.equals ( preEmploymentChange.getChangeState () )) {
+                            preEmploymentVo.setAbandonReason ( preEmploymentChange.getAbandonReason () );
+                        }
+                        if (CHANGSTATUS_BLACKLIST.equals ( preEmploymentChange.getChangeState () )) {
+                            preEmploymentVo.setBlockReson ( preEmploymentChange.getChangeRemark () );
+                        }
                     }
                 }
             }
         }
-        PageResult < PreEmploymentVo > preEmploymentVoPageResult = new PageResult <> (preEmploymentList  );
-        return preEmploymentVoPageResult;
+        return new PageResult <> ( preEmploymentList );
     }
 
     @Override
     public Map < String, String > selectPreEmploymentField(UserSession userSession) {
         Map < String, String > map = new HashMap <> ();
-        List < CustomArchiveField > list =customTableFieldDao.selectFieldNameByTableName(userSession.getCompanyId (), PRE_EMPLOYMENT);
+        List < CustomArchiveField > list = customTableFieldDao.selectFieldNameByTableName ( userSession.getCompanyId (), PRE_EMPLOYMENT );
         for (CustomArchiveField customArchiveField : list) {
             map.put ( customArchiveField.getFieldCode (), customArchiveField.getFieldName () );
         }
@@ -261,27 +263,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     public PreEmployment selectPreEmploymentSingle(Integer employeeId) {
-       return preEmploymentDao.selectByPrimaryKey ( employeeId );
+        return preEmploymentDao.selectByPrimaryKey ( employeeId );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void confirmEmployment(List<Integer> list,UserSession userSession) {
-        List < PreEmployment > preEmploymentList = preEmploymentDao.selectByPrimaryKeyList ( list );
-        for (PreEmployment preEmployment : preEmploymentList) {
-            preEmployment.setEmploymentState("CONFIRM");
-        }
-        preEmploymentDao.updateBatch ( preEmploymentList );
-
+    public void confirmEmployment(List < Integer > list, UserSession userSession) throws Exception {
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
-        statusChangeVo.setChangeState ( "CONFIRM" );
-        statusChangeVo.setAbandonReason ( "" );
-        statusChangeVo.setRuleId ( 1 );
-        //新增变更记录
-        for (Integer integer : list) {
-            getPreEmploymentChange(userSession.getArchiveId (),integer,statusChangeVo);
-        }
-
+        statusChangeVo.setPreEmploymentList ( list );
+        statusChangeVo.setChangeState ( CHANGSTATUS_READY );
+        insertStatusChange ( userSession, statusChangeVo );
     }
-
 }

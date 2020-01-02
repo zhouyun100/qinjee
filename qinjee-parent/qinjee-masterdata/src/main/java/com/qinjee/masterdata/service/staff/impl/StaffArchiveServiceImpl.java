@@ -502,6 +502,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return userArchiveDao.selectByPrimaryKey ( id );
     }
 
+    @Override
+    public PageResult < UserArchiveVo > selectArchiveNoOrgId(UserSession userSession, Integer pageSize, Integer currentPage) {
+        PageHelper.startPage ( currentPage,pageSize );
+        List<UserArchiveVo> list=userArchiveDao.selectUserArchiveVo (userSession.getCompanyId ());
+        return new PageResult <> ( list );
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public Integer insertQueryScheme(QuerySchemaVo querySchemaVo) {
         if(querySchemaVo.getQuerySchemeId ()==null || querySchemaVo.getQuerySchemeId (  )==0 ) {

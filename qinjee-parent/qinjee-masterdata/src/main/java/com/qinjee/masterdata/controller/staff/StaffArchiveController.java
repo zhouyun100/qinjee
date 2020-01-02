@@ -177,7 +177,13 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.GET)
     @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
-//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+   /* @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    })*/
+
     public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
         Boolean b = checkParam(id);
         if(b){
@@ -190,20 +196,29 @@ public class StaffArchiveController extends BaseController {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
-//    @ApiImplicitParam(name = "Integer", value = "页面的机构comanyId", paramType = "query", required = true)
-    public ResponseResult<UserArchiveVoAndHeader>  selectArchivebatch(@RequestParam List<Integer> orgId,
-                                                                      @RequestParam Integer pageSize,
-                                                                      @RequestParam Integer currentPage,
-                                                                      @RequestParam Integer querySchemaId
-    ) {
-        Boolean b = checkParam(getUserSession(),orgId,pageSize,currentPage);
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "orgId", value = "机构id集合", paramType = "query", required = false),
+//            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "querySchemaId", value = "查询方案id", paramType = "query", required = true)
+//    })
+    public ResponseResult<UserArchiveVoAndHeader>  selectArchivebatch(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam(requestUserarchiveVo);
         if(b){
-                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
-                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), orgId, pageSize, currentPage );
+            UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
+            PageResult < UserArchiveVo > userArchiveVoPageResult;
+            Boolean param = checkParam ( requestUserarchiveVo.getOrgId () );
+            if(param){
+                userArchiveVoPageResult=staffArchiveService.selectArchiveNoOrgId(getUserSession (),requestUserarchiveVo.getPageSize (),
+                        requestUserarchiveVo.getCurrentPage ());
+            }else {
+                userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
+                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getPageSize () );
+            }
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
+                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),requestUserarchiveVo.getQuerySchemaId () ));
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_SESSION);
@@ -409,7 +424,6 @@ public class StaffArchiveController extends BaseController {
     public ResponseResult< ExportFile > selectArchiveByQueryScheme(@RequestBody List<Integer> archiveIdList, Integer queryschemaId) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Boolean b = checkParam(getUserSession(),archiveIdList);
         if(b){
-
                 ExportFile exportFile =
                         staffArchiveService.selectArchiveByQueryScheme( getUserSession(), archiveIdList,queryschemaId);
                     return new ResponseResult<>(exportFile,CommonCode.SUCCESS);

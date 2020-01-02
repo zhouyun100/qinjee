@@ -87,6 +87,12 @@ spring:
       max-redirects: 6
     timeout: 2000
     password: qinjee2019
+  #  文件上传限制
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB  #文件最大单次上传限制
+      max-request-size: 5MB
 
 
 

@@ -69,7 +69,7 @@ public class ExcelUtil {
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
         // 设置边框颜色
-        style.setBottomBorderColor(IndexedColors.BLACK.index);
+//        style.setBottomBorderColor(IndexedColors.BLACK.index);
         style.setTopBorderColor(IndexedColors.BLACK.index);
         style.setLeftBorderColor(IndexedColors.BLACK.index);
         style.setRightBorderColor(IndexedColors.BLACK.index);

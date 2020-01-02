@@ -63,5 +63,5 @@ public interface IStaffPreEmploymentService {
 
     PreEmployment selectPreEmploymentSingle(Integer employeeId);
 
-    void confirmEmployment(List<Integer> list,UserSession userSession);
+    void confirmEmployment(List<Integer> list,UserSession userSession) throws Exception;
 }

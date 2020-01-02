@@ -170,7 +170,7 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult confirmPreemployment(@RequestBody List<Integer> list)  {
+    public ResponseResult confirmPreemployment(@RequestBody List<Integer> list) throws Exception {
         Boolean b = checkParam ( list, getUserSession () );
         if (b) {
                 staffPreEmploymentService.confirmEmployment ( list,getUserSession ());

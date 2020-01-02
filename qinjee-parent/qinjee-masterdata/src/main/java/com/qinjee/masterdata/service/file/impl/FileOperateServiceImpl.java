@@ -20,6 +20,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.CompressFileUtil;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -128,24 +129,28 @@ public class FileOperateServiceImpl implements IFileOperateService {
         File temp=null;
         try {
             String fileName=null;
-            List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
-            for (int i = 0; i < attchmentRecordVos.size (); i++) {
-                String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
-                int j =attatchmentUrl.lastIndexOf ( "\\" );
-                fileName= attatchmentUrl.substring ( j + 1 );
-                COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( attatchmentUrl );
-                if (cosObjectInputStream != null) {
-                    String s = fileName.split ( "\\." )[1];
-                    temp = File.createTempFile(fileName, "."+s);
-                    IOUtils.copy ( cosObjectInputStream, new FileOutputStream ( temp ) );
-                    files.add ( temp );
-                } else {
-                    ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
+            if(CollectionUtils.isNotEmpty ( list )) {
+                List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
+                for (int i = 0; i < attchmentRecordVos.size (); i++) {
+                    String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
+                    int j = attatchmentUrl.lastIndexOf ( "\\" );
+                    fileName = attatchmentUrl.substring ( j + 1 );
+                    COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( attatchmentUrl );
+                    if (cosObjectInputStream != null) {
+                        String s = fileName.split ( "\\." )[1];
+                        temp = File.createTempFile ( fileName, "." + s );
+                        IOUtils.copy ( cosObjectInputStream, new FileOutputStream ( temp ) );
+                        files.add ( temp );
+                    } else {
+                        ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
+                    }
                 }
+                // 将文件输入流写入response的输出流中
+                response.setHeader ( "content-disposition", "attachment;filename=" + URLEncoder.encode ( fileName + ".zip", "UTF-8" ) );
+                CompressFileUtil.toZip ( files, response.getOutputStream () );
+            }else{
+                ExceptionCast.cast ( CommonCode.FILE_EMPTY );
             }
-            // 将文件输入流写入response的输出流中
-            response.setHeader ( "content-disposition", "attachment;filename=" + URLEncoder.encode ( fileName+".zip", "UTF-8" ) );
-            CompressFileUtil.toZip ( files,response.getOutputStream () );
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("下载失败!");
@@ -194,6 +199,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
         attachmentRecord.setGroupId ( groupId );
         attachmentRecord.setCompanyId ( companyId );
         attachmentRecord.setAttachmentName ( multipartFile.getOriginalFilename () );
+        String s1 = multipartFile.getOriginalFilename ().split ( "." )[1];
+        attachmentRecord.setAttachmentType ( s1 );
         attachmentRecord.setIsDelete ( ( short ) 0 );
         attachmentRecord.setBusinessModule ( "ARC" );
         return attachmentRecord;
