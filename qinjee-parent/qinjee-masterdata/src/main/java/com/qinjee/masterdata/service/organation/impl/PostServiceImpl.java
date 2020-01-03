@@ -182,7 +182,7 @@ public class PostServiceImpl implements PostService {
                 @Override
                 public int compare(Object o1, Object o2) {
                     String postCode1 = String.valueOf(o1);
-                    String postCode2 = String.valueOf(o1);
+                    String postCode2 = String.valueOf(o2);
                     String postCode1Num = postCode1.substring(postCode1.length() - 2);
                     String postCode2Num = postCode1.substring(postCode2.length() - 2);
                     boolean isNum = StringUtils.isNumeric(postCode1Num) && StringUtils.isNumeric(postCode2Num);
