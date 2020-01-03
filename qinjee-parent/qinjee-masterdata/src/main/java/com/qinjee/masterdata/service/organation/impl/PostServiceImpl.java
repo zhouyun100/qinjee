@@ -177,6 +177,7 @@ public class PostServiceImpl implements PostService {
         } else {
             //先过滤掉机构编码最后两位为非数字的，再筛选最大值
             List<Post> filterBrotherPostList = sonPostsByOrgId.stream().filter(o -> (o.getPostCode().length()>2&&StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2)))).collect(Collectors.toList());
+            logger.info("滤掉后的filterBrotherPostList："+filterBrotherPostList);
             //根据机构编码排序，并且只取最后两位位数字的
             Comparator comparator = new Comparator() {
                 @Override
@@ -184,14 +185,14 @@ public class PostServiceImpl implements PostService {
                     String postCode1 = String.valueOf(o1);
                     String postCode2 = String.valueOf(o2);
                     String postCode1Num = postCode1.substring(postCode1.length() - 2);
-                    String postCode2Num = postCode1.substring(postCode2.length() - 2);
+                    String postCode2Num = postCode2.substring(postCode2.length() - 2);
                     boolean isNum = StringUtils.isNumeric(postCode1Num) && StringUtils.isNumeric(postCode2Num);
                     if (isNum && postCode1.length() > postCode2.length()) {
                         return -1;
                     } else if (isNum && postCode1.length() < postCode2.length()) {
                         return 1;
                     }
-                    return postCode2.compareTo(postCode1);
+                    return postCode1.compareTo(postCode2);
                 }
             };
             String lastPostCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();

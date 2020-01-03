@@ -191,8 +191,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             return parentOrg.getOrgCode() + "01";
         } else {
             //先过滤掉机构编码最后两位为非数字的，再筛选最大值
-            //TODO 漏洞  如果getOrgCode的总长度小于2，会出现越界异常（正常业务情况不会出现）
             List<OrganizationVO> filterBrotherOrgList = brotherOrgList.stream().filter(o ->( o.getOrgCode().length()>2&&StringUtils.isNumeric(o.getOrgCode().substring(o.getOrgCode().length() - 2)))).collect(Collectors.toList());
+            logger.info("滤掉后的filterBrotherOrgList："+filterBrotherOrgList);
             //根据机构编码排序，并且只取最后两位位数字的
             Comparator comparator = new Comparator() {
                 @Override
