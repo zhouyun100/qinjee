@@ -36,9 +36,9 @@ import java.util.List;
  * @author 周赟
  * @date 2020/01/03
  */
-@Api(tags = "企业注册接口")
+@Api(tags = "【注册接口】")
 @RestController
-@RequestMapping("/companyRegist")
+@RequestMapping("/regist")
 public class CompanyRegistController extends BaseController{
 
     private static Logger logger = LogManager.getLogger(CompanyRegistController.class);
