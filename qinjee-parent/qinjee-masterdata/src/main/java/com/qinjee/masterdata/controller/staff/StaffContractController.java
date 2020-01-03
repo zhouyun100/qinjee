@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -49,7 +48,6 @@ public class StaffContractController extends BaseController {
     ) {
         Boolean b = checkParam(orgId, currentPage, pageSize,getUserSession ());
         if (b) {
-
                 PageResult< UserArchiveVo > pageResult =
                         staffContractService.selectNoLaborContract(orgId, currentPage, pageSize);
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
@@ -447,6 +445,7 @@ public class StaffContractController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {

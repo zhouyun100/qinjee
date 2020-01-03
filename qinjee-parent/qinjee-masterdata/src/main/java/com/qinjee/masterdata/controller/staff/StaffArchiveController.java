@@ -42,7 +42,7 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/insertArchive", method = RequestMethod.POST)
     @ApiOperation(value = "新增档案表", notes = "hkt")
 //    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
-    public ResponseResult insertArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) {
+    public ResponseResult insertArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) throws Exception {
         Boolean b = checkParam(userArchiveVo,getUserSession());
         if(b){
                 staffArchiveService.insertArchive(userArchiveVo,getUserSession());
@@ -81,6 +81,7 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
     /**
      * 删除恢复
      */
@@ -95,6 +96,7 @@ public class StaffArchiveController extends BaseController {
         }
         return  failResponseResult("档案表id错误");
     }
+
     /**
      * 更新档案表(物理数据)
      */
@@ -109,6 +111,7 @@ public class StaffArchiveController extends BaseController {
         }
         return  failResponseResult("档案表id错误");
     }
+
     /**
      * 更新档案表(自定义表数据)
      */
@@ -133,12 +136,12 @@ public class StaffArchiveController extends BaseController {
     public ResponseResult<UserArchiveVoAndHeader> selectArchiveAtOnce(Integer querySchemaId) {
         Boolean b = checkParam(getUserSession());
         if(b){
-
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchive ( getUserSession () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
+                setHead ( querySchemaId, userArchiveVoAndHeader );
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
+
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -154,11 +157,21 @@ public class StaffArchiveController extends BaseController {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveSingle ( id, getUserSession () );
                 userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult  );
-                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),querySchemaId ));
+                setHead ( querySchemaId, userArchiveVoAndHeader );
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
+
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
+    private void setHead(Integer querySchemaId, UserArchiveVoAndHeader userArchiveVoAndHeader) {
+        if (querySchemaId != null && querySchemaId != 0) {
+            userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), querySchemaId ) );
+        } else {
+            userArchiveVoAndHeader.setHeads ( archiveService.getDefaultArcHead () );
+        }
+    }
+
     /**
      * 根据id查询人员信息
      */
@@ -218,7 +231,7 @@ public class StaffArchiveController extends BaseController {
                         requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getPageSize () );
             }
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),requestUserarchiveVo.getQuerySchemaId () ));
+                setHead ( requestUserarchiveVo.getQuerySchemaId (), userArchiveVoAndHeader );
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_SESSION);
@@ -315,7 +328,7 @@ public class StaffArchiveController extends BaseController {
         Boolean b = checkParam(tableId,getUserSession());
         if(b){
                 List<String> list= staffArchiveService.selectFieldByTableIdAndAuth(tableId,getUserSession());
-                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+                return new ResponseResult<>(list,CommonCode.SUCCESS);
         }
        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }

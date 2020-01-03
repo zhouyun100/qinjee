@@ -124,7 +124,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void downLoadFile(HttpServletResponse response, List<Integer> list) throws Exception {
+    public void downLoadFile(HttpServletResponse response, List<Integer> list)  {
         List<File> files=new ArrayList <> (  );
         File temp=null;
         try {
@@ -145,9 +145,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
                         ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
                     }
                 }
+                response.reset ();
                 // 将文件输入流写入response的输出流中
-                response.setHeader ( "content-disposition", "attachment;filename=" + URLEncoder.encode ( fileName + ".zip", "UTF-8" ) );
-                response.setContentType ( "application/zip" );
+                response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( fileName, "UTF-8" ) + "\"" );
                 CompressFileUtil.toZip ( files, response.getOutputStream () );
             }else{
                 ExceptionCast.cast ( CommonCode.FILE_EMPTY );
@@ -199,8 +199,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
         Integer groupId = attachmentRecordDao.selectGroupId ( s );
         attachmentRecord.setGroupId ( groupId );
         attachmentRecord.setCompanyId ( companyId );
-        attachmentRecord.setAttachmentName ( multipartFile.getOriginalFilename () );
-        String s1 = multipartFile.getOriginalFilename ().split ( "." )[1];
+        String originalFilename = multipartFile.getOriginalFilename ();
+        attachmentRecord.setAttachmentName ( originalFilename );
+        String s1 = originalFilename.split ( "\\." )[1];
         attachmentRecord.setAttachmentType ( s1 );
         attachmentRecord.setIsDelete ( ( short ) 0 );
         attachmentRecord.setBusinessModule ( "ARC" );

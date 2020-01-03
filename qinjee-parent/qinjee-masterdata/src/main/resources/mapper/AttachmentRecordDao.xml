@@ -232,7 +232,7 @@
             left join t_organization orga on arc.business_unit_id = arc.org_id and orga.is_enable=1
             WHERE
             record.business_id
-            in(select employment_id from t_pre_employment
+            in(select archive_id from t_user_archive
             where org_id in
             <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
             #{item}

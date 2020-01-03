@@ -39,8 +39,10 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         employeeNumberRule.setOperatorId(userSession.getArchiveId());
         employeeNumberRule.setCompanyId(userSession.getCompanyId());
         employeeNumberRule.setIsDelete((short) 0);
-        employeeNumberRuleDao.insertSelective(employeeNumberRule);
+        employeeNumberRuleDao.updateByPrimaryKeySelective (employeeNumberRule);
     }
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addContractParam(ContractParamVo contractParamVo, UserSession userSession) {
@@ -58,11 +60,15 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         contractParam.setIsDelete((short) 0);
         contractParam.setIsEnable((short) 1);
         contractParam.setOperatorId(userSession.getArchiveId());
-        contractParamDao.insertSelective(contractParam);
+        try {
+            contractParamDao.updateContractSelective(contractParam);
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
     }
 
     @Override
-    public String createEmpNumber(Integer id, UserSession userSession) throws Exception {
+    public String createEmpNumber(Integer id,Integer archiveId) throws Exception {
         EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey ( id );
         if(employeeNumberRule!=null) {
             CreatNumberVo creatNumberVo = new CreatNumberVo ();
@@ -71,7 +77,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String dateModel = getDateModel ( creatNumberVo.getDateRule () );
             String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
             String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
-            String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (), userSession.getArchiveId () );
+            String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (),archiveId );
             return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
         }else {
             ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
@@ -84,7 +90,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( id );
         CreatNumberVo creatNumberVo=new CreatNumberVo ();
         BeanUtils.copyProperties (contractParamByCondition.get(0),creatNumberVo);
-        return getString ( userSession, creatNumberVo );
+        return getString ( creatNumberVo );
     }
 
     @Override
@@ -98,12 +104,15 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
 
     }
 
-    private String getString(UserSession userSession, CreatNumberVo creatNumberVo) throws Exception {
+    private String getString( CreatNumberVo creatNumberVo) throws Exception {
         String employeeNumberPrefix = creatNumberVo.getContractRulePrefix ();
         String dateModel = getDateModel ( creatNumberVo.getDateRule () );
         String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
         String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
-        String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (), userSession.getArchiveId () );
+        Date date=new Date (  );
+        String s = String.valueOf ( date.getTime () );
+        int i = Integer.parseInt ( s.substring ( s.length () - creatNumberVo.getDigitCapacity () ) );
+        String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (),i );
         return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
     }
 

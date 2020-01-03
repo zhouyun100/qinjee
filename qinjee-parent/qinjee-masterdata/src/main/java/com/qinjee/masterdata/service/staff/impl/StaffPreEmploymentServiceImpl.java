@@ -107,10 +107,18 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                       Integer userId = userLoginService.getUserIdByPhone ( phone,userSession.getCompanyId () );
                       //目前一家公司只有一个参数表
                       userArchive.setUserId ( userId );
-                      List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-                      String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession );
-                      userArchive.setEmployeeNumber ( empNumber );
                       userArchiveDao.insertSelective ( userArchive );
+                      List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+                      System.out.println (integers.get ( 0 ));
+                      System.out.println (userArchive.getArchiveId ());
+                      String empNumber = null;
+                      try {
+                          empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
+                      } catch (Exception e) {
+                          e.printStackTrace ();
+                      }
+                      userArchive.setEmployeeNumber ( empNumber );
+                      userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                       //删除预入职表
 //                preEmploymentDao.deletePreEmployment ( preEmploymentId );
                   }

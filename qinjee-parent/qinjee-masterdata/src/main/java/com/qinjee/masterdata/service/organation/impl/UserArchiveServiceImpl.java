@@ -115,19 +115,19 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userCompanyDao.insertSelective(userCompany);
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
-        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-        try {
-            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession );
-            userArchive.setEmployeeNumber(empNumber);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         userArchive.setOperatorId(userSession.getArchiveId());
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        try {
+            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
+            userArchive.setEmployeeNumber(empNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userArchiveDao.updateByPrimaryKeySelective ( userArchive );
         return new ResponseResult(userArchive.getArchiveId());
     }
 
