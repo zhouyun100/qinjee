@@ -15,7 +15,6 @@ import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
-import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -25,6 +24,8 @@ import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class PostServiceImpl implements PostService {
+
+    private static Logger logger = LogManager.getLogger(PostServiceImpl.class);
 
     @Autowired
     private PostDao postDao;
@@ -165,6 +168,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String generatePostCode(Integer orgId, Integer parentPostId) {
+        logger.info("根据机构id生成岗位编码：orgId="+orgId);
         //TODO 不需要根据父岗位编码
         List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
         if (CollectionUtils.isEmpty(sonPostsByOrgId)) {
@@ -191,12 +195,14 @@ public class PostServiceImpl implements PostService {
                 }
             };
             String lastOrgCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
+            logger.info("当前机构下的lastOrgCode："+lastOrgCode);
             if (null == lastOrgCode || "".equals(lastOrgCode)) {
                 OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
                 return superOrg.getOrgCode() + "01";
             }
             //计算编码
             String postCode = culPostCode(lastOrgCode);
+            logger.info("计算生成的postCode："+postCode);
             return postCode;
         }
 
