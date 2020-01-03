@@ -273,6 +273,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgParentId(Integer.parseInt(parentOrgId));
         if (null != orgManagerId && !"".equals(orgManagerId)) {
             organization.setOrgManagerId(Integer.parseInt(orgManagerId));
+        }else{
+            organization.setOrgManagerId(null);
         }
         organization.setOrgType(orgType);
         organization.setOrgName(orgName);
