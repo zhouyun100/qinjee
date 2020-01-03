@@ -63,6 +63,7 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void sendMessageSms(List<Integer> list, Integer templateId, UserSession userSession) {
+        Integer i=0;
         SmsConfig smsConfig = smsConfigService.selectEntryRegistrationSmsConfig ();
         //获取预入职的信息
         Map < Integer, Map < String, String > > integerMapMap = preEmploymentDao.selectNameAndOrg ( list );
@@ -90,10 +91,17 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             params.add ( companyName );
             params.add ( url );
             //发送短信
-            SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
+            try {
+                SendMessage.sendMessageMany ( smsConfig.getAppId (), smsConfig.getAppKey (), smsConfig.getTemplateId (), "勤杰软件", phoneNumbers,params  );
+                i++;
+            } catch (Exception e) {
+                e.printStackTrace ();
+            }
+//            SendMessage.sendMailSingle ( smsConfig.getAppId (),smsConfig.getAppKey (),smsConfig.getTemplateId (),"勤杰软件", phoneNumbers,params);
             //添加短信记录
             insertSmsRecord(smsConfig,phone,params);
         }
+        System.out.println (i);
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.qinjee.utils;
 
+import com.alibaba.fastjson.JSONException;
 import com.github.qcloudsms.SmsMultiSender;
+import com.github.qcloudsms.SmsSingleSender;
+import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.httpclient.HTTPException;
 import com.github.qcloudsms.httpclient.PoolingHTTPClient;
 
@@ -74,5 +77,26 @@ public class SendMessage {
             }
             // 关闭连接池 httpclient
             httpclient.close();
+        }
+        public static void  sendMailSingle(int appid, String appkey,int templateId, String smsSign, List<String> phoneNumber, List<String> param) {
+            try {
+                SmsSingleSender ssender = new SmsSingleSender (appid, appkey );
+                String[] params = new String[param.size()];
+                param.toArray(params);
+                String[] phoneNumbers = new String[phoneNumber.size()];
+                phoneNumber.toArray(phoneNumbers);
+                SmsSingleSenderResult result = ssender.sendWithParam ( "86", phoneNumbers[0],
+                        templateId, params, smsSign, "", "" );
+                System.out.println ( result );
+            } catch (HTTPException e) {
+                // HTTP 响应码错误
+                e.printStackTrace ();
+            } catch (JSONException e) {
+                // JSON 解析错误
+                e.printStackTrace ();
+            } catch (IOException e) {
+                // 网络 IO 错误
+                e.printStackTrace ();
+            }
         }
     }

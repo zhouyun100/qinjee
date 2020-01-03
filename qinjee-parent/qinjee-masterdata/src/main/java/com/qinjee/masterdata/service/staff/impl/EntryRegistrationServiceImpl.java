@@ -107,4 +107,6 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
         resultCount += templateAttachmentGroupDao.sortTemplateAttachmentGroup(templateAttachmentGroupList, operatorId);
         return resultCount;
     }
+
+
 }

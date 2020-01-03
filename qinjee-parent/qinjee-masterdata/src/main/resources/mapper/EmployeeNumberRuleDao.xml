@@ -121,9 +121,9 @@
       <if test="digitCapacity != null">
         digit_capacity = #{digitCapacity,jdbcType=SMALLINT},
       </if>
-      <if test="companyId != null">
-        company_id = #{companyId,jdbcType=INTEGER},
-      </if>
+<!--      <if test="companyId != null">-->
+<!--        company_id = #{companyId,jdbcType=INTEGER},-->
+<!--      </if>-->
       <if test="operatorId != null">
         operator_id = #{operatorId,jdbcType=INTEGER},
       </if>
@@ -137,7 +137,7 @@
         is_delete = #{isDelete,jdbcType=SMALLINT},
       </if>
     </set>
-    where en_rule_id = #{enRuleId,jdbcType=INTEGER}
+    where company_id = #{companyId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.EmployeeNumberRule">
     update t_employee_number_rule
