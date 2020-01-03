@@ -65,6 +65,7 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
             UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(phone);
             if(userInfo == null){
                 //添加登录用户信息
+                userInfo = new UserInfo();
                 userInfo.setPhone(phone);
                 userInfo.setUserName(userName);
                 int phoneLength = phone.length();

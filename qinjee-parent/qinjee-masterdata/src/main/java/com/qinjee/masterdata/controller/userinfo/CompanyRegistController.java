@@ -66,9 +66,9 @@ public class CompanyRegistController extends BaseController{
             Date validEndDate = cal.getTime();
 
             companyRegistService.registCompany(companyName,userNumber,validEndDate,phone,account);
-
+            responseResult = ResponseResult.SUCCESS();
         }catch(Exception e) {
-            logger.info("registCompany exception! exception={}", e.toString());
+            logger.info("registCompany exception! exception={}", e);
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
         }
