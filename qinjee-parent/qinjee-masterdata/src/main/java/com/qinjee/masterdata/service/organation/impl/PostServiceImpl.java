@@ -125,6 +125,13 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void addPost(PostVo postVo, UserSession userSession) {
+
+        //校验orgCode是否已存在
+        Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
+        if (Objects.nonNull(postByPostCode)) {
+            ExceptionCast.cast(CommonCode.CODE_USED);
+        }
+
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
@@ -241,6 +248,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void editPost(PostVo postVo, UserSession userSession) {
+
+        //判断机构编码是否唯一
         Post post = new Post();
         Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
         if (Objects.nonNull(postByPostCode) && !postVo.getPostId().equals(postByPostCode.getPostId())) {
@@ -248,7 +257,6 @@ public class PostServiceImpl implements PostService {
         }
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
-        //如果上级机构id或上级岗位id改变，则重新排序id
         Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
         if (!postVo.getOrgId().equals(post1.getOrgId()) || !postVo.getParentPostId().equals(post1.getParentPostId())) {
             Integer sortId = generatePostSortId(postVo.getOrgId(), postVo.getParentPostId());

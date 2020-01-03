@@ -67,6 +67,8 @@ public class PositionGroupServiceImpl implements PositionGroupService {
             }
             PositionGroup positionGroup_1 = positionGroups.get(positionGroups.size() - 1);
             sortId = positionGroup_1.getSortId() + 1000;
+        }else{
+            sortId =  1000;
         }
         positionGroup.setPositionGroupName(positionGroupName);
         positionGroup.setOperatorId(archiveId);

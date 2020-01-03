@@ -130,7 +130,7 @@
     select
     <include refid="Base_Column_List"></include>
     from t_position
-    where position_group_id = #{positionGroupId,jdbcType=INTEGER} and is_delete = 0 ORDER BY sort_id ASC
+    where   position_group_id = #{positionGroupId,jdbcType=INTEGER} and is_delete = 0 ORDER BY sort_id ASC
   </select>
     <select id="getPositionList" resultMap="BaseResultMap">
       select tp.position_id, tp.position_name, tp.position_group_id, tp.sort_id, tp.operator_id, tp.create_time, tp.is_delete, tpg.position_group_name positionGroupName

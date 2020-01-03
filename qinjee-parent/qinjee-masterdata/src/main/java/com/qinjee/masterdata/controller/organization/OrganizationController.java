@@ -29,12 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-/**
- * @author 高雄
- * @version 1.0.0
- * @Description 机构controller
- * @createTime 2019年09月10日 10:19:00
- */
 @RequestMapping("/organization")
 @RestController
 @Api(tags = "【机构管理】机构接口")
@@ -62,6 +56,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
         Boolean b = checkParam(orgName, orgType, orgParentId);
         if (b) {
+            logger.info("新增机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
             organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
             return ResponseResult.SUCCESS();
         }
@@ -73,6 +68,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
         Boolean b = checkParam(orgCode, orgId, orgParentId);
         if (b) {
+            logger.info("编辑机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
             organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
             return ResponseResult.SUCCESS();
         }
@@ -84,6 +80,7 @@ public class OrganizationController extends BaseController {
     public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds) {
         Boolean b = checkParam(orgIds);
         if (b) {
+            logger.info("删除机构，orgIds》"+orgIds);
             organizationService.deleteOrganizationById(orgIds, getUserSession());
             return ResponseResult.SUCCESS();
         }

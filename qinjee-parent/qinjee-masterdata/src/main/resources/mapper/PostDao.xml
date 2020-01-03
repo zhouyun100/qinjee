@@ -487,7 +487,7 @@
          from t_post
          where post_code =#{postCode}
          and company_id =#{companyId}
-
+        and is_delete=0
     </select>
 
 

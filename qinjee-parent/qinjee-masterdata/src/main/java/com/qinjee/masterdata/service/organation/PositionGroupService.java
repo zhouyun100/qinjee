@@ -44,9 +44,6 @@ public interface PositionGroupService {
 
     /**
      * 职位族排序
-     * @param prePositionGroupId
-     * @param midPositionGroupId
-     * @param nextPositionGroupId
      * @return
      */
     ResponseResult sortPositionGroup(LinkedList<String> positionGroupIds);
