@@ -55,7 +55,6 @@ public class UserArchiveController extends BaseController {
     @PostMapping("/addUserArchive")
     @ApiOperation(value = "新增员工档案信息")
     public ResponseResult<Integer> addUserArchive(@RequestBody UserArchiveVo userArchiveVo) {
-        System.out.println();
         if (checkParam(userArchiveVo)) {
             return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
         }

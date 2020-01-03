@@ -147,8 +147,7 @@
         select  tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
     tp.is_delete,tpg.position_group_name
     from t_position tp  LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
-        where tpg.company_id = 1
-        and tpg.is_delete=0
+        where  tpg.is_delete=0
         AND tp.is_delete = 0
     <if test="pageVo != null">
       <if test="pageVo.positionGroupId != null">

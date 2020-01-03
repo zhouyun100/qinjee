@@ -57,7 +57,7 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-        return positionService.getPositionPage(getUserSession(), positionPageVo);
+        return positionService.getPositionPage( positionPageVo);
     }
 
     @ApiOperation(value = "ok，查询所有职位", notes = "高雄")

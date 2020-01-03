@@ -56,9 +56,8 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PositionPageVo pageVo) {
+    public ResponseResult<PageResult<Position>> getPositionPage(PositionPageVo pageVo) {
 
-        Integer companyId = userSession.getCompanyId();
         if (pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)) {
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
         }

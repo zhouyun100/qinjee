@@ -26,11 +26,10 @@ public interface PositionService {
 
     /**
      * 分页查询职位
-     * @param userSession
      * @param pageVo
      * @return
      */
-    ResponseResult<PageResult<Position>> getPositionPage(UserSession userSession, PositionPageVo pageVo);
+    ResponseResult<PageResult<Position>> getPositionPage( PositionPageVo pageVo);
 
     /**
      * 新增职位

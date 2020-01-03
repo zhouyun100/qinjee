@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.masterdata.dao.UserCompanyDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.UserArchive;
@@ -12,6 +13,7 @@ import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -45,6 +47,11 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
     @Autowired
     private OrganizationDao organizationDao;
+
+    @Autowired
+    private IEmployeeNumberRuleService employeeNumberRuleService;
+    @Autowired
+    private ContractParamDao contractParamDao;
 
     private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
@@ -106,15 +113,20 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userCompany.setCompanyId(userSession.getCompanyId());
         userCompany.setIsEnable((short) 0);
         userCompanyDao.insertSelective(userCompany);
-
-
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        try {
+            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession );
+            userArchive.setEmployeeNumber(empNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         userArchive.setOperatorId(userSession.getArchiveId());
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
-        System.out.println("新增用户档案："+userArchive);
         userArchiveDao.insertSelective(userArchive);
         return new ResponseResult(userArchive.getArchiveId());
     }
