@@ -36,9 +36,9 @@ import java.util.List;
  * @author 周赟
  * @date 2020/01/03
  */
-@Api(tags = "企业注册接口")
+@Api(tags = "【注册接口】")
 @RestController
-@RequestMapping("/companyRegist")
+@RequestMapping("/regist")
 public class CompanyRegistController extends BaseController{
 
     private static Logger logger = LogManager.getLogger(CompanyRegistController.class);
@@ -66,9 +66,9 @@ public class CompanyRegistController extends BaseController{
             Date validEndDate = cal.getTime();
 
             companyRegistService.registCompany(companyName,userNumber,validEndDate,phone,account);
-
+            responseResult = ResponseResult.SUCCESS();
         }catch(Exception e) {
-            logger.info("registCompany exception! exception={}", e.toString());
+            logger.info("registCompany exception! exception={}", e);
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
         }
