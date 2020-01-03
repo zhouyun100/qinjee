@@ -163,6 +163,7 @@
     <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
         update t_organization
         <set>
+            org_manager_id = #{orgManagerId,jdbcType=INTEGER},
             org_id = #{orgId,jdbcType=VARCHAR},
             <if test="orgCode != null">
                 org_code = #{orgCode,jdbcType=VARCHAR},
@@ -179,9 +180,7 @@
             <if test="orgFullName != null">
                 org_full_name = #{orgFullName,jdbcType=VARCHAR},
             </if>
-            <if test="orgManagerId != null">
-                org_manager_id = #{orgManagerId,jdbcType=INTEGER},
-            </if>
+
             <if test="companyId != null">
                 company_id = #{companyId,jdbcType=INTEGER},
             </if>
