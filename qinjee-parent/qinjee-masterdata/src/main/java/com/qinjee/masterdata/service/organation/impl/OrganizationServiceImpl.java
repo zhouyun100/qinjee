@@ -194,7 +194,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 @Override
                 public int compare(Object o1, Object o2) {
                     String orgCode1 = String.valueOf(o1);
-                    String orgCode2 = String.valueOf(o1);
+                    String orgCode2 = String.valueOf(o2);
                     String orgCode1Num = orgCode1.substring(orgCode1.length() - 2);
                     String orgCode2Num = orgCode1.substring(orgCode2.length() - 2);
                     boolean isNum = StringUtils.isNumeric(orgCode1Num) && StringUtils.isNumeric(orgCode2Num);
