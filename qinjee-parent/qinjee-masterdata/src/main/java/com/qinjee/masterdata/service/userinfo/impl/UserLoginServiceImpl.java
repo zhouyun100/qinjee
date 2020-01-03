@@ -175,4 +175,9 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
         return userInfoVO;
     }
+
+    @Override
+    public UserInfo searchUserInfoDetailByPhone(String phone) {
+        return userLoginDao.searchUserInfoDetailByPhone(phone);
+    }
 }

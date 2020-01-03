@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.userinfo;
 
+import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 
@@ -76,4 +77,11 @@ public interface UserLoginService {
      * @return
      */
     UserInfoVO searchUserInfoByWeChatCode(String code);
+
+    /**
+     * 根据手机号查询登录用户详情
+     * @param phone
+     * @return
+     */
+    UserInfo searchUserInfoDetailByPhone(String phone);
 }
