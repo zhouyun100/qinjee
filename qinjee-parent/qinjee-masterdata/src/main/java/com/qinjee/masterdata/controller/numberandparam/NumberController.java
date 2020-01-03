@@ -88,11 +88,11 @@ public class NumberController extends BaseController {
     @RequestMapping(value = "/creatNumberPre", method = RequestMethod.POST)
     @ApiOperation(value = "生成工号", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult<String> creatNumberPre( Integer ruleId) {
-        Boolean b = checkParam(ruleId, getUserSession());
+    public ResponseResult<String> creatNumberPre( Integer ruleId,Integer archiveId) {
+        Boolean b = checkParam(ruleId,archiveId);
         if (b) {
             try {
-                String number = employeeNumberRuleService.createEmpNumber (ruleId, getUserSession());
+                String number = employeeNumberRuleService.createEmpNumber (ruleId,archiveId);
                 return new ResponseResult<>(number, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();

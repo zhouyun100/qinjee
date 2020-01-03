@@ -1058,7 +1058,7 @@
 
     </select>
     <select id="selectNameAndOrg" resultType="java.util.Map">
-        select user_name,application_position,company_id,phone
+        select employment_id,user_name,application_position,company_id,phone
         from t_pre_employment pre
         where employment_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">

@@ -23,11 +23,10 @@ public interface IEmployeeNumberRuleService {
     /**
      * 生成工号编码
      * @param id
-     * @param userSession
      * @return
      * @throws Exception
      */
-    String createEmpNumber(Integer id, UserSession userSession) throws Exception;
+    String createEmpNumber(Integer id, Integer archiveId) throws Exception;
 
     /**
      *

@@ -103,16 +103,15 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) throws Exception {
-
         List < Integer > list = preRegistVo.getList();
-        for(Integer sendWay : preRegistVo.getSendWay()){
-            if(sendWay.equals(1)){
-                //短信发送
-                smsRecordService.sendMessageSms(list, preRegistVo.getTemplateId(), userSession);
-            }else if(sendWay.equals(2)){
-                //邮件发送
-                emailRecordService.SendMailForPreRegist(userSession, list, preRegistVo.getTemplateId());
-            }
+            for (Integer sendWay : preRegistVo.getSendWay ()) {
+                if (sendWay.equals ( 1 )) {
+                    //短信发送
+                    smsRecordService.sendMessageSms ( list, preRegistVo.getTemplateId (), userSession );
+                } else if (sendWay.equals ( 2 )) {
+                    //邮件发送
+                    emailRecordService.SendMailForPreRegist ( userSession, list, preRegistVo.getTemplateId () );
+                }
         }
 
         for (Integer integer : list) {

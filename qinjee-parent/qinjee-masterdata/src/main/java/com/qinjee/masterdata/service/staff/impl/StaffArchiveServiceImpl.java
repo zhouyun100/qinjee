@@ -1,10 +1,9 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.qinjee.masterdata.dao.organation.PositionDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
@@ -13,10 +12,11 @@ import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
-import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.masterdata.utils.FieldToProperty;
+import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.BeanUtils;
@@ -58,13 +58,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Autowired
     private UserLoginService userLoginService;
     @Autowired
-    private PositionDao positionDao;
+    private ContractParamDao contractParamDao;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
     private ArchiveCareerTrackDao archiveCareerTrackdao;
     @Autowired
     private CustomTableFieldService customTableFieldService;
+
+    @Autowired
+    private IEmployeeNumberRuleService employeeNumberRuleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -100,7 +103,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private  List < TableHead >  getHeadList(UserSession userSession, List < QueryScheme > list1) {
         List < TableHead > headList = new ArrayList <> ();
         if (CollectionUtils.isEmpty ( list1 )) {
-            headList = setDefaultHead ( userSession,  0 );
+            headList = getDefaultArcHead ();
         }
         //非默认显示方案表头
         for (QueryScheme queryScheme : list1) {
@@ -111,20 +114,24 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
         }
         if(CollectionUtils.isEmpty ( headList )){
-            headList = setDefaultHead ( userSession,  0 );
+            headList = getDefaultArcHead ();
         }
         return headList;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+    public void insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
         UserArchive userArchive = new UserArchive ();
         int userId = userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () );
         userArchive.setUserId ( userId );
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
+        userArchiveDao.insertSelective ( userArchive );
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
+        userArchive.setEmployeeNumber ( empNumber );
         userArchiveDao.insertSelective ( userArchive );
     }
 
@@ -169,14 +176,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             arcHead.setIsShow ( 1 );
             headList.add ( arcHead );
             }
-            if(querySchemaId.equals ( 0 )) {
-                TableHead arcHead = new TableHead ();
-                arcHead.setName ( "任职类型" );
-                arcHead.setKey ( "employment_type" );
-                arcHead.setIndex ( 10 );
-                arcHead.setIsShow ( 1 );
-                headList.add ( arcHead );
-            }
+
         return headList;
     }
 
@@ -570,8 +570,21 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
         }
     }
-
-
+    public List < TableHead > getDefaultArcHead() {
+        List < TableHead > headList = new ArrayList <> ();
+        String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期到期时间","直接上级","联系电话","任职类型"};
+        String[] codeList={"userName","employeeNumber","businessUnitName","orgName","postName","hireDate",
+                "probationDueDate","supervisorUserName","phone","emplymentType"};
+        for (int i = 0; i < strings.length; i++) {
+            TableHead arcHead = new TableHead ();
+            arcHead.setName ( strings[i] );
+            arcHead.setKey ( codeList[i] );
+            arcHead.setIndex (i);
+            arcHead.setIsShow ( 1 );
+            headList.add ( arcHead );
+        }
+        return headList;
+    }
 }
 
 

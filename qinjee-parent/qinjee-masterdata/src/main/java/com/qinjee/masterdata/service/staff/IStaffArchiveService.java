@@ -93,7 +93,7 @@ public interface IStaffArchiveService {
      * @param userArchiveVo
      * @return
      */
-   void insertArchive(UserArchiveVo userArchiveVo,UserSession userSession);
+   void insertArchive(UserArchiveVo userArchiveVo,UserSession userSession) throws Exception;
     /**
      * 修改预入职信息(显示字段的信息)
      */
@@ -165,4 +165,6 @@ public interface IStaffArchiveService {
     UserArchiveVo selectById(Integer id);
 
     PageResult< UserArchiveVo> selectArchiveNoOrgId(UserSession userSession, Integer pageSize, Integer currentPage);
+
+
 }

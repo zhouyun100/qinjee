@@ -11,12 +11,14 @@ import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.FieldToProperty;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -71,6 +74,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private UserLoginService userLoginService;
     @Autowired
     private PostDao postDao;
+    @Autowired
+    private ContractParamDao contractParamDao;
+    @Autowired
+    private IEmployeeNumberRuleService employeeNumberRuleService;
 
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable, UserSession userSession) {
@@ -266,24 +273,27 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             Field[] declaredFields = userArchive.getClass ().getDeclaredFields ();
                             for (Field declaredField : declaredFields) {
                                 declaredField.setAccessible ( true );
-                                if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                    if (map1.get ( "text_type" ).equals ( "text" )) {
-                                        declaredField.set ( userArchive, String.valueOf (selectValueById ( integerStringMap, integer ) ));
-                                    } else if (map1.get ( "text_type" ).equals ( "code" )) {
-                                        String s = declaredField.getType ().toString ();
-                                        int i = s.lastIndexOf ( "." );
-                                        s.substring ( i+1 );
-                                        if("Integer".equals ( s )) {
-                                            declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
-                                        }else if("String".equals ( s )){
-                                            declaredField.set (userArchive,selectValueById ( integerStringMap, integer )  );
+                                String s1 = selectValueById ( integerStringMap, integer );
+                                if (!StringUtils.isEmpty ( s1 )) {
+                                    if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
+                                        if (map1.get ( "text_type" ).equals ( "text" )) {
+                                            declaredField.set ( userArchive, String.valueOf (s1) );
+                                        } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                            String s = declaredField.getType ().toString ();
+                                            int i = s.lastIndexOf ( "." );
+                                            s.substring ( i + 1 );
+                                            if ("Integer".equals ( s )) {
+                                                declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
+                                            } else if ("String".equals ( s )) {
+                                                declaredField.set ( userArchive, s1 );
+                                            }
+                                        } else if (map1.get ( "text_type" ).equals ( "number" )) {
+                                            declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
+                                        } else if (map1.get ( "text_type" ).equals ( "date" )) {
+                                            SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                            Date parse = sim.parse ( s1 );
+                                            declaredField.set ( userArchive, parse );
                                         }
-                                    } else if (map1.get ( "text_type" ).equals ( "number" )) {
-                                        declaredField.set ( userArchive, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
-                                    } else if (map1.get ( "text_type" ).equals ( "date" )) {
-                                        SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                        Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );
-                                        declaredField.set ( userArchive, parse );
                                     }
                                 }
                             }
@@ -305,6 +315,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 }
                             }
                             userArchiveDao.insertSelective ( userArchive );
+                            List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+                            employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
+                            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                         }
                             list.add ( userArchive.getArchiveId () );
                     }
@@ -318,9 +331,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 customArchiveTableData.setBusinessId ( archiveId );
                                 StringBuilder stringBuilder = new StringBuilder ();
                                 for (Integer integer : integerListEntry.getValue ()) {
-                                    Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                                    stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( selectValueById ( integerStringMap, integer ) );
-                                    customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                    String s = selectValueById ( integerStringMap, integer );
+                                    if (!StringUtils.isEmpty ( s )) {
+                                        Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                        stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( s );
+                                        customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                    }
                                 }
                                 customArchiveTableDataDao.insertSelective ( customArchiveTableData );
                                 list.add ( customArchiveTableData.getBusinessId () );
@@ -347,23 +363,25 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
                             for (Field declaredField : declaredFields) {
                                 declaredField.setAccessible ( true );
+                                String s1 = selectValueById ( integerStringMap, integer );
+                                if(!StringUtils.isEmpty ( s1 )) {
                                 if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                    if (map1.get ( "text_type" ).equals ( "text" )) {
-                                        declaredField.set ( preEmployment, selectValueById ( integerStringMap, integer ) );
-                                    }else if(map1.get ( "text_type" ).equals ( "code" )){
-                                        String s = declaredField.getType ().toString ();
-                                        if(s.contains ( "Integer" )) {
-                                            declaredField.set ( preEmployment, Integer.parseInt ( selectValueById ( integerStringMap, integer ) ) );
-                                        }else if(s.contains ( "String" )){
-                                            declaredField.set (preEmployment,selectValueById ( integerStringMap, integer )  );
+                                        if (map1.get ( "text_type" ).equals ( "text" )) {
+                                            declaredField.set ( preEmployment, s1 );
+                                        } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                            String s = declaredField.getType ().toString ();
+                                            if (s.contains ( "Integer" )) {
+                                                declaredField.set ( preEmployment, Integer.parseInt (s1) );
+                                            } else if (s.contains ( "String" )) {
+                                                declaredField.set ( preEmployment, s1 );
+                                            }
+                                        } else if (map1.get ( "text_type" ).equals ( "number" )) {
+                                            declaredField.set ( preEmployment, Integer.parseInt ( s1 ) );
+                                        } else if (map1.get ( "text_type" ).equals ( "date" )) {
+                                            SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                            Date parse = sim.parse ( s1 );
+                                            declaredField.set ( preEmployment, parse );
                                         }
-                                    }
-                                    else if (map1.get ( "text_type" ).equals ( "number" )) {
-                                            declaredField.set ( preEmployment, Integer.parseInt (selectValueById ( integerStringMap, integer )) );
-                                    }else if (map1.get ( "text_type" ).equals ( "date" )) {
-                                        SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                        Date parse = sim.parse ( selectValueById ( integerStringMap, integer ) );
-                                        declaredField.set ( preEmployment, parse );
                                     }
                                 }
                             }
@@ -393,9 +411,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 customArchiveTableData.setBusinessId ( preemploymentId );
                                 StringBuilder stringBuilder = new StringBuilder ();
                                 for (Integer integer : integerListEntry.getValue ()) {
-                                    Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                                    stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( selectValueById ( integerStringMap, integer ) );
-                                    customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                    String s = selectValueById ( integerStringMap, integer );
+                                    if(!StringUtils.isEmpty ( s )) {
+                                        Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                        stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append (s);
+                                        customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                    }
                                 }
                                 customArchiveTableDataDao.insertSelective ( customArchiveTableData );
                                 list.add ( customArchiveTableData.getBusinessId () );

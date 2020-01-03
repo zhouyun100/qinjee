@@ -24,7 +24,8 @@ public interface ContractParamDao {
     int insertContractParam(@Param("map") Map<String,Object> map);
     int insertContractParams(@Param("list") List<ContractParam> list);
     int updateContractParam(@Param("map") Map<String,Object> map);
-    int updateContractParams(@Param("list") List<Integer> list);
+    int updateContractParams(@Param("list") List< ContractParam> list);
+    int updateContractSelective(ContractParam record);
 
     /**
      * @param id
