@@ -165,81 +165,45 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String generatePostCode(Integer orgId, Integer parentPostId) {
-        //如果父岗位id不为空且不为0，则以父岗位为基准
-        if (null != parentPostId && parentPostId != 0) {
-            List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
-            if (CollectionUtils.isEmpty(sonPosts)) {
-                Post parentPost = postDao.selectByPrimaryKey(parentPostId);
-                return parentPost.getPostCode() + "01";
-            } else {
-                //先过滤掉机构编码最后两位为非数字的，再筛选最大值
-                //TODO 漏洞  如果getPostCode的总长度小于2，会出现越界异常（正常业务情况不会出现）
-                List<Post> filterBrotherPostList = sonPosts.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
-                //根据机构编码排序，并且只取最后两位位数字的
-                Comparator comparator = new Comparator() {
-                    @Override
-                    public int compare(Object o1, Object o2) {
-                        String postCode1 = String.valueOf(o1);
-                        String postCode2 = String.valueOf(o1);
-                        String orgCode1Num = postCode1.substring(postCode1.length() - 2);
-                        String orgCode2Num = postCode1.substring(postCode2.length() - 2);
-                        boolean isNum = StringUtils.isNumeric(orgCode1Num) && StringUtils.isNumeric(orgCode2Num);
-                        if (isNum && postCode1.length() > postCode2.length()) {
-                            return -1;
-                        } else if (isNum && postCode1.length() < postCode2.length()) {
-                            return 1;
-                        }
-                        return postCode2.compareTo(postCode1);
-                    }
-                };
-                String lastOrgCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
-                if (null == lastOrgCode || "".equals(lastOrgCode)) {
-                    Post parentPost = postDao.selectByPrimaryKey(parentPostId);
-                    return parentPost.getPostCode() + "01";
-                }
-                //计算编码
-                String postCode = culPostCode(lastOrgCode);
-                return postCode;
-            }
+        //TODO 不需要根据父岗位编码
+        List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+        if (CollectionUtils.isEmpty(sonPostsByOrgId)) {
+            OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
+            return superOrg.getOrgCode() + "01";
         } else {
-            List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
-            if (CollectionUtils.isEmpty(sonPostsByOrgId)) {
+            //先过滤掉机构编码最后两位为非数字的，再筛选最大值
+            List<Post> filterBrotherPostList = sonPostsByOrgId.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
+            //根据机构编码排序，并且只取最后两位位数字的
+            Comparator comparator = new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    String postCode1 = String.valueOf(o1);
+                    String postCode2 = String.valueOf(o1);
+                    String postCode1Num = postCode1.substring(postCode1.length() - 2);
+                    String postCode2Num = postCode1.substring(postCode2.length() - 2);
+                    boolean isNum = StringUtils.isNumeric(postCode1Num) && StringUtils.isNumeric(postCode2Num);
+                    if (isNum && postCode1.length() > postCode2.length()) {
+                        return -1;
+                    } else if (isNum && postCode1.length() < postCode2.length()) {
+                        return 1;
+                    }
+                    return postCode2.compareTo(postCode1);
+                }
+            };
+            String lastOrgCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
+            if (null == lastOrgCode || "".equals(lastOrgCode)) {
                 OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
                 return superOrg.getOrgCode() + "01";
-            } else {
-                //先过滤掉机构编码最后两位为非数字的，再筛选最大值
-                List<Post> filterBrotherPostList = sonPostsByOrgId.stream().filter(o -> StringUtils.isNumeric(o.getPostCode().substring(o.getPostCode().length() - 2))).collect(Collectors.toList());
-                //根据机构编码排序，并且只取最后两位位数字的
-                Comparator comparator = new Comparator() {
-                    @Override
-                    public int compare(Object o1, Object o2) {
-                        String postCode1 = String.valueOf(o1);
-                        String postCode2 = String.valueOf(o1);
-                        String postCode1Num = postCode1.substring(postCode1.length() - 2);
-                        String postCode2Num = postCode1.substring(postCode2.length() - 2);
-                        boolean isNum = StringUtils.isNumeric(postCode1Num) && StringUtils.isNumeric(postCode2Num);
-                        if (isNum && postCode1.length() > postCode2.length()) {
-                            return -1;
-                        } else if (isNum && postCode1.length() < postCode2.length()) {
-                            return 1;
-                        }
-                        return postCode2.compareTo(postCode1);
-                    }
-                };
-                String lastOrgCode = filterBrotherPostList.stream().map(Post::getPostCode).max(comparator).get().toString();
-                if (null == lastOrgCode || "".equals(lastOrgCode)) {
-                    OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
-                    return superOrg.getOrgCode() + "01";
-                }
-                //计算编码
-                String postCode = culPostCode(lastOrgCode);
-                return postCode;
             }
+            //计算编码
+            String postCode = culPostCode(lastOrgCode);
+            return postCode;
         }
+
     }
 
     @Override
-    public Post getPostById( String postId) {
+    public Post getPostById(String postId) {
         return postDao.getPostById(postId);
 
     }
@@ -905,8 +869,8 @@ public class PostServiceImpl implements PostService {
                 checkVo.setCheckResult(false);
                 resultMsg.append("职位" + post.getPositionName() + "不存在|");
             }
-            if(resultMsg.length()>1){
-                resultMsg.deleteCharAt(resultMsg.length()-1);
+            if (resultMsg.length() > 1) {
+                resultMsg.deleteCharAt(resultMsg.length() - 1);
             }
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
