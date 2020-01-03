@@ -64,8 +64,8 @@
 
   <!-- 新增登录用户 -->
   <insert id="addUserArchive" keyColumn="archive_id" keyProperty="archiveId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
-      INSERT INTO t_user_archive (user_id, user_name, id_type, id_number, company_id, operator_id)
-      value (#{userId}, #{userName}, #{idType}, #{idNumber}, #{companyId}, 1)
+      INSERT INTO t_user_archive (user_id, user_name, id_type, id_number,org_id, company_id, operator_id)
+      value (#{userId}, #{userName}, #{idType}, #{idNumber}, #{orgId}, #{companyId}, 1)
   </insert>
 
   <!-- 新增企业登录用户关系 -->
@@ -81,7 +81,7 @@
   </insert>
 
   <!-- 新增企业机构信息 -->
-  <insert id="addOrganization" parameterType="com.qinjee.masterdata.model.entity.Organization">
+  <insert id="addOrganization" keyColumn="org_id" keyProperty="orgId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.Organization">
       INSERT INTO t_organization (org_code, org_name, org_type, org_parent_id, company_id, operator_id) VALUES ('1', #{orgName}, 'GROUP', 0,  #{companyId}, 1);
   </insert>
 
@@ -194,13 +194,13 @@
 
     <!-- 新增预入职模板登记自定义表 -->
     <insert id="addTemplateCustomTable" parameterType="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO">
-      insert into t_template_custom_table(template_id,table_id,sort,operator_id)
-        select #{templateId},table_id,sort,1 from t_custom_archive_table where company_id = 1 and is_delete = 0
+      INSERT INTO t_template_custom_table(template_id,table_id,sort,operator_id)
+      VALUES(#{templateId},#{tableId},#{sort},1)
   </insert>
 
     <!-- 新增预入职模板登记自定义字段 -->
     <insert id="addTemplateCustomField" parameterType="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO">
         INSERT INTO t_template_custom_table_field(template_id,table_id,field_id,is_must,sort,placeholder,operator_id)
-        select #{templateId},table_id,field_id,is_must,sort,placeholder,1 from t_custom_archive_field where table_id in (1,2,3,4,5,6,7,8,9,10,11,12)
+        VALUES (#{templateId},#{tableId},#{fieldId},#{isMust},#{sort},#{placeholder},1)
   </insert>
 </mapper>
