@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.entryregistration.EntryRegistrationDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
+import com.qinjee.masterdata.model.Thread.SendSmsAndMail;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
-import com.qinjee.masterdata.service.email.EmailRecordService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.staff.IPreTemplateService;
 import com.qinjee.model.request.UserSession;
@@ -45,8 +45,8 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
     private SmsRecordService smsRecordService;
     @Autowired
     private EntryRegistrationDao entryRegistrationDao;
-    @Autowired
-    private EmailRecordService emailRecordService;
+//    @Autowired
+//    private EmailRecordService emailRecordService;
 
 
 //    private static final String CHANGSTATUS_READY = "已入职";
@@ -102,18 +102,10 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) throws Exception {
-        List < Integer > list = preRegistVo.getList();
-            for (Integer sendWay : preRegistVo.getSendWay ()) {
-                if (sendWay.equals ( 1 )) {
-                    //短信发送
-                    smsRecordService.sendMessageSms ( list, preRegistVo.getTemplateId (), userSession );
-                } else if (sendWay.equals ( 2 )) {
-                    //邮件发送
-                    emailRecordService.SendMailForPreRegist ( userSession, list, preRegistVo.getTemplateId () );
-                }
-        }
-        for (Integer integer : list) {
+    public void sendRegisterMessage(PreRegistVo preRegistVo,UserSession userSession) {
+        Thread thread=new Thread ( new SendSmsAndMail ( preRegistVo,userSession ) );
+        thread.run ();
+        for (Integer integer : preRegistVo.getList ()) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( integer );
             preEmployment.setEmploymentRegister ( "已发送" );
             preEmploymentDao.updateByPrimaryKey ( preEmployment );
@@ -159,3 +151,4 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
         return entryRegistrationTableVOList;
     }
 }
+
