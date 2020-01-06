@@ -3,6 +3,7 @@ package com.qinjee.utils;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -86,6 +87,7 @@ public class CompressFileUtil {
             }
         }
     }
+
 
     /**
      * 递归压缩方法
@@ -199,8 +201,13 @@ public class CompressFileUtil {
         }
     }
 
-    public static void main(String[] args) {
-        unZip(new File("C:\\Users\\aRunner\\Desktop\\20181011.zip"),"C:\\Users\\aRunner\\Desktop");
+    public static void main(String[] args) throws FileNotFoundException {
+        List<File> list=new ArrayList <> (  );
+        File file=new File ( "C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-parent\\qinjee-masterdata\\src\\main\\resources\\411522199812254141%5C身份证原件照片%5C身份证原件照片(0) (1).jpg" );
+        File file1=new File ( "C:\\Users\\Administrator\\IdeaProjects\\eTalent\\qinjee-parent\\qinjee-masterdata\\src\\main\\resources\\411522199812254141%5C身份证原件照片%5C身份证原件照片(0) (1).jpg" );
+        list.add ( file );
+        list.add ( file1 );
+        toZip (list,new FileOutputStream ("C:\\Users\\Administrator\\Desktop\\a.zip"  )  );
     }
 }
 

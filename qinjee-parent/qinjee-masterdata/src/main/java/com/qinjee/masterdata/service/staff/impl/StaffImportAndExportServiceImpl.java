@@ -483,7 +483,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportBlackFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
-
         Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId () );
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );

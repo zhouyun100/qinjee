@@ -50,18 +50,19 @@ public class ShortUrlController {
                    String s = redisClusterService.get ( shortUrlCode );
                     Map < String, Integer >  map = (  Map < String, Integer>  ) JSONArray.parse ( s );
                     StringBuffer stringBuffer=new StringBuffer (  );
-                    stringBuffer.append ( "?" );
                    for (Map.Entry < String, Integer > integerStringEntry : map.entrySet ()) {
                     stringBuffer.append ( integerStringEntry.getKey () );
                     stringBuffer.append ( "=" );
                     stringBuffer.append ( integerStringEntry.getValue () );
+                    stringBuffer.append ( "&" );
                    }
-                   response.sendRedirect("http://www.dhr360.com/file/pre/index.html?"+stringBuffer.toString ());
+                   int i = stringBuffer.toString ().lastIndexOf ( "&" );
+                   String substring = stringBuffer.substring ( 0, i );
+                   response.sendRedirect("http://www.dhr360.com/file/pre/index.html?"+substring);
+                   logger.info ( "params={}",substring);
                }
             }
-
             logger.info("shortUrl request success shortUrlCode={}",shortUrlCode);
-
         }catch (Exception e){
             e.printStackTrace();
         }

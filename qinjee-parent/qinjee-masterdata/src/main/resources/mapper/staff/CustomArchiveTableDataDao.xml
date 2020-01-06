@@ -241,6 +241,17 @@
     UPDATE t_custom_archive_table_data
      SET is_delete = 1
      where id=#{id}
-
   </update>
+  <select id="selectByBusinessIdAndCompanyId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from t_custom_archive_table_data
+    where table_id in (
+    select table_id from t_custom_archive_table
+    where company_id=#{companyId}
+    and is_delete=0
+    and is_enable=1
+    )
+    and business_id=#{employmentId}
+    and is_delete=0
+  </select>
 </mapper>

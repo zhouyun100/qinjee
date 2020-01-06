@@ -198,7 +198,7 @@
     select
     <include refid="Base_Column_List" />
     from t_standing_book
-    where   company_id = #{companyId,jdbcType=INTEGER} AND  is_delete = 0 AND is_share=1
+    where   company_id = #{companyId,jdbcType=INTEGER} AND  is_delete = 0
   </select>
   <update id="updateStandingBook">
     update t_standing_book

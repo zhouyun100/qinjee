@@ -250,4 +250,8 @@ public class UpAndDownUtil {
         }
     }
 
+    public static void main(String[] args) {
+        downFile ( "4115846434638436\\身份证原件照片\\身份证原件照片(0).png" );
+    }
+
 }

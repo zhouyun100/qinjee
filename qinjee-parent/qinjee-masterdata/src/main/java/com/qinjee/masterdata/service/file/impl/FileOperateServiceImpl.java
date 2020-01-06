@@ -20,7 +20,6 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.CompressFileUtil;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,7 +128,6 @@ public class FileOperateServiceImpl implements IFileOperateService {
         File temp=null;
         try {
             String fileName=null;
-            if(CollectionUtils.isNotEmpty ( list )) {
                 List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
                 for (int i = 0; i < attchmentRecordVos.size (); i++) {
                     String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
@@ -140,6 +138,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                         String s = fileName.split ( "\\." )[1];
                         temp = File.createTempFile ( fileName, "." + s );
                         IOUtils.copy ( cosObjectInputStream, new FileOutputStream ( temp ) );
+                        System.out.println (temp.length ());
                         files.add ( temp );
                     } else {
                         ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
@@ -147,13 +146,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 }
                 response.reset ();
                 // 将文件输入流写入response的输出流中
-                response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( fileName, "UTF-8" ) + "\"" );
+                response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( "file.zip", "UTF-8" ) + "\"" );
+                response.setContentType("multipart/form-data");
                 CompressFileUtil.toZip ( files, response.getOutputStream () );
-            }else{
-                ExceptionCast.cast ( CommonCode.FILE_EMPTY );
-            }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace ();
            ExceptionCast.cast ( CommonCode.FILE_EMPTY);
         }finally {
             if(temp!=null){

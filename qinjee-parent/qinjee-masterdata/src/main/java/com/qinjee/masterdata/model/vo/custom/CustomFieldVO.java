@@ -186,4 +186,8 @@ public class CustomFieldVO {
      * 读写权限
      */
     private String  readWriteCode;
+    /**
+     * chDefaultValue
+     */
+    private String chDefaultValue;
 }

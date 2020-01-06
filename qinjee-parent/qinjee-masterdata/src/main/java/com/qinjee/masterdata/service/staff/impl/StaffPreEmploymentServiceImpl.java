@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
@@ -60,6 +61,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private IEmployeeNumberRuleService employeeNumberRuleService;
     @Autowired
     private ContractParamDao contractParamDao;
+    @Autowired
+    private CustomArchiveTableDataDao customArchiveTableDataDao;
 
 
     /**
@@ -71,7 +74,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo) throws Exception {
+    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo)  {
         String changeState = statusChangeVo.getChangeState ();
         List < Integer > preEmploymentList = statusChangeVo.getPreEmploymentList ();
         for (Integer preEmploymentId : preEmploymentList) {
@@ -109,8 +112,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                       userArchive.setUserId ( userId );
                       userArchiveDao.insertSelective ( userArchive );
                       List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-                      System.out.println (integers.get ( 0 ));
-                      System.out.println (userArchive.getArchiveId ());
                       String empNumber = null;
                       try {
                           empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
@@ -119,12 +120,13 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                       }
                       userArchive.setEmployeeNumber ( empNumber );
                       userArchiveDao.updateByPrimaryKeySelective ( userArchive );
-                      //删除预入职表
-//                preEmploymentDao.deletePreEmployment ( preEmploymentId );
+                      //更改其它子集的
+                      //根据companyid与预入职id找到customData对象
+                      List<CustomArchiveTableData> list=
+                              customArchiveTableDataDao.selectByBusinessIdAndCompanyId(preEmployment.getEmploymentId (),userSession.getCompanyId ());
+
                   }
                 }
-
-
             }
             if (CHANGSTATUS_DELAY.equals ( changeState )) {
 

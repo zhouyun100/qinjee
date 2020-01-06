@@ -452,9 +452,11 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 if(StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())){
                     sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
                     if(sysDict != null){
-                        fieldVO.setDefaultValue(sysDict.getDictValue());
+                        fieldVO.setDefaultValue ( mapValue.get ( fieldVO.getFieldId () ) );
+                        fieldVO.setChDefaultValue(sysDict.getDictValue());
                     }
                 }else{
+                    fieldVO.setChDefaultValue ( mapValue.get(fieldVO.getFieldId()) );
                     fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
                 }
             }

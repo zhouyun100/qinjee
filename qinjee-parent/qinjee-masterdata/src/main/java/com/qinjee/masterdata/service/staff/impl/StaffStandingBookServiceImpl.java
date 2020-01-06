@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
@@ -17,6 +18,7 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -177,11 +179,15 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         //通过id查询档案
         //通过台账id找到台账筛选表，直接返回台账筛选表对象
         List<StandingBookFilterVo> filters = standingBookFilterDao.selectByStandingBookId(standingBookReturnVo.getStangdingBookId ());
-        for (StandingBookFilterVo filter : filters) {
-                stringBuffer.append(filter.getSqlStr());
-        }
-        for (StandingBookFilterVo filter : filters) {
-            fieldIdList.add (filter.getFieldId ());
+        if(!CollectionUtils.isEmpty (filters)) {
+            for (StandingBookFilterVo filter : filters) {
+                stringBuffer.append ( filter.getSqlStr () );
+            }
+            for (StandingBookFilterVo filter : filters) {
+                fieldIdList.add ( filter.getFieldId () );
+            }
+        }else{
+            ExceptionCast.cast ( CommonCode.STANDINGBOOK_IS_EMPTY );
         }
         CustomTableVO customTableVO=new CustomTableVO ();
         customTableVO.setCompanyId ( userSession.getCompanyId () );

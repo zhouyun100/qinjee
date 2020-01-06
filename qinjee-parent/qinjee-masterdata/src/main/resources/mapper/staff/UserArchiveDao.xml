@@ -1046,7 +1046,7 @@
 
       FROM
       t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
       left join t_organization org on org.org_id=arc.business_unit_id
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -1114,10 +1114,9 @@
     post.post_name as post_name ,
     org.org_name as business_unit_name,
     arch.user_name as supervisor_user_name
-
     FROM
     t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0

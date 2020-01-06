@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -94,17 +95,17 @@ public class FileController extends BaseController {
     /**
      * 删除文件
      */
-    @RequestMapping(value = "/deleteFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
     @ApiOperation(value = "删除文件,预入职也调用此接口", notes = "hkt")
-    public ResponseResult deleteFile(@RequestParam List<Integer> id,Integer companyId) {
-        Boolean b = checkParam(id);
+    public ResponseResult deleteFile(@RequestBody DeleteFileVo deleteFileVo) {
+        Boolean b = checkParam(deleteFileVo);
         if(b) {
-                if(checkParam ( companyId )){
-                    fileOperateService.deleteFile (id,companyId );
+                if(checkParam ( deleteFileVo.getCompanyId () )){
+                    fileOperateService.deleteFile (deleteFileVo.getList (),deleteFileVo.getCompanyId () );
                 }else{
-                    fileOperateService.deleteFile ( id,getUserSession ().getCompanyId () );
+                    fileOperateService.deleteFile ( deleteFileVo.getList (),getUserSession ().getCompanyId () );
                 }
-                return new ResponseResult <> (null, CommonCode.SUCCESS);
+                return new ResponseResult <> (null, CommonCode.SUCCESS );
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }

@@ -219,12 +219,12 @@ public class StaffStandingBookController extends BaseController {
         Boolean b = checkParam(standingBookReturnVo,getUserSession());
         if (b) {
                 List < UserArchiveVo > list = staffStandingBookService.selectStaff ( standingBookReturnVo, getUserSession () );
-                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( list );
+                UserArchiveVoAndHeader userArchiveVoAndHeader = new UserArchiveVoAndHeader ();
                 userArchiveVoPageResult.setTotal ( standingBookReturnVo.getTotal () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                userArchiveVoAndHeader.setHeads (archiveService.setDefaultHead (getUserSession (),standingBookReturnVo.getQuerySchemaId () ));
-                return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
+                userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), standingBookReturnVo.getQuerySchemaId () ) );
+                return new ResponseResult <> ( userArchiveVoAndHeader, CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }

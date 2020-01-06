@@ -82,7 +82,6 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
                 templateCustomTable.setFieldList ( fieldList );
             }
         }
-
         return templateCustomTableList;
     }
 
