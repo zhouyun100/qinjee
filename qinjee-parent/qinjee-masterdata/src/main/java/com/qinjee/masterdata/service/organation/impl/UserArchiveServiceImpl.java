@@ -6,10 +6,12 @@ import com.qinjee.masterdata.dao.UserCompanyDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.userinfo.UserInfoDao;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserCompany;
 import com.qinjee.masterdata.model.entity.UserInfo;
+import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
@@ -42,6 +44,8 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
     @Autowired
     private UserLoginDao userLoginDao;
+    @Autowired
+    private UserInfoDao userInfoDao;
     @Autowired
     private UserCompanyDao userCompanyDao;
 
@@ -100,6 +104,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
         //构建userInfo对象
         UserInfo userInfo=new UserInfo();
+        //TODO
         userInfo.setUserName(userArchiveVo.getUserName());
         userInfo.setPhone(userArchiveVo.getPhone());
         userInfo.setEmail(userArchiveVo.getEmail());
@@ -115,19 +120,19 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userCompanyDao.insertSelective(userCompany);
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        try {
+            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession.getArchiveId() );
+            userArchive.setEmployeeNumber(empNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         userArchive.setOperatorId(userSession.getArchiveId());
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
-        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-        try {
-            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
-            userArchive.setEmployeeNumber(empNumber);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        userArchiveDao.updateByPrimaryKeySelective ( userArchive );
         return new ResponseResult(userArchive.getArchiveId());
     }
 
@@ -142,5 +147,21 @@ public class UserArchiveServiceImpl implements UserArchiveService {
             }
         }
         return new ResponseResult();
+    }
+
+    @Override
+    public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userArchiveVo.getUserId(), userSession.getCompanyId());
+        userInfoVO.setUserName(userArchiveVo.getUserName());
+        userInfoVO.setPhone(userArchiveVo.getPhone());
+        userInfoVO.setEmail(userArchiveVo.getEmail());
+
+        userInfoDao.editUserInfo(userInfoVO);
+        UserArchiveVo userArchiveVo1 = userArchiveDao.selectByPrimaryKey(userArchiveVo.getArchiveId());
+
+        UserArchive userArchive = new UserArchive();
+        BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
+        BeanUtils.copyProperties(userArchiveVo1, userArchive);
+        userArchiveDao.updateByPrimaryKeySelective(userArchive);
     }
 }

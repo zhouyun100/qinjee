@@ -61,6 +61,16 @@ public class UserArchiveController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
+    @PostMapping("/editUserArchive")
+    @ApiOperation(value = "编辑保存员工档案信息")
+    public ResponseResult<Integer> editUserArchive(@RequestBody UserArchiveVo userArchiveVo) {
+        if (checkParam(userArchiveVo)) {
+         userArchiveService.editUserArchive(userArchiveVo, getUserSession());
+         return new ResponseResult<>(CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
     @PostMapping("/deleteUserArchive")
     @ApiOperation(value = "删除员工档案信息")
     public ResponseResult deleteUserArchive(@RequestBody List<Integer> archiveIds) throws Exception {
