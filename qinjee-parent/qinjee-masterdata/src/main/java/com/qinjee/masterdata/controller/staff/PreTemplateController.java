@@ -16,6 +16,7 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -264,8 +265,12 @@ public class PreTemplateController extends BaseController {
     public ResponseResult addTemplateAttachmentGroup(@RequestBody List<TemplateAttachmentGroup> list) {
         Boolean b = checkParam ( list );
         if (b) {
-                entryRegistrationService.addTemplateAttachmentGroup ( list );
+            Integer templateId;
+            if(CollectionUtils.isNotEmpty(list)){
+                templateId = list.get(0).getTemplateId();
+                entryRegistrationService.addTemplateAttachmentGroup(templateId, list, userSession.getArchiveId() );
                 return new ResponseResult <> ( null, CommonCode.SUCCESS );
+            }
         }
         return failResponseResult ( "参数错误或者session错误" );
     }

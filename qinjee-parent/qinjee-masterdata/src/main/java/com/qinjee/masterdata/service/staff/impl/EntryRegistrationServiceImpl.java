@@ -18,8 +18,11 @@ import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachment
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author 周赟
@@ -87,10 +90,30 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     }
 
     @Override
-    public int addTemplateAttachmentGroup(List<TemplateAttachmentGroup> list) {
+    @Transactional(rollbackFor = Exception.class)
+    public int addTemplateAttachmentGroup(Integer templateId, List<TemplateAttachmentGroup> list, Integer operatorId) {
         int resultCount = 0;
-//        resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroup(templateAttachmentGroup);
-        templateAttachmentGroupDao.addTemplateAttachmentGroupBatch ( list );
+        List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,1);
+
+        List<TemplateAttachmentGroup> tempList = new ArrayList<>();
+        for(TemplateAttachmentGroupVO groupVO : templateAttachmentGroupVOList){
+            list.stream().filter(group ->{
+                if(group.getGroupId().equals(groupVO.getGroupId())){
+                    tempList.add(group);
+                    return true;
+                }else{
+                    return false;
+                }
+            }).collect(Collectors.toList());
+        }
+
+        //删除重复后，剩下需要新增的附件
+        list.removeAll(tempList);
+        resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroupBatch(list, operatorId);
+
+        //删除重复后，剩下需要删除的附件
+        templateAttachmentGroupVOList.removeAll(tempList);
+        templateAttachmentGroupDao.delTemplateAttachmentGroupList(templateAttachmentGroupVOList, operatorId);
         return resultCount;
     }
 
