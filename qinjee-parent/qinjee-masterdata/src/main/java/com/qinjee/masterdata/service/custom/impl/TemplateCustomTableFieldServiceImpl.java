@@ -193,13 +193,14 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveTemplate(Integer archiveId, SaveTemplateVo saveTemplateVo) {
+    public void saveTemplate(UserSession userSession, SaveTemplateVo saveTemplateVo) {
+        Integer archiveId=userSession.getArchiveId ();
         TemplateEntryRegistration templateEntryRegistration = saveTemplateVo.getTemplateEntryRegistration ();
-        //删除外层
-        entryRegistrationService.deleteTemplateEntryRegistration ( templateEntryRegistration.getTemplateId (),archiveId );
-        //添加外层
+        //更新外层
         templateEntryRegistration.setOperatorId (archiveId);
-        entryRegistrationService.addTemplateEntryRegistration ( templateEntryRegistration );
+        templateEntryRegistration.setIsEnable ( 1 );
+        templateEntryRegistration.setCompanyId ( userSession.getCompanyId () );
+        entryRegistrationService.modifyTemplateEntryRegistration ( templateEntryRegistration );
         if(CollectionUtils.isNotEmpty ( saveTemplateVo.getTemplateCustomTableList () )) {
             //删除模板中的表
             templateCustomTableFieldDao.deleteTemplateTableByKt ( saveTemplateVo.getTemplateId (), archiveId );

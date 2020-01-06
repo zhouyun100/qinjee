@@ -233,203 +233,211 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws Exception {
-        List<Integer> list=new ArrayList <> (  );
-        List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
-        Set < Integer > isSystemDefineSet = new HashSet <> ();
-        List < Integer > isSystemDefineList = new ArrayList <> ();
-        Set < Integer > notSystemDefineSet = new HashSet <> ();
-        List < Integer > notSystemDefineList = new ArrayList <> ();
-        Map < Integer, Map < String, Integer > > mapMap = customTableFieldDao.selectNameAndIdAndIsSystemDefine ( idList );
-        for (Map.Entry < Integer, Map < String, Integer > > integerMapEntry : mapMap.entrySet ()) {
-            Integer is_system_define = integerMapEntry.getValue ().get ( "is_system_define" );
-            //是内置字段
-            if (is_system_define == 1) {
-                //记录tableId
-                isSystemDefineSet.add ( integerMapEntry.getValue ().get ( "table_id" ) );
-                //记录fieldId
-                isSystemDefineList.add ( integerMapEntry.getKey () );
+    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo)  {
+        List<Integer> list= null;
+        try {
+            list = new ArrayList <> (  );
+            List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
+            Set < Integer > isSystemDefineSet = new HashSet <> ();
+            List < Integer > isSystemDefineList = new ArrayList <> ();
+            Set < Integer > notSystemDefineSet = new HashSet <> ();
+            List < Integer > notSystemDefineList = new ArrayList <> ();
+            Map < Integer, Map < String, Integer > > mapMap = customTableFieldDao.selectNameAndIdAndIsSystemDefine ( idList );
+            if(mapMap!=null) {
+                for (Map.Entry < Integer, Map < String, Integer > > integerMapEntry : mapMap.entrySet ()) {
+                    Integer isSystemDefine = integerMapEntry.getValue ().get ( "is_system_define" );
+                    //是内置字段
+                    if (isSystemDefine == 1) {
+                        //记录tableId
+                        isSystemDefineSet.add ( integerMapEntry.getValue ().get ( "table_id" ) );
+                        //记录fieldId
+                        isSystemDefineList.add ( integerMapEntry.getKey () );
+                    }
+                    //非内置字段
+                    else {
+                        //记录非内置tableId
+                        notSystemDefineSet.add ( integerMapEntry.getValue ().get ( "table_id" ) );
+                        //记录fieldId
+                        notSystemDefineList.add ( integerMapEntry.getKey () );
+                    }
+                }
+            }else{
+                ExceptionCast.cast ( CommonCode.FAIL );
             }
-            //非内置字段
-            else {
-                //记录非内置tableId
-                notSystemDefineSet.add ( integerMapEntry.getValue ().get ( "table_id" ) );
-                //记录fieldId
-                notSystemDefineList.add ( integerMapEntry.getKey () );
-            }
-        }
-        Map < Integer, List < Integer > > map = searchFieldIdByTableId ( isSystemDefineSet, isSystemDefineList );
-        Map < Integer, List < Integer > > notMap = searchFieldIdByTableId ( notSystemDefineSet, notSystemDefineList );
-        if ("ARC".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
-            //找到确认唯一性的字段id，进行判断新增或是更新操作
-            //进行对象组装
-            for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
-                UserArchive userArchive = new UserArchive ();
-                Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
-                if (checkMap ( map )) {
-                    for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
-                        for (Integer integer : integerListEntry.getValue ()) {
-                            Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                            Field[] declaredFields = userArchive.getClass ().getDeclaredFields ();
-                            for (Field declaredField : declaredFields) {
-                                declaredField.setAccessible ( true );
-                                String s1 = selectValueById ( integerStringMap, integer );
-                                if (!StringUtils.isEmpty ( s1 )) {
-                                    if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                        if (map1.get ( "text_type" ).equals ( "text" )) {
-                                            declaredField.set ( userArchive, String.valueOf (s1) );
-                                        } else if (map1.get ( "text_type" ).equals ( "code" )) {
-                                            String s = declaredField.getType ().toString ();
-                                            int i = s.lastIndexOf ( "." );
-                                            s.substring ( i + 1 );
-                                            if ("Integer".equals ( s )) {
+            Map < Integer, List < Integer > > map = searchFieldIdByTableId ( isSystemDefineSet, isSystemDefineList );
+            Map < Integer, List < Integer > > notMap = searchFieldIdByTableId ( notSystemDefineSet, notSystemDefineList );
+            if ("ARC".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
+                //找到确认唯一性的字段id，进行判断新增或是更新操作
+                //进行对象组装
+                for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
+                    UserArchive userArchive = new UserArchive ();
+                    Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
+                    if (checkMap ( map )) {
+                        for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
+                            for (Integer integer : integerListEntry.getValue ()) {
+                                Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                Field[] declaredFields = userArchive.getClass ().getDeclaredFields ();
+                                for (Field declaredField : declaredFields) {
+                                    declaredField.setAccessible ( true );
+                                    String s1 = selectValueById ( integerStringMap, integer );
+                                    if (!StringUtils.isEmpty ( s1 )) {
+                                        if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
+                                            if (map1.get ( "text_type" ).equals ( "text" )) {
+                                                declaredField.set ( userArchive, String.valueOf (s1) );
+                                            } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                                String s = declaredField.getType ().toString ();
+                                                int i = s.lastIndexOf ( "." );
+                                                s.substring ( i + 1 );
+                                                if ("Integer".equals ( s )) {
+                                                    declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
+                                                } else if ("String".equals ( s )) {
+                                                    declaredField.set ( userArchive, s1 );
+                                                }
+                                            } else if (map1.get ( "text_type" ).equals ( "number" )) {
                                                 declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
-                                            } else if ("String".equals ( s )) {
-                                                declaredField.set ( userArchive, s1 );
+                                            } else if (map1.get ( "text_type" ).equals ( "date" )) {
+                                                SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                                Date parse = sim.parse ( s1 );
+                                                declaredField.set ( userArchive, parse );
                                             }
-                                        } else if (map1.get ( "text_type" ).equals ( "number" )) {
-                                            declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
-                                        } else if (map1.get ( "text_type" ).equals ( "date" )) {
-                                            SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                            Date parse = sim.parse ( s1 );
-                                            declaredField.set ( userArchive, parse );
                                         }
                                     }
                                 }
                             }
+                            if (archiveId != null && archiveId != 0) {
+                                userArchive.setOperatorId ( userSession.getArchiveId () );
+                                userArchive.setArchiveId ( archiveId );
+                                setUserIdByPhone ( userSession, userArchive );
+                                userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+                            } else {
+                                userArchive.setOperatorId ( userSession.getArchiveId () );
+                                userArchive.setCompanyId ( userSession.getCompanyId () );
+                                if (userArchive.getPhone () != null) {
+                                    Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
+                                    if(id!=null && !id.equals (archiveId)){
+                                        ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+                                    }else {
+                                        userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
+                                    }
+                                }
+                                userArchiveDao.insertSelective ( userArchive );
+                                List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+                                employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
+                                userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+                            }
+                                list.add ( userArchive.getArchiveId () );
                         }
+                    }else {
                         if (archiveId != null && archiveId != 0) {
-                            userArchive.setOperatorId ( userSession.getArchiveId () );
-                            userArchive.setArchiveId ( archiveId );
-                            setUserIdByPhone ( userSession, userArchive );
-                            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
-                        } else {
-                            userArchive.setOperatorId ( userSession.getArchiveId () );
-                            userArchive.setCompanyId ( userSession.getCompanyId () );
-                            if (userArchive.getPhone () != null) {
-                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
-                                if(id!=null && !id.equals (archiveId)){
-                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-                                }else {
-                                    userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
-                                }
-                            }
-                            userArchiveDao.insertSelective ( userArchive );
-                            List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-                            employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
-                            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
-                        }
-                            list.add ( userArchive.getArchiveId () );
-                    }
-                }else {
-                    if (archiveId != null && archiveId != 0) {
-                        if (checkMap ( notMap )) {
-                            for (Map.Entry < Integer, List < Integer > > integerListEntry : notMap.entrySet ()) {
-                                CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
-                                customArchiveTableData.setTableId ( integerListEntry.getKey () );
-                                customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
-                                customArchiveTableData.setBusinessId ( archiveId );
-                                StringBuilder stringBuilder = new StringBuilder ();
-                                for (Integer integer : integerListEntry.getValue ()) {
-                                    String s = selectValueById ( integerStringMap, integer );
-                                    if (!StringUtils.isEmpty ( s )) {
-                                        Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                                        stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( s );
-                                        customArchiveTableData.setBigData ( stringBuilder.toString () );
+                            if (checkMap ( notMap )) {
+                                for (Map.Entry < Integer, List < Integer > > integerListEntry : notMap.entrySet ()) {
+                                    CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
+                                    customArchiveTableData.setTableId ( integerListEntry.getKey () );
+                                    customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
+                                    customArchiveTableData.setBusinessId ( archiveId );
+                                    StringBuilder stringBuilder = new StringBuilder ();
+                                    for (Integer integer : integerListEntry.getValue ()) {
+                                        String s = selectValueById ( integerStringMap, integer );
+                                        if (!StringUtils.isEmpty ( s )) {
+                                            Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                            stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append ( s );
+                                            customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                        }
                                     }
+                                    customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
-                                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                                list.add ( customArchiveTableData.getBusinessId () );
                             }
                         }
                     }
                 }
-            }
 
-        } else if ("PRE".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
-            for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
-                PreEmployment preEmployment = new PreEmployment ();
-                Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
-                if (checkMap ( map )) {
-                for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
-                        for (Integer integer : integerListEntry.getValue ()) {
-                            Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                            preEmployment.setEmploymentState ( "未入职" );
-                            preEmployment.setEmploymentRegister ( "未发送" );
-                            preEmployment.setDataSource ( "手工录入" );
-                            preEmployment.setHireDate ( new Date () );
-                            preEmployment.setCompanyId ( userSession.getCompanyId () );
-                            preEmployment.setOperatorId ( userSession.getArchiveId () );
-                            Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
-                            for (Field declaredField : declaredFields) {
-                                declaredField.setAccessible ( true );
-                                String s1 = selectValueById ( integerStringMap, integer );
-                                if(!StringUtils.isEmpty ( s1 )) {
-                                if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                        if (map1.get ( "text_type" ).equals ( "text" )) {
-                                            declaredField.set ( preEmployment, s1 );
-                                        } else if (map1.get ( "text_type" ).equals ( "code" )) {
-                                            String s = declaredField.getType ().toString ();
-                                            if (s.contains ( "Integer" )) {
-                                                declaredField.set ( preEmployment, Integer.parseInt (s1) );
-                                            } else if (s.contains ( "String" )) {
+            } else if ("PRE".equalsIgnoreCase ( insertDataVo.getFuncCode () )) {
+                for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
+                    PreEmployment preEmployment = new PreEmployment ();
+                    Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
+                    if (checkMap ( map )) {
+                    for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
+                            for (Integer integer : integerListEntry.getValue ()) {
+                                Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                preEmployment.setEmploymentState ( "未入职" );
+                                preEmployment.setEmploymentRegister ( "未发送" );
+                                preEmployment.setDataSource ( "手工录入" );
+                                preEmployment.setHireDate ( new Date () );
+                                preEmployment.setCompanyId ( userSession.getCompanyId () );
+                                preEmployment.setOperatorId ( userSession.getArchiveId () );
+                                Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
+                                for (Field declaredField : declaredFields) {
+                                    declaredField.setAccessible ( true );
+                                    String s1 = selectValueById ( integerStringMap, integer );
+                                    if(!StringUtils.isEmpty ( s1 )) {
+                                    if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
+                                            if (map1.get ( "text_type" ).equals ( "text" )) {
                                                 declaredField.set ( preEmployment, s1 );
+                                            } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                                String s = declaredField.getType ().toString ();
+                                                if (s.contains ( "Integer" )) {
+                                                    declaredField.set ( preEmployment, Integer.parseInt (s1) );
+                                                } else if (s.contains ( "String" )) {
+                                                    declaredField.set ( preEmployment, s1 );
+                                                }
+                                            } else if (map1.get ( "text_type" ).equals ( "number" )) {
+                                                declaredField.set ( preEmployment, Integer.parseInt ( s1 ) );
+                                            } else if (map1.get ( "text_type" ).equals ( "date" )) {
+                                                SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                                Date parse = sim.parse ( s1 );
+                                                declaredField.set ( preEmployment, parse );
                                             }
-                                        } else if (map1.get ( "text_type" ).equals ( "number" )) {
-                                            declaredField.set ( preEmployment, Integer.parseInt ( s1 ) );
-                                        } else if (map1.get ( "text_type" ).equals ( "date" )) {
-                                            SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                            Date parse = sim.parse ( s1 );
-                                            declaredField.set ( preEmployment, parse );
                                         }
                                     }
                                 }
                             }
-                        }
-                        if(preEmployment.getPhone ()!=null){
-                            Integer integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
-                            if(integer!=null){
-                                ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-                            }
-                        }
-                        if (preemploymentId != null && preemploymentId != 0) {
-                            preEmployment.setEmploymentId ( preemploymentId );
-                            preEmploymentDao.updateByPrimaryKey ( preEmployment );
-                        } else {
-                            preEmploymentDao.insert ( preEmployment );
-                            preemploymentId=preEmployment.getEmploymentId (  );
-                        }
-                        list.add ( preemploymentId );
-                    }
-                }else {
-                    if (preemploymentId != null && preemploymentId != 0) {
-                        if (checkMap ( map )) {
-                            for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
-                                CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
-                                customArchiveTableData.setTableId ( integerListEntry.getKey () );
-                                customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
-                                customArchiveTableData.setBusinessId ( preemploymentId );
-                                StringBuilder stringBuilder = new StringBuilder ();
-                                for (Integer integer : integerListEntry.getValue ()) {
-                                    String s = selectValueById ( integerStringMap, integer );
-                                    if(!StringUtils.isEmpty ( s )) {
-                                        Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
-                                        stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append (s);
-                                        customArchiveTableData.setBigData ( stringBuilder.toString () );
-                                    }
+                            if(preEmployment.getPhone ()!=null){
+                                Integer integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
+                                if(integer!=null){
+                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
                                 }
-                                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                                list.add ( customArchiveTableData.getBusinessId () );
+                            }
+                            if (preemploymentId != null && preemploymentId != 0) {
+                                preEmployment.setEmploymentId ( preemploymentId );
+                                preEmploymentDao.updateByPrimaryKey ( preEmployment );
+                            } else {
+                                preEmploymentDao.insert ( preEmployment );
+                                preemploymentId=preEmployment.getEmploymentId (  );
+                            }
+                            list.add ( preemploymentId );
+                        }
+                    }else {
+                        if (preemploymentId != null && preemploymentId != 0) {
+                            if (checkMap ( map )) {
+                                for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
+                                    CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
+                                    customArchiveTableData.setTableId ( integerListEntry.getKey () );
+                                    customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
+                                    customArchiveTableData.setBusinessId ( preemploymentId );
+                                    StringBuilder stringBuilder = new StringBuilder ();
+                                    for (Integer integer : integerListEntry.getValue ()) {
+                                        String s = selectValueById ( integerStringMap, integer );
+                                        if(!StringUtils.isEmpty ( s )) {
+                                            Map < String, String > map3 = customTableFieldDao.selectCodeAndTypeById ( integer );
+                                            stringBuilder.append ( "@@" ).append ( String.valueOf ( map3.get ( "field_id" ) ) ).append ( "@@:" ).append (s);
+                                            customArchiveTableData.setBigData ( stringBuilder.toString () );
+                                        }
+                                    }
+                                    customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                                    list.add ( customArchiveTableData.getBusinessId () );
+                                }
                             }
                         }
                     }
                 }
             }
-        } else {
-            ExceptionCast.cast ( CommonCode.INVALID_PARAM );
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace ();
             return null;
         }
-        return list;
+
     }
 
     private void setUserIdByPhone(UserSession userSession, UserArchive userArchive) {

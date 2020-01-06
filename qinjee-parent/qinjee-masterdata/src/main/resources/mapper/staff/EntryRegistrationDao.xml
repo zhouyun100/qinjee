@@ -24,6 +24,8 @@
         logo_url,background_img_url,company_id,is_enable,operator_id
         from t_template_entry_registration
         WHERE company_id = #{companyId,jdbcType=INTEGER}
+        and is_delete=0
+        and is_enable=1
     </select>
 
 

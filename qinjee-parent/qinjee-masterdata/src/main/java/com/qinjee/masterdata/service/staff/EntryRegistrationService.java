@@ -103,4 +103,5 @@ public interface EntryRegistrationService {
      */
     int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList, Integer operatorId);
 
+
 }

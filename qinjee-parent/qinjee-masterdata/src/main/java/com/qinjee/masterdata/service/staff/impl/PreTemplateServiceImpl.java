@@ -113,7 +113,6 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                     emailRecordService.SendMailForPreRegist ( userSession, list, preRegistVo.getTemplateId () );
                 }
         }
-
         for (Integer integer : list) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( integer );
             preEmployment.setEmploymentRegister ( "已发送" );

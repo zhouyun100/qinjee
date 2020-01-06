@@ -82,5 +82,5 @@ public interface TemplateCustomTableFieldService {
      */
     void setCustomTableForTemplate(List< TemplateCustomTableVO> list, UserSession userSession);
 
-    void saveTemplate(Integer archiveId, SaveTemplateVo saveTemplateVo);
+    void saveTemplate(UserSession userSession, SaveTemplateVo saveTemplateVo);
 }

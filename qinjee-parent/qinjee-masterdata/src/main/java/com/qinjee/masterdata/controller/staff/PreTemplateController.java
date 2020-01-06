@@ -387,7 +387,7 @@ public class PreTemplateController extends BaseController {
         response.setHeader ( "Access-Control-Allow-Origin","*" );
         if (b) {
             try {
-                templateCustomTableFieldService.saveTemplate ( getUserSession ().getArchiveId (),saveTemplateVo );
+                templateCustomTableFieldService.saveTemplate ( getUserSession (),saveTemplateVo );
                 return new ResponseResult <> ( null, CommonCode.SUCCESS );
             } catch (Exception e) {
                 e.printStackTrace ();

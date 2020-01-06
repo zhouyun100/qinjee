@@ -88,7 +88,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
-        userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+        try {
+            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
     }
 
     @Override
