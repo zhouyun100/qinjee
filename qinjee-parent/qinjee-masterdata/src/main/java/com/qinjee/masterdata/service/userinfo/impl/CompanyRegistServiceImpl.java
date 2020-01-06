@@ -58,9 +58,26 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
         companyInfo.setValidEndDate(validEndDate);
         companyRegistDao.addCompany(companyInfo);
         Integer companyId = companyInfo.getCompanyId();
-        logger.info("companyId={}" , companyId);
 
         if(companyId != null){
+
+            //添加企业邮箱配置，默认使用勤杰邮件配置
+            EmailConfig emailConfig = new EmailConfig();
+            emailConfig.setCompanyId(companyId);
+            companyRegistDao.addEmailConfig(emailConfig);
+
+            //添加企业顶级机构，以企业命名
+            Organization organization = new Organization();
+            organization.setOrgName(companyName);
+            organization.setCompanyId(companyId);
+            companyRegistDao.addOrganization(organization);
+            Integer orgId = organization.getOrgId();
+
+            //添加系统管理员角色（内置）
+            Role role = new Role();
+            role.setCompanyId(companyId);
+            companyRegistDao.addRole(role);
+            Integer roleId = role.getRoleId();
 
             UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(phone);
             if(userInfo == null){
@@ -77,7 +94,6 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 }
             }
             Integer userId = userInfo.getUserId();
-            logger.info("userId={}" , userId);
 
             if(userId != null){
                 //添加档案
@@ -85,9 +101,9 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 userArchive.setUserId(userId);
                 userArchive.setUserName(userName);
                 userArchive.setCompanyId(companyId);
+                userArchive.setOrgId(orgId);
                 companyRegistDao.addUserArchive(userArchive);
                 Integer archiveId = userArchive.getArchiveId();
-                logger.info("archiveId={}" , archiveId);
 
                 //添加登录用户与企业关系
                 UserCompany userCompany = new UserCompany();
@@ -95,24 +111,6 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 userCompany.setUserId(userId);
                 userCompany.setIsEnable(new Short("1"));
                 companyRegistDao.addUserCompany(userCompany);
-
-                //添加企业邮箱配置，默认使用勤杰邮件配置
-                EmailConfig emailConfig = new EmailConfig();
-                emailConfig.setCompanyId(1);
-                companyRegistDao.addEmailConfig(emailConfig);
-
-                //添加企业顶级机构，以企业命名
-                Organization organization = new Organization();
-                organization.setOrgName(companyName);
-                organization.setCompanyId(companyId);
-                companyRegistDao.addOrganization(organization);
-
-                //添加系统管理员角色（内置）
-                Role role = new Role();
-                role.setCompanyId(companyId);
-                companyRegistDao.addRole(role);
-                Integer roleId = role.getRoleId();
-                logger.info("roleId={}" , roleId);
 
                 if(roleId != null && archiveId != null){
                     //添加档案与角色关系
@@ -131,14 +129,34 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 //初始化企业菜单权限
                 companyRegistDao.initCompanyMenu(companyId);
 
+                //添加企业预入职模板数据
+                TemplateEntryRegistration templateEntryRegistration = new TemplateEntryRegistration();
+                templateEntryRegistration.setCompanyId(companyId);
+                companyRegistDao.addTemplateEntryRegistration(templateEntryRegistration);
+                Integer templateId = templateEntryRegistration.getTemplateId();
+
+                //添加企业预入职模板附件数据
+                TemplateAttachmentGroup templateAttachmentGroup = new TemplateAttachmentGroup();
+                templateAttachmentGroup.setTemplateId(templateId);
+                companyRegistDao.addTemplateAttachmentGroup(templateAttachmentGroup);
+
                 //默认查询勤杰的自定义表
                 List<CustomArchiveTable> customArchiveTableList = companyRegistDao.searchCustomArchiveTable(1);
                 for(CustomArchiveTable customArchiveTable : customArchiveTableList){
                     Integer oldTableId = customArchiveTable.getTableId();
                     customArchiveTable.setCompanyId(companyId);
                     companyRegistDao.addCustomTable(customArchiveTable);
-                    int tableId = customArchiveTable.getTableId();
-                    logger.info("tableId={}" , tableId);
+                    Integer tableId = customArchiveTable.getTableId();
+
+
+                    if(customArchiveTable.getFuncCode().equals("PRE")){
+                        //添加企业预入职模板自定义表
+                        TemplateCustomTableVO templateCustomTableVO = new TemplateCustomTableVO();
+                        templateCustomTableVO.setTemplateId(templateId);
+                        templateCustomTableVO.setTableId(tableId);
+                        templateCustomTableVO.setSort(customArchiveTable.getSort());
+                        companyRegistDao.addTemplateCustomTable(templateCustomTableVO);
+                    }
 
                     List<CustomArchiveGroup> customArchiveGroupList = companyRegistDao.searchCustomArchiveGroup(oldTableId);
                     if(CollectionUtils.isNotEmpty(customArchiveGroupList)){
@@ -147,7 +165,6 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                             customArchiveGroup.setTableId(tableId);
                             companyRegistDao.addCustomGroup(customArchiveGroup);
                             Integer groupId = customArchiveGroup.getGroupId();
-                            logger.info("groupId={}" , groupId);
 
                             List<CustomArchiveField> customArchiveFieldList = companyRegistDao.searchCustomArchiveField(oldTableId,oldGroupId);
                             for(CustomArchiveField customArchiveField : customArchiveFieldList){
@@ -155,8 +172,12 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                                 customArchiveField.setGroupId(groupId);
                                 companyRegistDao.addCustomField(customArchiveField);
                                 Integer fieldId = customArchiveField.getFieldId();
-                                logger.info("fieldId={}" , fieldId);
                                 companyRegistDao.addRoleCustomFieldAuth(roleId,fieldId);
+
+                                if(customArchiveTable.getFuncCode().equals("PRE")){
+                                    //添加企业预入职模板自定义表字段
+                                    addTemplateCustomField(templateId, tableId, fieldId, Integer.valueOf(customArchiveField.getIsMust()),customArchiveField.getSort(),customArchiveField.getPlaceholder());
+                                }
                             }
                         }
                     }else{
@@ -165,35 +186,38 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                             customArchiveField.setTableId(tableId);
                             companyRegistDao.addCustomField(customArchiveField);
                             Integer fieldId = customArchiveField.getFieldId();
-                            logger.info("fieldId={}" , fieldId);
                             companyRegistDao.addRoleCustomFieldAuth(roleId,fieldId);
+
+                            if(customArchiveTable.getFuncCode().equals("PRE")){
+                                //添加企业预入职模板自定义表字段
+                                addTemplateCustomField(templateId, tableId, fieldId, Integer.valueOf(customArchiveField.getIsMust()),customArchiveField.getSort(),customArchiveField.getPlaceholder());
+                            }
                         }
                     }
+
                 }
-
-                //添加企业预入职模板数据
-                TemplateEntryRegistration templateEntryRegistration = new TemplateEntryRegistration();
-                templateEntryRegistration.setCompanyId(companyId);
-                companyRegistDao.addTemplateEntryRegistration(templateEntryRegistration);
-                Integer templateId = templateEntryRegistration.getTemplateId();
-                logger.info("templateId={}" , templateId);
-
-                //添加企业预入职模板附件数据
-                TemplateAttachmentGroup templateAttachmentGroup = new TemplateAttachmentGroup();
-                templateAttachmentGroup.setTemplateId(templateId);
-                companyRegistDao.addTemplateAttachmentGroup(templateAttachmentGroup);
-
-                //添加企业预入职模板自定义表
-                TemplateCustomTableVO templateCustomTableVO = new TemplateCustomTableVO();
-                templateCustomTableVO.setTemplateId(templateId);
-                companyRegistDao.addTemplateCustomTable(templateCustomTableVO);
-
-                //添加企业预入职模板自定义表字段
-                TemplateCustomTableFieldVO templateCustomTableFieldVO = new TemplateCustomTableFieldVO();
-                templateCustomTableFieldVO.setTemplateId(templateId);
-                companyRegistDao.addTemplateCustomField(templateCustomTableFieldVO);
             }
         }
         logger.info("REGIST FINISHED!");
+    }
+
+    /**
+     * 添加预入职模板自定义字段
+     * @param templateId
+     * @param tableId
+     * @param fieldId
+     * @param isMust
+     * @param sort
+     * @param placeholder
+     */
+    private void addTemplateCustomField(Integer templateId,Integer tableId,Integer fieldId,Integer isMust,Integer sort,String placeholder){
+        TemplateCustomTableFieldVO templateCustomTableFieldVO = new TemplateCustomTableFieldVO();
+        templateCustomTableFieldVO.setTemplateId(templateId);
+        templateCustomTableFieldVO.setTableId(tableId);
+        templateCustomTableFieldVO.setFieldId(fieldId);
+        templateCustomTableFieldVO.setIsMust(isMust);
+        templateCustomTableFieldVO.setSort(sort);
+        templateCustomTableFieldVO.setPlaceholder(placeholder);
+        companyRegistDao.addTemplateCustomField(templateCustomTableFieldVO);
     }
 }

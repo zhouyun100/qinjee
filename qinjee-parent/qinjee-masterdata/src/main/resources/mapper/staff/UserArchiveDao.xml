@@ -546,6 +546,9 @@
       <if test="postId != null">
         post_id = #{postId,jdbcType=INTEGER},
       </if>
+      <if test="businessUnitId != null">
+        business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+      </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
       </if>

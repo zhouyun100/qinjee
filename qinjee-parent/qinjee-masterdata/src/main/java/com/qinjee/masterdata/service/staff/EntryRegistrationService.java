@@ -83,10 +83,12 @@ public interface EntryRegistrationService {
 
     /**
      * 新增模板附件信息
+     * @param templateId
      * @param list
+     * @param operatorId
      * @return
      */
-    int addTemplateAttachmentGroup(List<TemplateAttachmentGroup> list);
+    int addTemplateAttachmentGroup(Integer templateId, List<TemplateAttachmentGroup> list, Integer operatorId);
 
     /**
      * 删除模板附件信息

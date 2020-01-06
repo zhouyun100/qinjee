@@ -118,7 +118,8 @@
             and is_delete = 0
         </foreach>
     </update>
-    <insert id="addTemplateAttachmentGroupBatch" useGeneratedKeys="true">
+
+    <insert id="addTemplateAttachmentGroupBatch">
         <foreach collection="list" item="item" separator=";" >
         INSERT INTO t_template_attachment_group
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -157,10 +158,19 @@
             <if test="item.sort != null">
             #{item.sort,jdbcType=INTEGER},
             </if>
-            <if test="item.operatorId != null">
-            #{item.operatorId,jdbcType=INTEGER}
+            <if test="operatorId != null">
+            #{operatorId,jdbcType=INTEGER}
             </if>
         </trim>
         </foreach>
     </insert>
+
+    <!-- 批量删除模板附件信息 -->
+    <update id="delTemplateAttachmentGroupList">
+        update t_template_attachment_group set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where tag_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=";" >
+            #{item.tagId,jdbcType=INTEGER}
+        </foreach>
+    </update>
 </mapper>

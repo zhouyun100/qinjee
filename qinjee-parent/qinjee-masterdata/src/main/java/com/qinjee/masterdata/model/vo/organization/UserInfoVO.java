@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.entity;
+package com.qinjee.masterdata.model.vo.organization;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
@@ -17,7 +17,7 @@ import java.util.Date;
 @ApiModel(description = "用户信息表")
 @Data
 @NoArgsConstructor
-public class UserInfo implements Serializable {
+public class UserInfoVO implements Serializable {
     /**
      * 用户ID
      */
@@ -27,11 +27,13 @@ public class UserInfo implements Serializable {
     /**
      * 用户账号
      */
-    @ApiModelProperty("用户账号")
+    @ApiModelProperty("用户名")
     private String userName;
-
-    @ApiModelProperty("用户昵称")
-    private String nickname;
+    /**
+     * 用户账号
+     */
+    @ApiModelProperty("用户姓名")
+    private String nickName;
 
     /**
      * 用户密码

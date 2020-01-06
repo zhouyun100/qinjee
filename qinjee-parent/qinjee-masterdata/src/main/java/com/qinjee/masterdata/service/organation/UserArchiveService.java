@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,4 +39,6 @@ public interface UserArchiveService {
      */
     ResponseResult deleteUserArchive(List<Integer> archiveIds);
 
+    @Transactional
+    void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession);
 }

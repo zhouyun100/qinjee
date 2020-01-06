@@ -9,15 +9,9 @@ spring:
     encoding: utf-8
     cache-duration: 3600
 
-  jackson:
-    #设置时间格式
-    date-format: yyyy-MM-dd HH:mm:ss
-    #设置时区
-    time-zone: GMT+8
-
   datasource:
     # mysql 8.0 数据库配置
-    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=GMT%2B8&useSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+    url: jdbc:mysql://193.112.188.180:3306/masterdata?serverTimezone=GMT%2B8&useSSL=false&characterEncoding=utf8&allowMultiQueries=true
     username: qinjee
     password: qinjee2019
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -52,7 +46,7 @@ spring:
       pool-prepared-statements: false #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
       max-pool-prepared-statement-per-connection-size: 20 #开启poolPreparedStatements后生效
       filters: stat,log4j2  #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
-      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000 #通过connectProperties属性来打开mergeSql功能;慢SQL记录
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=1000 #通过connectProperties属性来打开mergeSql功能;慢SQL记录
       filter:
         wall:
           config:
@@ -94,6 +88,7 @@ spring:
     timeout: 2000
     password: qinjee2019
 
+  #  文件上传限制
   servlet:
     multipart:
       enabled: true
@@ -150,8 +145,4 @@ pagehelper:
   supportMethodsArguments: true
   pageSizeZero: true
   params: count=countSql
-
-jackson:
-  date_format: yyyy-MM-dd HH:mm:ss
-  time-zone: GMT+8
 

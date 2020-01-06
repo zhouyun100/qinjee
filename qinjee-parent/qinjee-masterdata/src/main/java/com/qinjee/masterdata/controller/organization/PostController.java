@@ -212,9 +212,9 @@ public class PostController extends BaseController {
         }
         List<Post> postList = postService.exportPost(orgId, postIds, getUserSession());
         if (!CollectionUtils.isEmpty(postList)) {
-            response.setHeader("fileName", URLEncoder.encode("postDefualt.xls", "UTF-8"));
+            //response.setHeader("fileName", URLEncoder.encode("岗位信息.xls", "UTF-8"));
             Workbook workbook = DefaultExcelBuilder.of(Post.class).build(postList);
-            AttachmentExportUtil.export(workbook, "postDefualt", response);
+            AttachmentExportUtil.export(workbook, "岗位信息", response);
             //只能返回null
 
             return null;
@@ -243,8 +243,8 @@ public class PostController extends BaseController {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/x-msdownload;charset=UTF-8");
             response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
-            response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
+                "attachment;filename=\"" + URLEncoder.encode("岗位导入错误校验信息.txt", "UTF-8") + "\"");
+            response.setHeader("fileName", URLEncoder.encode("岗位导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
             return null;
         }

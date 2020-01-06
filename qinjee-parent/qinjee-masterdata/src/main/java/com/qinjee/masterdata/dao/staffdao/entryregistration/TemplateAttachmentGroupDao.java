@@ -71,6 +71,16 @@ public interface TemplateAttachmentGroupDao {
     /**
      * 批量新增附件
      * @param list
+     * @param operatorId
+     * @return
      */
-    void addTemplateAttachmentGroupBatch(@Param("list") List< TemplateAttachmentGroup> list);
+    int addTemplateAttachmentGroupBatch(List<TemplateAttachmentGroup> list, Integer operatorId);
+
+    /**
+     * 批量删除模板附件信息
+     * @param list
+     * @param operatorId
+     * @return
+     */
+    int delTemplateAttachmentGroupList(List<TemplateAttachmentGroupVO> list, Integer operatorId);
 }
