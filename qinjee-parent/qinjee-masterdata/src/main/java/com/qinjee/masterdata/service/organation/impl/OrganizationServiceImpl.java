@@ -178,7 +178,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public String generateOrgCode(Integer parentOrgId) {
-        logger.info("根据父机构id生成机构编码：parentOrgId="+parentOrgId);
+        logger.info("根据父机构id生成机构编码：parentOrgId=" + parentOrgId);
         //查询父级机构，用来生成机构全称和机构编码
         OrganizationVO parentOrg = organizationDao.getOrganizationById(parentOrgId);
         //查询同级机构用来生成机构sortid、orgCode
@@ -191,8 +191,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             return parentOrg.getOrgCode() + "01";
         } else {
             //先过滤掉机构编码最后两位为非数字的，再筛选最大值
-            List<OrganizationVO> filterBrotherOrgList = brotherOrgList.stream().filter(o ->( o.getOrgCode().length()>2&&StringUtils.isNumeric(o.getOrgCode().substring(o.getOrgCode().length() - 2)))).collect(Collectors.toList());
-            logger.info("滤掉后的filterBrotherOrgList："+filterBrotherOrgList);
+            List<OrganizationVO> filterBrotherOrgList = brotherOrgList.stream().filter(o -> (o.getOrgCode().length() > 2 && StringUtils.isNumeric(o.getOrgCode().substring(o.getOrgCode().length() - 2)))).collect(Collectors.toList());
+            logger.info("滤掉后的filterBrotherOrgList：" + filterBrotherOrgList);
             //根据机构编码排序，并且只取最后两位位数字的
             Comparator comparator = new Comparator() {
                 @Override
@@ -211,13 +211,13 @@ public class OrganizationServiceImpl implements OrganizationService {
                 }
             };
             String lastOrgCode = filterBrotherOrgList.stream().map(OrganizationVO::getOrgCode).max(comparator).get().toString();
-            logger.info("当前机构下的lastOrgCode："+lastOrgCode);
+            logger.info("当前机构下的lastOrgCode：" + lastOrgCode);
             if (null == lastOrgCode || "".equals(lastOrgCode)) {
                 return parentOrg.getOrgCode() + "01";
             }
             //计算编码
             String orgCode = culOrgCode(lastOrgCode);
-            logger.info("计算生成的orgCode："+orgCode);
+            logger.info("计算生成的orgCode：" + orgCode);
             return orgCode;
         }
     }
@@ -273,7 +273,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgParentId(Integer.parseInt(parentOrgId));
         if (null != orgManagerId && !"".equals(orgManagerId)) {
             organization.setOrgManagerId(Integer.parseInt(orgManagerId));
-        }else{
+        } else {
             organization.setOrgManagerId(null);
         }
         organization.setOrgType(orgType);
@@ -420,7 +420,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 //导入时将“部门”转为"DEPT"
                 List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
                 for (SysDict dict : orgTypeDic) {
-                    if(null!=dict.getDictValue() && dict.getDictValue().equalsIgnoreCase(vo.getOrgType())){
+                    if (null != dict.getDictValue() && dict.getDictValue().equalsIgnoreCase(vo.getOrgType())) {
                         vo.setOrgType(dict.getDictCode());
                     }
                 }
@@ -694,15 +694,15 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     //=====================================================================
     @Override
-    public void sealOrganization(Integer archiveId,List<Integer> orgIds, Short isEnable) {
-        List<Integer> idList=new ArrayList<>();
+    public void sealOrganization(Integer archiveId, List<Integer> orgIds, Short isEnable) {
+        List<Integer> idList = new ArrayList<>();
         for (Integer orgId : orgIds) {
             List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
             idList.addAll(orgIdList);
         }
-        if(!CollectionUtils.isEmpty(idList)){
+        if (!CollectionUtils.isEmpty(idList)) {
             organizationDao.updateEnable(idList, isEnable);
-        }else{
+        } else {
             ExceptionCast.cast(CommonCode.FAIL);
         }
     }
@@ -750,9 +750,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     //=====================================================================
     @Override
-    public List<UserArchiveVo> getUserArchiveListByUserName(String userName,UserSession userSession) {
+    public List<UserArchiveVo> getUserArchiveListByUserName(String userName, UserSession userSession) {
         //调用人员的接口
-        List<UserArchiveVo> userArchives = userArchiveDao.selectUserArchiveByName(userName,userSession.getCompanyId ());
+        List<UserArchiveVo> userArchives = userArchiveDao.selectUserArchiveByName(userName, userSession.getCompanyId());
         if (org.apache.commons.collections4.CollectionUtils.isEmpty(userArchives)) {
 
         }
@@ -1021,16 +1021,16 @@ public class OrganizationServiceImpl implements OrganizationService {
                 resultMsg.append("非集团类型机构的上级机构名称不能为空 | ");
             }
             if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
-                boolean isExist=false;
+                boolean isExist = false;
                 List<SysDict> sysDicts = sysDictService.searchSysDictListByDictType("ORG_TYPE");
                 for (SysDict dict : sysDicts) {
-                    if(null != dict.getDictValue() && organizationVO.getOrgType().equalsIgnoreCase(dict.getDictValue())){
+                    if (null != dict.getDictValue() && organizationVO.getOrgType().equalsIgnoreCase(dict.getDictValue())) {
                         //如果存在 直接结束
-                        isExist=true;
+                        isExist = true;
                         break;
                     }
                 }
-                if(!isExist){
+                if (!isExist) {
                     checkVo.setCheckResult(false);
                     resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在 | ");
                 }
@@ -1059,30 +1059,30 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
             //根据上级机构编码查询数据库 判断上级机构是否存在
             if (StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
-
                 //先判断上级机构在表中是否存在，如果表中不存就需要去查询数据库
                 String orgName = excelOrgNameMap.get(organizationVO.getOrgParentCode());
                 if (StringUtils.isNotBlank(orgName)) {
                     //检查excel中的父级机构名称是否一致
-                    if(!orgName.equals(organizationVO.getOrgParentName())){
+                    if (!orgName.equals(organizationVO.getOrgParentName())) {
                         checkVo.setCheckResult(false);
                         resultMsg.append("上级机构名称在excel中不匹配 | ");
-                    }else {
-                        OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
-                        if (Objects.nonNull(org)) {
-                            if (null == org.getOrgName() || "".equals(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
-                                checkVo.setCheckResult(false);
-                                resultMsg.append("上级机构名称在数据库中不匹配 | ");
-                            }
-                        }
                     }
-                }else{
-                    checkVo.setCheckResult(false);
-                    resultMsg.append("编码为："+organizationVO.getOrgParentCode()+"的上级机构在excel中不存在 | ");
+                } else {
+                    //上级编码在excel中不存在，那就去数据库查找
+                    OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
+                    if (Objects.nonNull(org)) {
+                        if (StringUtils.isBlank(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
+                            checkVo.setCheckResult(false);
+                            resultMsg.append("上级机构名称在数据库中不匹配 | ");
+                        }
+                    }else {
+                        checkVo.setCheckResult(false);
+                        resultMsg.append("上级机构编码["+organizationVO.getOrgParentCode()+"]不存在 | ");
+                    }
                 }
             }
-            if(resultMsg.length()>2){
-                resultMsg.deleteCharAt(resultMsg.length()-2);
+            if (resultMsg.length() > 2) {
+                resultMsg.deleteCharAt(resultMsg.length() - 2);
             }
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);

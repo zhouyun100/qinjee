@@ -245,10 +245,9 @@ public class OrganizationController extends BaseController {
                 }
                 dataList.add(org);
             }
-            response.setHeader("fileName", URLEncoder.encode("orgDefualt.xls", "UTF-8"));
             Workbook workbook = DefaultExcelBuilder.of(OrganizationVO.class).build(dataList);
 
-            AttachmentExportUtil.export(workbook, "orgDefualt", response);
+            AttachmentExportUtil.export(workbook, "组织机构信息", response);
             //只能返回null
             return null;
         }
@@ -274,8 +273,8 @@ public class OrganizationController extends BaseController {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/x-msdownload;charset=UTF-8");
             response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode("errorInfo.txt", "UTF-8") + "\"");
-            response.setHeader("fileName", URLEncoder.encode("errorInfo.txt", "UTF-8"));
+                "attachment;filename=\"" + URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8") + "\"");
+            response.setHeader("fileName", URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
             //是否只能返回null
             return null;

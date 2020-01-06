@@ -856,19 +856,18 @@ public class PostServiceImpl implements PostService {
                     if (!parentPostName.equals(post.getParentPostName())) {
                         checkVo.setCheckResult(false);
                         resultMsg.append("上级岗位名称在excel中不匹配 | ");
-                    } else {
-                        // 校验上级岗位编码是否存在，与岗位名称是否对应
-                        Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
-                        if (Objects.nonNull(parentPost)) {
-                            if (!post.getParentPostName().equals(parentPost.getPostName())) {
-                                checkVo.setCheckResult(false);
-                                resultMsg.append("上级岗位名称在数据库中不匹配 | ");
-                            }
-                        }
                     }
                 } else {
-                    checkVo.setCheckResult(false);
-                    resultMsg.append("编码为：" + post.getParentPostCode() + "的上级岗位在excel中不存在 | ");
+                    // 校验上级岗位编码是否存在，与岗位名称是否对应
+                    Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
+                    if (Objects.nonNull(parentPost)) {
+                        if (!post.getParentPostName().equals(parentPost.getPostName())) {
+                            checkVo.setCheckResult(false);
+                            resultMsg.append("上级岗位名称在数据库中不匹配 | ");
+                        }
+                    }else{
+                        resultMsg.append("上级岗位编码["+post.getParentPostCode()+"]不存在 | ");
+                    }
                 }
             }
 

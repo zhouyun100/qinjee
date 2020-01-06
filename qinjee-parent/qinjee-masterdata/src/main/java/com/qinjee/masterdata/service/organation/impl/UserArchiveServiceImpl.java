@@ -20,9 +20,11 @@ import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
+import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,10 +107,13 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         //构建userInfo对象
         UserInfo userInfo=new UserInfo();
         //TODO
-        userInfo.setUserName(userArchiveVo.getUserName());
+        //userInfo.setUserName(userArchiveVo.getUserName());
         userInfo.setPhone(userArchiveVo.getPhone());
         userInfo.setEmail(userArchiveVo.getEmail());
         userInfo.setCreateTime(new Date());
+        //密码默认手机号后6位
+        String p=StringUtils.substring(userArchiveVo.getPhone(),userArchiveVo.getPhone().length()-6,userArchiveVo.getPhone().length());
+        userInfo.setPassword(MD5Utils.getMd5(p));
         userLoginDao.addUserInfo ( userInfo );
         //维护员工企业关系表
 
@@ -116,23 +121,25 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userCompany.setCreateTime(new Date());
         userCompany.setUserId(userInfo.getUserId());
         userCompany.setCompanyId(userSession.getCompanyId());
-        userCompany.setIsEnable((short) 0);
+        userCompany.setIsEnable((short) 1);
         userCompanyDao.insertSelective(userCompany);
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
-        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-        try {
-            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userSession.getArchiveId() );
-            userArchive.setEmployeeNumber(empNumber);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
         userArchive.setOperatorId(userSession.getArchiveId());
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        try {
+            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId() );
+            userArchive.setEmployeeNumber(empNumber);
+            userArchiveDao.updateByPrimaryKeySelective(userArchive);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new ResponseResult(userArchive.getArchiveId());
     }
 
@@ -151,7 +158,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
-        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userArchiveVo.getUserId(), userSession.getCompanyId());
+        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId( userSession.getCompanyId(),userArchiveVo.getUserId());
         userInfoVO.setUserName(userArchiveVo.getUserName());
         userInfoVO.setPhone(userArchiveVo.getPhone());
         userInfoVO.setEmail(userArchiveVo.getEmail());
