@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.UserCompanyDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
@@ -18,6 +19,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.MD5Utils;
@@ -108,6 +110,11 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         UserInfo userInfo=new UserInfo();
         //TODO
         //userInfo.setUserName(userArchiveVo.getUserName());
+        //校验手机号在同家企业下不能重复
+        int count=userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(),userSession.getCompanyId());
+        if(count>0){
+            ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
+        }
         userInfo.setPhone(userArchiveVo.getPhone());
         userInfo.setEmail(userArchiveVo.getEmail());
         userInfo.setCreateTime(new Date());
