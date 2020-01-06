@@ -2,30 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.userinfo.UserInfoDao">
 
-  <resultMap id="UserInfoResultMap" type="com.qinjee.masterdata.model.vo.auth.UserInfoVO">
-    <id column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
-    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
-  </resultMap>
+    <resultMap id="UserInfoResultMap" type="com.qinjee.masterdata.model.vo.auth.UserInfoVO">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="company_id" jdbcType="INTEGER" property="companyId"/>
+        <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
+        <result column="archive_id" jdbcType="INTEGER" property="archiveId"/>
+    </resultMap>
 
-  <update  id="editUserInfo"  parameterType="com.qinjee.masterdata.model.vo.auth.UserInfoVO">
-    update t_user_info
-    <set>
-      <if test="phone != null">
-        phone = #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null">
-        user_name = #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        email = #{email,jdbcType=VARCHAR},
-      </if>
+    <update id="editUserInfo" parameterType="com.qinjee.masterdata.model.vo.auth.UserInfoVO">
+        update t_user_info
+        <set>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
 
-    </set>
+        </set>
         where user_id = #{userId}
-  </update>
+    </update>
+
+    <select id="getUserByPhoneAndCompanyId" resultType="integer">
+      SELECT
+        COUNT(1)
+            FROM
+         t_user_info tu
+            LEFT JOIN t_user_archive tua
+            ON tua.user_id = tu.user_id AND tua.company_id = #{companyId}
+            WHERE
+	        tu.phone = #{phone}
+  </select>
 </mapper>
