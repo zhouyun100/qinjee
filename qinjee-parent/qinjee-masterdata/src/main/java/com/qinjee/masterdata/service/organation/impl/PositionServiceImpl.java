@@ -264,7 +264,7 @@ public class PositionServiceImpl implements PositionService {
         if(!CollectionUtils.isEmpty(positionIds)){
 
             List<Post> posts=postDao.listPostByPisitionId(positionIds);
-            if(Objects.nonNull(posts)){
+            if(!CollectionUtils.isEmpty(posts)){
                 ExceptionCast.cast(CommonCode.POSITION_USED_NY_POST);
             }
             for (Integer positionId : positionIds) {
