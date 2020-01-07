@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -72,10 +73,10 @@ public class UserArchiveController extends BaseController {
     }
 
     @PostMapping("/deleteUserArchive")
-    @ApiOperation(value = "删除员工档案信息")
-    public ResponseResult deleteUserArchive(@RequestBody List<Integer> archiveIds) throws Exception {
-        if (checkParam(archiveIds)) {
-            staffArchiveService.deleteArchiveById(archiveIds);
+    @ApiOperation(value = "删除用户信息,参数List<Map<Integer,Integer>>，map中key为userId，value为archiveId")
+    public ResponseResult deleteUserArchive(@RequestBody Map<Integer,Integer> idsMap) throws Exception {
+        if (checkParam(idsMap)) {
+            userArchiveService.deleteUserArchive(idsMap,getUserSession().getCompanyId());
             return new ResponseResult();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

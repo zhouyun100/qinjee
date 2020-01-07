@@ -9,6 +9,7 @@ import com.qinjee.model.response.ResponseResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 高雄
@@ -34,10 +35,10 @@ public interface UserArchiveService {
 
     /**
      * 删除员工档案信息
-     * @param archiveIds
+     * @param idsMap
      * @return
      */
-    ResponseResult deleteUserArchive(List<Integer> archiveIds);
+    void deleteUserArchive(Map<Integer,Integer> idsMap,Integer companyId);
 
     @Transactional
     void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession);
