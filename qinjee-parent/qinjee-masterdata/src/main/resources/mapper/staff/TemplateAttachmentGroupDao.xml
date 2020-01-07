@@ -21,7 +21,7 @@
         FROM t_attachment_group ag LEFT JOIN t_template_attachment_group tag
         ON ag.group_id = tag.group_id AND tag.template_id = #{templateId,jdbcType=INTEGER}
         WHERE ag.group_type = 'GROUP'
-        <if test="isAll == null or isAll == 0">
+        <if test="isAll != null and isAll == 0">
             AND tag.tag_id IS NOT NULL
         </if>
         and tag.is_delete=0

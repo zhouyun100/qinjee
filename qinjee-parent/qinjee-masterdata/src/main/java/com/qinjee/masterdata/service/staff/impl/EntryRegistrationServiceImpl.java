@@ -16,6 +16,7 @@ import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +94,7 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     @Transactional(rollbackFor = Exception.class)
     public int addTemplateAttachmentGroup(Integer templateId, List<TemplateAttachmentGroup> list, Integer operatorId) {
         int resultCount = 0;
-        List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,1);
+        List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,0);
 
         List<TemplateAttachmentGroup> tempList = new ArrayList<>();
         for(TemplateAttachmentGroupVO groupVO : templateAttachmentGroupVOList){
@@ -109,11 +110,15 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
 
         //删除重复后，剩下需要新增的附件
         list.removeAll(tempList);
-        resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroupBatch(list, operatorId);
+        if(CollectionUtils.isNotEmpty(list)){
+            resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroupBatch(list, operatorId);
+        }
 
         //删除重复后，剩下需要删除的附件
         templateAttachmentGroupVOList.removeAll(tempList);
-        templateAttachmentGroupDao.delTemplateAttachmentGroupList(templateAttachmentGroupVOList, operatorId);
+        if(CollectionUtils.isNotEmpty(templateAttachmentGroupVOList)){
+            templateAttachmentGroupDao.delTemplateAttachmentGroupList(templateAttachmentGroupVOList, operatorId);
+        }
         return resultCount;
     }
 
