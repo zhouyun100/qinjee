@@ -103,28 +103,33 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
     @Override
     @Transactional
+    /**
+     * 1.添加账号（如果已存在则不更新）
+     * 2.关联企业
+     * 3.新增档案（用户在一家企业下只有一份档案）
+     */
     public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+        //根据手机号查找账号表，如果存在则不对账号表进行处理
+        UserInfo userInfo = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
+        if (Objects.isNull(userInfo)) {
+            userInfo = new UserInfo();
+            userInfo.setPhone(userArchiveVo.getPhone());
+            userInfo.setEmail(userArchiveVo.getEmail());
+            userInfo.setCreateTime(new Date());
+            //密码默认手机号后6位
+            String p = StringUtils.substring(userArchiveVo.getPhone(), userArchiveVo.getPhone().length() - 6, userArchiveVo.getPhone().length());
+            userInfo.setPassword(MD5Utils.getMd5(p));
+            userLoginDao.addUserInfo(userInfo);
 
-
-        //构建userInfo对象
-        UserInfo userInfo=new UserInfo();
-        //TODO
-        //userInfo.setUserName(userArchiveVo.getUserName());
-        //校验手机号在同家企业下不能重复
-        int count=userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(),userSession.getCompanyId());
-        if(count>0){
-            ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
+        } else {
+            int count = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
+            if (count > 0) {
+                ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
+            }
         }
-        userInfo.setPhone(userArchiveVo.getPhone());
-        userInfo.setEmail(userArchiveVo.getEmail());
-        userInfo.setCreateTime(new Date());
-        //密码默认手机号后6位
-        String p=StringUtils.substring(userArchiveVo.getPhone(),userArchiveVo.getPhone().length()-6,userArchiveVo.getPhone().length());
-        userInfo.setPassword(MD5Utils.getMd5(p));
-        userLoginDao.addUserInfo ( userInfo );
-        //维护员工企业关系表
 
-        UserCompany userCompany=new UserCompany();
+        //维护员工企业关系表
+        UserCompany userCompany = new UserCompany();
         userCompany.setCreateTime(new Date());
         userCompany.setUserId(userInfo.getUserId());
         userCompany.setCompanyId(userSession.getCompanyId());
@@ -133,15 +138,14 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
 
-
         userArchive.setOperatorId(userSession.getArchiveId());
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
-        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        List<Integer> integers = contractParamDao.selectRuleIdByCompanyId(userSession.getCompanyId());
         try {
-            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId() );
+            String empNumber = employeeNumberRuleService.createEmpNumber(integers.get(0), userArchive.getArchiveId());
             userArchive.setEmployeeNumber(empNumber);
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
@@ -150,23 +154,32 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         return new ResponseResult(userArchive.getArchiveId());
     }
 
+
+    /**
+     * 删除时不要删除账号信息，只将用户当前企业下的档案信息，以及用户企业关系表的信息
+     * @param idsMap
+     * @return
+     */
     @Override
-    public ResponseResult deleteUserArchive(List<Integer> archiveIds) {
-        if (!CollectionUtils.isEmpty(archiveIds)) {
-            for (Integer archiveId : archiveIds) {
-                UserArchive userArchive = new UserArchive();
-                userArchive.setIsDelete((short) 1);
-                userArchive.setArchiveId(archiveId);
-                userArchiveDao.updateByPrimaryKeySelective(userArchive);
-            }
+    public void deleteUserArchive(Map<Integer,Integer> idsMap,Integer companyId) {
+
+        //entry中key为userId，value为archiveId
+        for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
+            //清除企业关联
+            userInfoDao.clearUserCompany(entry.getKey(),companyId);
+            //删除档案
+            UserArchive userArchive = new UserArchive();
+            userArchive.setIsDelete((short) 1);
+            userArchive.setArchiveId(entry.getValue());
+            userArchiveDao.updateByPrimaryKeySelective(userArchive);
+
         }
-        return new ResponseResult();
     }
 
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
-        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId( userSession.getCompanyId(),userArchiveVo.getUserId());
-        userInfoVO.setUserName(userArchiveVo.getUserName());
+        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
+        //userInfoVO.setUserName(userArchiveVo.getUserName());
         userInfoVO.setPhone(userArchiveVo.getPhone());
         userInfoVO.setEmail(userArchiveVo.getEmail());
 
