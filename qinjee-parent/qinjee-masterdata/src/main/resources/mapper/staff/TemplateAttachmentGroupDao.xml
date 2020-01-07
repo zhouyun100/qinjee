@@ -19,13 +19,12 @@
     <select id="searchTemplateAttachmentListByTemplateId" resultMap="TemplateAttachmentGroupResultMap">
         SELECT ag.group_id,ag.group_name,ag.group_type,ag.attachment_number,tag.tag_id,tag.template_id,tag.description,tag.is_must,tag.sort
         FROM t_attachment_group ag LEFT JOIN t_template_attachment_group tag
-        ON ag.group_id = tag.group_id AND tag.template_id = #{templateId,jdbcType=INTEGER}
+        ON tag.template_id = #{templateId,jdbcType=INTEGER} AND ag.group_id = tag.group_id AND tag.is_delete = 0
         WHERE ag.group_type = 'GROUP'
         <if test="isAll == null or isAll == 1">
             AND tag.tag_id IS NOT NULL
+            ORDER BY tag.sort
         </if>
-        and tag.is_delete=0
-        ORDER BY tag.sort
     </select>
 
 
