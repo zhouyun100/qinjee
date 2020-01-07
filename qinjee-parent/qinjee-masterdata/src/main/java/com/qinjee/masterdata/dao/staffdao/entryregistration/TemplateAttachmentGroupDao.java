@@ -27,7 +27,7 @@ public interface TemplateAttachmentGroupDao {
     /**
      * 根据模板ID查询模板附件配置列表
      * @param templateId 模板ID
-     * @param isAll 是否显示全部(1：是[包含系统默认且未配置的信息]，0：否[仅显示模板已配置的附件信息])，默认是1，显示全部
+     * @param isAll 是否显示全部(0：是[包含系统默认且未配置的信息]，1：否[仅显示模板已配置的附件信息])，默认是0，显示全部
      * @return
      */
     List<TemplateAttachmentGroupVO> searchTemplateAttachmentListByTemplateId(Integer templateId, Integer isAll);

@@ -94,7 +94,7 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     @Transactional(rollbackFor = Exception.class)
     public int addTemplateAttachmentGroup(Integer templateId, List<TemplateAttachmentGroup> list, Integer operatorId) {
         int resultCount = 0;
-        List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,0);
+        List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,1);
 
         List<TemplateAttachmentGroup> tempList = new ArrayList<>();
         for(TemplateAttachmentGroupVO groupVO : templateAttachmentGroupVOList){

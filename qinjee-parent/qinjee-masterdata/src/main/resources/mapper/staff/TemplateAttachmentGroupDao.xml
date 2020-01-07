@@ -21,7 +21,7 @@
         FROM t_attachment_group ag LEFT JOIN t_template_attachment_group tag
         ON ag.group_id = tag.group_id AND tag.template_id = #{templateId,jdbcType=INTEGER}
         WHERE ag.group_type = 'GROUP'
-        <if test="isAll != null and isAll == 0">
+        <if test="isAll == null or isAll == 1">
             AND tag.tag_id IS NOT NULL
         </if>
         and tag.is_delete=0
@@ -169,7 +169,7 @@
     <update id="delTemplateAttachmentGroupList">
         update t_template_attachment_group set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
         where tag_id in
-        <foreach collection="list" item="item" open="(" close=")" separator=";" >
+        <foreach collection="list" item="item" open="(" close=")" separator="," >
             #{item.tagId,jdbcType=INTEGER}
         </foreach>
     </update>
