@@ -13,10 +13,7 @@ package com.qinjee.masterdata.service.custom.impl;
 import com.qinjee.masterdata.dao.custom.TemplateCustomTableFieldDao;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.SaveTemplateVo;
-import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
-import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
-import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
-import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
+import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
@@ -165,11 +162,10 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
     public List < EntryRegistrationTableVO > handlerCustomTableGroupFieldList(List < EntryRegistrationTableVO > entryRegistrationTableList, Map < Integer, String > mapValue) {
         if (CollectionUtils.isNotEmpty ( entryRegistrationTableList )) {
             for (EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableList) {
-                List < CustomFieldVO > fieldList = entryRegistrationTableVO.getCustomFieldVOList ();
-                /**
-                 * 处理自定义表字段数据回填
-                 */
-                customTableFieldService.handlerCustomTableGroupFieldList ( fieldList, mapValue );
+                List < CustomFieldVO > customFieldVOS = customTableFieldService.selectFieldListByTableId ( entryRegistrationTableVO.getTableId () );
+                //处理自定义表字段数据回填
+                customTableFieldService.handlerCustomTableGroupFieldList ( customFieldVOS, mapValue );
+                entryRegistrationTableVO.setCustomFieldVOList ( customFieldVOS );
             }
         }
         return entryRegistrationTableList;
@@ -209,8 +205,10 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
             templateCustomTableFieldDao.addTemplateTable ( saveTemplateVo.getTemplateId (), saveTemplateVo.getTemplateCustomTableList (), archiveId );
             //新增表字段
             for (TemplateCustomTableVO templateCustomTableVO : saveTemplateVo.getTemplateCustomTableList ()) {
-                templateCustomTableFieldDao.addTemplateTableField ( saveTemplateVo.getTemplateId (),
-                        templateCustomTableVO.getFieldList (), archiveId );
+                if(CollectionUtils.isNotEmpty ( templateCustomTableVO.getFieldList () )) {
+                    templateCustomTableFieldDao.addTemplateTableField ( saveTemplateVo.getTemplateId (),
+                            templateCustomTableVO.getFieldList (), archiveId );
+                }
             }
         }
     }

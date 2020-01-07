@@ -11,6 +11,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.file.IFileOperateService;
@@ -49,8 +50,10 @@ import java.util.stream.Collectors;
 public class FileOperateServiceImpl implements IFileOperateService {
     @Autowired
     private AttachmentRecordDao attachmentRecordDao;
+
     @Autowired
     private UserArchiveDao userArchiveDao;
+
     @Autowired
     private RedisClusterService redisClusterService;
 
@@ -213,14 +216,14 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteFile(List<Integer> id ,Integer companyId) {
+    public void deleteFile(DeleteFileVo deleteFileVo) {
         //删除文件
-        List < AttachmentRecord > list = attachmentRecordDao.selectByList ( id );
+        List < AttachmentRecord > list = attachmentRecordDao.selectByList (deleteFileVo.getList ());
         for (AttachmentRecord attachmentRecord : list) {
             UpAndDownUtil.delFile ( attachmentRecord.getAttachmentUrl ());
         }
         //删除记录
-        attachmentRecordDao.deleteFile (id,companyId);
+        attachmentRecordDao.deleteFile (deleteFileVo.getList (),deleteFileVo.getCompanyId ());
     }
 
     @Override

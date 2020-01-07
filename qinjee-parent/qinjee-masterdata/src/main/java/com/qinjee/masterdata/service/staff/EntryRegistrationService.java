@@ -104,6 +104,9 @@ public interface EntryRegistrationService {
      * @return
      */
     int sortTemplateAttachmentGroup(List<TemplateAttachmentGroup> templateAttachmentGroupList, Integer operatorId);
-
+    /**
+     * 根据模板id删除附件记录
+     */
+    void deleteTemplateAttachmentGroupById(Integer templateId, Integer archiveId);
 
 }

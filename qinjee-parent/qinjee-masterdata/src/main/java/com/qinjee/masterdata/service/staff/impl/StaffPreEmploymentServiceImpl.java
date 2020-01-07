@@ -2,8 +2,8 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
-import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
@@ -62,7 +62,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private ContractParamDao contractParamDao;
     @Autowired
-    private CustomArchiveTableDataDao customArchiveTableDataDao;
+    private AttachmentRecordDao attachmentRecordDao;
 
 
     /**
@@ -120,11 +120,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                       }
                       userArchive.setEmployeeNumber ( empNumber );
                       userArchiveDao.updateByPrimaryKeySelective ( userArchive );
-                      //更改其它子集的
-                      //根据companyid与预入职id找到customData对象
-                      List<CustomArchiveTableData> list=
-                              customArchiveTableDataDao.selectByBusinessIdAndCompanyId(preEmployment.getEmploymentId (),userSession.getCompanyId ());
-
+                     //将附件信息同步到档案
+                      List<AttachmentRecord> list=attachmentRecordDao.selectByBuinessId(preEmployment.getEmploymentId (),"employment",userSession.getCompanyId ());
+                      for (AttachmentRecord attachmentRecord : list) {
+                          attachmentRecord.setBusinessType ( "archive" );
+                          attachmentRecord.setBusinessId ( userArchive.getArchiveId () );
+                          attachmentRecord.setBusinessModule ( "ARC" );
+                          attachmentRecord.setOperatorId ( userSession.getArchiveId () );
+                      }
+                      attachmentRecordDao.updateByPrimaryKeySelectiveList (list);
                   }
                 }
             }
@@ -285,7 +289,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void confirmEmployment(List < Integer > list, UserSession userSession) throws Exception {
+    public void confirmEmployment(List < Integer > list, UserSession userSession)  {
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
         statusChangeVo.setPreEmploymentList ( list );
         statusChangeVo.setAbandonReason ( "" );

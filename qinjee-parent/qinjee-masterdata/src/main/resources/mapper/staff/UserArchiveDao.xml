@@ -1156,5 +1156,13 @@
     where arc.company_id=#{companyId}
     and arc.is_delete=0
   </select>
+  <select id="selectEmployNumberByCompanyId" resultType="java.lang.String">
+    select employee_number
+    from t_user_archive
+    where company_id=#{companyId}
+    and employee_number=#{employeeNumber}
+    and is_delete=0
+
+  </select>
 </mapper>
 

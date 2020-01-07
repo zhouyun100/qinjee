@@ -308,6 +308,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setArchiveId ( archiveId );
                                 setUserIdByPhone ( userSession, userArchive );
+                                checkEmployeeNumber(userSession,userArchive);
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             } else {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
@@ -323,6 +324,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 userArchiveDao.insertSelective ( userArchive );
                                 List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
                                 employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
+                                checkEmployeeNumber ( userSession, userArchive );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             }
                                 list.add ( userArchive.getArchiveId () );
@@ -438,6 +440,15 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             return null;
         }
 
+    }
+
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
+        List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+        if(CollectionUtils.isEmpty ( employnumberList )){
+            userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
+        }else{
+            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        }
     }
 
     private void setUserIdByPhone(UserSession userSession, UserArchive userArchive) {

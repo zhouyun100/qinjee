@@ -287,6 +287,8 @@ public interface CustomTableFieldDao {
 
 
     List< Integer> selectTableIdByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String pre);
+
+    List< CustomFieldVO> selectFieldListByTableId(Integer tableId);
 }
 
 

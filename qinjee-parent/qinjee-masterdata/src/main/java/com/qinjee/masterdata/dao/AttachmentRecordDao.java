@@ -46,4 +46,8 @@ public interface AttachmentRecordDao {
     void moveFile(@Param("attachmentId") Integer attachmentId, @Param("groupId") Integer groupId, @Param("companyId") Integer companyId);
 
     List< AttchmentRecordVo> selectFileFromPackage(@Param("businessId") Integer businessId, @Param("groupId") Integer groupId, @Param("companyId") Integer companyId);
+
+    List<AttachmentRecord> selectByBuinessId(@Param("employmentId") Integer employmentId, @Param("type") String employment, @Param("companyId") Integer companyId);
+
+    void updateByPrimaryKeySelectiveList(@Param("list") List< AttachmentRecord> list);
 }

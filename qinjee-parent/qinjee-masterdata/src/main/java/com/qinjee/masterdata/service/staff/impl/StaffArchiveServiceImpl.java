@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
@@ -18,6 +19,7 @@ import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,11 +90,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
-        try {
-            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
-        } catch (Exception e) {
-            e.printStackTrace ();
+        if(userArchive.getEmployeeNumber ()!=null){
+            List<String> list=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+            if(CollectionUtils.isEmpty ( list )){
+                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
+            }else{
+                ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+            }
         }
+            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+
     }
 
     @Override
@@ -135,7 +142,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         userArchiveDao.insertSelective ( userArchive );
         List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
         String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
-        userArchive.setEmployeeNumber ( empNumber );
+        List<String> list=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),empNumber);
+        if(CollectionUtils.isEmpty ( list )){
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        }
         userArchiveDao.insertSelective ( userArchive );
     }
 

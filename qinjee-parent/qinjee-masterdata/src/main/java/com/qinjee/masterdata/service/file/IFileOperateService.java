@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.file;
 
 import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public interface IFileOperateService {
     /**
      * 删除文件(逻辑删除)
      */
-    void deleteFile(List<Integer> id,Integer companyId);
+    void deleteFile(DeleteFileVo deleteFileVo);
     /**
      * 展示附件列表
      */

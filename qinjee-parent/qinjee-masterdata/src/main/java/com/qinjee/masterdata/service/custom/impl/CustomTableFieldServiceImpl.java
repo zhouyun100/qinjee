@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
@@ -58,6 +59,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Autowired
     private SysDictService sysDictService;
+
+    @Autowired
+    private SysDictDao sysDictDao;
 
     @Override
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
@@ -421,6 +425,12 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
+    public List < CustomFieldVO > selectFieldListByTableId(Integer tableId) {
+        return customTableFieldDao.selectFieldListByTableId(tableId);
+
+    }
+
+    @Override
     public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue) {
 
         if(customTable != null && !org.springframework.util.CollectionUtils.isEmpty(mapValue)){
@@ -451,6 +461,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             for(CustomFieldVO fieldVO : customFieldList){
                 if(StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())){
                     sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
+                    List < SysDict > sysDicts = sysDictDao.searchSysDictList(sysDict);
+                    fieldVO.setDictList ( sysDicts );
                     if(sysDict != null){
                         fieldVO.setDefaultValue ( mapValue.get ( fieldVO.getFieldId () ) );
                         fieldVO.setChDefaultValue(sysDict.getDictValue());

@@ -83,4 +83,6 @@ public interface TemplateAttachmentGroupDao {
      * @return
      */
     int delTemplateAttachmentGroupList(List<TemplateAttachmentGroupVO> list, Integer operatorId);
+
+    void deleteTemplateAttachmentGroupById(@Param("templateId") Integer templateId, @Param("archiveId") Integer archiveId);
 }

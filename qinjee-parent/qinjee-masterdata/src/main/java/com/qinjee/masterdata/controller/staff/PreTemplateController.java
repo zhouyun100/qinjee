@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
+import com.qinjee.masterdata.model.vo.InsertTemplateAttachmentVo;
 import com.qinjee.masterdata.model.vo.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
@@ -16,7 +17,6 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,19 +256,17 @@ public class PreTemplateController extends BaseController {
     }
     /**
      * 新增模板附件信息
-     * @param list 附件组信息
+     * @param insertTemplateAttachmentVo 附件组信息
      * @return
      */
     @CrossOrigin
     @RequestMapping(value = "/addTemplateAttachmentGroup", method = RequestMethod.POST)
     @ApiOperation(value = "新增模板附件信息", notes = "hkt")
-    public ResponseResult addTemplateAttachmentGroup(@RequestBody List<TemplateAttachmentGroup> list) {
-        Boolean b = checkParam ( list );
+    public ResponseResult addTemplateAttachmentGroup(@RequestBody InsertTemplateAttachmentVo insertTemplateAttachmentVo) {
+        Boolean b = checkParam ( insertTemplateAttachmentVo, getUserSession () );
         if (b) {
-            Integer templateId;
-            if(CollectionUtils.isNotEmpty(list)){
-                templateId = list.get(0).getTemplateId();
-                entryRegistrationService.addTemplateAttachmentGroup(templateId, list, userSession.getArchiveId() );
+            if (checkParam ( insertTemplateAttachmentVo.getTemplatedId () )) {
+                entryRegistrationService.addTemplateAttachmentGroup ( insertTemplateAttachmentVo.getTemplatedId (), insertTemplateAttachmentVo.getList (), getUserSession ().getArchiveId () );
                 return new ResponseResult <> ( null, CommonCode.SUCCESS );
             }
         }

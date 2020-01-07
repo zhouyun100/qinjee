@@ -99,4 +99,10 @@ public interface CustomTableFieldService {
      */
     List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(Integer companyId, String funcCode);
 
+    /**
+     * 根据tableId找到自定义字段
+     * @param tableId
+     * @return
+     */
+    List< CustomFieldVO> selectFieldListByTableId(Integer tableId);
 }

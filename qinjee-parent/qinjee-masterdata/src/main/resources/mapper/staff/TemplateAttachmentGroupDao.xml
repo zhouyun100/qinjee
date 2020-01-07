@@ -172,4 +172,9 @@
             #{item.tagId,jdbcType=INTEGER}
         </foreach>
     </update>
+    <update id="deleteTemplateAttachmentGroupById">
+         update t_template_attachment_group
+         set is_delete = 1,operator_id = #{archiveId,jdbcType=INTEGER}
+         where template_id=#{templateId}
+    </update>
 </mapper>

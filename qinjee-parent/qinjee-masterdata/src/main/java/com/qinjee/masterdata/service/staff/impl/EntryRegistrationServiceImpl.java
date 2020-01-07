@@ -136,5 +136,10 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
         return resultCount;
     }
 
+    @Override
+    public void deleteTemplateAttachmentGroupById(Integer templateId, Integer archiveId) {
+        templateAttachmentGroupDao.deleteTemplateAttachmentGroupById(templateId,archiveId);
+    }
+
 
 }

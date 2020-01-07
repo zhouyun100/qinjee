@@ -100,10 +100,9 @@ public class FileController extends BaseController {
     public ResponseResult deleteFile(@RequestBody DeleteFileVo deleteFileVo) {
         Boolean b = checkParam(deleteFileVo);
         if(b) {
-                if(checkParam ( deleteFileVo.getCompanyId () )){
-                    fileOperateService.deleteFile (deleteFileVo.getList (),deleteFileVo.getCompanyId () );
-                }else{
-                    fileOperateService.deleteFile ( deleteFileVo.getList (),getUserSession ().getCompanyId () );
+                if(!checkParam ( deleteFileVo.getCompanyId () )){
+                    deleteFileVo.setCompanyId ( getUserSession ().getCompanyId () );
+                    fileOperateService.deleteFile (deleteFileVo );
                 }
                 return new ResponseResult <> (null, CommonCode.SUCCESS );
         }
@@ -182,7 +181,6 @@ public class FileController extends BaseController {
     public ResponseResult< List<AttchmentRecordVo>> showPreFile(@RequestParam Integer companyId,Integer preId,HttpServletResponse response) {
         Boolean b = checkParam(companyId,preId);
         if(b) {
-
                 response.setHeader ( "Access-Control-Allow-Origin","*" );
                 List < AttchmentRecordVo> list  = fileOperateService.selectPreAttach (companyId,preId );
                     return new ResponseResult<>  (list, CommonCode.SUCCESS);
