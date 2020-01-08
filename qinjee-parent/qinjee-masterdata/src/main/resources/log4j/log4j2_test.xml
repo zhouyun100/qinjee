@@ -15,7 +15,7 @@
         </Console>
 
         <RollingRandomAccessFile name="rolling_file" fileName="${log_home}/${file_name}.log"
-                                 filePattern="${log_home}/$${date:yyyy-MM-dd}/${file_name}-%d{yyyy-MM-dd HH-mm}-%i.log">
+                                 filePattern="${log_home}/$${date:yyyy-MM-dd}/${file_name}-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${pattern_layout}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>

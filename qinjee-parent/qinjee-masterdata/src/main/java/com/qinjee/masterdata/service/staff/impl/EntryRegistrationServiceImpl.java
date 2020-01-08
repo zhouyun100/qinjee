@@ -97,24 +97,26 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
         //查询模板中的附件信息
         List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,1);
         //筛选出已经存在的附件信息
-        List<TemplateAttachmentGroup> tempList = new ArrayList<>();
-        for(TemplateAttachmentGroupVO groupVO : templateAttachmentGroupVOList){
-            list.stream().filter(group ->{
-                if(group.getGroupId().equals(groupVO.getGroupId())){
-                    tempList.add(group);
-                    return true;
-                }else{
-                    return false;
+        List<TemplateAttachmentGroup> groupTempList = new ArrayList<>();
+        List<TemplateAttachmentGroupVO> groupVOTempList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list) && CollectionUtils.isNotEmpty(templateAttachmentGroupVOList)){
+            for(TemplateAttachmentGroupVO groupVO : templateAttachmentGroupVOList){
+                for(TemplateAttachmentGroup group : list){
+                    if(group.getGroupId().equals(groupVO.getGroupId())){
+                        groupTempList.add(group);
+                        groupVOTempList.add(groupVO);
+                    }
                 }
-            }).collect(Collectors.toList());
+            }
         }
+
         //删除重复后，剩下需要新增的附件
-        list.removeAll(tempList);
+        list.removeAll(groupTempList);
         if(CollectionUtils.isNotEmpty(list)){
             resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroupBatch(list, operatorId);
         }
         //删除重复后，剩下需要删除的附件
-        templateAttachmentGroupVOList.removeAll(tempList);
+        templateAttachmentGroupVOList.removeAll(groupVOTempList);
         if(CollectionUtils.isNotEmpty(templateAttachmentGroupVOList)){
             templateAttachmentGroupDao.delTemplateAttachmentGroupList(templateAttachmentGroupVOList, operatorId);
         }
