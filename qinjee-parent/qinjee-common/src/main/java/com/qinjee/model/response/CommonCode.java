@@ -52,7 +52,8 @@ public enum CommonCode implements ResultCode{
     PHONE_ALREADY_EXIST(false,10324, "手机号已存在"),
     PARAM_IS_NULL(false,10325, "参数表为空不能进行生成工号"),
     STAFF_IS_EXIST(false,10326, "此人员已经在档案信息中存在"),
-    STANDINGBOOK_IS_EMPTY(false,10327, "台账无内容");
+    STANDINGBOOK_IS_EMPTY(false,10327, "台账无内容"),
+    ORG_HAVE_POST(false,10328, "机构下存在岗位");
 
 
     /**
