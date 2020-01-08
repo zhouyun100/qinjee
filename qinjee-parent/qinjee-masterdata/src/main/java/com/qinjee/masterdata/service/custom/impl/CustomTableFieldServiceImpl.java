@@ -455,19 +455,18 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Override
     public void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList, Map<Integer, String> mapValue) {
         if(CollectionUtils.isNotEmpty(customFieldList)){
-            SysDict sysDict;
             for(CustomFieldVO fieldVO : customFieldList){
+                fieldVO.setDefaultValue ( mapValue.get ( fieldVO.getFieldId () ) );
                 if(StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())){
-                    sysDict = sysDictService.searchSysDictByTypeAndCode(fieldVO.getCode(),mapValue.get(fieldVO.getFieldId()));
-                    List < SysDict > sysDicts = sysDictDao.searchSysDictList(sysDict);
-                    fieldVO.setDictList ( sysDicts );
-                    if(sysDict != null){
-                        fieldVO.setDefaultValue ( mapValue.get ( fieldVO.getFieldId () ) );
-                        fieldVO.setChDefaultValue(sysDict.getDictValue());
+                    List < SysDict > dictList = sysDictService.searchSysDictListByDictType ( fieldVO.getCode () );
+                    for (SysDict dict : dictList) {
+                        if(dict.getDictType ().equals ( fieldVO.getCode () )){
+                            fieldVO.setChDefaultValue(dict.getDictValue());
+                        }
                     }
+                    fieldVO.setDictList ( dictList );
                 }else{
                     fieldVO.setChDefaultValue ( mapValue.get(fieldVO.getFieldId()) );
-                    fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
                 }
             }
         }
