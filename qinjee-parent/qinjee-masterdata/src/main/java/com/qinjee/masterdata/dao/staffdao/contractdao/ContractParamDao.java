@@ -41,4 +41,6 @@ public interface ContractParamDao {
 
 
     List< Integer> selectRuleIdByCompanyId(@Param("companyId") Integer companyId);
+
+
 }

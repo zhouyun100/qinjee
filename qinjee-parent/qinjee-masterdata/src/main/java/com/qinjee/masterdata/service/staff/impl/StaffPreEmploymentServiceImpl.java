@@ -74,7 +74,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo)  {
+    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo) throws Exception {
         String changeState = statusChangeVo.getChangeState ();
         List < Integer > preEmploymentList = statusChangeVo.getPreEmploymentList ();
         for (Integer preEmploymentId : preEmploymentList) {
@@ -111,14 +111,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                       //目前一家公司只有一个参数表
                       userArchive.setUserId ( userId );
                       userArchiveDao.insertSelective ( userArchive );
-                      List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-                      String empNumber = null;
-                      try {
-                          empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
-                      } catch (Exception e) {
-                          e.printStackTrace ();
-                      }
-                      userArchive.setEmployeeNumber ( empNumber );
+
+                      checkEmployeeNumber ( userSession,userArchive );
                       userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                      //将附件信息同步到档案
                       List<AttachmentRecord> list=attachmentRecordDao.selectByBuinessId(preEmployment.getEmploymentId (),"employment",userSession.getCompanyId ());
@@ -217,7 +211,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deletePreEmployment(List < Integer > list) throws Exception {
+    public void deletePreEmployment(List < Integer > list){
         preEmploymentDao.deletePreEmploymentList ( list );
     }
 
@@ -289,11 +283,21 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void confirmEmployment(List < Integer > list, UserSession userSession)  {
+    public void confirmEmployment(List < Integer > list, UserSession userSession) throws Exception {
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
         statusChangeVo.setPreEmploymentList ( list );
         statusChangeVo.setAbandonReason ( "" );
         statusChangeVo.setChangeState ( CHANGSTATUS_READY );
         insertStatusChange ( userSession, statusChangeVo );
+    }
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
+        List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+        if(CollectionUtils.isEmpty ( employnumberList )){
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        }
     }
 }

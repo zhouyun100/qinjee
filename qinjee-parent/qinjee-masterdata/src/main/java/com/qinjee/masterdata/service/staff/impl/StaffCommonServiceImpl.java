@@ -440,14 +440,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     }
 
-    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-        List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-        if(CollectionUtils.isEmpty ( employnumberList )){
-            userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
-        }else{
-            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
+            List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
+            List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+            if(CollectionUtils.isEmpty ( employnumberList )){
+                userArchive.setEmployeeNumber ( empNumber );
+            }else{
+                ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+            }
         }
-    }
 
     private void setUserIdByPhone(UserSession userSession, UserArchive userArchive) {
         if (userArchive.getPhone () != null) {
