@@ -286,11 +286,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                                 declaredField.set ( userArchive, String.valueOf (s1) );
                                             } else if (map1.get ( "text_type" ).equals ( "code" )) {
                                                 String s = declaredField.getType ().toString ();
-                                                int i = s.lastIndexOf ( "." );
-                                                s.substring ( i + 1 );
-                                                if ("Integer".equals ( s )) {
-                                                    declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
-                                                } else if ("String".equals ( s )) {
+                                                if (s.contains ( "Integer" )) {
+                                                    declaredField.set ( userArchive, Integer.parseInt (s1) );
+                                                } else if (s.contains ( "String" )) {
                                                     declaredField.set ( userArchive, s1 );
                                                 }
                                             } else if (map1.get ( "text_type" ).equals ( "number" )) {

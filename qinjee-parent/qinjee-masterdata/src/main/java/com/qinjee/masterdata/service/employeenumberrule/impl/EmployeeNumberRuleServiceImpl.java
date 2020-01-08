@@ -101,7 +101,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     @Override
     public List < EmployeeNumberRule > showCreateEmpRule(UserSession userSession) {
        return employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () );
-
     }
 
     private String getString( CreatNumberVo creatNumberVo) throws Exception {
@@ -152,11 +151,11 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         return null;
     }
 
-    private String getDigtaNumber(short capacity, Integer number) throws Exception {
+    private String getDigtaNumber(short capacity, Integer number)  {
         String t = "";
         String s = String.valueOf(number);
         if (s.length() > capacity) {
-            throw new Exception("sorry,你选的位数不够");
+           ExceptionCast.cast ( CommonCode.ARCHIVEID_IS_TOOLONG );
         }
         if (s.length() == capacity) {
             return String.valueOf(number);

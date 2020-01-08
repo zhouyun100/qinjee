@@ -53,9 +53,10 @@ public enum CommonCode implements ResultCode{
     PARAM_IS_NULL(false,10325, "参数表为空不能进行生成工号"),
     STAFF_IS_EXIST(false,10326, "此人员已经在档案信息中存在"),
     STANDINGBOOK_IS_EMPTY(false,10327, "台账无内容"),
-    ORG_HAVE_POST(false,10328, "机构下存在岗位");
-    STANDINGBOOK_IS_EMPTY(false,10327, "台账无内容"),
-    EMPLOYEENUMBER_IS_EXIST(false,10328, "工号已存在，请重新操作");
+    ORG_HAVE_POST(false,10328, "机构下存在岗位"),
+    EMPLOYEENUMBER_IS_EXIST(false,10328, "工号已存在，请重新操作"),
+    ARCHIVEID_IS_TOOLONG(false,10329, "请增加规则容量");
+
 
 
     /**

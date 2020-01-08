@@ -8,7 +8,6 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
@@ -81,8 +80,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private BlacklistDao blacklistDao;
     @Autowired
     private RedisClusterService redisClusterService;
-    @Autowired
-    private QuerySchemeDao querySchemeDao;
     @Autowired
     private IStaffArchiveService staffArchiveService;
     @Autowired
@@ -606,21 +603,28 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             map = new HashMap <> ();
             if (ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName ) ||
                     ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName )) {
-                Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
-                map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "org_id" ) ) );
+                if(null!=value && !"null".equals ( value )) {
+                    Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+                    map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "org_id" ) ) );
+                }
             } else if (SUPORCODE.equals ( fieldName ) || SUPVISORUSERNAME.equals ( fieldName )) {
-                Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
-                map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "supervisor_id" ) ) );
+                if(null!=value && !"null".equals ( value )) {
+                    Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
+                    map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "archive_id" ) ) );
+                }
             } else if (POSTCODE.equals ( fieldName ) || POSTNAME.equals ( fieldName )) {
-                Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
-                map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "post_id" ) ) );
+                if(null!=value && !"null".equals ( value )) {
+                    Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
+                    map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "post_id" ) ) );
+                }
             } else {
                 Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode ( fieldName, companyId, funcCode );
-                if (integer != null && integer != 0) {
+                if (integer != null && integer != 0 && null!=value && !"null".equals ( value ) ) {
                     map.put ( integer, value );
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace ();
             ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
         }
         return map;

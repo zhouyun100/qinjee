@@ -62,7 +62,6 @@
 
     <!-- 根据企业ID和模板ID查询自定义表列表 -->
     <select id="searchTableListByCompanyIdAndTemplateId" resultMap="TableResultMap">
-
         SELECT
         cat.table_id,
         cat.table_name,
@@ -73,14 +72,13 @@
         FROM
         t_custom_archive_table cat
         LEFT JOIN t_template_custom_table tct ON cat.table_id = tct.table_id
+        and  tct.template_id = #{templateId}
+        AND tct.is_delete = 0
         WHERE
         cat.company_id =#{companyId}
         AND cat.func_code = 'PRE'
         AND cat.is_enable = 1
         AND cat.is_delete = 0
-        and tct.template_id is null
-        or tct.template_id = #{templateId}
-        AND tct.is_delete = 0
     </select>
 
 

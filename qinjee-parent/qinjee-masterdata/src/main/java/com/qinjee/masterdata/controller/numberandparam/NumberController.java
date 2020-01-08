@@ -36,12 +36,8 @@ public class NumberController extends BaseController {
     public ResponseResult insertContractParam(@Valid ContractParamVo contractParamVo) {
         Boolean b = checkParam(contractParamVo, getUserSession());
         if (b) {
-            try {
                 employeeNumberRuleService.addContractParam(contractParamVo,getUserSession());
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("新增合同参数表失败");
-            }
         }
         return failResponseResult("合同参数表参数错误或者session错误");
     }
@@ -54,12 +50,8 @@ public class NumberController extends BaseController {
     public ResponseResult insertEmployNumber(@Valid EmployeeNumberRuleVo employeeNumberRuleVo) {
         Boolean b = checkParam(employeeNumberRuleVo, getUserSession());
         if (b) {
-            try {
                 employeeNumberRuleService.addEmployeeNumberRule(employeeNumberRuleVo,getUserSession());
                 return ResponseResult.SUCCESS();
-            } catch (Exception e) {
-                return failResponseResult("新增工号表失败");
-            }
         }
         return failResponseResult("工号表错误或者session错误");
     }
@@ -69,16 +61,11 @@ public class NumberController extends BaseController {
     @RequestMapping(value = "/creatConNumber", method = RequestMethod.POST)
     @ApiOperation(value = "生成合同编号", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult<String> creatConNumber( Integer ruleId) {
+    public ResponseResult<String> creatConNumber( Integer ruleId) throws Exception {
         Boolean b = checkParam(ruleId, getUserSession());
         if (b) {
-            try {
                 String number = employeeNumberRuleService.createConNumber(ruleId, getUserSession());
                 return new ResponseResult<>(number, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace ();
-                return failResponseResult("生成合同编号失败");
-            }
         }
         return failResponseResult("生成合同编号错误或者session错误");
     }
@@ -88,16 +75,11 @@ public class NumberController extends BaseController {
     @RequestMapping(value = "/creatNumberPre", method = RequestMethod.POST)
     @ApiOperation(value = "生成工号", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult<String> creatNumberPre( Integer ruleId,Integer archiveId) {
+    public ResponseResult<String> creatNumberPre( Integer ruleId,Integer archiveId) throws Exception {
         Boolean b = checkParam(ruleId,archiveId);
         if (b) {
-            try {
                 String number = employeeNumberRuleService.createEmpNumber (ruleId,archiveId);
                 return new ResponseResult<>(number, CommonCode.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace ();
-                return failResponseResult("生成工号失败");
-            }
         }
         return failResponseResult("生成工号错误或者session错误");
     }
@@ -110,17 +92,8 @@ public class NumberController extends BaseController {
     public ResponseResult< List < ContractParam > > showCreateConRule() {
         Boolean b = checkParam( getUserSession());
         if (b) {
-            try {
                 List < ContractParam > contractParams = employeeNumberRuleService.showCreateConRule ( getUserSession () );
-                if(contractParams.size ()>0) {
                     return new ResponseResult <> ( contractParams, CommonCode.SUCCESS );
-                }else{
-                    return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
-                }
-            } catch (Exception e) {
-                e.printStackTrace ();
-                return failResponseResult("展示失败");
-            }
         }
         return failResponseResult("session错误");
     }
@@ -133,17 +106,8 @@ public class NumberController extends BaseController {
     public ResponseResult< List < EmployeeNumberRule > > showCreateEmpRule() {
         Boolean b = checkParam( getUserSession());
         if (b) {
-            try {
                 List < EmployeeNumberRule > contractParams = employeeNumberRuleService.showCreateEmpRule ( getUserSession () );
-                if(contractParams.size ()>0) {
                     return new ResponseResult <> ( contractParams, CommonCode.SUCCESS );
-                }else{
-                    return new ResponseResult <> ( null,CommonCode.FAIL_VALUE_NULL );
-                }
-            } catch (Exception e) {
-                e.printStackTrace ();
-                return failResponseResult("展示失败");
-            }
         }
         return failResponseResult("session错误");
     }

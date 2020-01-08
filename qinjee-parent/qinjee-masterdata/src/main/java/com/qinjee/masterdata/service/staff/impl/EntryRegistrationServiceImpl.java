@@ -94,8 +94,9 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     @Transactional(rollbackFor = Exception.class)
     public int addTemplateAttachmentGroup(Integer templateId, List<TemplateAttachmentGroup> list, Integer operatorId) {
         int resultCount = 0;
+        //查询模板中的附件信息
         List<TemplateAttachmentGroupVO> templateAttachmentGroupVOList = templateAttachmentGroupDao.searchTemplateAttachmentListByTemplateId(templateId,1);
-
+        //筛选出已经存在的附件信息
         List<TemplateAttachmentGroup> tempList = new ArrayList<>();
         for(TemplateAttachmentGroupVO groupVO : templateAttachmentGroupVOList){
             list.stream().filter(group ->{
@@ -107,13 +108,11 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
                 }
             }).collect(Collectors.toList());
         }
-
         //删除重复后，剩下需要新增的附件
         list.removeAll(tempList);
         if(CollectionUtils.isNotEmpty(list)){
             resultCount += templateAttachmentGroupDao.addTemplateAttachmentGroupBatch(list, operatorId);
         }
-
         //删除重复后，剩下需要删除的附件
         templateAttachmentGroupVOList.removeAll(tempList);
         if(CollectionUtils.isNotEmpty(templateAttachmentGroupVOList)){

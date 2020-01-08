@@ -254,6 +254,8 @@ public class PreTemplateController extends BaseController {
         }
         return failResponseResult ( "参数错误或者session错误" );
     }
+
+
     /**
      * 新增模板附件信息
      * @param insertTemplateAttachmentVo 附件组信息
@@ -267,6 +269,7 @@ public class PreTemplateController extends BaseController {
         if (b) {
             if (checkParam ( insertTemplateAttachmentVo.getTemplatedId () )) {
                 entryRegistrationService.addTemplateAttachmentGroup ( insertTemplateAttachmentVo.getTemplatedId (), insertTemplateAttachmentVo.getList (), getUserSession ().getArchiveId () );
+
                 return new ResponseResult <> ( null, CommonCode.SUCCESS );
             }
         }

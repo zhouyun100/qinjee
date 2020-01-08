@@ -63,8 +63,13 @@ public class ImportAndExportStaffController extends BaseController {
     public ResponseResult< CheckImportVo > importFileAndCheckFileARC(@RequestParam("file") MultipartFile multipartFile,Integer isSystemDefine) throws Exception {
         Boolean b = checkParam(multipartFile,getUserSession (),isSystemDefine);
         if(b) {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession (),isSystemDefine );
-                return new ResponseResult<>  (checkImportVo, CommonCode.SUCCESS);
+            CheckImportVo checkImportVo = null;
+            try {
+                checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession (),isSystemDefine );
+            } catch (Exception e) {
+                e.printStackTrace ();
+            }
+            return new ResponseResult<>  (checkImportVo, CommonCode.SUCCESS);
         }
         return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
     }
