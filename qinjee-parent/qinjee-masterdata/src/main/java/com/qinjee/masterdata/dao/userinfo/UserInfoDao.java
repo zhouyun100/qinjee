@@ -4,6 +4,8 @@ import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 /**
  * @program: eTalent
  * @description:
@@ -17,6 +19,6 @@ public interface UserInfoDao {
     Integer getUserByPhoneAndCompanyId(String phone, Integer companyId);
     UserInfo getUserByPhone(String phone);
 
-    int clearUserCompany(Integer userId,Integer companyId);
+    int clearUserCompany(Integer userId, Integer companyId, Date date);
 
 }

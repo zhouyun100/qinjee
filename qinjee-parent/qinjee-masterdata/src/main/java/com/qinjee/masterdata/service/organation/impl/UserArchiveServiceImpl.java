@@ -172,11 +172,12 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
             //清除企业关联
-            userInfoDao.clearUserCompany(entry.getKey(),companyId);
+            userInfoDao.clearUserCompany(entry.getKey(),companyId,new Date());
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);
             userArchive.setArchiveId(entry.getValue());
+            userArchive.setUpdateTime(new Date());
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
 
         }
