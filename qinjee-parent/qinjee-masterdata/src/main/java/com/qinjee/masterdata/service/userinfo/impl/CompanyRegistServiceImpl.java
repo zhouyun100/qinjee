@@ -84,14 +84,9 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 //添加登录用户信息
                 userInfo = new UserInfo();
                 userInfo.setPhone(phone);
-                userInfo.setUserName(userName);
                 int phoneLength = phone.length();
                 userInfo.setPassword(MD5Utils.getMd5(phone.substring(phoneLength-6,phoneLength)));
                 companyRegistDao.addUserInfo(userInfo);
-            }else{
-                if(StringUtils.isBlank(userInfo.getUserName())){
-                    userInfo.setUserName(userName);
-                }
             }
             Integer userId = userInfo.getUserId();
 
