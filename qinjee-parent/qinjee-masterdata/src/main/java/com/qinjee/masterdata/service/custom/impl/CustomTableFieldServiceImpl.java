@@ -439,9 +439,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             if(CollectionUtils.isNotEmpty(groupList)){
                 for(CustomGroupVO groupVO : groupList){
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
-                    /**
-                     * 处理自定义组字段数据回填
-                     */
+                    //处理自定义组字段数据回填
                     handlerCustomTableGroupFieldList(fieldList,mapValue);
                 }
             }

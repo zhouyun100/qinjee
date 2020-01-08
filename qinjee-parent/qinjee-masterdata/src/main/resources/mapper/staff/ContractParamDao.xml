@@ -314,10 +314,12 @@
             #{contractParamId}
         </foreach>
     </delete>
+
     <select id="selectRuleIdByCompanyId" resultType="java.lang.Integer">
-        select  contract_param_id
-        from t_contract_param
+        select  en_rule_id
+        from t_employee_number_rule
         where company_id=#{companyId}
         and is_delete=0
     </select>
+
 </mapper>
