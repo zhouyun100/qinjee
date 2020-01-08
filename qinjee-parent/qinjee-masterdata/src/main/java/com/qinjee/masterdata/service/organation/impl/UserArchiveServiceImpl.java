@@ -156,6 +156,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
             e.printStackTrace();
+           ExceptionCast.cast(CommonCode.FAIL);
         }
         return new ResponseResult(userArchive.getArchiveId());
     }

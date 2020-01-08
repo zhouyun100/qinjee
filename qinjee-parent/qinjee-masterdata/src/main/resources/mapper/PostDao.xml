@@ -507,6 +507,7 @@
         <foreach collection="positionIds" separator="," close=")" open="(" item="item">
             #{item}
         </foreach>
+        and is_delete = 0
 
     </select>
 
