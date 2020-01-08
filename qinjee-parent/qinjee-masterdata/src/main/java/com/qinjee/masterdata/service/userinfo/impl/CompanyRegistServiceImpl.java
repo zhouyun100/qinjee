@@ -102,6 +102,7 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 userArchive.setUserName(userName);
                 userArchive.setCompanyId(companyId);
                 userArchive.setOrgId(orgId);
+                userArchive.setPhone(phone);
                 companyRegistDao.addUserArchive(userArchive);
                 Integer archiveId = userArchive.getArchiveId();
 
