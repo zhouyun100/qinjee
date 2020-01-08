@@ -11,12 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月24日 15:25:00
- */
 public interface UserArchiveService {
     /**
      * 根据条件分页查询用户信息
@@ -31,6 +25,7 @@ public interface UserArchiveService {
      * @param userArchiveVo
      * @return
      */
+    @Transactional
     ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo, UserSession userSession);
 
     /**
@@ -38,6 +33,7 @@ public interface UserArchiveService {
      * @param idsMap
      * @return
      */
+    @Transactional
     void deleteUserArchive(Map<Integer,Integer> idsMap,Integer companyId);
 
     @Transactional
