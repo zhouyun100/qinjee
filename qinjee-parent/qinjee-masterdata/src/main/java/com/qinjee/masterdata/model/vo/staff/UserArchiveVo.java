@@ -20,6 +20,7 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("档案ID")
     private Integer archiveId;
 
+    private Integer lineNumber;
     /**
      * 人员ID
      */

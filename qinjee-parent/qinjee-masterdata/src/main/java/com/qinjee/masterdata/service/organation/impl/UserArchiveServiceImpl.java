@@ -1,5 +1,7 @@
 package com.qinjee.masterdata.service.organation.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
@@ -17,6 +19,7 @@ import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.request.UserSession;
@@ -25,32 +28,35 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.MyCollectionUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月24日 15:25:00
- */
+
 @Service
-public class UserArchiveServiceImpl implements UserArchiveService {
+public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  implements UserArchiveService {
     private static Logger logger = LogManager.getLogger(UserArchiveServiceImpl.class);
-
+    private final static String xls = "xls";
+    private final static String xlsx = "xlsx";
     @Autowired
     private UserArchiveDao userArchiveDao;
-
+    @Autowired
+    private RedisClusterService redisService;
     @Autowired
     private UserLoginDao userLoginDao;
     @Autowired
@@ -148,16 +154,12 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userArchive.setUserId(userInfo.getUserId());
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
-        List<Integer> integers = contractParamDao.selectRuleIdByCompanyId(userSession.getCompanyId());
         try {
-            logger.info("工号规则id：{}",integers.get(0));
-            String empNumber = employeeNumberRuleService.createEmpNumber(integers.get(0), userArchive.getArchiveId());
-            logger.info("生成的工号：{}",empNumber);
-            userArchive.setEmployeeNumber(empNumber);
+            checkEmployeeNumber(userSession,userArchive);
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
             e.printStackTrace();
-           //ExceptionCast.cast(CommonCode.FAIL);
+            //ExceptionCast.cast(CommonCode.FAIL);
         }
         return new ResponseResult(userArchive.getArchiveId());
     }
@@ -181,7 +183,6 @@ public class UserArchiveServiceImpl implements UserArchiveService {
             userArchive.setArchiveId(entry.getValue());
             userArchive.setUpdateTime(new Date());
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
-
         }
     }
 
@@ -199,5 +200,49 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
         BeanUtils.copyProperties(userArchiveVo1, userArchive);
         userArchiveDao.updateByPrimaryKeySelective(userArchive);
+    }
+
+    @Override
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
+        HashMap<Object, Object> resultMap = new HashMap<>();
+        //excel文件基本校验
+        basicCheck(multfile);
+        //excel文件导入内存
+        List<UserArchiveVo> excelList = importFromExcel(multfile,UserArchiveVo.class);
+
+        List<UserArchiveVo> userArchiveList = new ArrayList<>(excelList.size());
+        //记录行号
+        Integer number = 1;
+        for (UserArchiveVo vo : excelList) {
+            vo.setLineNumber(++number);
+            //排序前记录行号
+            userArchiveList.add(vo);
+        }
+        //TODO 进行排序，根据工号？
+
+        //将排序后的集合以及原excel数据集合存入redis
+        String redisKey = "tempOrgData" + multfile.getOriginalFilename().hashCode();
+        redisService.del(redisKey);
+        String json = JSON.toJSONString(userArchiveList);
+        redisService.setex(redisKey, 30 * 60, json);
+        //将原表信息及redis key置入返回对象
+        resultMap.put("excelList", userArchiveList);
+        resultMap.put("redisKey", redisKey);
+
+        //TODO
+
+        return new ResponseResult();
+    }
+
+
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
+        List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+        if(CollectionUtils.isEmpty ( employnumberList )){
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        }
     }
 }
