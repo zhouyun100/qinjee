@@ -150,13 +150,14 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         userArchiveDao.insertSelective(userArchive);
         List<Integer> integers = contractParamDao.selectRuleIdByCompanyId(userSession.getCompanyId());
         try {
+            logger.info("工号规则id：{}",integers.get(0));
             String empNumber = employeeNumberRuleService.createEmpNumber(integers.get(0), userArchive.getArchiveId());
             logger.info("生成的工号：{}",empNumber);
             userArchive.setEmployeeNumber(empNumber);
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
             e.printStackTrace();
-           ExceptionCast.cast(CommonCode.FAIL);
+           //ExceptionCast.cast(CommonCode.FAIL);
         }
         return new ResponseResult(userArchive.getArchiveId());
     }
