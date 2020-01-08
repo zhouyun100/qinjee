@@ -46,6 +46,16 @@
     and t_user_archive.is_delete = 0
   </select>
 
+  <!-- 根据账号查询用户信息 -->
+  <select id="searchUserInfoByAccount" resultMap="UserInfoMap">
+    select
+    t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email
+    from t_user_info
+    where t_user_info.user_name = #{account,jdbcType=VARCHAR}
+    or t_user_info.phone = #{account,jdbcType=VARCHAR}
+    or t_user_info.email = #{account,jdbcType=VARCHAR}
+  </select>
+
   <select id="searchUserInfoByPhone" parameterType="java.lang.String" resultMap="UserInfoResultMap">
     select
     t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id

@@ -32,6 +32,13 @@ public interface UserLoginService {
     List<UserInfoVO> searchUserInfoByAccountAndPassword(String account, String password);
 
     /**
+     * 根据账号查询用户信息
+     * @param account 用户名/手机号/邮箱
+     * @return
+     */
+    List<UserInfo> searchUserInfoByAccount(String account);
+
+    /**
      * 根据手机号查询用户信息
      * @param phone
      * @return

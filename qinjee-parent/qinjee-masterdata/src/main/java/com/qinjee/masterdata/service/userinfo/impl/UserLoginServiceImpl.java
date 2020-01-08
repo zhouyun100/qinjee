@@ -59,6 +59,14 @@ public class UserLoginServiceImpl implements UserLoginService {
     }
 
     @Override
+    public List<UserInfo> searchUserInfoByAccount(String account) {
+        if(StringUtils.isNoneBlank(account)){
+            return userLoginDao.searchUserInfoByAccount(account);
+        }
+        return null;
+    }
+
+    @Override
     public List<UserInfoVO> searchUserInfoByPhone(String phone) {
         if(phone.isEmpty() || !RegexpUtils.checkPhone(phone)){
             return null;
