@@ -52,7 +52,7 @@
     </select>
     <update id="clearUserCompany">
         update t_user_company
-        set is_enable = 0
+        set is_enable = 0 and update_time =#{date,jdbcType=TIMESTAMP}
         where user_id =#{userId} and company_id = #{companyId}
     </update>
 </mapper>

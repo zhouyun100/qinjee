@@ -644,7 +644,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     @Override
     @OrganizationDeleteAnno
-    public void deleteOrganizationById(List<Integer> orgIds, UserSession userSession) {
+    /**
+     * 删除机构时，如果该机构以及其下级机构存在人员则无法删除
+     * 如果机构以及其下级机构没有人员，但有岗位时，则给出提示“机构下含有岗位，请确认是否一并删除这些岗位”
+     */
+    public void deleteOrganizationById(List<Integer> orgIds, boolean cascadeDeletePost, UserSession userSession) {
         List<Integer> idList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orgIds)) {
             for (Integer orgId : orgIds) {
@@ -663,12 +667,18 @@ public class OrganizationServiceImpl implements OrganizationService {
             isExsit = true;
             ExceptionCast.cast(CommonCode.EXIST_USER);
         }
-        //如果所有机构下都不存在相关人员资料，则全部删除（包含机构下的岗位）
+        //如果所有机构下都不存在相关人员资料
         if (!isExsit) {
-            //物理删除机构表
-            organizationDao.batchDeleteOrganization(idList);
-            //逻辑删除岗位表
-            postDao.batchDelete(idList);
+            //判断是否存在岗位
+            List<Post> posts = postDao.listPostByOrgIds(idList);
+            if (!CollectionUtils.isEmpty(posts) && !cascadeDeletePost) {
+                ExceptionCast.cast(CommonCode.ORG_HAVE_POST);
+            } else {
+                //物理删除机构表
+                organizationDao.batchDeleteOrganization(idList);
+                //逻辑删除岗位表
+                postDao.batchDelete(idList);
+            }
         }
         // 回收机构权限
         apiAuthService.deleteOrg(idList, userSession.getArchiveId());
@@ -1075,9 +1085,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                             checkVo.setCheckResult(false);
                             resultMsg.append("上级机构名称在数据库中不匹配 | ");
                         }
-                    }else {
+                    } else {
                         checkVo.setCheckResult(false);
-                        resultMsg.append("上级机构编码["+organizationVO.getOrgParentCode()+"]不存在 | ");
+                        resultMsg.append("上级机构编码[" + organizationVO.getOrgParentCode() + "]不存在 | ");
                     }
                 }
             }

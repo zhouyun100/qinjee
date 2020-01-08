@@ -3,6 +3,7 @@ package com.qinjee.masterdata.service.organation.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.controller.organization.OrganizationController;
 import com.qinjee.masterdata.dao.UserCompanyDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
@@ -27,6 +28,8 @@ import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,8 @@ import java.util.*;
  */
 @Service
 public class UserArchiveServiceImpl implements UserArchiveService {
+    private static Logger logger = LogManager.getLogger(UserArchiveServiceImpl.class);
+
     @Autowired
     private UserArchiveDao userArchiveDao;
 
@@ -55,6 +60,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
 
     @Autowired
     private OrganizationDao organizationDao;
+
 
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
@@ -120,7 +126,6 @@ public class UserArchiveServiceImpl implements UserArchiveService {
             String p = StringUtils.substring(userArchiveVo.getPhone(), userArchiveVo.getPhone().length() - 6, userArchiveVo.getPhone().length());
             userInfo.setPassword(MD5Utils.getMd5(p));
             userLoginDao.addUserInfo(userInfo);
-
         } else {
             int count = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
             if (count > 0) {
@@ -146,6 +151,7 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         List<Integer> integers = contractParamDao.selectRuleIdByCompanyId(userSession.getCompanyId());
         try {
             String empNumber = employeeNumberRuleService.createEmpNumber(integers.get(0), userArchive.getArchiveId());
+            logger.info("生成的工号：{}",empNumber);
             userArchive.setEmployeeNumber(empNumber);
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
@@ -166,11 +172,12 @@ public class UserArchiveServiceImpl implements UserArchiveService {
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
             //清除企业关联
-            userInfoDao.clearUserCompany(entry.getKey(),companyId);
+            userInfoDao.clearUserCompany(entry.getKey(),companyId,new Date());
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);
             userArchive.setArchiveId(entry.getValue());
+            userArchive.setUpdateTime(new Date());
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
 
         }

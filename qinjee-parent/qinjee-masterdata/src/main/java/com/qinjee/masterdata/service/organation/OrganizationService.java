@@ -44,7 +44,7 @@ public interface OrganizationService  {
    * @param orgIds
    * @return
    */
-  void deleteOrganizationById(List<Integer> orgIds, UserSession userSession);
+  void deleteOrganizationById(List<Integer> orgIds,boolean cascadeDeletePost, UserSession userSession);
 
   /**
    * 封存/封存机构 包括其下级机构

@@ -77,11 +77,11 @@ public class OrganizationController extends BaseController {
 
     @PostMapping("/deleteOrganizationById")
     @ApiOperation(value = "ok，删除机构", notes = "ok")
-    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds) {
+    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds,boolean cascadeDeletePost) {
         Boolean b = checkParam(orgIds);
         if (b) {
             logger.info("删除机构，orgIds》"+orgIds);
-            organizationService.deleteOrganizationById(orgIds, getUserSession());
+            organizationService.deleteOrganizationById(orgIds, cascadeDeletePost,getUserSession());
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
