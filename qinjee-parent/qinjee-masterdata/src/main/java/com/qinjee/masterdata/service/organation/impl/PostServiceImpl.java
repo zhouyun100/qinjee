@@ -810,6 +810,7 @@ public class PostServiceImpl implements PostService {
         }
 
         for (Post post : voList) {
+            System.out.println("===================:"+post.getLineNumber());
             Post checkVo = new Post();
             BeanUtils.copyProperties(post, checkVo);
             checkVo.setCheckResult(true);
