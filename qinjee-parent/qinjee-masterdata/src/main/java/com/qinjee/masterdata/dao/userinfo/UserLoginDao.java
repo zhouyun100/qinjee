@@ -15,7 +15,6 @@ import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -32,6 +31,13 @@ public interface UserLoginDao {
      * @return
      */
     List<UserInfoVO> searchUserInfoByAccountAndPassword(RequestLoginVO userLoginVO);
+
+    /**
+     * 根据账号查询用户信息
+     * @param account 用户名/手机号/邮箱
+     * @return
+     */
+    List<UserInfo> searchUserInfoByAccount(String account);
 
     /**
      * 根据手机号查询用户信息

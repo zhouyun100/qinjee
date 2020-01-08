@@ -13,13 +13,13 @@ package com.qinjee.masterdata.controller.userinfo;
 import com.alibaba.fastjson.JSON;
 import com.qinjee.consts.ResponseConsts;
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.VerifyCodeUtils;
 import io.swagger.annotations.Api;
@@ -69,7 +69,7 @@ public class UserLoginController extends BaseController{
 
         try {
 
-            if(phone.isEmpty() || code.isEmpty() || !RegexpUtils.checkPhone(phone)){
+            if(StringUtils.isBlank(phone) || StringUtils.isBlank(code) || !RegexpUtils.checkPhone(phone)){
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("手机号或验证码错误，请重新输入!");
                 return responseResult;
@@ -87,7 +87,7 @@ public class UserLoginController extends BaseController{
             if (CollectionUtils.isEmpty(userInfoList)) {
 
                 responseResult = ResponseResult.FAIL();
-                responseResult.setMessage("手机号用户信息为空!");
+                responseResult.setMessage("无租户信息!");
                 return responseResult;
             }
 
@@ -111,21 +111,30 @@ public class UserLoginController extends BaseController{
     })
     @RequestMapping(value = "/loginByAccountAndPassword",method = RequestMethod.POST)
     public ResponseResult<UserSession> loginByAccountAndPassword(HttpServletResponse response, String account, String password) {
-        if(account.isEmpty() || password.isEmpty()){
+        if(StringUtils.isBlank(account) || StringUtils.isBlank(password)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("账号或密码为空，请重新输入!");
             return responseResult;
         }
 
-        List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByAccountAndPassword(account,password);
-        if (CollectionUtils.isEmpty(userInfoList)) {
+        List<UserInfo> userInfoList = userLoginService.searchUserInfoByAccount(account);
+
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(userInfoList)){
+            List<UserInfoVO> userInfoVOList = userLoginService.searchUserInfoByAccountAndPassword(account,password);
+            if (CollectionUtils.isEmpty(userInfoVOList)) {
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("密码错误或无租户信息!");
+                return responseResult;
+            }
+            setResponseResult(response,userInfoVOList);
+
+            logger.info("Login success！phone={}", account);
+        }else{
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("账号用户信息为空!");
+            responseResult.setMessage("账号信息不存在!");
             return responseResult;
         }
-        setResponseResult(response,userInfoList);
 
-        logger.info("Login success！phone={}", account);
         return responseResult;
     }
 
@@ -213,18 +222,25 @@ public class UserLoginController extends BaseController{
     @RequestMapping(value = "/sendCodeByPhone",method = RequestMethod.POST)
     public ResponseResult sendCodeByMobile(String phone) {
 
-        if(phone.isEmpty() || !RegexpUtils.checkPhone(phone)){
+        if(StringUtils.isEmpty(phone) || !RegexpUtils.checkPhone(phone)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("手机号错误，请重新输入!");
             return responseResult;
         }
 
         try{
-            smsRecordService.sendSmsLoginCode(phone);
 
-            logger.info("sendCodeByPhone success！phone={}", phone);
-            responseResult = ResponseResult.SUCCESS();
-            responseResult.setMessage("手机号短信验证码发送完毕!");
+            UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(phone);
+            if(null != userInfo){
+                smsRecordService.sendSmsLoginCode(phone);
+                logger.info("sendCodeByPhone success！phone={}", phone);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setMessage("手机号短信验证码发送完毕!");
+            }else{
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号不存在！");
+            }
+
         }catch (Exception e){
             logger.info("sendCodeByPhone exception! phone={},exception={}", phone, e.toString());
             e.printStackTrace();
