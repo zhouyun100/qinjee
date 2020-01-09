@@ -79,7 +79,7 @@ public interface IStaffArchiveService {
      * @param userArchiveVo
      * @return
      */
-    void updateArchive(UserArchiveVo userArchiveVo,UserSession userSession);
+    void updateArchive(UserArchiveVo userArchiveVo,UserSession userSession) throws Exception;
 
     /**
      * 查看人员档案

@@ -85,20 +85,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+    public void updateArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
         UserArchive userArchive = new UserArchive ();
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
-        if(userArchive.getEmployeeNumber ()!=null){
-            List<String> list=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-            if(CollectionUtils.isEmpty ( list )){
-                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
-            }else{
-                ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
-            }
-        }
-            userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+        checkEmployeeNumber( userSession,  userArchive);
+        userArchiveDao.updateByPrimaryKeySelective ( userArchive );
 
     }
 
@@ -600,6 +593,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             headList.add ( arcHead );
         }
         return headList;
+    }
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
+        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
+        String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
+        List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+        if(CollectionUtils.isEmpty ( employnumberList )|| (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getEmployeeNumber () ))){
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        }
     }
 }
 

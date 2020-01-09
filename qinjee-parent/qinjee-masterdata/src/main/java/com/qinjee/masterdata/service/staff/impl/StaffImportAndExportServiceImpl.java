@@ -230,39 +230,55 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //请求接口获得返回前端的结果
         List < CheckCustomTableVO > checkCustomTableVOS = customTableFieldService.checkCustomFieldValue ( idList, mapList );
-            for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
-                String idtype = null;
-                String idnumber = null;
-                String employmentNumber = null;
-                for (CheckCustomFieldVO fieldVO : checkCustomTableVO.getCustomFieldVOList ()) {
-                    if ("id_type".equals ( fieldVO.getFieldCode () )) {
-                        idtype = fieldVO.getFieldValue ();
-                    } else if ("id_number".equals ( fieldVO.getFieldCode () )) {
-                        idnumber = fieldVO.getFieldValue ();
-                    } else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
-                        employmentNumber = fieldVO.getFieldValue ();
-                    }
-
+        for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
+            String idtype = null;
+            String idnumber = null;
+            String employmentNumber = null;
+            for (CheckCustomFieldVO fieldVO : checkCustomTableVO.getCustomFieldVOList ()) {
+                if ("id_type".equals ( fieldVO.getFieldCode () )) {
+                    idtype = fieldVO.getFieldValue ();
+                } else if ("id_number".equals ( fieldVO.getFieldCode () )) {
+                    idnumber = fieldVO.getFieldValue ();
+                } else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
+                    employmentNumber = fieldVO.getFieldValue ();
                 }
-                boolean result = false;
-                if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
-                    Integer pre = null;
-                    Integer achiveId = null;
-                    if ("PRE".equals ( funcCode )) {
-                        pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber );
-                    } else if ("ARC".equals ( funcCode )) {
-                        achiveId = userArchiveDao.selectIdByNumberAndEmploy ( idnumber, employmentNumber );
-                    }
-                    if (pre != null || achiveId != null) {
-                        result = true;
-                    }
+                setCheck ( fieldVO, "org_id", "单位或部门" );
+                setCheck ( fieldVO, "post_id", "岗位" );
+                setCheck ( fieldVO, "supervisor_id", "直接上级" );
+            }
+            boolean result = false;
+            if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
+                Integer pre = null;
+                Integer achiveId = null;
+                if ("PRE".equals ( funcCode )) {
+                    pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber );
+                } else if ("ARC".equals ( funcCode )) {
+                    achiveId = userArchiveDao.selectIdByNumberAndEmploy ( idnumber, employmentNumber );
                 }
-                if (!result) {
-                    checkCustomTableVO.setCheckResult ( false );
-                    checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg ()+"用户不存在" );
+                if (pre != null || achiveId != null) {
+                    result = true;
                 }
             }
+            if (!result) {
+                checkCustomTableVO.setCheckResult ( false );
+                checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg () + "用户不存在" );
+            }
+        }
         return checkCustomTableVOS;
+    }
+
+    private void setCheck(CheckCustomFieldVO fieldVO, String code, String name) {
+        if (code.equals ( fieldVO.getFieldCode () )) {
+            String orgId = fieldVO.getFieldValue ();
+            if ("-1".equals ( orgId )) {
+                fieldVO.setCheckResult ( false );
+                fieldVO.setResultMsg ( name + "不存在" );
+            }
+            if ("-2".equals ( orgId )) {
+                fieldVO.setCheckResult ( false );
+                fieldVO.setResultMsg ( name + "不能为空" );
+            }
+        }
     }
 
     @Override
@@ -602,23 +618,44 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             map = new HashMap <> ();
             if (ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName ) ||
                     ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName )) {
-                if(null!=value && !"null".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
-                    map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "org_id" ) ) );
+                Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+                if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    String orgName = String.valueOf ( map1.get ( "org_id" ) );
+                    if (StringUtils.isNotBlank ( orgName )) {
+                        map.put ( map1.get ( "field_id" ), orgName );
+                    } else {
+                        map.put ( map1.get ( "field_id" ), "-1" );
+                    }
+                } else {
+                    map.put ( map1.get ( "field_id" ), "-2" );
                 }
-            } else if (SUPORCODE.equals ( fieldName ) ) {
-                if(null!=value && !"null".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
-                    map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "archive_id" ) ) );
+            } else if (SUPORCODE.equals ( fieldName )) {
+                Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
+                if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    String archiveId = String.valueOf ( map1.get ( "archive_id" ) );
+                    if (StringUtils.isNotBlank ( archiveId )) {
+                        map.put ( map1.get ( "field_id" ), archiveId );
+                    } else {
+                        map.put ( map1.get ( "field_id" ), "-1" );
+                    }
+                } else {
+                    map.put ( map1.get ( "field_id" ), "-2" );
                 }
             } else if (POSTCODE.equals ( fieldName ) || POSTNAME.equals ( fieldName )) {
-                if(null!=value && !"null".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
-                    map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "post_id" ) ) );
+                Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
+                if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    String postName = String.valueOf ( map1.get ( "post_id" ) );
+                    if (StringUtils.isNotBlank ( postName )) {
+                        map.put ( map1.get ( "field_id" ), postName );
+                    } else {
+                        map.put ( map1.get ( "field_id" ), "-1" );
+                    }
+                } else {
+                    map.put ( map1.get ( "field_id" ), "-2" );
                 }
             } else {
                 Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode ( fieldName, companyId, funcCode );
-                if (integer != null && integer != 0 && null!=value && !"null".equals ( value ) ) {
+                if (integer != null && integer != 0 && null != value && !"null".equals ( value ) && !"".equals ( value )) {
                     map.put ( integer, value );
                 }
             }

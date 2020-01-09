@@ -65,7 +65,7 @@
     professional_certification, professional_title, professional_level, attrition_date,
     attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
     select
     <include refid="Base_Column_List" />
     from t_user_archive

@@ -444,7 +444,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
             String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
             List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-            if(CollectionUtils.isEmpty ( employnumberList )){
+            if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getEmployeeNumber () ))){
                 userArchive.setEmployeeNumber ( empNumber );
             }else{
                 ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
