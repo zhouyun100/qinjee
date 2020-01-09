@@ -225,6 +225,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation("机构导出，demo {\"orgId\":28,\"orgIds\":[14,25]}")
     public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
         if (checkParam(paramMap)) {
+            long start = System.currentTimeMillis();
             List<Integer> orgIds = null;
             Integer orgId = null;
             if (paramMap.get("orgIds") != null && paramMap.get("orgIds") instanceof List) {
@@ -248,6 +249,7 @@ public class OrganizationController extends BaseController {
             Workbook workbook = DefaultExcelBuilder.of(OrganizationVO.class).build(dataList);
 
             AttachmentExportUtil.export(workbook, "组织机构信息", response);
+            logger.info("导出岗位："+(System.currentTimeMillis()-start));
             //只能返回null
             return null;
         }
@@ -260,7 +262,10 @@ public class OrganizationController extends BaseController {
     public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
         //参数判空校验
         if (checkParam(multfile)) {
-            return organizationService.uploadAndCheck(multfile, getUserSession(), response);
+            long start = System.currentTimeMillis();
+            ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession(), response);
+            logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start));
+            return  responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -269,6 +274,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
     public ResponseResult exportError2Txt(String redisKey, HttpServletResponse response) throws Exception {
         if (checkParam(redisKey)) {
+            long start = System.currentTimeMillis();
             String errorData = redisClusterService.get(redisKey.trim());
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/x-msdownload;charset=UTF-8");
@@ -276,6 +282,7 @@ public class OrganizationController extends BaseController {
                 "attachment;filename=\"" + URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8") + "\"");
             response.setHeader("fileName", URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start));
             //是否只能返回null
             return null;
         }
@@ -297,7 +304,9 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok,导入机构入库")
     public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey) {
         if (checkParam(orgExcelRedisKey)) {
+            long start = System.currentTimeMillis();
             organizationService.importToDatabase(orgExcelRedisKey, getUserSession());
+            logger.info("导入机构入库："+(System.currentTimeMillis()-start));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

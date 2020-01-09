@@ -111,6 +111,7 @@ public interface OrganizationDao {
     List<OrganizationVO> getOrganizationGraphics(Integer archiveId, List<Integer> orgIdList, Short isEnable, Date now);
 
     List<OrganizationVO> listAllOrganizationByArchiveIdAndOrgId(List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
+    List<OrganizationVO> listOrganizationByCompanyId(Integer companyId);
 
     void updateByOrgCode(OrganizationVO vo);
 
