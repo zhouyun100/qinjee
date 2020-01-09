@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
@@ -11,11 +10,16 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -28,6 +32,7 @@ import java.util.Map;
 @RequestMapping("/userArchive")
 @RestController
 public class UserArchiveController extends BaseController {
+    private static Logger logger = LogManager.getLogger(UserArchiveController.class);
 
     @Autowired
     private UserArchiveService userArchiveService;
@@ -58,6 +63,19 @@ public class UserArchiveController extends BaseController {
     public ResponseResult<Integer> addUserArchive(@RequestBody UserArchiveVo userArchiveVo) {
         if (checkParam(userArchiveVo)) {
             return userArchiveService.addUserArchive(userArchiveVo, getUserSession());
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+    @PostMapping("/uploadAndCheck")
+    @ApiOperation(value = "ok,导入用户信息excel并校验", notes = "ok")
+    public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
+        //参数判空校验
+        if (checkParam(multfile)) {
+            long start = System.currentTimeMillis();
+            ResponseResult responseResult = userArchiveService.uploadAndCheck(multfile, getUserSession(), response);
+            logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start));
+            return  responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }

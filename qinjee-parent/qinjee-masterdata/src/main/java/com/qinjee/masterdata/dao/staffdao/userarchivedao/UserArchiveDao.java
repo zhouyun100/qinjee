@@ -116,4 +116,6 @@ public interface UserArchiveDao {
 
 
     List< String> selectEmployNumberByCompanyId(@Param("companyId") Integer companyId, @Param("employeeNumber") String employeeNumber);
+
+    List<UserArchiveVo> getByCompanyId(Integer employeeNumber);
 }

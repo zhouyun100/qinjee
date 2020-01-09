@@ -19,6 +19,8 @@ import java.util.Date;
 public class UserArchiveVo implements Serializable {
 
     private Integer lineNumber;
+    private Boolean checkResult;
+    private String resultMsg;
     /**
      * 档案ID
      */

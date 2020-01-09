@@ -1,17 +1,16 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
-import com.qinjee.masterdata.controller.organization.OrganizationController;
 import com.qinjee.masterdata.dao.UserCompanyDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.dao.userinfo.UserInfoDao;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.entity.UserCompany;
 import com.qinjee.masterdata.model.entity.UserInfo;
@@ -21,6 +20,7 @@ import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
+import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -34,7 +34,6 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,14 +41,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
-public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  implements UserArchiveService {
+public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchiveVo> implements UserArchiveService {
     private static Logger logger = LogManager.getLogger(UserArchiveServiceImpl.class);
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
@@ -63,6 +59,8 @@ public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  i
     private UserInfoDao userInfoDao;
     @Autowired
     private UserCompanyDao userCompanyDao;
+    @Autowired
+    private SysDictDao sysDictDao;
 
     @Autowired
     private OrganizationDao organizationDao;
@@ -155,7 +153,7 @@ public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  i
         userArchive.setIsDelete((short) 0);
         userArchiveDao.insertSelective(userArchive);
         try {
-            checkEmployeeNumber(userSession,userArchive);
+            checkEmployeeNumber(userSession, userArchive);
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,16 +165,17 @@ public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  i
 
     /**
      * 删除时不要删除账号信息，只将用户当前企业下的档案信息，以及用户企业关系表的信息
+     *
      * @param idsMap
      * @return
      */
     @Override
-    public void deleteUserArchive(Map<Integer,Integer> idsMap,Integer companyId) {
+    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId) {
 
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
             //清除企业关联
-            userInfoDao.clearUserCompany(entry.getKey(),companyId,new Date());
+            userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);
@@ -204,58 +203,104 @@ public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  i
 
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        HashMap<Object, Object> resultMap = new HashMap<>();
-        //excel文件基本校验
-        basicCheck(multfile);
-        //excel文件导入内存
-        List<UserArchiveVo> excelList = importFromExcel(multfile,UserArchiveVo.class);
-
-        List<UserArchiveVo> userArchiveList = new ArrayList<>(excelList.size());
-        //记录行号
-        Integer number = 1;
-        for (UserArchiveVo vo : excelList) {
-            vo.setLineNumber(++number);
-            //排序前记录行号
-            userArchiveList.add(vo);
-        }
-        //TODO 进行排序，根据工号？
-
-        //将排序后的集合以及原excel数据集合存入redis
-        String redisKey = "tempOrgData" + multfile.getOriginalFilename().hashCode();
-        redisService.del(redisKey);
-        String json = JSON.toJSONString(userArchiveList);
-        redisService.setex(redisKey, 30 * 60, json);
-        //将原表信息及redis key置入返回对象
-        resultMap.put("excelList", userArchiveList);
-        resultMap.put("redisKey", redisKey);
-
-        //导入用户信息不用进行排序，只需按照原表顺序即可
-        checkExcel(userArchiveList,userSession);
-
-        //TODO
-
-        return new ResponseResult();
+       return  doUploadAndCheck(multfile,UserArchiveVo.class,userSession,response);
     }
-
-    private void checkExcel(List<UserArchiveVo> userArchiveList, UserSession userSession) {
-        List<UserArchiveVo> checkVos = new ArrayList<>(userArchiveList.size());
-        for (UserArchiveVo vo : userArchiveList) {
-
-
-        }
-
-
-    }
-
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
-        List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-        String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
-        List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-        if(CollectionUtils.isEmpty ( employnumberList )){
-            userArchive.setEmployeeNumber ( empNumber );
-        }else{
-            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        List<Integer> integers = contractParamDao.selectRuleIdByCompanyId(userSession.getCompanyId());
+        String empNumber = employeeNumberRuleService.createEmpNumber(integers.get(0), userArchive.getArchiveId());
+        List<String> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
+        if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getEmployeeNumber()))) {
+            userArchive.setEmployeeNumber(empNumber);
+        } else {
+            ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
         }
+    }
+
+    @Override
+    protected List<UserArchiveVo> checkExcel(List<UserArchiveVo> userArchiveList, UserSession userSession) {
+        List<UserArchiveVo> checkList = new ArrayList<>(userArchiveList.size());
+        List<UserArchiveVo> archiveVoByCompanyIdMem = userArchiveDao.getByCompanyId(userSession.getCompanyId());
+        List<SysDict> sysDictsMem = sysDictDao.searchSomeSysDictList();
+        for (UserArchiveVo vo : userArchiveList) {
+            StringBuilder resultMsg = new StringBuilder(1024);
+            //先校验必填项 姓名 证件号
+            if (StringUtils.isBlank(vo.getUserName())) {
+                vo.setCheckResult(false);
+                resultMsg.append("用户姓名不能为空 | ");
+            }
+            if (StringUtils.isBlank(vo.getIdNumber())) {
+                vo.setCheckResult(false);
+                resultMsg.append("证件号码不能为空 | ");
+            }
+            //如果同时存在证件号和工号 //则判断是否相等
+            if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
+                boolean bool = archiveVoByCompanyIdMem.stream().anyMatch(a -> vo.getEmployeeNumber().equals(a.getEmployeeNumber()) && vo.getIdNumber().equals(a.getIdNumber()));
+                //TODO 待验证
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("证件号码与其对应的工号人员不一致 | ");
+                }
+            }
+            //--------------下面的进行字典验证
+            if (StringUtils.isNotBlank(vo.getGender())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("SEX_TYPE") && a.getDictValue().equals(vo.getGender()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+
+                    resultMsg.append("性别中没有[" + vo.getGender() + "]的选项 | ");
+                }
+            }
+            if (StringUtils.isNotBlank(vo.getIdType())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("CARD_TYPE") && a.getDictValue().equals(vo.getIdType()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+
+                    resultMsg.append("证件类型中没有[" + vo.getIdType() + "]的选项 | ");
+                }
+            }
+
+            if (StringUtils.isNotBlank(vo.getNationality())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("NATIONALITY") && a.getDictValue().equals(vo.getNationality()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("民族中没有[" + vo.getNationality() + "]的选项 | ");
+                }
+            }
+            if (StringUtils.isNotBlank(vo.getHighestDegree())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("DEGREE") && a.getDictValue().equals(vo.getHighestDegree()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("最高学历中没有[" + vo.getHighestDegree() + "]的选项 | ");
+                }
+            }
+            if (StringUtils.isNotBlank(vo.getFirstDegree())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("DEGREE") && a.getDictValue().equals(vo.getFirstDegree()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("第一学历中没有[" + vo.getFirstDegree() + "]的选项 | ");
+                }
+            }
+            if (StringUtils.isNotBlank(vo.getMaritalStatus())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("MARITAL_STATUS") && a.getDictValue().equals(vo.getMaritalStatus()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("婚姻状况中没有[" + vo.getMaritalStatus() + "]的选项 | ");
+                }
+            }
+            if (StringUtils.isNotBlank(vo.getPoliticalStatus())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("POLITICAL_AFFILIATION") && a.getDictValue().equals(vo.getPoliticalStatus()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("政治面貌中没有[" + vo.getPoliticalStatus() + "]的选项 | ");
+                }
+            }
+            // --------------下面是一些其他的匹配性校验
+
+            //--------------下面的进行格式验证
+            vo.setResultMsg(resultMsg.toString());
+            checkList.add(vo);
+        }
+        return checkList;
     }
 }

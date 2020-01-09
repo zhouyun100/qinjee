@@ -23,6 +23,12 @@
     from t_sys_dict
     where dict_type = #{dictType,jdbcType=VARCHAR} and is_delete = 0 ORDER BY id
   </select>
+  <select id="searchSomeSysDictList"  resultMap="BaseResultMap">
+    select
+    dict_type, dict_code, dict_value
+    from t_sys_dict
+    where   is_delete = 0
+  </select>
 
   <!-- 根据字典类型查询字典列表 -->
   <select id="searchSysDictByTypeAndCode" resultMap="BaseResultMap">
