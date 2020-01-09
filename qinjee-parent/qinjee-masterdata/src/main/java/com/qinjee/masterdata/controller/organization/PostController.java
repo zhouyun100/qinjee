@@ -12,6 +12,8 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -24,17 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月11日 15:17:00
- */
 @Api(tags = "【机构管理】岗位接口")
 @RestController
 @RequestMapping("/post")
 public class PostController extends BaseController {
-
+    private static Logger logger = LogManager.getLogger(PostController.class);
     @Autowired
     private PostService postService;
 
@@ -202,6 +198,7 @@ public class PostController extends BaseController {
     @ApiOperation(value = "ok，导出岗位  参数demo {\"orgId\":28,\"postIds\":[1,47]}")
     public ResponseResult exportPost(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult();
+        long start = System.currentTimeMillis();
         List<Integer> postIds = null;
         Integer orgId = null;
         if (paramMap.get("postIds") != null && paramMap.get("postIds") instanceof List) {
@@ -216,7 +213,7 @@ public class PostController extends BaseController {
             Workbook workbook = DefaultExcelBuilder.of(Post.class).build(postList);
             AttachmentExportUtil.export(workbook, "岗位信息", response);
             //只能返回null
-
+            logger.info("导出岗位："+(System.currentTimeMillis()-start));
             return null;
         } else {
             responseResult.setMessage("岗位为空");
@@ -229,7 +226,10 @@ public class PostController extends BaseController {
     @ApiOperation(value = "ok，导入岗位excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
     public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
         if (checkParam(multfile)) {
-            return postService.uploadAndCheck(multfile, getUserSession(), response);
+            long start = System.currentTimeMillis();
+            ResponseResult responseResult = postService.uploadAndCheck(multfile, getUserSession(), response);
+            logger.info("导入岗位excel并校验："+(System.currentTimeMillis()-start));
+            return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
@@ -239,6 +239,7 @@ public class PostController extends BaseController {
     @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
     public ResponseResult exportError2Txt(String errorInfoKey, HttpServletResponse response) throws Exception {
         if (checkParam(errorInfoKey)) {
+            long start = System.currentTimeMillis();
             String errorData = redisClusterService.get(errorInfoKey.trim());
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/x-msdownload;charset=UTF-8");
@@ -246,6 +247,7 @@ public class PostController extends BaseController {
                 "attachment;filename=\"" + URLEncoder.encode("岗位导入错误校验信息.txt", "UTF-8") + "\"");
             response.setHeader("fileName", URLEncoder.encode("岗位导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start));
             return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -256,7 +258,9 @@ public class PostController extends BaseController {
     @ApiOperation(value = "ok,导入岗位入库")
     public ResponseResult importToDatabase(@RequestParam("redisKey") String redisKey) {
         if (checkParam(redisKey)) {
+            long start = System.currentTimeMillis();
             postService.importToDatabase(redisKey, getUserSession());
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

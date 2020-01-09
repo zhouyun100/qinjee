@@ -229,9 +229,22 @@ public class UserArchiveServiceImpl extends OrganizationHelper<UserArchiveVo>  i
         resultMap.put("excelList", userArchiveList);
         resultMap.put("redisKey", redisKey);
 
+        //导入用户信息不用进行排序，只需按照原表顺序即可
+        checkExcel(userArchiveList,userSession);
+
         //TODO
 
         return new ResponseResult();
+    }
+
+    private void checkExcel(List<UserArchiveVo> userArchiveList, UserSession userSession) {
+        List<UserArchiveVo> checkVos = new ArrayList<>(userArchiveList.size());
+        for (UserArchiveVo vo : userArchiveList) {
+
+
+        }
+
+
     }
 
 

@@ -55,4 +55,6 @@ public interface PositionDao {
     List<Position> getSinglePositionList(@Param("positionIds")List<Integer> positionIds);
 
     Integer sortPosition(@Param("positionIds") List<Integer> positionIds);
+
+    List<Position> getPositionListByCompanyId(Integer companyId);
 }

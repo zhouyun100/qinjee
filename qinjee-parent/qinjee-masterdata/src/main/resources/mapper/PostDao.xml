@@ -544,4 +544,9 @@
         </if>
         and is_delete=0 and is_enable=1
     </select>
+    <select id="getPostListByCompanyId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_post
+        where company_id=#{companyId} and is_delete=0
+    </select>
 </mapper>

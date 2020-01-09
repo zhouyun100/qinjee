@@ -746,6 +746,13 @@
     #{item}
    </foreach>
   </update>
+
+  <select id="listUserArchiveByCompanyId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_user_archive where company_id =#{companyId} and is_delete =0
+
+  </select>
   <select id="selectNameAndNumber" resultType="java.util.Map">
     select user_name,employee_number
     from   t_user_archive

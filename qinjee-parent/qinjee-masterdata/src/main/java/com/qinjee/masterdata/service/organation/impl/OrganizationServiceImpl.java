@@ -988,6 +988,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 
     public List<OrganizationVO> checkExcel(List<OrganizationVO> voList, UserSession userSession) {
+        //统一查找出一些公共不变的数据
+        List<SysDict> orgDictListMem = sysDictService.searchSysDictListByDictType("ORG_TYPE");
+        List<UserArchiveVo> userArchiveVosMem = userArchiveDao.listUserArchiveByCompanyId(userSession.getCompanyId());
+        List<OrganizationVO> organizationVOListMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId());
         voList.sort(new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -1001,6 +1005,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<OrganizationVO> checkVos = new ArrayList<>(voList.size());
         Map<String, String> excelOrgNameMap = new HashMap<>(voList.size());
         for (OrganizationVO organizationVO : voList) {
+            //用于判断机构编码在excel中是否存在
             excelOrgNameMap.put(organizationVO.getOrgCode(), organizationVO.getOrgName());
         }
         int groupCount = 0;
@@ -1031,16 +1036,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 resultMsg.append("非集团类型机构的上级机构名称不能为空 | ");
             }
             if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
-                boolean isExist = false;
-                List<SysDict> sysDicts = sysDictService.searchSysDictListByDictType("ORG_TYPE");
-                for (SysDict dict : sysDicts) {
-                    if (null != dict.getDictValue() && organizationVO.getOrgType().equalsIgnoreCase(dict.getDictValue())) {
-                        //如果存在 直接结束
-                        isExist = true;
-                        break;
-                    }
-                }
-                if (!isExist) {
+                boolean bool = orgDictListMem.stream().anyMatch(a -> a.getDictValue().equals(organizationVO.getOrgType()));
+                if (!bool) {
                     checkVo.setCheckResult(false);
                     resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在 | ");
                 }
@@ -1053,15 +1050,14 @@ public class OrganizationServiceImpl implements OrganizationService {
                 checkVo.setCheckResult(false);
                 resultMsg.append("集团类型机构只能存在一个 | ");
             }
-
-
             if (StringUtils.isNotBlank(organizationVO.getManagerEmployeeNumber())) {
-                UserArchiveVo userArchive = userArchiveDao.selectArchiveByNumber(organizationVO.getManagerEmployeeNumber());
-                if (Objects.isNull(userArchive)) {
+                boolean bool = userArchiveVosMem.stream().anyMatch(a -> a.getEmployeeNumber().equals(organizationVO.getManagerEmployeeNumber()));
+                if (!bool) {
                     checkVo.setCheckResult(false);
                     resultMsg.append("部门负责人不存在 | ");
                 } else {
-                    if (null == userArchive.getUserName() || userArchive.getUserName().equals("") || !userArchive.getUserName().equals(organizationVO.getOrgManagerName())) {
+                    boolean bool2 = userArchiveVosMem.stream().anyMatch(a -> a.getUserName().equals(organizationVO.getOrgManagerName()));
+                    if (!bool2) {
                         checkVo.setCheckResult(false);
                         resultMsg.append("部门负责人名字不一致 | ");
                     }
@@ -1070,6 +1066,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             //根据上级机构编码查询数据库 判断上级机构是否存在
             if (StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
                 //先判断上级机构在表中是否存在，如果表中不存就需要去查询数据库
+                //TODO 先用缓存数据进行查找，如果缓存中不存在，再调用数据库，避免多次sql查询
                 String orgName = excelOrgNameMap.get(organizationVO.getOrgParentCode());
                 if (StringUtils.isNotBlank(orgName)) {
                     //检查excel中的父级机构名称是否一致
@@ -1078,16 +1075,25 @@ public class OrganizationServiceImpl implements OrganizationService {
                         resultMsg.append("上级机构名称在excel中不匹配 | ");
                     }
                 } else {
-                    //上级编码在excel中不存在，那就去数据库查找
-                    OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
-                    if (Objects.nonNull(org)) {
-                        if (StringUtils.isBlank(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
+                    //上级编码在excel中不存在，那就去数据库查找,先在缓存中查
+                    boolean bool = organizationVOListMem.stream().anyMatch(a -> a.getOrgCode().equals(organizationVO.getOrgParentCode()));
+                    if (bool) {
+                        if (!organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(organizationVO.getOrgParentName()))) {
                             checkVo.setCheckResult(false);
                             resultMsg.append("上级机构名称在数据库中不匹配 | ");
                         }
                     } else {
-                        checkVo.setCheckResult(false);
-                        resultMsg.append("上级机构编码[" + organizationVO.getOrgParentCode() + "]不存在 | ");
+                        //如果缓存中不存在，再去查数据库
+                        OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
+                        if (Objects.nonNull(org)) {
+                            if (StringUtils.isBlank(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
+                                checkVo.setCheckResult(false);
+                                resultMsg.append("上级机构名称在数据库中不匹配 | ");
+                            }
+                        } else {
+                            checkVo.setCheckResult(false);
+                            resultMsg.append("上级机构编码[" + organizationVO.getOrgParentCode() + "]不存在 | ");
+                        }
                     }
                 }
             }
@@ -1097,6 +1103,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             checkVo.setResultMsg(resultMsg);
             checkVos.add(checkVo);
         }
+        orgDictListMem = null;
+        userArchiveVosMem = null;
+        organizationVOListMem = null;
+        excelOrgNameMap=null;
         return checkVos;
     }
 

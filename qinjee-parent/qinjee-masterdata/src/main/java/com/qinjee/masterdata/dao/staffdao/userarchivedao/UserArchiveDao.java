@@ -27,6 +27,8 @@ public interface UserArchiveDao {
 
     int updateByPrimaryKeySelective(UserArchive record);
 
+
+    List<UserArchiveVo> listUserArchiveByCompanyId(Integer companyId);
     int updateByPrimaryKey(UserArchive record);
 
     Integer selectMaxId();

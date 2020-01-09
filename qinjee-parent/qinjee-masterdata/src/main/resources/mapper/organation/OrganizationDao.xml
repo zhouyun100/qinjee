@@ -573,6 +573,10 @@
         </if>
     </select>
 
+    <select id="listOrganizationByCompanyId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include>
+        from t_organization where company_id =#{companyId}
+    </select>
     <update id="updateByOrgCode" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
         update t_organization
         <set>

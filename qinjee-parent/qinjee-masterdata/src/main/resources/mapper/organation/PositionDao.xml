@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.organation.PositionDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Position">
-    <id column="position_id" jdbcType="INTEGER" property="positionId" />
-    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
-    <result column="position_group_name" jdbcType="VARCHAR" property="positionGroupName" />
-    <result column="position_group_id" jdbcType="INTEGER" property="positionGroupId" />
-    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
-    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.Position">
+        <id column="position_id" jdbcType="INTEGER" property="positionId"/>
+        <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
+        <result column="position_group_name" jdbcType="VARCHAR" property="positionGroupName"/>
+        <result column="position_group_id" jdbcType="INTEGER" property="positionGroupId"/>
+        <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     position_id, position_name, position_group_id,  sort_id,operator_id, create_time,
     is_delete
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_position
-    where position_id = #{positionId,jdbcType=INTEGER}
-  </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_position
+        where position_id = #{positionId,jdbcType=INTEGER}
+    </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_position
     where position_id = #{positionId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="position_id" keyProperty="positionId" parameterType="com.qinjee.masterdata.model.entity.Position" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="position_id" keyProperty="positionId"
+            parameterType="com.qinjee.masterdata.model.entity.Position" useGeneratedKeys="true">
     insert into t_position (position_name, position_group_id, sort_id,
       operator_id, create_time, is_delete
       )
@@ -34,104 +35,105 @@
       #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="position_id" keyProperty="positionId" parameterType="com.qinjee.masterdata.model.entity.Position" useGeneratedKeys="true">
-    insert into t_position
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="positionName != null">
-        position_name,
-      </if>
-      <if test="positionGroupId != null">
-        position_group_id,
-      </if>
-      <if test="sortId != null">
-        sort_id,
-      </if>
-      <if test="operatorId != null">
-        operator_id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="isDelete != null">
-        is_delete,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="positionName != null">
-        #{positionName,jdbcType=VARCHAR},
-      </if>
-      <if test="positionGroupId != null">
-        #{positionGroupId,jdbcType=INTEGER},
-      </if>
-      <if test="sortId != null">
-        #{sortId,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDelete != null">
-        #{isDelete,jdbcType=SMALLINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Position">
-    update t_position
-    <set>
-      <if test="positionName != null">
-        position_name = #{positionName,jdbcType=VARCHAR},
-      </if>
-      <if test="positionGroupId != null">
-        position_group_id = #{positionGroupId,jdbcType=INTEGER},
-      </if>
-      <if test="sortId != null">
-        sort_id = #{sortId,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
-    </set>
-    where position_id = #{positionId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.Position">
-    update t_position
+    <insert id="insertSelective" keyColumn="position_id" keyProperty="positionId"
+            parameterType="com.qinjee.masterdata.model.entity.Position" useGeneratedKeys="true">
+        insert into t_position
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="positionName != null">
+                position_name,
+            </if>
+            <if test="positionGroupId != null">
+                position_group_id,
+            </if>
+            <if test="sortId != null">
+                sort_id,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="positionName != null">
+                #{positionName,jdbcType=VARCHAR},
+            </if>
+            <if test="positionGroupId != null">
+                #{positionGroupId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=SMALLINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Position">
+        update t_position
+        <set>
+            <if test="positionName != null">
+                position_name = #{positionName,jdbcType=VARCHAR},
+            </if>
+            <if test="positionGroupId != null">
+                position_group_id = #{positionGroupId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where position_id = #{positionId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.Position">
+        update t_position
 
-    <set>
-      <if test="positionId != null">
-        position_id =#{positionId,jdbcType=INTEGER},
-      </if>
-       <if test="positionGroupId != null">
-         position_group_id =#{positionGroupId,jdbcType=INTEGER},
-      </if>
-      <if test="positionName != null">
-        position_name = #{positionName,jdbcType=VARCHAR},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
+        <set>
+            <if test="positionId != null">
+                position_id =#{positionId,jdbcType=INTEGER},
+            </if>
+            <if test="positionGroupId != null">
+                position_group_id =#{positionGroupId,jdbcType=INTEGER},
+            </if>
+            <if test="positionName != null">
+                position_name = #{positionName,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=SMALLINT},
+            </if>
 
-    </set>
+        </set>
 
-    where position_id = #{positionId,jdbcType=INTEGER}
-  </update>
+        where position_id = #{positionId,jdbcType=INTEGER}
+    </update>
 
-  <select id="getPositionListByGroupId"  resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"></include>
-    from t_position
-    where   position_group_id = #{positionGroupId,jdbcType=INTEGER} and is_delete = 0 ORDER BY sort_id ASC
-  </select>
+    <select id="getPositionListByGroupId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_position
+        where position_group_id = #{positionGroupId,jdbcType=INTEGER} and is_delete = 0 ORDER BY sort_id ASC
+    </select>
     <select id="getPositionList" resultMap="BaseResultMap">
       select tp.position_id, tp.position_name, tp.position_group_id, tp.sort_id, tp.operator_id, tp.create_time, tp.is_delete, tpg.position_group_name positionGroupName
       from t_position_group tpg left join t_position tp on tpg.position_group_id = tp.position_group_id
@@ -143,50 +145,55 @@
       where tp.is_delete = 0 and tps.is_delete = 0 and tp.is_enable = 1
     </select>
 
-  <select id="getPositionPage" resultMap="BaseResultMap" >
-        select  tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
-    tp.is_delete,tpg.position_group_name
-    from t_position tp  LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
-        where  tpg.is_delete=0
+    <select id="getPositionPage" resultMap="BaseResultMap">
+        select tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
+        tp.is_delete,tpg.position_group_name
+        from t_position tp LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
+        where tpg.is_delete=0
         AND tp.is_delete = 0
-    <if test="pageVo != null">
-      <if test="pageVo.positionGroupId != null">
-            and tp.position_group_id = #{pageVo.positionGroupId}
-      </if>
-    </if>
-    order by tp.sort_id ASC
-  </select>
+        <if test="pageVo != null">
+            <if test="pageVo.positionGroupId != null">
+                and tp.position_group_id = #{pageVo.positionGroupId}
+            </if>
+        </if>
+        order by tp.sort_id ASC
+    </select>
 
-  <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">
+    <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">
     SELECT tp.position_id FROM t_position tp
     LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id
     WHERE tpg.company_id=#{companyId} AND tp.position_name=#{positionName} and  tp.is_delete =0
   </select>
-  <select id="getSinglePositionList" resultMap="BaseResultMap">
+    <select id="getSinglePositionList" resultMap="BaseResultMap">
 
-    SELECT <include refid="Base_Column_List"></include> FROM t_position tp where
-    1 =1
-    and tp.position_id in
-    <foreach collection="positionIds" item="item" open="(" close=")" separator=",">
-        #{item}
-    </foreach>
+        SELECT <include refid="Base_Column_List"></include> FROM t_position tp where
+        1 =1
+        and tp.position_id in
+        <foreach collection="positionIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
 
-  </select>
-  <update id="sortPosition" parameterType="java.util.LinkedList">
+    </select>
+    <update id="sortPosition" parameterType="java.util.LinkedList">
 
-    <foreach collection="positionIds" item="id" index="index" separator=";">
-      UPDATE t_position
-      <set>
-        sort_id=(#{index}+1)*1000
-      </set>
-      <where>
-        position_id = #{id}
-      </where>
-    </foreach>
+        <foreach collection="positionIds" item="id" index="index" separator=";">
+            UPDATE t_position
+            <set>
+                sort_id=(#{index}+1)*1000
+            </set>
+            <where>
+                position_id = #{id}
+            </where>
+        </foreach>
 
-  </update>
+    </update>
 
-
+    <select id="getPositionListByCompanyId" resultMap="BaseResultMap">
+        select
+        tp.position_id,tp.position_name
+        from t_position  tp left join t_position_group tpg on tpg.position_group_id =tp.position_group_id and tpg.is_delete =0
+        where tpg.company_id =#{companyId} and tp.is_delete =0
+    </select>
 
 
 </mapper>
