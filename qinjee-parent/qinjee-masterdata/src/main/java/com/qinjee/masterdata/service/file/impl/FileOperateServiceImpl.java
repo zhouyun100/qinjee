@@ -9,8 +9,8 @@ import com.qinjee.masterdata.dao.AttachmentGroupDao;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
-import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
+import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
@@ -141,7 +141,6 @@ public class FileOperateServiceImpl implements IFileOperateService {
                         String s = fileName.split ( "\\." )[1];
                         temp = File.createTempFile ( fileName, "." + s );
                         IOUtils.copy ( cosObjectInputStream, new FileOutputStream ( temp ) );
-                        System.out.println (temp.length ());
                         files.add ( temp );
                     } else {
                         ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
@@ -149,9 +148,10 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 }
                 response.reset ();
                 // 将文件输入流写入response的输出流中
-                response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( "file.zip", "UTF-8" ) + "\"" );
-                response.setContentType("multipart/form-data");
-                CompressFileUtil.toZip ( files, response.getOutputStream () );
+            response.setContentType("multipart/form-data");
+            response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( "file.zip", "UTF-8" ) + "\"" );
+            response.setHeader ( "fileName", URLEncoder.encode ( "file.zip ", "UTF-8" ) );
+            CompressFileUtil.toZip ( files, response.getOutputStream () );
         } catch (Exception e) {
             e.printStackTrace ();
            ExceptionCast.cast ( CommonCode.FILE_EMPTY);

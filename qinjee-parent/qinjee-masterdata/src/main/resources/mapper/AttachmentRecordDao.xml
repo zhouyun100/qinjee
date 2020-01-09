@@ -262,7 +262,7 @@
       #{item}
     </foreach>
   </update>
-  <select id="selectAttach" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo" >
+  <select id="selectAttach" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo" >
             SELECT
             record.attachment_id as attatchmentId,
             arc.user_name as  userName,
@@ -326,7 +326,7 @@
     </foreach>
     and is_delete=0
   </select>
-  <select id="selectByPreIdAndCompanyId" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo">
+  <select id="selectByPreIdAndCompanyId" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
     SELECT
           record.attachment_id as attatchmentId,
           arc.user_name as  userName,
@@ -355,7 +355,7 @@
         where attachment_id=#{attahmentId}
         and is_delete=0
     </update>
-    <select id="selectByBusinessIdAndGroupNameAndBusinessType" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo">
+    <select id="selectByBusinessIdAndGroupNameAndBusinessType" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
           select
           record.attachment_id as attatchmentId,
           arc.user_name as  userName,
@@ -379,7 +379,7 @@
           AND record.is_delete = 0
           group by fileName
     </select>
-    <select id="selectFileFromPackage" resultType="com.qinjee.masterdata.model.vo.AttchmentRecordVo">
+    <select id="selectFileFromPackage" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
         SELECT
         record.attachment_id as attatchmentId,
         arc.user_name as  userName,

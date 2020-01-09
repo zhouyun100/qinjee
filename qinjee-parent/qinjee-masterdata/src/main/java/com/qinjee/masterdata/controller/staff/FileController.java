@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
-import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
+import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.response.CommonCode;

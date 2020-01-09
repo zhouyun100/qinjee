@@ -1,6 +1,6 @@
 package com.qinjee.masterdata.dao;
 
-import com.qinjee.masterdata.model.vo.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

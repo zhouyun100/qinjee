@@ -33,4 +33,5 @@ public class EntryRegistrationTableVO {
      * 自定义字段列表
      */
     private List<CustomFieldVO> customFieldVOList;
+
 }

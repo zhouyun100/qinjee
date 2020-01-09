@@ -2,7 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.vo.StandingBookReturnVo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.staff.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;

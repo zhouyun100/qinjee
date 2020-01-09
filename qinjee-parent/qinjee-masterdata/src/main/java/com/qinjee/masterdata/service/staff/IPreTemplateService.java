@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
-import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTableListWithValueVo;
 import com.qinjee.model.request.UserSession;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface IPreTemplateService {
-    List < EntryRegistrationTableVO > handlerCustomTableGroupFieldList(Integer companyId, Integer preId, Integer templateId) throws IllegalAccessException;
+    List < EntryTableListWithValueVo > handlerCustomTableGroupFieldList(Integer companyId, Integer preId, Integer templateId) throws IllegalAccessException;
 
     String createBackGroundPhoto(MultipartFile file, UserSession userSession) throws Exception;
 

@@ -10,7 +10,7 @@
  */
 package com.qinjee.masterdata.service.custom;
 
-import com.qinjee.masterdata.model.vo.SaveTemplateVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;

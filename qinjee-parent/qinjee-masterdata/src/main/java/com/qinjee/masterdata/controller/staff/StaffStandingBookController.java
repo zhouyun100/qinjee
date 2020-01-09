@@ -3,7 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.vo.StandingBookReturnVo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.service.staff.impl.StaffArchiveServiceImpl;

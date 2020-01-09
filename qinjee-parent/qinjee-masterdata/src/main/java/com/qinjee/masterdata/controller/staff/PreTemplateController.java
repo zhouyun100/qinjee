@@ -3,8 +3,9 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
-import com.qinjee.masterdata.model.vo.InsertTemplateAttachmentVo;
-import com.qinjee.masterdata.model.vo.SaveTemplateVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTableListWithValueVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.InsertTemplateAttachmentVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
@@ -428,14 +429,18 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
     @ApiOperation(value = "处理自定义表字段数据回填", notes = "hkt")
-    public ResponseResult <List < EntryRegistrationTableVO >> handlerCustomTableGroupFieldList(Integer preId,Integer templateId,Integer companyId,HttpServletResponse response ) throws IllegalAccessException {
+    public ResponseResult <List < EntryTableListWithValueVo >> handlerCustomTableGroupFieldList(Integer preId, Integer templateId, Integer companyId, HttpServletResponse response ) throws IllegalAccessException {
         Boolean b = checkParam (preId,templateId,companyId,response);
         if (b) {
-
                 response.setHeader ( "Access-Control-Allow-Origin","*" );
-                List < EntryRegistrationTableVO > list =
-                        preTemplateService.handlerCustomTableGroupFieldList ( companyId, preId,templateId );
-                    return new ResponseResult <> ( list, CommonCode.SUCCESS);
+            List < EntryTableListWithValueVo > list =
+                    null;
+            try {
+                list = preTemplateService.handlerCustomTableGroupFieldList ( companyId, preId,templateId );
+            } catch (IllegalAccessException e) {
+                e.printStackTrace ();
+            }
+            return new ResponseResult <> ( list, CommonCode.SUCCESS);
 
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

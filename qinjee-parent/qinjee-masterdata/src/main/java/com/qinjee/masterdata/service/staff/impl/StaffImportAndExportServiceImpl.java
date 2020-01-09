@@ -87,13 +87,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession, Integer isSystemDefine) throws Exception {
+    public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         // 获取文件名
         checkFileType ( multipartFile );
         //解析集合
         List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
         //获取检验结果
-        List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode, isSystemDefine );
+        List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode );
         redisClusterService.setex ( userSession.getCompanyId () + funcCode + userSession.getArchiveId () + "import", 2 * 60 * 60,
                 JSON.toJSONString ( maps ) );
         //将获取的结果存进缓存中，有效期2小时
@@ -105,7 +105,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             for (Map.Entry < Integer, String > integerStringEntry : map.entrySet ()) {
                 TableHead tableHead = new TableHead ();
                 tableHead.setIsShow ( 1 );
-
                 Integer key = integerStringEntry.getKey ();
                 if ("PRE".equals ( funcCode )) {
                     CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( key,
@@ -218,7 +217,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     }
 
 
-    public List < CheckCustomTableVO > checkFile(List < Map < Integer, String > > list, String funcCode, Integer isSystemDefine) {
+    private List < CheckCustomTableVO > checkFile(List < Map < Integer, String > > list, String funcCode) {
         List < Integer > idList = null;
         idList = new ArrayList <> ( list.get ( 0 ).keySet () );
         List < Map < Integer, Object > > mapList = new ArrayList <> ();
@@ -231,7 +230,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         //请求接口获得返回前端的结果
         List < CheckCustomTableVO > checkCustomTableVOS = customTableFieldService.checkCustomFieldValue ( idList, mapList );
-        if (isSystemDefine != 0) {
             for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
                 String idtype = null;
                 String idnumber = null;
@@ -244,6 +242,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     } else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
                         employmentNumber = fieldVO.getFieldValue ();
                     }
+
                 }
                 boolean result = false;
                 if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
@@ -260,10 +259,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
                 if (!result) {
                     checkCustomTableVO.setCheckResult ( false );
-                    checkCustomTableVO.setResultMsg ( "用户不存在" );
+                    checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg ()+"用户不存在" );
                 }
             }
-        }
         return checkCustomTableVOS;
     }
 
@@ -356,6 +354,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             s = redisClusterService.get ( s1 );
         } else {
             logger.error ( "获取缓存失败" );
+            ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
         }
         //还原成list
         List < ContractVo > objectList = JSONArray.parseArray ( s, ContractVo.class );
@@ -607,7 +606,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
                     map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "org_id" ) ) );
                 }
-            } else if (SUPORCODE.equals ( fieldName ) || SUPVISORUSERNAME.equals ( fieldName )) {
+            } else if (SUPORCODE.equals ( fieldName ) ) {
                 if(null!=value && !"null".equals ( value )) {
                     Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
                     map.put ( map1.get ( "field_id" ), String.valueOf ( map1.get ( "archive_id" ) ) );
@@ -629,6 +628,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         }
         return map;
     }
+
 
     /**
      * 从传过来map中解析数据并转化封装到Dates中

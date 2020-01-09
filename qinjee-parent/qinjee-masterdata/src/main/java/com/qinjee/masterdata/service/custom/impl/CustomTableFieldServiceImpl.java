@@ -456,14 +456,17 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     public void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList, Map<Integer, String> mapValue) {
         if(CollectionUtils.isNotEmpty(customFieldList)){
             for(CustomFieldVO fieldVO : customFieldList){
+                //设置默认值
                 fieldVO.setDefaultValue ( mapValue.get ( fieldVO.getFieldId () ) );
                 if(StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())){
                     List < SysDict > dictList = sysDictService.searchSysDictListByDictType ( fieldVO.getCode () );
                     for (SysDict dict : dictList) {
-                        if(dict.getDictType ().equals ( fieldVO.getCode () )){
+                        if(dict.getDictCode ().equals ( mapValue.get(fieldVO.getFieldId ()) )){
+                            //设置中文值
                             fieldVO.setChDefaultValue(dict.getDictValue());
                         }
                     }
+                    //设置字典类
                     fieldVO.setDictList ( dictList );
                 }else{
                     fieldVO.setChDefaultValue ( mapValue.get(fieldVO.getFieldId()) );

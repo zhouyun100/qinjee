@@ -16,7 +16,7 @@
 <!-- 附件组表(t_attachment_group) -->
 <mapper namespace="com.qinjee.masterdata.dao.AttachmentGroupDao">
     <!-- 结果映射 -->
-    <resultMap id="t_attachment_groupMap" type="com.qinjee.masterdata.model.vo.ShowAttatchementVo">
+    <resultMap id="t_attachment_groupMap" type="com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo">
         <id column="group_id" property="groupId" jdbcType="INTEGER" />
         <result column="group_name" property="groupName" jdbcType="VARCHAR" />
         <result column="group_type" property="groupType" jdbcType="VARCHAR" />

@@ -10,7 +10,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
-import com.qinjee.masterdata.model.vo.StandingBookReturnVo;
+import com.qinjee.masterdata.model.vo.staff.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.*;

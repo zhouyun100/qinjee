@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.vo.AttchmentRecordVo;
+import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

@@ -12,7 +12,7 @@ package com.qinjee.masterdata.service.custom.impl;
 
 import com.qinjee.masterdata.dao.custom.TemplateCustomTableFieldDao;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
-import com.qinjee.masterdata.model.vo.SaveTemplateVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;

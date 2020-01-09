@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo;
+package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.masterdata.model.entity.AttachmentGroup;
