@@ -103,7 +103,7 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/updateArchive", method = RequestMethod.POST)
     @ApiOperation(value = "更新档案表", notes = "hkt")
 //    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
-    public ResponseResult updateArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) {
+    public ResponseResult updateArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) throws Exception {
         Boolean b = checkParam(userArchiveVo,getUserSession());
         if(b){
                 staffArchiveService.updateArchive(userArchiveVo,getUserSession());
