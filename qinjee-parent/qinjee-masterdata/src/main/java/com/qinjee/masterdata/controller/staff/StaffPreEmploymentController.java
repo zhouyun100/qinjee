@@ -61,6 +61,8 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
+
+
     /**
      * 修改预入职信息(值的信息)
      */
@@ -75,6 +77,8 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return  failResponseResult("参数错误");
     }
+
+
     /**
      * 修改预入职信息(显示字段的信息)
      */
@@ -103,6 +107,8 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 查看单个预入职信息
      */
@@ -116,6 +122,8 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 根据机构查看预入职
      */
@@ -139,6 +147,8 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+
+
     /**
      * 延期入职以及放弃入职(延期入职时间还需要添加时间)
      * 延期入职需要更新预入职信息的入职时间，同时更新预入职更改表
@@ -182,6 +192,7 @@ public class StaffPreEmploymentController extends BaseController {
         }
         return failResponseResult ( "参数错误" );
     }
+
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
             if (null == param || "".equals(param)) {

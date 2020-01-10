@@ -19,7 +19,6 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.QRCodeUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,7 +128,6 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
             throws IllegalAccessException {
         Map < Integer, String > map = new HashMap <> ();
         List < Integer > integers = new ArrayList <> ();
-
         List < EntryTableListWithValueVo > entryTableListWithValueVos = new ArrayList <> ();
 
         //根据模板id获取模板数据
@@ -138,7 +136,9 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
         //将对象属性进行copy
         for (EntryRegistrationTableVO entryRegistrationTableVO : entryRegistrationTableVOList) {
             EntryTableListWithValueVo entryTableListWithValueVo = new EntryTableListWithValueVo ();
-            BeanUtils.copyProperties ( entryRegistrationTableVO, entryTableListWithValueVo );
+            entryTableListWithValueVo.setSort ( entryRegistrationTableVO.getSort () );
+            entryTableListWithValueVo.setTableId ( entryRegistrationTableVO.getTableId () );
+            entryTableListWithValueVo.setTableName ( entryRegistrationTableVO.getTableName () );
             entryTableListWithValueVos.add ( entryTableListWithValueVo );
         }
         //筛选出tableId

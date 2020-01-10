@@ -68,7 +68,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     }
 
     @Override
-    public String createEmpNumber(Integer id,Integer archiveId) throws Exception {
+    public String createEmpNumber(Integer id,Integer archiveId) {
         EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey ( id );
         if(employeeNumberRule!=null) {
             CreatNumberVo creatNumberVo = new CreatNumberVo ();
@@ -86,7 +86,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     }
 
     @Override
-    public String createConNumber(Integer id, UserSession userSession) throws Exception {
+    public String createConNumber(Integer id, UserSession userSession)  {
         List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( id );
         CreatNumberVo creatNumberVo=new CreatNumberVo ();
         BeanUtils.copyProperties (contractParamByCondition.get(0),creatNumberVo);
@@ -103,7 +103,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
        return employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () );
     }
 
-    private String getString( CreatNumberVo creatNumberVo) throws Exception {
+    private String getString( CreatNumberVo creatNumberVo)  {
         String employeeNumberPrefix = creatNumberVo.getContractRulePrefix ();
         String dateModel = getDateModel ( creatNumberVo.getDateRule () );
         String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();

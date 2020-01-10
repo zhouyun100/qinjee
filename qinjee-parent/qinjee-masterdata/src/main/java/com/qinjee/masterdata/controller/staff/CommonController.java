@@ -115,7 +115,6 @@ public class CommonController extends BaseController {
                     return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
     }
     /**
      * 根据企业ID和功能CODE查询自定义档案表
@@ -362,26 +361,25 @@ public class CommonController extends BaseController {
      */
     @RequestMapping(value = "/selectValue", method = RequestMethod.GET)
     @ApiOperation(value = "在进行修改操作时，根据businessId与对应的表id找到值，进行回显", notes = "hkt")
-
     public ResponseResult<List<CustomTableVO>> selectValue(Integer tableId,Integer businessId) throws IllegalAccessException {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
                 List<CustomTableVO> list=new ArrayList <> (  );
                 CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId,getUserSession ());
                 List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
-                for (Map < Integer, String > map : mapList) {
-                    list.add (customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map ));
-                }
-             for (CustomTableVO tableVO : list) {
-                    List < CustomGroupVO > customGroupVOList = tableVO.getCustomGroupVOList ();
-                    for (CustomGroupVO customGroupVO : customGroupVOList) {
-                        for (CustomFieldVO customFieldVO : customGroupVO.getCustomFieldVOList ()) {
-                            if(customFieldVO.getIsSystemDefine ()==1){
-                            customFieldVO.setFieldCode ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
+                    for (Map < Integer, String > map : mapList) {
+                        list.add ( customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map ) );
+                    }
+                    for (CustomTableVO tableVO : list) {
+                        List < CustomGroupVO > customGroupVOList = tableVO.getCustomGroupVOList ();
+                        for (CustomGroupVO customGroupVO : customGroupVOList) {
+                            for (CustomFieldVO customFieldVO : customGroupVO.getCustomFieldVOList ()) {
+                                if (customFieldVO.getIsSystemDefine () == 1) {
+                                    customFieldVO.setFieldCode ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
+                                }
                             }
                         }
                     }
-             }
                 return new ResponseResult <> (list, CommonCode.SUCCESS);
         }
             return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
@@ -503,8 +501,6 @@ public class CommonController extends BaseController {
     public ResponseResult<List<Post>> getPostByOrgId(Integer orgId) {
                  List<Post> list=staffCommonService.getPostListByOrgId ( orgId,getUserSession ().getCompanyId () );
                 return new ResponseResult<>(list, CommonCode.SUCCESS);
-
-
     }
 
     /**

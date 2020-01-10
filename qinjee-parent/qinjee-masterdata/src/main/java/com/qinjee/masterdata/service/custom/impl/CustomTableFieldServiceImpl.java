@@ -433,9 +433,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Override
     public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue) {
 
-        if(customTable != null && !org.springframework.util.CollectionUtils.isEmpty(mapValue)){
+        if(customTable != null && mapValue!=null){
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
-
             if(CollectionUtils.isNotEmpty(groupList)){
                 for(CustomGroupVO groupVO : groupList){
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();

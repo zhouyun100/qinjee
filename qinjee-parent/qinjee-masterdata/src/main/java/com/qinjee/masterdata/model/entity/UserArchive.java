@@ -176,6 +176,10 @@ public class UserArchive implements Serializable {
      */
     @ApiModelProperty("司龄")
     private BigDecimal servingAge;
+    /**
+     * 入职时间
+     */
+    private Date servingDate;
 
     /**
      * 工龄

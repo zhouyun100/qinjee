@@ -29,6 +29,7 @@
     <resultMap id="EntryRegistrationTableResultMap" type="com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO">
         <result column="table_id" jdbcType="INTEGER" property="tableId" />
         <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
     </resultMap>
 
     <resultMap id="CustomFieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
@@ -58,6 +59,7 @@
         <result column="is_show" jdbcType="SMALLINT" property="isShow" />
         <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
         <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
     </resultMap>
 
     <!-- 根据企业ID和模板ID查询自定义表列表 -->
@@ -237,7 +239,7 @@
 
     <!-- 根据模板ID查询预入职登记表单所有的表 -->
     <select id="searchEntryRegistrationTableListByTemplateId" resultMap="EntryRegistrationTableResultMap">
-        SELECT cat.table_id,cat.table_name
+        SELECT cat.table_id,cat.table_name,tct.sort
         FROM t_custom_archive_table cat,t_template_custom_table tct
         WHERE tct.template_id = #{templateId,jdbcType=INTEGER}
         and cat.func_code='pre'
@@ -254,7 +256,7 @@
         select caf.field_id,caf.field_code,caf.field_name,caf.field_type,caf.input_type,caf.text_type,caf.default_value,
         caf.placeholder,caf.max_length,caf.min_length,caf.max_number,caf.min_number,caf.float_length,
         caf.is_time_range,caf.min_time,caf.max_time,caf.format_time,caf.is_must,caf.rule,caf.is_only_read,
-        caf.table_id,caf.group_id,caf.is_show,caf.is_system_define,caf.sort
+        caf.table_id,caf.group_id,caf.is_show,caf.is_system_define,caf.sort,caf.code
         FROM
         t_custom_archive_field caf
         where caf.field_id in

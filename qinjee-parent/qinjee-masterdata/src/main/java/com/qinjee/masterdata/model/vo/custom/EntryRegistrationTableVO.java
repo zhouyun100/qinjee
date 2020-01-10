@@ -30,6 +30,10 @@ public class EntryRegistrationTableVO {
      */
     private String tableName;
     /**
+     *排序sort
+     */
+    private Integer sort;
+    /**
      * 自定义字段列表
      */
     private List<CustomFieldVO> customFieldVOList;

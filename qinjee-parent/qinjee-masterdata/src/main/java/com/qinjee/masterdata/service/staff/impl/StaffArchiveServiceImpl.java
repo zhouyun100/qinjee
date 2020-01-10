@@ -92,7 +92,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         userArchive.setIsDelete ( ( short ) 0 );
         checkEmployeeNumber( userSession,  userArchive);
         userArchiveDao.updateByPrimaryKeySelective ( userArchive );
-
     }
 
     @Override

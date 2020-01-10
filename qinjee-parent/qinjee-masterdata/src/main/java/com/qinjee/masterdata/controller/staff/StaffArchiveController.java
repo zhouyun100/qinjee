@@ -190,13 +190,6 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectNameAndNumber", method = RequestMethod.GET)
     @ApiOperation(value = "通过id找到人员姓名与工号", notes = "hkt")
-   /* @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
-    })*/
-
     public ResponseResult<Map<String,String>> selectNameAndNumber(Integer id) {
         Boolean b = checkParam(id);
         if(b){
@@ -211,12 +204,6 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchivebatch", method = RequestMethod.POST)
     @ApiOperation(value = "查看档案（查询某个组织部门下的档案）", notes = "hkt")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "orgId", value = "机构id集合", paramType = "query", required = false),
-//            @ApiImplicitParam(name = "pageSize", value = "页大小", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
-//            @ApiImplicitParam(name = "querySchemaId", value = "查询方案id", paramType = "query", required = true)
-//    })
     public ResponseResult<UserArchiveVoAndHeader>  selectArchivebatch(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
         Boolean b = checkParam(requestUserarchiveVo);
         if(b){
@@ -243,7 +230,6 @@ public class StaffArchiveController extends BaseController {
 
     @RequestMapping(value = "/insertUserArchivePostRelation", method = RequestMethod.POST)
     @ApiOperation(value = "新增人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
-//    @ApiImplicitParam(name = "UserArchivePostRelation", value = "人员档案关系表", paramType = "form", required = true)
     public ResponseResult insertUserArchivePostRelation(@RequestBody @Valid UserArchivePostRelationVo userArchivePostRelationVo) throws ParseException {
         Boolean b = checkParam(getUserSession());
         if(b){
@@ -258,7 +244,6 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/deleteUserArchivePostRelation", method = RequestMethod.POST)
     @ApiOperation(value = "删除人员岗位关系，初期只涉及任职状态是否兼职", notes = "hkt")
-//    @ApiImplicitParam(name = "list", value = "人员档案关系表id集合", paramType = "query", required = true)
     public ResponseResult deleteUserArchivePostRelation(@RequestBody List<Integer> list) throws Exception {
         Boolean b = checkParam(list);
         if(b){

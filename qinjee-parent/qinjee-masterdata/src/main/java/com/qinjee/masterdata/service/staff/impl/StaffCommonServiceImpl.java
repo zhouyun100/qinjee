@@ -282,19 +282,20 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     String s1 = selectValueById ( integerStringMap, integer );
                                     if (!StringUtils.isEmpty ( s1 )) {
                                         if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                            if (map1.get ( "text_type" ).equals ( "text" )) {
+                                            if ("text".equals (map1.get ( "text_type" ) )) {
                                                 declaredField.set ( userArchive, String.valueOf (s1) );
-                                            } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                            } else if ("code".equals (map1.get ( "text_type" ) )) {
                                                 String s = declaredField.getType ().toString ();
                                                 if (s.contains ( "Integer" )) {
                                                     declaredField.set ( userArchive, Integer.parseInt (s1) );
                                                 } else if (s.contains ( "String" )) {
                                                     declaredField.set ( userArchive, s1 );
                                                 }
-                                            } else if (map1.get ( "text_type" ).equals ( "number" )) {
+                                            } else if ("number".equals (map1.get ( "text_type" ) )) {
                                                 declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
-                                            } else if (map1.get ( "text_type" ).equals ( "date" )) {
+                                            } else if ("date".equals (map1.get ( "text_type" ) )) {
                                                 SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                                sim.setTimeZone (TimeZone.getTimeZone ( "GMT+8" ));
                                                 Date parse = sim.parse ( s1 );
                                                 declaredField.set ( userArchive, parse );
                                             }
@@ -363,7 +364,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 preEmployment.setEmploymentState ( "未入职" );
                                 preEmployment.setEmploymentRegister ( "未发送" );
                                 preEmployment.setDataSource ( "手工录入" );
-                                preEmployment.setHireDate ( new Date () );
                                 preEmployment.setCompanyId ( userSession.getCompanyId () );
                                 preEmployment.setOperatorId ( userSession.getArchiveId () );
                                 Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
@@ -372,19 +372,20 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     String s1 = selectValueById ( integerStringMap, integer );
                                     if(!StringUtils.isEmpty ( s1 )) {
                                     if (declaredField.getName ().equals ( FieldToProperty.fieldToProperty ( map1.get ( "field_code" ) ) )) {
-                                            if (map1.get ( "text_type" ).equals ( "text" )) {
+                                            if ("text".equals ( map1.get ( "text_type" ) )) {
                                                 declaredField.set ( preEmployment, s1 );
-                                            } else if (map1.get ( "text_type" ).equals ( "code" )) {
+                                            } else if ("code".equals ( map1.get ( "text_type" ) )) {
                                                 String s = declaredField.getType ().toString ();
                                                 if (s.contains ( "Integer" )) {
                                                     declaredField.set ( preEmployment, Integer.parseInt (s1) );
                                                 } else if (s.contains ( "String" )) {
                                                     declaredField.set ( preEmployment, s1 );
                                                 }
-                                            } else if (map1.get ( "text_type" ).equals ( "number" )) {
+                                            } else if ("number".equals ( map1.get ( "text_type" ) )) {
                                                 declaredField.set ( preEmployment, Integer.parseInt ( s1 ) );
-                                            } else if (map1.get ( "text_type" ).equals ( "date" )) {
+                                            } else if ("date".equals (map1.get ( "text_type" ))) {
                                                 SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
+                                                sim.setTimeZone (TimeZone.getTimeZone ( "GMT+8" ));
                                                 Date parse = sim.parse ( s1 );
                                                 declaredField.set ( preEmployment, parse );
                                             }
