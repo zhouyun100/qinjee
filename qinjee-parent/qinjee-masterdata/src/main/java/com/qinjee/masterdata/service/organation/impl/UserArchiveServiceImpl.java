@@ -190,7 +190,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
         UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
-        UserInfo userByPhone = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
+        UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
         if (Objects.nonNull(userByPhone) && userInfoVO.getUserId() != userInfoVO.getUserId()) {
             ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
         }

@@ -34,7 +34,7 @@
 
     <select id="getUserByPhoneAndCompanyId" resultType="com.qinjee.masterdata.model.entity.UserInfo">
       SELECT
-        <include refid="Base_Column_List"></include>
+         tua.user_id,tua.phone ,tua.user_name,tua.email
             FROM
          t_user_info tu
             LEFT JOIN t_user_archive tua
