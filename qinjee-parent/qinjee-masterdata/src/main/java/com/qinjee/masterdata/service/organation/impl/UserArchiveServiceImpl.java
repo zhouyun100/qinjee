@@ -189,9 +189,12 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+        logger.info("编辑用户信息：userId："+userArchiveVo.getUserId());
         UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
         UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
-        if (Objects.nonNull(userByPhone) && userInfoVO.getUserId() != userInfoVO.getUserId()) {
+        logger.info("根据手机号查到的用户："+userByPhone);
+        if (Objects.nonNull(userByPhone) && userByPhone.getUserId() != userInfoVO.getUserId()) {
+
             ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
         }
         //userInfoVO.setUserName(userArchiveVo.getUserName());
