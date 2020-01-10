@@ -102,6 +102,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
         List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
+        logger.info("查询机构下用户，机构id："+orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
@@ -112,6 +113,56 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         return new ResponseResult<>(pageResult);
     }
 
+
+    /**
+     * 删除时不要删除账号信息，只将用户当前企业下的档案信息，以及用户企业关系表的信息
+     *
+     * @param idsMap
+     * @return
+     */
+    @Override
+    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId) {
+
+        //entry中key为userId，value为archiveId
+        for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
+            //清除企业关联
+            userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
+            //删除档案
+            UserArchive userArchive = new UserArchive();
+            userArchive.setIsDelete((short) 1);
+            userArchive.setArchiveId(entry.getValue());
+            userArchive.setUpdateTime(new Date());
+            userArchiveDao.updateByPrimaryKeySelective(userArchive);
+        }
+    }
+
+    @Override
+    public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+        logger.info("编辑用户信息：userId：" + userArchiveVo.getUserId());
+        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
+        UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
+        logger.info("根据手机号查到的用户：" + userByPhone);
+        if (Objects.nonNull(userByPhone) && userByPhone.getUserId() != userInfoVO.getUserId()) {
+
+            ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
+        }
+        //userInfoVO.setUserName(userArchiveVo.getUserName());
+        userInfoVO.setPhone(userArchiveVo.getPhone());
+        userInfoVO.setEmail(userArchiveVo.getEmail());
+
+        userInfoDao.editUserInfo(userInfoVO);
+        UserArchiveVo userArchiveVo1 = userArchiveDao.selectByPrimaryKey(userArchiveVo.getArchiveId());
+
+        UserArchive userArchive = new UserArchive();
+        BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
+        BeanUtils.copyProperties(userArchiveVo1, userArchive);
+        userArchiveDao.updateByPrimaryKeySelective(userArchive);
+    }
+
+    @Override
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
+        return doUploadAndCheck(multfile, UserArchiveVo.class, userSession, response);
+    }
 
     @Override
     @Transactional
@@ -146,6 +197,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         userCompany.setCompanyId(userSession.getCompanyId());
         userCompany.setIsEnable((short) 1);
         userCompanyDao.insertSelective(userCompany);
+
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchive);
 
@@ -165,67 +217,76 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     }
 
 
-    /**
-     * 删除时不要删除账号信息，只将用户当前企业下的档案信息，以及用户企业关系表的信息
-     *
-     * @param idsMap
-     * @return
-     */
-    @Override
-    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId) {
-
-        //entry中key为userId，value为archiveId
-        for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
-            //清除企业关联
-            userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
-            //删除档案
-            UserArchive userArchive = new UserArchive();
-            userArchive.setIsDelete((short) 1);
-            userArchive.setArchiveId(entry.getValue());
-            userArchive.setUpdateTime(new Date());
-            userArchiveDao.updateByPrimaryKeySelective(userArchive);
-        }
-    }
-
-    @Override
-    public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
-        logger.info("编辑用户信息：userId："+userArchiveVo.getUserId());
-        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
-        UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
-        logger.info("根据手机号查到的用户："+userByPhone);
-        if (Objects.nonNull(userByPhone) && userByPhone.getUserId() != userInfoVO.getUserId()) {
-
-            ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
-        }
-        //userInfoVO.setUserName(userArchiveVo.getUserName());
-        userInfoVO.setPhone(userArchiveVo.getPhone());
-        userInfoVO.setEmail(userArchiveVo.getEmail());
-
-        userInfoDao.editUserInfo(userInfoVO);
-        UserArchiveVo userArchiveVo1 = userArchiveDao.selectByPrimaryKey(userArchiveVo.getArchiveId());
-
-        UserArchive userArchive = new UserArchive();
-        BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
-        BeanUtils.copyProperties(userArchiveVo1, userArchive);
-        userArchiveDao.updateByPrimaryKeySelective(userArchive);
-    }
-
-    @Override
-    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        return doUploadAndCheck(multfile, UserArchiveVo.class, userSession, response);
-    }
-
     @Override
     public void importToDatabase(String orgExcelRedisKey, UserSession userSession) {
         String data = redisService.get(orgExcelRedisKey.trim());
         //将其转为对象集合
         List<UserArchiveVo> list = JSONArray.parseArray(data, UserArchiveVo.class);
         //直接遍历入库  账户信息表  账户企业关联表 用户档案表
-        for (UserArchiveVo archiveVo : list) {
+        for (UserArchiveVo vo : list) {
 
+            //1.根据手机号+企业查询用户 如果存在则更新  如果不存在则单独以手机号查询用户  如果存在则不新增账户 只需进行企业关联 如果两次查询都不存在则新增一条账户信息
+            UserInfo user1 = userInfoDao.getUserByPhoneAndCompanyId(vo.getPhone(), userSession.getCompanyId());
+            if (Objects.nonNull(user1)) {
+                //2.进行账户更新操作 账户企业关联表不用动
+                UserInfo userInfoDo = new UserInfo();
+                userInfoDo.setUserId(user1.getUserId());
+                userInfoDo.setEmail(vo.getEmail());
+                //TODO 分析还有哪些列需要更新
+                userInfoDao.update(userInfoDo);
+                //3.进行档案维护 根据userId查询企业下关联的档案的维护，如果存在档案则更新，不存在则插入
+                UserArchiveVo archiveVo = userArchiveDao.selectByUserId(user1.getUserId(), userSession.getCompanyId());
+                if (Objects.nonNull(archiveVo)) {
+                    UserArchive userArchive = new UserArchive();
+                    //进行一些属性设置，注意 有些需要进行字典转换
+                    userArchive.setUserId(archiveVo.getUserId());
+                    userArchive.setArchiveId(archiveVo.getArchiveId());
+                    userArchive.setEmail(vo.getEmail());
+                    userArchiveDao.updateByPrimaryKeySelective(userArchive);
+                } else {
+                    UserArchive userArchive = new UserArchive();
+                    //进行一些属性设置，注意 有些需要进行字典转换
+                    userArchive.setEmail(vo.getEmail());
+                    userArchiveDao.insertSelective(userArchive);
+                }
+            } else {
+                UserInfo user2 = userInfoDao.getUserByPhone(vo.getPhone());
+                if (Objects.nonNull(user2)) {
+                    //4.进行企业绑定
+                    //维护员工企业关系表
+                    UserCompany userCompany = new UserCompany();
+                    userCompany.setCreateTime(new Date());
+                    userCompany.setUserId(user2.getUserId());
+                    userCompany.setCompanyId(userSession.getCompanyId());
+                    userCompany.setIsEnable((short) 1);
+                    userCompanyDao.insertSelective(userCompany);
+
+                } else {
+                    //5.如果都为空 新增账户并绑定企业
+                    user2 = new UserInfo();
+                    user2.setPhone(vo.getPhone());
+                    user2.setEmail(vo.getEmail());
+                    user2.setCreateTime(new Date());
+                    //密码默认手机号后6位
+                    String p = StringUtils.substring(vo.getPhone(), vo.getPhone().length() - 6, vo.getPhone().length());
+                    user2.setPassword(MD5Utils.getMd5(p));
+                    userLoginDao.addUserInfo(user2);
+
+                    UserCompany userCompany = new UserCompany();
+                    userCompany.setCreateTime(new Date());
+                    userCompany.setUserId(user2.getUserId());
+                    userCompany.setCompanyId(userSession.getCompanyId());
+                    userCompany.setIsEnable((short) 1);
+                    userCompanyDao.insertSelective(userCompany);
+                }
+
+                //6.进行档案维护 新增档案
+                UserArchive userArchive = new UserArchive();
+                //进行一些属性设置，注意 有些需要进行字典转换
+                userArchive.setEmail(vo.getEmail());
+                userArchiveDao.insertSelective(userArchive);
+            }
         }
-
-
     }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {

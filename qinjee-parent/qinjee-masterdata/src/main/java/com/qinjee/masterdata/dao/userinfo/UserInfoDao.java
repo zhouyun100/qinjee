@@ -21,4 +21,5 @@ public interface UserInfoDao {
 
     int clearUserCompany(Integer userId, Integer companyId, Date date);
 
+    void update(UserInfo userInfoDo);
 }

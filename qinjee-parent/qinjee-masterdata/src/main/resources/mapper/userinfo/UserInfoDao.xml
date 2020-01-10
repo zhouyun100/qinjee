@@ -61,4 +61,8 @@
         set is_enable = 0 and update_time =#{date,jdbcType=TIMESTAMP}
         where user_id =#{userId} and company_id = #{companyId}
     </update>
+
+    <update id="update">
+        update t_user_info set email  =#{email} where user_id =#{userId}
+    </update>
 </mapper>
