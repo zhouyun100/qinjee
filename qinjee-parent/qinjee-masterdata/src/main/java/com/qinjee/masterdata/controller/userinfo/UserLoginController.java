@@ -230,7 +230,6 @@ public class UserLoginController extends BaseController{
 
         try{
 
-            Thread.sleep ( 5000 );
             UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(phone);
             if(null != userInfo){
                 smsRecordService.sendSmsLoginCode(phone);
@@ -278,8 +277,6 @@ public class UserLoginController extends BaseController{
     @RequestMapping(value = "/loadMenuTreeByCurrentLoginUser",method = RequestMethod.POST)
     public ResponseResult<MenuVO> loadMenuTreeByCurrentLoginUser() {
         try{
-
-            Thread.sleep ( 5000 );
 
             userSession = getUserSession();
             if(userSession == null){
