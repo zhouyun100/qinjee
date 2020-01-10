@@ -621,7 +621,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             if (resultMsg.length() > 2) {
                 resultMsg.deleteCharAt(resultMsg.length() - 2);
             }
-            organizationVO.setResultMsg(resultMsg);
+            organizationVO.setResultMsg(resultMsg.toString());
             checkList.add(organizationVO);
         }
         orgDictListMem = null;

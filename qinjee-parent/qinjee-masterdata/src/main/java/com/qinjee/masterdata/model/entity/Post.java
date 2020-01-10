@@ -24,7 +24,7 @@ public class Post  implements Serializable {
 
     private Boolean checkResult;
     private Integer lineNumber;
-    private StringBuilder resultMsg;
+    private String resultMsg;
     /**
      * 岗位ID
      */

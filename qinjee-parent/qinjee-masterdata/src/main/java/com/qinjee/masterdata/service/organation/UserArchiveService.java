@@ -46,4 +46,6 @@ public interface UserArchiveService {
 
     @Transactional
     ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
+
+    void importToDatabase(String orgExcelRedisKey, UserSession userSession);
 }

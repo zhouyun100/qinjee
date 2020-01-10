@@ -32,9 +32,9 @@
         where user_id = #{userId}
     </update>
 
-    <select id="getUserByPhoneAndCompanyId" resultType="integer">
+    <select id="getUserByPhoneAndCompanyId" resultType="com.qinjee.masterdata.model.entity.UserInfo">
       SELECT
-        COUNT(1)
+        <include refid="Base_Column_List"></include>
             FROM
          t_user_info tu
             LEFT JOIN t_user_archive tua

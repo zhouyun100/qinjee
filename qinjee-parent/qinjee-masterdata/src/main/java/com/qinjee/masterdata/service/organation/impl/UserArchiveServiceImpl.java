@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.organation.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
@@ -38,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -131,8 +133,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             userInfo.setPassword(MD5Utils.getMd5(p));
             userLoginDao.addUserInfo(userInfo);
         } else {
-            int count = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
-            if (count > 0) {
+            UserInfo user = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
+            if (Objects.nonNull(user)) {
                 ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
             }
         }
@@ -188,6 +190,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
         UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
+        UserInfo userByPhone = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
+        if (Objects.nonNull(userByPhone) && userInfoVO.getUserId() != userInfoVO.getUserId()) {
+            ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
+        }
         //userInfoVO.setUserName(userArchiveVo.getUserName());
         userInfoVO.setPhone(userArchiveVo.getPhone());
         userInfoVO.setEmail(userArchiveVo.getEmail());
@@ -203,7 +209,20 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-       return  doUploadAndCheck(multfile,UserArchiveVo.class,userSession,response);
+        return doUploadAndCheck(multfile, UserArchiveVo.class, userSession, response);
+    }
+
+    @Override
+    public void importToDatabase(String orgExcelRedisKey, UserSession userSession) {
+        String data = redisService.get(orgExcelRedisKey.trim());
+        //将其转为对象集合
+        List<UserArchiveVo> list = JSONArray.parseArray(data, UserArchiveVo.class);
+        //直接遍历入库  账户信息表  账户企业关联表 用户档案表
+        for (UserArchiveVo archiveVo : list) {
+
+        }
+
+
     }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {

@@ -31,7 +31,7 @@ public class OrganizationVO  implements Serializable {
 
     private Boolean checkResult;
     private Integer lineNumber;
-    private StringBuilder resultMsg;
+    private String resultMsg;
 
     /**
      * 机构ID

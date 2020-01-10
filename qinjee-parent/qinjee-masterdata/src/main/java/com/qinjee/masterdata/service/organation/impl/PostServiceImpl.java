@@ -810,7 +810,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             if (resultMsg.length() > 2) {
                 resultMsg.deleteCharAt(resultMsg.length() - 2);
             }
-            post.setResultMsg(resultMsg);
+            post.setResultMsg(resultMsg.toString());
             checkVos.add(post);
         }
         organizationVOListMem = null;

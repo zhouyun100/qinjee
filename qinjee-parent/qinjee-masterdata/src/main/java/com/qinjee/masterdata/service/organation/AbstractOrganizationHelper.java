@@ -87,7 +87,7 @@ public abstract class AbstractOrganizationHelper<T> {
         //进行一些前置处理，并把excel原表信息与处理后的信息存入redis
         List<T> dataList = preHandle(excelList, userArchiveList);
         String key = "userDataKey" + multfile.getOriginalFilename().hashCode();
-        //将排序后的集合存入redis
+        //将记录行号后的集合存入redis
         putIntoRedis(key, dataList, resultMap);
         //将上一步处理后的信息进行规则校
         List<T> checkList = checkExcel(dataList, userSession);
@@ -95,6 +95,7 @@ public abstract class AbstractOrganizationHelper<T> {
         String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode();
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
         responseResult.setResult(resultMap);
+        resultMap=null;
         return responseResult;
     }
 
@@ -175,8 +176,8 @@ public abstract class AbstractOrganizationHelper<T> {
                 Method getLineNumber = error.getClass().getMethod("getLineNumber");
                 Method getResultMsg = error.getClass().getMethod("getResultMsg");
                 Integer lineNum = (Integer) getLineNumber.invoke(error);
-                StringBuilder msg = (StringBuilder) getResultMsg.invoke(error);
-                errorSb.append(lineNum + " -   " + msg.toString() + "\r\n");
+                String msg = (String)getResultMsg.invoke(error);
+                errorSb.append(lineNum + " -   " + msg + "\r\n");
             }
             redisService.del(key);
             String errorStr = errorSb.toString();

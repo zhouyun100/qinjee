@@ -13,10 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -100,5 +97,17 @@ public class UserArchiveController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
+
+    @GetMapping("/importToDatabase")
+    @ApiOperation(value = "ok,导入用户信息入库")
+    public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey) {
+        if (checkParam(orgExcelRedisKey)) {
+            long start = System.currentTimeMillis();
+            userArchiveService.importToDatabase(orgExcelRedisKey, getUserSession());
+            logger.info("导入机构入库："+(System.currentTimeMillis()-start));
+            return ResponseResult.SUCCESS();
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
 }
