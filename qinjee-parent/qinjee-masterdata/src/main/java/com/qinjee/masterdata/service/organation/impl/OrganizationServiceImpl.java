@@ -20,6 +20,7 @@ import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
+import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
@@ -55,7 +56,7 @@ import java.util.stream.Collectors;
  * @createTime 2019年09月16日 09:12:00
  */
 @Service
-public class OrganizationServiceImpl implements OrganizationService {
+public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO> implements OrganizationService {
     private static Logger logger = LogManager.getLogger(OrganizationServiceImpl.class);
 
     @Autowired
@@ -467,94 +468,11 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        ResponseResult responseResult = new ResponseResult();
-        //将校验结果与原表格信息返回
-        HashMap<Object, Object> resultMap = new HashMap<>();
-        //判断文件名
-        String filename = multfile.getOriginalFilename();
-        if (!(filename.endsWith(xls) || filename.endsWith(xlsx))) {
-            //文件格式不对
-            ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
-        }
-        //导入excel
-        File tempFile = File.createTempFile("temp", ".xls");
-        multfile.transferTo(tempFile);
-        List<OrganizationVO> excelDataList = DefaultExcelReader.of(OrganizationVO.class).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
-        tempFile.delete();
-        if (CollectionUtils.isEmpty(excelDataList)) {
-            //excel为空
-            ExceptionCast.cast(CommonCode.FILE_EMPTY);
-        }
-        List<OrganizationVO> orgList = new ArrayList<>();
-        //记录行号
-        Integer number = 1;
-        for (OrganizationVO org : excelDataList) {
-            org.setLineNumber(++number);
-            //排序前记录行号
-            orgList.add(org);
-        }
-        //进行排序
-        orgList.sort(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                OrganizationVO org1 = (OrganizationVO) o1;
-                OrganizationVO org2 = (OrganizationVO) o2;
-                if (org1.getOrgCode().length() > org2.getOrgCode().length()) {
-                    return 1;
-                } else if (org1.getOrgCode().length() < org2.getOrgCode().length()) {
-                    return -1;
-                }
-                return org1.getOrgCode().compareTo(org2.getOrgCode());
-                //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
-            }
-        });
-        //将排序后的orgList存入redis
-        //将orgList存入redis
-        String redisKey = "tempOrgData" + filename.hashCode();
-        redisService.del(redisKey);
-        String json = JSON.toJSONString(orgList);
-        redisService.setex(redisKey, 30 * 60, json);
-        //将原表信息及redis key置入返回对象
-        resultMap.put("excelList", orgList);
-        resultMap.put("redisKey", redisKey);
+        return  doUploadAndCheck(multfile,OrganizationVO.class,userSession,response);
 
-        //校验  校验前先根据行号进行排序
-        List<OrganizationVO> checkResultList = checkExcel(orgList, userSession);
-        //过滤出错误校验列表
-        List<OrganizationVO> failCheckList = checkResultList.stream().filter(check -> {
-            if (!check.getCheckResult()) {
-                return true;
-            } else {
-                return false;
-            }
-        }).collect(Collectors.toList());
-        //如果不为空则校验成功,将错误信息、原表数据存储到redis后抛出异常
-        if (!CollectionUtils.isEmpty(failCheckList)) {
-            StringBuilder errorSb = new StringBuilder();
-            errorSb.append("行号    |             错误信息\r\n");
-            errorSb.append("--------------------------------\r\n");
-            for (OrganizationVO error : failCheckList) {
-                errorSb.append(error.getLineNumber() + " -   " + error.getResultMsg() + "\r\n");
-            }
-            String errorInfoKey = "errorOrgData" + filename.hashCode();
-            redisService.del(errorInfoKey);
-            String errorStr = errorSb.toString();
-            redisService.setex(errorInfoKey, 30 * 60, errorStr);
-            //将错误信息置入返回对象
-            resultMap.put("failCheckList", failCheckList);
-            resultMap.put("errorInfoKey", errorInfoKey);
-            //
-            response.setHeader("errorInfoKey", errorInfoKey);
-            //文件解析失败
-            responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
-        } else {
-            responseResult.setResultCode(CommonCode.SUCCESS);
-            responseResult.setMessage("文件校验成功");
-        }
-        response.setHeader("redisKey", redisKey);
-        responseResult.setResult(resultMap);
-        return responseResult;
     }
+
+
 
     @Override
     public void cancelImport(String redisKey, String errorInfoKey) {
@@ -566,23 +484,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     //=====================================================================
 
 
-    private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
-        List<Integer> idsList = new ArrayList<>();
-/*        OrganizationVO currentOrg = organizationDao.getOrganizationById(orgId);
-        if (Objects.isNull(currentOrg)) {
-            return idsList;
-        }*/
-        //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
-        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
-        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
-        for (OrganizationVO org : allOrgs) {
-            multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
-        }
-        //根据机构id递归，取出该机构下的所有子机构
-        collectOrgIds(multiValuedMap, orgId, idsList, layer);
-        return MyCollectionUtil.removeDuplicate(idsList);
-    }
 
 
     //=====================================================================
@@ -613,6 +514,121 @@ public class OrganizationServiceImpl implements OrganizationService {
             }
         }
 
+    }
+
+    @Override
+    protected List<OrganizationVO> checkExcel(List<OrganizationVO> dataList, UserSession userSession) {
+        //统一查找出一些公共不变的数据
+        List<SysDict> orgDictListMem = sysDictService.searchSysDictListByDictType("ORG_TYPE");
+        List<UserArchiveVo> userArchiveVosMem = userArchiveDao.listUserArchiveByCompanyId(userSession.getCompanyId());
+        List<OrganizationVO> organizationVOListMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId());
+        dataList.sort(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                OrganizationVO org1 = (OrganizationVO) o1;
+                OrganizationVO org2 = (OrganizationVO) o2;
+                return org1.getLineNumber().compareTo(org2.getLineNumber());
+                //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
+            }
+        });
+
+        List<OrganizationVO> checkList = new ArrayList<>(dataList.size());
+        Map<String, String> excelOrgNameMap = new HashMap<>(dataList.size());
+        for (OrganizationVO organizationVO : dataList) {
+            //用于判断机构编码在excel中是否存在
+            excelOrgNameMap.put(organizationVO.getOrgCode(), organizationVO.getOrgName());
+        }
+        int groupCount = 0;
+        for (OrganizationVO organizationVO : dataList) {
+            //OrganizationVO checkVo = new OrganizationVO();
+            //BeanUtils.copyProperties(organizationVO, checkVo);
+            organizationVO.setCheckResult(true);
+            StringBuilder resultMsg = new StringBuilder(1024);
+            //验空
+            if (StringUtils.isBlank(organizationVO.getOrgCode())) {
+                organizationVO.setCheckResult(false);
+                resultMsg.append("机构编码不能为空 | ");
+            }
+            if (StringUtils.isBlank(organizationVO.getOrgName())) {
+                organizationVO.setCheckResult(false);
+                resultMsg.append("机构名称不能为空| ");
+            }
+            if (StringUtils.isBlank(organizationVO.getOrgType())) {
+                organizationVO.setCheckResult(false);
+                resultMsg.append("机构类型不能为空 | ");
+            }
+            if (StringUtils.isBlank(organizationVO.getOrgParentCode()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
+                organizationVO.setCheckResult(false);
+                resultMsg.append("非集团类型机构的上级机构编码不能为空 | ");
+            }
+            if (StringUtils.isBlank(organizationVO.getOrgParentName()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
+                organizationVO.setCheckResult(false);
+                resultMsg.append("非集团类型机构的上级机构名称不能为空 | ");
+            }
+            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
+                boolean bool = orgDictListMem.stream().anyMatch(a -> a.getDictValue().equals(organizationVO.getOrgType()));
+                if (!bool) {
+                    organizationVO.setCheckResult(false);
+                    resultMsg.append("机构类型[" + organizationVO.getOrgType() + "]不存在 | ");
+                }
+            }
+
+            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && organizationVO.getOrgType().equals("GROUP")) {
+                groupCount++;
+            }
+            if (groupCount > 1) {
+                organizationVO.setCheckResult(false);
+                resultMsg.append("集团类型机构只能存在一个 | ");
+            }
+            if (StringUtils.isNotBlank(organizationVO.getManagerEmployeeNumber())) {
+                boolean bool = userArchiveVosMem.stream().anyMatch(a -> a.getEmployeeNumber().equals(organizationVO.getManagerEmployeeNumber()));
+                if (!bool) {
+                    organizationVO.setCheckResult(false);
+                    resultMsg.append("部门负责人不存在 | ");
+                } else {
+                    boolean bool2 = userArchiveVosMem.stream().anyMatch(a -> a.getUserName().equals(organizationVO.getOrgManagerName()));
+                    if (!bool2) {
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("部门负责人名字不一致 | ");
+                    }
+                }
+            }
+            //根据上级机构编码查询数据库 判断上级机构是否存在
+            if (StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
+                //先判断上级机构在表中是否存在，只需要再缓存中验证就好
+                String orgName = excelOrgNameMap.get(organizationVO.getOrgParentCode());
+                if (StringUtils.isNotBlank(orgName)) {
+                    //检查excel中的父级机构名称是否一致
+                    if (!orgName.equals(organizationVO.getOrgParentName())) {
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("上级机构名称在excel中不匹配 | ");
+                    }
+                } else {
+                    //上级编码在excel中不存在，那就去缓存中查
+                    boolean bool = organizationVOListMem.stream().anyMatch(a -> a.getOrgCode().equals(organizationVO.getOrgParentCode()));
+                    if (bool) {
+                        if (!organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(organizationVO.getOrgParentName()))) {
+                            organizationVO.setCheckResult(false);
+                            resultMsg.append("上级机构名称在数据库中不匹配 | ");
+                        }
+                    } else {
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("上级机构编码[" + organizationVO.getOrgParentCode() + "]不存在 | ");
+
+                    }
+                }
+            }
+            if (resultMsg.length() > 2) {
+                resultMsg.deleteCharAt(resultMsg.length() - 2);
+            }
+            organizationVO.setResultMsg(resultMsg);
+            checkList.add(organizationVO);
+        }
+        orgDictListMem = null;
+        userArchiveVosMem = null;
+        organizationVOListMem = null;
+        excelOrgNameMap = null;
+        return checkList;
     }
 
 
@@ -984,130 +1000,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                 handlerOrganizationToGraphics(allOrg, childList, isContainsCompiler, isContainsActualMembers);
             }
         }
-    }
-
-
-    public List<OrganizationVO> checkExcel(List<OrganizationVO> voList, UserSession userSession) {
-        //统一查找出一些公共不变的数据
-        List<SysDict> orgDictListMem = sysDictService.searchSysDictListByDictType("ORG_TYPE");
-        List<UserArchiveVo> userArchiveVosMem = userArchiveDao.listUserArchiveByCompanyId(userSession.getCompanyId());
-        List<OrganizationVO> organizationVOListMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId());
-        voList.sort(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                OrganizationVO org1 = (OrganizationVO) o1;
-                OrganizationVO org2 = (OrganizationVO) o2;
-                return org1.getLineNumber().compareTo(org2.getLineNumber());
-                //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
-            }
-        });
-
-        List<OrganizationVO> checkVos = new ArrayList<>(voList.size());
-        Map<String, String> excelOrgNameMap = new HashMap<>(voList.size());
-        for (OrganizationVO organizationVO : voList) {
-            //用于判断机构编码在excel中是否存在
-            excelOrgNameMap.put(organizationVO.getOrgCode(), organizationVO.getOrgName());
-        }
-        int groupCount = 0;
-        for (OrganizationVO organizationVO : voList) {
-            OrganizationVO checkVo = new OrganizationVO();
-            BeanUtils.copyProperties(organizationVO, checkVo);
-            checkVo.setCheckResult(true);
-            StringBuilder resultMsg = new StringBuilder();
-            //验空
-            if (StringUtils.isBlank(organizationVO.getOrgCode())) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("机构编码不能为空 | ");
-            }
-            if (StringUtils.isBlank(organizationVO.getOrgName())) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("机构名称不能为空| ");
-            }
-            if (StringUtils.isBlank(organizationVO.getOrgType())) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("机构类型不能为空 | ");
-            }
-            if (StringUtils.isBlank(organizationVO.getOrgParentCode()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("非集团类型机构的上级机构编码不能为空 | ");
-            }
-            if (StringUtils.isBlank(organizationVO.getOrgParentName()) && Objects.nonNull(organizationVO.getOrgType()) && !organizationVO.getOrgType().equals("集团")) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("非集团类型机构的上级机构名称不能为空 | ");
-            }
-            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
-                boolean bool = orgDictListMem.stream().anyMatch(a -> a.getDictValue().equals(organizationVO.getOrgType()));
-                if (!bool) {
-                    checkVo.setCheckResult(false);
-                    resultMsg.append("机构类型“" + organizationVO.getOrgType() + "”不存在 | ");
-                }
-            }
-
-            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && organizationVO.getOrgType().equals("GROUP")) {
-                groupCount++;
-            }
-            if (groupCount > 1) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("集团类型机构只能存在一个 | ");
-            }
-            if (StringUtils.isNotBlank(organizationVO.getManagerEmployeeNumber())) {
-                boolean bool = userArchiveVosMem.stream().anyMatch(a -> a.getEmployeeNumber().equals(organizationVO.getManagerEmployeeNumber()));
-                if (!bool) {
-                    checkVo.setCheckResult(false);
-                    resultMsg.append("部门负责人不存在 | ");
-                } else {
-                    boolean bool2 = userArchiveVosMem.stream().anyMatch(a -> a.getUserName().equals(organizationVO.getOrgManagerName()));
-                    if (!bool2) {
-                        checkVo.setCheckResult(false);
-                        resultMsg.append("部门负责人名字不一致 | ");
-                    }
-                }
-            }
-            //根据上级机构编码查询数据库 判断上级机构是否存在
-            if (StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
-                //先判断上级机构在表中是否存在，如果表中不存就需要去查询数据库
-                //TODO 先用缓存数据进行查找，如果缓存中不存在，再调用数据库，避免多次sql查询
-                String orgName = excelOrgNameMap.get(organizationVO.getOrgParentCode());
-                if (StringUtils.isNotBlank(orgName)) {
-                    //检查excel中的父级机构名称是否一致
-                    if (!orgName.equals(organizationVO.getOrgParentName())) {
-                        checkVo.setCheckResult(false);
-                        resultMsg.append("上级机构名称在excel中不匹配 | ");
-                    }
-                } else {
-                    //上级编码在excel中不存在，那就去数据库查找,先在缓存中查
-                    boolean bool = organizationVOListMem.stream().anyMatch(a -> a.getOrgCode().equals(organizationVO.getOrgParentCode()));
-                    if (bool) {
-                        if (!organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(organizationVO.getOrgParentName()))) {
-                            checkVo.setCheckResult(false);
-                            resultMsg.append("上级机构名称在数据库中不匹配 | ");
-                        }
-                    } else {
-                        //如果缓存中不存在，再去查数据库
-                        OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(organizationVO.getOrgParentCode(), userSession.getCompanyId());
-                        if (Objects.nonNull(org)) {
-                            if (StringUtils.isBlank(org.getOrgName()) || !organizationVO.getOrgParentName().equals(org.getOrgName())) {
-                                checkVo.setCheckResult(false);
-                                resultMsg.append("上级机构名称在数据库中不匹配 | ");
-                            }
-                        } else {
-                            checkVo.setCheckResult(false);
-                            resultMsg.append("上级机构编码[" + organizationVO.getOrgParentCode() + "]不存在 | ");
-                        }
-                    }
-                }
-            }
-            if (resultMsg.length() > 2) {
-                resultMsg.deleteCharAt(resultMsg.length() - 2);
-            }
-            checkVo.setResultMsg(resultMsg);
-            checkVos.add(checkVo);
-        }
-        orgDictListMem = null;
-        userArchiveVosMem = null;
-        organizationVOListMem = null;
-        excelOrgNameMap=null;
-        return checkVos;
     }
 
 }

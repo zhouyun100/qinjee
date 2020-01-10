@@ -10,7 +10,6 @@
  */
 package com.qinjee.masterdata.service.userinfo.impl;
 
-import com.qinjee.masterdata.controller.userinfo.CompanyRegistController;
 import com.qinjee.masterdata.dao.userinfo.CompanyRegistDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
@@ -19,7 +18,6 @@ import com.qinjee.masterdata.service.userinfo.CompanyRegistService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.utils.MD5Utils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

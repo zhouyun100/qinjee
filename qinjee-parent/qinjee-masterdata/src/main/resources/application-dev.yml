@@ -1,7 +1,7 @@
 spring:
   #应用名
   application:
-    name: masterdata-dev-zhouyun
+    name: masterdata-dev
 
   #配置国际化
   messages:

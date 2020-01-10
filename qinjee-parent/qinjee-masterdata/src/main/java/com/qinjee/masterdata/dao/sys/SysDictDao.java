@@ -30,6 +30,9 @@ public interface SysDictDao {
      */
     List<SysDict> searchSysDictList(SysDict sysDict);
 
+    //查询一些选项比较少的字典
+    List<SysDict> searchSomeSysDictList();
+
     /**
      * 查询字典对象
      * @param sysDict

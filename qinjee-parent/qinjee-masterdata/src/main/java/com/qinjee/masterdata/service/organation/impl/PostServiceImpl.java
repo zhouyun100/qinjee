@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
+import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
  * @createTime 2019年09月23日 11:07:00
  */
 @Service
-public class PostServiceImpl implements PostService {
+public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements PostService {
 
     private static Logger logger = LogManager.getLogger(PostServiceImpl.class);
 
@@ -391,85 +392,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        ResponseResult responseResult = new ResponseResult(CommonCode.FAIL);
-        //将校验结果与原表格信息返回
-        HashMap<Object, Object> resultMap = new HashMap<>();
-        //判断文件名
-        String filename = multfile.getOriginalFilename();
-        if (!(filename.endsWith(".xls") || filename.endsWith(".xlsx"))) {
-            responseResult.setResultCode(CommonCode.FILE_FORMAT_ERROR);
-            return responseResult;
-        }
-        //@ExcelColumn(order = 3, index = 3, width = 20)
-        //List<Object> objects = ExcelImportUtil.importExcel(multfile.getInputStream(), Post.class);
-        File tempFile = File.createTempFile("temp", ".xls");
-        multfile.transferTo(tempFile);
-        List<Post> objects = DefaultExcelReader.of(Post.class).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
-        tempFile.delete();
-        List<Post> orgList = new ArrayList<>();
-        //记录行号
-        Integer number = 1;
-        for (Post vo : objects) {
-            vo.setLineNumber(++number);
-            orgList.add(vo);
-        }
-        orgList.sort(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Post post1 = (Post) o1;
-                Post post2 = (Post) o2;
-                if (post1.getPostCode().length() > post1.getPostCode().length()) {
-                    return 1;
-                } else if (post1.getPostCode().length() < post1.getPostCode().length()) {
-                    return -1;
-                }
-                return post1.getPostCode().compareTo(post2.getPostCode());
-                //return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
-            }
-        });
-        //校验 校验前先根据行号进行排序
-        List<Post> checkResultList = checkExcel(orgList, userSession);
-        //拿到错误校验列表
-        List<Post> failCheckList = checkResultList.stream().filter(check -> {
-            if (!check.getCheckResult()) {
-                return true;
-            } else {
-                return false;
-            }
-        }).collect(Collectors.toList());
-        //如果为空则校验成功
-        if (CollectionUtils.isEmpty(failCheckList)) {
-            responseResult.setMessage("文件校验成功");
-            responseResult.setResultCode(CommonCode.SUCCESS);
-        } else {
-            StringBuilder errorSb = new StringBuilder();
-            errorSb.append("行号    |             错误信息\r\n");
-            errorSb.append("--------------------------------\r\n");
-            for (Post error : failCheckList) {
-                errorSb.append(error.getLineNumber() + " -   " + error.getResultMsg() + "\r\n");
-            }
-            String errorInfoKey = "errorPostData" + filename.hashCode();
-            redisService.del(errorInfoKey);
-            String errorStr = errorSb.toString();
+        return  doUploadAndCheck(multfile,Post.class,userSession,response);
 
-            redisService.setex(errorInfoKey, 30 * 60, errorStr);
-
-            resultMap.put("errorInfoKey", errorInfoKey);
-            responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);
-            response.setHeader("errorInfoKey", errorInfoKey);
-        }
-        //将orgList存入redis
-        String redisKey = "tempPostData" + String.valueOf(filename.hashCode());
-        redisService.del(redisKey);
-        String json = JSON.toJSONString(orgList);
-        redisService.setex(redisKey, 30 * 60, json);
-
-        resultMap.put("failCheckList", failCheckList);
-        resultMap.put("excelList", orgList);
-        resultMap.put("redisKey", redisKey);
-        responseResult.setResult(resultMap);
-        response.setHeader("redisKey", redisKey);
-        return responseResult;
     }
 
     @Override
@@ -791,8 +715,12 @@ public class PostServiceImpl implements PostService {
     }
 
 
-    public List<Post> checkExcel(List<Post> voList, UserSession userSession) {
-        voList.sort(new Comparator() {
+
+
+
+    @Override
+    protected List<Post> checkExcel(List<Post> dataList, UserSession userSession) {
+        dataList.sort(new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
                 Post org1 = (Post) o1;
@@ -805,37 +733,37 @@ public class PostServiceImpl implements PostService {
         List<Post> postMem = postDao.getPostListByCompanyId(userSession.getCompanyId());
         List<Position> positionListMem = positionDao.getPositionListByCompanyId(userSession.getCompanyId());
 
-        List<Post> checkVos = new ArrayList<>(voList.size());
+        List<Post> checkVos = new ArrayList<>(dataList.size());
         //用来校验本地excel岗位编码与名称是否匹配，如果匹配 还要进行数据库校验
-        Map<String, String> excelPostNameMap = new HashMap<>(voList.size());
-        for (Post post : voList) {
+        Map<String, String> excelPostNameMap = new HashMap<>(dataList.size());
+        for (Post post : dataList) {
             excelPostNameMap.put(post.getPostCode(), post.getPostName());
         }
 
-        for (Post post : voList) {
-            Post checkVo = new Post();
-            BeanUtils.copyProperties(post, checkVo);
-            checkVo.setCheckResult(true);
-            StringBuilder resultMsg = new StringBuilder();
+        for (Post post : dataList) {
+            // Post checkVo = new Post();
+            // BeanUtils.copyProperties(post, checkVo);
+            post.setCheckResult(true);
+            StringBuilder resultMsg = new StringBuilder(1024);
             //验空
             if (StringUtils.isBlank(post.getPostCode())) {
-                checkVo.setCheckResult(false);
+                post.setCheckResult(false);
                 resultMsg.append("岗位编码不能为空 | ");
             }
             if (StringUtils.isBlank(post.getPostName())) {
-                checkVo.setCheckResult(false);
+                post.setCheckResult(false);
                 resultMsg.append("岗位名称不能为空 | ");
             }
             if (StringUtils.isBlank(post.getOrgCode())) {
-                checkVo.setCheckResult(false);
+                post.setCheckResult(false);
                 resultMsg.append("所属部门编码不能为空 | ");
             }
             if (StringUtils.isBlank(post.getOrgName())) {
-                checkVo.setCheckResult(false);
+                post.setCheckResult(false);
                 resultMsg.append("所属部门名称不能为空 | ");
             }
             if (StringUtils.isBlank(post.getPositionName())) {
-                checkVo.setCheckResult(false);
+                post.setCheckResult(false);
                 resultMsg.append("职位名称不能为空 | ");
             }
 
@@ -844,19 +772,19 @@ public class PostServiceImpl implements PostService {
                 boolean bool = organizationVOListMem.stream().anyMatch(a -> a.getOrgCode().equals(post.getOrgCode()));
                 if (bool) {
                     if (organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(post.getOrgName()))) {
-                        checkVo.setCheckResult(false);
+                        post.setCheckResult(false);
                         resultMsg.append("部门名称不匹配 | ");
                     }
                 } else {
-                    checkVo.setCheckResult(false);
-                    resultMsg.append("部门编码不存在 | ");
+                    post.setCheckResult(false);
+                    resultMsg.append("部门编码["+post.getOrgCode()+"]不存在 | ");
                 }
             }
             if (StringUtils.isNotBlank(post.getParentPostCode())) {
                 String parentPostName = excelPostNameMap.get(post.getParentPostCode());
                 if (StringUtils.isNotBlank(parentPostName)) {
                     if (!parentPostName.equals(post.getParentPostName())) {
-                        checkVo.setCheckResult(false);
+                        post.setCheckResult(false);
                         resultMsg.append("上级岗位名称在excel中不匹配 | ");
                     }
                 } else {
@@ -864,44 +792,32 @@ public class PostServiceImpl implements PostService {
                     boolean bool = postMem.stream().anyMatch(a -> a.getPostCode().equals(post.getParentPostCode()));
                     if (bool) {
                         if (!postMem.stream().anyMatch(a -> a.getPostName().equals(post.getParentPostName()))) {
-                            checkVo.setCheckResult(false);
+                            post.setCheckResult(false);
                             resultMsg.append("上级岗位名称在数据库中不匹配 | ");
                         }
                     } else {
-                        //如果缓存中不存在 再去查数据库
-                        Post parentPost = postDao.getPostByPostCode(post.getParentPostCode(), userSession.getCompanyId());
-                        if (Objects.nonNull(parentPost)) {
-                            if (!post.getParentPostName().equals(parentPost.getPostName())) {
-                                checkVo.setCheckResult(false);
-                                resultMsg.append("上级岗位名称在数据库中不匹配 | ");
-                            }
-                        } else {
-                            checkVo.setCheckResult(false);
-                            resultMsg.append("上级岗位编码[" + post.getParentPostCode() + "]不存在 | ");
-                        }
+                        post.setCheckResult(false);
+                        resultMsg.append("上级岗位编码[" + post.getParentPostCode() + "]不存在 | ");
                     }
                 }
             }
             //校验职位是否存在
             boolean bool = positionListMem.stream().anyMatch(a -> a.getPositionName().equals(post.getPositionName()));
             if (!bool) {
-                checkVo.setCheckResult(false);
-                resultMsg.append("职位" + post.getPositionName() + "不存在 | ");
+                post.setCheckResult(false);
+                resultMsg.append("职位[" + post.getPositionName() + "]不存在 | ");
             }
             if (resultMsg.length() > 2) {
                 resultMsg.deleteCharAt(resultMsg.length() - 2);
             }
-            checkVo.setResultMsg(resultMsg);
-            checkVos.add(checkVo);
+            post.setResultMsg(resultMsg);
+            checkVos.add(post);
         }
         organizationVOListMem = null;
         postMem = null;
         positionListMem = null;
-
         //用来校验本地excel岗位编码与名称是否匹配，如果匹配 还要进行数据库校验
         excelPostNameMap = null;
-        return checkVos;
+        return dataList;
     }
-
-
 }
