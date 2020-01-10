@@ -34,8 +34,7 @@ public class UserArchiveController extends BaseController {
     @Autowired
     private UserArchiveService userArchiveService;
 
-    @Autowired
-    private IStaffArchiveService staffArchiveService;
+
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
@@ -71,7 +70,7 @@ public class UserArchiveController extends BaseController {
         if (checkParam(multfile)) {
             long start = System.currentTimeMillis();
             ResponseResult responseResult = userArchiveService.uploadAndCheck(multfile, getUserSession(), response);
-            logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("导入用户信息excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
             return  responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -104,7 +103,7 @@ public class UserArchiveController extends BaseController {
         if (checkParam(orgExcelRedisKey)) {
             long start = System.currentTimeMillis();
             userArchiveService.importToDatabase(orgExcelRedisKey, getUserSession());
-            logger.info("导入机构入库："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("导入用户信息入库："+(System.currentTimeMillis()-start)+"ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
