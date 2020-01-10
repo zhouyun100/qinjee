@@ -157,7 +157,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
         BeanUtils.copyProperties(userArchiveVo1, userArchive);
         logger.info("编辑的userArchive："+userArchive);
-        userArchiveDao.updateByPrimaryKeySelective(userArchive);
+        userArchiveDao.updateByPrimaryKey(userArchive);
     }
 
     @Override
