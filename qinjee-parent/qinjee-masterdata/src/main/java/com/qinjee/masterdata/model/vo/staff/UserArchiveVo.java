@@ -7,6 +7,7 @@ import com.github.liaochong.myexcel.core.annotation.ExcelTable;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -16,10 +17,12 @@ import java.util.Date;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ExcelTable(sheetName = "用户信息", useFieldNameAsTitle = false,includeAllField = false)
+@Getter
 public class UserArchiveVo implements Serializable {
 
     private Integer lineNumber;
-    private Boolean checkResult;
+    private boolean checkResult=true;
+
     private String resultMsg;
     /**
      * 档案ID
@@ -32,7 +35,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.user_name")
     @ApiModelProperty("姓名")
-    @ExcelColumn(order = 0, title = "姓名",index = 0)
+    @ExcelColumn(order = 0, title = "姓名")
     private String userName;
 
     /**
@@ -40,7 +43,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
-    @ExcelColumn(order = 1, title = "性别",index = 1)
+    @ExcelColumn(order = 1, title = "性别")
     private String gender;
 
     /**
@@ -48,14 +51,14 @@ public class UserArchiveVo implements Serializable {
      */
 
     @ApiModelProperty("证件类型")
-    @ExcelColumn(order = 2, title = "证件类型",index = 2)
+    @ExcelColumn(order = 2, title = "证件类型")
     private String idType;
 
     /**
      * 证件号码
      */
     @ApiModelProperty("证件号码")
-    @ExcelColumn(order = 3, title = "证件号码",index = 3)
+    @ExcelColumn(order = 3, title = "证件号码")
     private String idNumber;
 
     /**
@@ -64,28 +67,28 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("出生日期")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ExcelColumn(order =4, title = "出生日期",index = 4,format = "yyyy-MM-dd")
+    @ExcelColumn(order =4, title = "出生日期",format = "yyyy-MM-dd")
     private Date birthDate;
 
     /**
      * 年龄
      */
     @ApiModelProperty("年龄")
-    @ExcelColumn(order =5, title = "年龄",index = 5)
+    @ExcelColumn(order =5, title = "年龄")
     private Short age;
 
     /**
      * 籍贯
      */
     @ApiModelProperty("籍贯")
-    @ExcelColumn(order =6, title = "籍贯",index = 6)
+    @ExcelColumn(order =6, title = "籍贯")
     private String birthplace;
 
     /**
      * 民族
      */
     @ApiModelProperty("民族")
-    @ExcelColumn(order =7, title = "民族",index = 7)
+    @ExcelColumn(order =7, title = "民族")
     private String nationality;
 
 
@@ -93,14 +96,14 @@ public class UserArchiveVo implements Serializable {
      * 最高学历
      */
     @ApiModelProperty("最高学历")
-    @ExcelColumn(order =8, title = "最高学历",index = 8)
+    @ExcelColumn(order =8, title = "最高学历")
     private String highestDegree;
 
     /**
      * 第一学历
      */
     @ApiModelProperty("第一学历")
-    @ExcelColumn(order =9, title = "第一学历",index = 9)
+    @ExcelColumn(order =9, title = "第一学历")
     private String firstDegree;
 
     /**
@@ -108,7 +111,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.phone")
     @ApiModelProperty("联系电话")
-    @ExcelColumn(order =10, title = "联系电话",index = 10)
+    @ExcelColumn(order =10, title = "联系电话")
     private String phone;
 
     /**
@@ -116,21 +119,21 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.email")
     @ApiModelProperty("电子邮箱")
-    @ExcelColumn(order =11, title = "电子邮箱",index = 11)
+    @ExcelColumn(order =11, title = "电子邮箱")
     private String email;
 
     /**
      * 婚姻状况
      */
     @ApiModelProperty("婚姻状况")
-    @ExcelColumn(order =12, title = "婚姻状况",index = 12)
+    @ExcelColumn(order =12, title = "婚姻状况")
     private String maritalStatus;
 
     /**
      * 政治面貌
      */
     @ApiModelProperty("政治面貌")
-    @ExcelColumn(order =13, title = "政治面貌",index = 13)
+    @ExcelColumn(order =13, title = "政治面貌")
     private String politicalStatus;
 
 
@@ -138,20 +141,20 @@ public class UserArchiveVo implements Serializable {
      * 现住址
      */
     @ApiModelProperty("现住址")
-    @ExcelColumn(order =14, title = "现住址",index = 14)
+    @ExcelColumn(order =14, title = "现住址")
     private String address;
     /**
      * 职业资格
      */
     @ApiModelProperty("职业资格")
-    @ExcelColumn(order =15, title = "职业资格",index = 15)
+    @ExcelColumn(order =15, title = "职业资格")
     private String professionalCertification;
 
     /**
      * 职称
      */
     @ApiModelProperty("职称")
-    @ExcelColumn(order =16, title = "职称",index = 16)
+    @ExcelColumn(order =16, title = "职称")
     private String professionalTitle;
 
 
@@ -159,28 +162,28 @@ public class UserArchiveVo implements Serializable {
      * 职称等级
      */
     @ApiModelProperty("职称等级")
-    @ExcelColumn(order =17, title = "职称等级",index = 17)
+    @ExcelColumn(order =17, title = "职称等级")
     private String professionalLevel;
 
     /**
      * 工号
      */
     @ApiModelProperty("工号")
-    @ExcelColumn(order =18, title = "工号",index = 18)
+    @ExcelColumn(order =18, title = "工号")
     private String employeeNumber;
 
     /**
      * 部门名称
      */
     @ApiModelProperty("部门编码")
-    @ExcelColumn(order =19, title = "部门编码",index = 19)
+    @ExcelColumn(order =19, title = "部门编码")
     private String orgCode;
 
     /**
      * 部门名称
      */
     @ApiModelProperty("部门名称")
-    @ExcelColumn(order =20, title = "部门",index = 20)
+    @ExcelColumn(order =20, title = "部门")
     private String orgName;
 
 
@@ -188,13 +191,13 @@ public class UserArchiveVo implements Serializable {
      * 岗位名称
      */
     @ApiModelProperty("岗位编码")
-    @ExcelColumn(order =21, title = "岗位编码",index = 21)
+    @ExcelColumn(order =21, title = "岗位编码")
     private String postCode;
     /**
      * 岗位名称
      */
     @ApiModelProperty("岗位")
-    @ExcelColumn(order =22, title = "岗位",index = 22)
+    @ExcelColumn(order =22, title = "岗位")
     private String postName;
 
 
@@ -205,19 +208,19 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("入职时间")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ExcelColumn(order =23, title = "任职时间",index = 23)
+    @ExcelColumn(order =23, title = "任职时间",format = "yyyy-MM-dd")
     private Date servingDate;
 
     /**
      * 人员分类   多级代码：在职（正式、试用、实习）、不在职（离职、退休）
      */
     @ApiModelProperty("人员分类")
-    @ExcelColumn(order =24, title = "人员分类",index = 24)
+    @ExcelColumn(order =24, title = "人员分类")
     private String userCategory;
 
 
     @ApiModelProperty("直接上级工号")
-    @ExcelColumn(order =25, title = "直接上级工号",index = 25)
+    @ExcelColumn(order =25, title = "直接上级工号")
     private String supervisorEmployeeNumber;
 
     /**
@@ -226,14 +229,14 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("参加工作时间")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ExcelColumn(order =26, title = "参加工作时间",index = 26)
+    @ExcelColumn(order =26, title = "参加工作时间",format = "yyyy-MM-dd")
     private Date firstWorkDate;
 
     /**
      * 工龄
      */
     @ApiModelProperty("工龄")
-    @ExcelColumn(order =27, title = "工龄",index = 27)
+    @ExcelColumn(order =27, title = "工龄")
     private BigDecimal workingPeriod;
 
     /**
@@ -243,19 +246,19 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("入职时间")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ExcelColumn(order =28, title = "入职时间",index = 28)
+    @ExcelColumn(order =28, title = "入职时间",format = "yyyy-MM-dd")
     private Date hireDate;
 
     /**
      * 司龄
      */
     @ApiModelProperty("司龄")
-    @ExcelColumn(order =29, title = "司龄",index = 29)
+    @ExcelColumn(order =29, title = "司龄")
     private BigDecimal servingAge;
 
 
     @ApiModelProperty("试用期限(月)")
-    @ExcelColumn(order =30, title = "试用期限(月)",index = 30)
+    @ExcelColumn(order =30, title = "试用期限(月)")
     private Integer probationPeriod;
 
     /**
@@ -264,7 +267,7 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("试用到期时间")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ExcelColumn(order =31, title = "试用到期时间",index = 31)
+    @ExcelColumn(order =31, title = "试用到期时间",format = "yyyy-MM-dd")
     private Date probationDueDate;
 
     /**
@@ -273,7 +276,7 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("转正时间")
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ExcelColumn(order =32, title = "转正时间",index = 32)
+    @ExcelColumn(order =32, title = "转正时间",format = "yyyy-MM-dd")
     private Date converseDate;
 
     /**

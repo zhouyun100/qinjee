@@ -36,6 +36,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -392,7 +394,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     @Override
     @Transactional
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        return  doUploadAndCheck(multfile,Post.class,userSession,response);
+        return doUploadAndCheck(multfile, Post.class, userSession, response);
 
     }
 
@@ -714,10 +716,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         return newPostCode;
     }
 
-
-
-
-
     @Override
     protected List<Post> checkExcel(List<Post> dataList, UserSession userSession) {
         dataList.sort(new Comparator() {
@@ -743,7 +741,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         for (Post post : dataList) {
             // Post checkVo = new Post();
             // BeanUtils.copyProperties(post, checkVo);
-            post.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder(1024);
             //验空
             if (StringUtils.isBlank(post.getPostCode())) {
@@ -771,13 +768,13 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             if (StringUtils.isNotBlank(post.getOrgCode())) {
                 boolean bool = organizationVOListMem.stream().anyMatch(a -> a.getOrgCode().equals(post.getOrgCode()));
                 if (bool) {
-                    if (organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(post.getOrgName()))) {
+                    if (!organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(post.getOrgName()))) {
                         post.setCheckResult(false);
                         resultMsg.append("部门名称不匹配 | ");
                     }
                 } else {
                     post.setCheckResult(false);
-                    resultMsg.append("部门编码["+post.getOrgCode()+"]不存在 | ");
+                    resultMsg.append("部门编码[" + post.getOrgCode() + "]不存在 | ");
                 }
             }
             if (StringUtils.isNotBlank(post.getParentPostCode())) {
@@ -789,35 +786,42 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
                     }
                 } else {
                     // 校验上级岗位编码是否存在，与岗位名称是否对应
-                    boolean bool = postMem.stream().anyMatch(a -> a.getPostCode().equals(post.getParentPostCode()));
+                    boolean bool = postMem.stream().anyMatch(a -> post.getParentPostCode().equals(a.getParentPostCode()));
                     if (bool) {
-                        if (!postMem.stream().anyMatch(a -> a.getPostName().equals(post.getParentPostName()))) {
-                            post.setCheckResult(false);
-                            resultMsg.append("上级岗位名称在数据库中不匹配 | ");
+                        if (StringUtils.isNotBlank(post.getParentPostName())) {
+                            if (!postMem.stream().anyMatch(a -> post.getParentPostName().equals(a.getParentPostName()))) {
+                                post.setCheckResult(false);
+                                resultMsg.append("上级岗位名称在数据库中不匹配 | ");
+                            }
                         }
                     } else {
                         post.setCheckResult(false);
-                        resultMsg.append("上级岗位编码[" + post.getParentPostCode() + "]不存在 | ");
+                        resultMsg.append("上级岗位编码为[" + post.getParentPostCode() + "]的岗位不存在 | ");
                     }
                 }
             }
-            //校验职位是否存在
-            boolean bool = positionListMem.stream().anyMatch(a -> a.getPositionName().equals(post.getPositionName()));
-            if (!bool) {
-                post.setCheckResult(false);
-                resultMsg.append("职位[" + post.getPositionName() + "]不存在 | ");
+            if (StringUtils.isNotBlank(post.getPositionName())) {
+                //校验职位是否存在
+                boolean bool = positionListMem.stream().anyMatch(a -> post.getPositionName().equals(a.getPositionName()));
+                if (!bool) {
+                    post.setCheckResult(false);
+                    resultMsg.append("职位[" + post.getPositionName() + "]不存在 | ");
+                }
             }
+
             if (resultMsg.length() > 2) {
                 resultMsg.deleteCharAt(resultMsg.length() - 2);
             }
             post.setResultMsg(resultMsg.toString());
-            checkVos.add(post);
+            if (!post.isCheckResult()) {
+                checkVos.add(post);
+            }
         }
         organizationVOListMem = null;
         postMem = null;
         positionListMem = null;
         //用来校验本地excel岗位编码与名称是否匹配，如果匹配 还要进行数据库校验
         excelPostNameMap = null;
-        return dataList;
+        return checkVos;
     }
 }

@@ -318,12 +318,15 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
-                boolean bool = archiveVoByCompanyIdMem.stream().anyMatch(a -> vo.getEmployeeNumber().equals(a.getEmployeeNumber()) && vo.getIdNumber().equals(a.getIdNumber()));
-                //TODO 待验证
-                if (!bool) {
-                    vo.setCheckResult(false);
-                    resultMsg.append("证件号码与其对应的工号人员不一致 | ");
+                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> a.getIdNumber().equals(vo.getIdNumber())).findFirst();
+                if(first.isPresent()){
+                    UserArchiveVo archiveVo = first.get();
+                    if(Objects.nonNull(archiveVo)&&Objects.nonNull(archiveVo.getEmployeeNumber())&&!archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())){
+                        vo.setCheckResult(false);
+                        resultMsg.append("证件号码与其对应的工号人员不一致 | ");
+                    }
                 }
+
             }
             //--------------下面的进行字典验证
             if (StringUtils.isNotBlank(vo.getGender())) {
@@ -351,14 +354,14 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getHighestDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("DEGREE") && a.getDictValue().equals(vo.getHighestDegree()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("ACADEMIC_DEGREE") && a.getDictValue().equals(vo.getHighestDegree()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("最高学历中没有[" + vo.getHighestDegree() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getFirstDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("DEGREE") && a.getDictValue().equals(vo.getFirstDegree()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("ACADEMIC_DEGREE") && a.getDictValue().equals(vo.getFirstDegree()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("第一学历中没有[" + vo.getFirstDegree() + "]的选项 | ");
@@ -382,7 +385,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
             //--------------下面的进行格式验证
             vo.setResultMsg(resultMsg.toString());
-            checkList.add(vo);
+            if(!vo.isCheckResult()){
+                checkList.add(vo);
+            }
+
         }
         return checkList;
     }
