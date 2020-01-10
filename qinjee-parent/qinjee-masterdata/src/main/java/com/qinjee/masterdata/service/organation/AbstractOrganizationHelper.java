@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation;
 
 import com.alibaba.fastjson.JSON;
 import com.github.liaochong.myexcel.core.DefaultExcelReader;
+import com.github.liaochong.myexcel.core.SaxExcelReader;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
@@ -38,6 +39,8 @@ public abstract class AbstractOrganizationHelper<T> {
 
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
+    private final static String XLS = "XLS";
+    private final static String XLSX = "XLSX";
     @Autowired
     private OrganizationDao organizationDao;
 
@@ -75,7 +78,6 @@ public abstract class AbstractOrganizationHelper<T> {
             }
         }
     }
-
     protected ResponseResult doUploadAndCheck(MultipartFile multfile,Class clazz, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult();
         HashMap<Object, Object> resultMap = new HashMap<>();
@@ -87,7 +89,7 @@ public abstract class AbstractOrganizationHelper<T> {
         //进行一些前置处理，并把excel原表信息与处理后的信息存入redis
         List<T> dataList = preHandle(excelList, userArchiveList);
         String key = "userDataKey" + multfile.getOriginalFilename().hashCode();
-        //将排序后的集合存入redis
+        //将记录行号后的集合存入redis
         putIntoRedis(key, dataList, resultMap);
         //将上一步处理后的信息进行规则校
         List<T> checkList = checkExcel(dataList, userSession);
@@ -95,6 +97,7 @@ public abstract class AbstractOrganizationHelper<T> {
         String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode();
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
         responseResult.setResult(resultMap);
+        resultMap=null;
         return responseResult;
     }
 
@@ -102,18 +105,25 @@ public abstract class AbstractOrganizationHelper<T> {
     private boolean basicCheck(MultipartFile multfile) {
         //判断文件名
         String filename = multfile.getOriginalFilename();
-        if (!(filename.endsWith(xls) || filename.endsWith(xlsx))) {
+        if (!(filename.endsWith(xls) || filename.endsWith(xlsx)||filename.endsWith(XLS) || filename.endsWith(XLSX))) {
             //文件格式不对
             ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
         }
 
         return false;
     }
-
     private List<T> importFromExcel(MultipartFile multfile, Class<T> clazz) throws Exception {
-        File tempFile = File.createTempFile("temp", ".xls");
+        String filename = multfile.getOriginalFilename();
+        File tempFile=null;
+        if(filename.endsWith("xls")||filename.endsWith("XLS")){
+            tempFile = File.createTempFile("temp", ".xls");//必须要是xlsx
+        }else{
+            tempFile = File.createTempFile("temp", ".xlsx");
+        }
+
+
         multfile.transferTo(tempFile);
-        List<T> excelDataList = DefaultExcelReader.of(clazz).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
+        List<T> excelDataList = SaxExcelReader.of(clazz).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
         tempFile.delete();
         if (CollectionUtils.isEmpty(excelDataList)) {
             //excel为空
@@ -152,37 +162,24 @@ public abstract class AbstractOrganizationHelper<T> {
     }
 
     private void handleErrorInfo(String key, List<T> checkList, HashMap<Object, Object> resultMap, ResponseResult responseResult) throws Exception {
-        List<T> failCheckList = checkList.stream().filter(check -> {
-            Boolean bool = false;
-            try {
-                Method getCheckResult = check.getClass().getMethod("getCheckResult");
-                bool = (Boolean) getCheckResult.invoke(check);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (!bool) {
-                return true;
-            } else {
-                return false;
-            }
-        }).collect(Collectors.toList());
+
         //如果不为空则校验成功,将错误信息、原表数据存储到redis后抛出异常
-        if (!CollectionUtils.isEmpty(failCheckList)) {
+        if (!CollectionUtils.isEmpty(checkList)) {
             StringBuilder errorSb = new StringBuilder();
             errorSb.append("行号    |             错误信息\r\n");
             errorSb.append("--------------------------------\r\n");
-            for (T error : failCheckList) {
+            for (T error : checkList) {
                 Method getLineNumber = error.getClass().getMethod("getLineNumber");
                 Method getResultMsg = error.getClass().getMethod("getResultMsg");
                 Integer lineNum = (Integer) getLineNumber.invoke(error);
-                StringBuilder msg = (StringBuilder) getResultMsg.invoke(error);
-                errorSb.append(lineNum + " -   " + msg.toString() + "\r\n");
+                String msg = (String)getResultMsg.invoke(error);
+                errorSb.append(lineNum + " -   " + msg + "\r\n");
             }
             redisService.del(key);
             String errorStr = errorSb.toString();
             redisService.setex(key, 30 * 60, errorStr);
             //将错误信息置入返回对象
-            resultMap.put("failCheckList", failCheckList);
+            resultMap.put("failCheckList", checkList);
             resultMap.put("errorInfoKey", key);
             //文件解析失败
             responseResult.setResultCode(CommonCode.FILE_PARSING_EXCEPTION);

@@ -16,9 +16,10 @@ import java.util.Date;
 public interface UserInfoDao {
     int editUserInfo(UserInfoVO userInfo);
 
-    Integer getUserByPhoneAndCompanyId(String phone, Integer companyId);
+    UserInfo getUserByPhoneAndCompanyId(String phone, Integer companyId);
     UserInfo getUserByPhone(String phone);
 
     int clearUserCompany(Integer userId, Integer companyId, Date date);
 
+    void update(UserInfo userInfoDo);
 }

@@ -29,9 +29,9 @@ import java.util.List;
 @ExcelTable(sheetName = "机构信息", useFieldNameAsTitle = false,includeAllField = false)
 public class OrganizationVO  implements Serializable {
 
-    private Boolean checkResult;
+    private boolean checkResult=true;
     private Integer lineNumber;
-    private StringBuilder resultMsg;
+    private String resultMsg;
 
     /**
      * 机构ID
@@ -43,7 +43,7 @@ public class OrganizationVO  implements Serializable {
     /**
      * 机构编码
      */
-    @ExcelColumn(order = 0, title = "机构编码",index = 0)
+    @ExcelColumn(order = 0, title = "机构编码")
     private String orgCode;
 
     /**
@@ -51,7 +51,7 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构名称")
     @QueryColumn("org.org_name")
-    @ExcelColumn(order = 1, title = "机构名称",index = 1)
+    @ExcelColumn(order = 1, title = "机构名称")
     private String orgName;
 
     /**
@@ -59,7 +59,7 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构类型  GROUP 集团、UNIT 单位、DEPT 部门")
     @QueryColumn("org.org_type")
-    @ExcelColumn(order = 2, title = "机构类型",index = 2)
+    @ExcelColumn(order = 2, title = "机构类型")
     private String orgType;
 
     /**
@@ -74,7 +74,7 @@ public class OrganizationVO  implements Serializable {
      * 机构父级编码
      */
     @ApiModelProperty("机构父级编码")
-    @ExcelColumn(order = 3, title = "上级机构编码",index = 3)
+    @ExcelColumn(order = 3, title = "上级机构编码")
     private String orgParentCode;
 
     /**
@@ -82,14 +82,14 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构父级名称")
     @QueryColumn("parent_org.org_name")
-    @ExcelColumn(order = 4, title = "上级机构",index = 4)
+    @ExcelColumn(order = 4, title = "上级机构")
     private String orgParentName;
 
     /**
      * 机构负责人工号
      */
     @ApiModelProperty("机构负责人工号")
-    @ExcelColumn(order = 5, title = "部门负责人编号",index = 5)
+    @ExcelColumn(order = 5, title = "部门负责人编号")
     private String managerEmployeeNumber;
 
     /**
@@ -97,7 +97,7 @@ public class OrganizationVO  implements Serializable {
      */
     @ApiModelProperty("机构负责人姓名")
     @QueryColumn("tua.user_name")
-    @ExcelColumn(order = 6, title = "部门负责人",index = 6)
+    @ExcelColumn(order = 6, title = "部门负责人")
     private String orgManagerName;
     /**
      * 机构全称

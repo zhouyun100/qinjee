@@ -1,7 +1,9 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.github.liaochong.myexcel.core.DefaultExcelBuilder;
+import com.github.liaochong.myexcel.core.DefaultStreamExcelBuilder;
 import com.github.liaochong.myexcel.utils.AttachmentExportUtil;
+import com.github.liaochong.myexcel.utils.FileExportUtil;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
@@ -16,17 +18,21 @@ import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 @RequestMapping("/organization")
@@ -246,15 +252,17 @@ public class OrganizationController extends BaseController {
                 }
                 dataList.add(org);
             }
-            Workbook workbook = DefaultExcelBuilder.of(OrganizationVO.class).build(dataList);
 
+            Workbook workbook = DefaultExcelBuilder.of(OrganizationVO.class).build(dataList);
             AttachmentExportUtil.export(workbook, "组织机构信息", response);
-            logger.info("导出岗位："+(System.currentTimeMillis()-start));
+            logger.info("导出岗位："+(System.currentTimeMillis()-start)+"ms");
             //只能返回null
             return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
+
 
 
     @PostMapping("/uploadAndCheck")
@@ -264,7 +272,7 @@ public class OrganizationController extends BaseController {
         if (checkParam(multfile)) {
             long start = System.currentTimeMillis();
             ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession(), response);
-            logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start));
+            logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
             return  responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -282,7 +290,7 @@ public class OrganizationController extends BaseController {
                 "attachment;filename=\"" + URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8") + "\"");
             response.setHeader("fileName", URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
-            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start));
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start)+"ms");
             //是否只能返回null
             return null;
         }
@@ -306,7 +314,7 @@ public class OrganizationController extends BaseController {
         if (checkParam(orgExcelRedisKey)) {
             long start = System.currentTimeMillis();
             organizationService.importToDatabase(orgExcelRedisKey, getUserSession());
-            logger.info("导入机构入库："+(System.currentTimeMillis()-start));
+            logger.info("导入机构入库："+(System.currentTimeMillis()-start)+"ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

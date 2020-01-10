@@ -57,7 +57,7 @@
     <result column="employment_type" jdbcType="VARCHAR" property="employment_type" />
   </resultMap>
 
-  <sql id="Base_Column_List">
+    <sql id="Base_Column_List">
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
     user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
     marital_status, first_work_date, hire_date, serving_age, working_period, probation_due_date,
@@ -72,6 +72,13 @@
     where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_archive
+        where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </delete>
@@ -104,135 +111,135 @@
       #{isDelete,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId"
-          parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
-    insert into t_user_archive
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="employeeNumber != null">
-        employee_number,
-      </if>
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="companyId != null">
-        company_id,
-      </if>
-      <if test="userCategory != null">
-        user_category,
-      </if>
-      <if test="businessUnitId != null">
-        business_unit_id,
-      </if>
-      <if test="supervisorId != null">
-        supervisor_id,
-      </if>
-      <if test="orgId != null">
-        org_id,
-      </if>
-      <if test="postId != null">
-        post_id,
-      </if>
-      <if test="userName != null">
-        user_name,
-      </if>
-      <if test="idType != null">
-        id_type,
-      </if>
-      <if test="idNumber != null">
-        id_number,
-      </if>
-      <if test="gender != null">
-        gender,
-      </if>
-      <if test="birthDate != null">
-        birth_date,
-      </if>
-      <if test="age != null">
-        age,
-      </if>
-      <if test="nationality != null">
-        nationality,
-      </if>
-      <if test="birthplace != null">
-        birthplace,
-      </if>
-      <if test="politicalStatus != null">
-        political_status,
-      </if>
-      <if test="maritalStatus != null">
-        marital_status,
-      </if>
-      <if test="firstWorkDate != null">
-        first_work_date,
-      </if>
-      <if test="hireDate != null">
-        hire_date,
-      </if>
-      <if test="servingAge != null">
-        serving_age,
-      </if>
-      <if test="workingPeriod != null">
-        working_period,
-      </if>
-      <if test="probationDueDate != null">
-        probation_due_date,
-      </if>
-      <if test="probationPeriod != null">
-        probation_period,
-      </if>
-      <if test="converseDate != null">
-        converse_date,
-      </if>
-      <if test="firstDegree != null">
-        first_degree,
-      </if>
-      <if test="highestDegree != null">
-        highest_degree,
-      </if>
-      <if test="phone != null">
-        phone,
-      </if>
-      <if test="email != null">
-        email,
-      </if>
-      <if test="address != null">
-        address,
-      </if>
-      <if test="professionalCertification != null">
-        professional_certification,
-      </if>
-      <if test="professionalTitle != null">
-        professional_title,
-      </if>
-      <if test="professionalLevel != null">
-        professional_level,
-      </if>
-      <if test="attritionDate != null">
-        attrition_date,
-      </if>
-      <if test="attritionType != null">
-        attrition_type,
-      </if>
-      <if test="operatorId != null">
-        operator_id
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="employeeNumber != null">
-        #{employeeNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="userId != null">
-       #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="companyId != null">
-        #{companyId,jdbcType=INTEGER},
-      </if>
-      <if test="userCategory != null">
-        #{userCategory,jdbcType=VARCHAR},
-      </if>
-      <if test="businessUnitId != null">
-        #{businessUnitId,jdbcType=INTEGER},
-      </if>
+    <insert id="insertSelective" keyColumn="archive_id" keyProperty="archiveId"
+            parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
+        insert into t_user_archive
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="employeeNumber != null">
+                employee_number,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="userCategory != null">
+                user_category,
+            </if>
+            <if test="businessUnitId != null">
+                business_unit_id,
+            </if>
+            <if test="supervisorId != null">
+                supervisor_id,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="postId != null">
+                post_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="idType != null">
+                id_type,
+            </if>
+            <if test="idNumber != null">
+                id_number,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="birthDate != null">
+                birth_date,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="nationality != null">
+                nationality,
+            </if>
+            <if test="birthplace != null">
+                birthplace,
+            </if>
+            <if test="politicalStatus != null">
+                political_status,
+            </if>
+            <if test="maritalStatus != null">
+                marital_status,
+            </if>
+            <if test="firstWorkDate != null">
+                first_work_date,
+            </if>
+            <if test="hireDate != null">
+                hire_date,
+            </if>
+            <if test="servingAge != null">
+                serving_age,
+            </if>
+            <if test="workingPeriod != null">
+                working_period,
+            </if>
+            <if test="probationDueDate != null">
+                probation_due_date,
+            </if>
+            <if test="probationPeriod != null">
+                probation_period,
+            </if>
+            <if test="converseDate != null">
+                converse_date,
+            </if>
+            <if test="firstDegree != null">
+                first_degree,
+            </if>
+            <if test="highestDegree != null">
+                highest_degree,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="professionalCertification != null">
+                professional_certification,
+            </if>
+            <if test="professionalTitle != null">
+                professional_title,
+            </if>
+            <if test="professionalLevel != null">
+                professional_level,
+            </if>
+            <if test="attritionDate != null">
+                attrition_date,
+            </if>
+            <if test="attritionType != null">
+                attrition_type,
+            </if>
+            <if test="operatorId != null">
+                operator_id
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="employeeNumber != null">
+                #{employeeNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="companyId != null">
+                #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="userCategory != null">
+                #{userCategory,jdbcType=VARCHAR},
+            </if>
+            <if test="businessUnitId != null">
+                #{businessUnitId,jdbcType=INTEGER},
+            </if>
 
       <if test="supervisorId != null">
         #{supervisorId,jdbcType=INTEGER},

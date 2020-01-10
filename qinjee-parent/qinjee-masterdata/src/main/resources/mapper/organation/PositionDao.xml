@@ -191,9 +191,8 @@
     <select id="getPositionListByCompanyId" resultMap="BaseResultMap">
         select
         tp.position_id,tp.position_name
-        from t_position  tp left join t_position_group tpg on tpg.position_group_id =tp.position_group_id and tpg.is_delete =0
+        from t_position  tp left join t_position_group tpg on tpg.position_group_id =tp.position_group_id
         where tpg.company_id =#{companyId} and tp.is_delete =0
     </select>
-
 
 </mapper>

@@ -11,6 +11,12 @@
         <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
         <result column="archive_id" jdbcType="INTEGER" property="archiveId"/>
     </resultMap>
+    <resultMap id="UserInfoResultMap2" type="com.qinjee.masterdata.model.entity.UserInfo">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+    </resultMap>
     <sql id="Base_Column_List">
         user_id,phone ,user_name,email
     </sql>
@@ -32,9 +38,9 @@
         where user_id = #{userId}
     </update>
 
-    <select id="getUserByPhoneAndCompanyId" resultType="integer">
+    <select id="getUserByPhoneAndCompanyId" resultMap="UserInfoResultMap2">
       SELECT
-        COUNT(1)
+         tua.user_id,tua.phone ,tua.user_name,tua.email
             FROM
          t_user_info tu
             LEFT JOIN t_user_archive tua
@@ -42,7 +48,7 @@
             WHERE
 	        tu.phone = #{phone}
   </select>
-    <select id="getUserByPhone" resultType="com.qinjee.masterdata.model.entity.UserInfo">
+    <select id="getUserByPhone" resultMap="UserInfoResultMap2">
         SELECT
         <include refid="Base_Column_List"></include>
         FROM
@@ -54,5 +60,9 @@
         update t_user_company
         set is_enable = 0 and update_time =#{date,jdbcType=TIMESTAMP}
         where user_id =#{userId} and company_id = #{companyId}
+    </update>
+
+    <update id="update">
+        update t_user_info set email  =#{email} where user_id =#{userId}
     </update>
 </mapper>

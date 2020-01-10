@@ -468,10 +468,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      */
     @Override
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        return  doUploadAndCheck(multfile,OrganizationVO.class,userSession,response);
+        return doUploadAndCheck(multfile, OrganizationVO.class, userSession, response);
 
     }
-
 
 
     @Override
@@ -482,8 +481,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
 
     //=====================================================================
-
-
 
 
     //=====================================================================
@@ -542,7 +539,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         for (OrganizationVO organizationVO : dataList) {
             //OrganizationVO checkVo = new OrganizationVO();
             //BeanUtils.copyProperties(organizationVO, checkVo);
-            organizationVO.setCheckResult(true);
             StringBuilder resultMsg = new StringBuilder(1024);
             //验空
             if (StringUtils.isBlank(organizationVO.getOrgCode())) {
@@ -581,15 +577,17 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                 resultMsg.append("集团类型机构只能存在一个 | ");
             }
             if (StringUtils.isNotBlank(organizationVO.getManagerEmployeeNumber())) {
-                boolean bool = userArchiveVosMem.stream().anyMatch(a -> a.getEmployeeNumber().equals(organizationVO.getManagerEmployeeNumber()));
+                boolean bool = userArchiveVosMem.stream().anyMatch(a -> organizationVO.getManagerEmployeeNumber().equals(a.getEmployeeNumber()));
                 if (!bool) {
                     organizationVO.setCheckResult(false);
                     resultMsg.append("部门负责人不存在 | ");
                 } else {
-                    boolean bool2 = userArchiveVosMem.stream().anyMatch(a -> a.getUserName().equals(organizationVO.getOrgManagerName()));
-                    if (!bool2) {
-                        organizationVO.setCheckResult(false);
-                        resultMsg.append("部门负责人名字不一致 | ");
+                    if (StringUtils.isNotBlank(organizationVO.getOrgManagerName())) {
+                        boolean bool2 = userArchiveVosMem.stream().anyMatch(a -> organizationVO.getOrgManagerName().equals(a.getUserName()));
+                        if (!bool2) {
+                            organizationVO.setCheckResult(false);
+                            resultMsg.append("部门负责人名字不一致 | ");
+                        }
                     }
                 }
             }
@@ -605,15 +603,17 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                     }
                 } else {
                     //上级编码在excel中不存在，那就去缓存中查
-                    boolean bool = organizationVOListMem.stream().anyMatch(a -> a.getOrgCode().equals(organizationVO.getOrgParentCode()));
+                    boolean bool = organizationVOListMem.stream().anyMatch(a -> organizationVO.getOrgCode().equals(a.getOrgParentCode()));
                     if (bool) {
-                        if (!organizationVOListMem.stream().anyMatch(a -> a.getOrgName().equals(organizationVO.getOrgParentName()))) {
-                            organizationVO.setCheckResult(false);
-                            resultMsg.append("上级机构名称在数据库中不匹配 | ");
+                        if (StringUtils.isNotBlank(organizationVO.getOrgName())) {
+                            if (!organizationVOListMem.stream().anyMatch(a -> organizationVO.getOrgName().equals(a.getOrgParentName()))) {
+                                organizationVO.setCheckResult(false);
+                                resultMsg.append("上级机构名称在数据库中不匹配 | ");
+                            }
                         }
                     } else {
                         organizationVO.setCheckResult(false);
-                        resultMsg.append("上级机构编码[" + organizationVO.getOrgParentCode() + "]不存在 | ");
+                        resultMsg.append("上级机构编码为[" + organizationVO.getOrgParentCode() + "]的机构不存在 | ");
 
                     }
                 }
@@ -621,8 +621,10 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             if (resultMsg.length() > 2) {
                 resultMsg.deleteCharAt(resultMsg.length() - 2);
             }
-            organizationVO.setResultMsg(resultMsg);
-            checkList.add(organizationVO);
+            organizationVO.setResultMsg(resultMsg.toString());
+            if (!organizationVO.isCheckResult()) {
+                checkList.add(organizationVO);
+            }
         }
         orgDictListMem = null;
         userArchiveVosMem = null;

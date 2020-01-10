@@ -22,9 +22,9 @@ import java.util.List;
 @ExcelTable(sheetName = "岗位信息", useFieldNameAsTitle = false,includeAllField = false)
 public class Post  implements Serializable {
 
-    private Boolean checkResult;
+    private boolean checkResult=true;
     private Integer lineNumber;
-    private StringBuilder resultMsg;
+    private String resultMsg;
     /**
      * 岗位ID
      */
@@ -40,41 +40,41 @@ public class Post  implements Serializable {
      */
     @QueryColumn("tp.post_code")
     @ApiModelProperty("岗位编码")
-    @ExcelColumn(order = 0, title = "岗位编码",index = 0)
+    @ExcelColumn(order = 0, title = "岗位编码")
     private String postCode;
     /**
      * 岗位名称
      */
     @QueryColumn("tp.post_name")
     @ApiModelProperty("岗位名称")
-    @ExcelColumn(order = 1, title = "岗位名称",index = 1)
+    @ExcelColumn(order = 1, title = "岗位名称")
     private String postName;
     /**
      * 父级机构编码
      */
     @ApiModelProperty("所属部门编码")
-    @ExcelColumn(order = 2, title = "所属部门编码",index = 2)
+    @ExcelColumn(order = 2, title = "所属部门编码")
     private String orgCode;
 
     /**
      * 机构名称
      */
     @ApiModelProperty("所属部门")
-    @ExcelColumn(order = 3, title = "所属部门",index = 3)
+    @ExcelColumn(order = 3, title = "所属部门")
     private String orgName;
 
     /**
      * 父级岗位编码
      */
     @ApiModelProperty("上级岗位编码")
-    @ExcelColumn(order = 4, title = "上级岗位编码",index = 4)
+    @ExcelColumn(order = 4, title = "上级岗位编码")
     private String parentPostCode;
 
     /**
      * 父级岗位名称
      */
     @ApiModelProperty("上级岗位")
-    @ExcelColumn(order = 5, title = "上级岗位",index = 5)
+    @ExcelColumn(order = 5, title = "上级岗位")
     private String parentPostName;
 
     /**
@@ -82,7 +82,7 @@ public class Post  implements Serializable {
      */
     @QueryColumn("tps.position_name")
     @ApiModelProperty("职位")
-    @ExcelColumn(order = 6, title = "职位",index = 6)
+    @ExcelColumn(order = 6, title = "职位")
     private String positionName;
 
 

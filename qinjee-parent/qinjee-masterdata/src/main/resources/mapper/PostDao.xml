@@ -11,7 +11,7 @@
         <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
         <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
         <result column="position_id" jdbcType="INTEGER" property="positionId"/>
-        <result column="parent_post_code" jdbcType="INTEGER" property="parentPostCode"/>
+        <result column="parent_post_code" jdbcType="VARCHAR" property="parentPostCode"/>
         <result column="org_id" jdbcType="INTEGER" property="orgId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="position_id" jdbcType="INTEGER" property="positionId"/>
@@ -545,8 +545,15 @@
         and is_delete=0 and is_enable=1
     </select>
     <select id="getPostListByCompanyId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
-        from t_post
-        where company_id=#{companyId} and is_delete=0
+        select
+        tp.org_id,
+        tp.post_id,tp.post_code,
+        tp.is_enable,
+        tp.parent_post_id,
+        tp.post_name,
+        ptp.post_code parent_post_code,
+        ptp.post_name parent_post_name
+        from t_post tp left join t_post  ptp  on tp.parent_post_id = ptp.post_id
+        where tp.company_id=#{companyId} and tp.is_delete=0
     </select>
 </mapper>

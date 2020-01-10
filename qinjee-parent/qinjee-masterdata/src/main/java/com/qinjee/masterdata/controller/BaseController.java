@@ -47,7 +47,6 @@ public class BaseController {
             for (int i = 0; i < cookies.length; i++) {
                 if (ResponseConsts.SESSION_KEY.equals(cookies[i].getName())) {
                     userSession = new UserSession();
-
                     JSONObject jsonObject = JSON.parseObject(redisClusterService.get(cookies[i].getValue()));
                     userSession.setUserId(Integer.valueOf(String.valueOf(jsonObject.get("userId"))));
                     userSession.setUserName(String.valueOf(jsonObject.get("userName")));

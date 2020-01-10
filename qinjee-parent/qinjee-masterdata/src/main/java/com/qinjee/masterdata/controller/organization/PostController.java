@@ -213,7 +213,7 @@ public class PostController extends BaseController {
             Workbook workbook = DefaultExcelBuilder.of(Post.class).build(postList);
             AttachmentExportUtil.export(workbook, "岗位信息", response);
             //只能返回null
-            logger.info("导出岗位："+(System.currentTimeMillis()-start));
+            logger.info("导出岗位："+(System.currentTimeMillis()-start)+"ms");
             return null;
         } else {
             responseResult.setMessage("岗位为空");
@@ -229,7 +229,7 @@ public class PostController extends BaseController {
             logger.info("导入岗位excel并校验");
             long start = System.currentTimeMillis();
             ResponseResult responseResult = postService.uploadAndCheck(multfile, getUserSession(), response);
-            logger.info("导入岗位excel并校验："+(System.currentTimeMillis()-start));
+            logger.info("导入岗位excel并校验："+(System.currentTimeMillis()-start)+"ms");
             return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -248,7 +248,7 @@ public class PostController extends BaseController {
                 "attachment;filename=\"" + URLEncoder.encode("岗位导入错误校验信息.txt", "UTF-8") + "\"");
             response.setHeader("fileName", URLEncoder.encode("岗位导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
-            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start));
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start)+"ms");
             return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -261,7 +261,7 @@ public class PostController extends BaseController {
         if (checkParam(redisKey)) {
             long start = System.currentTimeMillis();
             postService.importToDatabase(redisKey, getUserSession());
-            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start));
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start)+"ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
