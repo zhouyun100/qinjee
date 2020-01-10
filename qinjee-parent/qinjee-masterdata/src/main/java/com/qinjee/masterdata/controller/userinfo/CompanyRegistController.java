@@ -11,10 +11,8 @@
 package com.qinjee.masterdata.controller.userinfo;
 
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.service.userinfo.CompanyRegistService;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.RegexpUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,15 +20,12 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author 周赟
@@ -52,10 +47,10 @@ public class CompanyRegistController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "companyName", value = "企业名称", required = true, dataType = "String"),
             @ApiImplicitParam(name = "phone", value = "注册人员手机号", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "account", value = "注册人登录账号", required = true, dataType = "String")
+            @ApiImplicitParam(name = "userName", value = "注册人姓名", required = true, dataType = "String")
     })
     @RequestMapping(value = "/registCompany",method = RequestMethod.POST)
-    public ResponseResult registCompany(String companyName, String phone, String account) {
+    public ResponseResult registCompany(String companyName, String phone, String userName) {
 
         try {
             Integer userNumber = 10000;
@@ -65,7 +60,7 @@ public class CompanyRegistController extends BaseController{
             cal.add(Calendar.YEAR, 1);
             Date validEndDate = cal.getTime();
 
-            companyRegistService.registCompany(companyName,userNumber,validEndDate,phone,account);
+            companyRegistService.registCompany(companyName,userNumber,validEndDate,phone,userName);
             responseResult = ResponseResult.SUCCESS();
         }catch(Exception e) {
             logger.info("registCompany exception! exception={}", e);
