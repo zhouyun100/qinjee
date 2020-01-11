@@ -90,7 +90,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( id );
         CreatNumberVo creatNumberVo=new CreatNumberVo ();
         BeanUtils.copyProperties (contractParamByCondition.get(0),creatNumberVo);
-        return getString ( creatNumberVo );
+        return getString ( creatNumberVo,userSession.getCompanyId () );
     }
 
     @Override
@@ -103,15 +103,14 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
        return employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () );
     }
 
-    private String getString( CreatNumberVo creatNumberVo)  {
+    private String getString( CreatNumberVo creatNumberVo,Integer companyId)  {
         String employeeNumberPrefix = creatNumberVo.getContractRulePrefix ();
         String dateModel = getDateModel ( creatNumberVo.getDateRule () );
         String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
         String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
-        Date date=new Date (  );
-        String s = String.valueOf ( date.getTime () );
-        int i = Integer.parseInt ( s.substring ( s.length () - creatNumberVo.getDigitCapacity () ) );
-        String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (),i );
+        //截取来寻找目前最大的流水号
+        String s=employeeNumberRuleDao.selectMaxNumber(creatNumberVo,companyId);
+        String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (),Integer.parseInt ( s ) );
         return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
     }
 

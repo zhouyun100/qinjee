@@ -8,6 +8,10 @@ import java.util.List;
 
 @Data
 public class EntryTemplateValueVo implements Serializable {
+    /**
+     * 数据内容id
+     */
+    private Integer bigDataId;
 
     /**
      * 表数据

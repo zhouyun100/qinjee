@@ -295,7 +295,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                                 declaredField.set ( userArchive, Integer.parseInt ( s1 ) );
                                             } else if ("date".equals (map1.get ( "text_type" ) )) {
                                                 SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                                sim.setTimeZone (TimeZone.getTimeZone ( "GMT+8" ));
                                                 Date parse = sim.parse ( s1 );
                                                 declaredField.set ( userArchive, parse );
                                             }
@@ -305,9 +304,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             }
                             if (archiveId != null && archiveId != 0) {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
+                                userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveId ( archiveId );
-                                setUserIdByPhone ( userSession, userArchive );
-                                checkEmployeeNumber(userSession,userArchive);
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             } else {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
@@ -321,8 +319,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                                 userArchiveDao.insertSelective ( userArchive );
-                                List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-                                employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ),userArchive.getArchiveId () );
                                 checkEmployeeNumber ( userSession, userArchive );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             }
@@ -385,7 +381,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                                 declaredField.set ( preEmployment, Integer.parseInt ( s1 ) );
                                             } else if ("date".equals (map1.get ( "text_type" ))) {
                                                 SimpleDateFormat sim = new SimpleDateFormat ( "yyyy-MM-dd" );
-                                                sim.setTimeZone (TimeZone.getTimeZone ( "GMT+8" ));
                                                 Date parse = sim.parse ( s1 );
                                                 declaredField.set ( preEmployment, parse );
                                             }
@@ -661,6 +656,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public List < Post > getPostListByOrgId(Integer orgId,Integer companyId) {
        return postDao.selectPostByOrgId(orgId,companyId);
+    }
+
+    @Override
+    public void updateCustomArchiveTableDatas(List < CustomArchiveTableDataVo > list, UserSession userSession) {
+        for (CustomArchiveTableDataVo customArchiveTableDataVo : list) {
+            updateCustomArchiveTableData(customArchiveTableDataVo,userSession);
+        }
     }
 
 }

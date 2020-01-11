@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao;
 
 import com.qinjee.masterdata.model.entity.EmployeeNumberRule;
+import com.qinjee.masterdata.model.vo.staff.CreatNumberVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -21,4 +22,6 @@ public interface EmployeeNumberRuleDao {
     int updateByPrimaryKey(EmployeeNumberRule record);
 
     List< EmployeeNumberRule> selectByCompanyId(@Param("companyId") Integer companyId);
+
+    String selectMaxNumber(@Param("creatNumberVo") CreatNumberVo creatNumberVo, @Param("companyId") Integer companyId);
 }

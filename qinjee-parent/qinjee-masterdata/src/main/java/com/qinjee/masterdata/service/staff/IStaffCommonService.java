@@ -193,4 +193,6 @@ public interface IStaffCommonService {
     void deleteCustomTableData(Integer id);
 
     List< Post> getPostListByOrgId(Integer orgId,Integer companyId);
+
+    void updateCustomArchiveTableDatas(List< CustomArchiveTableDataVo> list, UserSession userSession);
 }

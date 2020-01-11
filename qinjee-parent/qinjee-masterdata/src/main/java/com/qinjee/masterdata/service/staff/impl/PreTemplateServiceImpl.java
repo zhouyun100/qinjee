@@ -19,6 +19,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.AesUtils;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.QRCodeUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,7 +147,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
             integers.add ( entryRegistrationTableVO.getTableId () );
         }
         //找到对应的值
-
+        Integer bigDataId=0;
         for (EntryTableListWithValueVo entryTableListWithValueVo : entryTableListWithValueVos) {
             for (Integer integer : integers) {
                 if (entryTableListWithValueVo.getTableId ().equals ( integer )) {
@@ -156,12 +157,16 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                     for (Map < Integer, String > integerStringMap : mapList) {
                         for (Map.Entry < Integer, String > integerStringEntry : integerStringMap.entrySet ()) {
                             map.put ( integerStringEntry.getKey (), integerStringEntry.getValue () );
+                            if(StringUtils.isNotBlank (integerStringMap.get(-1))){
+                                bigDataId= Integer.parseInt ( integerStringMap.get ( -1 ) );
+                            }
                         }
                         //通过tableid寻找对应的值
                         //给list赋值
                         EntryTemplateValueVo entryTemplateValueVo=new EntryTemplateValueVo () ;
                         List < CustomFieldVO > customFieldList = templateCustomTableFieldDao.searchCustomFieldListByTemplateIdAndTableId ( integer, templateId );
                         customTableFieldService.handlerCustomTableGroupFieldList ( customFieldList, map );
+                        entryTemplateValueVo.setBigDataId ( bigDataId );
                         entryTemplateValueVo.setList ( customFieldList );
                         entryTemplateValueVos.add ( entryTemplateValueVo );
                     }
@@ -169,7 +174,6 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                 }
             }
         }
-
         return entryTableListWithValueVos;
     }
 }

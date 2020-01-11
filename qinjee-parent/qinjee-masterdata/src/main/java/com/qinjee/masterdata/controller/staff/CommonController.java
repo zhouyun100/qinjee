@@ -428,6 +428,20 @@ public class CommonController extends BaseController {
         return failResponseResult("自定义数据参数错误");
     }
     /**
+     * 批量新增或者修改自定义字段表中的数据
+     */
+    @RequestMapping(value = "/saveCustomArchiveTableDatas", method = RequestMethod.POST)
+    @ApiOperation(value = "批量新增或者修改自定义字段表中的数据", notes = "hkt")
+//    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
+    public ResponseResult saveCustomArchiveTableData(@RequestBody @Valid List<CustomArchiveTableDataVo> list) {
+        Boolean b = checkParam(list,getUserSession ());
+        if (b) {
+            staffCommonService.updateCustomArchiveTableDatas(list,getUserSession ());
+            return ResponseResult.SUCCESS();
+        }
+        return failResponseResult("自定义数据参数错误");
+    }
+    /**
      * 删除自定义字段表中的数据
      */
     @RequestMapping(value = "/ deleteCustomArchiveTableData", method = RequestMethod.POST)

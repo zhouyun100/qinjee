@@ -159,4 +159,10 @@
     where company_id=#{companyId}
     and is_delete=0
   </select>
+    <select id="selectMaxNumber" resultType="java.lang.String">
+    select
+    MAX(substring_index(employee_number,concat(#{creatNumberVo.employeeNumberPrefix},#{creatNumberVo.dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),1))
+    from t_user_archive
+    where company_id=#{companyId}
+    </select>
 </mapper>

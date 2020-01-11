@@ -63,6 +63,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private static final String ORGNAME = "部门";
     private static final String BUSINESSUNITNAME = "单位";
     private static final String POSTNAME = "岗位";
+    private static final String ORGCODEPRE = "入职部门编码";
     private static final String SUPVISORUSERNAME = "直接上级";
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
@@ -616,10 +617,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         Map < Integer, String > map = null;
         try {
             map = new HashMap <> ();
-            if (ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName ) ||
-                    ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName )) {
-                Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+            if (ORGNAME.equals ( fieldName ) || BUSINESSUNITNAME.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    Map < String, Integer > map1 = customTableFieldDao.transOrgId( funcCode, companyId, value );
                     String orgName = String.valueOf ( map1.get ( "org_id" ) );
                     if (StringUtils.isNotBlank ( orgName )) {
                         map.put ( map1.get ( "field_id" ), orgName );
@@ -627,7 +627,19 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         map.put ( map1.get ( "field_id" ), "-1" );
                     }
                 } else {
-                    map.put ( map1.get ( "field_id" ), "-2" );
+                map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("org_id",funcCode,companyId), "-2" );
+            }
+        }else if (ORGCODE.equals ( fieldName ) || BUSINESSUNITCODE.equals ( fieldName )|| ORGCODEPRE.equals ( fieldName ) ) {
+                if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    Map < String, Integer > map1 = customTableFieldDao.transOrgIdByCode ( funcCode, companyId, value );
+                    String orgName = String.valueOf ( map1.get ( "org_id" ) );
+                    if (StringUtils.isNotBlank ( orgName )) {
+                        map.put ( map1.get ( "field_id" ), orgName );
+                    } else {
+                        map.put ( map1.get ( "field_id" ), "-1" );
+                    }
+                } else {
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("org_id",funcCode,companyId), "-2" );
                 }
             } else if (SUPORCODE.equals ( fieldName )) {
                 Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
@@ -639,11 +651,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         map.put ( map1.get ( "field_id" ), "-1" );
                     }
                 } else {
-                    map.put ( map1.get ( "field_id" ), "-2" );
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("supervisor_id",funcCode,companyId), "-2" );
                 }
             } else if (POSTCODE.equals ( fieldName ) || POSTNAME.equals ( fieldName )) {
-                Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
                     String postName = String.valueOf ( map1.get ( "post_id" ) );
                     if (StringUtils.isNotBlank ( postName )) {
                         map.put ( map1.get ( "field_id" ), postName );
@@ -651,7 +663,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         map.put ( map1.get ( "field_id" ), "-1" );
                     }
                 } else {
-                    map.put ( map1.get ( "field_id" ), "-2" );
+                    map.put (customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id",funcCode,companyId), "-2" );
                 }
             } else {
                 Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode ( fieldName, companyId, funcCode );

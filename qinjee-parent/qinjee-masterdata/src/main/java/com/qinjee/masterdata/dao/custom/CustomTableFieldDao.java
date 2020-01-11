@@ -289,6 +289,10 @@ public interface CustomTableFieldDao {
     List< Integer> selectTableIdByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String pre);
 
     List< CustomFieldVO> selectFieldListByTableId(Integer tableId);
+
+    Map< String, Integer> transOrgIdByCode(String funcCode, Integer companyId, String value);
+
+    Integer selectFieldIdByCodeAndFuncCodeAndComapnyId(@Param("code") String code, @Param("funcCode") String funcCode, @Param("companyId") Integer companyId);
 }
 
 
