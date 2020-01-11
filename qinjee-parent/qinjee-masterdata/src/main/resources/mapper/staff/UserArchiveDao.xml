@@ -1176,5 +1176,10 @@
     select <include refid="Base_Column_List"></include>
     from t_user_archive where company_id =#{companyId} and is_delete =0
   </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from t_user_archive where company_id =#{companyId} and  user_id =#{userId} and is_delete =0
+  </select>
 </mapper>
 
