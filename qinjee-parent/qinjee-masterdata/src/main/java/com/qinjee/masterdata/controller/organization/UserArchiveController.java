@@ -118,7 +118,7 @@ public class UserArchiveController extends BaseController {
 
     @GetMapping("/importToDatabase")
     @ApiOperation(value = "ok,导入用户信息入库")
-    public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey) {
+    public ResponseResult importToDatabase(@RequestParam("userExcelRedisKey") String orgExcelRedisKey) {
         if (checkParam(orgExcelRedisKey)) {
             long start = System.currentTimeMillis();
             userArchiveService.importToDatabase(orgExcelRedisKey, getUserSession());
