@@ -23,6 +23,7 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
+import com.qinjee.masterdata.utils.BeanUtilsExtension;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -155,7 +156,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         UserArchiveVo userArchiveVo1 = userArchiveDao.selectByPrimaryKey(userArchiveVo.getArchiveId());
 
         UserArchive userArchive = new UserArchive();
-        BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
+        BeanUtils.copyProperties(userArchiveVo, userArchiveVo1, BeanUtilsExtension.getNullPropertyNames(userArchiveVo));
         BeanUtils.copyProperties(userArchiveVo1, userArchive);
         logger.info("编辑的userArchive：" + userArchive);
         userArchiveDao.updateByPrimaryKeySelective(userArchive);
