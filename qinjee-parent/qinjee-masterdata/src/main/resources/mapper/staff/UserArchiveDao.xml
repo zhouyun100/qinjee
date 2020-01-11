@@ -561,10 +561,7 @@
       <if test="userCategory != null">
         user_category = #{userCategory,jdbcType=VARCHAR},
       </if>
-
-      <if test="supervisorId != null and supervisorId != ''">
         supervisor_id = #{supervisorId,jdbcType=INTEGER},
-      </if>
       <if test="userName != null">
         user_name = #{userName,jdbcType=VARCHAR},
       </if>
