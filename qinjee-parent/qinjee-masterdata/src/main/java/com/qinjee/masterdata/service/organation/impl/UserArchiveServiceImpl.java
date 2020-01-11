@@ -102,7 +102,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
         List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
-        logger.info("查询机构下用户，机构id："+orgIdList);
+        logger.info("查询机构下用户，机构id：" + orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
@@ -138,7 +138,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
-        logger.info("编辑用户信息：userId：" + userArchiveVo.getUserId());
+
+        logger.info("编辑用户信息：userArchiveVo：" + userArchiveVo);
         UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
         UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
         logger.info("根据手机号查到的用户：" + userByPhone);
@@ -156,7 +157,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
         BeanUtils.copyProperties(userArchiveVo1, userArchive);
-        logger.info("编辑的userArchive："+userArchive);
+        logger.info("编辑的userArchive：" + userArchive);
         userArchiveDao.updateByPrimaryKeySelective(userArchive);
     }
 
@@ -320,9 +321,9 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
                 Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> a.getIdNumber().equals(vo.getIdNumber())).findFirst();
-                if(first.isPresent()){
+                if (first.isPresent()) {
                     UserArchiveVo archiveVo = first.get();
-                    if(Objects.nonNull(archiveVo)&&Objects.nonNull(archiveVo.getEmployeeNumber())&&!archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())){
+                    if (Objects.nonNull(archiveVo) && Objects.nonNull(archiveVo.getEmployeeNumber()) && !archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())) {
                         vo.setCheckResult(false);
                         resultMsg.append("证件号码与其对应的工号人员不一致 | ");
                     }
@@ -386,7 +387,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
             //--------------下面的进行格式验证
             vo.setResultMsg(resultMsg.toString());
-            if(!vo.isCheckResult()){
+            if (!vo.isCheckResult()) {
                 checkList.add(vo);
             }
 
