@@ -396,6 +396,11 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             // --------------下面是一些其他的匹配性校验
 
             //--------------下面的进行格式验证
+
+            if (resultMsg.length() > 2) {
+                resultMsg.deleteCharAt(resultMsg.length() - 2);
+            }
+
             vo.setResultMsg(resultMsg.toString());
             if (!vo.isCheckResult()) {
                 checkList.add(vo);

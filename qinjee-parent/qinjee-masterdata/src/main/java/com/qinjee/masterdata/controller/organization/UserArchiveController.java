@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -72,6 +73,24 @@ public class UserArchiveController extends BaseController {
             ResponseResult responseResult = userArchiveService.uploadAndCheck(multfile, getUserSession(), response);
             logger.info("导入用户信息excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
             return  responseResult;
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+    @GetMapping("/exportError2Txt")
+    @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
+    public ResponseResult exportError2Txt(String errorInfoKey, HttpServletResponse response) throws Exception {
+        if (checkParam(errorInfoKey)) {
+            long start = System.currentTimeMillis();
+            String errorData = redisClusterService.get(errorInfoKey.trim());
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/x-msdownload;charset=UTF-8");
+            response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode("用户信息导入错误校验信息.txt", "UTF-8") + "\"");
+            response.setHeader("fileName", URLEncoder.encode("用户信息错误校验信息.txt", "UTF-8"));
+            response.getOutputStream().write(errorData.getBytes());
+            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start)+"ms");
+            return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
