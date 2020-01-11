@@ -330,7 +330,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
-                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> a.getIdNumber().equals(vo.getIdNumber())).findFirst();
+                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> vo.getIdNumber().equals(a.getIdNumber())).findFirst();
                 if (first.isPresent()) {
                     UserArchiveVo archiveVo = first.get();
                     if (Objects.nonNull(archiveVo) && Objects.nonNull(archiveVo.getEmployeeNumber()) && !archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())) {
@@ -342,7 +342,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
             //--------------下面的进行字典验证
             if (StringUtils.isNotBlank(vo.getGender())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("SEX_TYPE") && a.getDictValue().equals(vo.getGender()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "SEX_TYPE".equals(a.getDictType()) &&vo.getGender() .equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
 
@@ -350,7 +350,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getIdType())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("CARD_TYPE") && a.getDictValue().equals(vo.getIdType()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "CARD_TYPE".equals(a.getDictType()) &&vo.getIdType() .equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
 
@@ -359,35 +359,35 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
 
             if (StringUtils.isNotBlank(vo.getNationality())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("NATIONALITY") && a.getDictValue().equals(vo.getNationality()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"NATIONALITY" .equals(a.getDictType()) &&vo.getNationality() .equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("民族中没有[" + vo.getNationality() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getHighestDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("ACADEMIC_DEGREE") && a.getDictValue().equals(vo.getHighestDegree()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "ACADEMIC_DEGREE".equals(a.getDictType()) && vo.getHighestDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("最高学历中没有[" + vo.getHighestDegree() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getFirstDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("ACADEMIC_DEGREE") && a.getDictValue().equals(vo.getFirstDegree()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"ACADEMIC_DEGREE" .equals(a.getDictType()) && vo.getFirstDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("第一学历中没有[" + vo.getFirstDegree() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getMaritalStatus())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("MARITAL_STATUS") && a.getDictValue().equals(vo.getMaritalStatus()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "MARITAL_STATUS".equals(a.getDictType()) && vo.getMaritalStatus().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("婚姻状况中没有[" + vo.getMaritalStatus() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getPoliticalStatus())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("POLITICAL_AFFILIATION") && a.getDictValue().equals(vo.getPoliticalStatus()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"POLITICAL_AFFILIATION" .equals(a.getDictType()) && vo.getPoliticalStatus().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("政治面貌中没有[" + vo.getPoliticalStatus() + "]的选项 | ");
