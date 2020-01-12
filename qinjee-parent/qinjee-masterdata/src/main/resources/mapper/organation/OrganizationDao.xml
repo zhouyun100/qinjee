@@ -323,6 +323,13 @@
         from t_organization
         where org_parent_id = #{orgParentId,jdbcType=INTEGER}  ORDER BY sort_Id DESC
     </select>
+    <select id="listSonFullNameAndType" resultMap="BaseResultMap">
+        select
+       org_full_name,org_type
+        from t_organization
+        where org_parent_id = #{orgParentId,jdbcType=INTEGER}  ORDER BY sort_Id DESC
+    </select>
+
     <select id="listOrgnizationByIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

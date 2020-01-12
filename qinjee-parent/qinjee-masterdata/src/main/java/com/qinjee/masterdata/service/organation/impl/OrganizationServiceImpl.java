@@ -1,8 +1,6 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
@@ -32,11 +30,9 @@ import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +40,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -283,7 +278,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         organization.setOrgCode(orgCode);
         organizationDao.updateByPrimaryKey(organization);
         //修改子机构名称
-        recursiveUpdateOrgName(organization);
+        recursiveUpdateOrgFullName(organization);
     }
 
 //=====================================================================
@@ -641,9 +636,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      * 递归修改机构全称
      *
      */
-    private void recursiveUpdateOrgName(OrganizationVO organizationVO) {
+    private void recursiveUpdateOrgFullName(OrganizationVO organizationVO) {
 
-        List<OrganizationVO> childOrgList = organizationDao.listSonOrganization(organizationVO.getOrgId());
+        List<OrganizationVO> childOrgList = organizationDao.listSonFullNameAndType(organizationVO.getOrgId());
         for (OrganizationVO org : childOrgList) {
             if(organizationVO.getOrgType().equals("GROUP")){
                 org.setOrgFullName(org.getOrgName());
@@ -651,9 +646,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                 org.setOrgFullName(organizationVO.getOrgFullName() + "/" + org.getOrgName());
             }
             organizationDao.updateByPrimaryKey(org);
-            List<OrganizationVO> childOrgList2 = organizationDao.listSonOrganization(org.getOrgId());
+            List<OrganizationVO> childOrgList2 = organizationDao.listSonFullNameAndType(org.getOrgId());
             if (!CollectionUtils.isEmpty(childOrgList2)) {
-                recursiveUpdateOrgName(org);
+                recursiveUpdateOrgFullName(org);
             }
         }
     }

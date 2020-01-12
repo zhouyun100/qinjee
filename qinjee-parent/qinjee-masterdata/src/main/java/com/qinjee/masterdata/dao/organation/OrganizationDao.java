@@ -124,4 +124,7 @@ public interface OrganizationDao {
     OrganizationVO getOrgById(@Param("orgId") Integer orgId, @Param("companyId") Integer companyId);
 
     Integer selectBusinessUnitIdByName(@Param("businessName") String BusinessName, @Param("companyId") Integer companyId);
+
+    List<OrganizationVO> listSonFullNameAndType(Integer orgId);
+
 }

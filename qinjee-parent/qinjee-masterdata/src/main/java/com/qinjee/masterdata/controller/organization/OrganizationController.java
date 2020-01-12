@@ -74,8 +74,10 @@ public class OrganizationController extends BaseController {
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
         Boolean b = checkParam(orgCode, orgId, orgParentId);
         if (b) {
+            long start = System.currentTimeMillis();
             logger.info("编辑机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
             organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
+            logger.info("编辑机构耗时："+(System.currentTimeMillis()-start)+"ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
