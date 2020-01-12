@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @ToString
@@ -20,19 +21,19 @@ public class LaborContractVo implements Serializable {
      * 合同签订日期
      */
     @NotNull
-    private String contractSignDate;
+    private Date contractSignDate;
 
     /**
      * 合同开始日期
      */
     @NotNull
-    private String contractBeginDate;
+    private Date contractBeginDate;
 
     /**
      * 合同结束日期
      */
     @NotNull
-    private String contractEndDate;
+    private Date contractEndDate;
 
     /**
      * 合同期限(月)

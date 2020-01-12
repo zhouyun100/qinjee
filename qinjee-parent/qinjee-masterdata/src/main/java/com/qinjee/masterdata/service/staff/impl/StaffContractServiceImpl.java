@@ -371,7 +371,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //设置其余字段
         BeanUtils.copyProperties ( laborContractVo, laborContract );
         SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy-MM-dd" );
-        laborContract.setContractSignDate ( formatter.parse ( laborContractVo.getContractSignDate () ) );
+        laborContract.setContractSignDate (  laborContractVo.getContractSignDate () );
         if ("固定期限".equals ( laborContractVo.getContractPeriodType () )) {
             UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( archiveId );
             laborContract.setContractBeginDate ( userArchiveVo.getHireDate () );
