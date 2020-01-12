@@ -40,15 +40,15 @@ public class RenewIntentionVo implements Serializable {
     /**
      * 合同开始日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date contractBeginDate;
 
     /**
      * 合同结束日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date contractEndDate;
 
     /**

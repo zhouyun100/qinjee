@@ -29,7 +29,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -412,15 +411,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private UserArchivePostRelation getUserArchivePostRelation(UserArchivePostRelationVo userArchivePostRelationVo, UserSession userSession) throws ParseException {
         UserArchivePostRelation userArchivePostRelation = new UserArchivePostRelation ();
         BeanUtils.copyProperties ( userArchivePostRelationVo, userArchivePostRelation );
-        //通过工号查询档案id
-        SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy-MM-dd" );
-        userArchivePostRelation.setEmploymentBeginDate ( sdf.parse ( userArchivePostRelationVo.getEmploymentBeginDate () ) );
-        String employmentEndDate = userArchivePostRelationVo.getEmploymentEndDate ();
+        Date employmentEndDate = userArchivePostRelationVo.getEmploymentEndDate ();
         if(employmentEndDate!=null) {
-            userArchivePostRelation.setEmploymentEndDate ( sdf.parse (employmentEndDate) );
+            userArchivePostRelation.setEmploymentEndDate ( employmentEndDate );
         }
-        Integer id = userArchiveDao.selectArchiveIdByNumber ( userArchivePostRelationVo.getEmployeeNumber () );
-        userArchivePostRelation.setArchiveId ( id );
+        //通过工号查询档案id
+//        Integer id = userArchiveDao.selectArchiveIdByNumber ( userArchivePostRelationVo.getEmployeeNumber () );
+        userArchivePostRelation.setArchiveId ( userArchivePostRelation.getArchiveId () );
         userArchivePostRelation.setOperatorId ( userSession.getArchiveId () );
         userArchivePostRelation.setIsDelete ( ( short ) 0 );
         return userArchivePostRelation;

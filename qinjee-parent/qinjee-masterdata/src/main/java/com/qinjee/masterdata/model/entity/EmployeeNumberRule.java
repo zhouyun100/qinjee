@@ -71,16 +71,16 @@ public class EmployeeNumberRule implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     @ApiModelProperty("创建时间")
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     @ApiModelProperty("修改时间")
     private Date updateTime;
 

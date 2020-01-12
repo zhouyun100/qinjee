@@ -44,21 +44,21 @@ public class LaborContract implements Serializable {
     /**
      * 合同签订日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date contractSignDate;
 
     /**
      * 合同开始日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date contractBeginDate;
 
     /**
      * 合同结束日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date contractEndDate;
 
@@ -108,14 +108,14 @@ public class LaborContract implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 

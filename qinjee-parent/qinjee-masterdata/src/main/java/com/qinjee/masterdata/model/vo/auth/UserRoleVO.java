@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -71,13 +70,13 @@ public class UserRoleVO implements Serializable {
      * 托管开始时间
      */
     @ApiModelProperty("托管开始时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   // @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date trusteeshipBeginTime;
 
     /**
      * 托管结束时间
      */
     @ApiModelProperty("托管结束时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   // @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date trusteeshipEndTime;
 }

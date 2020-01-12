@@ -140,7 +140,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
       <if test="isDelete != null">
-        #{isDelete,jdbcType=SMALLINT},
+        #{isDelete,jdbcType=SMALLINT}
       </if>
     </trim>
   </insert>

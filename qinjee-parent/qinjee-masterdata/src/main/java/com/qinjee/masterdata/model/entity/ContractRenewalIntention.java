@@ -1,9 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -76,15 +74,15 @@ public class ContractRenewalIntention implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date updateTime;
 
     private static final long serialVersionUID = 1L;

@@ -39,15 +39,15 @@ public class SmsRecord implements Serializable {
     /**
      * 发送时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date sendTime;
 
     /**
      * 接收时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date userReceiveTime;
 
     /**

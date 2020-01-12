@@ -123,7 +123,6 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 工号
      */
-    @NotNull
     @ApiModelProperty("工号")
     private String employeeNumber;
 

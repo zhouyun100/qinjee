@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 /**
@@ -82,14 +83,14 @@ public class UserArchivePostRelationVo implements Serializable {
      * 任职开始时间
      */
 
-    private String employmentBeginDate;
+    private Date employmentBeginDate;
 
     /**
      * 任职结束时间
      */
 
     @ApiModelProperty("任职结束时间")
-    private String employmentEndDate;
+    private Date employmentEndDate;
 
     /**
      * 任职类型

@@ -30,8 +30,8 @@ public class LaborContractChange implements Serializable {
     /**
      * 变更日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date changeDate;
 
     /**
@@ -57,8 +57,8 @@ public class LaborContractChange implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
+   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
+    //@JSONField(format = "yyyy-MM-dd ")
     private Date createTime;
 
     private static final long serialVersionUID = 1L;
