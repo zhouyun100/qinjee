@@ -603,10 +603,10 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                     }
                 } else {
                     //上级编码在excel中不存在，那就去缓存中查
-                    boolean bool = organizationVOListMem.stream().anyMatch(a -> organizationVO.getOrgCode().equals(a.getOrgParentCode()));
+                    boolean bool = organizationVOListMem.stream().anyMatch(a -> organizationVO.getOrgParentCode().equals(a.getOrgCode()));
                     if (bool) {
                         if (StringUtils.isNotBlank(organizationVO.getOrgName())) {
-                            if (!organizationVOListMem.stream().anyMatch(a -> organizationVO.getOrgName().equals(a.getOrgParentName()))) {
+                            if (!organizationVOListMem.stream().anyMatch(a -> organizationVO.getOrgParentName().equals(a.getOrgName()))) {
                                 organizationVO.setCheckResult(false);
                                 resultMsg.append("上级机构名称在数据库中不匹配 | ");
                             }

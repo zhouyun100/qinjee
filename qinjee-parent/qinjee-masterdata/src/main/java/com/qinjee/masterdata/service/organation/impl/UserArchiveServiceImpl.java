@@ -23,6 +23,7 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
+import com.qinjee.masterdata.utils.BeanUtilsExtension;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -101,7 +102,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
         List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
-        logger.info("查询机构下用户，机构id："+orgIdList);
+        logger.info("查询机构下用户，机构id：" + orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
@@ -137,7 +138,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
-        logger.info("编辑用户信息：userId：" + userArchiveVo.getUserId());
+
+        logger.info("编辑用户信息：userArchiveVo：" + userArchiveVo);
         UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
         UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
         logger.info("根据手机号查到的用户：" + userByPhone);
@@ -155,7 +157,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
         BeanUtils.copyProperties(userArchiveVo1, userArchive);
-        logger.info("编辑的userArchive："+userArchive);
+        logger.info("编辑的userArchive：" + userArchive);
         userArchiveDao.updateByPrimaryKeySelective(userArchive);
     }
 
@@ -222,71 +224,80 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         String data = redisService.get(orgExcelRedisKey.trim());
         //将其转为对象集合
         List<UserArchiveVo> list = JSONArray.parseArray(data, UserArchiveVo.class);
-        //直接遍历入库  账户信息表  账户企业关联表 用户档案表
-        for (UserArchiveVo vo : list) {
 
-            //1.根据手机号+企业查询用户 如果存在则更新  如果不存在则单独以手机号查询用户  如果存在则不新增账户 只需进行企业关联 如果两次查询都不存在则新增一条账户信息
-            UserInfo user1 = userInfoDao.getUserByPhoneAndCompanyId(vo.getPhone(), userSession.getCompanyId());
-            if (Objects.nonNull(user1)) {
-                //2.进行账户更新操作 账户企业关联表不用动
-                UserInfo userInfoDo = new UserInfo();
-                userInfoDo.setUserId(user1.getUserId());
-                userInfoDo.setEmail(vo.getEmail());
-                //TODO 分析还有哪些列需要更新
-                userInfoDao.update(userInfoDo);
-                //3.进行档案维护 根据userId查询企业下关联的档案的维护，如果存在档案则更新，不存在则插入
-                UserArchiveVo archiveVo = userArchiveDao.selectByUserId(user1.getUserId(), userSession.getCompanyId());
-                if (Objects.nonNull(archiveVo)) {
-                    UserArchive userArchive = new UserArchive();
-                    //进行一些属性设置，注意 有些需要进行字典转换
-                    userArchive.setUserId(archiveVo.getUserId());
-                    userArchive.setArchiveId(archiveVo.getArchiveId());
-                    userArchive.setEmail(vo.getEmail());
-                    userArchiveDao.updateByPrimaryKeySelective(userArchive);
+        if(CollectionUtils.isNotEmpty(list)){
+            //直接遍历入库  账户信息表  账户企业关联表 用户档案表
+            for (UserArchiveVo vo : list) {
+
+                //1.根据手机号+企业查询用户 如果存在则更新  如果不存在则单独以手机号查询用户  如果存在则不新增账户 只需进行企业关联 如果两次查询都不存在则新增一条账户信息
+                UserInfo user1 = userInfoDao.getUserByPhoneAndCompanyId(vo.getPhone(), userSession.getCompanyId());
+                if (Objects.nonNull(user1)) {
+                    //2.进行账户更新操作 账户企业关联表不用动
+                    user1.setEmail(vo.getEmail());
+                    //TODO 分析还有哪些列需要更新
+                    userInfoDao.update(user1);
+                    //3.进行档案维护 根据userId查询企业下关联的档案的维护，如果存在档案则更新，不存在则插入
+                    UserArchiveVo archiveVo = userArchiveDao.selectByUserId(user1.getUserId(), userSession.getCompanyId());
+                    if (Objects.nonNull(archiveVo)) {
+                        UserArchive userArchive = new UserArchive();
+                        //进行一些属性设置，注意 有些需要进行字典转换
+                        userArchive.setUserId(user1.getUserId());
+                        userArchive.setArchiveId(archiveVo.getArchiveId());
+                        userArchive.setEmail(vo.getEmail());
+                        userArchiveDao.updateByPrimaryKeySelective(userArchive);
+                    } else {
+                        UserArchive userArchive = new UserArchive();
+                        //进行一些属性设置，注意 有些需要进行字典转换
+                        BeanUtils.copyProperties(vo,userArchive);
+                        userArchive.setCompanyId(userSession.getCompanyId());
+                        userArchive.setUserId(user1.getUserId());
+                        userArchive.setOperatorId(userSession.getArchiveId());
+                        userArchiveDao.insertSelective(userArchive);
+                    }
                 } else {
+                    UserInfo user2 = userInfoDao.getUserByPhone(vo.getPhone());
+                    if (Objects.nonNull(user2)) {
+                        //4.进行企业绑定
+                        //维护员工企业关系表
+                        UserCompany userCompany = new UserCompany();
+                        userCompany.setCreateTime(new Date());
+                        userCompany.setUserId(user2.getUserId());
+                        userCompany.setCompanyId(userSession.getCompanyId());
+                        userCompany.setIsEnable((short) 1);
+                        userCompanyDao.insertSelective(userCompany);
+
+                    } else {
+                        //5.如果都为空 新增账户并绑定企业
+                        user2 = new UserInfo();
+                        user2.setPhone(vo.getPhone());
+                        user2.setEmail(vo.getEmail());
+                        user2.setCreateTime(new Date());
+                        //密码默认手机号后6位
+                        String p = StringUtils.substring(vo.getPhone(), vo.getPhone().length() - 6, vo.getPhone().length());
+                        user2.setPassword(MD5Utils.getMd5(p));
+                        userLoginDao.addUserInfo(user2);
+
+                        UserCompany userCompany = new UserCompany();
+                        userCompany.setCreateTime(new Date());
+                        userCompany.setUserId(user2.getUserId());
+                        userCompany.setCompanyId(userSession.getCompanyId());
+                        userCompany.setIsEnable((short) 1);
+                        userCompanyDao.insertSelective(userCompany);
+                    }
+
+                    //6.进行档案维护 新增档案
                     UserArchive userArchive = new UserArchive();
                     //进行一些属性设置，注意 有些需要进行字典转换
-                    userArchive.setEmail(vo.getEmail());
+                    BeanUtils.copyProperties(vo,userArchive);
+                    userArchive.setUserId(user2.getUserId());
+                    userArchive.setCompanyId(userSession.getCompanyId());
+                    userArchive.setOperatorId(userSession.getArchiveId());
                     userArchiveDao.insertSelective(userArchive);
                 }
-            } else {
-                UserInfo user2 = userInfoDao.getUserByPhone(vo.getPhone());
-                if (Objects.nonNull(user2)) {
-                    //4.进行企业绑定
-                    //维护员工企业关系表
-                    UserCompany userCompany = new UserCompany();
-                    userCompany.setCreateTime(new Date());
-                    userCompany.setUserId(user2.getUserId());
-                    userCompany.setCompanyId(userSession.getCompanyId());
-                    userCompany.setIsEnable((short) 1);
-                    userCompanyDao.insertSelective(userCompany);
-
-                } else {
-                    //5.如果都为空 新增账户并绑定企业
-                    user2 = new UserInfo();
-                    user2.setPhone(vo.getPhone());
-                    user2.setEmail(vo.getEmail());
-                    user2.setCreateTime(new Date());
-                    //密码默认手机号后6位
-                    String p = StringUtils.substring(vo.getPhone(), vo.getPhone().length() - 6, vo.getPhone().length());
-                    user2.setPassword(MD5Utils.getMd5(p));
-                    userLoginDao.addUserInfo(user2);
-
-                    UserCompany userCompany = new UserCompany();
-                    userCompany.setCreateTime(new Date());
-                    userCompany.setUserId(user2.getUserId());
-                    userCompany.setCompanyId(userSession.getCompanyId());
-                    userCompany.setIsEnable((short) 1);
-                    userCompanyDao.insertSelective(userCompany);
-                }
-
-                //6.进行档案维护 新增档案
-                UserArchive userArchive = new UserArchive();
-                //进行一些属性设置，注意 有些需要进行字典转换
-                userArchive.setEmail(vo.getEmail());
-                userArchiveDao.insertSelective(userArchive);
             }
         }
+
+
     }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
@@ -317,10 +328,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
-                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> a.getIdNumber().equals(vo.getIdNumber())).findFirst();
-                if(first.isPresent()){
+                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> vo.getIdNumber().equals(a.getIdNumber())).findFirst();
+                if (first.isPresent()) {
                     UserArchiveVo archiveVo = first.get();
-                    if(Objects.nonNull(archiveVo)&&Objects.nonNull(archiveVo.getEmployeeNumber())&&!archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())){
+                    if (Objects.nonNull(archiveVo) && Objects.nonNull(archiveVo.getEmployeeNumber()) && !archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())) {
                         vo.setCheckResult(false);
                         resultMsg.append("证件号码与其对应的工号人员不一致 | ");
                     }
@@ -329,7 +340,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
             //--------------下面的进行字典验证
             if (StringUtils.isNotBlank(vo.getGender())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("SEX_TYPE") && a.getDictValue().equals(vo.getGender()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "SEX_TYPE".equals(a.getDictType()) &&vo.getGender() .equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
 
@@ -337,7 +348,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getIdType())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("CARD_TYPE") && a.getDictValue().equals(vo.getIdType()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "CARD_TYPE".equals(a.getDictType()) &&vo.getIdType() .equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
 
@@ -346,35 +357,35 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
 
             if (StringUtils.isNotBlank(vo.getNationality())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("NATIONALITY") && a.getDictValue().equals(vo.getNationality()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"NATIONALITY" .equals(a.getDictType()) &&vo.getNationality() .equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("民族中没有[" + vo.getNationality() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getHighestDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("ACADEMIC_DEGREE") && a.getDictValue().equals(vo.getHighestDegree()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "ACADEMIC_DEGREE".equals(a.getDictType()) && vo.getHighestDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("最高学历中没有[" + vo.getHighestDegree() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getFirstDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("ACADEMIC_DEGREE") && a.getDictValue().equals(vo.getFirstDegree()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"ACADEMIC_DEGREE" .equals(a.getDictType()) && vo.getFirstDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("第一学历中没有[" + vo.getFirstDegree() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getMaritalStatus())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("MARITAL_STATUS") && a.getDictValue().equals(vo.getMaritalStatus()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "MARITAL_STATUS".equals(a.getDictType()) && vo.getMaritalStatus().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("婚姻状况中没有[" + vo.getMaritalStatus() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getPoliticalStatus())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> a.getDictType().equals("POLITICAL_AFFILIATION") && a.getDictValue().equals(vo.getPoliticalStatus()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"POLITICAL_AFFILIATION" .equals(a.getDictType()) && vo.getPoliticalStatus().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("政治面貌中没有[" + vo.getPoliticalStatus() + "]的选项 | ");
@@ -383,8 +394,13 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             // --------------下面是一些其他的匹配性校验
 
             //--------------下面的进行格式验证
+
+            if (resultMsg.length() > 2) {
+                resultMsg.deleteCharAt(resultMsg.length() - 2);
+            }
+
             vo.setResultMsg(resultMsg.toString());
-            if(!vo.isCheckResult()){
+            if (!vo.isCheckResult()) {
                 checkList.add(vo);
             }
 

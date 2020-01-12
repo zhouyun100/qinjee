@@ -39,14 +39,11 @@
     </update>
 
     <select id="getUserByPhoneAndCompanyId" resultMap="UserInfoResultMap2">
-      SELECT
-         tua.user_id,tua.phone ,tua.user_name,tua.email
-            FROM
-         t_user_info tu
-            LEFT JOIN t_user_archive tua
-            ON tua.user_id = tu.user_id AND tua.company_id = #{companyId}
-            WHERE
-	        tu.phone = #{phone}
+        SELECT tu.user_id,tu.phone ,tu.user_name,tu.email
+        FROM t_user_info tu
+        , t_user_company tum
+        WHERE tum.user_id = tu.user_id AND tum.company_id = #{companyId}
+        AND tu.phone =  #{phone}
   </select>
     <select id="getUserByPhone" resultMap="UserInfoResultMap2">
         SELECT
@@ -56,11 +53,12 @@
         WHERE
         phone = #{phone}
     </select>
-    <update id="clearUserCompany">
-        update t_user_company
-        set is_enable = 0 and update_time =#{date,jdbcType=TIMESTAMP}
-        where user_id =#{userId} and company_id = #{companyId}
-    </update>
+
+
+    <delete id="clearUserCompany">
+        delete from t_user_company where user_id =#{userId} and company_id = #{companyId}
+    </delete>
+
 
     <update id="update">
         update t_user_info set email  =#{email} where user_id =#{userId}
