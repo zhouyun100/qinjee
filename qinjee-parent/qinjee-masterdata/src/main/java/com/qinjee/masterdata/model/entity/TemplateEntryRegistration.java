@@ -14,7 +14,7 @@ import java.util.Date;
  * @version 2019-12-10
  */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class TemplateEntryRegistration implements java.io.Serializable {
 
     /**

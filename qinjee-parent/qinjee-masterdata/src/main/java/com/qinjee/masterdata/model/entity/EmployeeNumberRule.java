@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @JsonInclude
 @ApiModel(description = "工号规则表实体类")
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class EmployeeNumberRule implements Serializable {
     /**
      * 工号规则ID

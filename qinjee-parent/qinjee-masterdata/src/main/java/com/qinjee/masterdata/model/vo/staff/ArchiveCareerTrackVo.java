@@ -14,7 +14,7 @@ import java.util.Date;
  */
 @Data
 @JsonInclude
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class ArchiveCareerTrackVo implements Serializable {
     /** 变更ID */
     private Integer changeId;

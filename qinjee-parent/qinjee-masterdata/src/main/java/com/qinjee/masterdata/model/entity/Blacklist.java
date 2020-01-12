@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @JsonInclude
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class Blacklist implements Serializable {
     /**
      * 黑名单ID

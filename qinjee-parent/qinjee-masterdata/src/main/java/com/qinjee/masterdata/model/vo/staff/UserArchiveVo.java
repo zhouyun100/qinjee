@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 @ExcelTable(sheetName = "用户信息", useFieldNameAsTitle = false,includeAllField = false)
 @Getter
 public class UserArchiveVo implements Serializable {
