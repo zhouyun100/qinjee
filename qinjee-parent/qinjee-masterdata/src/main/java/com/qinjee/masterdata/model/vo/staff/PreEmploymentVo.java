@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,6 +12,7 @@ import java.util.Date;
 
 @Data
 @JsonInclude
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PreEmploymentVo implements Serializable {
     /**
      * 版本号

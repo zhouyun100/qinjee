@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,6 +10,8 @@ import java.util.Date;
  * t_company_code
  * @author
  */
+@Data
+@JsonInclude
 public class CompanyCode implements Serializable {
     /**
      * 代码ID
@@ -49,15 +51,11 @@ public class CompanyCode implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date updateTime;
 
     /**
@@ -66,84 +64,4 @@ public class CompanyCode implements Serializable {
     private Short isDelete;
 
     private static final long serialVersionUID = 1L;
-
-    public Integer getCodeId() {
-        return codeId;
-    }
-
-    public void setCodeId(Integer codeId) {
-        this.codeId = codeId;
-    }
-
-    public String getCodeName() {
-        return codeName;
-    }
-
-    public void setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
-
-    public Integer getCodeParentId() {
-        return codeParentId;
-    }
-
-    public void setCodeParentId(Integer codeParentId) {
-        this.codeParentId = codeParentId;
-    }
-
-    public Short getIsSystemDefine() {
-        return isSystemDefine;
-    }
-
-    public void setIsSystemDefine(Short isSystemDefine) {
-        this.isSystemDefine = isSystemDefine;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getSortId() {
-        return sortId;
-    }
-
-    public void setSortId(Integer sortId) {
-        this.sortId = sortId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

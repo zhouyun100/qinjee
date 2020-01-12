@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -13,7 +15,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -195,13 +200,18 @@ public class StaffPreEmploymentController extends BaseController {
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
             if (null == param || "".equals(param)) {
                 return false;
             }
         }
         return true;
     }
-
     private ResponseResult failResponseResult(String message){
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);

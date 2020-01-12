@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,6 +10,8 @@ import java.util.Date;
  * t_company_info
  * @author
  */
+@Data
+@JsonInclude
 public class CompanyInfo implements Serializable {
     /**
      * 企业ID
@@ -64,15 +66,11 @@ public class CompanyInfo implements Serializable {
     /**
      * 有效截止日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date validEndDate;
 
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     private Date createTime;
 
     /**
@@ -87,115 +85,4 @@ public class CompanyInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getBusinessLicenseId() {
-        return businessLicenseId;
-    }
-
-    public void setBusinessLicenseId(String businessLicenseId) {
-        this.businessLicenseId = businessLicenseId;
-    }
-
-    public String getRegistAddress() {
-        return registAddress;
-    }
-
-    public void setRegistAddress(String registAddress) {
-        this.registAddress = registAddress;
-    }
-
-    public String getOfficeAddress() {
-        return officeAddress;
-    }
-
-    public void setOfficeAddress(String officeAddress) {
-        this.officeAddress = officeAddress;
-    }
-
-    public String getWelcomeTitle() {
-        return welcomeTitle;
-    }
-
-    public void setWelcomeTitle(String welcomeTitle) {
-        this.welcomeTitle = welcomeTitle;
-    }
-
-    public String getWelcomeContent() {
-        return welcomeContent;
-    }
-
-    public void setWelcomeContent(String welcomeContent) {
-        this.welcomeContent = welcomeContent;
-    }
-
-    public String getLogoImgUrl() {
-        return logoImgUrl;
-    }
-
-    public void setLogoImgUrl(String logoImgUrl) {
-        this.logoImgUrl = logoImgUrl;
-    }
-
-    public String getBackgroundImgUrl() {
-        return backgroundImgUrl;
-    }
-
-    public void setBackgroundImgUrl(String backgroundImgUrl) {
-        this.backgroundImgUrl = backgroundImgUrl;
-    }
-
-    public Integer getUserNumber() {
-        return userNumber;
-    }
-
-    public void setUserNumber(Integer userNumber) {
-        this.userNumber = userNumber;
-    }
-
-    public Date getValidEndDate() {
-        return validEndDate;
-    }
-
-    public void setValidEndDate(Date validEndDate) {
-        this.validEndDate = validEndDate;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsSaas() {
-        return isSaas;
-    }
-
-    public void setIsSaas(Short isSaas) {
-        this.isSaas = isSaas;
-    }
-
-    public Short getIsEnable() {
-        return isEnable;
-    }
-
-    public void setIsEnable(Short isEnable) {
-        this.isEnable = isEnable;
-    }
 }

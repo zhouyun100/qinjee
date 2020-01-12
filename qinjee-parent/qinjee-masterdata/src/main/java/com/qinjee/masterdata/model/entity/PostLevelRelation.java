@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +10,8 @@ import java.util.Date;
  * t_post_level_relation
  * @author
  */
+@Data
+@JsonInclude
 public class PostLevelRelation implements Serializable {
     /**
      * 主键ID
@@ -40,51 +45,4 @@ public class PostLevelRelation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public Integer getPositionLevelId() {
-        return positionLevelId;
-    }
-
-    public void setPositionLevelId(Integer positionLevelId) {
-        this.positionLevelId = positionLevelId;
-    }
-
-    public Integer getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(Integer operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

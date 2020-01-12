@@ -1,11 +1,16 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
  * t_custom_archive_field_check
  * @author
  */
+@JsonInclude
+@Data
 public class CustomArchiveFieldCheck implements Serializable {
     /**
      * 主键ID
@@ -24,27 +29,4 @@ public class CustomArchiveFieldCheck implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getFieldId() {
-        return fieldId;
-    }
-
-    public void setFieldId(Integer fieldId) {
-        this.fieldId = fieldId;
-    }
-
-    public String getCheckCode() {
-        return checkCode;
-    }
-
-    public void setCheckCode(String checkCode) {
-        this.checkCode = checkCode;
-    }
 }

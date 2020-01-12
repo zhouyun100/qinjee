@@ -35,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -230,9 +231,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo)  {
+    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
         List<Integer> list= null;
-        try {
             list = new ArrayList <> (  );
             List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
             Set < Integer > isSystemDefineSet = new HashSet <> ();
@@ -426,12 +426,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 }
             }
             return list;
-        } catch (Exception e) {
-            e.printStackTrace ();
-            return null;
         }
 
-    }
+
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
             String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );

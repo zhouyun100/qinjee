@@ -1,11 +1,9 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -64,17 +62,12 @@ public class UserArchivePostRelation implements Serializable {
     /**
      * 任职开始时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
     @ApiModelProperty("任职开始时间")
     private Date employmentBeginDate;
 
     /**
      * 任职结束时间
      */
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")//数据库导出页面时json格式化
     @ApiModelProperty("任职结束时间")
     private Date employmentEndDate;
 

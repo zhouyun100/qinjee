@@ -1,10 +1,12 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
-import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
+import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -258,6 +260,12 @@ public class FileController extends BaseController {
     }
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
             if (null == param || "".equals(param)) {
                 return false;
             }

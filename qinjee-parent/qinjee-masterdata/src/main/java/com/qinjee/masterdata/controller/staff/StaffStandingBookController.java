@@ -1,12 +1,13 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.vo.staff.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.service.staff.impl.StaffArchiveServiceImpl;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -230,6 +231,12 @@ public class StaffStandingBookController extends BaseController {
     }
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
             if (null == param || "".equals(param)) {
                 return false;
             }

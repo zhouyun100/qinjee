@@ -1,5 +1,8 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,6 +10,8 @@ import java.util.Date;
  * t_standing_book
  * @author
  */
+@JsonInclude
+@Data
 public class StandingBook implements Serializable {
     /**
      * 台账ID
@@ -75,107 +80,4 @@ public class StandingBook implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getStandingBookId() {
-        return standingBookId;
-    }
-
-    public void setStandingBookId(Integer standingBookId) {
-        this.standingBookId = standingBookId;
-    }
-
-    public String getStandingBookName() {
-        return standingBookName;
-    }
-
-    public void setStandingBookName(String standingBookName) {
-        this.standingBookName = standingBookName;
-    }
-
-    public String getStandingBookRemark() {
-        return standingBookRemark;
-    }
-
-    public void setStandingBookRemark(String standingBookRemark) {
-        this.standingBookRemark = standingBookRemark;
-    }
-
-    public String getStandingBookDescribe() {
-        return standingBookDescribe;
-    }
-
-    public void setStandingBookDescribe(String standingBookDescribe) {
-        this.standingBookDescribe = standingBookDescribe;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public Integer getArchiveId() {
-        return archiveId;
-    }
-
-    public void setArchiveId(Integer archiveId) {
-        this.archiveId = archiveId;
-    }
-
-    public Short getIsShare() {
-        return isShare;
-    }
-
-    public void setIsShare(Short isShare) {
-        this.isShare = isShare;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Short getIsEnable() {
-        return isEnable;
-    }
-
-    public void setIsEnable(Short isEnable) {
-        this.isEnable = isEnable;
-    }
-
-    public Integer getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Integer creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Short getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Short isDelete) {
-        this.isDelete = isDelete;
-    }
 }

@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
@@ -12,6 +13,7 @@ import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.utils.FieldToProperty;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -349,8 +352,16 @@ public class CommonController extends BaseController {
     public ResponseResult<List<Integer>> saveFieldAndValue(@RequestBody InsertDataVo insertDataVo) throws Exception {
         Boolean b = checkParam(insertDataVo,getUserSession ());
         if(b) {
+            try {
                 List<Integer> businessId=staffCommonService.saveFieldAndValue (getUserSession (),insertDataVo );
                 return new ResponseResult <> (businessId, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                        if(e instanceof IllegalAccessException || e instanceof ParseException ){
+                            return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
+                        }else{
+                            return new ResponseResult <> ( null,CommonCode.PHONE_ALREADY_EXIST );
+                        }
+            }
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
@@ -581,6 +592,12 @@ public class CommonController extends BaseController {
     }
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
             if (null == param || "".equals(param)) {
                 return false;
             }

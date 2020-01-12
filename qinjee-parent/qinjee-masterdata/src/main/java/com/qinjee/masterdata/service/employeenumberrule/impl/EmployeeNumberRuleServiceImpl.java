@@ -79,14 +79,8 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String dateModel = getDateModel ( creatNumberVo.getDateRule () );
             String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
             String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
-            String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId);
-            String digtaNumber=null;
-            if(StringUtils.isNotEmpty( s )) {
-                digtaNumber= getDigtaNumber ( creatNumberVo.getDigitCapacity (), Integer.parseInt ( s ) + 1 );
-            }else{
-                digtaNumber=getDigtaNumber (creatNumberVo.getDigitCapacity (), 1 );
-            }
-            return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
+            String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId,dateModel);
+            return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
         }else {
             ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
             return null;
@@ -104,17 +98,27 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
             String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
             //截取来寻找目前最大的流水号
-            String s=employeeNumberRuleDao.selectMaxNumberForCon(creatNumberVo,companyId);
-            String digtaNumber=null;
-            if(StringUtils.isNotEmpty( s )) {
-                digtaNumber= getDigtaNumber ( creatNumberVo.getDigitCapacity (), Integer.parseInt ( s ) + 1 );
-            }else{
-                digtaNumber=getDigtaNumber (creatNumberVo.getDigitCapacity (), 1 );
-            }
-            return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
+            String s=employeeNumberRuleDao.selectMaxNumberForCon(creatNumberVo,companyId,dateModel);
+            return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
         }
         ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
         return null;
+    }
+
+    private String getString(CreatNumberVo creatNumberVo, String employeeNumberPrefix, String dateModel, String employeeNumberInfix, String employeeNumberSuffix, String s) {
+        String digtaNumber = null;
+        if (StringUtils.isNotEmpty ( s )) {
+            int i = 0;
+            try {
+                i = Integer.parseInt ( s );
+            } catch (NumberFormatException e) {
+                i = 1;
+            }
+            digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (), i + 1 );
+        } else {
+            digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (), 1 );
+        }
+        return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
     }
 
     @Override

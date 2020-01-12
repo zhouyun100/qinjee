@@ -1,11 +1,16 @@
 package com.qinjee.masterdata.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
  * t_check_type
  * @author
  */
+@JsonInclude
+@Data
 public class CheckType implements Serializable {
     /**
      * 验证code
@@ -19,19 +24,4 @@ public class CheckType implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public String getCheckCode() {
-        return checkCode;
-    }
-
-    public void setCheckCode(String checkCode) {
-        this.checkCode = checkCode;
-    }
-
-    public String getCheckName() {
-        return checkName;
-    }
-
-    public void setCheckName(String checkName) {
-        this.checkName = checkName;
-    }
 }

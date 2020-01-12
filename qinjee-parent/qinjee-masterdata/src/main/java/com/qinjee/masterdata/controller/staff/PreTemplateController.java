@@ -1,19 +1,21 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTableListWithValueVo;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.InsertTemplateAttachmentVo;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTableListWithValueVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.InsertTemplateAttachmentVo;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import com.qinjee.masterdata.service.staff.IPreTemplateService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -448,7 +450,13 @@ public class PreTemplateController extends BaseController {
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
-            if (null == param || "".equals ( param )) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
+            if (null == param || "".equals(param)) {
                 return false;
             }
         }

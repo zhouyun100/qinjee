@@ -1,12 +1,10 @@
 package com.qinjee.masterdata.model.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -119,8 +117,6 @@ public class UserArchive implements Serializable {
     /**
      * 出生日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @ApiModelProperty("出生日期")
     private Date birthDate;
 
@@ -157,16 +153,12 @@ public class UserArchive implements Serializable {
     /**
      * 参加工作时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @ApiModelProperty("参加工作时间")
     private Date firstWorkDate;
 
     /**
      * 入职时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
     private Date hireDate;
@@ -190,8 +182,6 @@ public class UserArchive implements Serializable {
     /**
      * 试用到期时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @ApiModelProperty("试用到期时间")
     private Date probationDueDate;
 
@@ -204,8 +194,6 @@ public class UserArchive implements Serializable {
     /**
      * 转正时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @ApiModelProperty("转正时间")
     private Date converseDate;
 
@@ -295,16 +283,12 @@ public class UserArchive implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @ApiModelProperty("创建时间")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd" )//页面写入数据库时格式化
-    @JSONField(format = "yyyy-MM-dd ")//数据库导出页面时json格式化
     @ApiModelProperty("更新时间")
     private Date updateTime;
 

@@ -161,15 +161,18 @@
   </select>
     <select id="selectMaxNumberForEmp" resultType="java.lang.String">
     select
-     substring_index(MAX(employee_number),concat(#{creatNumberVo.employeeNumberPrefix},#{creatNumberVo.dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
+     substring_index(MAX(employee_number),concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
     from t_user_archive
     where company_id=#{companyId}
+    AND employee_number like concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix},'%')
     </select>
 
   <select id="selectMaxNumberForCon" resultType="java.lang.String">
     select
-    substring_index(MAX(contract_number),concat(#{creatNumberVo.employeeNumberPrefix},#{creatNumberVo.dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
+    substring_index(MAX(contract_number),concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
     from t_labor_contract
-    where company_id=#{companyId}
+    where org_id in
+    (select org_id from t_organization where company_id=#{companyId} and is_enable=1)
+    AND contract_number like concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix},'%')
   </select>
 </mapper>
