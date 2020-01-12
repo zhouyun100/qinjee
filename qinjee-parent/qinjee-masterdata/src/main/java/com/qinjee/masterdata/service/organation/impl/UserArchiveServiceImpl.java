@@ -213,7 +213,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             userArchiveDao.updateByPrimaryKeySelective(userArchive);
         } catch (Exception e) {
             e.printStackTrace();
-            //ExceptionCast.cast(CommonCode.FAIL);
+            //TODO 记录异常 ExceptionCast.cast(CommonCode.FAIL);
         }
         return new ResponseResult(userArchive.getArchiveId());
     }
@@ -301,14 +301,17 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId ());
-        List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
-        if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId ()))) {
-            userArchive.setEmployeeNumber(empNumber);
-        } else {
-            ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
+        String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );
+        List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+        if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getArchiveId () ))){
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
         }
     }
+
+
+
 
     @Override
     protected List<UserArchiveVo> checkExcel(List<UserArchiveVo> userArchiveList, UserSession userSession) {

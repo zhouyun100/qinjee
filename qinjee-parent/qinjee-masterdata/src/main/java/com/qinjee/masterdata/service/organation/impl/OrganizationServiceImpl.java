@@ -266,7 +266,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         }
 
         String newOrgFullName;
-        if (Objects.nonNull(parentOrganization)) {
+        if (Objects.nonNull(parentOrganization)&&!parentOrganization.getOrgType().equals("GROUP")) {
             newOrgFullName = parentOrganization.getOrgFullName() + "/" + orgName;
         } else {
             newOrgFullName = orgName;
@@ -283,7 +283,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         organization.setOrgCode(orgCode);
         organizationDao.updateByPrimaryKey(organization);
         //修改子机构名称
-        recursiveUpdateOrgName(newOrgFullName, orgId);
+        recursiveUpdateOrgName(organization);
     }
 
 //=====================================================================
@@ -562,6 +562,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                 resultMsg.append("非集团类型机构的上级机构名称不能为空 | ");
             }
             if (StringUtils.isNotBlank(organizationVO.getOrgType()) && (!(organizationVO.getOrgType().equals("集团") || organizationVO.getOrgType().equals("单位") || organizationVO.getOrgType().equals("部门")))) {
+                //TODO
                 boolean bool = orgDictListMem.stream().anyMatch(a -> a.getDictValue().equals(organizationVO.getOrgType()));
                 if (!bool) {
                     organizationVO.setCheckResult(false);
@@ -639,20 +640,20 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     /**
      * 递归修改机构全称
      *
-     * @param parentOrgFullName
-     * @param orgId
      */
-    private void recursiveUpdateOrgName(String parentOrgFullName, String orgId) {
+    private void recursiveUpdateOrgName(OrganizationVO organizationVO) {
 
-        List<OrganizationVO> childOrgList = organizationDao.listSonOrganization(Integer.parseInt(orgId));
+        List<OrganizationVO> childOrgList = organizationDao.listSonOrganization(organizationVO.getOrgId());
         for (OrganizationVO org : childOrgList) {
-            if (!"".equals(parentOrgFullName)) {
-                org.setOrgFullName(parentOrgFullName + "/" + org.getOrgName());
+            if(organizationVO.getOrgType().equals("GROUP")){
+                org.setOrgFullName(org.getOrgName());
+            }else{
+                org.setOrgFullName(organizationVO.getOrgFullName() + "/" + org.getOrgName());
             }
             organizationDao.updateByPrimaryKey(org);
             List<OrganizationVO> childOrgList2 = organizationDao.listSonOrganization(org.getOrgId());
             if (!CollectionUtils.isEmpty(childOrgList2)) {
-                recursiveUpdateOrgName(org.getOrgFullName(), String.valueOf(org.getOrgId()));
+                recursiveUpdateOrgName(org);
             }
         }
     }
