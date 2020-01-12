@@ -61,8 +61,7 @@ public class PreEmployment implements Serializable {
         /**
          * 参加工作时间
          */
-        @JsonFormat(pattern="yyyy-MM-dd")
-        @DateTimeFormat(pattern="yyyy-MM-dd")
+
         private Date firstWorkDate;
 
         /**
@@ -123,8 +122,7 @@ public class PreEmployment implements Serializable {
         /**
          * 出生日期
          */
-        @JsonFormat(pattern="yyyy-MM-dd")
-        @DateTimeFormat(pattern="yyyy-MM-dd")
+
         private Date birthDate;
 
         /**
@@ -150,8 +148,7 @@ public class PreEmployment implements Serializable {
         /**
          * 入职日期
          */
-        @JsonFormat(pattern="yyyy-MM-dd")
-        @DateTimeFormat(pattern="yyyy-MM-dd")
+
         private Date hireDate;
 
         /**
@@ -197,15 +194,13 @@ public class PreEmployment implements Serializable {
         /**
          * 创建时间
          */
-        @JsonFormat(pattern="yyyy-MM-dd")
-        @DateTimeFormat(pattern="yyyy-MM-dd")
+
         private Date createTime;
 
         /**
          * 更新时间
          */
-        @JsonFormat(pattern="yyyy-MM-dd")
-        @DateTimeFormat(pattern="yyyy-MM-dd")
+
         private Date updateTime;
 
         /**

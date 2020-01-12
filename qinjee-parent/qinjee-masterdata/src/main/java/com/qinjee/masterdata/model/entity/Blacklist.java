@@ -76,8 +76,7 @@ public class Blacklist implements Serializable {
     /**
      * 拉黑时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date blockTime;
 
     /**
@@ -98,8 +97,7 @@ public class Blacklist implements Serializable {
     /**
      * 修改时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date updateTime;
 
     /**

@@ -67,8 +67,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 参加工作时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date firstWorkDate;
 
     /**
@@ -129,8 +128,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 出生日期
      */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date birthDate;
 
     /**
@@ -156,8 +154,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 入职日期
      */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date hireDate;
 
     /**
@@ -229,8 +226,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 延期入职时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date delayDate;
     /**
      * 部门编码

@@ -65,8 +65,7 @@ public class UserArchiveVo implements Serializable {
      * 出生日期
      */
     @ApiModelProperty("出生日期")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     @ExcelColumn(order =4, title = "出生日期",format = "yyyy-MM-dd")
     private Date birthDate;
 
@@ -206,8 +205,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     @ExcelColumn(order =23, title = "任职时间",format = "yyyy-MM-dd")
     private Date servingDate;
 
@@ -227,8 +225,7 @@ public class UserArchiveVo implements Serializable {
      * 参加工作时间
      */
     @ApiModelProperty("参加工作时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     @ExcelColumn(order =26, title = "参加工作时间",format = "yyyy-MM-dd")
     private Date firstWorkDate;
 
@@ -244,8 +241,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     @ExcelColumn(order =28, title = "入职时间",format = "yyyy-MM-dd")
     private Date hireDate;
 
@@ -265,8 +261,7 @@ public class UserArchiveVo implements Serializable {
      * 试用到期时间
      */
     @ApiModelProperty("试用到期时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     @ExcelColumn(order =31, title = "试用到期时间",format = "yyyy-MM-dd")
     private Date probationDueDate;
 
@@ -274,8 +269,7 @@ public class UserArchiveVo implements Serializable {
      * 转正时间
      */
     @ApiModelProperty("转正时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     @ExcelColumn(order =32, title = "转正时间",format = "yyyy-MM-dd")
     private Date converseDate;
 
@@ -332,8 +326,7 @@ public class UserArchiveVo implements Serializable {
      * 减员时间
      */
     @ApiModelProperty("减员时间")
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date attritionDate;
 
     /**

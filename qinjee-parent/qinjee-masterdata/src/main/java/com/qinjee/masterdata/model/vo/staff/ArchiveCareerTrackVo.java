@@ -50,8 +50,7 @@ public class ArchiveCareerTrackVo implements Serializable {
     private String changeType;
 
     /** 变更日期 */
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+
     private Date changeDate;
 
     /** 变更原因 */
