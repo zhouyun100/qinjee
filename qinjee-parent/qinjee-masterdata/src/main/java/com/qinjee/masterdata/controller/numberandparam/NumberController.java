@@ -61,10 +61,10 @@ public class NumberController extends BaseController {
     @RequestMapping(value = "/creatConNumber", method = RequestMethod.POST)
     @ApiOperation(value = "生成合同编号", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult<String> creatConNumber( Integer ruleId) throws Exception {
-        Boolean b = checkParam(ruleId, getUserSession());
+    public ResponseResult<String> creatConNumber() throws Exception {
+        Boolean b = checkParam( getUserSession());
         if (b) {
-                String number = employeeNumberRuleService.createConNumber(ruleId, getUserSession());
+                String number = employeeNumberRuleService.createConNumber(getUserSession().getCompanyId ());
                 return new ResponseResult<>(number, CommonCode.SUCCESS);
         }
         return failResponseResult("生成合同编号错误或者session错误");
@@ -75,10 +75,10 @@ public class NumberController extends BaseController {
     @RequestMapping(value = "/creatNumberPre", method = RequestMethod.POST)
     @ApiOperation(value = "生成工号", notes = "hkt")
 //    @ApiImplicitParam(name = "customArchiveTable", value = "自定义表", paramType = "form" ,required = true)
-    public ResponseResult<String> creatNumberPre( Integer ruleId,Integer archiveId) throws Exception {
-        Boolean b = checkParam(ruleId,archiveId);
+    public ResponseResult<String> creatNumberPre( ) throws Exception {
+        Boolean b = checkParam(getUserSession ());
         if (b) {
-                String number = employeeNumberRuleService.createEmpNumber (ruleId,archiveId);
+                String number = employeeNumberRuleService.createEmpNumber (getUserSession ().getCompanyId ());
                 return new ResponseResult<>(number, CommonCode.SUCCESS);
         }
         return failResponseResult("生成工号错误或者session错误");

@@ -1054,7 +1054,6 @@
       post.post_name as post_name ,
       org.org_name as business_unit_name,
       arch.user_name as supervisor_user_name
-
       FROM
       t_user_archive arc
       LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
@@ -1167,8 +1166,8 @@
     where arc.company_id=#{companyId}
     and arc.is_delete=0
   </select>
-  <select id="selectEmployNumberByCompanyId" resultType="java.lang.String">
-    select employee_number
+  <select id="selectEmployNumberByCompanyId" resultType="java.lang.Integer">
+    select archive_id
     from t_user_archive
     where company_id=#{companyId}
     and employee_number=#{employeeNumber}

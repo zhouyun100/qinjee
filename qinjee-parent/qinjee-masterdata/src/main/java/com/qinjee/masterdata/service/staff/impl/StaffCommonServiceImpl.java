@@ -11,7 +11,6 @@ import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
-import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -74,8 +73,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private UserLoginService userLoginService;
     @Autowired
     private PostDao postDao;
-    @Autowired
-    private ContractParamDao contractParamDao;
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
 
@@ -436,11 +433,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     }
 
-    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
-            List < Integer > integers = contractParamDao.selectRuleIdByCompanyId ( userSession.getCompanyId () );
-            String empNumber = employeeNumberRuleService.createEmpNumber ( integers.get ( 0 ), userArchive.getArchiveId () );
-            List <String> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-            if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getEmployeeNumber () ))){
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
+            String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );
+            List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
+            if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getArchiveId () ))){
                 userArchive.setEmployeeNumber ( empNumber );
             }else{
                 ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );

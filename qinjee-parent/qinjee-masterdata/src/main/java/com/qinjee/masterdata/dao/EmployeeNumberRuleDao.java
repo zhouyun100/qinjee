@@ -23,5 +23,7 @@ public interface EmployeeNumberRuleDao {
 
     List< EmployeeNumberRule> selectByCompanyId(@Param("companyId") Integer companyId);
 
-    String selectMaxNumber(@Param("creatNumberVo") CreatNumberVo creatNumberVo, @Param("companyId") Integer companyId);
+    String selectMaxNumberForEmp(@Param("creatNumberVo") CreatNumberVo creatNumberVo, @Param("companyId") Integer companyId);
+
+    String selectMaxNumberForCon(@Param("creatNumberVo") CreatNumberVo creatNumberVo, @Param("companyId") Integer companyId);
 }

@@ -159,10 +159,17 @@
     where company_id=#{companyId}
     and is_delete=0
   </select>
-    <select id="selectMaxNumber" resultType="java.lang.String">
+    <select id="selectMaxNumberForEmp" resultType="java.lang.String">
     select
-    MAX(substring_index(employee_number,concat(#{creatNumberVo.employeeNumberPrefix},#{creatNumberVo.dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),1))
+     substring_index(MAX(employee_number),concat(#{creatNumberVo.employeeNumberPrefix},#{creatNumberVo.dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
     from t_user_archive
     where company_id=#{companyId}
     </select>
+
+  <select id="selectMaxNumberForCon" resultType="java.lang.String">
+    select
+    substring_index(MAX(contract_number),concat(#{creatNumberVo.employeeNumberPrefix},#{creatNumberVo.dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
+    from t_labor_contract
+    where company_id=#{companyId}
+  </select>
 </mapper>

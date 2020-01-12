@@ -48,8 +48,8 @@ public class StaffContractController extends BaseController {
     ) {
         Boolean b = checkParam(orgId, currentPage, pageSize,getUserSession ());
         if (b) {
-                PageResult< UserArchiveVo > pageResult =
-                        staffContractService.selectNoLaborContract(orgId, currentPage, pageSize);
+            PageResult < UserArchiveVo > pageResult=
+            staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
                 userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList ( getUserSession ()));

@@ -12,6 +12,7 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,16 +69,23 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     }
 
     @Override
-    public String createEmpNumber(Integer id,Integer archiveId) {
-        EmployeeNumberRule employeeNumberRule = employeeNumberRuleDao.selectByPrimaryKey ( id );
-        if(employeeNumberRule!=null) {
+    public String createEmpNumber(Integer companyId) {
+        List < EmployeeNumberRule > employeeNumberRules = employeeNumberRuleDao.selectByCompanyId ( companyId );
+
+        if(CollectionUtils.isNotEmpty ( employeeNumberRules )) {
             CreatNumberVo creatNumberVo = new CreatNumberVo ();
-            BeanUtils.copyProperties ( employeeNumberRule, creatNumberVo );
+            BeanUtils.copyProperties ( employeeNumberRules.get ( 0 ), creatNumberVo );
             String employeeNumberPrefix = creatNumberVo.getEmployeeNumberPrefix ();
             String dateModel = getDateModel ( creatNumberVo.getDateRule () );
             String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
             String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
-            String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (),archiveId );
+            String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId);
+            String digtaNumber=null;
+            if(StringUtils.isNotEmpty( s )) {
+                digtaNumber= getDigtaNumber ( creatNumberVo.getDigitCapacity (), Integer.parseInt ( s ) + 1 );
+            }else{
+                digtaNumber=getDigtaNumber (creatNumberVo.getDigitCapacity (), 1 );
+            }
             return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
         }else {
             ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
@@ -86,11 +94,27 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     }
 
     @Override
-    public String createConNumber(Integer id, UserSession userSession)  {
-        List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCondition ( id );
-        CreatNumberVo creatNumberVo=new CreatNumberVo ();
-        BeanUtils.copyProperties (contractParamByCondition.get(0),creatNumberVo);
-        return getString ( creatNumberVo,userSession.getCompanyId () );
+    public String createConNumber(Integer companyId)  {
+        List < ContractParam > contractParamByCondition = contractParamDao.findContractParamByCompanyId ( companyId );
+        if(CollectionUtils.isNotEmpty ( contractParamByCondition )) {
+            CreatNumberVo creatNumberVo = new CreatNumberVo ();
+            BeanUtils.copyProperties ( contractParamByCondition.get ( 0 ), creatNumberVo );
+            String employeeNumberPrefix = creatNumberVo.getContractRulePrefix ();
+            String dateModel = getDateModel ( creatNumberVo.getDateRule () );
+            String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
+            String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
+            //截取来寻找目前最大的流水号
+            String s=employeeNumberRuleDao.selectMaxNumberForCon(creatNumberVo,companyId);
+            String digtaNumber=null;
+            if(StringUtils.isNotEmpty( s )) {
+                digtaNumber= getDigtaNumber ( creatNumberVo.getDigitCapacity (), Integer.parseInt ( s ) + 1 );
+            }else{
+                digtaNumber=getDigtaNumber (creatNumberVo.getDigitCapacity (), 1 );
+            }
+            return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
+        }
+        ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
+        return null;
     }
 
     @Override
@@ -103,17 +127,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
        return employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () );
     }
 
-    private String getString( CreatNumberVo creatNumberVo,Integer companyId)  {
-        String employeeNumberPrefix = creatNumberVo.getContractRulePrefix ();
-        String dateModel = getDateModel ( creatNumberVo.getDateRule () );
-        String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
-        String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
-        //截取来寻找目前最大的流水号
-        String s=employeeNumberRuleDao.selectMaxNumber(creatNumberVo,companyId);
-        String digtaNumber = getDigtaNumber ( creatNumberVo.getDigitCapacity (),Integer.parseInt ( s ) );
-        return employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix + digtaNumber;
-    }
-
     private String getDateModel(String rule) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -121,7 +134,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if ("YY".equals(rule)) {
-            return year.substring(2, 3);
+            return year.substring(2, 4);
         }
         if ("YYYY".equals(rule)) {
             return year;
@@ -130,7 +143,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             if (Integer.parseInt(month) < 10) {
                 month = "0" + month;
             }
-            return year.substring(2, 3) + month;
+            return year.substring(2, 4) + month;
         }
         if ("YYYYMM".equals(rule)) {
             if (Integer.parseInt(month) < 10) {
@@ -149,6 +162,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         }
         return null;
     }
+
 
     private String getDigtaNumber(short capacity, Integer number)  {
         String t = "";

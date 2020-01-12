@@ -69,6 +69,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return new PageResult <> ( arcList );
     }
 
+    @Override
+    public PageResult < UserArchiveVo > selectNoLaborContract(Integer companyId, Integer currentPage, Integer pageSize) {
+        return null;
+    }
+
     /**
      * 展示全量未签合同人员
      *

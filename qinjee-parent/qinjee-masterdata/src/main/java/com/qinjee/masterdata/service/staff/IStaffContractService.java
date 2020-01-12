@@ -26,6 +26,10 @@ public interface IStaffContractService {
      */
     PageResult< UserArchiveVo > selectNoLaborContract(List<Integer> orgId, Integer currentPage, Integer pageSize);
     /**
+     * 展示未签合同人员全量
+     */
+    PageResult< UserArchiveVo > selectNoLaborContract(Integer companyId, Integer currentPage, Integer pageSize);
+    /**
      * 删除合同
      * @param laborContractid
      * @return

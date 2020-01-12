@@ -22,20 +22,19 @@ public interface IEmployeeNumberRuleService {
     void addContractParam(ContractParamVo contractParamVo, UserSession userSession);
     /**
      * 生成工号编码
-     * @param id
+     * @param comapnyId
      * @return
      * @throws Exception
      */
-    String createEmpNumber(Integer id, Integer archiveId) throws Exception;
+    String createEmpNumber(Integer comapnyId) ;
 
     /**
      *
-     * @param id
-     * @param userSession
+     * @param comapnyId
      * @return
      * @throws Exception
      */
-    String createConNumber(Integer id, UserSession userSession) throws Exception;
+    String createConNumber(Integer comapnyId) throws Exception;
 
     List < ContractParam > showCreateConRule(UserSession userSession);
 

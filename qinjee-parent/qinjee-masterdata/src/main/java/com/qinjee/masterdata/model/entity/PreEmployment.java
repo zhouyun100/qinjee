@@ -1,7 +1,6 @@
 package com.qinjee.masterdata.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
@@ -17,7 +16,6 @@ import java.util.Date;
 @Data
 @ToString
 @JsonInclude
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PreEmployment implements Serializable {
 
         /**

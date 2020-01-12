@@ -39,7 +39,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -290,11 +289,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         }
     }
 
-    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) throws Exception {
-        List<Integer> integers = contractParamDao.selectRuleIdByCompanyId(userSession.getCompanyId());
-        String empNumber = employeeNumberRuleService.createEmpNumber(integers.get(0), userArchive.getArchiveId());
-        List<String> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
-        if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getEmployeeNumber()))) {
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
+        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId ());
+        List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
+        if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId ()))) {
             userArchive.setEmployeeNumber(empNumber);
         } else {
             ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
