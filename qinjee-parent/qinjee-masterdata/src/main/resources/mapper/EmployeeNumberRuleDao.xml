@@ -171,8 +171,7 @@
     select
     substring_index(MAX(contract_number),concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
     from t_labor_contract
-    where org_id in
-    (select org_id from t_organization where company_id=#{companyId} and is_enable=1)
+    where archive_id in(select archive_id from t_user_archive where company_id=#{companyId} and is_delete=0)
     AND contract_number like concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix},'%')
   </select>
 </mapper>
