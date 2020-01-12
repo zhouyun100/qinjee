@@ -673,6 +673,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             for (Integer orgId : orgIds) {
                 //递归至每一层机构
                 idList.add(orgId);
+                //递归查找子机构id
                 recursiveFindOrgIds(orgId, idList);
             }
         }
