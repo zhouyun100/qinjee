@@ -90,9 +90,9 @@ public class OrganizationController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-    @PostMapping("/deleteOrganizationById")
+    @GetMapping("/deleteOrganizationById")
     @ApiOperation(value = "ok，删除机构", notes = "ok")
-    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds,boolean cascadeDeletePost) {
+    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestParam List<Integer> orgIds,@ApiParam(value = "是否级联删除岗位")@RequestParam boolean cascadeDeletePost) {
         Boolean b = checkParam(orgIds,getUserSession());
         if (b) {
             logger.info("删除机构，orgIds》"+orgIds);

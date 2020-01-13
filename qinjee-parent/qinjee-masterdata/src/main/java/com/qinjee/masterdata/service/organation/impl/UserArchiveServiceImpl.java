@@ -182,13 +182,13 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
         //黑名单校验
         Blacklist blacklist = blacklistDao.selectByIdNumberAndPhone(null, userArchiveVo.getPhone(), userSession.getCompanyId());
-        if(Objects.nonNull(blacklist)){
+        if (Objects.nonNull(blacklist)) {
             //”XX曾于XX年月日被XX公司因XX原因被列入黑名单，不允许入职/投递简历，请联系该公司处理!"
             //查询公司名称
             CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey(userSession.getCompanyId());
             CommonCode isExistBlacklist = CommonCode.IS_EXIST_BLACKLIST;
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM月dd日");
-            String msg=blacklist.getUserName()+"曾于"+sdf.format(blacklist.getBlockTime())+"被"+companyInfo.getCompanyName()+"因"+blacklist.getBlockReason()+"原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+            String msg = blacklist.getUserName() + "曾于" + sdf.format(blacklist.getBlockTime()) + "被" + companyInfo.getCompanyName() + "因" + blacklist.getBlockReason() + "原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
             isExistBlacklist.setMessage(msg);
             ExceptionCast.cast(isExistBlacklist);
         }
@@ -243,7 +243,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         //将其转为对象集合
         List<UserArchiveVo> list = JSONArray.parseArray(data, UserArchiveVo.class);
 
-        if(CollectionUtils.isNotEmpty(list)){
+        if (CollectionUtils.isNotEmpty(list)) {
             //直接遍历入库  账户信息表  账户企业关联表 用户档案表
             for (UserArchiveVo vo : list) {
 
@@ -266,7 +266,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                     } else {
                         UserArchive userArchive = new UserArchive();
                         //进行一些属性设置，注意 有些需要进行字典转换
-                        BeanUtils.copyProperties(vo,userArchive);
+                        BeanUtils.copyProperties(vo, userArchive);
                         userArchive.setCompanyId(userSession.getCompanyId());
                         userArchive.setUserId(user1.getUserId());
                         userArchive.setOperatorId(userSession.getArchiveId());
@@ -306,7 +306,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                     //6.进行档案维护 新增档案
                     UserArchive userArchive = new UserArchive();
                     //进行一些属性设置，注意 有些需要进行字典转换
-                    BeanUtils.copyProperties(vo,userArchive);
+                    BeanUtils.copyProperties(vo, userArchive);
                     userArchive.setUserId(user2.getUserId());
                     userArchive.setCompanyId(userSession.getCompanyId());
                     userArchive.setOperatorId(userSession.getArchiveId());
@@ -319,16 +319,14 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-        String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );
-        List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-        if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getArchiveId () ))){
-            userArchive.setEmployeeNumber ( empNumber );
-        }else{
-            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+        List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
+        if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId()))) {
+            userArchive.setEmployeeNumber(empNumber);
+        } else {
+            ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
         }
     }
-
-
 
 
     @Override
@@ -348,18 +346,25 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             if (StringUtils.isBlank(vo.getPhone())) {
                 vo.setCheckResult(false);
                 resultMsg.append("手机号不能为空 | ");
-            }else{
+            } else {
                 //根据手机号进行黑名单校验
-                //TODO 身份证号呢？
                 boolean bool = blacklistsMem.stream().anyMatch(a -> vo.getPhone().equals(a.getPhone()));
-                if(bool){
+                if (bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("用户已在黑名单中 | ");
                 }
             }
+
             if (StringUtils.isBlank(vo.getIdNumber())) {
                 vo.setCheckResult(false);
                 resultMsg.append("证件号码不能为空 | ");
+            } else {
+                //根据证件号码进行黑名单校验
+                boolean bool = blacklistsMem.stream().anyMatch(a -> vo.getIdNumber().equals(a.getIdNumber()));
+                if (bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("用户已在黑名单中 | ");
+                }
             }
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
@@ -375,11 +380,9 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
 
 
-
-
             //--------------下面的进行字典验证
             if (StringUtils.isNotBlank(vo.getGender())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> "SEX_TYPE".equals(a.getDictType()) &&vo.getGender() .equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "SEX_TYPE".equals(a.getDictType()) && vo.getGender().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
 
@@ -387,7 +390,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getIdType())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> "CARD_TYPE".equals(a.getDictType()) &&vo.getIdType() .equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "CARD_TYPE".equals(a.getDictType()) && vo.getIdType().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
 
@@ -396,7 +399,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
 
             if (StringUtils.isNotBlank(vo.getNationality())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a ->"NATIONALITY" .equals(a.getDictType()) &&vo.getNationality() .equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "NATIONALITY".equals(a.getDictType()) && vo.getNationality().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("民族中没有[" + vo.getNationality() + "]的选项 | ");
@@ -410,7 +413,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getFirstDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a ->"ACADEMIC_DEGREE" .equals(a.getDictType()) && vo.getFirstDegree().equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "ACADEMIC_DEGREE".equals(a.getDictType()) && vo.getFirstDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("第一学历中没有[" + vo.getFirstDegree() + "]的选项 | ");
@@ -424,13 +427,46 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getPoliticalStatus())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a ->"POLITICAL_AFFILIATION" .equals(a.getDictType()) && vo.getPoliticalStatus().equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "POLITICAL_AFFILIATION".equals(a.getDictType()) && vo.getPoliticalStatus().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("政治面貌中没有[" + vo.getPoliticalStatus() + "]的选项 | ");
                 }
             }
-            // --------------下面是一些其他的匹配性校验
+            if (StringUtils.isNotBlank(vo.getProfessionalCertification())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "PROFESSIONAL_CERTIFICATION".equals(a.getDictType()) && vo.getProfessionalCertification().equals(a.getDictValue()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("职业资格中没有[" + vo.getProfessionalCertification() + "]的选项 | ");
+                }
+            }
+
+            if (StringUtils.isNotBlank(vo.getProfessionalTitle())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "PROFESSIONAL_TITLE".equals(a.getDictType()) && vo.getProfessionalTitle().equals(a.getDictValue()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("职称中没有[" + vo.getProfessionalTitle() + "]的选项 | ");
+                }
+            }
+
+            if (StringUtils.isNotBlank(vo.getProfessionalLevel())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "PROFESSIONAL_LEVEL".equals(a.getDictType()) && vo.getProfessionalLevel().equals(a.getDictValue()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("职称等级中没有[" + vo.getProfessionalLevel() + "]的选项 | ");
+                }
+            }
+
+            if (StringUtils.isNotBlank(vo.getUserCategory())) {
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "USER_CATEGORY".equals(a.getDictType()) && vo.getUserCategory().equals(a.getDictValue()));
+                if (!bool) {
+                    vo.setCheckResult(false);
+                    resultMsg.append("人员分类中没有[" + vo.getUserCategory() + "]的选项 | ");
+                }
+            }
+
+
+
 
             //--------------下面的进行格式验证
 
