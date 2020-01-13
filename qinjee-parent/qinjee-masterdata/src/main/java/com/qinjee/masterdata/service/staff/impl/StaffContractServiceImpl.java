@@ -19,11 +19,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -162,26 +162,10 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
-        StringBuilder stringBuffer = new StringBuilder ();
-        //判断是否有已签合同，根据人员id寻找是否存在已签的
-        List < Integer > integerList = laborContractDao.selectConByArcId ( contractVo.getList () );
-        if (CollectionUtils.isEmpty ( integerList )) {
-            //将合同vo设置进去
-            LaborContract laborContract = new LaborContract ();
             //批量新签合同
             for (Integer integer : contractVo.getList ()) {
-                BeanUtils.copyProperties ( contractVo.getLaborContractVo (), laborContract );
-                laborContract.setArchiveId ( integer );
-                laborContract.setOperatorId ( userSession.getArchiveId () );
-                laborContract.setContractState ( NEWMARK );
-                laborContractDao.insertSelective ( laborContract );
+                mark ( contractVo.getLaborContractVo (), integer, userSession.getArchiveId (), NEWMARK );
             }
-        } else {
-            for (Integer integer : integerList) {
-                stringBuffer.append ( integer );
-            }
-            throw new Exception ( "存在已签合同人员" + stringBuffer.toString () );
-        }
     }
 
     @Override
@@ -365,30 +349,22 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return new PageResult <> ( list );
     }
 
-    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state) throws ParseException {
+    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state)  {
         //新增合同
         LaborContract laborContract = new LaborContract ();
         //设置其余字段
         BeanUtils.copyProperties ( laborContractVo, laborContract );
-        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy-MM-dd" );
         laborContract.setContractSignDate (  laborContractVo.getContractSignDate () );
-        if ("固定期限".equals ( laborContractVo.getContractPeriodType () )) {
-            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( archiveId );
-            laborContract.setContractBeginDate ( userArchiveVo.getHireDate () );
-            String dateString = formatter.format ( userArchiveVo.getHireDate () );
-            laborContract.setContractEndDate ( formatter.parse ( addMonth ( dateString, "yyyy-MM-dd", laborContractVo.getContractPeriodMonth () ) ) );
-        }
         laborContract.setArchiveId ( id );
         laborContract.setOperatorId ( archiveId );
         laborContract.setContractState ( state );
         laborContractDao.insertSelective ( laborContract );
     }
 
-    private void change(LaborContractChangeVo laborContractChangeVo, String type, Integer id, Integer achiveId) throws ParseException {
+    private void change(LaborContractChangeVo laborContractChangeVo, String type, Integer id, Integer achiveId)  {
         LaborContractChange laborContractChange = new LaborContractChange ();
         BeanUtils.copyProperties ( laborContractChangeVo, laborContractChange );
-        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy-MM-dd" );
-        laborContractChange.setChangeDate (formatter.parse (laborContractChangeVo.getChangeDate ()) );
+        laborContractChange.setChangeDate (laborContractChangeVo.getChangeDate () );
         laborContractChange.setChangeType ( type );
         laborContractChange.setContractId ( id );
         laborContractChange.setOperatorId ( achiveId );
@@ -396,20 +372,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
 
-    private static String addMonth(String date, String dateType, int month) {
-        String nowDate = null;
-        SimpleDateFormat format = new SimpleDateFormat ( dateType );
-        try {
-            Date parse = format.parse ( date );
-            Calendar calendar = Calendar.getInstance ();
-            calendar.setTime ( parse );
-            calendar.add ( Calendar.MONTH, month );
-            nowDate = format.format ( calendar.getTime () );
-        } catch (java.text.ParseException e) {
-            e.printStackTrace ();
-        }
-        return nowDate;
-    }
+
 
 
 /*

@@ -52,8 +52,15 @@ public class ImportAndExportStaffController extends BaseController {
     public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile) throws Exception {
         Boolean b = checkParam(multipartFile,getUserSession ());
         if(b) {
-                CheckImportVo checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession () );
+            CheckImportVo checkImportVo = null;
+            try {
+                checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession () );
                 return new ResponseResult<>  (checkImportVo, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace ();
+                return new ResponseResult <> ( null,CommonCode.FAIL );
+            }
+
         }
         return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
     }

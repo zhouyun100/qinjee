@@ -7,6 +7,7 @@ import lombok.ToString;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @ToString
@@ -29,7 +30,7 @@ public class LaborContractChangeVo implements Serializable {
     /**
      * 变更日期
      */
-    private String changeDate;
+    private Date changeDate;
 
     /**
      * 变更原因
