@@ -200,8 +200,7 @@ public class UserArchiveVo implements Serializable {
     /**
      * 入职时间
      */
-    @QueryColumn("tua.hiredate")
-    @ApiModelProperty("入职时间")
+    @ApiModelProperty("任职时间")
     @ExcelColumn(order =23, title = "任职时间",format = "yyyy-MM-dd")
     private Date servingDate;
 
