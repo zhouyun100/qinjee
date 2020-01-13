@@ -4,6 +4,7 @@ import com.github.liaochong.myexcel.core.DefaultExcelBuilder;
 import com.github.liaochong.myexcel.core.DefaultStreamExcelBuilder;
 import com.github.liaochong.myexcel.utils.AttachmentExportUtil;
 import com.github.liaochong.myexcel.utils.FileExportUtil;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
@@ -50,6 +51,12 @@ public class OrganizationController extends BaseController {
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
             if (null == param || "".equals(param)) {
                 return false;
             }
@@ -60,7 +67,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
     public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
-        Boolean b = checkParam(orgName, orgType, orgParentId);
+        Boolean b = checkParam(orgName, orgType, orgParentId,getUserSession());
         if (b) {
             logger.info("新增机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
             organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
@@ -72,7 +79,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/editOrganization")
     @ApiOperation(value = "ok，编辑机构", notes = "机构编码待验证")
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
-        Boolean b = checkParam(orgCode, orgId, orgParentId);
+        Boolean b = checkParam(orgCode, orgId, orgParentId,getUserSession());
         if (b) {
             long start = System.currentTimeMillis();
             logger.info("编辑机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
@@ -86,7 +93,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/deleteOrganizationById")
     @ApiOperation(value = "ok，删除机构", notes = "ok")
     public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestBody List<Integer> orgIds,boolean cascadeDeletePost) {
-        Boolean b = checkParam(orgIds);
+        Boolean b = checkParam(orgIds,getUserSession());
         if (b) {
             logger.info("删除机构，orgIds》"+orgIds);
             organizationService.deleteOrganizationById(orgIds, cascadeDeletePost,getUserSession());
@@ -108,7 +115,7 @@ public class OrganizationController extends BaseController {
     })
     @GetMapping("/getAllOrganizationTree")
     public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable") Short isEnable) {
-        Boolean b = checkParam(isEnable);
+        Boolean b = checkParam(isEnable,getUserSession());
         if (b) {
             if (isEnable != 0) {
                 isEnable = null;
@@ -123,7 +130,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/getOrganizationPageList")
     @ApiOperation(value = "ok，分页按条件查询用户下所有的机构(包含子孙)", notes = "ok")
     public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
-        Boolean b = checkParam(organizationPageVo);
+        Boolean b = checkParam(organizationPageVo,getUserSession());
         if (b) {
             Short isEnable = organizationPageVo.getIsEnable();
             if (isEnable == null || isEnable == 0) {
@@ -141,7 +148,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/getDirectOrganizationPageList")
     @ApiOperation(value = "ok，分页查询下级直属机构", notes = "ok")
     public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
-        Boolean b = checkParam(organizationPageVo);
+        Boolean b = checkParam(organizationPageVo,getUserSession());
         if (b) {
             Short isEnable = organizationPageVo.getIsEnable();
             if (isEnable == null || isEnable == 0) {
@@ -173,7 +180,7 @@ public class OrganizationController extends BaseController {
                                                                         @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
                                                                         @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
                                                                         @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
-        Boolean b = checkParam(layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
+        Boolean b = checkParam(layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable,getUserSession());
         if (b) {
             if (isEnable == null || isEnable == 0) {
                 isEnable = 0;
@@ -189,7 +196,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
     @GetMapping("/getOrganizationPostTree")
     public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0不包含（默认）、1 包含", example = "0") @RequestParam(value = "isEnable") Short isEnable) {
-        Boolean b = checkParam(isEnable);
+        Boolean b = checkParam(isEnable,getUserSession());
         if (b) {
             if (isEnable != 0) {
                 isEnable = null;
@@ -211,7 +218,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/lockOrganizationByIds")
     @ApiOperation(value = "ok，封存机构，设为0", notes = "ok")
     public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
-        if (checkParam(orgIds)) {
+        if (checkParam(orgIds,getUserSession())) {
             organizationService.sealOrganization(getUserSession().getArchiveId(),orgIds, Short.parseShort("0"));
             return ResponseResult.SUCCESS();
         }
@@ -221,7 +228,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/unlockOrganizationByIds")
     @ApiOperation(value = "ok，解封机构，设为1", notes = "ok")
     public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
-        if (checkParam(orgIds)) {
+        if (checkParam(orgIds,getUserSession())) {
             organizationService.sealOrganization(getUserSession().getArchiveId(),orgIds, Short.parseShort("1"));
             return ResponseResult.SUCCESS();
         }
@@ -232,7 +239,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/exportOrganization")
     @ApiOperation("机构导出，demo {\"orgId\":28,\"orgIds\":[14,25]}")
     public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
-        if (checkParam(paramMap)) {
+        if (checkParam(paramMap,getUserSession())) {
             long start = System.currentTimeMillis();
             List<Integer> orgIds = null;
             Integer orgId = null;
@@ -271,7 +278,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok,导入机构excel并校验", notes = "ok")
     public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
         //参数判空校验
-        if (checkParam(multfile)) {
+        if (checkParam(multfile,getUserSession())) {
             long start = System.currentTimeMillis();
             ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession(), response);
             logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
@@ -354,7 +361,7 @@ public class OrganizationController extends BaseController {
     //TODO 还需要将人员进行划转
     public ResponseResult transferOrganization(@RequestBody Map<String, Object> paramMap) {
         //校验参数
-        if (checkParam(paramMap)) {
+        if (checkParam(paramMap,getUserSession())) {
             List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
             Integer targetOrgId = (Integer) paramMap.get("targetOrgId");
             //校验参数
@@ -371,7 +378,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，合并机构,传参demo  {\"newOrgName\":\"新机构名称\",\"orgIds\":[1001,1002],\"parentOrgId\":1003}", notes = "调通，需维护人员")
     public ResponseResult mergeOrganization(@RequestBody Map<String, Object> paramMap) {
         //校验参数
-        if (checkParam(paramMap)) {
+        if (checkParam(paramMap,getUserSession())) {
             List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
             Integer parentOrgId = (Integer) paramMap.get("parentOrgId");
             String newOrgName = (String) paramMap.get("newOrgName");

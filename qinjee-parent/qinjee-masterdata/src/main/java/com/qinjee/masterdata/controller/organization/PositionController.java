@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.exception.BusinessException;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.Position;
@@ -9,6 +10,7 @@ import com.qinjee.masterdata.model.vo.organization.PositionVo;
 import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
 import com.qinjee.masterdata.service.organation.PositionService;
+import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
@@ -46,6 +48,12 @@ public class PositionController extends BaseController {
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
+            if(param instanceof UserSession){
+                if(null == param|| "".equals(param)){
+                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+                    return false;
+                }
+            }
             if (null == param || "".equals(param)) {
                 return false;
             }
@@ -57,25 +65,37 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-        return positionService.getPositionPage( positionPageVo);
+        if(checkParam(positionPageVo)){
+            return positionService.getPositionPage( positionPageVo);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+
     }
 
     @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
     @GetMapping("/getAllPositions")
     public ResponseResult<List<Position>> getAllPositions() {
-        return positionService.getAllPositions(getUserSession());
+        if(checkParam(getUserSession())){
+            return positionService.getAllPositions(getUserSession());
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+
     }
 
     @ApiOperation(value = "ok，新增职位", notes = "ok")
     @PostMapping("/addPosition")
     public ResponseResult addPosition(PositionVo positionVo) {
-        return positionService.addPosition(positionVo, getUserSession());
+        if(checkParam(positionVo,getUserSession())){
+            return positionService.addPosition(positionVo, getUserSession());
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+
     }
 
     @ApiOperation(value = "ok，保证职位名称在同一家企业下唯一", notes = "ok")
     @PostMapping("/determinePositionNameIsOnly")
     public ResponseResult determinePositionNameIsOnly(String positionName) {
-        Boolean b = checkParam(positionName);
+        Boolean b = checkParam(positionName,getUserSession());
         if (b) {
             positionService.determinePositionNameIsOnly(positionName, getUserSession());
             return ResponseResult.SUCCESS();
@@ -87,13 +107,23 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，编辑职位", notes = "ok")
     @PostMapping("/editPosition")
     public ResponseResult editPosition(PositionVo positionVo) {
-        return positionService.editPosition(positionVo, getUserSession());
+        Boolean b = checkParam(positionVo,getUserSession());
+        if (b) {
+             positionService.editPosition(positionVo, getUserSession());
+            return ResponseResult.SUCCESS();
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     @ApiOperation(value = "ok，删除职位", notes = "ok")
     @PostMapping("/deletePosition")
     public ResponseResult deletePosition(@RequestBody List<Integer> positionIds) {
-        return positionService.deletePosition(positionIds, getUserSession());
+        Boolean b = checkParam(positionIds,getUserSession());
+        if (b) {
+            return positionService.deletePosition(positionIds, getUserSession());
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+
     }
 
 
@@ -107,21 +137,4 @@ public class PositionController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
-
-
-    @ApiImplicitParam(name = "positionIds", value = "选择的职位id,不传默认导出所有d", paramType = "query", dataType = "int", allowMultiple = true)
-    @ApiOperation(value = "未实现，导出职位excel", notes = "未实现")
-    @GetMapping("/downloadExcel")
-    public ResponseResult downloadExcelByOrg(@RequestParam("positionIds") List<Integer> positionIds) {
-
-        return null;
-    }
-
-  /*  @ApiOperation(value = "新增岗位选择职位时带出职级职等", notes = "高雄")
-    @GetMapping("/getPositionLevelAndGrade")
-    public ResponseResult<Position> getPositionLevelAndGrade(@ApiParam(value = "职位id", example = "1", required = true) Integer positionId){
-        return positionService.getPositionLevelAndGrade(positionId);
-    }*/
-
-
 }

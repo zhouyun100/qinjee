@@ -11,10 +11,16 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.organation.PostDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.sys.SysDictDao;
+import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.*;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
+import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
@@ -56,6 +62,13 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
+    @Autowired
+    private OrganizationDao organizationDao;
+    @Autowired
+    private PostDao postDao;
+
+    @Autowired
+    private UserArchiveDao userArchiveDao;
 
     @Autowired
     private SysDictService sysDictService;
@@ -75,25 +88,25 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
         //查询自定义字段详细信息，并转化为Map，方便通过fieldId获取对象
         List<CustomFieldVO> customFieldDetailList = customTableFieldDao.searchCustomFieldListByFieldIdList(fileIdList);
-        Map<Integer,CheckCustomFieldVO> customFieldMap = new HashMap<>(customFieldDetailList.size());
-        for(CustomFieldVO customFieldDetail : customFieldDetailList){
+        Map<Integer, CheckCustomFieldVO> customFieldMap = new HashMap<>(customFieldDetailList.size());
+        for (CustomFieldVO customFieldDetail : customFieldDetailList) {
             CheckCustomFieldVO checkCustomFieldVO = new CheckCustomFieldVO();
-            BeanUtils.copyProperties(customFieldDetail,checkCustomFieldVO);
-            customFieldMap.put(customFieldDetail.getFieldId(),checkCustomFieldVO);
+            BeanUtils.copyProperties(customFieldDetail, checkCustomFieldVO);
+            customFieldMap.put(customFieldDetail.getFieldId(), checkCustomFieldVO);
         }
 
         //循环大表数据
-        for(Map<Integer,Object> map : mapList){
+        for (Map<Integer, Object> map : mapList) {
             customFieldValueList = new ArrayList<>();
             resultMsg = new StringBuffer();
             customTableVO = new CheckCustomTableVO();
             checkResult = true;
 
             //循环每条记录的每个字段对应的值
-            for(Map.Entry<Integer,Object> entry : map.entrySet()){
+            for (Map.Entry<Integer, Object> entry : map.entrySet()) {
                 //获取字段的配置信息
                 customFieldVO = customFieldMap.get(entry.getKey());
-                if(customFieldVO == null){
+                if (customFieldVO == null) {
                     continue;
                 }
 
@@ -104,7 +117,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 validCustomFieldValue(customFieldVO);
 
                 //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                if(!customFieldVO.getCheckResult()){
+                if (!customFieldVO.getCheckResult()) {
                     checkResult = false;
 
                     //错误信息追加
@@ -123,99 +136,100 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String,String>> lists) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
-            List<Object> list=new ArrayList <> (  );
-            List<CheckCustomFieldVO> checkCustomFieldVOS=new ArrayList <> (  );
-            List<CheckCustomTableVO> checkCustomTableVOS=new ArrayList <> (  );
-            StringBuffer resultMsg=new StringBuffer (  );
-            InsideCheckAndImport insideCheckAndImport=new InsideCheckAndImport ();
-        for (Map < String, String > map : lists) {
-            for (Map.Entry < String, String > integerStringEntry : map.entrySet ()) {
-                for (Field declaredField : object.getClass ().getDeclaredFields ()) {
-                    declaredField.setAccessible ( true );
-                    CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO ();
-                    if (declaredField.getName ().equals (
-                            HeadFieldUtil.getFieldMap ().get ( integerStringEntry.getKey () ) )) {
-                        Class typeClass = declaredField.getType ();
-                        int i = typeClass.getName ().lastIndexOf ( "." );
-                        String type=typeClass.getTypeName ().substring ( i+1 );
+    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
+        List<Object> list = new ArrayList<>();
+        List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
+        List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();
+        StringBuffer resultMsg = new StringBuffer();
+        InsideCheckAndImport insideCheckAndImport = new InsideCheckAndImport();
+        for (Map<String, String> map : lists) {
+            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
+                for (Field declaredField : object.getClass().getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    CheckCustomFieldVO checkCustomFieldVO = new CheckCustomFieldVO();
+                    if (declaredField.getName().equals(
+                        HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+                        Class typeClass = declaredField.getType();
+                        int i = typeClass.getName().lastIndexOf(".");
+                        String type = typeClass.getTypeName().substring(i + 1);
                         //拼接单个字段
-                        checkCustomFieldVO.setIsMust ( ( short ) 1 );
-                        if("Date".equals ( type )){
-                            SimpleDateFormat sdf=new SimpleDateFormat ( "yyyy-MM-dd" );
-                            Date parse = sdf.parse ( integerStringEntry.getValue () );
+                        checkCustomFieldVO.setIsMust((short) 1);
+                        if ("Date".equals(type)) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date parse = sdf.parse(integerStringEntry.getValue());
                             //设置值类型
-                            checkCustomFieldVO.setTextType ( "date" );
+                            checkCustomFieldVO.setTextType("date");
                             declaredField.set(object, parse);
                         }
-                        if("Integer".equals ( type )){
-                            int i1 = Integer.parseInt ( integerStringEntry.getValue () );
-                            checkCustomFieldVO.setTextType ( "number" );
+                        if ("Integer".equals(type)) {
+                            int i1 = Integer.parseInt(integerStringEntry.getValue());
+                            checkCustomFieldVO.setTextType("number");
                             declaredField.set(object, i1);
                         }
-                        if("String".equals ( type )){
-                            String value = integerStringEntry.getValue ();
-                            checkCustomFieldVO.setTextType ( "text" );
+                        if ("String".equals(type)) {
+                            String value = integerStringEntry.getValue();
+                            checkCustomFieldVO.setTextType("text");
                             declaredField.set(object, value);
                         }
                         //设置值
-                        checkCustomFieldVO.setCode ( integerStringEntry.getKey () );
-                        checkCustomFieldVO.setFieldValue ( integerStringEntry.getValue () );
+                        checkCustomFieldVO.setCode(integerStringEntry.getKey());
+                        checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
 
                         //字段值规则校验
                         validCustomFieldValue(checkCustomFieldVO);
                         //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                        if(!checkCustomFieldVO.getCheckResult()){
+                        if (!checkCustomFieldVO.getCheckResult()) {
                             //错误信息追加
-                            checkCustomFieldVO.setCheckResult ( false );
-                            resultMsg.append(checkCustomFieldVO.getResultMsg ());
+                            checkCustomFieldVO.setCheckResult(false);
+                            resultMsg.append(checkCustomFieldVO.getResultMsg());
                         }
                         //检验一行的结果
-                        checkCustomFieldVOS.add ( checkCustomFieldVO );
+                        checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
 
                 }
             }
-            list.add ( object );
-            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO ();
-            checkCustomTableVO.setResultMsg ( resultMsg.toString () );
-            checkCustomTableVO.setCustomFieldVOList ( checkCustomFieldVOS );
+            list.add(object);
+            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
+            checkCustomTableVO.setResultMsg(resultMsg.toString());
+            checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
             //检验多行的结果
-            checkCustomTableVOS.add ( checkCustomTableVO );
+            checkCustomTableVOS.add(checkCustomTableVO);
         }
-        insideCheckAndImport.setList ( checkCustomTableVOS );
-        insideCheckAndImport.setObjectList ( list );
+        insideCheckAndImport.setList(checkCustomTableVOS);
+        insideCheckAndImport.setObjectList(list);
         return insideCheckAndImport;
     }
 
 
     /**
      * 校验自定义字段值（单个校验）
+     *
      * @param customFieldVO
      */
     @Override
     public void validCustomFieldValue(CheckCustomFieldVO customFieldVO) {
 
         //验证不为空
-        if(customFieldVO.getIsMust() != null && customFieldVO.getIsMust() == 1){
-            if(StringUtils.isBlank(customFieldVO.getFieldValue())){
-                handlerCheckCustomFieldVO(customFieldVO, false,"数据不能为空！");
+        if (customFieldVO.getIsMust() != null && customFieldVO.getIsMust() == 1) {
+            if (StringUtils.isBlank(customFieldVO.getFieldValue())) {
+                handlerCheckCustomFieldVO(customFieldVO, false, "数据不能为空！");
                 return;
             }
         }
 
         //值类型校验
-        if(customFieldVO.getTextType().equals(CUSTOM_TEXT_TYPE_DATE)){
+        if (customFieldVO.getTextType().equals(CUSTOM_TEXT_TYPE_DATE)) {
 
             //日期验证
             validDate(customFieldVO);
 
-        }else if(customFieldVO.getTextType().equals(CUSTOM_TEXT_TYPE_TEXT)){
+        } else if (customFieldVO.getTextType().equals(CUSTOM_TEXT_TYPE_TEXT)) {
 
             //文本验证
             validText(customFieldVO);
 
-        }else if(customFieldVO.getTextType().equals(CUSTOM_TEXT_TYPE_NUMBER)){
+        } else if (customFieldVO.getTextType().equals(CUSTOM_TEXT_TYPE_NUMBER)) {
 
             //数据验证
             validNumber(customFieldVO);
@@ -223,34 +237,34 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         }
 
         //规则校验
-        if(StringUtils.isNoneBlank(customFieldVO.getRule())){
-            String [] ruleArr = customFieldVO.getRule().split(",");
-            for(String rule : ruleArr){
+        if (StringUtils.isNoneBlank(customFieldVO.getRule())) {
+            String[] ruleArr = customFieldVO.getRule().split(",");
+            for (String rule : ruleArr) {
                 //验证身份证
-                if(rule.equals(CUSTOM_FIELD_CHECK_TYPE_ID_CARD)){
-                    if(!RegexpUtils.checkIdCard(customFieldVO.getFieldValue())){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"身份证号码格式不正确！");
+                if (rule.equals(CUSTOM_FIELD_CHECK_TYPE_ID_CARD)) {
+                    if (!RegexpUtils.checkIdCard(customFieldVO.getFieldValue())) {
+                        handlerCheckCustomFieldVO(customFieldVO, false, "身份证号码格式不正确！");
                     }
                 }
 
                 //验证邮箱
-                if(rule.equals(CUSTOM_FIELD_CHECK_TYPE_EMAIL)){
-                    if(!RegexpUtils.checkEmail(customFieldVO.getFieldValue())){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"邮箱格式不正确！");
+                if (rule.equals(CUSTOM_FIELD_CHECK_TYPE_EMAIL)) {
+                    if (!RegexpUtils.checkEmail(customFieldVO.getFieldValue())) {
+                        handlerCheckCustomFieldVO(customFieldVO, false, "邮箱格式不正确！");
                     }
                 }
 
                 //验证手机号
-                if(rule.equals(CUSTOM_FIELD_CHECK_TYPE_PHONE)){
-                    if(!RegexpUtils.checkPhone(customFieldVO.getFieldValue())){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"手机号格式不正确！");
+                if (rule.equals(CUSTOM_FIELD_CHECK_TYPE_PHONE)) {
+                    if (!RegexpUtils.checkPhone(customFieldVO.getFieldValue())) {
+                        handlerCheckCustomFieldVO(customFieldVO, false, "手机号格式不正确！");
                     }
                 }
             }
         }
 
         //无校验失败则默认校验通过
-        if(customFieldVO.getCheckResult() == null){
+        if (customFieldVO.getCheckResult() == null) {
             customFieldVO.setCheckResult(true);
         }
 
@@ -258,23 +272,24 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     /**
      * 字段类型
+     *
      * @param customFieldVO
      */
     public void validDate(CheckCustomFieldVO customFieldVO) {
-        if(StringUtils.isNoneBlank(customFieldVO.getFieldValue()) && StringUtils.isNoneBlank(customFieldVO.getFieldType())){
+        if (StringUtils.isNoneBlank(customFieldVO.getFieldValue()) && StringUtils.isNoneBlank(customFieldVO.getFieldType())) {
 
             //日期格式根据字段类型fieldType分别判断date、time、datetime
-            if(customFieldVO.getFieldType().equals(CUSTOM_FIELD_TYPE_DATE) && !RegexpUtils.checkDate(customFieldVO.getFieldValue())){
+            if (customFieldVO.getFieldType().equals(CUSTOM_FIELD_TYPE_DATE) && !RegexpUtils.checkDate(customFieldVO.getFieldValue())) {
 
-                handlerCheckCustomFieldVO(customFieldVO, false,"日期格式不正确!");
+                handlerCheckCustomFieldVO(customFieldVO, false, "日期格式不正确!");
 
-            }else if(customFieldVO.getFieldType().equals(CUSTOM_FIELD_TYPE_TIME) && !RegexpUtils.checkTime(customFieldVO.getFieldValue())){
+            } else if (customFieldVO.getFieldType().equals(CUSTOM_FIELD_TYPE_TIME) && !RegexpUtils.checkTime(customFieldVO.getFieldValue())) {
 
-                handlerCheckCustomFieldVO(customFieldVO, false,"时间格式不正确!");
+                handlerCheckCustomFieldVO(customFieldVO, false, "时间格式不正确!");
 
-            }else if(customFieldVO.getFieldType().equals(CUSTOM_FIELD_TYPE_DATETIME) && !RegexpUtils.checkDateTime(customFieldVO.getFieldValue())){
+            } else if (customFieldVO.getFieldType().equals(CUSTOM_FIELD_TYPE_DATETIME) && !RegexpUtils.checkDateTime(customFieldVO.getFieldValue())) {
 
-                handlerCheckCustomFieldVO(customFieldVO, false,"日期时间格式不正确!");
+                handlerCheckCustomFieldVO(customFieldVO, false, "日期时间格式不正确!");
 
             }
 
@@ -284,18 +299,19 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     /**
      * 文本校验
+     *
      * @param customFieldVO
      */
-    private void validText(CheckCustomFieldVO customFieldVO){
-        if(StringUtils.isNoneBlank(customFieldVO.getFieldValue())){
-            if(customFieldVO.getMaxLength() != null){
-                if(customFieldVO.getFieldValue().length() > customFieldVO.getMaxLength()){
-                    handlerCheckCustomFieldVO(customFieldVO, false,"内容太多，字符数超过：" + customFieldVO.getMaxLength());
+    private void validText(CheckCustomFieldVO customFieldVO) {
+        if (StringUtils.isNoneBlank(customFieldVO.getFieldValue())) {
+            if (customFieldVO.getMaxLength() != null) {
+                if (customFieldVO.getFieldValue().length() > customFieldVO.getMaxLength()) {
+                    handlerCheckCustomFieldVO(customFieldVO, false, "内容太多，字符数超过：" + customFieldVO.getMaxLength());
                 }
             }
-            if(customFieldVO.getMinLength() != null){
-                if(customFieldVO.getFieldValue().length() < customFieldVO.getMinLength()){
-                    handlerCheckCustomFieldVO(customFieldVO, false,"内容太少，字符数超过：" + customFieldVO.getMinLength());
+            if (customFieldVO.getMinLength() != null) {
+                if (customFieldVO.getFieldValue().length() < customFieldVO.getMinLength()) {
+                    handlerCheckCustomFieldVO(customFieldVO, false, "内容太少，字符数超过：" + customFieldVO.getMinLength());
                 }
             }
         }
@@ -303,44 +319,45 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     /**
      * 校验精度
+     *
      * @param customFieldVO
      */
-    private void validNumber(CheckCustomFieldVO customFieldVO){
-        if(StringUtils.isNoneBlank(customFieldVO.getFieldValue())){
-            if(!RegexpUtils.checkDecimal(customFieldVO.getFieldValue())){
-                handlerCheckCustomFieldVO(customFieldVO, false,"不是数值类型！");
-            }else{
-                if(customFieldVO.getMaxNumber() != null){
-                    if(Double.valueOf(customFieldVO.getFieldValue()) >= customFieldVO.getMaxNumber()){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"数值不能大于" + customFieldVO.getMaxNumber());
+    private void validNumber(CheckCustomFieldVO customFieldVO) {
+        if (StringUtils.isNoneBlank(customFieldVO.getFieldValue())) {
+            if (!RegexpUtils.checkDecimal(customFieldVO.getFieldValue())) {
+                handlerCheckCustomFieldVO(customFieldVO, false, "不是数值类型！");
+            } else {
+                if (customFieldVO.getMaxNumber() != null) {
+                    if (Double.valueOf(customFieldVO.getFieldValue()) >= customFieldVO.getMaxNumber()) {
+                        handlerCheckCustomFieldVO(customFieldVO, false, "数值不能大于" + customFieldVO.getMaxNumber());
                     }
                 }
 
-                if(customFieldVO.getMinNumber() != null){
-                    if(Double.valueOf(customFieldVO.getFieldValue()) <= customFieldVO.getMinNumber()){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"数值不能小于" + customFieldVO.getMinNumber());
+                if (customFieldVO.getMinNumber() != null) {
+                    if (Double.valueOf(customFieldVO.getFieldValue()) <= customFieldVO.getMinNumber()) {
+                        handlerCheckCustomFieldVO(customFieldVO, false, "数值不能小于" + customFieldVO.getMinNumber());
                     }
                 }
 
-                if(customFieldVO.getFloatLength() != null){
+                if (customFieldVO.getFloatLength() != null) {
                     String[] strArr = customFieldVO.getFieldValue().split("\\.");
                     int decimalDigit = strArr.length > 1 ? strArr[1].length() : 0;
-                    if(decimalDigit > customFieldVO.getFloatLength()){
-                        handlerCheckCustomFieldVO(customFieldVO, false,"小数位超过" + customFieldVO.getFloatLength());
+                    if (decimalDigit > customFieldVO.getFloatLength()) {
+                        handlerCheckCustomFieldVO(customFieldVO, false, "小数位超过" + customFieldVO.getFloatLength());
                     }
                 }
             }
         }
     }
 
-    private void handlerCheckCustomFieldVO(CheckCustomFieldVO customFieldVO,Boolean checkResult,String resultMsg){
+    private void handlerCheckCustomFieldVO(CheckCustomFieldVO customFieldVO, Boolean checkResult, String resultMsg) {
         customFieldVO.setCheckResult(checkResult);
         customFieldVO.setResultMsg(customFieldVO.getFieldValue() + resultMsg);
     }
 
     @Override
     public List<CustomTableVO> searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO) {
-            customTableVO.setIsEnable(Short.valueOf("1"));
+        customTableVO.setIsEnable(Short.valueOf("1"));
         List<CustomTableVO> customTableList = customTableFieldDao.searchCustomTableListByCompanyIdAndFuncCode(customTableVO);
         return customTableList;
     }
@@ -348,49 +365,49 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Override
     public CustomTableVO searchCustomTableGroupFieldListByTableCode(UserSession userSession, String tableCode) {
 
-        List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(userSession.getCompanyId (),tableCode,null);
+        List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(userSession.getCompanyId(), tableCode, null);
 
-        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(userSession.getCompanyId (),userSession.getArchiveId (),tableCode,null);
+        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(userSession.getCompanyId(), userSession.getArchiveId(), tableCode, null);
 
-        CustomTableVO customTable = handlerGroupFieldToTable(customGroupList,customFieldList);
+        CustomTableVO customTable = handlerGroupFieldToTable(customGroupList, customFieldList);
 
         return customTable;
     }
 
     @Override
-    public CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId,UserSession userSession) {
-        List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(null,null, tableId);
+    public CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId, UserSession userSession) {
+        List<CustomGroupVO> customGroupList = customTableFieldDao.searchCustomGroupList(null, null, tableId);
 
-        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(userSession.getCompanyId (),userSession.getArchiveId (),null,tableId);
+        List<CustomFieldVO> customFieldList = customTableFieldDao.searchCustomFieldList(userSession.getCompanyId(), userSession.getArchiveId(), null, tableId);
 
-        CustomTableVO customTable = handlerGroupFieldToTable(customGroupList,customFieldList);
+        CustomTableVO customTable = handlerGroupFieldToTable(customGroupList, customFieldList);
 
         return customTable;
     }
 
-    private CustomTableVO handlerGroupFieldToTable(List<CustomGroupVO> customGroupList, List<CustomFieldVO> customFieldList){
+    private CustomTableVO handlerGroupFieldToTable(List<CustomGroupVO> customGroupList, List<CustomFieldVO> customFieldList) {
         CustomTableVO customTable = new CustomTableVO();
 
-        if(CollectionUtils.isNotEmpty(customFieldList)){
-            for(CustomFieldVO customFieldVO : customFieldList){
+        if (CollectionUtils.isNotEmpty(customFieldList)) {
+            for (CustomFieldVO customFieldVO : customFieldList) {
                 handlerCustomFieldDict(customFieldVO);
             }
         }
 
         //如果没有自定义组，则设置一个groupId为0的空组
-        if(CollectionUtils.isEmpty(customGroupList)){
+        if (CollectionUtils.isEmpty(customGroupList)) {
             customGroupList = new ArrayList<>();
             CustomGroupVO groupVO = new CustomGroupVO();
             groupVO.setCustomFieldVOList(customFieldList);
             customGroupList.add(groupVO);
             customTable.setCustomGroupVOList(customGroupList);
-        }else{
-            for(CustomGroupVO groupVO : customGroupList){
+        } else {
+            for (CustomGroupVO groupVO : customGroupList) {
 
                 List<CustomFieldVO> fieldList = customFieldList.stream().filter(customFieldVO -> {
-                    if(customFieldVO.getGroupId().equals(groupVO.getGroupId())){
+                    if (customFieldVO.getGroupId().equals(groupVO.getGroupId())) {
                         return true;
-                    }else{
+                    } else {
                         return false;
                     }
                 }).collect(Collectors.toList());
@@ -407,12 +424,13 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     /**
      * 自定义表字段设置code下拉数据
+     *
      * @param customFieldVO
      */
-    private void handlerCustomFieldDict(CustomFieldVO customFieldVO){
+    private void handlerCustomFieldDict(CustomFieldVO customFieldVO) {
         String textType = customFieldVO.getTextType();
         String code = customFieldVO.getCode();
-        if(StringUtils.isNoneBlank(textType) && textType.equals("code") && StringUtils.isNoneBlank(code)){
+        if (StringUtils.isNoneBlank(textType) && textType.equals("code") && StringUtils.isNoneBlank(code)) {
             List<SysDict> dictList = sysDictService.searchSysDictListByDictType(code);
             customFieldVO.setDictList(dictList);
         }
@@ -425,7 +443,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public List < CustomFieldVO > selectFieldListByTableId(Integer tableId) {
+    public List<CustomFieldVO> selectFieldListByTableId(Integer tableId) {
         return customTableFieldDao.selectFieldListByTableId(tableId);
 
     }
@@ -433,18 +451,18 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Override
     public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue) {
 
-        if(customTable != null && mapValue!=null){
+        if (customTable != null && mapValue != null) {
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
-            if(CollectionUtils.isNotEmpty(groupList)){
-                for(CustomGroupVO groupVO : groupList){
+            if (CollectionUtils.isNotEmpty(groupList)) {
+                for (CustomGroupVO groupVO : groupList) {
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
                     //处理自定义组字段数据回填
-                    handlerCustomTableGroupFieldList(fieldList,mapValue);
+                    handlerCustomTableGroupFieldList(fieldList, mapValue);
                 }
             }
-            if(StringUtils.isNotBlank (mapValue.get(-1))){
+            if (StringUtils.isNotBlank(mapValue.get(-1))) {
 
-                customTable.setBigDataId ( Integer.parseInt ( mapValue.get(-1) ) );
+                customTable.setBigDataId(Integer.parseInt(mapValue.get(-1)));
             }
 
         }
@@ -453,22 +471,34 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList, Map<Integer, String> mapValue) {
-        if(CollectionUtils.isNotEmpty(customFieldList)){
-            for(CustomFieldVO fieldVO : customFieldList){
+        if (CollectionUtils.isNotEmpty(customFieldList)) {
+            for (CustomFieldVO fieldVO : customFieldList) {
                 //设置默认值
-                fieldVO.setDefaultValue ( mapValue.get ( fieldVO.getFieldId () ) );
-                if(StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())){
-                    List < SysDict > dictList = sysDictService.searchSysDictListByDictType ( fieldVO.getCode () );
+                fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
+                if (StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())) {
+                    List<SysDict> dictList = sysDictService.searchSysDictListByDictType(fieldVO.getCode());
                     for (SysDict dict : dictList) {
-                        if(dict.getDictCode ().equals ( mapValue.get(fieldVO.getFieldId ()) )){
+                        if (dict.getDictCode().equals(mapValue.get(fieldVO.getFieldId()))) {
                             //设置中文值
                             fieldVO.setChDefaultValue(dict.getDictValue());
                         }
                     }
                     //设置字典类
-                    fieldVO.setDictList ( dictList );
-                }else{
-                    fieldVO.setChDefaultValue ( mapValue.get(fieldVO.getFieldId()) );
+                    fieldVO.setDictList(dictList);
+                } else {
+                    //如果是部门 单位 岗位 直接上级  也同样设置中文值
+                    if (("business_unit_id".equals(fieldVO.getFieldCode()) || "org_id".equals(fieldVO.getFieldCode()))&&Objects.nonNull(fieldVO.getDefaultValue())) {
+                        OrganizationVO org = organizationDao.getOrganizationById(Integer.parseInt(fieldVO.getDefaultValue()));
+                        fieldVO.setChDefaultValue(org.getOrgName());
+                    } else if ("post_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())) {
+                        Post post = postDao.getPostById(fieldVO.getDefaultValue());
+                        fieldVO.setChDefaultValue(post.getPostName());
+                    } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())) {
+                        UserArchiveVo archiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getDefaultValue()));
+                        fieldVO.setChDefaultValue(archiveVo.getUserName());
+                    } else {
+                        fieldVO.setChDefaultValue(mapValue.get(fieldVO.getFieldId()));
+                    }
                 }
             }
         }
