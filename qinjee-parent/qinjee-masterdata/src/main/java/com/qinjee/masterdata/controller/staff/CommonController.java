@@ -375,7 +375,8 @@ public class CommonController extends BaseController {
     public ResponseResult<List<CustomTableVO>> selectValue(Integer tableId,Integer businessId) throws IllegalAccessException {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
-                List<CustomTableVO> list=new ArrayList <> (  );
+            long start = System.currentTimeMillis();
+            List<CustomTableVO> list=new ArrayList <> (  );
                 CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId,getUserSession ());
                 List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
                     for (Map < Integer, String > map : mapList) {
@@ -391,6 +392,7 @@ public class CommonController extends BaseController {
                             }
                         }
                     }
+                    logger.info("selectValue耗时:"+(System.currentTimeMillis()-start)+"ms");
                 return new ResponseResult <> (list, CommonCode.SUCCESS);
         }
             return new ResponseResult <> (null, CommonCode.INVALID_PARAM);

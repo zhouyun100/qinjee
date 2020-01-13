@@ -25,6 +25,7 @@
     <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
     <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
     <result column="hire_date" jdbcType="DATE"  property="hireDate" />
+    <result column="serving_date" jdbcType="DATE"  property="servingDate" />
     <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
     <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
     <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
@@ -60,7 +61,7 @@
     <sql id="Base_Column_List">
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
     user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
-    marital_status, first_work_date, hire_date, serving_age, working_period, probation_due_date,
+    marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, phone, email, address,
     professional_certification, professional_title, professional_level, attrition_date,
     attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete
