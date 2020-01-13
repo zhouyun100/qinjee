@@ -55,7 +55,8 @@ public enum CommonCode implements ResultCode{
     STANDINGBOOK_IS_EMPTY(false,10327, "台账无内容"),
     ORG_HAVE_POST(false,10328, "机构下存在岗位"),
     EMPLOYEENUMBER_IS_EXIST(false,10328, "工号已存在，请重新操作"),
-    ARCHIVEID_IS_TOOLONG(false,10329, "请增加规则容量");
+    ARCHIVEID_IS_TOOLONG(false,10329, "请增加规则容量"),
+    CANNOT_TWO_NULL(false,10330, "两个参数不能同时为空");
 
 
 

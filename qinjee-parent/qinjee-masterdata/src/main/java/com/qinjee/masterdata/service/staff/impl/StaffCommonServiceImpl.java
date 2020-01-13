@@ -11,6 +11,7 @@ import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -72,6 +73,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private UserLoginService userLoginService;
+    @Autowired
+    private BlacklistDao blacklistDao;
     @Autowired
     private PostDao postDao;
     @Autowired
@@ -472,7 +475,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         String s3 = selectValueById ( map, integer1 );
         return preEmploymentDao.selectPreByIdtypeAndIdnumber ( s3, s2 );
     }
-
     private Integer getArchiveId(Map < Integer, String > map, List < Integer > isSystemDefineList) {
         Integer integer = customTableFieldDao.selectSymbolForArcIdNumber ( isSystemDefineList );
         Integer integer1 = customTableFieldDao.selectSymbolForArcEmploymentNumber ( isSystemDefineList );
@@ -481,13 +483,20 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         return userArchiveDao.selectIdByNumberAndEmploy ( s2, s3 );
     }
 
+    private Integer getBlaId(Map < Integer, String > map, List < Integer > notSystemDefineList) {
+        Integer integer = customTableFieldDao.selectSymbolForPreIdNumber ( notSystemDefineList );
+        Integer integer1 = customTableFieldDao.selectSymbolForPreIdType ( notSystemDefineList );
+        String s2 = selectValueById ( map, integer );
+        String s3 = selectValueById ( map, integer1 );
+        return preEmploymentDao.selectPreByIdtypeAndIdnumber ( s3, s2 );
+    }
+
     private String selectValueById(Map < Integer, String > map, Integer id) {
         for (Map.Entry < Integer, String > integerStringEntry : map.entrySet ()) {
             if (integerStringEntry.getKey ().equals ( id )) {
                 return integerStringEntry.getValue ();
             }
         }
-
         return null;
     }
 

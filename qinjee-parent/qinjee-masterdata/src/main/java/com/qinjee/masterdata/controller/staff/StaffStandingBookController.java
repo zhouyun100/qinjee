@@ -44,10 +44,10 @@ public class StaffStandingBookController extends BaseController {
     @RequestMapping(value = "/insertBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "加入黑名单表", notes = "hkt")
 //    @ApiImplicitParam(name = "blackListGroup", value = "黑名单表集合", paramType = "query", required = true)
-    public ResponseResult insertBlackList(@RequestBody List<BlackListVo> blacklists) {
+    public ResponseResult insertBlackList(@RequestBody List<BlackListVo> blacklists) throws IllegalAccessException {
         Boolean b = checkParam(blacklists,  getUserSession());
         if (b) {
-                staffStandingBookService.insertBlackList(blacklists,  getUserSession());
+                staffStandingBookService.insertBlackList(blacklists,getUserSession());
                 return ResponseResult.SUCCESS();
 
         }

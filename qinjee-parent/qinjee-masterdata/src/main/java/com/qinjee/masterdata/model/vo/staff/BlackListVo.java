@@ -20,25 +20,21 @@ public class BlackListVo implements Serializable {
     /**
      * 手机号
      */
-    @NotNull
     private String phone;
 
     /**
      * 证件类型
      */
-    @NotNull
     private String idType;
 
     /**
      * 证件号码
      */
-    @NotNull
     private String idNumber;
 
     /**
      * 所属单位ID
      */
-    @NotNull
     private String businessUnitName;
 
     /**

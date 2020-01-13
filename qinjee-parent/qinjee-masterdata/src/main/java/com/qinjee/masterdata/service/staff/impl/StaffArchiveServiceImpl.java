@@ -84,7 +84,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
+    public void updateArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
         UserArchive userArchive = new UserArchive ();
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         userArchive.setOperatorId ( userSession.getArchiveId () );

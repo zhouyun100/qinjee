@@ -475,7 +475,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             for (CustomFieldVO fieldVO : customFieldList) {
                 //设置默认值
                 fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
-                if (StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())) {
+                if (StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                     List<SysDict> dictList = sysDictService.searchSysDictListByDictType(fieldVO.getCode());
                     for (SysDict dict : dictList) {
                         if (dict.getDictCode().equals(mapValue.get(fieldVO.getFieldId()))) {
@@ -487,13 +487,13 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     fieldVO.setDictList(dictList);
                 } else {
                     //如果是部门 单位 岗位 直接上级  也同样设置中文值
-                    if (("business_unit_id".equals(fieldVO.getFieldCode()) || "org_id".equals(fieldVO.getFieldCode()))&&Objects.nonNull(fieldVO.getDefaultValue())) {
+                    if (("business_unit_id".equals(fieldVO.getFieldCode()) || "org_id".equals(fieldVO.getFieldCode()))&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         OrganizationVO org = organizationDao.getOrganizationById(Integer.parseInt(fieldVO.getDefaultValue()));
                         fieldVO.setChDefaultValue(org.getOrgName());
                     } else if ("post_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())) {
                         Post post = postDao.getPostById(fieldVO.getDefaultValue());
                         fieldVO.setChDefaultValue(post.getPostName());
-                    } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())) {
+                    } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         UserArchiveVo archiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getDefaultValue()));
                         fieldVO.setChDefaultValue(archiveVo.getUserName());
                     } else {

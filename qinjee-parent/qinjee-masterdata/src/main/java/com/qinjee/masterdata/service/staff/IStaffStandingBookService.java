@@ -24,7 +24,7 @@ public interface IStaffStandingBookService {
      * @param userSession
      * @return
      */
-    void insertBlackList(List<BlackListVo> blacklists,  UserSession userSession);
+    void insertBlackList(List<BlackListVo> blacklists,  UserSession userSession) throws IllegalAccessException;
 
     /**
      * 批量删除黑名单

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +63,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private CustomTableFieldService customTableFieldService;
 
     @Override
-    public void insertBlackList(List<BlackListVo> blackListVos, UserSession userSession) {
+    public void insertBlackList(List<BlackListVo> blackListVos, UserSession userSession) throws IllegalAccessException {
         for (BlackListVo blacklistVo : blackListVos) {
+            checkBlackList(blacklistVo);
             Blacklist blacklist = new Blacklist();
             BeanUtils.copyProperties(blacklistVo, blacklist);
             blacklist.setOperatorId(userSession.getArchiveId());
@@ -326,6 +328,30 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             return " OR ";
         }
         return "";
+    }
+
+    private void checkBlackList (BlackListVo blacklistVo) throws IllegalAccessException {
+        Boolean flag1=false;
+        Boolean flag2=false;
+        Class  aClass = blacklistVo.getClass ();
+        Field[] declaredFields = aClass.getDeclaredFields ();
+        for (Field declaredField : declaredFields) {
+            if("phone".equals ( declaredField.getName () )){
+                Object o = declaredField.get ( blacklistVo );
+                if(o!=null){
+                    flag1=true;
+                }
+            }
+            if("idNumber".equals ( declaredField.getName () )){
+                Object o = declaredField.get ( blacklistVo );
+                if(o!=null){
+                    flag2=true;
+                }
+            }
+            if(!flag1&&flag2){
+                ExceptionCast.cast ( CommonCode.CANNOT_TWO_NULL);
+            }
+        }
     }
 
 }
