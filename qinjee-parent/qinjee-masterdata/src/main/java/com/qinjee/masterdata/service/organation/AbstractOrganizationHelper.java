@@ -15,6 +15,8 @@ import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -88,13 +90,13 @@ public abstract class AbstractOrganizationHelper<T> {
         List<T> userArchiveList = new ArrayList<>(excelList.size());
         //进行一些前置处理，并把excel原表信息与处理后的信息存入redis
         List<T> dataList = preHandle(excelList, userArchiveList);
-        String key = "userDataKey" + multfile.getOriginalFilename().hashCode();
+        String key = "userDataKey" + multfile.getOriginalFilename().hashCode()+"-"+ RandomStringUtils.random(6);
         //将记录行号后的集合存入redis
         putIntoRedis(key, dataList, resultMap);
         //将上一步处理后的信息进行规则校
         List<T> checkList = checkExcel(dataList, userSession);
         //处理校验结果
-        String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode();
+        String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode()+"-"+ RandomStringUtils.random(6);
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
         responseResult.setResult(resultMap);
         resultMap=null;
@@ -166,7 +168,7 @@ public abstract class AbstractOrganizationHelper<T> {
         //如果不为空则校验成功,将错误信息、原表数据存储到redis后抛出异常
         if (!CollectionUtils.isEmpty(checkList)) {
             StringBuilder errorSb = new StringBuilder();
-            errorSb.append("行号    |             错误信息\r\n");
+            errorSb.append("行号    |        错误信息\r\n");
             errorSb.append("--------------------------------\r\n");
             for (T error : checkList) {
                 Method getLineNumber = error.getClass().getMethod("getLineNumber");

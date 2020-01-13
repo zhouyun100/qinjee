@@ -250,7 +250,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //反查organizationVO
         OrganizationVO organization = organizationDao.getOrganizationById(Integer.parseInt(orgId));
         OrganizationVO parentOrganization = organizationDao.getOrganizationById(Integer.parseInt(parentOrgId));
-
         //判断机构编码是否唯一
         if (!organization.getOrgCode().equals(orgCode)) {
             OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
@@ -259,7 +258,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                 ExceptionCast.cast(CommonCode.CODE_USED);
             }
         }
-
         String newOrgFullName;
         if (Objects.nonNull(parentOrganization)&&!parentOrganization.getOrgType().equals("GROUP")) {
             newOrgFullName = parentOrganization.getOrgFullName() + "/" + orgName;
@@ -410,8 +408,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             for (OrganizationVO vo : orgList) {
                 OrganizationVO ifExistVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
                 OrganizationVO parentOrg = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgParentCode(), userSession.getCompanyId());
-                Integer orgManagerId = userArchiveDao.selectArchiveIdByNumber(vo.getManagerEmployeeNumber());
-                vo.setOrgManagerId(orgManagerId);
+                Integer orgManagerId = userArchiveDao.selectArchiveIdByNumber(vo.getManagerEmployeeNumber(),userSession.getCompanyId());
 
                 //导入时将“部门”转为"DEPT"
                 List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
@@ -421,28 +418,32 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                     }
                 }
 
+                //构建vo
+                vo.setOrgManagerId(orgManagerId);
+                vo.setOperatorId(userSession.getArchiveId());
+                vo.setCompanyId(userSession.getCompanyId());
+                vo.setSortId(sortId);
+                sortId += 1000;
+                //TODO 根据部门负责人编号  查询档案id
+                vo.setOrgManagerId(userSession.getArchiveId());
+                //查询父机构的全称  设置全称
+                if (Objects.isNull(parentOrg)) {
+                    vo.setOrgParentId(0);
+                    vo.setOrgFullName(vo.getOrgName());
+                } else {
+                    vo.setOrgParentId(parentOrg.getOrgId());
+                    vo.setOrgFullName(parentOrg.getOrgFullName() + "/" + vo.getOrgName());
+                    if (parentOrg.getOrgType().equalsIgnoreCase("GROUP")) {
+                        vo.setOrgFullName(vo.getOrgName());
+                    }
+                }
+
+
                 //已存在 则更新
                 if (Objects.nonNull(ifExistVo)) {
-                    //根据机构编码进行更新
+                    //根据机构编码与企业id进行更新
                     organizationDao.updateByOrgCode(vo);
                 } else {
-                    vo.setOperatorId(userSession.getArchiveId());
-                    vo.setCompanyId(userSession.getCompanyId());
-                    vo.setSortId(sortId);
-                    sortId += 1000;
-                    //TODO 根据部门负责人编号  查询档案id
-                    vo.setOrgManagerId(userSession.getArchiveId());
-                    //查询父机构的全称  设置全称
-                    if (Objects.isNull(parentOrg)) {
-                        vo.setOrgParentId(0);
-                        vo.setOrgFullName(vo.getOrgName());
-                    } else {
-                        vo.setOrgParentId(parentOrg.getOrgId());
-                        vo.setOrgFullName(parentOrg.getOrgFullName() + "/" + vo.getOrgName());
-                        if (parentOrg.getOrgType().equalsIgnoreCase("GROUP")) {
-                            vo.setOrgFullName(vo.getOrgName());
-                        }
-                    }
                     organizationDao.insertSelective(vo);
                     //维护机构与角色
                     apiAuthService.addOrg(vo.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());

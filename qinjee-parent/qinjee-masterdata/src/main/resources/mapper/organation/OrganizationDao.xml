@@ -621,7 +621,7 @@
                 is_enable = #{isEnable,jdbcType=SMALLINT},
             </if>
         </set>
-        where org_code = #{orgCode,jdbcType=VARCHAR}
+        where org_code = #{orgCode,jdbcType=VARCHAR} and company_id =#{companyId}
 
     </update>
     <delete id="batchDeleteOrganization">

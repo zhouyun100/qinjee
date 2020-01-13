@@ -3,6 +3,7 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -52,7 +53,7 @@ public interface UserArchiveDao {
     Map<String,String> selectNameAndNumber(@Param("id") Integer id);
 
 
-    Integer selectArchiveIdByNumber(String employeeNumber);
+    Integer selectArchiveIdByNumber(String employeeNumber, Integer companyId);
 
     UserArchiveVo selectArchiveByNumber(String employeeNumber);
 
