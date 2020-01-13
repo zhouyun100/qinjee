@@ -166,7 +166,7 @@ public abstract class AbstractOrganizationHelper<T> {
         //如果不为空则校验成功,将错误信息、原表数据存储到redis后抛出异常
         if (!CollectionUtils.isEmpty(checkList)) {
             StringBuilder errorSb = new StringBuilder();
-            errorSb.append("行号    |             错误信息\r\n");
+            errorSb.append("行号    |        错误信息\r\n");
             errorSb.append("--------------------------------\r\n");
             for (T error : checkList) {
                 Method getLineNumber = error.getClass().getMethod("getLineNumber");
