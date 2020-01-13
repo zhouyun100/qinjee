@@ -398,4 +398,16 @@
               </foreach>
               AND bla.is_delete = 0
     </select>
+  <select id="selectByIdNumberAndPhone" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_blacklist
+        where 1=1
+        <if test="id_number != null">
+        and id_number=#{idNumber}
+        </if>
+       <if test="phone != null">
+       and phone=#{phone}
+       </if>
+       and company_id=#{companyId}
+  </select>
 </mapper>

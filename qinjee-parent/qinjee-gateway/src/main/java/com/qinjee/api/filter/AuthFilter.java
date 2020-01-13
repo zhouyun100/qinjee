@@ -68,13 +68,10 @@ public class AuthFilter extends ZuulFilter{
 		paths.add("/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId");
 		paths.add("/api/masterdata/userLogin/sendCodeByPhone");
 		paths.add("/api/masterdata/userLogin/verifyCode");
-
 		paths.add("/api/masterdata/druid/**");
-
 		paths.add("/api/masterdata/webjars/**");
 		paths.add("/api/masterdata/swagger**/**");
 		paths.add("/api/masterdata/v2/api-docs");
-
 	}
 
 	/**

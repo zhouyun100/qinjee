@@ -583,6 +583,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         return headList;
     }
+
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
         String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
         List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());

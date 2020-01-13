@@ -3,6 +3,9 @@ spring:
   application:
     name: masterdata
 
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: Asia/Shanghai
   #配置国际化
   messages:
     basename: i18n/messages

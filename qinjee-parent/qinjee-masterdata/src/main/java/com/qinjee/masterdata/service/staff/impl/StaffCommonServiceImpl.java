@@ -242,7 +242,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             List < Integer > isSystemDefineList = new ArrayList <> ();
             Set < Integer > notSystemDefineSet = new HashSet <> ();
             List < Integer > notSystemDefineList = new ArrayList <> ();
-            Map < Integer, Map < String, Integer > > mapMap = customTableFieldDao.selectNameAndIdAndIsSystemDefine ( idList );
+            Map < Integer, Map < String, Integer > > mapMap = customTableFieldDao.selectNameAndIdAndIsSystemDefine ( idList,userSession.getCompanyId () );
             if(mapMap!=null) {
                 for (Map.Entry < Integer, Map < String, Integer > > integerMapEntry : mapMap.entrySet ()) {
                     Integer isSystemDefine = integerMapEntry.getValue ().get ( "is_system_define" );
@@ -272,6 +272,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                     UserArchive userArchive = new UserArchive ();
                     Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
+                    Blacklist blacklist = checkBlackList ( integerStringMap, isSystemDefineList, userSession );
+                    if(blacklist!=null){
+                        ExceptionCast.cast ( CommonCode.IS_EXIST_BLACKLIST );
+                    }
                     if (checkMap ( map )) {
                         for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                             for (Integer integer : integerListEntry.getValue ()) {
@@ -431,8 +435,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             return list;
         }
 
-
-
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
             String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );
             List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
@@ -442,18 +444,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
             }
         }
-
-    private void setUserIdByPhone(UserSession userSession, UserArchive userArchive) {
-        if (userArchive.getPhone () != null) {
-            Integer id = userArchiveDao.selectByPhoneAndCompanyId ( userArchive.getPhone (), userSession.getCompanyId () );
-            if (id != null) {
-                ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-            } else {
-                userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
-            }
-        }
-    }
-
 
     private Boolean checkMap(Map < Integer, List < Integer > > map) {
         Integer size = 0;
@@ -473,22 +463,35 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         Integer integer1 = customTableFieldDao.selectSymbolForPreIdType ( notSystemDefineList );
         String s2 = selectValueById ( map, integer );
         String s3 = selectValueById ( map, integer1 );
-        return preEmploymentDao.selectPreByIdtypeAndIdnumber ( s3, s2 );
+        if(!StringUtils.isEmpty ( s2 )&&!StringUtils.isEmpty ( s3 )) {
+            return preEmploymentDao.selectPreByIdtypeAndIdnumber ( s3, s2 );
+        }else{
+            return null;
+        }
     }
+
     private Integer getArchiveId(Map < Integer, String > map, List < Integer > isSystemDefineList) {
         Integer integer = customTableFieldDao.selectSymbolForArcIdNumber ( isSystemDefineList );
         Integer integer1 = customTableFieldDao.selectSymbolForArcEmploymentNumber ( isSystemDefineList );
         String s2 = selectValueById ( map, integer );
         String s3 = selectValueById ( map, integer1 );
-        return userArchiveDao.selectIdByNumberAndEmploy ( s2, s3 );
+        if(!StringUtils.isEmpty ( s2 )&&!StringUtils.isEmpty ( s3 )) {
+            return userArchiveDao.selectIdByNumberAndEmploy ( s2, s3 );
+        }else{
+            return null;
+        }
     }
 
-    private Integer getBlaId(Map < Integer, String > map, List < Integer > notSystemDefineList) {
-        Integer integer = customTableFieldDao.selectSymbolForPreIdNumber ( notSystemDefineList );
-        Integer integer1 = customTableFieldDao.selectSymbolForPreIdType ( notSystemDefineList );
+    private Blacklist checkBlackList(Map < Integer, String > map, List < Integer > isSystemDefineList,UserSession userSession) {
+        Integer integer = customTableFieldDao.selectSymbolForPreIdNumber ( isSystemDefineList );
+        Integer integer1 = customTableFieldDao.selectSymbolForPhone ( isSystemDefineList );
         String s2 = selectValueById ( map, integer );
         String s3 = selectValueById ( map, integer1 );
-        return preEmploymentDao.selectPreByIdtypeAndIdnumber ( s3, s2 );
+        if(!StringUtils.isEmpty ( s2 )&&!StringUtils.isEmpty ( s3 )) {
+            return blacklistDao.selectByIdNumberAndPhone ( s2, s3, userSession.getCompanyId () );
+        }else{
+            return null;
+        }
     }
 
     private String selectValueById(Map < Integer, String > map, Integer id) {

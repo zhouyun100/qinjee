@@ -43,7 +43,6 @@ public class ShortUrlController {
      */
     @RequestMapping("/{shortUrlCode}")
     public String shortUrl(HttpServletResponse response, @PathVariable("shortUrlCode") String shortUrlCode) {
-
         try{
             if(StringUtils.isNotBlank(shortUrlCode) ){
                if(redisClusterService.exists ( shortUrlCode ) ){

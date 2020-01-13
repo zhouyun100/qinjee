@@ -82,7 +82,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId,dateModel);
             return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
         }else {
-            ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
             return null;
         }
     }
@@ -101,7 +100,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String s=employeeNumberRuleDao.selectMaxNumberForCon(creatNumberVo,companyId,dateModel);
             return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
         }
-        ExceptionCast.cast ( CommonCode.PARAM_IS_NULL );
         return null;
     }
 

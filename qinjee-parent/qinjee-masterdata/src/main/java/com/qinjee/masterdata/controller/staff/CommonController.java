@@ -359,6 +359,7 @@ public class CommonController extends BaseController {
                         if(e instanceof IllegalAccessException || e instanceof ParseException ){
                             return new ResponseResult <> ( null,CommonCode.BUSINESS_EXCEPTION );
                         }else{
+                            e.printStackTrace ();
                             return new ResponseResult <> ( null,CommonCode.PHONE_ALREADY_EXIST );
                         }
             }

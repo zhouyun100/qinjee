@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,12 +55,27 @@ public class StaffContractController extends BaseController {
             staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
-                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList ( getUserSession ()));
+
+                userArchiveVoAndHeader.setHeads (getDefaultHeadCon ());
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
+    private List < TableHead > getDefaultHeadCon() {
+        List < TableHead > headList = new ArrayList <> ();
+        String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期限（月）","试用期到期日期","人员分类"};
+        String[] codeList={"userName","employeeNumber","businessUnitName","orgName","postName","hireDate",
+                "probationPeriod","probationDueDate","userCategory",};
+        for (int i = 0; i < strings.length; i++) {
+            TableHead arcHead = new TableHead ();
+            arcHead.setName ( strings[i] );
+            arcHead.setKey ( codeList[i] );
+            arcHead.setIndex (i);
+            arcHead.setIsShow ( 1 );
+            headList.add ( arcHead );
+        }
+        return headList;
+    }
 
     /**合同状态  新签、变更   续签、解除、终止
      *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）

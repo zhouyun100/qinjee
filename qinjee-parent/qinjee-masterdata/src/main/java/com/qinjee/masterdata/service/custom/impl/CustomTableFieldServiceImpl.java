@@ -490,7 +490,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     if (("business_unit_id".equals(fieldVO.getFieldCode()) || "org_id".equals(fieldVO.getFieldCode()))&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         OrganizationVO org = organizationDao.getOrganizationById(Integer.parseInt(fieldVO.getDefaultValue()));
                         fieldVO.setChDefaultValue(org.getOrgName());
-                    } else if ("post_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())) {
+                    } else if ("post_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&&!"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         Post post = postDao.getPostById(fieldVO.getDefaultValue());
                         fieldVO.setChDefaultValue(post.getPostName());
                     } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {

@@ -1,14 +1,11 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.liaochong.myexcel.core.annotation.ExcelColumn;
 import com.github.liaochong.myexcel.core.annotation.ExcelTable;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -74,7 +71,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("年龄")
     @ExcelColumn(order =5, title = "年龄")
-    private Short age;
+    private Integer age;
 
     /**
      * 籍贯

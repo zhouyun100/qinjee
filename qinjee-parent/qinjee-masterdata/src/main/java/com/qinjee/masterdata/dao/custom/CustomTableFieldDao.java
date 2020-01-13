@@ -187,10 +187,11 @@ public interface CustomTableFieldDao {
      * 根据id找到一系列属性
      *
      * @param idList
+     * @param companyId
      * @return
      */
     @MapKey("field_id")
-    Map < Integer, Map < String, Integer > > selectNameAndIdAndIsSystemDefine(@Param("idList") List < Integer > idList);
+    Map < Integer, Map < String, Integer > > selectNameAndIdAndIsSystemDefine(@Param("idList") List < Integer > idList, @Param("companyId") Integer companyId);
 
     /**
      * 预入职唯一标识证件号对应的fieldId
@@ -293,6 +294,8 @@ public interface CustomTableFieldDao {
     Map< String, Integer> transOrgIdByCode(String funcCode, Integer companyId, String value);
 
     Integer selectFieldIdByCodeAndFuncCodeAndComapnyId(@Param("code") String code, @Param("funcCode") String funcCode, @Param("companyId") Integer companyId);
+
+    Integer selectSymbolForPhone(List< Integer> isSystemDefineList);
 }
 
 

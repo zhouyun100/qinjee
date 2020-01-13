@@ -271,6 +271,8 @@
     <foreach collection="idList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
+    and table_id in
+    (select table_id from t_custom_archive_table where company_id =#{companyId} and is_enable=1)
     and is_delete=0
   </select>
     <select id="selectFieldById" resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO" resultMap="FieldResultMap" >
@@ -494,7 +496,16 @@
         and table_id in
         (select table_id from t_custom_archive_table where is_delete=1
         and func_code=#{funcCode} and company_id=#{companyId})
-
+    </select>
+    <select id="selectSymbolForPhone">
+        select
+        field_id
+        from t_custom_archive_field
+        where field_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and field_code="phone"
     </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
