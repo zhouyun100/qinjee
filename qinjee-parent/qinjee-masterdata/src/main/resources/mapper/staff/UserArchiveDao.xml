@@ -893,7 +893,7 @@
     and arc.archive_id in
     <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
     #{item}
-
+     group by arc.archive_id
  </foreach>
 </select>
   <select id="selectEmployNumber" resultType="java.lang.String">
@@ -1070,7 +1070,7 @@
       <foreach collection="orgId" item='item' open="(" close=")" separator=",">
         #{item}
       </foreach>
-
+        group by arc.archive_id
   </select>
   <select id="selectTransMessage" resultType="java.util.Map">
       SELECT
@@ -1113,6 +1113,7 @@
     where arc.id_number=#{s}
     and arc.company_id = #{companyId}
     and arc.is_delete=0
+     group by arc.archive_id
   </select>
   <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     SELECT
@@ -1133,12 +1134,13 @@
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
     left join t_sys_dict dict on dict.dict_code=arc.gender AND dict.is_delete=0
-      left join t_sys_dict dict2 on  dict2.dict_code=arc.user_category AND dict2.is_delete=0
+    left join t_sys_dict dict2 on  dict2.dict_code=arc.user_category AND dict2.is_delete=0
     where arc.org_id in
     <foreach collection="orgId" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
     and arc.is_delete=1
+    group by arc.archive_id
   </select>
   <select id="selectByPhoneAndCompanyId" resultType="java.lang.Integer">
     select archive_id
@@ -1169,6 +1171,7 @@
     left join t_sys_dict dict2 on dict2.dict_code=arc.user_category AND dict2.is_delete=0
     where arc.company_id=#{companyId}
     and arc.is_delete=0
+     group by arc.archive_id
   </select>
   <select id="selectEmployNumberByCompanyId" resultType="java.lang.Integer">
     select archive_id

@@ -23,7 +23,6 @@ import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
-import com.qinjee.masterdata.utils.BeanUtilsExtension;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -301,14 +300,19 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-        String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );
-        List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-        if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getArchiveId () ))){
+        String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
+        if(null==userArchive.getEmployeeNumber ()||"".equals (userArchive.getEmployeeNumber ()  )) {
             userArchive.setEmployeeNumber ( empNumber );
         }else{
-            ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+            List < Integer > employnumberList = userArchiveDao.selectEmployNumberByCompanyId ( userSession.getCompanyId (), userArchive.getEmployeeNumber () );
+            if (CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size () == 1 && employnumberList.get ( 0 ).equals ( userArchive.getArchiveId () ))) {
+                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
+            } else {
+                ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
+            }
         }
     }
+
 
 
 

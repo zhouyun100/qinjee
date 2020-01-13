@@ -113,6 +113,11 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 //设置字段录入的值
                 customFieldVO.setFieldValue(String.valueOf(entry.getValue()));
 
+//                //设置字段录入的code
+//                customFieldVO.setFieldCode (customFieldVO.getCode ());
+
+
+
                 //字段值规则校验
                 validCustomFieldValue(customFieldVO);
 
@@ -489,13 +494,19 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     //如果是部门 单位 岗位 直接上级  也同样设置中文值
                     if (("business_unit_id".equals(fieldVO.getFieldCode()) || "org_id".equals(fieldVO.getFieldCode()))&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         OrganizationVO org = organizationDao.getOrganizationById(Integer.parseInt(fieldVO.getDefaultValue()));
-                        fieldVO.setChDefaultValue(org.getOrgName());
+                        if(org!=null) {
+                            fieldVO.setChDefaultValue ( org.getOrgName () );
+                        }
                     } else if ("post_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&&!"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         Post post = postDao.getPostById(fieldVO.getDefaultValue());
-                        fieldVO.setChDefaultValue(post.getPostName());
+                        if(post!=null) {
+                            fieldVO.setChDefaultValue ( post.getPostName () );
+                        }
                     } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
                         UserArchiveVo archiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getDefaultValue()));
-                        fieldVO.setChDefaultValue(archiveVo.getUserName());
+                        if(archiveVo!=null) {
+                            fieldVO.setChDefaultValue ( archiveVo.getUserName () );
+                        }
                     } else {
                         fieldVO.setChDefaultValue(mapValue.get(fieldVO.getFieldId()));
                     }

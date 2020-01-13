@@ -177,7 +177,7 @@ public class UserArchive implements Serializable {
      * 工龄
      */
     @ApiModelProperty("工龄")
-    private BigDecimal workingPeriod;
+    private Integer workingPeriod;
 
     /**
      * 试用到期时间

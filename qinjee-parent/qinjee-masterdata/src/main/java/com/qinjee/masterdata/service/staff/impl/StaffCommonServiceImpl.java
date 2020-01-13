@@ -436,14 +436,19 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-            String empNumber = employeeNumberRuleService.createEmpNumber (userSession.getCompanyId () );
-            List <Integer> employnumberList=userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId (),userArchive.getEmployeeNumber ());
-            if(CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size ()==1 && employnumberList.get(0).equals ( userArchive.getArchiveId () ))){
-                userArchive.setEmployeeNumber ( empNumber );
-            }else{
+        String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
+        if(null==userArchive.getEmployeeNumber ()||"".equals (userArchive.getEmployeeNumber ()  )) {
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            List < Integer > employnumberList = userArchiveDao.selectEmployNumberByCompanyId ( userSession.getCompanyId (), userArchive.getEmployeeNumber () );
+            if (CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size () == 1 && employnumberList.get ( 0 ).equals ( userArchive.getArchiveId () ))) {
+                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
+            } else {
                 ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
             }
         }
+    }
+
 
     private Boolean checkMap(Map < Integer, List < Integer > > map) {
         Integer size = 0;

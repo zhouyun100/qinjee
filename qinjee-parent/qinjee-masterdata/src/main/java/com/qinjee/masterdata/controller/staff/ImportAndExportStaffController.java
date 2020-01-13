@@ -49,12 +49,12 @@ public class ImportAndExportStaffController extends BaseController {
      */
     @RequestMapping(value = "/importFileAndCheckFilePre", method = RequestMethod.POST)
     @ApiOperation(value = "预入职自定义文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile) throws Exception {
-        Boolean b = checkParam(multipartFile,getUserSession ());
+    public ResponseResult< CheckImportVo > importFileAndCheckFilePre(@RequestParam("file") MultipartFile multipartFile,Integer systemDefine)  {
+        Boolean b = checkParam(multipartFile,getUserSession (),systemDefine);
         if(b) {
             CheckImportVo checkImportVo = null;
             try {
-                checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession () );
+                checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"PRE" , getUserSession (),systemDefine );
                 return new ResponseResult<>  (checkImportVo, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
@@ -69,12 +69,12 @@ public class ImportAndExportStaffController extends BaseController {
      */
     @RequestMapping(value = "/importFileAndCheckFileArc", method = RequestMethod.POST)
     @ApiOperation(value = "档案自定义文件类型校验以及生成list", notes = "hkt")
-    public ResponseResult< CheckImportVo > importFileAndCheckFileArc(@RequestParam("file") MultipartFile multipartFile)   {
-        Boolean b = checkParam(multipartFile,getUserSession ());
+    public ResponseResult< CheckImportVo > importFileAndCheckFileArc(@RequestParam("file") MultipartFile multipartFile,Integer systemDefine)   {
+        Boolean b = checkParam(multipartFile,getUserSession (),systemDefine);
         if(b) {
             CheckImportVo checkImportVo = null;
             try {
-                checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession () );
+                checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession (),systemDefine );
             } catch (Exception e) {
                 e.printStackTrace ();
             }

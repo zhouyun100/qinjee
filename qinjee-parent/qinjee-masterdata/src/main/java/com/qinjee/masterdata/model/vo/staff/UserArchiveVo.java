@@ -243,7 +243,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("司龄")
     @ExcelColumn(order =29, title = "司龄")
-    private BigDecimal servingAge;
+    private Integer servingAge;
 
 
     @ApiModelProperty("试用期限(月)")
