@@ -281,10 +281,14 @@
             WHERE
             record.business_id
             in(select archive_id from t_user_archive
-            where org_id in
-            <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
-            #{item}
-            </foreach>)
+            where company_id = #{companyId}
+            <if test="orgIdList != null">
+                and org_id in
+                <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            )
             AND record.company_id = #{companyId}
             AND record.is_delete = 0
             group by fileName
