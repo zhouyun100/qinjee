@@ -259,7 +259,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }
         }
         String newOrgFullName;
-        if (Objects.nonNull(parentOrganization)&&!parentOrganization.getOrgType().equals("GROUP")) {
+        if (Objects.nonNull(parentOrganization) && !parentOrganization.getOrgType().equals("GROUP")) {
             newOrgFullName = parentOrganization.getOrgFullName() + "/" + orgName;
         } else {
             newOrgFullName = orgName;
@@ -408,7 +408,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             for (OrganizationVO vo : orgList) {
                 OrganizationVO ifExistVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
                 OrganizationVO parentOrg = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgParentCode(), userSession.getCompanyId());
-                Integer orgManagerId = userArchiveDao.selectArchiveIdByNumber(vo.getManagerEmployeeNumber(),userSession.getCompanyId());
+                Integer orgManagerId = userArchiveDao.selectArchiveIdByNumber(vo.getManagerEmployeeNumber(), userSession.getCompanyId());
 
                 //导入时将“部门”转为"DEPT"
                 List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
@@ -634,22 +634,25 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
     /**
      * 递归修改机构全称
-     *
      */
-    private void recursiveUpdateOrgFullName(OrganizationVO organizationVO) {
+    private void recursiveUpdateOrgFullName(OrganizationVO parent) {
 
-        List<OrganizationVO> childOrgList = organizationDao.listSonFullNameAndType(organizationVO.getOrgId());
+        List<OrganizationVO> childOrgList = organizationDao.listSonFullNameAndType(parent.getOrgId());
         for (OrganizationVO org : childOrgList) {
-            if(organizationVO.getOrgType().equals("GROUP")){
+            System.out.println(parent.getOrgParentId()+":"+parent.getOrgName()+"-"+parent.getOrgId());
+            //只要上级不是顶级
+            if (0==parent.getOrgParentId()) {
+
+            } /*else if ("UNIT".equals(organizationVO.getOrgType())) {
                 org.setOrgFullName(org.getOrgName());
-            }else{
-                org.setOrgFullName(organizationVO.getOrgFullName() + "/" + org.getOrgName());
+            }*/ else {
+                org.setOrgFullName(parent.getOrgFullName() + "/" + org.getOrgName());
             }
             organizationDao.updateByPrimaryKey(org);
-            List<OrganizationVO> childOrgList2 = organizationDao.listSonFullNameAndType(org.getOrgId());
-            if (!CollectionUtils.isEmpty(childOrgList2)) {
-                recursiveUpdateOrgFullName(org);
-            }
+
+        }
+        for (OrganizationVO org : childOrgList) {
+            recursiveUpdateOrgFullName(org);
         }
     }
 
@@ -677,7 +680,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
-        List<UserArchiveVo> userArchiveVos=userArchiveDao.getUserArchiveList(idList);
+        List<UserArchiveVo> userArchiveVos = userArchiveDao.getUserArchiveList(idList);
         if (!CollectionUtils.isEmpty(userArchiveVos)) {
             isExsit = true;
             ExceptionCast.cast(CommonCode.EXIST_USER);
