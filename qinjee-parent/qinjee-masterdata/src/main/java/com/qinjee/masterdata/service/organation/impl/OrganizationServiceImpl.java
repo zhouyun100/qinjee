@@ -44,12 +44,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-/**
- * @author 高雄
- * @version 1.0.0
- * @Description TODO
- * @createTime 2019年09月16日 09:12:00
- */
+
 @Service
 public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO> implements OrganizationService {
     private static Logger logger = LogManager.getLogger(OrganizationServiceImpl.class);
