@@ -140,6 +140,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
             entryTableListWithValueVo.setSort ( entryRegistrationTableVO.getSort () );
             entryTableListWithValueVo.setTableId ( entryRegistrationTableVO.getTableId () );
             entryTableListWithValueVo.setTableName ( entryRegistrationTableVO.getTableName () );
+            entryTableListWithValueVo.setIsSystemDefine ( entryRegistrationTableVO.getIsSystemDefine () );
             entryTableListWithValueVos.add ( entryTableListWithValueVo );
         }
         //筛选出tableId

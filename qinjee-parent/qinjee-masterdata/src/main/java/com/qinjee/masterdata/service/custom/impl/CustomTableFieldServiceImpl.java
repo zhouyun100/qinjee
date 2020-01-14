@@ -297,7 +297,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 handlerCheckCustomFieldVO(customFieldVO, false, "日期时间格式不正确!");
 
             }
-
         }
 
     }

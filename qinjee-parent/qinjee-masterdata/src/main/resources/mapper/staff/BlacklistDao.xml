@@ -403,11 +403,13 @@
         from t_blacklist
         where 1=1
         <if test="idNumber != null">
-        and id_number=#{idNumber}
+          and id_number=#{idNumber}
+          and company_id=#{companyId}
         </if>
        <if test="phone != null">
-       and phone=#{phone}
+         and phone=#{phone}
+         and company_id=#{companyId}
        </if>
-       and company_id=#{companyId}
+
   </select>
 </mapper>
