@@ -35,5 +35,5 @@ public interface BlacklistDao {
 
     void insertBatch(@Param("blacklistList") List< Blacklist> blacklistList);
 
-    Blacklist selectByIdNumberAndPhone(@Param("idNumber") String idNumber, @Param("phone") String phone, @Param("companyId") Integer companyId);
+    List<Blacklist> selectByIdNumberAndPhone(@Param("idNumber") String idNumber, @Param("phone") String phone, @Param("companyId") Integer companyId);
 }

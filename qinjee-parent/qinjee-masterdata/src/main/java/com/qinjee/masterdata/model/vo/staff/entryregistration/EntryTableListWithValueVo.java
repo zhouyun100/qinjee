@@ -20,6 +20,11 @@ public class EntryTableListWithValueVo implements Serializable {
      */
     private Integer sort;
     /**
+     * 是否内置
+     */
+    private Integer isSystemDefine;
+
+    /**
      * 自定义字段列表
      */
     private List<EntryTemplateValueVo> entryTemplateValueVos;

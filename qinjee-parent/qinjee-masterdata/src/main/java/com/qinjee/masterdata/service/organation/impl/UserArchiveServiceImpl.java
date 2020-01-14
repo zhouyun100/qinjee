@@ -4,17 +4,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.UserCompanyDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.dao.userinfo.UserInfoDao;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
-import com.qinjee.masterdata.model.entity.SysDict;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.entity.UserCompany;
-import com.qinjee.masterdata.model.entity.UserInfo;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
@@ -43,7 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -66,7 +67,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Autowired
     private OrganizationDao organizationDao;
-
+    @Autowired
+    private BlacklistDao blacklistDao;
+    @Autowired
+    private CompanyInfoDao companyInfoDao;
 
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
@@ -174,6 +178,25 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
      * 3.新增档案（用户在一家企业下只有一份档案）
      */
     public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
+
+        //黑名单校验
+        List<Blacklist> blacklistsMem = blacklistDao.selectByPage(userSession.getCompanyId());
+
+        if(CollectionUtils.isNotEmpty(blacklistsMem)){
+            //”XX曾于XX年月日被XX公司因XX原因被列入黑名单，不允许入职/投递简历，请联系该公司处理!"
+            //查询公司名称
+            CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey(userSession.getCompanyId());
+            //如果身份证在黑名单表中存在  或者（手机号+姓名）在身份证中存在
+            List<Blacklist> blacklist = blacklistsMem.stream().filter(a -> (userArchiveVo.getPhone().equals(a.getPhone()) && userArchiveVo.getUserName().equals(a.getUserName()))||(null!= userArchiveVo.getIdNumber()&&userArchiveVo.getIdNumber().equals(a.getIdNumber()))).collect(Collectors.toList());
+            if(CollectionUtils.isNotEmpty(blacklist)){
+                CommonCode isExistBlacklist = CommonCode.IS_EXIST_BLACKLIST;
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM月dd日");
+                String msg=blacklist.get(0).getUserName()+"曾于"+sdf.format(blacklist.get(0).getBlockTime())+"被"+companyInfo.getCompanyName()+"因"+blacklist.get(0).getBlockReason()+"原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
+                isExistBlacklist.setMessage(msg);
+                ExceptionCast.cast(isExistBlacklist);
+            }
+        }
+
         //根据手机号查找账号表，如果存在则不对账号表进行处理
         UserInfo userInfo = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
         if (Objects.isNull(userInfo)) {
@@ -318,17 +341,31 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         List<UserArchiveVo> checkList = new ArrayList<>(userArchiveList.size());
         List<UserArchiveVo> archiveVoByCompanyIdMem = userArchiveDao.getByCompanyId(userSession.getCompanyId());
         List<SysDict> sysDictsMem = sysDictDao.searchSomeSysDictList();
+        List<Blacklist> blacklistsMem = blacklistDao.selectByPage(userSession.getCompanyId());
+
         for (UserArchiveVo vo : userArchiveList) {
             StringBuilder resultMsg = new StringBuilder(1024);
-            //先校验必填项 姓名 证件号
+            //先校验必填项 手机号 姓名 证件号
             if (StringUtils.isBlank(vo.getUserName())) {
                 vo.setCheckResult(false);
                 resultMsg.append("用户姓名不能为空 | ");
+            }
+            if (StringUtils.isBlank(vo.getPhone())) {
+                vo.setCheckResult(false);
+                resultMsg.append("手机号不能为空 | ");
             }
             if (StringUtils.isBlank(vo.getIdNumber())) {
                 vo.setCheckResult(false);
                 resultMsg.append("证件号码不能为空 | ");
             }
+            //黑名单校验
+            if(blacklistsMem.stream().anyMatch(a -> (vo.getPhone().equals(a.getPhone()) && vo.getUserName().equals(a.getUserName()))|| vo.getIdNumber().equals(a.getIdNumber()))){
+                vo.setCheckResult(false);
+                resultMsg.append("用户已存在于黑名单 | ");
+            }
+
+
+
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
                 Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> vo.getIdNumber().equals(a.getIdNumber())).findFirst();

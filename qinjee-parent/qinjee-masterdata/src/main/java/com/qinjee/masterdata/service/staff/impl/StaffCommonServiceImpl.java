@@ -272,8 +272,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                     UserArchive userArchive = new UserArchive ();
                     Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
-                    Blacklist blacklist = checkBlackList ( integerStringMap, isSystemDefineList, userSession );
-                    if(blacklist!=null){
+                    List < Blacklist > blacklistList = checkBlackList ( integerStringMap, isSystemDefineList, userSession );
+                    if(!CollectionUtils.isEmpty ( blacklistList )){
                         ExceptionCast.cast ( CommonCode.IS_EXIST_BLACKLIST );
                     }
                     if (checkMap ( map )) {
@@ -487,7 +487,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
     }
 
-    private Blacklist checkBlackList(Map < Integer, String > map, List < Integer > isSystemDefineList,UserSession userSession) {
+    private List<Blacklist> checkBlackList(Map < Integer, String > map, List < Integer > isSystemDefineList,UserSession userSession) {
         Integer integer = customTableFieldDao.selectSymbolForPreIdNumber ( isSystemDefineList );
         Integer integer1 = customTableFieldDao.selectSymbolForPhone ( isSystemDefineList );
         String s2 = selectValueById ( map, integer );

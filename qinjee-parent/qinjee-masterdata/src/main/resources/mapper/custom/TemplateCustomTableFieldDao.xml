@@ -30,6 +30,7 @@
         <result column="table_id" jdbcType="INTEGER" property="tableId" />
         <result column="table_name" jdbcType="VARCHAR" property="tableName" />
         <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="is_system_define" jdbcType="INTEGER" property="isSystemDefine" />
     </resultMap>
 
     <resultMap id="CustomFieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
@@ -239,7 +240,7 @@
 
     <!-- 根据模板ID查询预入职登记表单所有的表 -->
     <select id="searchEntryRegistrationTableListByTemplateId" resultMap="EntryRegistrationTableResultMap">
-        SELECT cat.table_id,cat.table_name,tct.sort
+        SELECT cat.table_id,cat.table_name,tct.sort,cat.is_system_define
         FROM t_custom_archive_table cat,t_template_custom_table tct
         WHERE tct.template_id = #{templateId,jdbcType=INTEGER}
         and cat.func_code='pre'
