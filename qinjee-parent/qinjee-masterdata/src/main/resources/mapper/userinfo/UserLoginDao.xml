@@ -33,7 +33,8 @@
 
   <select id="searchUserInfoByAccountAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
     select
-    t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
+    t_user_info.user_id,CASE WHEN t_user_archive.user_name IS NOT NULL THEN t_user_archive.user_name ELSE t_user_info.user_name END user_name,
+    t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
     from t_user_info,t_user_company,t_company_info,t_user_archive
     where (t_user_info.user_name = #{account,jdbcType=VARCHAR} or t_user_info.phone = #{account,jdbcType=VARCHAR} or t_user_info.email = #{account,jdbcType=VARCHAR})
     and t_user_info.password = #{password,jdbcType=VARCHAR}
