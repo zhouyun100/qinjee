@@ -174,7 +174,7 @@
   <!--根据档案ID查询人员机构树 -->
   <select id="searchOrgAuthTree" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" resultMap="OrgResultMap">
     SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_full_name,
-        CASE WHEN t.org_id is not NULL THEN 1 ELSE 0 END has_org
+        CASE WHEN t.has_org is not NULL THEN t.has_org ELSE 0 END has_org
     from (
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
         t_organization.org_parent_id,t_organization.org_full_name,t_organization.sort_id
@@ -204,7 +204,14 @@
         WHERE t_organization.org_id = v1.org_id
     ) v
     LEFT JOIN (
-        select t_organization.org_id
+        select t1.org_id,t1.has_org from (
+        select t_organization.org_id,1 as has_org from t_role_org_auth,t_organization
+        where t_role_org_auth.role_id = #{roleId,jdbcType=INTEGER}
+        and t_role_org_auth.org_id = t_organization.org_id
+        and t_role_org_auth.is_delete = 0
+        and t_organization.is_enable = 0
+        UNION
+        select t_organization.org_id,2 as has_org
         from t_user_org_auth,t_organization
         where t_user_org_auth.archive_id = #{archiveId,jdbcType=INTEGER}
         and t_user_org_auth.role_id = #{roleId,jdbcType=INTEGER}
@@ -216,12 +223,7 @@
         and t_user_org_auth.org_id = t_organization.org_id
         and t_user_org_auth.is_delete = 0
         and t_organization.is_enable = 1
-        UNION
-        select t_organization.org_id from t_role_org_auth,t_organization
-        where t_role_org_auth.role_id = #{roleId,jdbcType=INTEGER}
-        and t_role_org_auth.org_id = t_organization.org_id
-        and t_role_org_auth.is_delete = 0
-        and t_organization.is_enable = 0
+        ) t1 GROUP BY t1.org_id
     ) t ON v.org_id = t.org_id
     ORDER BY sort_id
   </select>
