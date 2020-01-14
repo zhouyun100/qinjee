@@ -19,6 +19,7 @@ import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -340,18 +341,18 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         for (Field declaredField : declaredFields) {
             declaredField.setAccessible(true);
             if("phone".equals ( declaredField.getName () )){
-                Object o = declaredField.get ( blacklistVo );
-                if(o!=null){
+                String phone = (String)declaredField.get ( blacklistVo );
+                if(StringUtils.isNotBlank(phone)){
                     flag1=true;
                 }
             }
             if("idNumber".equals ( declaredField.getName () )){
-                Object o = declaredField.get ( blacklistVo );
-                if(o!=null){
+                String idNumber = (String)declaredField.get ( blacklistVo );
+                if(StringUtils.isNotBlank(idNumber)){
                     flag2=true;
                 }
             }
-            if(!flag1&&flag2){
+            if(!(flag2||flag1)){
                 ExceptionCast.cast ( CommonCode.CANNOT_TWO_NULL);
             }
         }
