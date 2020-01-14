@@ -57,7 +57,7 @@ public class ShortUrlController {
                    }
                    int i = stringBuffer.toString ().lastIndexOf ( "&" );
                    String substring = stringBuffer.substring ( 0, i );
-                   response.sendRedirect("http://www.dhr360.com/file/pre/index.html?"+substring);
+                   response.sendRedirect("http://www.dhr360.com:1010/index.html?"+substring);
                    logger.info ( "params={}",substring);
                }
             }
