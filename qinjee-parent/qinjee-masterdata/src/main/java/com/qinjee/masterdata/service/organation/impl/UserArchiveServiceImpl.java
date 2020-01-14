@@ -404,14 +404,14 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
             }
             if (StringUtils.isNotBlank(vo.getHighestDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a -> "ACADEMIC_DEGREE".equals(a.getDictType()) && vo.getHighestDegree().equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a -> "DEGREE".equals(a.getDictType()) && vo.getHighestDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("最高学历中没有[" + vo.getHighestDegree() + "]的选项 | ");
                 }
             }
             if (StringUtils.isNotBlank(vo.getFirstDegree())) {
-                boolean bool = sysDictsMem.stream().anyMatch(a ->"ACADEMIC_DEGREE" .equals(a.getDictType()) && vo.getFirstDegree().equals(a.getDictValue()));
+                boolean bool = sysDictsMem.stream().anyMatch(a ->"DEGREE" .equals(a.getDictType()) && vo.getFirstDegree().equals(a.getDictValue()));
                 if (!bool) {
                     vo.setCheckResult(false);
                     resultMsg.append("第一学历中没有[" + vo.getFirstDegree() + "]的选项 | ");
