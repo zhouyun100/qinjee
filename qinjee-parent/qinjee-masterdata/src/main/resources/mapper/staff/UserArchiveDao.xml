@@ -1147,7 +1147,17 @@
     from t_user_archive
     where phone=#{phone}
     and company_id=#{companyId}
+    and archive_status = 'SERVICE'
     and is_delete=0
+  </select>
+    <select id="selectByIDNumberAndCompanyId" resultType="java.lang.Integer">
+    SELECT archive_id
+    FROM t_user_archive
+    WHERE id_type = #{idType}
+    AND id_number = #{idNumber}
+    AND company_id = #{companyId}
+    AND archive_status = 'SERVICE'
+    AND is_delete = 0
   </select>
   <select id="selectUserArchiveVo" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
    SELECT

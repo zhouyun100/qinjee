@@ -113,6 +113,8 @@ public interface UserArchiveDao {
 
     Integer selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 
+    Integer selectByIDNumberAndCompanyId(@Param("idType") String idType, @Param("idNumber") String idNumber, @Param("companyId") Integer companyId);
+
     List< UserArchiveVo> selectUserArchiveVo(@Param("companyId") Integer companyId);
 
 

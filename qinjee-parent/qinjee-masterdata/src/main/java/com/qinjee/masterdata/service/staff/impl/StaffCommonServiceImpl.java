@@ -322,6 +322,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
                                     }
                                 }
+
+                                if(org.apache.commons.lang3.StringUtils.isNoneBlank(userArchive.getIdType()) && org.apache.commons.lang3.StringUtils.isNoneBlank(userArchive.getIdNumber())){
+                                    Integer id = userArchiveDao.selectByIDNumberAndCompanyId(userArchive.getIdType(), userArchive.getIdNumber(), userSession.getCompanyId ());
+                                    if(id != null && !id.equals(archiveId)){
+                                        ExceptionCast.cast ( CommonCode.IDNUMBER_ALREADY_EXIST );
+                                    }
+                                }
                                 userArchiveDao.insertSelective ( userArchive );
                                 checkEmployeeNumber ( userSession, userArchive );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
