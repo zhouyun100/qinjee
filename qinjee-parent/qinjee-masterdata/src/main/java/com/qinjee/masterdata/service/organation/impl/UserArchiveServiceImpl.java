@@ -191,7 +191,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             if(CollectionUtils.isNotEmpty(blacklist)){
                 CommonCode isExistBlacklist = CommonCode.IS_EXIST_BLACKLIST;
                 SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM月dd日");
-                String msg=blacklist.get(0).getUserName()+"曾于"+sdf.format(blacklist.get(0).getBlockTime())+"被"+companyInfo.getCompanyName()+"因"+blacklist.get(0).getBlockReason()+"原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
+                String msg=blacklist.get(0).getUserName()+"曾于"+sdf.format(blacklist.get(0).getBlockTime())+"被"+companyInfo.getCompanyName()+"因["+blacklist.get(0).getBlockReason()+"]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
                 isExistBlacklist.setMessage(msg);
                 ExceptionCast.cast(isExistBlacklist);
             }

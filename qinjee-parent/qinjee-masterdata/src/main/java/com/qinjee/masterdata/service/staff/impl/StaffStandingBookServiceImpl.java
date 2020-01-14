@@ -29,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,6 +70,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             Blacklist blacklist = new Blacklist();
             BeanUtils.copyProperties(blacklistVo, blacklist);
             blacklist.setOperatorId(userSession.getArchiveId());
+            blacklist.setBlockTime(new Date());
             blacklist.setCompanyId(userSession.getCompanyId());
             blacklist.setDataSource(blacklistVo.getDataSource ());
             blacklistDao.insertSelective(blacklist);
@@ -336,6 +338,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         Class  aClass = blacklistVo.getClass ();
         Field[] declaredFields = aClass.getDeclaredFields ();
         for (Field declaredField : declaredFields) {
+            declaredField.setAccessible(true);
             if("phone".equals ( declaredField.getName () )){
                 Object o = declaredField.get ( blacklistVo );
                 if(o!=null){
