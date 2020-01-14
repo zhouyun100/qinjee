@@ -170,8 +170,8 @@ public class OrgUserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.hiredate")
     @ApiModelProperty("入职时间")
-   // @DateTimeFormat(pattern = "yyyy/MM/dd" )
-    //@JSONField(format = "yyyy/MM/dd ")
+   // //@DateTimeFormat(pattern = "yyyy/MM/dd" )
+    ////@JSONField(format = "yyyy/MM/dd ")
     private Date hireDate;
 
     /**

@@ -74,15 +74,15 @@ public class ContractRenewalIntention implements Serializable {
     /**
      * 创建时间
      */
-   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
-    //@JSONField(format = "yyyy-MM-dd ")
+   // //@DateTimeFormat(pattern = "yyyy-MM-dd" )
+    ////@JSONField(format = "yyyy-MM-dd ")
     private Date createTime;
 
     /**
      * 更新时间
      */
-   // @DateTimeFormat(pattern = "yyyy-MM-dd" )
-    //@JSONField(format = "yyyy-MM-dd ")
+   // //@DateTimeFormat(pattern = "yyyy-MM-dd" )
+    ////@JSONField(format = "yyyy-MM-dd ")
     private Date updateTime;
 
     private static final long serialVersionUID = 1L;
