@@ -52,7 +52,6 @@ public class StaffArchiveController extends BaseController {
                 return ResponseResult.SUCCESS();
         }
         return  failResponseResult("档案表参数错误");
-
     }
 
     /**
@@ -214,11 +213,11 @@ public class StaffArchiveController extends BaseController {
             PageResult < UserArchiveVo > userArchiveVoPageResult;
             if(!CollectionUtils.isEmpty ( requestUserarchiveVo.getOrgId () )){
                 userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
-                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getPageSize () );
+                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
             }else{
                 List < Integer > integers = staffArchiveService.selectMyOrg ( getUserSession () );
                 userArchiveVoPageResult = staffArchiveService.selectArchiveNoOrgId ( getUserSession (), integers,
-                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getPageSize () );
+                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
             }
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 setHead ( requestUserarchiveVo.getQuerySchemaId (), userArchiveVoAndHeader );

@@ -342,6 +342,10 @@ public class UserArchiveVo implements Serializable {
      * 任职类型
      */
     private String  employmentType;
+    /**
+     * 档案状态(默认在职)
+     */
+    private String  archiveStatus;
 
     private static final long serialVersionUID = 1L;
 

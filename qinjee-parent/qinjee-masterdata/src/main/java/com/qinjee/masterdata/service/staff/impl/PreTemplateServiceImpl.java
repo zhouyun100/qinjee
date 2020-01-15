@@ -94,9 +94,9 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
         String[] split = s1.split ( "@@" );
         boolean b = smsRecordService.checkPreLoginCodeByPhoneAndCode ( phone, code );
         if (b) {
-            Integer preId = preEmploymentDao.selectIdByNumber ( phone, Integer.parseInt ( split[1] ) );
+            List<Integer> preId = preEmploymentDao.selectIdByNumber ( phone, Integer.parseInt ( split[1] ) );
             Map < String, Integer > map = new HashMap <> ();
-            map.put ( "preId", preId );
+            map.put ( "preId", preId.get(0) );
             map.put ( "templateId", Integer.parseInt ( split[0] ) );
             return JSON.toJSONString ( map );
         } else {
@@ -119,7 +119,7 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 
 
     @Override
-    public Integer selectPreIdByPhone(String phone, UserSession userSession) {
+    public List<Integer> selectPreIdByPhone(String phone, UserSession userSession) {
         return preEmploymentDao.selectIdByNumber ( phone, userSession.getCompanyId () );
     }
 

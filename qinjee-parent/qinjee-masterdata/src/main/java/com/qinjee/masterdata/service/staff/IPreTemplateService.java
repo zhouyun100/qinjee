@@ -17,7 +17,7 @@ public interface IPreTemplateService {
 
     void createPreRegistQrcode(Integer templateId, HttpServletResponse response, UserSession userSession) throws Exception;
 
-    Integer selectPreIdByPhone(String phone, UserSession userSession);
+    List<Integer> selectPreIdByPhone(String phone, UserSession userSession);
 
     String toCompleteMessage(String phone, String s, String code) throws Exception;
 }

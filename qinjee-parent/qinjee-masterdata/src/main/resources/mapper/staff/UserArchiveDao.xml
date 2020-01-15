@@ -42,6 +42,7 @@
     <result column="attrition_date" jdbcType="DATE" property="attritionDate" />
     <result column="attrition_type" jdbcType="VARCHAR" property="attritionType" />
     <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
+    <result column="archive_status" jdbcType="INTEGER" property="archiveStatus" />
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
@@ -217,6 +218,9 @@
             <if test="operatorId != null">
                 operator_id
             </if>
+            <if test="archiveStatus != null">
+            archive_status
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="employeeNumber != null">
@@ -328,6 +332,9 @@
       </if>
       <if test="operatorId != null">
         #{operatorId,jdbcType=INTEGER}
+      </if>
+      <if test="archiveStatus != null">
+        #{archive_status,jdbcType=VARCHAR}
       </if>
     </trim>
   </insert>
@@ -846,25 +853,17 @@
     AND is_delete=0
   </select>
   <select id="selectStaff" resultType="java.lang.Integer">
-  select arc.archive_id
-    from t_user_archive arc
-    where arc.user_category in
+      select arc.archive_id
+      from t_user_archive arc
+      where arc.user_category in
       <foreach collection="archiveType" item="item" open="(" separator="," close=")">
           #{item}
       </foreach>
-    and arc.is_delete=0
-    and  arc.archive_id in
-   (
-   select archive_id from t_user_archive_post_relation
-		where `employment_type` in
-		<foreach collection="type" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    and is_delete=0
-  )
-    and arc.archive_id in(
-    ${sql}
-    )
+      and arc.is_delete=0
+      <if test="sql != null">
+          and arc.archive_id in( ${sql})
+      </if>
+
   </select>
   <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
         <if test="baseSql != null">
@@ -1235,5 +1234,42 @@
     select <include refid="Base_Column_List"></include>
     from t_user_archive where company_id =#{companyId} and  user_id =#{userId} and is_delete =0
   </select>
+    <select id="selectPartTimeArchive" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, dict2.dict_value as user_category, relation.business_unit_id, relation.org_id, relation.post_id,
+        arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
+        arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
+        arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
+        arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
+        arc.attrition_type, relation.supervisor_id, relation.operator_id, relation.create_time, relation.update_time,relation.is_delete,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name
+        FROM
+        t_user_archive arc
+        left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id and relation.is_delete=0
+        LEFT JOIN t_organization orga ON orga.org_id = relation.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+        left join t_organization org on org.org_id=relation.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = relation.post_id  AND post.is_delete = 0
+        left join t_user_archive arch on relation.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+        left join t_sys_dict dict on dict.dict_code=arc.gender AND dict.is_delete=0
+        left join t_sys_dict dict2 on dict2.dict_code=arc.user_category AND dict2.is_delete=0
+        where 1=1
+        <choose>
+            <when test='integerList != null and integerList.size()>0'>
+                and relation.archive_id in
+                <foreach collection="integerList" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                and 1=0
+            </otherwise>
+        </choose>
+        and arc.is_delete=0
+        group by relation.archive_id
+
+    </select>
 </mapper>
 

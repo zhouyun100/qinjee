@@ -298,6 +298,11 @@ public class UserArchive implements Serializable {
     @ApiModelProperty("是否删除")
     private Short isDelete;
 
+    /**
+     * 档案状态(默认在职)
+     */
+    private String  archiveStatus;
+
     private static final long serialVersionUID = 1L;
 
 }

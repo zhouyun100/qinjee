@@ -27,7 +27,7 @@ public interface StandingBookDao {
 
     List<StandingBook> selectByAchiveId(@Param("archiveId") Integer archiveId);
 
-    List<StandingBook> selectShare(@Param("companyId") Integer companyId);
+    List<StandingBook> selectShare(@Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
-    void updateStandingBook(@Param("standingBookId") Integer standingBookId, @Param("name") String name);
+    void updateStandingBook(@Param("standingBookId") Integer standingBookId, @Param("name") String name, @Param("isShare") Short isShare);
 }

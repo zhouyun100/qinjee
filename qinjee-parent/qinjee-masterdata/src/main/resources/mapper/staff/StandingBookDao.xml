@@ -192,18 +192,24 @@
     company_id, archive_id, is_share, sort, is_enable, creator_id, create_time, update_time,
     is_delete
     from t_standing_book
-    where   archive_id = #{archiveId,jdbcType=INTEGER} AND  is_delete = 0 AND is_share=0
+    where   archive_id = #{archiveId,jdbcType=INTEGER} AND  is_delete = 0 and is_enable=1
   </select>
   <select id="selectShare" resultType="com.qinjee.masterdata.model.entity.StandingBook" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_standing_book
-    where   company_id = #{companyId,jdbcType=INTEGER} AND  is_delete = 0
+    where archive_id=#{archiveId} and is_delete=0 and is_enable=1
+    union
+    select
+    <include refid="Base_Column_List" />
+    from t_standing_book
+    where company_id=#{companyId} and is_delete=0 and is_enable=1 and is_share=1
   </select>
   <update id="updateStandingBook">
     update t_standing_book
     set
-        standing_book_name =#{name}
+         standing_book_name =#{name},
+         is_share = #{isShare,jdbcType=SMALLINT}
         where standing_book_id = #{standingBookId,jdbcType=INTEGER}
         and is_delete=0
   </update>

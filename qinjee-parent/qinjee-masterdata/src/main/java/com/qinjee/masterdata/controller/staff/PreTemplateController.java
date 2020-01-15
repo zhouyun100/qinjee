@@ -71,7 +71,7 @@ public class PreTemplateController extends BaseController {
     public ResponseResult  selectPreIdByPhone(String phone) {
         Boolean b = checkParam (phone,getUserSession () );
         if (b) {
-                Integer preId=preTemplateService.selectPreIdByPhone(phone,getUserSession ());
+                List<Integer> preId=preTemplateService.selectPreIdByPhone(phone,getUserSession ());
                 return new ResponseResult<> ( preId,CommonCode.SUCCESS );
         }
         return failResponseResult ( "参数错误或者session错误" );

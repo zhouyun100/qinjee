@@ -1,6 +1,5 @@
 package com.qinjee.model.response;
 
-import lombok.Data;
 import lombok.ToString;
 
 /**
@@ -31,7 +30,6 @@ public enum CommonCode implements ResultCode{
     POST_DOES_NOT_EXIST(false,10308, "此岗位不存在,导入失败!"),
     TIME_FORMAT_ERROR(false,10310, "时间格式错误!"),
     FILE_EXPORT_FAILED(false,10311, "文件导出失败!"),
-    PRE_ALREADY_EXIST(false,10312, "文件解析失败!"),
     FAIL_VALUE_NULL(false,10313, "此员工已经存在!"),
     FILE_EMPTY(false,10314, "文件为空!"),
     REDIS_KEY_EXCEPTION(false,10315, "key不存在或者以过期!"),

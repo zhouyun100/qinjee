@@ -208,14 +208,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     public Integer getSignNumber(Integer archiveId) {
         //先通过人员找到合同，通过是续签合同的次数上加一
-        List < LaborContract > list = laborContractDao.selectByarcIdAndStatus ( archiveId, RENEWAGREE );
-        Integer signNumber = 0;
-        for (LaborContract contract : list) {
-            if (contract.getSignNumber () > signNumber) {
-                signNumber = contract.getSignNumber ();
-            }
+        Integer signNumber= laborContractDao.selectByarcIdAndStatus ( archiveId, RENEWMARK );
+        if(signNumber>1){
+            return signNumber;
         }
-        return signNumber;
+        return 1;
     }
 
 
@@ -238,7 +235,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         laborContract.setOperatorId ( userSession.getArchiveId () );
         laborContract.setContractState ( RENEWMARK );
         //新增续签次数
-        laborContract.setSignNumber ( getSignNumber ( userSession.getArchiveId () + 1 ) );
+        laborContract.setSignNumber ( getSignNumber ( id  ) +1);
         laborContractDao.insertSelective ( laborContract );
     }
 

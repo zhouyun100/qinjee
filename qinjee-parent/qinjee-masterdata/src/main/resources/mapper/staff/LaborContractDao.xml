@@ -39,10 +39,11 @@
     <result column="contract_remark" jdbcType="VARCHAR" property="contract_remark" />
   </resultMap>
   <sql id="Base_Column_List">
-    contract_id, archive_id,business_unit_id,org_id,post_id,
+    contract_id, archive_id,
     contract_sign_date, contract_begin_date, contract_end_date, contract_period_month,
     contract_period_type, contract_subject, contract_number, contract_state, contract_remark,
     sign_number, operator_id, create_time, update_time
+--     business_unit_id,org_id,post_id,
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
@@ -436,8 +437,8 @@
     </foreach>
     and arc.is_delete=0
   </select>
-  <select id="selectByarcIdAndStatus" resultType="com.qinjee.masterdata.model.entity.LaborContract">
-    select <include refid="Base_Column_List"/>
+  <select id="selectByarcIdAndStatus" resultType="java.lang.Integer">
+    select MAX(sign_number)
     from t_labor_contract
     where archive_id=#{archiveId}
     and  contract_state=#{renewagree}
@@ -483,7 +484,7 @@
   <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select
     org.org_name as orgName,
-    orga.org_name as businseeUnitName,
+    orga.org_name as businessUnitName,
     arch.employee_number as employeeNumber,
     arch.id_number as idNumber,
     arch.user_name as userName,
@@ -502,7 +503,7 @@
     from t_labor_contract contract
     left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
     left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
-    left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=0
+    left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
     where  contract.archive_id in
     (select archive_id from t_user_archive where org_id in
     <foreach collection="orgIdList" item="item" open="(" separator="," close=")">

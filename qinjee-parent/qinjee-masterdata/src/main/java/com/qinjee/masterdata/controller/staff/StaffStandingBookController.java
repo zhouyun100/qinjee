@@ -148,10 +148,10 @@ public class StaffStandingBookController extends BaseController {
     @RequestMapping(value = "/updateStandingBook", method = RequestMethod.GET)
     @ApiOperation(value = "修改台账名称", notes = "hkt")
 //    @ApiImplicitParam(name = "StandingBookInfoVo", value = "台账表信息", paramType = "form", required = true)
-    public ResponseResult updateStandingBook(Integer standingBookId,String name) {
-        Boolean b = checkParam(standingBookId,name);
+    public ResponseResult updateStandingBook(Integer standingBookId,String name,Short isShare) {
+        Boolean b = checkParam(standingBookId,name,isShare);
         if (b) {
-                staffStandingBookService.updateStandingBook(standingBookId,name);
+                staffStandingBookService.updateStandingBook(standingBookId,name,isShare);
                 return ResponseResult.SUCCESS();
         }
         return failResponseResult("参数错误");

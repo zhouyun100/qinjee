@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class QrcodeServiceImpl implements IQrcodeService {
@@ -41,11 +42,11 @@ public class QrcodeServiceImpl implements IQrcodeService {
         //验证验证码结果
         boolean b = smsRecordService.checkPreLoginCodeByPhoneAndCode(phone, code);
         //根据电话号码与查询预入职人信息
-        Integer integer = preEmploymentDao.selectIdByNumber(phone,companyId);
+        List <Integer> integer = preEmploymentDao.selectIdByNumber(phone,companyId);
         if(b){
             //将短链接作为key，带参数的链接为value存到redis中，有效期为2小时
             String baseShortUrl = sysDictService.searchSysDictByTypeAndCode ( "SHORT_URL", "EMPLOYMENT_REGISTER" ).getDictValue ();
-            redisClusterService.setex ( AesUtils.aesEncrypt ( baseShortUrl + "?" + integer +"?"+ templateId, AesKeyConsts.PRE_SMS_AES_KEY ),
+            redisClusterService.setex ( AesUtils.aesEncrypt ( baseShortUrl + "?" + integer.get ( 0 ) +"?"+ templateId, AesKeyConsts.PRE_SMS_AES_KEY ),
                     2*60*60,baseShortUrl + "?" +integer +"?"+ templateId);
             //拼接连接进行重定向
             response.sendRedirect(baseShortUrl + "?" +integer +"?"+ templateId);

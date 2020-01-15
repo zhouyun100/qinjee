@@ -3,8 +3,8 @@ package com.qinjee.masterdata.service.staff.impl;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
+import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
-import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -20,6 +20,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +62,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
     @Autowired
-    private ContractParamDao contractParamDao;
+    private CompanyInfoDao companyInfoDao;
     @Autowired
     private AttachmentRecordDao attachmentRecordDao;
 
@@ -189,19 +191,28 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     public void insertPreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession)  {
-        Integer integer = preEmploymentDao.selectIdByNumber ( preEmploymentVo.getPhone (), userSession.getCompanyId () );
-        if (integer == null || integer == 0) {
-            ExceptionCast.cast ( CommonCode.PRE_ALREADY_EXIST );
+       List<Integer> integer = preEmploymentDao.selectIdByNumber ( preEmploymentVo.getPhone (), userSession.getCompanyId () );
+        if (CollectionUtils.isNotEmpty ( integer )) {
+            ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+        }
+        List < Blacklist > blacklistList = blacklistDao.selectByPage ( userSession.getCompanyId () );
+        boolean bool = blacklistList.stream ().anyMatch ( a -> StringUtils.isNotBlank ( preEmploymentVo.getPhone () ) && preEmploymentVo.getPhone ().equals ( a.getPhone () ) ||
+                StringUtils.isNotBlank ( preEmploymentVo.getIdNumber () ) && preEmploymentVo.getIdNumber ().equals ( a.getIdNumber () ) );
+        if (bool) {
+            CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () );
+            CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
+            SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy年MM月dd日" );
+            String msg = blacklistList.get ( 0 ).getUserName () + "曾于" + sdf.format ( blacklistList.get ( 0 ).getBlockTime () ) + "被" + companyInfo.getCompanyName () + "因[" + blacklistList.get ( 0 ).getBlockReason () + "]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
+            isExistBlacklistCommonCode.setMessage ( msg );
+            ExceptionCast.cast ( isExistBlacklistCommonCode );
         }
         PreEmployment preEmployment = new PreEmployment ();
-//        if(RegexpUtils.checkPhone (preEmployment.getPhone ())){
-//            throw new Exception ( "电话格式有误！" );
-//        }
-//        if(RegexpUtils.checkEmail ( preEmployment.getEmail () )){
-//            throw new Exception ( "邮箱格式有误！" );
-//        }
-
         BeanUtils.copyProperties ( preEmploymentVo, preEmployment );
+        preEmployment.setEmploymentState ( "未入职" );
+        preEmployment.setEmploymentRegister ( "未发送" );
+        preEmployment.setDataSource ( "手工录入" );
+        preEmployment.setCompanyId ( userSession.getCompanyId () );
+        preEmployment.setOperatorId ( userSession.getArchiveId () );
         preEmployment.setCompanyId ( userSession.getCompanyId () );
         preEmployment.setOperatorId ( userSession.getArchiveId () );
         preEmployment.setIsDelete ( ( short ) 0 );
@@ -282,7 +293,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void confirmEmployment(List < Integer > list, UserSession userSession) throws Exception {
+    public void confirmEmployment(List < Integer > list, UserSession userSession){
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
         statusChangeVo.setPreEmploymentList ( list );
         statusChangeVo.setAbandonReason ( "" );
@@ -300,6 +311,18 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             } else {
                 ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
             }
+        }
+    }
+
+    public static void main(String[] args) {
+        PreEmployment preEmployment=new PreEmployment ();
+        preEmployment.setIdNumber ( "11112354646141" );
+        Blacklist blacklist = new Blacklist ();
+        List < Blacklist > blacklists = new ArrayList <> ();
+        blacklist.setIdNumber ( "11112354646141"  );
+        blacklists.add ( blacklist );
+        if (blacklists.stream().anyMatch(a -> ( null != preEmployment.getIdNumber()&&preEmployment.getIdNumber().equals(a.getIdNumber())))){
+            System.out.println ("方法有效");
         }
     }
 }

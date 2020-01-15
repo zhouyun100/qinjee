@@ -7,10 +7,10 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
 import com.qinjee.masterdata.model.entity.StandingBookFilter;
-import com.qinjee.masterdata.model.vo.staff.StandingBookReturnVo;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.*;
@@ -61,6 +61,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private UserArchiveDao userArchiveDao;
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
+    @Autowired
+    private UserArchivePostRelationDao userArchivePostRelationDao;
     @Autowired
     private CustomTableFieldService customTableFieldService;
 
@@ -126,6 +128,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             standingBook.setArchiveId(userSession.getArchiveId());
             standingBook.setCompanyId(userSession.getCompanyId());
             standingBook.setCreatorId(userSession.getArchiveId());
+            standingBook.setIsEnable ( ( short ) 1 );
             standingBookDao.updateByPrimaryKeySelective(standingBook);
             //删除已有的筛选方案
             standingBookFilterDao.deleteStandingBookFilter ( standingBookInfoVo.getStandingBookVo ().getStandingBookId () );
@@ -166,7 +169,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public List<StandingBook> selectMyStandingBookShare(UserSession userSession) {
 
-        return standingBookDao.selectShare(userSession.getCompanyId());
+        return standingBookDao.selectShare(userSession.getArchiveId (),userSession.getCompanyId());
     }
 
 
@@ -206,16 +209,31 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         }
         String sql=getBaseSql ( userSession.getCompanyId (),fieldVoList,customTableVOS )+stringBuffer.toString();
         PageHelper.startPage ( standingBookReturnVo.getCurrentPage (),standingBookReturnVo.getPageSize () );
+        //主职集合
         List<Integer> integerList=userArchiveDao.selectStaff(sql,standingBookReturnVo.getArchiveType (),
-                standingBookReturnVo.getOrgIdList (),standingBookReturnVo.getType ());
-        standingBookReturnVo.setTotal ( integerList.size () );
-        return userArchiveDao.selectByPrimaryKeyList ( integerList );
-
+                standingBookReturnVo.getOrgIdList (),"主职");
+        List < UserArchiveVo > list = userArchiveDao.selectByPrimaryKeyList ( integerList );
+        //兼职集合
+        List<UserArchiveVo> list2=userArchiveDao.selectPartTimeArchive(integerList,userSession.getCompanyId ());
+        if(standingBookReturnVo.getType ().contains ( "兼职" )&&!standingBookReturnVo.getType ().contains ( "主职" )){
+            standingBookReturnVo.setTotal ( list2.size () );
+           return list2;
+        }
+        if(!standingBookReturnVo.getType ().contains ( "兼职" )&&standingBookReturnVo.getType ().contains ( "主职" )){
+            standingBookReturnVo.setTotal ( list.size () );
+            return list;
+         }
+         if(standingBookReturnVo.getType ().contains ( "兼职" )&&standingBookReturnVo.getType ().contains ( "主职" )){
+            list.addAll ( list2 );
+             standingBookReturnVo.setTotal ( list.size () );
+            return list;
+         }
+      return null;
     }
 
     @Override
-    public void updateStandingBook(Integer standingBookId, String name) {
-        standingBookDao.updateStandingBook(standingBookId,name);
+    public void updateStandingBook(Integer standingBookId, String name,Short isShare) {
+       standingBookDao.updateStandingBook ( standingBookId,name,isShare );
     }
 
 
@@ -352,9 +370,9 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
                     flag2=true;
                 }
             }
-            if(!(flag2||flag1)){
-                ExceptionCast.cast ( CommonCode.CANNOT_TWO_NULL);
-            }
+        }
+        if(!(flag2||flag1)){
+            ExceptionCast.cast ( CommonCode.CANNOT_TWO_NULL);
         }
     }
 

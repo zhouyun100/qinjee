@@ -38,7 +38,7 @@ public interface LaborContractDao {
 
     void insertBatch(@Param("laborContractList") List< LaborContract> laborContractList);
 
-    List< LaborContract> selectByarcIdAndStatus(@Param("archiveId") Integer archiveId, @Param("renewagree") String renewagree);
+    Integer selectByarcIdAndStatus(@Param("archiveId") Integer archiveId, @Param("renewagree") String renewagree);
 
     List< LaborContract> selectContractByArchiveId(@Param("archiveId") Integer archiveId);
 
