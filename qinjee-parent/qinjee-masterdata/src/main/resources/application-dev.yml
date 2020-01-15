@@ -134,7 +134,7 @@ logging:
     com:
       qinjee:
         masterdata:
-          dao: DEBUG
+          dao: INFO
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml,classpath:mapper/**/*.xml

@@ -44,7 +44,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
 @Service
 public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO> implements OrganizationService {
     private static Logger logger = LogManager.getLogger(OrganizationServiceImpl.class);
@@ -114,7 +113,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      * @param userSession
      * @return
      */
-    @Transactional
     @Override
     @OrganizationSaveAnno
     public OrganizationVO addOrganization(String orgName, String orgCode, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
@@ -237,7 +235,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     }
 
     //=====================================================================
-    @Transactional
     @Override
     @OrganizationEditAnno
     //TODO 目前修改机构编码码 下级机构编码不会联动修改
@@ -634,9 +631,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
         List<OrganizationVO> childOrgList = organizationDao.listSonFullNameAndType(parent.getOrgId());
         for (OrganizationVO org : childOrgList) {
-            System.out.println(parent.getOrgParentId()+":"+parent.getOrgName()+"-"+parent.getOrgId());
+            System.out.println(parent.getOrgParentId() + ":" + parent.getOrgName() + "-" + parent.getOrgId());
             //只要上级不是顶级
-            if (0==parent.getOrgParentId()) {
+            if (0 == parent.getOrgParentId()) {
 
             } /*else if ("UNIT".equals(organizationVO.getOrgType())) {
                 org.setOrgFullName(org.getOrgName());
@@ -718,6 +715,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     //=====================================================================
     @Override
     public void sealOrganization(Integer archiveId, List<Integer> orgIds, Short isEnable) {
+
+        //ch查询用户有权的机构
         List<Integer> idList = new ArrayList<>();
         for (Integer orgId : orgIds) {
             List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
@@ -732,7 +731,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
 
     //=====================================================================
-    @Transactional
+
     @Override
     public void mergeOrganization(String newOrgName, Integer parentOrgId, List<Integer> orgIds, UserSession userSession) {
         //查询机构列表
@@ -791,7 +790,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      * @return
      */
     @Override
-    @Transactional
     public void sortOrganization(LinkedList<Integer> orgIds) {
         //查询出机构列表
         List<OrganizationVO> organizationList = organizationDao.listOrgnizationByIds(orgIds);
@@ -809,7 +807,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
     //=====================================================================
     @Override
-    @Transactional
     @OrganizationTransferAnno
     public void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession) {
         List<OrganizationVO> organizationVOList = null;
