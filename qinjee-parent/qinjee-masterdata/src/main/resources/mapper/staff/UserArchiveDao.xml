@@ -216,10 +216,10 @@
                 attrition_type,
             </if>
             <if test="operatorId != null">
-                operator_id
+                operator_id,
             </if>
             <if test="archiveStatus != null">
-            archive_status
+                archive_status
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -331,10 +331,10 @@
         #{attritionType,jdbcType=VARCHAR},
       </if>
       <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER}
+        #{operatorId,jdbcType=INTEGER},
       </if>
       <if test="archiveStatus != null">
-        #{archive_status,jdbcType=VARCHAR}
+        #{archiveStatus,jdbcType=VARCHAR}
       </if>
     </trim>
   </insert>
@@ -441,6 +441,9 @@
         <if test="operatorId != null">
           operator_id
         </if>
+          <if test="archiveStatus != null">
+              archive_status
+          </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
         <if test="employeeNumber != null">
@@ -542,6 +545,9 @@
         <if test="operatorId != null">
           #{item.operatorId,jdbcType=INTEGER}
         </if>
+          <if test="archiveStatus != null">
+              #{item.archiveStatus,jdbcType=VARCHAR}
+          </if>
       </trim>
     </foreach>
   </insert>
