@@ -148,7 +148,7 @@ public abstract class AbstractOrganizationHelper<T> {
     private void putIntoRedis(String key, List<T> dataList, HashMap<Object, Object> resultMap) {
         redisService.del(key);
         String json = JSON.toJSONString(dataList);
-        redisService.setex(key, 30 * 60, json);
+        redisService.setex(key, 10 * 60, json);
         //将原表信息及redis key置入返回对象
         resultMap.put("excelList", dataList);
         resultMap.put("redisKey", key);
@@ -187,7 +187,7 @@ public abstract class AbstractOrganizationHelper<T> {
             }
             redisService.del(key);
             String errorStr = errorSb.toString();
-            redisService.setex(key, 30 * 60, errorStr);
+            redisService.setex(key, 10 * 60, errorStr);
             //将错误信息置入返回对象
             resultMap.put("failCheckList", checkList);
             resultMap.put("errorInfoKey", key);
