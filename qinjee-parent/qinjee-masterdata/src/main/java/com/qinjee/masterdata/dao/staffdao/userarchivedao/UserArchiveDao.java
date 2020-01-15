@@ -3,6 +3,7 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -69,7 +70,7 @@ public interface UserArchiveDao {
 
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
-    List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") List<String> archiveType, @Param("list") List<Integer> list, @Param("type") List<String> type);
+    List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") String archiveType, @Param("list") List<Integer> list, @Param("type") String type);
 
      @MapKey("archive_id")
      Map<Integer,Map<String,Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order);
@@ -106,13 +107,16 @@ public interface UserArchiveDao {
 
     Map< String, Object> selectTransMessage(@Param("key") Integer key);
 
-    List<UserArchiveVo> selectByIdNumber(@Param("s") String s, @Param("companyId") Integer companyId);
+    UserArchiveVo selectByIdNumber(@Param("s") String s, @Param("companyId") Integer companyId);
 
     List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
 
     Integer selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 
     List< UserArchiveVo> selectUserArchiveVo(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
+    Integer selectByIDNumberAndCompanyId(@Param("idType") String idType, @Param("idNumber") String idNumber, @Param("companyId") Integer companyId);
+
+    List< UserArchiveVo> selectUserArchiveVo(@Param("companyId") Integer companyId);
 
 
     List< Integer> selectEmployNumberByCompanyId(@Param("companyId") Integer companyId, @Param("employeeNumber") String employeeNumber);
@@ -120,6 +124,4 @@ public interface UserArchiveDao {
     List<UserArchiveVo> getByCompanyId(Integer employeeNumber);
 
     UserArchiveVo selectByUserId(Integer userId,Integer companyId);
-
-    List< Integer> selectMyOrg(@Param("archiveId") Integer archiveId);
 }

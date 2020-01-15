@@ -1,12 +1,10 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.alibaba.fastjson.JSON;
-import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.liaochong.myexcel.core.SaxExcelReader;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -16,8 +14,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @program: eTalent
@@ -36,6 +33,8 @@ import java.util.stream.Collectors;
  **/
 @Component
 public abstract class AbstractOrganizationHelper<T> {
+    private static Logger logger = LogManager.getLogger(AbstractOrganizationHelper.class);
+
     @Autowired
     private RedisClusterService redisService;
 
@@ -80,26 +79,27 @@ public abstract class AbstractOrganizationHelper<T> {
             }
         }
     }
-    protected ResponseResult doUploadAndCheck(MultipartFile multfile,Class clazz, UserSession userSession, HttpServletResponse response) throws Exception {
+
+    protected ResponseResult doUploadAndCheck(MultipartFile multfile, Class clazz, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult();
         HashMap<Object, Object> resultMap = new HashMap<>();
         //excel文件基本校验
         basicCheck(multfile);
         //excel文件导入内存
-        List<T> excelList =importFromExcel(multfile,clazz);
+        List<T> excelList = importFromExcel(multfile, clazz);
         List<T> userArchiveList = new ArrayList<>(excelList.size());
         //进行一些前置处理，并把excel原表信息与处理后的信息存入redis
         List<T> dataList = preHandle(excelList, userArchiveList);
-        String key = "userDataKey" + multfile.getOriginalFilename().hashCode()+"-"+ RandomStringUtils.random(6);
+        String key = "userDataKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random(6);
         //将记录行号后的集合存入redis
         putIntoRedis(key, dataList, resultMap);
         //将上一步处理后的信息进行规则校
         List<T> checkList = checkExcel(dataList, userSession);
         //处理校验结果
-        String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode()+"-"+ RandomStringUtils.random(6);
+        String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random(6);
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
         responseResult.setResult(resultMap);
-        resultMap=null;
+        resultMap = null;
         return responseResult;
     }
 
@@ -107,19 +107,21 @@ public abstract class AbstractOrganizationHelper<T> {
     private boolean basicCheck(MultipartFile multfile) {
         //判断文件名
         String filename = multfile.getOriginalFilename();
-        if (!(filename.endsWith(xls) || filename.endsWith(xlsx)||filename.endsWith(XLS) || filename.endsWith(XLSX))) {
+        if (!(filename.endsWith(xls) || filename.endsWith(xlsx) || filename.endsWith(XLS) || filename.endsWith(XLSX))) {
             //文件格式不对
             ExceptionCast.cast(CommonCode.FILE_FORMAT_ERROR);
         }
 
         return false;
     }
+
     private List<T> importFromExcel(MultipartFile multfile, Class<T> clazz) throws Exception {
         String filename = multfile.getOriginalFilename();
-        File tempFile=null;
-        if(filename.endsWith("xls")||filename.endsWith("XLS")){
+        logger.info("上传文件名：" + filename);
+        File tempFile = null;
+        if (filename.endsWith("xls") || filename.endsWith("XLS")) {
             tempFile = File.createTempFile("temp", ".xls");//必须要是xlsx
-        }else{
+        } else {
             tempFile = File.createTempFile("temp", ".xlsx");
         }
 
@@ -174,7 +176,7 @@ public abstract class AbstractOrganizationHelper<T> {
                 Method getLineNumber = error.getClass().getMethod("getLineNumber");
                 Method getResultMsg = error.getClass().getMethod("getResultMsg");
                 Integer lineNum = (Integer) getLineNumber.invoke(error);
-                String msg = (String)getResultMsg.invoke(error);
+                String msg = (String) getResultMsg.invoke(error);
                 errorSb.append(lineNum + " -   " + msg + "\r\n");
             }
             redisService.del(key);
