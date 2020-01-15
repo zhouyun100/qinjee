@@ -65,7 +65,7 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-        if(checkParam(positionPageVo)){
+        if(checkParam(positionPageVo,getUserSession())){
             return positionService.getPositionPage( positionPageVo);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

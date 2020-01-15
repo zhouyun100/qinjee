@@ -290,7 +290,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/exportError2Txt")
     @ApiOperation(value = "ok,导出错误信息到txt", notes = "ok")
     public ResponseResult exportError2Txt(String redisKey, HttpServletResponse response) throws Exception {
-        if (checkParam(redisKey)) {
+        if (checkParam(redisKey, getUserSession())) {
             long start = System.currentTimeMillis();
             String errorData = redisClusterService.get(redisKey.trim());
             response.setCharacterEncoding("UTF-8");
@@ -309,7 +309,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/cancelImport")
     @ApiOperation(value = "ok,取消导入(将数据从redis中删除)")
     public ResponseResult cancelImport(@RequestParam("redisKey") String redisKey, @RequestParam("errorInfoKey") String errorInfoKey) {
-        if (checkParam(redisKey)) {
+        if (checkParam(redisKey, getUserSession())) {
             organizationService.cancelImport(redisKey.trim(), errorInfoKey.trim());
             return ResponseResult.SUCCESS();
         }
@@ -320,7 +320,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/importToDatabase")
     @ApiOperation(value = "ok,导入机构入库")
     public ResponseResult importToDatabase(@RequestParam("orgExcelRedisKey") String orgExcelRedisKey) {
-        if (checkParam(orgExcelRedisKey)) {
+        if (checkParam(orgExcelRedisKey, getUserSession())) {
             long start = System.currentTimeMillis();
             organizationService.importToDatabase(orgExcelRedisKey, getUserSession());
             logger.info("导入机构入库："+(System.currentTimeMillis()-start)+"ms");
@@ -340,7 +340,7 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，机构排序，只能同一级别下机构排序（需要将该级下所有机构的id按顺序传参）", notes = "ok")
     public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> orgIds) {
         //参数校验
-        if (checkParam(orgIds)) {
+        if (checkParam(orgIds, getUserSession())) {
             organizationService.sortOrganization(orgIds);
             return ResponseResult.SUCCESS();
         }
@@ -396,7 +396,7 @@ public class OrganizationController extends BaseController {
     @GetMapping("/generateOrgCode")
     public ResponseResult generateOrgCode(Integer orgId) {
         //校验参数
-        if (checkParam(orgId)) {
+        if (checkParam(orgId, getUserSession())) {
                 String orgCode = organizationService.generateOrgCode(orgId);
                 return new ResponseResult<>(orgCode);
         }

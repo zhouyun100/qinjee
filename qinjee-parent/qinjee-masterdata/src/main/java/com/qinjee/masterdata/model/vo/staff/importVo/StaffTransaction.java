@@ -9,7 +9,7 @@ public class StaffTransaction implements Serializable {
     /**
      *变动前人员分类
      */
-    private String user_category_before;
+    private String _before;
     private String org_name_before;
     private String org_number_before;
     private String org_number_after;

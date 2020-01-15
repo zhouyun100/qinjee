@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -90,13 +91,13 @@ public abstract class AbstractOrganizationHelper<T> {
         List<T> userArchiveList = new ArrayList<>(excelList.size());
         //进行一些前置处理，并把excel原表信息与处理后的信息存入redis
         List<T> dataList = preHandle(excelList, userArchiveList);
-        String key = "userDataKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random(6);
+        String key = "userDataKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random( 6, true, true);
         //将记录行号后的集合存入redis
         putIntoRedis(key, dataList, resultMap);
         //将上一步处理后的信息进行规则校
         List<T> checkList = checkExcel(dataList, userSession);
         //处理校验结果
-        String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random(6);
+        String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random( 6, true, true);
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
         responseResult.setResult(resultMap);
         resultMap = null;
@@ -115,7 +116,7 @@ public abstract class AbstractOrganizationHelper<T> {
         return false;
     }
 
-    private List<T> importFromExcel(MultipartFile multfile, Class<T> clazz) throws Exception {
+    private List<T> importFromExcel(MultipartFile multfile, Class<T> clazz) throws IOException {
         String filename = multfile.getOriginalFilename();
         logger.info("上传文件名：" + filename);
         File tempFile = null;
@@ -127,7 +128,12 @@ public abstract class AbstractOrganizationHelper<T> {
 
 
         multfile.transferTo(tempFile);
-        List<T> excelDataList = SaxExcelReader.of(clazz).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
+        List<T> excelDataList = null;
+        try {
+            excelDataList = SaxExcelReader.of(clazz).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
+        } catch (Exception e) {
+            ExceptionCast.cast(CommonCode.FILE_IMPORT_FAILED);
+        }
         tempFile.delete();
         if (CollectionUtils.isEmpty(excelDataList)) {
             //excel为空
@@ -142,7 +148,7 @@ public abstract class AbstractOrganizationHelper<T> {
     private void putIntoRedis(String key, List<T> dataList, HashMap<Object, Object> resultMap) {
         redisService.del(key);
         String json = JSON.toJSONString(dataList);
-        redisService.setex(key, 30 * 60, json);
+        redisService.setex(key, 10 * 60, json);
         //将原表信息及redis key置入返回对象
         resultMap.put("excelList", dataList);
         resultMap.put("redisKey", key);
@@ -181,7 +187,7 @@ public abstract class AbstractOrganizationHelper<T> {
             }
             redisService.del(key);
             String errorStr = errorSb.toString();
-            redisService.setex(key, 30 * 60, errorStr);
+            redisService.setex(key, 10 * 60, errorStr);
             //将错误信息置入返回对象
             resultMap.put("failCheckList", checkList);
             resultMap.put("errorInfoKey", key);

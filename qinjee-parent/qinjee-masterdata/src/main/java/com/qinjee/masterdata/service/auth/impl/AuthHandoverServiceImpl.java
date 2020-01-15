@@ -87,6 +87,8 @@ public class AuthHandoverServiceImpl implements AuthHandoverService {
             Integer acceptArchiveRoleId = authHandoverDao.searchAcceptArchiveAndId(userRole);
             if(acceptArchiveRoleId == null){
                 resultNumber += authHandoverDao.roleHandoverByArchiveId(userRole);
+            }else{
+                resultNumber += authHandoverDao.roleRecoveryByArchiveId(userRole);
             }
             resultNumber += authHandoverDao.archiveRoleOrgHandover(userRole);
         }

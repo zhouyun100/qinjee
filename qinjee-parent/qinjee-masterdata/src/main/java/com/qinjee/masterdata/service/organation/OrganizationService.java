@@ -45,6 +45,7 @@ public interface OrganizationService  {
    * @param orgIds
    * @return
    */
+  @Transactional
   void deleteOrganizationById(List<Integer> orgIds,boolean cascadeDeletePost, UserSession userSession);
 
   /**
@@ -54,6 +55,7 @@ public interface OrganizationService  {
    * @param isEnable
    * @return
    */
+  @Transactional
   void sealOrganization(Integer archiveId,List<Integer> orgIds, Short isEnable);
 
   /**
@@ -66,6 +68,7 @@ public interface OrganizationService  {
    * @param orgIds
    * @return
    */
+  @Transactional
   void mergeOrganization(String newOrgName, Integer targetOrgId, List<Integer> orgIds, UserSession userSession);
 
   /**
@@ -82,6 +85,7 @@ public interface OrganizationService  {
    * @param linkMap 顺序机构id数组
    * @return
    */
+  @Transactional
   void sortOrganization(LinkedList<Integer> linkMap);
 
   /**
@@ -94,6 +98,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return
    */
+  @Transactional
   void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession);
 
   /**
@@ -143,6 +148,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return
    */
+  @Transactional
   OrganizationVO addOrganization(String orgName, String orgCode,String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
 
@@ -159,6 +165,7 @@ public interface OrganizationService  {
    * @param userSession
    * @return ResponseResult
    */
+  @Transactional
   void editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession);
 
   List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);

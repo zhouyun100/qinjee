@@ -309,15 +309,9 @@ public class ArchiveAuthController extends BaseController {
                 return responseResult;
             }
             List<MenuVO> menuList = archiveAuthService.searchMenuButtonList(userSession.getArchiveId(), menuId);
-            if(CollectionUtils.isEmpty(menuList)){
-                logger.info("searchMenuButtonList fail！menuId={},menuList={}", menuId,menuList);
-                responseResult = ResponseResult.FAIL();
-                responseResult.setMessage("查询菜单按钮列表结果为空！");
-            }else {
-                logger.info("searchMenuButtonList success！menuId={},menuList={}", menuId,menuList);
-                responseResult = ResponseResult.SUCCESS();
-                responseResult.setResult(menuList);
-            }
+            logger.info("searchMenuButtonList success！menuId={},menuList={}", menuId,menuList);
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(menuList);
         }catch (Exception e){
             logger.info("searchMenuButtonList exception！menuId={},exception={}", menuId, e.toString());
             e.printStackTrace();
