@@ -183,8 +183,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
 //        }
         AttachmentRecord attachmentRecord = getAttachmentRecord ( multipartFile, s, userSession.getCompanyId () );
         String idnumber = multipartFile.getOriginalFilename ().split ( "#" )[0];
-        UserArchiveVo userArchiveVo = userArchiveDao.selectByIdNumber ( idnumber,userSession.getCompanyId () );
-        attachmentRecord.setBusinessId ( userArchiveVo.getArchiveId () );
+        List<UserArchiveVo> list = userArchiveDao.selectByIdNumber ( idnumber,userSession.getCompanyId () );
+        attachmentRecord.setBusinessId ( list.get(0).getArchiveId () );
         attachmentRecord.setBusinessType ( "archive" );
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)(multipartFile.getSize())/1024);
@@ -289,13 +289,14 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public String checkFielName(List<String> fileName, UserSession userSession) {
+    public String
+    checkFielName(List<String> fileName, UserSession userSession) {
         Map<String,String> map=new HashMap <> (  );
         Integer j=0;
         for (int i = 0; i < fileName.size (); i++) {
             Boolean flag=false;
             String s =fileName.get ( i ).split ( "#" )[0];
-            UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber(s,userSession.getCompanyId ());
+            List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumber(s,userSession.getCompanyId ());
             List < String > list = attachmentRecordDao.selectGroup ();
             String name = null;
             try {
@@ -311,7 +312,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                     }
                 }
             }
-            if (userArchiveVo != null && flag ) {
+            if (userArchiveVos.size ()==1 && flag ) {
                flag=true;
             } else {
                flag=false;

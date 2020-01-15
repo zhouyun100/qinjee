@@ -501,10 +501,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public PageResult < UserArchiveVo > selectArchiveNoOrgId(UserSession userSession, Integer pageSize, Integer currentPage) {
+    public PageResult < UserArchiveVo > selectArchiveNoOrgId(UserSession userSession,List<Integer> list, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage,pageSize );
-        List<UserArchiveVo> list=userArchiveDao.selectUserArchiveVo (userSession.getCompanyId ());
-        return new PageResult <> ( list );
+        List < UserArchiveVo > list1 = userArchiveDao.selectUserArchiveVo ( list,userSession.getCompanyId () );
+        return new PageResult <> ( list1 );
+    }
+
+    @Override
+    public List < Integer > selectMyOrg(UserSession userSession) {
+        return userArchiveDao.selectMyOrg(userSession.getArchiveId ());
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -113,10 +113,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 //设置字段录入的值
                 customFieldVO.setFieldValue(String.valueOf(entry.getValue()));
 
-//                //设置字段录入的code
-//                customFieldVO.setFieldCode (customFieldVO.getCode ());
-
-
 
                 //字段值规则校验
                 validCustomFieldValue(customFieldVO);
@@ -453,8 +449,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue) {
+    public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue,Integer index) {
 
+        CustomTableVO customTableVO1 = new CustomTableVO ();
         if (customTable != null && mapValue != null) {
             List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
             if (CollectionUtils.isNotEmpty(groupList)) {
@@ -464,13 +461,14 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     handlerCustomTableGroupFieldList(fieldList, mapValue);
                 }
             }
-            if (StringUtils.isNotBlank(mapValue.get(-1))) {
+            if (StringUtils.isNotBlank(mapValue.get(-index-1))) {
 
-                customTable.setBigDataId(Integer.parseInt(mapValue.get(-1)));
+                customTable.setBigDataId(Integer.parseInt(mapValue.get(-index-1)));
             }
 
         }
-        return customTable;
+        BeanUtils.copyProperties (customTable,  customTableVO1);
+        return customTableVO1;
     }
 
     @Override

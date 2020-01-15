@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -74,8 +75,9 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
-    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo){
-        Boolean b = checkParam(preEmploymentVo,getUserSession());
+    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo, HttpServletResponse response){
+        Boolean b = checkParam(preEmploymentVo,getUserSession(),response);
+        response.setHeader ( "Access-Control-Allow-Origin","*" );
         if(b){
                 staffPreEmploymentService.updatePreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();

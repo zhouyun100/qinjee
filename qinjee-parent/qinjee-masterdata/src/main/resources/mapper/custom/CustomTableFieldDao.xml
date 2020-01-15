@@ -508,6 +508,26 @@
         </foreach>
         and field_code="phone"
     </select>
+    <select id="transSupiorIdByName" resultType="java.util.Map">
+          select t.field_id,t.archive_id from(
+        SELECT
+            field.field_id,
+            field.table_id,
+            arc.archive_id
+        FROM
+            t_custom_archive_field field,
+            t_user_archive arc
+        WHERE
+           arc.user_name=#{value}
+        AND field.field_code = 'supervisor_id'
+        AND arc.is_delete = 0
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id
+        where  tab.company_id =#{companyId}
+         AND tab.is_delete = 0
+         AND tab.is_enable = 1
+         AND tab.func_code =#{funcCode}
+    </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldTypeByNameList" resultType="java.lang.String"></select>

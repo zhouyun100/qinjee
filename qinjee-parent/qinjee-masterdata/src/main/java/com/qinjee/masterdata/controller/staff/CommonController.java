@@ -377,12 +377,18 @@ public class CommonController extends BaseController {
         Boolean b = checkParam(tableId,businessId);
         if(b) {
             long start = System.currentTimeMillis();
-            List<CustomTableVO> list=new ArrayList <> (  );
-                CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId,getUserSession ());
-                List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
-                    for (Map < Integer, String > map : mapList) {
-                        list.add ( customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, map ) );
-                    }
+          List < CustomTableVO > list = new ArrayList <> ();
+            CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId (tableId,getUserSession ());
+            List<Map<Integer,String>>  mapList=staffCommonService.selectValue (tableId, businessId );
+            for (int i = 0; i < mapList.size (); i++) {
+                CustomTableVO customTableVO1 = customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, mapList.get ( i ), i );
+                System.out.println (customTableVO1.getBigDataId ()+".................................................");
+                System.out.println (customTableVO1.hashCode ());
+                list.add ( customTableVO1  );
+            }
+            for (CustomTableVO tableVO : list) {
+                System.out.println (tableVO.hashCode ());
+            }
                     for (CustomTableVO tableVO : list) {
                         List < CustomGroupVO > customGroupVOList = tableVO.getCustomGroupVOList ();
                         for (CustomGroupVO customGroupVO : customGroupVOList) {

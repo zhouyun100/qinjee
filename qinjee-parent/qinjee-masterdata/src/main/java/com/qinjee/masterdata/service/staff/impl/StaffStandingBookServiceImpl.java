@@ -245,17 +245,17 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
             if(TYPEDATE.equals(TYPEDATE)){
                 if("<".equals(filter.getOperateSymbol())){
-                    condition = "t."+fieldName + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
+                    condition = "t."+fieldName + "" + "<![CDATA[<]]>" + "" + "'"+filter.getFieldValue()+"'";
                 }else {
-                    condition = "t."+fieldName + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                    condition = "t."+fieldName + "" + filter.getOperateSymbol() + ""+ "'" + filter.getFieldValue()+ "'";
                 }
             }
             if (TYPETEXT.equals(textType)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
-                    condition ="t."+fieldName + " = " + filter.getFieldValue();
+                    condition ="t."+fieldName + " = " + "'"+ filter.getFieldValue()+ "'";
                 }
                 if (BUDENGYU.equals(filter.getOperateSymbol())) {
-                    condition ="t."+fieldName + " != " + filter.getFieldValue();
+                    condition ="t."+fieldName + " != " + "'"+ filter.getFieldValue()+ "'";
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
                     condition = "t."+fieldName + " like "+"'%" + filter.getFieldValue() + "%' ";
@@ -267,11 +267,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
             if (TYPECODE.equals(textType)) {
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition ="t."+fieldName + " = " + filter.getFieldValue();
+                    condition ="t."+fieldName + " = " + "'"+ filter.getFieldValue()+ "'";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition ="t."+fieldName + " != " + filter.getFieldValue();
+                    condition ="t."+fieldName + " != " + "'"+ filter.getFieldValue()+ "'";
                 }
             }
         }
@@ -281,17 +281,17 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
             if(TYPEDATE.equals(TYPEDATE)){
                 if("<".equals(filter.getOperateSymbol())){
-                    condition = "t."+fieldCode + "" + "<![CDATA[<]]>" + "" + filter.getFieldValue();
+                    condition = "t."+fieldCode + "" + "<![CDATA[<]]>" + "" + "'"+ filter.getFieldValue()+ "'";
                 }else {
-                    condition = "t."+fieldCode + "" + filter.getOperateSymbol() + "" + filter.getFieldValue();
+                    condition = "t."+fieldCode + "" + filter.getOperateSymbol() + "" + "'"+ filter.getFieldValue()+ "'";
                 }
             }
             if (TYPETEXT.equals(textType)) {
                 if (DENGYU.equals(filter.getOperateSymbol())) {
-                    condition = fieldCode + " = " + filter.getFieldValue();
+                    condition = fieldCode + " = " + "'"+ filter.getFieldValue()+ "'";
                 }
                 if (BUDENGYU.equals(filter.getOperateSymbol())) {
-                    condition = fieldCode + " != " + filter.getFieldValue();
+                    condition = fieldCode + " != "+ "'" + filter.getFieldValue()+ "'";
                 }
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
                     condition = fieldCode + " like "+"'%" + filter.getFieldValue() + "%' ";
@@ -303,11 +303,11 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
             if (TYPECODE.equals(textType)) {
                 if (BAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = fieldCode + " = " + filter.getFieldValue();
+                    condition = fieldCode + " = " + "'"+ filter.getFieldValue()+ "'";
                 }
 
                 if (BUBAOHAN.equals(filter.getOperateSymbol())) {
-                    condition = fieldCode + " != " + filter.getFieldValue();
+                    condition = fieldCode + " != "+ "'" + filter.getFieldValue()+ "'";
                 }
             }
         }

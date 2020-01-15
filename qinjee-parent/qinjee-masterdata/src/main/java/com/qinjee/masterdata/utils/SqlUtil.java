@@ -10,7 +10,6 @@ public class SqlUtil {
     //companyId 企业id
     //fieldNameNotInside 所有有关档案表的字段名称集合
     //临时集合，用来拼接非自定义表对的字段名
-    //
     public static String getsql(Integer companyId, List < CustomFieldVO > fieldIdNotInside, List< CustomTableVO > customTableVOS) {
         List<String> custom=new ArrayList<>();
         String substring="";

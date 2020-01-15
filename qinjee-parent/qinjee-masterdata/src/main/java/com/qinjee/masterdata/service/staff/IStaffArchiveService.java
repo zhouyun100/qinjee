@@ -164,7 +164,8 @@ public interface IStaffArchiveService {
 
     UserArchiveVo selectById(Integer id);
 
-    PageResult< UserArchiveVo> selectArchiveNoOrgId(UserSession userSession, Integer pageSize, Integer currentPage);
+    PageResult< UserArchiveVo> selectArchiveNoOrgId(UserSession userSession,List<Integer> integers, Integer pageSize, Integer currentPage);
 
 
+    List< Integer> selectMyOrg(UserSession userSession);
 }

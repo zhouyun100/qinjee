@@ -75,10 +75,12 @@ public class ImportAndExportStaffController extends BaseController {
             CheckImportVo checkImportVo = null;
             try {
                 checkImportVo = staffImportAndExportService.importFileAndCheckFile ( multipartFile,"ARC",  getUserSession (),systemDefine );
+                return new ResponseResult<>  (checkImportVo, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace ();
+                return new ResponseResult<>  (checkImportVo, CommonCode.FAIL);
             }
-            return new ResponseResult<>  (checkImportVo, CommonCode.SUCCESS);
+
         }
         return new ResponseResult <> (null, CommonCode.FILE_EMPTY);
     }

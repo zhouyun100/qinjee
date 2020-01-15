@@ -789,7 +789,6 @@
       <foreach collection="orgIdList" item="orgId" separator="," close=")" open="(">
         #{orgId}
       </foreach>
-
     </if>
 
   </select>
@@ -810,11 +809,20 @@
     select
     <include refid="Base_Column_List"  />
     from t_user_archive
-    where
-    archive_id in
-    <foreach collection="archiveList" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
+    where is_delete=0
+      <choose>
+          <when test='archiveList != null and archiveList.size()>0'>
+              and
+              archive_id in
+              <foreach collection="archiveList" item="item" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
+          </when>
+          <otherwise>
+             and 1=0
+          </otherwise>
+      </choose>
+
   </select>
 
   <select id="selectArchiveIdByTel" resultType="java.lang.Integer">
@@ -840,12 +848,18 @@
   <select id="selectStaff" resultType="java.lang.Integer">
   select arc.archive_id
     from t_user_archive arc
-    where arc.user_category=#{archiveType}
+    where arc.user_category in
+      <foreach collection="archiveType" item="item" open="(" separator="," close=")">
+          #{item}
+      </foreach>
     and arc.is_delete=0
     and  arc.archive_id in
    (
    select archive_id from t_user_archive_post_relation
-		where `employment_type`=#{type}
+		where `employment_type` in
+		<foreach collection="type" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     and is_delete=0
   )
     and arc.archive_id in(
@@ -860,7 +874,6 @@
         <if test="order != null">
         order by ${order}
         </if>
-
   </select>
 <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
   select archive_id
@@ -893,8 +906,8 @@
     and arc.archive_id in
     <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
     #{item}
-     group by arc.archive_id
  </foreach>
+      group by arc.archive_id
 </select>
   <select id="selectEmployNumber" resultType="java.lang.String">
     select employee_number
@@ -932,23 +945,21 @@
     left join t_sys_dict dict on  dict.dict_code=arc.gender AND dict.is_delete=0
     left join t_sys_dict dict2 on  dict2.dict_code=arc.user_category AND dict2.is_delete=0
     WHERE arc.is_delete = 0
+    and arc.archive_status='SERVICE'
     and arc.org_id in
     <foreach collection="orgId" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
     and arc.org_id in(
-    -- 查询人员机构权限
-    select org_id from t_user_org_auth oa where oa.archive_id = #{archiveId}-- 操作人档案ID
+    select org_id from t_user_org_auth oa where oa.archive_id = #{archiveId}
     and (oa.is_trusteeship = 0
     or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
     )
     and oa.is_delete = 0
-
-    -- 查询人员角色机构权限
     UNION
     select org_id from t_role_org_auth roa,t_user_role ur
     where roa.role_id = ur.role_id
-    and ur.archive_id = #{archiveId} -- 操作人档案ID
+    and ur.archive_id = #{archiveId}
     and (ur.is_trusteeship = 0
     or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time)
     )
@@ -1070,8 +1081,26 @@
       <foreach collection="orgId" item='item' open="(" close=")" separator=",">
         #{item}
       </foreach>
+        and arc.archive_status='SERVICE'
         group by arc.archive_id
   </select>
+    <select id="selectMyOrg" resultType="java.lang.Integer">
+    select org_id from t_user_org_auth oa where oa.archive_id = #{archiveId}
+    and (oa.is_trusteeship = 0
+    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
+    )
+    and oa.is_delete = 0
+    UNION
+    select org_id from t_role_org_auth roa,t_user_role ur
+    where roa.role_id = ur.role_id
+    and ur.archive_id = #{archiveId}
+    and (ur.is_trusteeship = 0
+    or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time)
+    )
+    and roa.is_delete = 0
+    and ur.is_delete = 0
+
+    </select>
   <select id="selectTransMessage" resultType="java.util.Map">
       SELECT
 	 org.org_name AS org_name,
@@ -1113,6 +1142,7 @@
     where arc.id_number=#{s}
     and arc.company_id = #{companyId}
     and arc.is_delete=0
+    and arc.archive_status='SERVICE'
      group by arc.archive_id
   </select>
   <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
@@ -1169,9 +1199,13 @@
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
     left join t_sys_dict dict on dict.dict_code=arc.gender AND dict.is_delete=0
     left join t_sys_dict dict2 on dict2.dict_code=arc.user_category AND dict2.is_delete=0
-    where arc.company_id=#{companyId}
+    where arc.org_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item}
+    </foreach>
     and arc.is_delete=0
-     group by arc.archive_id
+    and arc.archive_status='SERVICE'
+    group by arc.archive_id
   </select>
   <select id="selectEmployNumberByCompanyId" resultType="java.lang.Integer">
     select archive_id
@@ -1179,6 +1213,7 @@
     where company_id=#{companyId}
     and employee_number=#{employeeNumber}
     and is_delete=0
+    and archive_status='SERVICE'
 
   </select>
   <select id="getByCompanyId" resultMap="BaseResultMap">

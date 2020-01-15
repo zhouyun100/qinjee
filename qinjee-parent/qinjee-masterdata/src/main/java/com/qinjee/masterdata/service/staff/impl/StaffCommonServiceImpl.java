@@ -558,7 +558,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         customArchiveTableData.setBigData ( stringBuilder.toString () );
         if (customArchiveTableDataVo.getId () != null && !customArchiveTableDataVo.getId ().equals ( 0 )) {
             customArchiveTableData.setUpdateTime ( new Date (  ) );
-            customArchiveTableDataDao.updateByPrimaryKey ( customArchiveTableData );
+            customArchiveTableDataDao.updateByPrimaryKeyWithBLOBs ( customArchiveTableData );
         } else {
             customArchiveTableDataDao.insertSelective ( customArchiveTableData );
         }
@@ -596,13 +596,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "0" )) {
             List < CustomArchiveTableData > list1 = customArchiveTableDataDao.selectBigDataBybusinessIdAndTableId ( businessId, tableId );
             if (!CollectionUtils.isEmpty ( list1)) {
-                for (CustomArchiveTableData customArchiveTableData : list1) {
-                    if (Strings.isNotBlank ( customArchiveTableData.getBigData () )) {
-                        String[] split = customArchiveTableData.getBigData ().split ( "@@" );
+                for (int j = 0; j < list1.size (); j++) {
+                    if (Strings.isNotBlank ( list1.get(j).getBigData () )) {
+                        String[] split = list1.get(j).getBigData ().split ( "@@" );
                         for (int i = 1; i < split.length; i = i + 2) {
                             map.put ( Integer.parseInt ( split[i] ), split[i + 1].split ( ":" )[1] );
                         }
-                        map.put ( -1,String.valueOf (customArchiveTableData.getId ()) );
+                        map.put ( -j-1,String.valueOf (list1.get(j).getId ()) );
                         list.add ( map );
                     }
                 }

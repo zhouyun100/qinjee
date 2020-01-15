@@ -74,7 +74,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo) throws Exception {
+    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo)  {
         String changeState = statusChangeVo.getChangeState ();
         List < Integer > preEmploymentList = statusChangeVo.getPreEmploymentList ();
         for (Integer preEmploymentId : preEmploymentList) {
@@ -100,8 +100,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 if(null!=integer && 0!=integer){
                     ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
                 }else{
-                  UserArchiveVo userArchiveVo=userArchiveDao.selectByIdNumber ( preEmployment.getIdNumber (),userSession.getCompanyId () );
-                  if(userArchiveVo!=null){
+                  List<UserArchiveVo> userArchiveVo=userArchiveDao.selectByIdNumber ( preEmployment.getIdNumber (),userSession.getCompanyId () );
+                  if(CollectionUtils.isNotEmpty ( userArchiveVo )){
                       ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
                   }else{
                       UserArchive userArchive = new UserArchive ();
@@ -138,7 +138,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 }
                 //将预入职的入职时间重新设置
                 preEmployment.setHireDate ( statusChangeVo.getDelayDate () );
-                preEmploymentDao.updateByPrimaryKey ( preEmployment );
                 preEmployment.setEmploymentState ( CHANGSTATUS_DELAY );
                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
             }

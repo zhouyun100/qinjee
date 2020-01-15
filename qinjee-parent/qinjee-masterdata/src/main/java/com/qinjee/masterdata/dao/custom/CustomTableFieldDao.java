@@ -274,11 +274,12 @@ public interface CustomTableFieldDao {
 
     List < Map < String, String > > selectCodAndIdByTableId(@Param("tableId") Integer tableId);
 
-    Map< String, Integer> transOrgId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map< String, Integer>> transOrgId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
-    Map< String, Integer> transSupiorId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map< String, Integer>> transSupiorId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
-    Map< String, Integer> transPostId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+
+    List<Map< String, Integer>> transPostId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     String selectFieldCodeById(@Param("integer") Integer integer);
 
@@ -291,11 +292,13 @@ public interface CustomTableFieldDao {
 
     List< CustomFieldVO> selectFieldListByTableId(Integer tableId);
 
-    Map< String, Integer> transOrgIdByCode(String funcCode, Integer companyId, String value);
+    List<Map< String, Integer>> transOrgIdByCode(String funcCode, Integer companyId, String value);
 
     Integer selectFieldIdByCodeAndFuncCodeAndComapnyId(@Param("code") String code, @Param("funcCode") String funcCode, @Param("companyId") Integer companyId);
 
     Integer selectSymbolForPhone(List< Integer> isSystemDefineList);
+
+    List< Map< String, Integer>> transSupiorIdByName(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 }
 
 

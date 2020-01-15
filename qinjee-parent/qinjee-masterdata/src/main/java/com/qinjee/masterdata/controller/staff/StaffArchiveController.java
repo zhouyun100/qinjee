@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -211,12 +212,12 @@ public class StaffArchiveController extends BaseController {
         if(b){
             UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
             PageResult < UserArchiveVo > userArchiveVoPageResult;
-            Boolean param = checkParam ( requestUserarchiveVo.getOrgId () );
-            if(param){
-                userArchiveVoPageResult=staffArchiveService.selectArchiveNoOrgId(getUserSession (),requestUserarchiveVo.getPageSize (),
-                        requestUserarchiveVo.getCurrentPage ());
-            }else {
+            if(!CollectionUtils.isEmpty ( requestUserarchiveVo.getOrgId () )){
                 userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
+                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getPageSize () );
+            }else{
+                List < Integer > integers = staffArchiveService.selectMyOrg ( getUserSession () );
+                userArchiveVoPageResult = staffArchiveService.selectArchiveNoOrgId ( getUserSession (), integers,
                         requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getPageSize () );
             }
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );

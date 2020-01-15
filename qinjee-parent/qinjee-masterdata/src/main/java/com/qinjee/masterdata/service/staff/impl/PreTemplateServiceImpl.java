@@ -155,11 +155,11 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                     List < EntryTemplateValueVo > entryTemplateValueVos = new ArrayList <> ();
                     List < Map < Integer, String > > mapList = staffCommonService.selectValue ( integer, preId );
                     //属性对象组装
-                    for (Map < Integer, String > integerStringMap : mapList) {
-                        for (Map.Entry < Integer, String > integerStringEntry : integerStringMap.entrySet ()) {
+                    for (int i = 0; i < mapList.size (); i++) {
+                        for (Map.Entry < Integer, String > integerStringEntry : mapList.get(i).entrySet ()) {
                             map.put ( integerStringEntry.getKey (), integerStringEntry.getValue () );
-                            if(StringUtils.isNotBlank (integerStringMap.get(-1))){
-                                bigDataId= Integer.parseInt ( integerStringMap.get ( -1 ) );
+                            if(StringUtils.isNotBlank (mapList.get(i).get(-i-1))){
+                                bigDataId= Integer.parseInt ( mapList.get(i).get(-i-1) );
                             }
                         }
                         //通过tableid寻找对应的值

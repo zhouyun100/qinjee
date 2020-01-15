@@ -3,11 +3,12 @@ package com.qinjee.masterdata.model.vo.staff;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @JsonInclude
 @Data
-public class StandingBookReturnVo {
+public class StandingBookReturnVo implements Serializable {
     /**
      * 台账id
      */
@@ -15,7 +16,7 @@ public class StandingBookReturnVo {
     /**
      * 任职类型
      */
-    private String archiveType;
+    private List<String> archiveType;
     /**
      * 企业id
      */
@@ -23,7 +24,7 @@ public class StandingBookReturnVo {
     /**
      * 兼职类型
      */
-    private String type;
+    private List<String> type;
     /**
      * 页大小
      */

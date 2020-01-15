@@ -441,7 +441,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             map.putAll ( integerMapEntry.getValue () );
             integerMapEntry.setValue ( map );
         }
-        if (querySchemaId != null || querySchemaId != 0) {
+        if ( null!=querySchemaId || 0!=querySchemaId) {
             headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );
         } else {
             headsByArc = HeadMapUtil.getHeadForArc ();
@@ -638,11 +638,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             map = new HashMap <> ();
             if (ORGNAME.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
-                    if (map1 != null) {
-                        String orgName = String.valueOf ( map1.get ( "org_id" ) );
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String orgName = String.valueOf ( map1.get(0).get( "org_id" ) );
                         if (StringUtils.isNotBlank ( orgName )) {
-                            map.put ( map1.get ( "field_id" ), orgName );
+                            map.put ( map1.get(0).get( "field_id" ), orgName );
                         }
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-1" );
@@ -652,11 +652,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
             } else if (BUSINESSUNITNAME.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
-                    if (map1 != null) {
-                        String orgName = String.valueOf ( map1.get ( "org_id" ) );
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String orgName = String.valueOf ( map1.get(0).get ( "org_id" ) );
                         if (StringUtils.isNotBlank ( orgName )) {
-                            map.put ( map1.get ( "field_id" ), orgName );
+                            map.put (map1.get(0).get ( "field_id" ), orgName );
                         }
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-1" );
@@ -666,11 +666,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
             } else if (BUSINESSUNITCODE.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
-                    if (map1 != null) {
-                        String orgName = String.valueOf ( map1.get ( "org_id" ) );
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transOrgId ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String orgName = String.valueOf ( map1.get(0).get ( "org_id" ) );
                         if (StringUtils.isNotBlank ( orgName )) {
-                            map.put ( map1.get ( "field_id" ), orgName );
+                            map.put (map1.get(0).get ( "field_id" ), orgName );
                         }
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-1" );
@@ -680,11 +680,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
             } else if (ORGCODE.equals ( fieldName ) || ORGCODEPRE.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transOrgIdByCode ( funcCode, companyId, value );
-                    if (map1 != null) {
-                        String orgName = String.valueOf ( map1.get ( "org_id" ) );
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transOrgIdByCode ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String orgName = String.valueOf (map1.get(0).get ( "org_id" ) );
                         if (StringUtils.isNotBlank ( orgName )) {
-                            map.put ( map1.get ( "field_id" ), orgName );
+                            map.put ( map1.get(0).get ( "field_id" ), orgName );
                         }
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-1" );
@@ -692,13 +692,28 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 } else {
                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-2" );
                 }
-            } else if (SUPORCODE.equals ( fieldName ) || SUPVISORUSERNAME.equals ( fieldName )) {
+            } else if (SUPORCODE.equals ( fieldName ) ) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
-                    if (map1 != null) {
-                        String archiveId = String.valueOf ( map1.get ( "archive_id" ) );
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String archiveId = String.valueOf ( map1.get(0).get ( "archive_id" ) );
                         if (StringUtils.isNotBlank ( archiveId )) {
-                            map.put ( map1.get ( "field_id" ), archiveId );
+                            map.put ( map1.get(0).get ( "field_id" ), archiveId );
+                        }
+                    } else {
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-1" );
+                    }
+                } else {
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-2" );
+                }
+            }
+            else if ( SUPVISORUSERNAME.equals ( fieldName )) {
+                if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transSupiorIdByName ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String archiveId = String.valueOf ( map1.get(0).get ( "archive_id" ) );
+                        if (StringUtils.isNotBlank ( archiveId )) {
+                            map.put ( map1.get(0).get ( "field_id" ), archiveId );
                         }
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-1" );
@@ -708,11 +723,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
             } else if (POSTCODE.equals ( fieldName ) || POSTNAME.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
-                    Map < String, Integer > map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
-                    if (map1 != null) {
-                        String postName = String.valueOf ( map1.get ( "post_id" ) );
+                    List<Map < String, Integer >> map1 = customTableFieldDao.transPostId ( funcCode, companyId, value );
+                    if (!CollectionUtils.isEmpty ( map1 )) {
+                        String postName = String.valueOf ( map1.get(0).get ( "post_id" ) );
                         if (StringUtils.isNotBlank ( postName )) {
-                            map.put ( map1.get ( "field_id" ), postName );
+                            map.put ( map1.get(0).get ( "field_id" ), postName );
                         }
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-1" );
@@ -809,7 +824,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     }
 
     private String isDate(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat ( "yy-MM-dd" );
+        SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy-MM-dd" );
         try {
             return sdf.format ( new Date ( date ) );
         } catch (Exception e) {

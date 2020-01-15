@@ -82,7 +82,7 @@ public interface CustomTableFieldService {
      * @param mapValue 表单各字段数据值列表
      * @return
      */
-    CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable,Map<Integer,String> mapValue);
+    CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable,Map<Integer,String> mapValue,Integer index);
 
     /**
      * 处理自定义组字段数据回填

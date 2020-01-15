@@ -216,9 +216,10 @@ public class StaffStandingBookController extends BaseController {
 //            @ApiImplicitParam(name = "type", value = "兼职状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<UserArchiveVoAndHeader> selectStaff(@RequestBody StandingBookReturnVo standingBookReturnVo) throws ParseException {
+    public ResponseResult<UserArchiveVoAndHeader> selectStaff(@RequestBody StandingBookReturnVo standingBookReturnVo)  {
         Boolean b = checkParam(standingBookReturnVo,getUserSession());
         if (b) {
+            try {
                 List < UserArchiveVo > list = staffStandingBookService.selectStaff ( standingBookReturnVo, getUserSession () );
                 PageResult < UserArchiveVo > userArchiveVoPageResult = new PageResult <> ( list );
                 UserArchiveVoAndHeader userArchiveVoAndHeader = new UserArchiveVoAndHeader ();
@@ -226,6 +227,9 @@ public class StaffStandingBookController extends BaseController {
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), standingBookReturnVo.getQuerySchemaId () ) );
                 return new ResponseResult <> ( userArchiveVoAndHeader, CommonCode.SUCCESS );
+            } catch (ParseException e) {
+                e.printStackTrace ();
+            }
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }

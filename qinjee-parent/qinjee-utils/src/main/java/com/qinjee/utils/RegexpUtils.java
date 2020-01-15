@@ -1,7 +1,6 @@
 package com.qinjee.utils;
 
 
-import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -171,11 +170,11 @@ public class RegexpUtils {
     }
 
     public static void main(String [] args) {
-        String str = "999999";
-        String[] strArr = str.split("\\.");
+        String str = "2019-02-28";
+//        String[] strArr = str.split("\\.");
 
-        System.out.println(str+"是否合法：" + checkDecimal(str));
-        System.out.println("转化后结果为：" + strArr[0].length());
-        System.out.println("转化后结果为：" + strArr[1].length());
+        System.out.println(str+"是否合法：" + checkDateTime(str));
+//        System.out.println("转化后结果为：" + strArr[0].length());
+//        System.out.println("转化后结果为：" + strArr[1].length());
     }
 }

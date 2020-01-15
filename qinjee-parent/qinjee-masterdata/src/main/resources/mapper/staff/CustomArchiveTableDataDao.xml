@@ -120,7 +120,6 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       big_data = #{bigData,jdbcType=LONGVARBINARY}
-      is_delete = #{isDelete,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
