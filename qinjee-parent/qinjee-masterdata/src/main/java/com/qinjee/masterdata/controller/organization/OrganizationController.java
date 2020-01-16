@@ -51,9 +51,9 @@ public class OrganizationController extends BaseController {
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
-            if(param instanceof UserSession){
-                if(null == param|| "".equals(param)){
-                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+            if (param instanceof UserSession) {
+                if (null == param || "".equals(param)) {
+                    ExceptionCast.cast(CommonCode.INVALID_SESSION);
                     return false;
                 }
             }
@@ -67,10 +67,12 @@ public class OrganizationController extends BaseController {
     @GetMapping("/addOrganization")
     @ApiOperation(value = "ok，新增机构", notes = "ok")
     public ResponseResult addOrganization(@RequestParam("orgName") String orgName, @RequestParam("orgCode") String orgCode, @RequestParam("orgType") String orgType, @RequestParam(value = "orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
-        Boolean b = checkParam(orgName, orgType, orgParentId,getUserSession());
+        Boolean b = checkParam(orgName, orgType, orgParentId, getUserSession());
         if (b) {
-            logger.info("新增机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
+            logger.info("新增机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}", userSession.getCompanyId(), orgName, orgCode, orgType, orgParentId, orgManagerId);
+            long start = System.currentTimeMillis();
             organizationService.addOrganization(orgName, orgCode, orgType, orgParentId, orgManagerId, getUserSession());
+            logger.info("新增机构耗时：" + (System.currentTimeMillis()-start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -79,12 +81,12 @@ public class OrganizationController extends BaseController {
     @GetMapping("/editOrganization")
     @ApiOperation(value = "ok，编辑机构", notes = "机构编码待验证")
     public ResponseResult editOrganization(@RequestParam("orgCode") String orgCode, @RequestParam("orgId") String orgId, @RequestParam("orgName") String orgName, @RequestParam("orgType") String orgType, @RequestParam("orgParentId") String orgParentId, @RequestParam(value = "orgManagerId", required = false) String orgManagerId) {
-        Boolean b = checkParam(orgCode, orgId, orgParentId,getUserSession());
+        Boolean b = checkParam(orgCode, orgId, orgParentId, getUserSession());
         if (b) {
             long start = System.currentTimeMillis();
-            logger.info("编辑机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}",userSession.getCompanyId(),orgName,orgCode,orgType,orgParentId,orgManagerId);
+            logger.info("编辑机构：companyID:{},orgName：{}，orgCode：{}，orgType：{}，orgParentId：{}，orgManagerId：{}", userSession.getCompanyId(), orgName, orgCode, orgType, orgParentId, orgManagerId);
             organizationService.editOrganization(orgCode, orgId, orgName, orgType, orgParentId, orgManagerId, getUserSession());
-            logger.info("编辑机构耗时："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("编辑机构耗时：" + (System.currentTimeMillis() - start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -92,11 +94,13 @@ public class OrganizationController extends BaseController {
 
     @GetMapping("/deleteOrganizationById")
     @ApiOperation(value = "ok，删除机构", notes = "ok")
-    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestParam List<Integer> orgIds,@ApiParam(value = "是否级联删除岗位")@RequestParam boolean cascadeDeletePost) {
-        Boolean b = checkParam(orgIds,getUserSession());
+    public ResponseResult deleteOrganizationById(@ApiParam(value = "机构id列表") @RequestParam List<Integer> orgIds, @ApiParam(value = "是否级联删除岗位") @RequestParam boolean cascadeDeletePost) {
+        Boolean b = checkParam(orgIds, getUserSession());
         if (b) {
-            logger.info("删除机构，orgIds》"+orgIds);
-            organizationService.deleteOrganizationById(orgIds, cascadeDeletePost,getUserSession());
+            logger.info("删除机构，orgIds》" + orgIds);
+            long start = System.currentTimeMillis();
+            organizationService.deleteOrganizationById(orgIds, cascadeDeletePost, getUserSession());
+            logger.info("删除机构耗时：" + (System.currentTimeMillis()-start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -115,13 +119,15 @@ public class OrganizationController extends BaseController {
     })
     @GetMapping("/getAllOrganizationTree")
     public ResponseResult<PageResult<OrganizationVO>> getAllOrganizationTree(@RequestParam(value = "isEnable") Short isEnable) {
-        Boolean b = checkParam(isEnable,getUserSession());
+        Boolean b = checkParam(isEnable, getUserSession());
         if (b) {
             if (isEnable != 0) {
                 isEnable = null;
             }
+            long start = System.currentTimeMillis();
             List<OrganizationVO> organizationVOList = organizationService.getAllOrganizationTree(getUserSession().getArchiveId(), isEnable);
             PageResult<OrganizationVO> pageResult = new PageResult<>(organizationVOList);
+            logger.info("获取机构树耗时：" + (System.currentTimeMillis()-start) + "ms");
             return new ResponseResult(pageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -130,7 +136,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/getOrganizationPageList")
     @ApiOperation(value = "ok，分页按条件查询用户下所有的机构(包含子孙)", notes = "ok")
     public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
-        Boolean b = checkParam(organizationPageVo,getUserSession());
+        Boolean b = checkParam(organizationPageVo, getUserSession());
         if (b) {
             Short isEnable = organizationPageVo.getIsEnable();
             if (isEnable == null || isEnable == 0) {
@@ -138,8 +144,10 @@ public class OrganizationController extends BaseController {
             } else {
                 isEnable = null;
             }
+            long start = System.currentTimeMillis();
             organizationPageVo.setIsEnable(isEnable);
             PageResult<OrganizationVO> pageResult = organizationService.getAllOrganizationPageList(organizationPageVo, getUserSession());
+            logger.info("分页按条件查询用户下所有的机构(包含子孙)耗时：" + (System.currentTimeMillis()-start) + "ms");
             return new ResponseResult(pageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -148,7 +156,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/getDirectOrganizationPageList")
     @ApiOperation(value = "ok，分页查询下级直属机构", notes = "ok")
     public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageVo organizationPageVo) {
-        Boolean b = checkParam(organizationPageVo,getUserSession());
+        Boolean b = checkParam(organizationPageVo, getUserSession());
         if (b) {
             Short isEnable = organizationPageVo.getIsEnable();
             if (isEnable == null || isEnable == 0) {
@@ -156,9 +164,11 @@ public class OrganizationController extends BaseController {
             } else {
                 isEnable = null;
             }
+            long start = System.currentTimeMillis();
             organizationPageVo.setIsEnable(isEnable);
             UserSession userSession = getUserSession();
             PageResult<OrganizationVO> pageResult = organizationService.getDirectOrganizationPageList(organizationPageVo, userSession);
+            logger.info("分页查询下级直属机构耗时：" + (System.currentTimeMillis()-start) + "ms");
             return new ResponseResult<>(pageResult);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -180,14 +190,16 @@ public class OrganizationController extends BaseController {
                                                                         @RequestParam("isContainsActualMembers") @ApiParam(value = "是否显示实有人数", example = "false") boolean isContainsActualMembers,
                                                                         @RequestParam("orgId") @ApiParam(value = "机构id", example = "1") Integer orgId,
                                                                         @RequestParam("isEnable") @ApiParam(value = "是否包含封存：0不包含（默认）、1 包含", example = "0") Short isEnable) {
-        Boolean b = checkParam(layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable,getUserSession());
+        Boolean b = checkParam(layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable, getUserSession());
         if (b) {
             if (isEnable == null || isEnable == 0) {
                 isEnable = 0;
             } else {
                 isEnable = null;
             }
+            long start = System.currentTimeMillis();
             List<OrganizationVO> pageResult = organizationService.getOrganizationGraphics(getUserSession(), layer, isContainsCompiler, isContainsActualMembers, orgId, isEnable);
+            logger.info("获取机构图时耗时：" + (System.currentTimeMillis()-start) + "ms");
             return new ResponseResult(pageResult);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -196,14 +208,16 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，获取机构岗位树", notes = "ok")
     @GetMapping("/getOrganizationPostTree")
     public ResponseResult<List<OrganizationVO>> getOrganizationPostTree(@ApiParam(value = "是否不包含封存：0不包含（默认）、1 包含", example = "0") @RequestParam(value = "isEnable") Short isEnable) {
-        Boolean b = checkParam(isEnable,getUserSession());
+        Boolean b = checkParam(isEnable, getUserSession());
         if (b) {
             if (isEnable != 0) {
                 isEnable = null;
             }
+            long start = System.currentTimeMillis();
             List<OrganizationVO> orgList = organizationService.getOrganizationPostTree(getUserSession(), isEnable);
             ResponseResult responseResult = new ResponseResult();
             responseResult.setResult(orgList);
+            logger.info("获取机构岗位树耗时：" + (System.currentTimeMillis()-start) + "ms");
             return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -218,8 +232,10 @@ public class OrganizationController extends BaseController {
     @PostMapping("/lockOrganizationByIds")
     @ApiOperation(value = "ok，封存机构，设为0", notes = "ok")
     public ResponseResult lockOrganizationByIds(@RequestBody List<Integer> orgIds) {
-        if (checkParam(orgIds,getUserSession())) {
-            organizationService.sealOrganization(getUserSession().getArchiveId(),orgIds, Short.parseShort("0"));
+        if (checkParam(orgIds, getUserSession())) {
+            long start = System.currentTimeMillis();
+            organizationService.sealOrganization(getUserSession().getArchiveId(), orgIds, Short.parseShort("0"));
+            logger.info("封存机构：" + (System.currentTimeMillis()-start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -228,8 +244,10 @@ public class OrganizationController extends BaseController {
     @PostMapping("/unlockOrganizationByIds")
     @ApiOperation(value = "ok，解封机构，设为1", notes = "ok")
     public ResponseResult unlockOrganizationByIds(@RequestBody List<Integer> orgIds) {
-        if (checkParam(orgIds,getUserSession())) {
-            organizationService.sealOrganization(getUserSession().getArchiveId(),orgIds, Short.parseShort("1"));
+        if (checkParam(orgIds, getUserSession())) {
+            long start = System.currentTimeMillis();
+            organizationService.sealOrganization(getUserSession().getArchiveId(), orgIds, Short.parseShort("1"));
+            logger.info("解封机构耗时：" + (System.currentTimeMillis()-start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -239,7 +257,7 @@ public class OrganizationController extends BaseController {
     @PostMapping("/exportOrganization")
     @ApiOperation("机构导出，demo {\"orgId\":28,\"orgIds\":[14,25]}")
     public ResponseResult exportOrganization(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
-        if (checkParam(paramMap,getUserSession())) {
+        if (checkParam(paramMap, getUserSession())) {
             long start = System.currentTimeMillis();
             List<Integer> orgIds = null;
             Integer orgId = null;
@@ -255,7 +273,7 @@ public class OrganizationController extends BaseController {
             for (OrganizationVO org : organizationVOList) {
                 List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
                 for (SysDict dict : orgTypeDic) {
-                    if(null!=dict.getDictCode() && dict.getDictCode().equalsIgnoreCase(org.getOrgType())){
+                    if (null != dict.getDictCode() && dict.getDictCode().equalsIgnoreCase(org.getOrgType())) {
                         org.setOrgType(dict.getDictValue());
                     }
                 }
@@ -264,7 +282,7 @@ public class OrganizationController extends BaseController {
 
             Workbook workbook = DefaultExcelBuilder.of(OrganizationVO.class).build(dataList);
             AttachmentExportUtil.export(workbook, "组织机构信息", response);
-            logger.info("导出岗位："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("导出岗位耗时：" + (System.currentTimeMillis() - start) + "ms");
             //只能返回null
             return null;
         }
@@ -272,17 +290,15 @@ public class OrganizationController extends BaseController {
     }
 
 
-
-
     @PostMapping("/uploadAndCheck")
     @ApiOperation(value = "ok,导入机构excel并校验", notes = "ok")
     public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
         //参数判空校验
-        if (checkParam(multfile,getUserSession())) {
+        if (checkParam(multfile, getUserSession())) {
             long start = System.currentTimeMillis();
             ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession(), response);
-            logger.info("导入机构excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
-            return  responseResult;
+            logger.info("导入机构excel并校验耗时：" + (System.currentTimeMillis() - start) + "ms");
+            return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
@@ -299,7 +315,7 @@ public class OrganizationController extends BaseController {
                 "attachment;filename=\"" + URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8") + "\"");
             response.setHeader("fileName", URLEncoder.encode("机构导入错误校验信息.txt", "UTF-8"));
             response.getOutputStream().write(errorData.getBytes());
-            logger.info("导出错误信息到txt："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("导出错误信息到txt耗时：" + (System.currentTimeMillis() - start) + "ms");
             //是否只能返回null
             return null;
         }
@@ -323,7 +339,7 @@ public class OrganizationController extends BaseController {
         if (checkParam(orgExcelRedisKey, getUserSession())) {
             long start = System.currentTimeMillis();
             organizationService.importToDatabase(orgExcelRedisKey, getUserSession());
-            logger.info("导入机构入库："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("导入机构入库耗时：" + (System.currentTimeMillis() - start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -341,7 +357,9 @@ public class OrganizationController extends BaseController {
     public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> orgIds) {
         //参数校验
         if (checkParam(orgIds, getUserSession())) {
+            long start = System.currentTimeMillis();
             organizationService.sortOrganization(orgIds);
+            logger.info("机构排序耗时：" + (System.currentTimeMillis() - start) + "ms");
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -351,8 +369,8 @@ public class OrganizationController extends BaseController {
     @GetMapping("/getUserArchiveListByUserName")
     @ApiOperation(value = "ok,机构负责人查询，如果带负责人姓名，则根据姓名模糊查询，不带参则全量查询", notes = "需要调用人员接口")
     public ResponseResult<List<UserArchiveVo>> getUserArchiveListByUserName(@ApiParam(value = "姓名", example = "张三", required = false) @RequestParam(value = "userName", required = false) String userName) {
-            List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName,getUserSession ());
-            return new ResponseResult(users);
+        List<UserArchiveVo> users = organizationService.getUserArchiveListByUserName(userName, getUserSession());
+        return new ResponseResult(users);
     }
 
 
@@ -361,12 +379,14 @@ public class OrganizationController extends BaseController {
     //TODO 还需要将人员进行划转
     public ResponseResult transferOrganization(@RequestBody Map<String, Object> paramMap) {
         //校验参数
-        if (checkParam(paramMap,getUserSession())) {
+        if (checkParam(paramMap, getUserSession())) {
+            long start = System.currentTimeMillis();
             List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
             Integer targetOrgId = (Integer) paramMap.get("targetOrgId");
             //校验参数
             if (checkParam(orgIds, targetOrgId)) {
                 organizationService.transferOrganization(orgIds, targetOrgId, getUserSession());
+                logger.info("划转机构耗时：" + (System.currentTimeMillis() - start) + "ms");
                 return ResponseResult.SUCCESS();
             }
         }
@@ -378,7 +398,8 @@ public class OrganizationController extends BaseController {
     @ApiOperation(value = "ok，合并机构,传参demo  {\"newOrgName\":\"新机构名称\",\"orgIds\":[1001,1002],\"parentOrgId\":1003}", notes = "调通，需维护人员")
     public ResponseResult mergeOrganization(@RequestBody Map<String, Object> paramMap) {
         //校验参数
-        if (checkParam(paramMap,getUserSession())) {
+        if (checkParam(paramMap, getUserSession())) {
+            long start = System.currentTimeMillis();
             List<Integer> orgIds = (List<Integer>) paramMap.get("orgIds");
             Integer parentOrgId = (Integer) paramMap.get("parentOrgId");
             String newOrgName = (String) paramMap.get("newOrgName");
@@ -386,6 +407,7 @@ public class OrganizationController extends BaseController {
             if (checkParam(orgIds, parentOrgId, newOrgName)) {
                 //进行机构合并
                 organizationService.mergeOrganization(newOrgName, parentOrgId, orgIds, getUserSession());
+                logger.info("合并机构耗时：" + (System.currentTimeMillis() - start) + "ms");
                 return ResponseResult.SUCCESS();
             }
         }
@@ -397,8 +419,10 @@ public class OrganizationController extends BaseController {
     public ResponseResult generateOrgCode(Integer orgId) {
         //校验参数
         if (checkParam(orgId, getUserSession())) {
-                String orgCode = organizationService.generateOrgCode(orgId);
-                return new ResponseResult<>(orgCode);
+            long start = System.currentTimeMillis();
+            String orgCode = organizationService.generateOrgCode(orgId);
+            logger.info("根据orgId生成机构编码耗时：" + (System.currentTimeMillis() - start) + "ms");
+            return new ResponseResult<>(orgCode);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }

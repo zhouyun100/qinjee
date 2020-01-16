@@ -1,11 +1,9 @@
 package com.qinjee.masterdata.controller.organization;
 
-import com.qinjee.exception.BusinessException;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.Position;
-import com.qinjee.masterdata.model.entity.PositionGroup;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
 import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
 import com.qinjee.masterdata.service.organation.PositionGroupService;
@@ -15,18 +13,14 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 高雄
@@ -38,19 +32,16 @@ import java.util.Map;
 @RestController
 @RequestMapping("/position")
 public class PositionController extends BaseController {
+    private static Logger logger = LogManager.getLogger(PositionController.class);
 
     @Autowired
     private PositionService positionService;
-    @Autowired
-    private PostDao postDao;
-    @Autowired
-    private PositionGroupService positionGroupService;
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
-            if(param instanceof UserSession){
-                if(null == param|| "".equals(param)){
-                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+            if (param instanceof UserSession) {
+                if (null == param || "".equals(param)) {
+                    ExceptionCast.cast(CommonCode.INVALID_SESSION);
                     return false;
                 }
             }
@@ -65,8 +56,11 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-        if(checkParam(positionPageVo,getUserSession())){
-            return positionService.getPositionPage( positionPageVo);
+        if (checkParam(positionPageVo, getUserSession())) {
+            long start = System.currentTimeMillis();
+            ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(positionPageVo);
+            logger.info("分页查询职位信息耗时:" + (System.currentTimeMillis() - start));
+            return positionPage;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
@@ -75,8 +69,11 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
     @GetMapping("/getAllPositions")
     public ResponseResult<List<Position>> getAllPositions() {
-        if(checkParam(getUserSession())){
-            return positionService.getAllPositions(getUserSession());
+        if (checkParam(getUserSession())) {
+            long start = System.currentTimeMillis();
+            ResponseResult<List<Position>> allPositions = positionService.getAllPositions(getUserSession());
+            logger.info("查询所有职位耗时:" + (System.currentTimeMillis() - start));
+            return allPositions;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
@@ -85,8 +82,11 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，新增职位", notes = "ok")
     @PostMapping("/addPosition")
     public ResponseResult addPosition(PositionVo positionVo) {
-        if(checkParam(positionVo,getUserSession())){
-            return positionService.addPosition(positionVo, getUserSession());
+        if (checkParam(positionVo, getUserSession())) {
+            long start = System.currentTimeMillis();
+            ResponseResult responseResult = positionService.addPosition(positionVo, getUserSession());
+            logger.info("新增职位耗时:" + (System.currentTimeMillis() - start));
+            return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
@@ -95,9 +95,11 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，保证职位名称在同一家企业下唯一", notes = "ok")
     @PostMapping("/determinePositionNameIsOnly")
     public ResponseResult determinePositionNameIsOnly(String positionName) {
-        Boolean b = checkParam(positionName,getUserSession());
+        Boolean b = checkParam(positionName, getUserSession());
         if (b) {
+            long start = System.currentTimeMillis();
             positionService.determinePositionNameIsOnly(positionName, getUserSession());
+            logger.info("校验职位名称在同一家企业下唯一耗时:" + (System.currentTimeMillis() - start));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -107,9 +109,11 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，编辑职位", notes = "ok")
     @PostMapping("/editPosition")
     public ResponseResult editPosition(PositionVo positionVo) {
-        Boolean b = checkParam(positionVo,getUserSession());
+        Boolean b = checkParam(positionVo, getUserSession());
         if (b) {
-             positionService.editPosition(positionVo, getUserSession());
+            long start = System.currentTimeMillis();
+            positionService.editPosition(positionVo, getUserSession());
+            logger.info("编辑职位耗时:" + (System.currentTimeMillis() - start));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -118,9 +122,12 @@ public class PositionController extends BaseController {
     @ApiOperation(value = "ok，删除职位", notes = "ok")
     @PostMapping("/deletePosition")
     public ResponseResult deletePosition(@RequestBody List<Integer> positionIds) {
-        Boolean b = checkParam(positionIds,getUserSession());
+        Boolean b = checkParam(positionIds, getUserSession());
         if (b) {
-            return positionService.deletePosition(positionIds, getUserSession());
+            long start = System.currentTimeMillis();
+            ResponseResult responseResult = positionService.deletePosition(positionIds, getUserSession());
+            logger.info("删除职位耗时:" + (System.currentTimeMillis() - start));
+            return responseResult;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
@@ -132,7 +139,9 @@ public class PositionController extends BaseController {
     public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> positionIds) {
         //参数校验
         if (checkParam(positionIds)) {
+            long start = System.currentTimeMillis();
             positionService.sortPosition(positionIds);
+            logger.info("职位排序耗时:" + (System.currentTimeMillis() - start));
             return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
