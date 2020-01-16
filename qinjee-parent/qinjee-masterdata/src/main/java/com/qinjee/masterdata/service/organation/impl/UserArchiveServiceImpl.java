@@ -258,7 +258,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 if (Objects.nonNull(user)) {
                     //TODO 企业有没有权限更新平台用户的账户表
                 } else {
-                     user = userInfoDao.getUserByPhone(vo.getPhone());
+                    user = userInfoDao.getUserByPhone(vo.getPhone());
                     if (Objects.nonNull(user)) {//存在账户，但没有关联当前企业
                         //绑定企业
                         UserCompany userCompany = new UserCompany();
@@ -285,31 +285,37 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                         userCompanyDao.insertSelective(userCompany);
                     }
                 }
-                System.out.println(user);
-                //判断（根据身份证号/工号/手机号+姓名）是否存在档案
-
+                UserArchiveVo userArchiveVo = userArchiveDao.selectByUserId(user.getUserId(), userSession.getCompanyId());
+                UserArchive userArchive = buildUserArchive(userArchiveVo, userSession);
+                if (Objects.nonNull(userArchiveVo)) {
+                    userArchive.setUpdateTime(new Date());
+                    userArchiveDao.updateByPrimaryKey(userArchive);
+                } else {
+                    userArchive.setCreateTime(new Date());
+                    userArchiveDao.insertSelective(userArchive);
+                }
             }//外层循环结束
         }
     }
 
-    private UserArchive buildUserArchive(UserArchiveVo vo ,UserSession userSession){
-        UserArchive userArchive=new UserArchive();
+    private UserArchive buildUserArchive(UserArchiveVo vo, UserSession userSession) {
+        UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(vo, userArchive);
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setOperatorId(userSession.getArchiveId());
         //设置部门id
-        if(StringUtils.isNotBlank(vo.getOrgCode())){
+        if (StringUtils.isNotBlank(vo.getOrgCode())) {
             OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
             userArchive.setOrgId(org.getOrgId());
             //设置单位id
         }
         //设置岗位id
-        if(StringUtils.isNotBlank(vo.getPostCode())) {
+        if (StringUtils.isNotBlank(vo.getPostCode())) {
             Post post = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
             userArchive.setPostId(post.getPostId());
         }
         //设置直接上级id
-        if(StringUtils.isNotBlank(vo.getEmployeeNumber())) {
+        if (StringUtils.isNotBlank(vo.getEmployeeNumber())) {
             Integer archiveId = userArchiveDao.selectArchiveIdByNumber(vo.getEmployeeNumber(), userSession.getCompanyId());
             userArchive.setSupervisorId(archiveId);
         }
@@ -364,7 +370,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
-                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> StringUtils.equals(vo.getIdNumber(),a.getIdNumber())).findFirst();
+                Optional<UserArchiveVo> first = archiveVoByCompanyIdMem.stream().filter(a -> StringUtils.equals(vo.getIdNumber(), a.getIdNumber())).findFirst();
                 if (first.isPresent()) {
                     UserArchiveVo archiveVo = first.get();
                     if (Objects.nonNull(archiveVo) && Objects.nonNull(archiveVo.getEmployeeNumber()) && !archiveVo.getEmployeeNumber().equals(vo.getEmployeeNumber())) {
@@ -477,12 +483,12 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
             //判断岗位编码是否存在，如果存在再判断名称是否匹配
             //TODO 验证权限相关
-            if(StringUtils.isNotBlank(vo.getPostCode())){
+            if (StringUtils.isNotBlank(vo.getPostCode())) {
                 Optional<Post> postOp = postsMem.stream().filter(a -> vo.getPostCode().equals(a.getPostCode())).findFirst();
-                if(!postOp.isPresent()){
+                if (!postOp.isPresent()) {
                     vo.setCheckResult(false);
                     resultMsg.append("岗位编码[" + vo.getPostCode() + "]不存在 | ");
-                }else{
+                } else {
                     if (StringUtils.isNotBlank(vo.getPostName())) {
                         if (!vo.getPostName().equals(postOp.get().getPostName())) {
                             vo.setCheckResult(false);
