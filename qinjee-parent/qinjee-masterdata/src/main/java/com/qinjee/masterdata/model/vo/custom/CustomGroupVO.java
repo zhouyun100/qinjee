@@ -13,6 +13,7 @@ package com.qinjee.masterdata.model.vo.custom;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude
-public class CustomGroupVO {
+public class CustomGroupVO implements Serializable {
 
     /**
      * 组ID

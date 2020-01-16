@@ -26,6 +26,7 @@ import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.utils.RegexpUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -448,8 +449,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public CustomTableVO handlerCustomTableGroupFieldList(Integer tableId,UserSession userSession, Map<Integer, String> mapValue,Integer index) {
-        CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId, userSession );
+    public CustomTableVO handlerCustomTableGroupFieldList( CustomTableVO customTableVO1, Map<Integer, String> mapValue,Integer index) {
+
+        CustomTableVO customTableVO = SerializationUtils.clone(customTableVO1);
         if (customTableVO != null && mapValue != null) {
             List<CustomGroupVO> groupList = customTableVO.getCustomGroupVOList();
             if (CollectionUtils.isNotEmpty(groupList)) {
