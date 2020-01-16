@@ -251,6 +251,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         //将其转为对象集合
         List<UserArchiveVo> excelArchivelist = JSONArray.parseArray(data, UserArchiveVo.class);
         if (CollectionUtils.isNotEmpty(excelArchivelist)) {
+            List<SysDict> sysDictsMem = sysDictDao.searchSomeSysDictList();
             //直接遍历入库  账户信息表  账户企业关联表 用户档案表
             for (UserArchiveVo excelArchiveVo : excelArchivelist) {
                 UserInfo user = userInfoDao.getUserByPhoneAndCompanyId(excelArchiveVo.getPhone(), userSession.getCompanyId());
@@ -287,13 +288,13 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                 }
                 UserArchiveVo oldArchiveVo = userArchiveDao.selectByUserId(user.getUserId(), userSession.getCompanyId());
                 if (Objects.nonNull(oldArchiveVo)) {
-                    UserArchive userArchive = buildUserArchive(excelArchiveVo,oldArchiveVo, userSession);
+                    UserArchive userArchive = buildUserArchive(excelArchiveVo, oldArchiveVo, sysDictsMem, userSession);
                     userArchive.setArchiveId(oldArchiveVo.getArchiveId());
                     userArchive.setUserId(user.getUserId());
                     userArchive.setUpdateTime(new Date());
                     userArchiveDao.updateByPrimaryKeySelective(userArchive);
                 } else {
-                    UserArchive userArchive = buildUserArchive(excelArchiveVo,oldArchiveVo, userSession);
+                    UserArchive userArchive = buildUserArchive(excelArchiveVo, oldArchiveVo, sysDictsMem, userSession);
                     userArchive.setCreateTime(new Date());
                     userArchive.setUserId(user.getUserId());
                     userArchiveDao.insertSelective(userArchive);
@@ -302,15 +303,14 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         }
     }
 
-    private UserArchive buildUserArchive(UserArchiveVo excelArchiveVo,UserArchiveVo oldArchiveVo, UserSession userSession) {
+    private UserArchive buildUserArchive(UserArchiveVo excelArchiveVo, UserArchiveVo oldArchiveVo, List<SysDict> sysDictsMem, UserSession userSession) {
         UserArchive userArchive = new UserArchive();
-        if(Objects.nonNull(oldArchiveVo)){
+        if (Objects.nonNull(oldArchiveVo)) {
             BeanUtils.copyProperties(oldArchiveVo, userArchive);
         }
-        BeanUtils.copyProperties(excelArchiveVo,userArchive);
+        BeanUtils.copyProperties(excelArchiveVo, userArchive);
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setOperatorId(userSession.getArchiveId());
-
 
         //设置部门id
         if (StringUtils.isNotBlank(excelArchiveVo.getOrgCode())) {
@@ -325,8 +325,92 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         }
         //设置直接上级id
         if (StringUtils.isNotBlank(excelArchiveVo.getEmployeeNumber())) {
-            Integer archiveId = userArchiveDao.selectArchiveIdByNumber(excelArchiveVo.getEmployeeNumber(), userSession.getCompanyId());
+            Integer archiveId = userArchiveDao.selectArchiveIdByNumber(excelArchiveVo.getSupervisorEmployeeNumber(), userSession.getCompanyId());
             userArchive.setSupervisorId(archiveId);
+        }
+
+        //进行一些字典设置--------------------------
+        //性别
+        Optional<SysDict> sexDictOp = sysDictsMem.stream().filter(a -> "SEX_TYPE".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getGender()) && excelArchiveVo.getGender().equals(a.getDictValue())).findFirst();
+        if (sexDictOp.isPresent()) {
+            userArchive.setGender(sexDictOp.get().getDictCode());
+        } else {
+            userArchive.setGender(null);
+        }
+        //证件类型
+        Optional<SysDict> idTypeDictOp = sysDictsMem.stream().filter(a -> "CARD_TYPE".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getIdType()) && excelArchiveVo.getIdType().equals(a.getDictValue())).findFirst();
+        if (idTypeDictOp.isPresent()) {
+            userArchive.setIdType(idTypeDictOp.get().getDictCode());
+        } else {
+            userArchive.setIdType(null);
+        }
+
+        //第一学历
+        Optional<SysDict> firstDegreeDictOp = sysDictsMem.stream().filter(a -> "DEGREE".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getFirstDegree()) && excelArchiveVo.getFirstDegree().equals(a.getDictValue())).findFirst();
+        if (firstDegreeDictOp.isPresent()) {
+            userArchive.setFirstDegree(firstDegreeDictOp.get().getDictCode());
+        } else {
+            userArchive.setFirstDegree(null);
+        }
+        //最高学历
+        Optional<SysDict> topDegreeDictOp = sysDictsMem.stream().filter(a -> "DEGREE".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getHighestDegree()) && excelArchiveVo.getHighestDegree().equals(a.getDictValue())).findFirst();
+        if (topDegreeDictOp.isPresent()) {
+            userArchive.setHighestDegree(topDegreeDictOp.get().getDictCode());
+        } else {
+            userArchive.setHighestDegree(null);
+        }
+        //民族
+        Optional<SysDict> nationalityDictOp = sysDictsMem.stream().filter(a -> "NATIONALITY".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getNationality()) && excelArchiveVo.getNationality().equals(a.getDictValue())).findFirst();
+        if (nationalityDictOp.isPresent()) {
+            userArchive.setNationality(nationalityDictOp.get().getDictCode());
+        } else {
+            userArchive.setNationality(null);
+        }
+        //婚姻状况
+        Optional<SysDict> maritalStatusDictOp = sysDictsMem.stream().filter(a -> "MARITAL_STATUS".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getMaritalStatus()) && excelArchiveVo.getMaritalStatus().equals(a.getDictValue())).findFirst();
+        if (maritalStatusDictOp.isPresent()) {
+            userArchive.setMaritalStatus(maritalStatusDictOp.get().getDictCode());
+        } else {
+            userArchive.setMaritalStatus(null);
+        }
+        //政治面貌
+        Optional<SysDict> politicalAffiliationDictOp = sysDictsMem.stream().filter(a -> "POLITICAL_AFFILIATION".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getPoliticalStatus()) && excelArchiveVo.getPoliticalStatus().equals(a.getDictValue())).findFirst();
+        if (politicalAffiliationDictOp.isPresent()) {
+            userArchive.setPoliticalStatus(politicalAffiliationDictOp.get().getDictCode());
+        } else {
+            userArchive.setPoliticalStatus(null);
+        }
+        //职业资格
+        Optional<SysDict> professionalCertificationDictOp = sysDictsMem.stream().filter(a -> "PROFESSIONAL_CERTIFICATION".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getProfessionalCertification()) && excelArchiveVo.getProfessionalCertification().equals(a.getDictValue())).findFirst();
+        if (professionalCertificationDictOp.isPresent()) {
+            userArchive.setProfessionalCertification(professionalCertificationDictOp.get().getDictCode());
+        } else {
+            userArchive.setProfessionalCertification(null);
+        }
+
+        //职称
+        Optional<SysDict> professionalTitleDictOp = sysDictsMem.stream().filter(a -> "PROFESSIONAL_TITLE".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getProfessionalTitle()) && excelArchiveVo.getProfessionalTitle().equals(a.getDictValue())).findFirst();
+        if (professionalTitleDictOp.isPresent()) {
+            userArchive.setProfessionalTitle(professionalTitleDictOp.get().getDictCode());
+        } else {
+            userArchive.setProfessionalTitle(null);
+        }
+
+        //职称等级
+        Optional<SysDict> professionalLevelDictOp = sysDictsMem.stream().filter(a -> "PROFESSIONAL_LEVEL".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getProfessionalLevel()) && excelArchiveVo.getProfessionalLevel().equals(a.getDictValue())).findFirst();
+        if (professionalLevelDictOp.isPresent()) {
+            userArchive.setProfessionalLevel(professionalLevelDictOp.get().getDictCode());
+        } else {
+            userArchive.setProfessionalLevel(null);
+        }
+
+        //人员分类
+        Optional<SysDict> userCategoryDictOp = sysDictsMem.stream().filter(a -> "USER_CATEGORY".equals(a.getDictType()) && StringUtils.isNotBlank(excelArchiveVo.getUserCategory()) && excelArchiveVo.getUserCategory().equals(a.getDictValue())).findFirst();
+        if (userCategoryDictOp.isPresent()) {
+            userArchive.setUserCategory(userCategoryDictOp.get().getDictCode());
+
+        } else {
+            userArchive.setUserCategory(null);
         }
         return userArchive;
     }
