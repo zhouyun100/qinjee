@@ -100,6 +100,12 @@ public class PositionServiceImpl implements PositionService {
     @Transactional
     @Override
     public ResponseResult addPosition(PositionVo positionVo, UserSession userSession) {
+        List<Position> allPositions = positionDao.getPositionListByCompanyId(userSession.getCompanyId());
+        boolean bool = allPositions.stream().anyMatch(a -> positionVo.getPositionName().equals(a.getPositionName()));
+        if(bool){
+            return new ResponseResult(CommonCode.POSITION_NAME_REPEAT);
+
+        }
         Position position = new Position();
         BeanUtils.copyProperties(positionVo, position);
         position.setOperatorId(userSession.getArchiveId());
@@ -109,16 +115,6 @@ public class PositionServiceImpl implements PositionService {
         List<Position> positionList = positionDao.getPositionListByGroupId(positionVo.getPositionGroupId());
 
         if (!CollectionUtils.isEmpty(positionList)) {
-            List<Position> positions = positionList.stream().filter(position1 -> {
-                if (positionVo.getPositionName().equals(position1.getPositionName())) {
-                    return true;
-                }
-                return false;
-            }).collect(Collectors.toList());
-            if(!CollectionUtils.isEmpty(positions)){
-                return new ResponseResult(CommonCode.POSITION_NAME_REPEAT);
-            }
-
             Position lastPosition = positionList.get(positionList.size() - 1);
             sortId = lastPosition.getSortId() + 1000;
         } else {
