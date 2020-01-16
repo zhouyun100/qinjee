@@ -131,7 +131,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
+    public List<Integer> insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
         UserArchive userArchive = new UserArchive ();
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         //黑名单校验
@@ -162,7 +162,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         userArchiveDao.insertSelective ( userArchive );
         checkEmployeeNumber ( userSession, userArchive );
         userArchiveDao.insertSelective ( userArchive );
-        return userArchive.getArchiveId ();
+        List < Integer > integers = new ArrayList <> ();
+        integers.add ( userArchive.getArchiveId () );
+        return integers;
     }
 
 
@@ -183,28 +185,35 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public List < TableHead > setDefaultHead(UserSession userSession, Integer querySchemaId) {
         List < TableHead > headList = new ArrayList <> ();
         List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
-        for (QuerySchemeField querySchemeField : querySchemeFieldList) {
-            TableHead arcHead = new TableHead ();
-            arcHead.setIndex ( querySchemeField.getSort () );
+        if(CollectionUtils.isEmpty (querySchemeFieldList)){
+            ExceptionCast.cast ( CommonCode.PLAN_IS_NULL );
+        }
+        try {
+            for (QuerySchemeField querySchemeField : querySchemeFieldList) {
+                TableHead arcHead = new TableHead ();
+                arcHead.setIndex ( querySchemeField.getSort () );
 
-            CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
-                    "ARC" );
-            arcHead.setName ( customFieldVO.getFieldName () );
-            arcHead.setKey ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
-            if ("org_id".equals ( customFieldVO.getFieldCode () )) {
-                arcHead.setKey ( "orgName" );
+                CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
+                        "ARC" );
+                arcHead.setName ( customFieldVO.getFieldName () );
+                arcHead.setKey ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
+                if ("org_id".equals ( customFieldVO.getFieldCode () )) {
+                    arcHead.setKey ( "orgName" );
+                }
+                if ("post_id".equals ( customFieldVO.getFieldCode () )) {
+                    arcHead.setKey ( "postName" );
+                }
+                if ("bussiness_unit_id".equals ( customFieldVO.getFieldCode () )) {
+                    arcHead.setKey ( "businessUnitName" );
+                }
+                if ("supervisor_id".equals ( customFieldVO.getFieldCode () )) {
+                    arcHead.setKey ( "supervisorUserName" );
+                }
+                arcHead.setIsShow ( 1 );
+                headList.add ( arcHead );
             }
-            if ("post_id".equals ( customFieldVO.getFieldCode () )) {
-                arcHead.setKey ( "postName" );
-            }
-            if ("bussiness_unit_id".equals ( customFieldVO.getFieldCode () )) {
-                arcHead.setKey ( "businessUnitName" );
-            }
-            if ("supervisor_id".equals ( customFieldVO.getFieldCode () )) {
-                arcHead.setKey ( "supervisorUserName" );
-            }
-            arcHead.setIsShow ( 1 );
-            headList.add ( arcHead );
+        } catch (Exception e) {
+            ExceptionCast.cast ( CommonCode.PLAN_IS_MISTAKE );
         }
 
         return headList;

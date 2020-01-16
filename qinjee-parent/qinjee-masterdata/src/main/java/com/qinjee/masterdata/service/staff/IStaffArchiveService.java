@@ -93,7 +93,7 @@ public interface IStaffArchiveService {
      * @param userArchiveVo
      * @return
      */
-    Integer insertArchive(UserArchiveVo userArchiveVo,UserSession userSession) throws Exception;
+    List<Integer> insertArchive(UserArchiveVo userArchiveVo,UserSession userSession) throws Exception;
     /**
      * 修改预入职信息(显示字段的信息)
      */
