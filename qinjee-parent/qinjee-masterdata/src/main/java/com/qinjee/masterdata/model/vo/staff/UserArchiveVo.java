@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.Getter;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -228,7 +227,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("工龄")
     @ExcelColumn(order =27, title = "工龄")
-    private BigDecimal workingPeriod;
+    private Integer workingPeriod;
 
     /**
      * 入职时间

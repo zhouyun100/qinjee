@@ -8,7 +8,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -167,7 +166,7 @@ public class UserArchive implements Serializable {
      * 司龄
      */
     @ApiModelProperty("司龄")
-    private BigDecimal servingAge;
+    private Integer servingAge;
     /**
      * 入职时间
      */
