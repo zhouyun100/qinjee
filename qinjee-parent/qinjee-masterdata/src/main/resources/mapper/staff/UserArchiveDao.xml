@@ -612,6 +612,9 @@
       <if test="hireDate != null">
         hire_date = #{hireDate,jdbcType=DATE},
       </if>
+        <if test="servingDate != null">
+            serving_date = #{servingDate,jdbcType=DATE},
+      </if>
       <if test="servingAge != null">
         serving_age = #{servingAge,jdbcType=INTEGER},
       </if>
