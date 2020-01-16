@@ -96,8 +96,8 @@
       #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR},
       #{birthDate,jdbcType=DATE}, #{age,jdbcType=SMALLINT}, #{nationality,jdbcType=INTEGER},
       #{birthplace,jdbcType=VARCHAR}, #{politicalStatus,jdbcType=INTEGER}, #{maritalStatus,jdbcType=VARCHAR},
-      #{firstWorkDate,jdbcType=DATE}, #{hireDate,jdbcType=DATE}, #{servingAge,jdbcType=DECIMAL},
-      #{workingPeriod,jdbcType=DECIMAL}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER},
+      #{firstWorkDate,jdbcType=DATE}, #{hireDate,jdbcType=DATE}, #{servingAge,jdbcType=INTEGER},
+      #{workingPeriod,jdbcType=INTEGER}, #{probationDueDate,jdbcType=DATE}, #{probationPeriod,jdbcType=INTEGER},
       #{converseDate,jdbcType=DATE}, #{firstDegree,jdbcType=VARCHAR}, #{highestDegree,jdbcType=VARCHAR},
       #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
       #{professionalCertification,jdbcType=VARCHAR}, #{professionalTitle,jdbcType=VARCHAR},
@@ -286,10 +286,10 @@
         #{hireDate,jdbcType=DATE},
       </if>
       <if test="servingAge != null">
-        #{servingAge,jdbcType=DECIMAL},
+        #{servingAge,jdbcType=INTEGER},
       </if>
       <if test="workingPeriod != null">
-        #{workingPeriod,jdbcType=DECIMAL},
+        #{workingPeriod,jdbcType=INTEGER},
       </if>
       <if test="probationDueDate != null">
         #{probationDueDate,jdbcType=DATE},
@@ -498,10 +498,10 @@
           #{item.hireDate,jdbcType=DATE},
         </if>
         <if test="servingAge != null">
-          #{item.servingAge,jdbcType=DECIMAL},
+          #{item.servingAge,jdbcType=INTEGER},
         </if>
         <if test="workingPeriod != null">
-          #{item.workingPeriod,jdbcType=DECIMAL},
+          #{item.workingPeriod,jdbcType=INTEGER},
         </if>
         <if test="probationDueDate != null">
           #{item.probationDueDate,jdbcType=DATE},
@@ -613,10 +613,10 @@
         hire_date = #{hireDate,jdbcType=DATE},
       </if>
       <if test="servingAge != null">
-        serving_age = #{servingAge,jdbcType=DECIMAL},
+        serving_age = #{servingAge,jdbcType=INTEGER},
       </if>
       <if test="workingPeriod != null">
-        working_period = #{workingPeriod,jdbcType=DECIMAL},
+        working_period = #{workingPeriod,jdbcType=INTEGER},
       </if>
       <if test="probationDueDate != null">
         probation_due_date = #{probationDueDate,jdbcType=DATE},
@@ -692,8 +692,8 @@
       marital_status = #{maritalStatus,jdbcType=VARCHAR},
       first_work_date = #{firstWorkDate,jdbcType=DATE},
       hire_date = #{hireDate,jdbcType=DATE},
-      serving_age = #{servingAge,jdbcType=DECIMAL},
-      working_period = #{workingPeriod,jdbcType=DECIMAL},
+      serving_age = #{servingAge,jdbcType=INTEGER},
+      working_period = #{workingPeriod,jdbcType=INTEGER},
       probation_due_date = #{probationDueDate,jdbcType=DATE},
       probation_period = #{probationPeriod,jdbcType=INTEGER},
       converse_date = #{converseDate,jdbcType=DATE},
