@@ -139,7 +139,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     getPreEmploymentChange ( userSession.getArchiveId (), preEmploymentId, statusChangeVo );
                 }
                 //将预入职的入职时间重新设置
-                preEmployment.setHireDate ( statusChangeVo.getDelayDate () );
                 preEmployment.setEmploymentState ( CHANGSTATUS_DELAY );
                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
             }

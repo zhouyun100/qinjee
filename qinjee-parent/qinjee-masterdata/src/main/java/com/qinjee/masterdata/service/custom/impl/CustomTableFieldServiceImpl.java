@@ -14,7 +14,6 @@ import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.*;
@@ -73,8 +72,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Autowired
     private SysDictService sysDictService;
 
-    @Autowired
-    private SysDictDao sysDictDao;
+   @Autowired
+   private  CustomTableFieldService customTableFieldService;
 
     @Override
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
@@ -449,11 +448,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTable, Map<Integer, String> mapValue,Integer index) {
-
-        CustomTableVO customTableVO1 = new CustomTableVO ();
-        if (customTable != null && mapValue != null) {
-            List<CustomGroupVO> groupList = customTable.getCustomGroupVOList();
+    public CustomTableVO handlerCustomTableGroupFieldList(Integer tableId,UserSession userSession, Map<Integer, String> mapValue,Integer index) {
+        CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId, userSession );
+        if (customTableVO != null && mapValue != null) {
+            List<CustomGroupVO> groupList = customTableVO.getCustomGroupVOList();
             if (CollectionUtils.isNotEmpty(groupList)) {
                 for (CustomGroupVO groupVO : groupList) {
                     List<CustomFieldVO> fieldList = groupVO.getCustomFieldVOList();
@@ -463,12 +461,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             }
             if (StringUtils.isNotBlank(mapValue.get(-index-1))) {
 
-                customTable.setBigDataId(Integer.parseInt(mapValue.get(-index-1)));
+                customTableVO.setBigDataId(Integer.parseInt(mapValue.get(-index-1)));
             }
-
         }
-        BeanUtils.copyProperties (customTable,  customTableVO1);
-        return customTableVO1;
+        return customTableVO;
     }
 
     @Override

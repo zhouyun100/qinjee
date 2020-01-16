@@ -570,7 +570,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         customArchiveTableData.setBigData ( stringBuilder.toString () );
         if (customArchiveTableDataVo.getId () != null && !customArchiveTableDataVo.getId ().equals ( 0 )) {
             customArchiveTableData.setUpdateTime ( new Date (  ) );
-            customArchiveTableDataDao.updateByPrimaryKeyWithBLOBs ( customArchiveTableData );
+            customArchiveTableDataDao.updateByPrimaryKeySelective ( customArchiveTableData );
         } else {
             customArchiveTableDataDao.insertSelective ( customArchiveTableData );
         }
@@ -590,10 +590,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public List<Map < Integer, String >> selectValue(Integer tableId, Integer businessId) throws IllegalAccessException {
         List<Map<Integer,String>> list=new ArrayList <> (  );
         //通过tableId确认是自定义表还是内置表，是pre或者arc
-        Map < Integer, String > map = new HashMap <> ();
         Map < String, String > stringStringMap = customArchiveTableDao.selectIsSysAndFuncCode ( tableId );
         List < Map < String, String > > mapList = customTableFieldDao.selectCodAndIdByTableId ( tableId );
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "ARC" )) {
+            Map < Integer, String > map = new HashMap <> ();
             UserArchiveVo userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
             for (Field declaredField : userArchive.getClass ().getDeclaredFields ()) {
                 declaredField.setAccessible ( true );
@@ -610,6 +610,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             if (!CollectionUtils.isEmpty ( list1)) {
                 for (int j = 0; j < list1.size (); j++) {
                     if (Strings.isNotBlank ( list1.get(j).getBigData () )) {
+                        Map < Integer, String > map = new HashMap <> ();
                         String[] split = list1.get(j).getBigData ().split ( "@@" );
                         for (int i = 1; i < split.length; i = i + 2) {
                             map.put ( Integer.parseInt ( split[i] ), split[i + 1].split ( ":" )[1] );
@@ -617,11 +618,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         map.put ( -j-1,String.valueOf (list1.get(j).getId ()) );
                         list.add ( map );
                     }
+
                 }
+
             }
         }
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "PRE" )) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( businessId );
+            Map < Integer, String > map = new HashMap <> ();
             for (Field declaredField : preEmployment.getClass ().getDeclaredFields ()) {
                 declaredField.setAccessible ( true );
                 for (Map < String, String > stringMap : mapList) {

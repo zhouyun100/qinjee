@@ -65,8 +65,6 @@ public interface UserArchiveDao {
 
     Integer selectArchiveIdByTel(@Param("phoneNumber") String phoneNumber);
 
-    Integer selectId(@Param("idType") String idType, @Param("idNumber") String idNumber);
-
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
     List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") List<String> archiveType, @Param("list") List<Integer> list, @Param("type")String type);
