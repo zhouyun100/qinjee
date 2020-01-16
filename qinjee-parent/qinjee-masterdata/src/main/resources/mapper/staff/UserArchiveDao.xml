@@ -709,7 +709,7 @@
       attrition_type = #{attritionType,jdbcType=VARCHAR},
       operator_id = #{operatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
       is_delete = #{isDelete,jdbcType=TINYINT}
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>

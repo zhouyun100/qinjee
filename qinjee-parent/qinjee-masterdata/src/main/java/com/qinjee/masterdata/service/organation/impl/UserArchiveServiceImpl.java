@@ -249,16 +249,16 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     public void importToDatabase(String orgExcelRedisKey, UserSession userSession) {
         String data = redisService.get(orgExcelRedisKey.trim());
         //将其转为对象集合
-        List<UserArchiveVo> list = JSONArray.parseArray(data, UserArchiveVo.class);
-        if (CollectionUtils.isNotEmpty(list)) {
+        List<UserArchiveVo> excelArchivelist = JSONArray.parseArray(data, UserArchiveVo.class);
+        if (CollectionUtils.isNotEmpty(excelArchivelist)) {
             //直接遍历入库  账户信息表  账户企业关联表 用户档案表
-            for (UserArchiveVo vo : list) {
-                UserInfo user = userInfoDao.getUserByPhoneAndCompanyId(vo.getPhone(), userSession.getCompanyId());
+            for (UserArchiveVo excelArchiveVo : excelArchivelist) {
+                UserInfo user = userInfoDao.getUserByPhoneAndCompanyId(excelArchiveVo.getPhone(), userSession.getCompanyId());
                 //存在账户并且已与当前企业关联
                 if (Objects.nonNull(user)) {
                     //TODO 企业有没有权限更新平台用户的账户表
                 } else {
-                    user = userInfoDao.getUserByPhone(vo.getPhone());
+                    user = userInfoDao.getUserByPhone(excelArchiveVo.getPhone());
                     if (Objects.nonNull(user)) {//存在账户，但没有关联当前企业
                         //绑定企业
                         UserCompany userCompany = new UserCompany();
@@ -270,11 +270,11 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                     } else {
                         //不存在账号，新注册一个账号并绑定当前企业
                         user = new UserInfo();
-                        user.setPhone(vo.getPhone());
-                        user.setEmail(vo.getEmail());
+                        user.setPhone(excelArchiveVo.getPhone());
+                        user.setEmail(excelArchiveVo.getEmail());
                         user.setCreateTime(new Date());
                         //密码默认手机号后6位
-                        String passwd = StringUtils.substring(vo.getPhone(), vo.getPhone().length() - 6, vo.getPhone().length());
+                        String passwd = StringUtils.substring(excelArchiveVo.getPhone(), excelArchiveVo.getPhone().length() - 6, excelArchiveVo.getPhone().length());
                         user.setPassword(MD5Utils.getMd5(passwd));
                         userLoginDao.addUserInfo(user);
                         UserCompany userCompany = new UserCompany();
@@ -285,38 +285,47 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                         userCompanyDao.insertSelective(userCompany);
                     }
                 }
-                UserArchiveVo userArchiveVo = userArchiveDao.selectByUserId(user.getUserId(), userSession.getCompanyId());
-                UserArchive userArchive = buildUserArchive(userArchiveVo, userSession);
-                if (Objects.nonNull(userArchiveVo)) {
+                UserArchiveVo oldArchiveVo = userArchiveDao.selectByUserId(user.getUserId(), userSession.getCompanyId());
+                if (Objects.nonNull(oldArchiveVo)) {
+                    UserArchive userArchive = buildUserArchive(excelArchiveVo,oldArchiveVo, userSession);
+                    userArchive.setArchiveId(oldArchiveVo.getArchiveId());
+                    userArchive.setUserId(user.getUserId());
                     userArchive.setUpdateTime(new Date());
-                    userArchiveDao.updateByPrimaryKey(userArchive);
+                    userArchiveDao.updateByPrimaryKeySelective(userArchive);
                 } else {
+                    UserArchive userArchive = buildUserArchive(excelArchiveVo,oldArchiveVo, userSession);
                     userArchive.setCreateTime(new Date());
+                    userArchive.setUserId(user.getUserId());
                     userArchiveDao.insertSelective(userArchive);
                 }
             }//外层循环结束
         }
     }
 
-    private UserArchive buildUserArchive(UserArchiveVo vo, UserSession userSession) {
+    private UserArchive buildUserArchive(UserArchiveVo excelArchiveVo,UserArchiveVo oldArchiveVo, UserSession userSession) {
         UserArchive userArchive = new UserArchive();
-        BeanUtils.copyProperties(vo, userArchive);
+        if(Objects.nonNull(oldArchiveVo)){
+            BeanUtils.copyProperties(oldArchiveVo, userArchive);
+        }
+        BeanUtils.copyProperties(excelArchiveVo,userArchive);
         userArchive.setCompanyId(userSession.getCompanyId());
         userArchive.setOperatorId(userSession.getArchiveId());
+
+
         //设置部门id
-        if (StringUtils.isNotBlank(vo.getOrgCode())) {
-            OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
+        if (StringUtils.isNotBlank(excelArchiveVo.getOrgCode())) {
+            OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(excelArchiveVo.getOrgCode(), userSession.getCompanyId());
             userArchive.setOrgId(org.getOrgId());
             //设置单位id
         }
         //设置岗位id
-        if (StringUtils.isNotBlank(vo.getPostCode())) {
-            Post post = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
+        if (StringUtils.isNotBlank(excelArchiveVo.getPostCode())) {
+            Post post = postDao.getPostByPostCode(excelArchiveVo.getPostCode(), userSession.getCompanyId());
             userArchive.setPostId(post.getPostId());
         }
         //设置直接上级id
-        if (StringUtils.isNotBlank(vo.getEmployeeNumber())) {
-            Integer archiveId = userArchiveDao.selectArchiveIdByNumber(vo.getEmployeeNumber(), userSession.getCompanyId());
+        if (StringUtils.isNotBlank(excelArchiveVo.getEmployeeNumber())) {
+            Integer archiveId = userArchiveDao.selectArchiveIdByNumber(excelArchiveVo.getEmployeeNumber(), userSession.getCompanyId());
             userArchive.setSupervisorId(archiveId);
         }
         return userArchive;
