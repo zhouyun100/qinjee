@@ -131,7 +131,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
+    public Integer insertArchive(UserArchiveVo userArchiveVo, UserSession userSession) throws Exception {
         UserArchive userArchive = new UserArchive ();
         BeanUtils.copyProperties ( userArchiveVo, userArchive );
         //黑名单校验
@@ -162,6 +162,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         userArchiveDao.insertSelective ( userArchive );
         checkEmployeeNumber ( userSession, userArchive );
         userArchiveDao.insertSelective ( userArchive );
+        return userArchive.getArchiveId ();
     }
 
 

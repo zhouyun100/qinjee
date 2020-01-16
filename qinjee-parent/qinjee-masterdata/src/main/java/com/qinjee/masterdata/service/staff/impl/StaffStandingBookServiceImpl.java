@@ -210,8 +210,13 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         String sql=getBaseSql ( userSession.getCompanyId (),fieldVoList,customTableVOS )+stringBuffer.toString();
         PageHelper.startPage ( standingBookReturnVo.getCurrentPage (),standingBookReturnVo.getPageSize () );
         //主职集合
-        List<Integer> integerList=userArchiveDao.selectStaff(sql,standingBookReturnVo.getArchiveType (),
-                standingBookReturnVo.getOrgIdList (),"主职");
+        List<Integer> integerList= null;
+        try {
+            integerList = userArchiveDao.selectStaff(sql,standingBookReturnVo.getArchiveType (),
+                    standingBookReturnVo.getOrgIdList (),"主职");
+        } catch (Exception e) {
+            ExceptionCast.cast ( CommonCode.SQL_MAY_MISTAKE );
+        }
         List < UserArchiveVo > list = userArchiveDao.selectByPrimaryKeyList ( integerList );
         //兼职集合
         List<UserArchiveVo> list2=userArchiveDao.selectPartTimeArchive(integerList,userSession.getCompanyId ());

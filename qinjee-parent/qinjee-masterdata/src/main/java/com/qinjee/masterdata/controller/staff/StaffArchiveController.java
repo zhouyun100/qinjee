@@ -48,8 +48,8 @@ public class StaffArchiveController extends BaseController {
     public ResponseResult insertArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) throws Exception {
         Boolean b = checkParam(userArchiveVo,getUserSession());
         if(b){
-                staffArchiveService.insertArchive(userArchiveVo,getUserSession());
-                return ResponseResult.SUCCESS();
+            Integer integer = staffArchiveService.insertArchive ( userArchiveVo, getUserSession () );
+            return new ResponseResult ( integer,CommonCode.SUCCESS );
         }
         return  failResponseResult("档案表参数错误");
     }

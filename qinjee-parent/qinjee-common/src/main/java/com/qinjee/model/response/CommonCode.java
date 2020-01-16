@@ -58,6 +58,7 @@ public enum CommonCode implements ResultCode{
     CANNOT_TWO_NULL(false,10330, "证件号与手机号不能同时为空"),
     IS_EXIST_BLACKLIST(false,10331, "该人员已经存在与黑名单中"),
     IDNUMBER_ALREADY_EXIST(false,10332, "证件号已存在"),
+    SQL_MAY_MISTAKE(false,10334, "证件号已存在"),
     FILE_IMPORT_FAILED(false,10333, "文件加载失败，请检查内容是否符合指定格式");
 
     /**
