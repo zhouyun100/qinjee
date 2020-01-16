@@ -358,8 +358,9 @@ public class CommonController extends BaseController {
         if (b) {
             List<Integer> businessId = staffCommonService.saveFieldAndValue(getUserSession(), insertDataVo);
             return new ResponseResult<>(businessId, CommonCode.SUCCESS);
+        }else {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
 

@@ -315,7 +315,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void importFile(UserSession userSession, String funcCode) {
+    public void importFile(UserSession userSession, String funcCode) throws Exception {
 
         //从redis中取得文件
         //拼接key
@@ -333,11 +333,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         InsertDataVo insertDataVo = new InsertDataVo ();
         insertDataVo.setFuncCode ( funcCode );
         insertDataVo.setList ( list );
-        try {
-            staffCommonService.saveFieldAndValue ( userSession, insertDataVo );
-        } catch (Exception e) {
-            e.printStackTrace ();
-        }
+        staffCommonService.saveFieldAndValue ( userSession, insertDataVo );
+
     }
 
 

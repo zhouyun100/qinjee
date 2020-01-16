@@ -391,9 +391,9 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/saveTemplate", method = RequestMethod.POST)
     @ApiOperation(value = "保存自定义表字段配置", notes = "hkt")
-    public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo,HttpServletResponse response) {
-        Boolean b = checkParam (getUserSession (),saveTemplateVo ,response);
-        response.setHeader ( "Access-Control-Allow-Origin","*" );
+    public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo) {
+        Boolean b = checkParam (getUserSession (),saveTemplateVo );
+
         if (b) {
             try {
                 templateCustomTableFieldService.saveTemplate ( getUserSession (),saveTemplateVo );
@@ -431,10 +431,10 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/handlerCustomTableGroupFieldList", method = RequestMethod.GET)
     @ApiOperation(value = "处理自定义表字段数据回填", notes = "hkt")
-    public ResponseResult <List < EntryTableListWithValueVo >> handlerCustomTableGroupFieldList(Integer preId, Integer templateId, Integer companyId, HttpServletResponse response ) throws IllegalAccessException {
-        Boolean b = checkParam (preId,templateId,companyId,response);
+    public ResponseResult <List < EntryTableListWithValueVo >> handlerCustomTableGroupFieldList(Integer preId, Integer templateId, Integer companyId )  {
+        Boolean b = checkParam (preId,templateId,companyId);
         if (b) {
-                response.setHeader ( "Access-Control-Allow-Origin","*" );
+
             List < EntryTableListWithValueVo > list =
                     null;
             try {

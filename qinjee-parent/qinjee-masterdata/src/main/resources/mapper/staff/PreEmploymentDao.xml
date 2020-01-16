@@ -1069,7 +1069,8 @@
 
     <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
         select employment_id from t_pre_employment
-        where id_type=#{idtype}
+        where is_delete=0
+
         and id_number=#{idnumber}
         and is_delete=0
     </select>
@@ -1077,6 +1078,12 @@
         select <include refid="Base_Column_List"/>
         from t_pre_employment
         where id_number=#{s}
+        and is_delete=0
+    </select>
+    <select id="selectPreByPhone" resultType="java.lang.Integer">
+        select employment_id
+        from t_pre_employment
+        where phone=#{s3}
         and is_delete=0
     </select>
 </mapper>

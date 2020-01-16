@@ -148,9 +148,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 }
                 response.reset ();
                 // 将文件输入流写入response的输出流中
+            response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( "file.zip", "UTF-8" )   );
+            response.setHeader ( "fileName", URLEncoder.encode ( "file.zip", "UTF-8" ) );
             response.setContentType("multipart/form-data");
-            response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( "file.zip", "UTF-8" ) + "\"" );
-            response.setHeader ( "fileName", URLEncoder.encode ( "file.zip ", "UTF-8" ) );
             CompressFileUtil.toZip ( files, response.getOutputStream () );
         } catch (Exception e) {
             e.printStackTrace ();

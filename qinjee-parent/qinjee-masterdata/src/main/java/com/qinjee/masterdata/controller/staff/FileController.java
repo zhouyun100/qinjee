@@ -180,10 +180,9 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showPreFile", method = RequestMethod.GET)
     @ApiOperation(value = "展示预入职的文件", notes = "hkt")
-    public ResponseResult< List<AttchmentRecordVo>> showPreFile(@RequestParam Integer companyId,Integer preId,HttpServletResponse response) {
+    public ResponseResult< List<AttchmentRecordVo>> showPreFile(@RequestParam Integer companyId,Integer preId) {
         Boolean b = checkParam(companyId,preId);
         if(b) {
-                response.setHeader ( "Access-Control-Allow-Origin","*" );
                 List < AttchmentRecordVo> list  = fileOperateService.selectPreAttach (companyId,preId );
                     return new ResponseResult<>  (list, CommonCode.SUCCESS);
         }

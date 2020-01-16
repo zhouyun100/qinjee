@@ -70,4 +70,6 @@ public interface PreEmploymentDao {
     Integer selectPreByIdtypeAndIdnumber(@Param("idtype") String idtype, @Param("idnumber") String idnumber);
 
     PreEmployment selectByEmployNumber(@Param("s") String s);
+
+    Integer selectPreByPhone(@Param("s3") String s3);
 }

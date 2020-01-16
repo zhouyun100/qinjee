@@ -324,6 +324,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
                                 }
                             }
+
+
                             if (archiveId != null && archiveId != 0) {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
@@ -485,13 +487,11 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
     }
 
-    private Integer getPreemploymentId(Map < Integer, String > map, List < Integer > notSystemDefineList) {
-        Integer integer = customTableFieldDao.selectSymbolForPreIdNumber ( notSystemDefineList );
-        Integer integer1 = customTableFieldDao.selectSymbolForPreIdType ( notSystemDefineList );
-        String s2 = selectValueById ( map, integer );
+    private Integer getPreemploymentId(Map < Integer, String > map, List < Integer > systemDefineList) {
+        Integer integer1 = customTableFieldDao.selectSymbolForPhone ( systemDefineList );
         String s3 = selectValueById ( map, integer1 );
-        if(!StringUtils.isEmpty ( s2 )&&!StringUtils.isEmpty ( s3 )) {
-            return preEmploymentDao.selectPreByIdtypeAndIdnumber ( s3, s2 );
+        if(!StringUtils.isEmpty ( s3 )) {
+            return preEmploymentDao.selectPreByPhone ( s3 );
         }else{
             return null;
         }

@@ -1007,17 +1007,22 @@
     SELECT COUNT(org_id) FROM t_user_archive WHERE org_id =#{orgId} AND is_delete =0
 
   </select>
+    <select id="selectIdByNumberAndEmploy" resultType="java.lang.Integer">
+        select archive_id
+        from t_user_archive
+        where is_delete=0
+        and archive_status='SERVICE'
+        <if test="employ !=null">
+            and  employee_number=#{employ}
+        </if>
+        <if test="employ !=null">
+            and id_number=#{number}
+        </if>
+    </select>
+
   <select id="countUserArchiveByPostId" resultType="java.lang.Integer">
     SELECT COUNT(post_id) FROM t_user_archive WHERE post_id =#{postId} AND is_delete =0
 
-  </select>
-
-  <select id="selectIdByNumberAndEmploy" resultType="java.lang.Integer">
-    select archive_id
-    from t_user_archive
-    where employee_number=#{employ}
-    and id_number=#{number}
-    and is_delete=0
   </select>
  <update id="deleteArchiveById">
    update t_user_archive
@@ -1052,7 +1057,6 @@
     from t_user_archive
     where archive_status ='SERVICE' and is_delete =0 and post_id in
     <foreach collection="postIds" item="item" close=")" open="(" separator=",">
-
       #{item}
     </foreach>
   </select>

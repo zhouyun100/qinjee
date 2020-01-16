@@ -230,7 +230,7 @@ public class ExcelUtil {
             mapRow = new HashMap <> ();
             for (int j = 0; j < heads.size (); j++) {
                 if(StringUtils.isBlank ( list.get ( i )[j] )) {
-                    mapRow.put ( heads.get ( j ), "" );
+                    mapRow.put ( heads.get ( j ), "null" );
                 }else{
                     mapRow.put ( heads.get ( j ), list.get ( i )[j] );
                 }
