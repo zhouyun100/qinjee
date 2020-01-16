@@ -26,8 +26,8 @@
     <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
     <result column="hire_date" jdbcType="DATE"  property="hireDate" />
     <result column="serving_date" jdbcType="DATE"  property="servingDate" />
-    <result column="serving_age" jdbcType="DECIMAL" property="servingAge" />
-    <result column="working_period" jdbcType="DECIMAL" property="workingPeriod" />
+    <result column="serving_age" jdbcType="INTEGER" property="servingAge" />
+    <result column="working_period" jdbcType="INTEGER" property="workingPeriod" />
     <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
     <result column="probation_period" jdbcType="INTEGER" property="probationPeriod" />
     <result column="converse_date" jdbcType="DATE" property="converseDate" />
