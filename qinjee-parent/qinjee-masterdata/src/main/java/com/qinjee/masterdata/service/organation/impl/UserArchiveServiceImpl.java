@@ -456,10 +456,27 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             }
 
             //黑名单校验
-            if (blacklistsMem.stream().anyMatch(a -> (vo.getPhone().equals(a.getPhone()) && vo.getUserName().equals(a.getUserName())) || (null != vo.getIdNumber() && (vo.getIdNumber().equals(a.getIdNumber()))))) {
+            ////////////////////begin update date:2020-01-17; author:zhouyun
+            Boolean anyMatch = false;
+
+            //先判断手机号和用户名是否为空，不为空则验证黑名单是否存在
+            if(StringUtils.isNoneBlank(vo.getPhone()) && StringUtils.isNoneBlank(vo.getUserName())){
+                anyMatch = blacklistsMem.stream().anyMatch(a -> (vo.getPhone().equals(a.getPhone()) && vo.getUserName().equals(a.getUserName())));
+            }
+
+            //判断上一步手机号和用户名是否能查到黑名单，查不到再判断证件号码是否为空，不为空再使用证件号码验证黑名单是否存在
+            if(!anyMatch){
+                if(StringUtils.isNoneBlank(vo.getIdNumber())){
+                    anyMatch = blacklistsMem.stream().anyMatch(a -> (null != vo.getIdNumber() && (vo.getIdNumber().equals(a.getIdNumber()))));
+                }
+            }
+
+            //两步判断只要有一个为true即说明黑名单已存在
+            if (anyMatch) {
                 vo.setCheckResult(false);
                 resultMsg.append("用户已存在于黑名单 | ");
             }
+            ////////////////////end update date:2020-01-17; author:zhouyun
 
             //如果同时存在证件号和工号 //则判断是否相等
             if (StringUtils.isNotBlank(vo.getEmployeeNumber()) && StringUtils.isNotBlank(vo.getIdNumber())) {
