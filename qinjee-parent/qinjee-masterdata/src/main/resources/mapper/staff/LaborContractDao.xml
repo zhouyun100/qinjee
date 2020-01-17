@@ -510,9 +510,11 @@
       #{item}
     </foreach>
     )
-    and contract.contract_state in
-    <foreach collection="status" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
+    <if test="status != null and status.size() > 0">
+      and contract.contract_state in
+      <foreach collection="status" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
   </select>
 </mapper>
