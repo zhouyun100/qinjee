@@ -153,13 +153,19 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 ExceptionCast.cast ( CommonCode.IDNUMBER_ALREADY_EXIST );
             }
         }
+        if(StringUtils.isNoneBlank ( userArchive.getPhone() )){
+            Integer id = userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone(), userSession.getCompanyId());
+            if (id != null) {
+                ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+            }
+        }
         int userId = userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () );
         userArchive.setUserId ( userId );
         userArchive.setArchiveStatus ( "SERVICE" );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
         userArchive.setCompanyId ( userSession.getCompanyId () );
-        userArchiveDao.insertSelective ( userArchive );
+//        userArchiveDao.insertSelective ( userArchive );
         checkEmployeeNumber ( userSession, userArchive );
         userArchiveDao.insertSelective ( userArchive );
         List < Integer > integers = new ArrayList <> ();
