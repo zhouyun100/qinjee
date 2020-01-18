@@ -13,6 +13,7 @@ package com.qinjee.masterdata.service.staff;
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateEntryRegistrationVO;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public interface EntryRegistrationService {
      * @param companyId
      * @return
      */
-    List<TemplateEntryRegistration> searchTemplateEntryRegistrationList(Integer companyId);
+    List<TemplateEntryRegistrationVO> searchTemplateEntryRegistrationList(Integer companyId);
 
     /**
      * 新增入职登记模板

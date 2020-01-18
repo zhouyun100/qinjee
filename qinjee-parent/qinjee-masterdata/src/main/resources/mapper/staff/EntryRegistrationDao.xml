@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.entryregistration.EntryRegistrationDao">
 
-    <resultMap id="EntryRegistrationResultMap" type="com.qinjee.masterdata.model.entity.TemplateEntryRegistration">
+    <resultMap id="EntryRegistrationResultMap" type="com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateEntryRegistrationVO">
         <result column="template_id" jdbcType="INTEGER" property="templateId" />
         <result column="template_name" jdbcType="VARCHAR" property="templateName" />
         <result column="template_description" jdbcType="VARCHAR" property="templateDescription" />
@@ -14,18 +14,19 @@
         <result column="company_id" jdbcType="INTEGER" property="companyId" />
         <result column="is_enable" jdbcType="INTEGER" property="isEnable" />
         <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-        <result column="create_time" jdbcType="INTEGER" property="createTime" />
+        <result column="create_time" jdbcType="DATE" property="createTime" />
+        <result column="creator" jdbcType="VARCHAR" property="creator" />
     </resultMap>
 
 
     <!-- 根据企业ID查询入职登记模板列表 -->
     <select id="searchTemplateEntryRegistrationList" resultMap="EntryRegistrationResultMap">
-        select template_id,template_name,template_description,receive_ids,title,welcome_speech,
-        logo_url,background_img_url,company_id,is_enable,operator_id
-        from t_template_entry_registration
-        WHERE company_id = #{companyId,jdbcType=INTEGER}
-        and is_delete=0
-        and is_enable=1
+        select t1.template_id,t1.template_name,t1.template_description,t1.receive_ids,t1.title,t1.welcome_speech,
+        t1.logo_url,t1.background_img_url,t1.company_id,t1.is_enable,t1.operator_id,t1.create_time,t2.user_name creator
+        from t_template_entry_registration t1 LEFT JOIN t_user_archive t2 ON t2.company_id = #{companyId,jdbcType=INTEGER} and t1.operator_id = t2.archive_id
+        WHERE t1.company_id = #{companyId,jdbcType=INTEGER}
+        and t1.is_delete=0
+        and t1.is_enable=1
     </select>
 
 

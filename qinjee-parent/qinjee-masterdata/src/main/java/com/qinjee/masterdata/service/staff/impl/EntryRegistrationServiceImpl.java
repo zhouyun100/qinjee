@@ -15,6 +15,7 @@ import com.qinjee.masterdata.dao.staffdao.entryregistration.TemplateAttachmentGr
 import com.qinjee.masterdata.model.entity.TemplateAttachmentGroup;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateEntryRegistrationVO;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,8 @@ public class EntryRegistrationServiceImpl implements EntryRegistrationService {
     private TemplateAttachmentGroupDao templateAttachmentGroupDao;
 
     @Override
-    public List<TemplateEntryRegistration> searchTemplateEntryRegistrationList(Integer companyId) {
-        List<TemplateEntryRegistration> templateEntryRegistrationList = entryRegistrationDao.searchTemplateEntryRegistrationList(companyId);
+    public List<TemplateEntryRegistrationVO> searchTemplateEntryRegistrationList(Integer companyId) {
+        List<TemplateEntryRegistrationVO> templateEntryRegistrationList = entryRegistrationDao.searchTemplateEntryRegistrationList(companyId);
         return templateEntryRegistrationList;
     }
 

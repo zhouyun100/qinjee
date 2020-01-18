@@ -8,10 +8,7 @@ import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTableListWithValueVo;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.InsertTemplateAttachmentVo;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
-import com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateAttachmentGroupVO;
+import com.qinjee.masterdata.model.vo.staff.entryregistration.*;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
 import com.qinjee.masterdata.service.staff.IPreTemplateService;
@@ -108,10 +105,10 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/searchTemplateEntryRegistrationList", method = RequestMethod.GET)
     @ApiOperation(value = "根据企业ID查询入职登记模板列表", notes = "hkt")
-    public ResponseResult < List < TemplateEntryRegistration > > searchTemplateEntryRegistrationList() {
+    public ResponseResult < List < TemplateEntryRegistrationVO > > searchTemplateEntryRegistrationList() {
         Boolean b = checkParam ( getUserSession () );
         if (b) {
-                List < TemplateEntryRegistration > templateEntryRegistrations =
+                List <TemplateEntryRegistrationVO> templateEntryRegistrations =
                         entryRegistrationService.searchTemplateEntryRegistrationList ( getUserSession ().getCompanyId () );
                     return new ResponseResult <> ( templateEntryRegistrations, CommonCode.SUCCESS );
         }
