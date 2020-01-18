@@ -110,7 +110,9 @@ public class ExcelUtil {
                 Map.Entry < String, String > entry = it.next ();
                 HSSFCell hssfCell = hssfRow1.createCell ( j );
                 hssfCell.setCellStyle ( style );
-                hssfCell.setCellValue ( entry.getValue () );
+                if(StringUtils.isNoneBlank(entry.getValue()) && !entry.getValue().equals("null")){
+                    hssfCell.setCellValue (entry.getValue());
+                }
                 j++;
             }
         }
