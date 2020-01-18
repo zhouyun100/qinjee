@@ -209,7 +209,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public Integer getSignNumber(Integer archiveId) {
         //先通过人员找到合同，通过是续签合同的次数上加一
         Integer signNumber= laborContractDao.selectByarcIdAndStatus ( archiveId, RENEWMARK );
-        if(signNumber>1){
+        if(signNumber != null && signNumber>1){
             return signNumber;
         }
         return 1;
