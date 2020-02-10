@@ -184,6 +184,8 @@ public interface OrganizationService  {
 
 
     String generateOrgCode(Integer orgId);
+
+  Integer getBusunessUnitIdByOrgId(Integer orgId);
 }
 
 

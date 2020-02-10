@@ -211,6 +211,22 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         }
     }
 
+    @Override
+    public Integer getBusunessUnitIdByOrgId(Integer orgId) {
+        //判断当前机构类型是否是单位，如果是 则直接返回机构id，如果不是则查询上级机构，直至机构类型为单位或到顶级机构为止
+        OrganizationVO org = organizationDao.getOrganizationById(orgId);
+        int tempUnitId=0;
+        if (Objects.isNull(org)) {
+            return orgId;
+        }
+        if (!"UNIT".equalsIgnoreCase(org.getOrgType())||org.getOrgParentId()==0) {
+            tempUnitId=getBusunessUnitIdByOrgId(org.getOrgParentId());
+        } else {
+            return org.getOrgId();
+        }
+        return tempUnitId;
+    }
+
     /**
      * 获取新orgCode
      *

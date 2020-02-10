@@ -22,6 +22,7 @@ import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
+import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
 import com.qinjee.masterdata.utils.BeanUtilsExtension;
 import com.qinjee.model.request.UserSession;
@@ -68,6 +69,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Autowired
     private OrganizationDao organizationDao;
+    @Autowired
+    private OrganizationService organizationService;
     @Autowired
     private PostDao postDao;
     @Autowired
@@ -317,6 +320,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             OrganizationVO org = organizationDao.getOrganizationByOrgCodeAndCompanyId(excelArchiveVo.getOrgCode(), userSession.getCompanyId());
             userArchive.setOrgId(org.getOrgId());
             //设置单位id
+            //根据部门id查找单位id
+            Integer unitId=organizationService.getBusunessUnitIdByOrgId(org.getOrgId());
+            userArchive.setBusinessUnitId(unitId);
+
         }
         //设置岗位id
         if (StringUtils.isNotBlank(excelArchiveVo.getPostCode())) {
