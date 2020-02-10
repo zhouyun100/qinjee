@@ -716,31 +716,6 @@
       is_delete = #{isDelete,jdbcType=TINYINT}
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
-  <select id="selectMaxId" resultType="java.lang.Integer">
-    select MAX(archive_id)
-    from t_user_archive
-    where is_delete = 0
-  </select>
-  <select id="selectMail" resultType="java.lang.String">
-    select  email
-    from t_user_archive
-    where  is_delete=0
-    AND
-     archive_id in
-     <foreach collection="list" item="item" open="(" separator="," close=")">
-       #{item}
-     </foreach>
-  </select>
-  <select id="selectNotInList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_user_archive
-    where archive_id in
-    <foreach collection="readyIdList" item="item" open="(" separator="," index=")">
-    #{item}
-    </foreach>
-    AND is_delete=0
-  </select>
   <update id="deleteArchiveByIdList">
     update t_user_archive
     set
@@ -762,10 +737,49 @@
   </update>
 
   <select id="listUserArchiveByCompanyId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_user_archive where company_id =#{companyId} and is_delete =0
+   SELECT
+    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+    arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+    maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+    probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+    orga.org_name as org_name ,
+    post.post_name as post_name ,
+    org.org_name as business_unit_name,
+    arch.user_name as supervisor_user_name
+    FROM
+    t_user_archive arc
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+    left join t_organization org on org.org_id=arc.business_unit_id
+    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
+    left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
+
+    from t_user_archive where company_id =#{companyId} and is_delete =0
   </select>
   <select id="selectNameAndNumber" resultType="java.util.Map">
     select user_name,employee_number
@@ -778,12 +792,6 @@
     from   t_user_archive
     where is_delete=0
     AND  employee_number = #{employeeNumber,jdbcType=VARCHAR} and company_id = #{companyId}
-  </select>
-  <select id="selectArchiveByNumber" resultMap="BaseResultMap" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
-    select <include refid="Base_Column_List"/>
-    from   t_user_archive
-    where is_delete=0
-    AND  employee_number = #{employeeNumber,jdbcType=VARCHAR}
   </select>
 
   <select id="getUserArchiveList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
@@ -806,7 +814,6 @@
         #{orgId}
       </foreach>
     </if>
-
   </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id
@@ -814,12 +821,6 @@
   where org_id = #{orgId,jdbcType=INTEGER}
 
 </select>
-  <select id="selectArcNumberIn" resultType="java.lang.Integer">
-    select count(1)
-    from t_user_archive
-    where user_category != "离职" AND company_id = #{id,jdbcType=INTEGER}
-    AND  is_delete=0
-  </select>
 
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
     select
@@ -928,29 +929,50 @@
     and arc.is_delete=0
   </select>
   <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-    SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id,dict2.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
-    arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
-    arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
-    arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
-    orga.org_name as org_name ,
-    post.post_name as post_name ,
-    org.org_name as business_unit_name,
-    arch.user_name as supervisor_user_name
+      SELECT
+      arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+      arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+      maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+      probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+      orga.org_name as org_name ,
+      post.post_name as post_name ,
+      org.org_name as business_unit_name,
+      arch.user_name as supervisor_user_name
+      FROM
+      t_user_archive arc
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      left join t_organization org on org.org_id=arc.business_unit_id
+      LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+      left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
-    left join t_organization org on org.org_id=arc.business_unit_id
-    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-    left join t_sys_dict dict on  dict.dict_code=arc.gender AND dict.is_delete=0
-    left join t_sys_dict dict2 on  dict2.dict_code=arc.user_category AND dict2.is_delete=0
-    WHERE arc.is_delete = 0
-    and arc.archive_status='SERVICE'
-    and arc.org_id in
+      left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
+      WHERE arc.is_delete = 0
+     and arc.archive_status='SERVICE'
+     and arc.org_id in
     <foreach collection="orgId" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
@@ -971,33 +993,50 @@
     and ur.is_delete = 0
     )
   </select>
-  <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
-    SELECT
-    arc.user_name,
-    arc.employee_number,
-    org.org_name,
-    post.post_name,
-    arc.hire_date,
-    arc.probation_due_date,
-    arc.supervisor_id,
-    arc.phone,
-    arc.attrition_type
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization org
-    ON org.org_id = arc.org_id
-    LEFT JOIN t_user_org_auth auth
-    ON auth.org_id = org.org_id
+  <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+      SELECT
+      arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+      arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+      maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+      probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+      orga.org_name as org_name ,
+      post.post_name as post_name ,
+      org.org_name as business_unit_name,
+      arch.user_name as supervisor_user_name
+      FROM
+      t_user_archive arc
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      left join t_organization org on org.org_id=arc.business_unit_id
+      LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+      left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-    LEFT JOIN t_post post
-    ON post.post_id = arc.post_id
-    WHERE auth.archive_id = 1
-    AND auth.is_delete = 0
-    AND arc.is_delete = 0
-    AND post.is_delete = 0
-    AND org.is_enable = 1
-    AND org.company_id = 1
-    AND org.org_id IN
+      left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
+
+      AND org.org_id IN
     <foreach collection="orgList" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
@@ -1127,26 +1166,47 @@
     where arc.archive_id = #{key}
   </select>
   <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-   SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id,dict2.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
-    arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
-    arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
-    arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
+ SELECT
+    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+    arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+    maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+    probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
     arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
     arch.user_name as supervisor_user_name
-
     FROM
     t_user_archive arc
     LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-    left join t_sys_dict dict on  dict.dict_code=arc.gender AND dict.is_delete=0
-    left join t_sys_dict dict2 on  dict2.dict_code=arc.user_category AND dict2.is_delete=0
+
+    left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
     where arc.id_number=#{s}
     and arc.company_id = #{companyId}
     and arc.is_delete=0
@@ -1199,11 +1259,11 @@
   </select>
   <select id="selectUserArchiveVo" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
    SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, dict2.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
-    arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
-    arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
-    arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
+    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+    arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+    maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+    probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
     arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
     orga.org_name as org_name ,
     post.post_name as post_name ,
@@ -1215,8 +1275,31 @@
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-    left join t_sys_dict dict on dict.dict_code=arc.gender AND dict.is_delete=0
-    left join t_sys_dict dict2 on dict2.dict_code=arc.user_category AND dict2.is_delete=0
+
+    left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
+
     where arc.org_id in
     <foreach collection="list" item="item" open="(" separator="," close=")">
         #{item}
@@ -1245,26 +1328,47 @@
   </select>
     <select id="selectPartTimeArchive" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
         SELECT
-        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, dict2.dict_value as user_category, relation.business_unit_id, relation.org_id, relation.post_id,
-        arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
-        arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
-        arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
-        arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
-        arc.attrition_type, relation.supervisor_id, relation.operator_id, relation.create_time, relation.update_time,relation.is_delete,
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+        arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+        maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+        probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+        professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
         arch.user_name as supervisor_user_name
         FROM
         t_user_archive arc
-        left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id and relation.is_delete=0
-        LEFT JOIN t_organization orga ON orga.org_id = relation.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
-        left join t_organization org on org.org_id=relation.business_unit_id
-        LEFT JOIN t_post post ON post.post_id = relation.post_id  AND post.is_delete = 0
-        left join t_user_archive arch on relation.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-        left join t_sys_dict dict on dict.dict_code=arc.gender AND dict.is_delete=0
-        left join t_sys_dict dict2 on dict2.dict_code=arc.user_category AND dict2.is_delete=0
-        where 1=1
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+
+        left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+        left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+        left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+        left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+        left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+        left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+        left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+        left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+        left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+        left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+        left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+        left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
+        where arc.is_delete=0
         <choose>
             <when test='integerList != null and integerList.size()>0'>
                 and relation.archive_id in
@@ -1276,7 +1380,7 @@
                 and 1=0
             </otherwise>
         </choose>
-        and arc.is_delete=0
+
         group by relation.archive_id
 
     </select>

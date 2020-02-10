@@ -73,16 +73,12 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Autowired
     private SysDictService sysDictService;
 
-   @Autowired
-   private  CustomTableFieldService customTableFieldService;
 
     @Override
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
 
         List<CheckCustomTableVO> checkCustomTableVOList = new ArrayList<>();
         List<CheckCustomFieldVO> customFieldValueList;
-        CheckCustomTableVO customTableVO;
-        CheckCustomFieldVO customFieldVO;
         StringBuffer resultMsg;
         Boolean checkResult;
 
@@ -99,45 +95,40 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         for (Map<Integer, Object> map : mapList) {
             customFieldValueList = new ArrayList<>();
             resultMsg = new StringBuffer();
-            customTableVO = new CheckCustomTableVO();
+            CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
             checkResult = true;
 
             //循环每条记录的每个字段对应的值
             for (Map.Entry<Integer, Object> entry : map.entrySet()) {
                 //获取字段的配置信息
-                customFieldVO = customFieldMap.get(entry.getKey());
-                if (customFieldVO == null) {
+
+                if ( customFieldMap.get(entry.getKey()) == null) {
                     continue;
                 }
-
+                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
                 //设置字段录入的值
-                customFieldVO.setFieldValue(String.valueOf(entry.getValue()));
-
-
+                customFieldMap.get(entry.getKey()).setFieldValue(String.valueOf(entry.getValue()));
                 //字段值规则校验
-                validCustomFieldValue(customFieldVO);
+                validCustomFieldValue( customFieldMap.get(entry.getKey()));
 
                 //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                if (!customFieldVO.getCheckResult()) {
+                if (! customFieldMap.get(entry.getKey()).getCheckResult()) {
                     checkResult = false;
-
                     //错误信息追加
-                    resultMsg.append(customFieldVO.getResultMsg());
+                    resultMsg.append( customFieldMap.get(entry.getKey()).getResultMsg());
                 }
-
-                customFieldValueList.add(customFieldVO);
+                customFieldValueList.add( customFieldMap.get(entry.getKey()));
             }
-
-            customTableVO.setCustomFieldVOList(customFieldValueList);
-            customTableVO.setCheckResult(checkResult);
-            customTableVO.setResultMsg(resultMsg.toString());
-            checkCustomTableVOList.add(customTableVO);
+            customTableVO1.setCustomFieldVOList(customFieldValueList);
+            customTableVO1.setCheckResult(checkResult);
+            customTableVO1.setResultMsg(resultMsg.toString());
+            checkCustomTableVOList.add(customTableVO1);
         }
         return checkCustomTableVOList;
     }
 
     @Override
-    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
+    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists) throws IllegalAccessException,  ParseException {
         List<Object> list = new ArrayList<>();
         List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
         List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();

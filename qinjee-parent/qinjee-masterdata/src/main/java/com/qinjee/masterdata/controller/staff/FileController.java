@@ -41,7 +41,7 @@ public class FileController extends BaseController {
      * @param files 文件数组
      * @return
      */
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, headers = "content-type=multipart/form-data" )
     @ApiOperation(value = "上传文件", notes = "hkt")
     public ResponseResult importFile( @RequestParam MultipartFile[] files) throws Exception {
         Boolean b = checkParam(getUserSession (),files);

@@ -31,12 +31,6 @@ public interface UserArchiveDao {
     List<UserArchiveVo> listUserArchiveByCompanyId(Integer companyId);
     int updateByPrimaryKey(UserArchive record);
 
-    Integer selectMaxId();
-
-    List<String> selectMail(List<Integer> list);
-
-    List<UserArchive> selectNotInList(@Param("readyIdList") List<Integer> readyIdList);
-
    Integer deleteArchiveByIdList(@Param("archiveid") List<Integer> archiveid);
 
     Integer resumeDeleteArchiveById(@Param("archiveid") List<Integer> archiveid);
@@ -54,12 +48,7 @@ public interface UserArchiveDao {
 
     Integer selectArchiveIdByNumber(String employeeNumber, Integer companyId);
 
-    UserArchiveVo selectArchiveByNumber(String employeeNumber);
-
-
     List<Integer> selectByOrgId(Integer orgId);
-
-    Integer selectArcNumberIn(Integer id);
 
     List<UserArchiveVo> selectByPrimaryKeyList(@Param("archiveList") List<Integer> archiveList);
 
@@ -112,9 +101,6 @@ public interface UserArchiveDao {
 
     List< UserArchiveVo> selectUserArchiveVo(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
     Integer selectByIDNumberAndCompanyId(@Param("idType") String idType, @Param("idNumber") String idNumber, @Param("companyId") Integer companyId);
-
-    List< UserArchiveVo> selectUserArchiveVo(@Param("companyId") Integer companyId);
-
 
     List< Integer> selectEmployNumberByCompanyId(@Param("companyId") Integer companyId, @Param("employeeNumber") String employeeNumber);
 
