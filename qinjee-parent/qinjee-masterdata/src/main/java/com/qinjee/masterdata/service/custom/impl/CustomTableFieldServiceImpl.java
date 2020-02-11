@@ -78,7 +78,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
 
         List<CheckCustomTableVO> checkCustomTableVOList = new ArrayList<>();
-        List<CheckCustomFieldVO> customFieldValueList;
+//        List<CheckCustomFieldVO> customFieldValueList;
         StringBuffer resultMsg;
         Boolean checkResult;
 
@@ -93,19 +93,21 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
         //循环大表数据
         for (Map<Integer, Object> map : mapList) {
-            customFieldValueList = new ArrayList<>();
+            List<CheckCustomFieldVO> customFieldValueList = new ArrayList<>();
             resultMsg = new StringBuffer();
             CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
             checkResult = true;
 
             //循环每条记录的每个字段对应的值
             for (Map.Entry<Integer, Object> entry : map.entrySet()) {
+                CheckCustomFieldVO customFieldVOTemp = new CheckCustomFieldVO();
                 //获取字段的配置信息
 
                 if ( customFieldMap.get(entry.getKey()) == null) {
                     continue;
                 }
                 customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
+
                 //设置字段录入的值
                 customFieldMap.get(entry.getKey()).setFieldValue(String.valueOf(entry.getValue()));
                 //字段值规则校验
@@ -117,7 +119,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     //错误信息追加
                     resultMsg.append( customFieldMap.get(entry.getKey()).getResultMsg());
                 }
-                customFieldValueList.add( customFieldMap.get(entry.getKey()));
+                customFieldVOTemp = customFieldMap.get(entry.getKey()).clone();
+                customFieldValueList.add(customFieldVOTemp);
             }
             customTableVO1.setCustomFieldVOList(customFieldValueList);
             customTableVO1.setCheckResult(checkResult);

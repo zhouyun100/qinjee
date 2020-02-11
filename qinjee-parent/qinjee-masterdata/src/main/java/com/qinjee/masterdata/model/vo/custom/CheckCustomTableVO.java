@@ -12,6 +12,7 @@ package com.qinjee.masterdata.model.vo.custom;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -19,7 +20,9 @@ import java.util.List;
  * @date 2019/11/26
  */
 @Data
-public class CheckCustomTableVO {
+public class CheckCustomTableVO implements Serializable{
+
+
 
     /**
      * 自定义字段对应的值列表
