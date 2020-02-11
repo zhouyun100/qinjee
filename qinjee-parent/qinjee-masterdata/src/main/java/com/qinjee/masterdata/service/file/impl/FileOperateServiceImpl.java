@@ -115,6 +115,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
     public void insertPreAttachment(MultipartFile file,Integer preId,String groupName,Integer companyId,String pathUrl){
         AttachmentRecord attachmentRecord = getAttachmentRecord ( file, groupName, companyId );
         attachmentRecord.setBusinessId ( preId );
+        attachmentRecord.setBusinessType("PRE");
         attachmentRecord.setBusinessType ( "employment" );
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)(file.getSize())/1024);

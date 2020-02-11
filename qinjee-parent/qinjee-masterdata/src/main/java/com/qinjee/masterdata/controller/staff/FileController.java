@@ -46,8 +46,12 @@ public class FileController extends BaseController {
     public ResponseResult importFile( @RequestParam MultipartFile[] files) throws Exception {
         Boolean b = checkParam(getUserSession (),files);
         if(b) {
+            try {
                 fileOperateService.putFile (files,getUserSession () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                ExceptionCast.cast(CommonCode.FAIL);
+            }
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }

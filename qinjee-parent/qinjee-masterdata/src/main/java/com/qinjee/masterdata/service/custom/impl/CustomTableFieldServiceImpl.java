@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.custom.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
@@ -78,7 +79,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
 
         List<CheckCustomTableVO> checkCustomTableVOList = new ArrayList<>();
-        List<CheckCustomFieldVO> customFieldValueList;
         StringBuffer resultMsg;
         Boolean checkResult;
 
@@ -93,38 +93,44 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
         //循环大表数据
         for (Map<Integer, Object> map : mapList) {
-            customFieldValueList = new ArrayList<>();
             resultMsg = new StringBuffer();
-            CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
+            List<CheckCustomFieldVO> customFieldValueList=new ArrayList<>();
             checkResult = true;
 
             //循环每条记录的每个字段对应的值
             for (Map.Entry<Integer, Object> entry : map.entrySet()) {
                 //获取字段的配置信息
 
-                if ( customFieldMap.get(entry.getKey()) == null) {
+                CheckCustomFieldVO checkCustomFieldVO = customFieldMap.get(entry.getKey());
+                if ( checkCustomFieldVO == null) {
                     continue;
                 }
-                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
+//                CheckCustomFieldVO checkCustomFieldVO = (CheckCustomFieldVO) deepCopyByJson(customFieldMap.get(entry.getKey()));
                 //设置字段录入的值
-                customFieldMap.get(entry.getKey()).setFieldValue(String.valueOf(entry.getValue()));
+                checkCustomFieldVO.setFieldValue(String.valueOf(entry.getValue()));
                 //字段值规则校验
-                validCustomFieldValue( customFieldMap.get(entry.getKey()));
+                validCustomFieldValue(checkCustomFieldVO);
 
                 //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                if (! customFieldMap.get(entry.getKey()).getCheckResult()) {
+                if (! checkCustomFieldVO.getCheckResult()) {
                     checkResult = false;
                     //错误信息追加
-                    resultMsg.append( customFieldMap.get(entry.getKey()).getResultMsg());
+                    resultMsg.append( checkCustomFieldVO.getResultMsg());
                 }
-                customFieldValueList.add( customFieldMap.get(entry.getKey()));
+                customFieldValueList.add(checkCustomFieldVO);
             }
+            CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
             customTableVO1.setCustomFieldVOList(customFieldValueList);
             customTableVO1.setCheckResult(checkResult);
             customTableVO1.setResultMsg(resultMsg.toString());
             checkCustomTableVOList.add(customTableVO1);
         }
         return checkCustomTableVOList;
+    }
+
+    private Object deepCopyByJson(Object obj) {
+        String json = JSON.toJSONString(obj);
+        return JSON.parseObject(json, Object.class);
     }
 
     @Override
@@ -178,7 +184,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         //检验一行的结果
                         checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
-
                 }
             }
             list.add(object);
