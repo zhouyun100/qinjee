@@ -79,6 +79,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     public List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList) {
 
         List<CheckCustomTableVO> checkCustomTableVOList = new ArrayList<>();
+//        List<CheckCustomFieldVO> customFieldValueList;
         StringBuffer resultMsg;
         Boolean checkResult;
 
@@ -93,18 +94,22 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
         //循环大表数据
         for (Map<Integer, Object> map : mapList) {
+            List<CheckCustomFieldVO> customFieldValueList = new ArrayList<>();
             resultMsg = new StringBuffer();
-            List<CheckCustomFieldVO> customFieldValueList=new ArrayList<>();
+            CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
             checkResult = true;
 
             //循环每条记录的每个字段对应的值
             for (Map.Entry<Integer, Object> entry : map.entrySet()) {
+                CheckCustomFieldVO customFieldVOTemp = new CheckCustomFieldVO();
                 //获取字段的配置信息
 
                 CheckCustomFieldVO checkCustomFieldVO = customFieldMap.get(entry.getKey());
                 if ( checkCustomFieldVO == null) {
                     continue;
                 }
+                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
+
 //                CheckCustomFieldVO checkCustomFieldVO = (CheckCustomFieldVO) deepCopyByJson(customFieldMap.get(entry.getKey()));
                 //设置字段录入的值
                 checkCustomFieldVO.setFieldValue(String.valueOf(entry.getValue()));
@@ -117,6 +122,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     //错误信息追加
                     resultMsg.append( checkCustomFieldVO.getResultMsg());
                 }
+                customFieldVOTemp = customFieldMap.get(entry.getKey()).clone();
+                customFieldValueList.add(customFieldVOTemp);
                 customFieldValueList.add(checkCustomFieldVO);
             }
             CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
@@ -184,6 +191,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         //检验一行的结果
                         checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
+
                 }
             }
             list.add(object);

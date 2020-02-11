@@ -13,13 +13,17 @@ package com.qinjee.masterdata.model.vo.custom;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.lang.Cloneable;
+
 /**
  * @author 周赟
  * @date 2019/11/26
  */
 @Data
 @JsonInclude
-public class CheckCustomFieldVO extends CustomFieldVO {
+public class CheckCustomFieldVO extends CustomFieldVO implements Serializable, Cloneable {
+
 
     /**
      * 字段值
@@ -35,4 +39,15 @@ public class CheckCustomFieldVO extends CustomFieldVO {
      * 校验结果信息
      */
     private String resultMsg;
+
+    @Override
+    public CheckCustomFieldVO clone() {
+        CheckCustomFieldVO stu = null;
+            try{
+                stu = (CheckCustomFieldVO)super.clone();
+            }catch(CloneNotSupportedException e) {
+              e.printStackTrace();
+            }
+        return stu;
+    }
 }
