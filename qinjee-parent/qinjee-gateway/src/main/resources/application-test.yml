@@ -77,5 +77,35 @@ ribbon:
     enabled: true # 开启 okhttp 支持
 
 
+hystrix:
+#  threadpool:
+#    default:
+#      # 核心线程池大小  默认10
+#      coreSize: 20
+#      # 最大最大线程池大小
+#      maximumSize: 30
+#      # 此属性允许maximumSize的配置生效。 那么该值可以等于或高于coreSize。 设置coreSize <maximumSize会创建一个线程池，该线程池可以支持maximumSize并发，但在相对不活动期间将向系统返回线程。 （以keepAliveTimeInMinutes为准）
+#      allowMaximumSizeToDivergeFromCoreSize: true
+#      # 请求等待队列
+#      maxQueueSize: 10
+#      # 队列大小拒绝阀值 在还未超过请求等待队列时也会拒绝的大小
+#      queueSizeRejectionThreshold: 10
+  command:
+    default:
+#    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
+      fallback:
+        enabled: true
+      execution:
+        timeout:
+          #如果enabled设置为false，则请求超时交给ribbon超时时间为准,为true,则超时以熔断时间为准
+          enabled: true
+        isolation:
+          #隔离策略，有THREAD和SEMAPHORE
+          #THREAD - 它在单独的线程上执行，并发请求受线程池中的线程数量的限制
+          #SEMAPHORE - 它在调用线程上执行，并发请求受到信号量计数的限制
+          #对比：https://www.cnblogs.com/java-synchronized/p/7927726.html
+          thread:
+            timeoutInMilliseconds: 10000 #断路器超时时间，默认1000ms
+
 logging:
   config: classpath:log4j/log4j2_test.xml
