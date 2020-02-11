@@ -741,7 +741,7 @@
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-    probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
     arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
     orga.org_name as org_name ,
@@ -755,29 +755,27 @@
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-    left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+     left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
-      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+        left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
-      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+        left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
 
-      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+        left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
 
-      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+        left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
 
-      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+        left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
 
-      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+        left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
 
-      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+        left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
 
-      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+        left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
-      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
+        left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
     from t_user_archive where company_id =#{companyId} and is_delete =0
   </select>
@@ -823,14 +821,51 @@
 </select>
 
   <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"  />
-    from t_user_archive
-    where is_delete=0
+      SELECT
+      arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+      arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
+      maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+      arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+      orga.org_name as org_name ,
+      post.post_name as post_name ,
+      org.org_name as business_unit_name,
+      arch.user_name as supervisor_user_name
+      FROM
+      t_user_archive arc
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      left join t_organization org on org.org_id=arc.business_unit_id
+      LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+      left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+
+      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+
+      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+
+      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+
+      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+
+      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+
+      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+
+      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+
+      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+
+      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+
+      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+
+      where arc.is_delete=0
       <choose>
           <when test='archiveList != null and archiveList.size()>0'>
               and
-              archive_id in
+              arc.archive_id in
               <foreach collection="archiveList" item="item" open="(" separator="," close=")">
                   #{item}
               </foreach>
@@ -933,7 +968,7 @@
       arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
       arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
       maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
       professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
       arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
       orga.org_name as org_name ,
@@ -947,29 +982,28 @@
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-      left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
-      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
-      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
 
-      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
 
-      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
 
-      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
 
-      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
 
-      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
 
-      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
-      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
       WHERE arc.is_delete = 0
      and arc.archive_status='SERVICE'
      and arc.org_id in
@@ -998,7 +1032,7 @@
       arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
       arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
       maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
       professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
       arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
       orga.org_name as org_name ,
@@ -1012,29 +1046,28 @@
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-      left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
-      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
-      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
 
-      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
 
-      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
 
-      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
 
-      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
 
-      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
 
-      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
-      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
 
       AND org.org_id IN
     <foreach collection="orgList" item="item" open="(" separator="," close=")">
@@ -1170,7 +1203,7 @@
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-    probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+   arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
     arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
     orga.org_name as org_name ,
@@ -1184,29 +1217,28 @@
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-    left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+    left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
-      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+        left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
-      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+        left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
 
-      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+        left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
 
-      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+        left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
 
-      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+        left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
 
-      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+        left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
 
-      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+        left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
 
-      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+        left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
-      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+        left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
     where arc.id_number=#{s}
     and arc.company_id = #{companyId}
     and arc.is_delete=0
@@ -1262,7 +1294,7 @@
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-    probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
     arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
     orga.org_name as org_name ,
@@ -1276,31 +1308,29 @@
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-    left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
-      left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
-      left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
 
-      left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
 
-      left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
 
-      left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
 
-      left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
 
-      left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
 
-      left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
-      left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
+      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-      left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
-
-    where arc.org_id in
+      where arc.org_id in
     <foreach collection="list" item="item" open="(" separator="," close=")">
         #{item}
     </foreach>
@@ -1331,7 +1361,7 @@
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
         arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
         maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-        probationPeriod.dict_value as probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+        arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
         arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
         orga.org_name as org_name ,
@@ -1344,30 +1374,28 @@
         left join t_organization org on org.org_id=arc.business_unit_id
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
-        left join t_sys_dict userCategory on  userCategory.dict_value=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+        left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
-        left join t_sys_dict idType on  idType.dict_value=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
+        left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
 
-        left join t_sys_dict gender on gender.dict_value=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
+        left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
 
-        left join t_sys_dict nationality on nationality.dict_value=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
+        left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
 
-        left join t_sys_dict politicalStatus on politicalStatus.dict_value=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
+        left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
 
-        left join t_sys_dict maritalStatus on maritalStatus.dict_value=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
+        left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
 
-        left join t_sys_dict firstDegree on firstDegree.dict_value=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
+        left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-        left join t_sys_dict highestDegree on highestDegree.dict_value=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
+        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
 
-        left join t_sys_dict professionalCertification on professionalCertification.dict_value=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+        left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
-        left join t_sys_dict professionalTitle on professionalTitle.dict_value=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
+        left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-        left join t_sys_dict professionalLevel on professionalLevel.dict_value=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-        left join t_sys_dict probationPeriod on probationPeriod.dict_value=arc.probation_period  and probationPeriod.dict_type='PROBATION_PERIOD' AND probationPeriod.is_delete=0
         where arc.is_delete=0
         <choose>
             <when test='integerList != null and integerList.size()>0'>

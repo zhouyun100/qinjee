@@ -217,7 +217,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         } catch (Exception e) {
             ExceptionCast.cast ( CommonCode.SQL_MAY_MISTAKE );
         }
-        List < UserArchiveVo > list = userArchiveDao.selectByPrimaryKeyList ( integerList );
+        List < UserArchiveVo > list = userArchiveDao.selectByPrimaryKeyList ( integerList,userSession.getCompanyId() );
         //兼职集合
         List<UserArchiveVo> list2=userArchiveDao.selectPartTimeArchive(integerList,userSession.getCompanyId ());
         if(standingBookReturnVo.getType ().contains ( "兼职" )&&!standingBookReturnVo.getType ().contains ( "主职" )){

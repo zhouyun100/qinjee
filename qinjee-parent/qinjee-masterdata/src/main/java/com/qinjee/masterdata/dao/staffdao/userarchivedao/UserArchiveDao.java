@@ -50,7 +50,7 @@ public interface UserArchiveDao {
 
     List<Integer> selectByOrgId(Integer orgId);
 
-    List<UserArchiveVo> selectByPrimaryKeyList(@Param("archiveList") List<Integer> archiveList);
+    List<UserArchiveVo> selectByPrimaryKeyList(@Param("archiveList") List<Integer> archiveList, @Param("companyId") Integer companyId);
 
     Integer selectArchiveIdByTel(@Param("phoneNumber") String phoneNumber);
 
