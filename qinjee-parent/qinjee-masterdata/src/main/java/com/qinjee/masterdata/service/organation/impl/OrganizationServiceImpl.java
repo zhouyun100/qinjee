@@ -308,7 +308,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, (layer - 1), isEnable);
         //查询所有相关的机构
         List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics(userSession.getArchiveId(), orgIdList, isEnable, new Date());
-
         //拿到根节点
         List<OrganizationVO> topOrgsList = allOrg.stream().filter(organization -> {
             if (organization.getOrgId() != null && organization.getOrgId().equals(orgId)) {
@@ -1011,6 +1010,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }
         }
     }
+
+    /**
+     * 判断是否有操作权限
+     * @return
+     */
+    private boolean ensureRight(){
+        return false;
+    }
+
 }
 
 
