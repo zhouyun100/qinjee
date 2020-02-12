@@ -65,25 +65,26 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Override
     public void putFile(MultipartFile[] files, UserSession userSession) throws Exception {
         File file1 = null;
-        for (int i = 0; i < files.length; i++) {
-            try {
-                String pathUrl=files[i].getOriginalFilename ();
-                String s = pathUrl.split ( "#" )[0];
-                file1 = FileUploadUtils.multipartFileToFile ( files[i] );
-                String name = getName ( files[i].getOriginalFilename () );
-                int i1 = pathUrl.lastIndexOf ( "." );
-                String substring = pathUrl.substring ( i1 );
-                //根据层级拼接url
-                pathUrl=s+File.separator+name+File.separator+name+"("+i+")"+substring;
-                insertAttachment(files[i], userSession, pathUrl);
-                UpAndDownUtil.putFile(file1, pathUrl);
-            } finally {
-                if(file1!=null) {
-                    file1.delete ();
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    String pathUrl = files[i].getOriginalFilename();
+                    String s = pathUrl.split("#")[0];
+                    file1 = FileUploadUtils.multipartFileToFile(files[i]);
+                    String name = getName(files[i].getOriginalFilename());
+                    int i1 = pathUrl.lastIndexOf(".");
+                    String substring = pathUrl.substring(i1);
+                    //根据层级拼接url
+                    pathUrl = s + File.separator + name + File.separator + name + "(" + i + ")" + substring;
+                    insertAttachment(files[i], userSession, pathUrl);
+                    UpAndDownUtil.putFile(file1, pathUrl);
+                } finally {
+                    if (file1 != null) {
+                        file1.delete();
+                    }
                 }
             }
         }
-    }
+
 
 
 
@@ -210,9 +211,13 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     private String getName(String filename) {
-        String s = filename.split ( "#" )[1];
-        String s1 = s.split ( "\\." )[0];
-        return s1;
+        try {
+            String s = filename.split ( "#" )[1];
+            String s1 = s.split ( "\\." )[0];
+            return s1;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

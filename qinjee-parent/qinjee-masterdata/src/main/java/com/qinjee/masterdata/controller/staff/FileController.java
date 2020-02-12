@@ -12,6 +12,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,16 +42,17 @@ public class FileController extends BaseController {
      * @param files 文件数组
      * @return
      */
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, headers = "content-type=multipart/form-data" )
+    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST,headers="content-type=multipart/form-data" )
     @ApiOperation(value = "上传文件", notes = "hkt")
-    public ResponseResult importFile( @RequestParam MultipartFile[] files) throws Exception {
+    public ResponseResult importFile( @RequestParam MultipartFile[] files) {
         Boolean b = checkParam(getUserSession (),files);
         if(b) {
             try {
                 fileOperateService.putFile (files,getUserSession () );
                 return new ResponseResult <> (null, CommonCode.SUCCESS);
             } catch (Exception e) {
-                ExceptionCast.cast(CommonCode.FAIL);
+                e.printStackTrace();
+                return new ResponseResult<>(null,CommonCode.FAIL);
             }
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
@@ -165,7 +167,7 @@ public class FileController extends BaseController {
      * 预入职模板上传文件
      * @param file 文件
      */
-    @RequestMapping(value = "/uploadPreFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadPreFile", method = RequestMethod.POST,headers="content-type=multipart/form-data")
     @ApiOperation(value = "上传预入职文件", notes = "hkt")
     public ResponseResult uploadPreFile( @RequestParam MultipartFile file,Integer preId,Integer groupId,Integer companyId,HttpServletResponse response) throws Exception {
         Boolean b = checkParam(file,preId,groupId,companyId,response);

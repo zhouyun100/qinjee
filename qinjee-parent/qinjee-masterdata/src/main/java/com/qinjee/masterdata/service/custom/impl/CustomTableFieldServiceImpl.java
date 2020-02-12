@@ -104,29 +104,25 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 CheckCustomFieldVO customFieldVOTemp = new CheckCustomFieldVO();
                 //获取字段的配置信息
 
-                CheckCustomFieldVO checkCustomFieldVO = customFieldMap.get(entry.getKey());
-                if ( checkCustomFieldVO == null) {
+                if ( customFieldMap.get(entry.getKey()) == null) {
                     continue;
                 }
                 customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
-
-//                CheckCustomFieldVO checkCustomFieldVO = (CheckCustomFieldVO) deepCopyByJson(customFieldMap.get(entry.getKey()));
                 //设置字段录入的值
-                checkCustomFieldVO.setFieldValue(String.valueOf(entry.getValue()));
+                customFieldMap.get(entry.getKey()).setFieldValue(String.valueOf(entry.getValue()));
                 //字段值规则校验
-                validCustomFieldValue(checkCustomFieldVO);
+                validCustomFieldValue( customFieldMap.get(entry.getKey()));
 
                 //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                if (! checkCustomFieldVO.getCheckResult()) {
+                if (! customFieldMap.get(entry.getKey()).getCheckResult()) {
                     checkResult = false;
                     //错误信息追加
-                    resultMsg.append( checkCustomFieldVO.getResultMsg());
+                    resultMsg.append( customFieldMap.get(entry.getKey()).getResultMsg());
                 }
                 customFieldVOTemp = customFieldMap.get(entry.getKey()).clone();
                 customFieldValueList.add(customFieldVOTemp);
-                customFieldValueList.add(checkCustomFieldVO);
+
             }
-            CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
             customTableVO1.setCustomFieldVOList(customFieldValueList);
             customTableVO1.setCheckResult(checkResult);
             customTableVO1.setResultMsg(resultMsg.toString());
@@ -135,25 +131,22 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         return checkCustomTableVOList;
     }
 
-    private Object deepCopyByJson(Object obj) {
-        String json = JSON.toJSONString(obj);
-        return JSON.parseObject(json, Object.class);
-    }
-
     @Override
     public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists) throws IllegalAccessException,  ParseException {
         List<Object> list = new ArrayList<>();
         List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
         List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();
+
         StringBuffer resultMsg = new StringBuffer();
         InsideCheckAndImport insideCheckAndImport = new InsideCheckAndImport();
         for (Map<String, String> map : lists) {
+            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
             for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
                 for (Field declaredField : object.getClass().getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    CheckCustomFieldVO checkCustomFieldVO = new CheckCustomFieldVO();
                     if (declaredField.getName().equals(
                         HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+                        CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO();
                         Class typeClass = declaredField.getType();
                         int i = typeClass.getName().lastIndexOf(".");
                         String type = typeClass.getTypeName().substring(i + 1);
@@ -179,7 +172,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         //设置值
                         checkCustomFieldVO.setCode(integerStringEntry.getKey());
                         checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
-
                         //字段值规则校验
                         validCustomFieldValue(checkCustomFieldVO);
                         //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
@@ -188,22 +180,23 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setCheckResult(false);
                             resultMsg.append(checkCustomFieldVO.getResultMsg());
                         }
-                        //检验一行的结果
-                        checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
-
                 }
+                checkCustomTableVO.setResultMsg(resultMsg.toString());
+                checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
             }
-            list.add(object);
-            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
-            checkCustomTableVO.setResultMsg(resultMsg.toString());
-            checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
+            Object o = deepCopyByJson(object);
+            list.add(o);
             //检验多行的结果
             checkCustomTableVOS.add(checkCustomTableVO);
         }
         insideCheckAndImport.setList(checkCustomTableVOS);
         insideCheckAndImport.setObjectList(list);
         return insideCheckAndImport;
+    }
+    private Object deepCopyByJson(Object obj) {
+        String json = JSON.toJSONString(obj);
+        return JSON.parseObject(json, Object.class);
     }
 
 

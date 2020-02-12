@@ -228,7 +228,7 @@ public class ExcelUtil {
         List < String > heads = Arrays.asList ( list.get ( 0 ) );
         List < Map < String, String > > listMap = new ArrayList <> ();
         Map < String, String > mapRow;
-        for (int i = 1; i < list.size (); i++) {
+        for (int i = 1; i < list.size ()-1; i++) {
             mapRow = new HashMap <> ();
             for (int j = 0; j < heads.size (); j++) {
                 if(StringUtils.isBlank ( list.get ( i )[j] )) {
