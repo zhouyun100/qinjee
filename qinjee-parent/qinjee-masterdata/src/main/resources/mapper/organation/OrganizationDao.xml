@@ -305,7 +305,7 @@
         <if test="orgIds !=null and orgIds.size >0 ">
             update t_organization
             <set>
-                 is_enable = #{isEnable,jdbcType=SMALLINT}
+                is_enable = #{isEnable,jdbcType=SMALLINT}
             </set>
             <where>
                 org_id in
@@ -321,7 +321,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_organization
-        where org_parent_id = #{orgParentId,jdbcType=INTEGER}  ORDER BY sort_Id DESC
+        where org_parent_id = #{orgParentId,jdbcType=INTEGER} ORDER BY sort_Id DESC
     </select>
     <select id="listSonFullNameAndType" resultMap="BaseResultMap">
         select
@@ -330,6 +330,54 @@
         where org_parent_id = #{orgParentId,jdbcType=INTEGER}  ORDER BY sort_Id DESC
     </select>
 
+    <select id="ensureRight" resultType="int">
+        SELECT
+		count(1)
+	FROM
+		t_organization t
+	WHERE
+		t.org_id = #{orgId}
+		AND NOT EXISTS (
+		SELECT
+			t2.org_id
+		FROM
+			t_organization t2
+		WHERE
+			#{orgId} NOT IN (
+			SELECT
+				v.org_id
+			FROM
+				(
+				SELECT
+					t_organization.org_id
+				FROM
+					t_organization,
+					t_role_org_auth,
+					t_user_role
+				WHERE
+					t_user_role.archive_id = #{archiveId}
+					AND t_role_org_auth.role_id = t_user_role.role_id
+					AND t_organization.org_id = t_role_org_auth.org_id
+					AND t_user_role.is_delete = 0
+					AND t_role_org_auth.is_delete = 0
+
+				UNION
+
+				SELECT
+					t_organization.org_id
+				FROM
+					t_organization,
+					t_user_org_auth
+				WHERE
+					t_user_org_auth.archive_id = #{archiveId}
+					AND t_organization.org_id = t_user_org_auth.org_id
+					AND t_user_org_auth.is_delete = 0
+				) v
+			)
+			OR (t2.org_parent_id = #{orgId} and t2.is_enable = 1)
+		)
+
+    </select>
     <select id="listOrgnizationByIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -581,7 +629,8 @@
     </select>
 
     <select id="listOrganizationByCompanyId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"></include>
+        select
+        <include refid="Base_Column_List"></include>
         from t_organization where company_id =#{companyId}
     </select>
     <update id="updateByOrgCode" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
@@ -649,8 +698,10 @@
         and orga.is_enable=1
         and post.is_delete=0
     </select>
-    <select id="getOrgById" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+    <select id="getOrgById" resultType="com.qinjee.masterdata.model.vo.organization.OrganizationVO"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
         from t_organization
         where org_id=#{orgId}
         and company_id=#{companyId}
