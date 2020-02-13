@@ -549,17 +549,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return userArchiveDao.selectByPrimaryKey ( id );
     }
 
-    @Override
-    public PageResult < UserArchiveVo > selectArchiveNoOrgId(UserSession userSession, List < Integer > list, Integer pageSize, Integer currentPage) {
-        PageHelper.startPage ( currentPage, pageSize );
-        List < UserArchiveVo > list1 = userArchiveDao.selectUserArchiveVo ( list, userSession.getCompanyId () );
-        return new PageResult <> ( list1 );
-    }
 
-    @Override
-    public List < Integer > selectMyOrg(UserSession userSession) {
-        return userArchiveDao.selectMyOrg ( userSession.getArchiveId () );
-    }
+
 
     @Transactional(rollbackFor = Exception.class)
     public Integer insertQueryScheme(QuerySchemaVo querySchemaVo) {

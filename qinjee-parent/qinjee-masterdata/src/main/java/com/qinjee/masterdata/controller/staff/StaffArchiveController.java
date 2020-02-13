@@ -211,14 +211,8 @@ public class StaffArchiveController extends BaseController {
         if(b){
             UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
             PageResult < UserArchiveVo > userArchiveVoPageResult;
-            if(!CollectionUtils.isEmpty ( requestUserarchiveVo.getOrgId () )){
-                userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
-                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
-            }else{
-                List < Integer > integers = staffArchiveService.selectMyOrg ( getUserSession () );
-                userArchiveVoPageResult = staffArchiveService.selectArchiveNoOrgId ( getUserSession (), integers,
-                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
-            }
+            userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
+                       requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 setHead ( requestUserarchiveVo.getQuerySchemaId (), userArchiveVoAndHeader );
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);

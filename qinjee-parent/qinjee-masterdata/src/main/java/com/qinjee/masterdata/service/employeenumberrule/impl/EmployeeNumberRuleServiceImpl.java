@@ -79,7 +79,10 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String dateModel = getDateModel ( creatNumberVo.getDateRule () );
             String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
             String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
-            String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId,dateModel);
+//            String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId,dateModel);
+//            return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
+            String string = employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix;
+            String s=employeeNumberRuleDao.selectMaxNumberForEmp(employeeNumberPrefix,dateModel,employeeNumberInfix,employeeNumberSuffix,companyId, string);
             return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
         }else {
             return null;
@@ -97,7 +100,8 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String employeeNumberInfix = creatNumberVo.getContractRuleInfix ();
             String employeeNumberSuffix = creatNumberVo.getContractRuleSuffix ();
             //截取来寻找目前最大的流水号
-            String s=employeeNumberRuleDao.selectMaxNumberForCon(creatNumberVo,companyId,dateModel);
+            String string = employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix;
+            String s=employeeNumberRuleDao.selectMaxNumberForCon(employeeNumberPrefix,dateModel,employeeNumberInfix,employeeNumberSuffix,companyId, string);
             return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
         }
         return null;

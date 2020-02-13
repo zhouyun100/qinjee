@@ -108,7 +108,9 @@ public interface UserArchiveDao {
 
     UserArchiveVo selectByUserId(Integer userId,Integer companyId);
 
-    List< Integer> selectMyOrg(Integer archiveId);
+
 
     List< UserArchiveVo> selectPartTimeArchive(@Param("integerList") List< Integer> integerList, @Param("companyId") Integer companyId);
+
+   Integer selectIdByNumber(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
 }

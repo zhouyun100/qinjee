@@ -14,13 +14,16 @@ import com.alibaba.fastjson.JSON;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
@@ -73,6 +76,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Autowired
     private SysDictService sysDictService;
+
+    @Autowired
+    private BlacklistDao blacklistDao;
 
 
     @Override
@@ -132,9 +138,10 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists) throws IllegalAccessException,  ParseException {
+    public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists,UserSession userSession) throws IllegalAccessException,  ParseException {
+        String idnumber=null;
+        String phone=null;
         List<Object> list = new ArrayList<>();
-        List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
         List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();
 
         StringBuffer resultMsg = new StringBuffer();
@@ -142,16 +149,20 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         for (Map<String, String> map : lists) {
             CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
             for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
+                List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
                 for (Field declaredField : object.getClass().getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    if (declaredField.getName().equals(
-                        HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey()))) {
+                    String s = HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey());
+                    if (declaredField.getName().equals(s)) {
                         CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO();
+                        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s,"ARC",userSession.getCompanyId());
+                        if(customFieldVO!=null){
+                        BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
+                        }
                         Class typeClass = declaredField.getType();
                         int i = typeClass.getName().lastIndexOf(".");
                         String type = typeClass.getTypeName().substring(i + 1);
                         //拼接单个字段
-                        checkCustomFieldVO.setIsMust((short) 1);
                         if ("Date".equals(type)) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                             Date parse = sdf.parse(integerStringEntry.getValue());
@@ -169,8 +180,26 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setTextType("text");
                             declaredField.set(object, value);
                         }
+                        if ("id_number".equals ( checkCustomFieldVO.getFieldCode () )) {
+                           idnumber = checkCustomFieldVO.getFieldValue();
+                        }
+                        if ("phone".equals ( checkCustomFieldVO.getFieldCode () )) {
+                            phone = checkCustomFieldVO.getFieldValue();
+                        }
+                        if(!org.apache.commons.lang.StringUtils.isEmpty(idnumber)){
+                            resultMsg.append("idnumber不能为空");
+                        }
+                        if(!org.apache.commons.lang.StringUtils.isEmpty(phone)){
+                            resultMsg.append("phone不能为空");
+                        }
+                        if(org.apache.commons.lang.StringUtils.isNotBlank(idnumber)&& org.apache.commons.lang.StringUtils.isNotBlank(phone)) {
+                            List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
+                            if (!org.springframework.util.CollectionUtils.isEmpty(blacklistList)) {
+                                resultMsg.append("此人员已经存在于黑名单！");
+                            }
+                        }
+
                         //设置值
-                        checkCustomFieldVO.setCode(integerStringEntry.getKey());
                         checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
                         //字段值规则校验
                         validCustomFieldValue(checkCustomFieldVO);
@@ -180,6 +209,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setCheckResult(false);
                             resultMsg.append(checkCustomFieldVO.getResultMsg());
                         }
+                        checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
                 }
                 checkCustomTableVO.setResultMsg(resultMsg.toString());
@@ -443,6 +473,76 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     public List<CustomFieldVO> selectFieldListByTableId(Integer tableId) {
         return customTableFieldDao.selectFieldListByTableId(tableId);
 
+    }
+
+    @Override
+    public InsideCheckAndImport checkInsideFieldValueContract(Object object, List<Map<String, String>> mapList, UserSession userSession) throws IllegalAccessException, ParseException {
+        String idnumber=null;
+        String phone=null;
+        List<Object> list = new ArrayList<>();
+        List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();
+
+        StringBuffer resultMsg = new StringBuffer();
+        InsideCheckAndImport insideCheckAndImport = new InsideCheckAndImport();
+        for (Map<String, String> map : mapList) {
+            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
+            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
+                List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
+                for (Field declaredField : object.getClass().getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    String s = HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey());
+                    if (declaredField.getName().equals(s)) {
+                        CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO();
+                        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s,"ARC",userSession.getCompanyId());
+                        if(customFieldVO!=null){
+                            BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
+                        }
+                        Class typeClass = declaredField.getType();
+                        int i = typeClass.getName().lastIndexOf(".");
+                        String type = typeClass.getTypeName().substring(i + 1);
+                        //拼接单个字段
+                        if ("Date".equals(type)) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date parse = sdf.parse(integerStringEntry.getValue());
+                            //设置值类型
+                            checkCustomFieldVO.setTextType("date");
+                            declaredField.set(object, parse);
+                        }
+                        if ("Integer".equals(type)) {
+                            int i1 = Integer.parseInt(integerStringEntry.getValue());
+                            checkCustomFieldVO.setTextType("number");
+                            declaredField.set(object, i1);
+                        }
+                        if ("String".equals(type)) {
+                            String value = integerStringEntry.getValue();
+                            checkCustomFieldVO.setTextType("text");
+                            declaredField.set(object, value);
+                        }
+
+                        //设置值
+                        checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
+                        //字段值规则校验
+                        validCustomFieldValue(checkCustomFieldVO);
+                        //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
+                        if (!checkCustomFieldVO.getCheckResult()) {
+                            //错误信息追加
+                            checkCustomFieldVO.setCheckResult(false);
+                            resultMsg.append(checkCustomFieldVO.getResultMsg());
+                        }
+                        checkCustomFieldVOS.add(checkCustomFieldVO);
+                    }
+                }
+                checkCustomTableVO.setResultMsg(resultMsg.toString());
+                checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
+            }
+            Object o = deepCopyByJson(object);
+            list.add(o);
+            //检验多行的结果
+            checkCustomTableVOS.add(checkCustomTableVO);
+        }
+        insideCheckAndImport.setList(checkCustomTableVOS);
+        insideCheckAndImport.setObjectList(list);
+        return insideCheckAndImport;
     }
 
     @Override

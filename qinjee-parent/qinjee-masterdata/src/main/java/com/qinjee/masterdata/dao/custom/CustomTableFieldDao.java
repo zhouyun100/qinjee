@@ -299,6 +299,8 @@ public interface CustomTableFieldDao {
     Integer selectSymbolForPhone(List< Integer> isSystemDefineList);
 
     List< Map< String, Integer>> transSupiorIdByName(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+
+    CustomFieldVO selectFieldByCodeAndFuncCodeAndComapnyId(@Param("s") String s, @Param("arc") String arc, @Param("companyId") Integer companyId);
 }
 
 

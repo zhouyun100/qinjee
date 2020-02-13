@@ -159,19 +159,19 @@
     where company_id=#{companyId}
     and is_delete=0
   </select>
-    <select id="selectMaxNumberForEmp" resultType="java.lang.String">
-    select
-     substring_index(MAX(employee_number),concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
-    from t_user_archive
-    where company_id=#{companyId}
-    AND employee_number like concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix},'%')
-    </select>
 
+  <select id="selectMaxNumberForEmp" resultType="java.lang.String">
+    select
+    substring_index(MAX(employee_number),concat(#{employeeNumberPrefix},#{dateModel} , #{employeeNumberInfix} , #{employeeNumberSuffix}),-1)
+    from t_user_archive
+    where archive_id in(select archive_id from t_user_archive where company_id=#{companyId} and is_delete=0)
+    AND contract_number like concat('%',#{string},'%')
+  </select>
   <select id="selectMaxNumberForCon" resultType="java.lang.String">
     select
-    substring_index(MAX(contract_number),concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix}),-1)
+    substring_index(MAX(contract_number),concat(#{employeeNumberPrefix},#{dateModel} , #{employeeNumberInfix} , #{employeeNumberSuffix}),-1)
     from t_labor_contract
     where archive_id in(select archive_id from t_user_archive where company_id=#{companyId} and is_delete=0)
-    AND contract_number like concat(#{creatNumberVo.employeeNumberPrefix},#{dateModel} , #{creatNumberVo.employeeNumberInfix} , #{creatNumberVo.employeeNumberSuffix},'%')
+    AND contract_number like concat('%',#{string},'%')
   </select>
 </mapper>

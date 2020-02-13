@@ -1006,26 +1006,31 @@
 
       WHERE arc.is_delete = 0
      and arc.archive_status='SERVICE'
-     and arc.org_id in
-    <foreach collection="orgId" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
+     <if test="orgId !=null and orgId.size()>0">
+         and arc.org_id in
+         <foreach collection="orgId" item="item" open="(" separator="," close=")">
+             #{item}
+         </foreach>
+     </if>
     and arc.org_id in(
-    select org_id from t_user_org_auth oa where oa.archive_id = #{archiveId}
+    select org.org_id from t_user_org_auth oa
+    left join  t_organization org on org.org_id=oa.org_id and org.is_enable=1
+    where oa.archive_id = #{archiveId}
     and (oa.is_trusteeship = 0
     or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
     )
     and oa.is_delete = 0
     UNION
-    select org_id from t_role_org_auth roa,t_user_role ur
-    where roa.role_id = ur.role_id
-    and ur.archive_id = #{archiveId}
+    select org.org_id from t_role_org_auth roa
+    left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
     and (ur.is_trusteeship = 0
     or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time)
     )
-    and roa.is_delete = 0
     and ur.is_delete = 0
+      left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
+    where roa.is_delete = 0
     )
+    order by arc.archive_id
   </select>
   <select id="selectByOrgListAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
       SELECT
@@ -1164,23 +1169,7 @@
         and arc.archive_status='SERVICE'
         group by arc.archive_id
   </select>
-    <select id="selectMyOrg" resultType="java.lang.Integer">
-    select org_id from t_user_org_auth oa where oa.archive_id = #{archiveId}
-    and (oa.is_trusteeship = 0
-    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
-    )
-    and oa.is_delete = 0
-    UNION
-    select org_id from t_role_org_auth roa,t_user_role ur
-    where roa.role_id = ur.role_id
-    and ur.archive_id = #{archiveId}
-    and (ur.is_trusteeship = 0
-    or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time)
-    )
-    and roa.is_delete = 0
-    and ur.is_delete = 0
 
-    </select>
   <select id="selectTransMessage" resultType="java.util.Map">
       SELECT
 	 org.org_name AS org_name,
@@ -1412,6 +1401,12 @@
 
         group by relation.archive_id
 
+    </select>
+    <select id="selectIdByNumber" resultType="java.lang.Integer">
+        select archive_id from t_user_archive
+        where id_number=#{idnumber}
+        and company_id=#{companyId}
+        and is_delete=0
     </select>
 </mapper>
 

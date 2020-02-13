@@ -133,7 +133,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     public CheckImportVo importFileAndCheckFileBlackList(MultipartFile multipartFile, UserSession userSession) throws Exception {
         checkFileType ( multipartFile );
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
-        InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new BlackListVo (), mapList );
+        InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new BlackListVo (), mapList,userSession );
         redisClusterService.setex ( userSession.getCompanyId () + "BLACKLIST" + userSession.getArchiveId () + "import", 2 * 60 * 60,
                 JSON.toJSONString ( insideCheckAndImport.getObjectList () ) );
         //将获取的结果存进缓存中，有效期2小时
@@ -149,7 +149,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         // 获取文件名
         checkFileType ( multipartFile );
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
-        InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValue ( new ContractVo (), mapList );
+        InsideCheckAndImport insideCheckAndImport = customTableFieldService.checkInsideFieldValueContract ( new ContractVo (), mapList,userSession );
         redisClusterService.setex ( userSession.getCompanyId () + "CONTRACT" + userSession.getArchiveId () + "import", 2 * 60 * 60,
                 JSON.toJSONString ( insideCheckAndImport.getObjectList () ) );
         //将获取的结果存进缓存中，有效期2小时
@@ -234,7 +234,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
             String idtype = null;
             String idnumber = null;
-            String employmentNumber = null;
+//            String employmentNumber = null;
             String phone=null;
             StringBuffer stringBuffer=new StringBuffer (  );
             for (CheckCustomFieldVO fieldVO : checkCustomTableVO.getCustomFieldVOList ()) {
@@ -242,9 +242,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     idtype = fieldVO.getFieldValue ();
                 } else if ("id_number".equals ( fieldVO.getFieldCode () )) {
                     idnumber = fieldVO.getFieldValue ();
-                } else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
-                    employmentNumber = fieldVO.getFieldValue ();
-                }else if("phone".equals ( fieldVO.getFieldCode () )){
+                }
+//                else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
+//                    employmentNumber = fieldVO.getFieldValue ();}
+                else if("phone".equals ( fieldVO.getFieldCode () )){
                     phone=fieldVO.getFieldValue ();
                 }
                 //校验非空
@@ -252,14 +253,34 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 setCheck ( fieldVO, "org_id", "部门" );
                 setCheck ( fieldVO, "post_id", "岗位" );
                 setCheck ( fieldVO, "supervisor_id", "直接上级" );
-                //校验黑名单
                 if(fieldVO.getResultMsg ()!=null) {
                     stringBuffer.append ( fieldVO.getResultMsg ()+ "\t" );
                 }
             }
-            List < Blacklist > blacklistList = blacklistDao.selectByIdNumberAndPhone ( idnumber, phone, userSession.getCompanyId () );
-            if(!CollectionUtils.isEmpty ( blacklistList )){
-                stringBuffer.append ( "此人员已经存在于黑名单！" );
+            if("PRE".equalsIgnoreCase(funcCode)){
+                if(idnumber==null){
+                    stringBuffer.append("证件号不能为空");
+                }
+                if(idtype==null){
+                    stringBuffer.append("证件类型不能为空");
+                }
+            }
+            if("ARC".equalsIgnoreCase(funcCode)){
+                if(idnumber==null){
+                    stringBuffer.append("证件号不能为空");
+                }
+//                if(employmentNumber==null){
+//                    stringBuffer.append("工号不能为空");
+//                }
+            }
+
+
+            //校验黑名单
+            if(StringUtils.isNotBlank(idnumber)&& StringUtils.isNotBlank(phone)) {
+                List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
+                if (!CollectionUtils.isEmpty(blacklistList)) {
+                    stringBuffer.append("此人员已经存在于黑名单！");
+                }
             }
             checkCustomTableVO.setResultMsg ( stringBuffer.toString () );
             if (systemDefine == 0) {
@@ -268,9 +289,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     Integer pre = null;
                     Integer achiveId = null;
                     if ("PRE".equals ( funcCode )) {
-                        pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber );
+                        pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber,userSession.getCompanyId() );
                     } else if ("ARC".equals ( funcCode )) {
-                        achiveId = userArchiveDao.selectIdByNumberAndEmploy ( idnumber, employmentNumber );
+                        achiveId = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
                     }
                     if (pre != null || achiveId != null) {
                         result = true;
@@ -300,6 +321,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             }
         }
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

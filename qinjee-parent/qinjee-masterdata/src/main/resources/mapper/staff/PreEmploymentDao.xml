@@ -1057,6 +1057,17 @@
         and t_pre_employment.is_delete=0
 
     </select>
+    <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
+        select employment_id from t_pre_employment
+        where is_delete=0
+        and id_number=#{idnumber}
+        <if test="idtype !=null">
+            and id_type=#{idtype}
+        </if>
+        and company_id=#{companyId}
+        and is_delete=0
+    </select>
+
     <select id="selectNameAndOrg" resultType="java.util.Map">
         select employment_id,user_name,application_position,company_id,phone
         from t_pre_employment pre
@@ -1064,14 +1075,6 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and is_delete=0
-    </select>
-
-    <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
-        select employment_id from t_pre_employment
-        where is_delete=0
-
-        and id_number=#{idnumber}
         and is_delete=0
     </select>
     <select id="selectByEmployNumber" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">

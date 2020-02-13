@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
+import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.model.request.UserSession;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,11 +39,11 @@ public interface CustomTableFieldService {
     List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer,Object>> mapList);
 
     /**
-     * 检验内置表的值
+     * 检验黑名单
      * @param object
      * @return
      */
-    InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String,String>> lists) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException;
+    InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String,String>> lists,UserSession userSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException;
     /**
      * 校验自定义字段值（单个校验）
      * @param checkCustomFieldVO
@@ -104,4 +105,13 @@ public interface CustomTableFieldService {
      * @return
      */
     List< CustomFieldVO> selectFieldListByTableId(Integer tableId);
+
+    /**合同
+     * 检验
+     * @param object
+     * @param mapList
+     * @param userSession
+     * @return
+     */
+    InsideCheckAndImport checkInsideFieldValueContract(Object object, List<Map<String, String>> mapList, UserSession userSession) throws IllegalAccessException, ParseException;
 }
