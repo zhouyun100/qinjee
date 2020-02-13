@@ -127,4 +127,5 @@ public interface OrganizationDao {
 
     List<OrganizationVO> listSonFullNameAndType(Integer orgId);
 
+    int ensureRight(Integer orgId, Integer archiveId, Date now);
 }

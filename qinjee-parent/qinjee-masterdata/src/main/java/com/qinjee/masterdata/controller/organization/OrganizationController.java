@@ -39,6 +39,9 @@ import java.util.stream.Stream;
 @RequestMapping("/organization")
 @RestController
 @Api(tags = "【机构管理】机构接口")
+/**
+ * 在操作（删除、划转、合并、解封、封存）机构之前，根据用户勾选的机构id，查询出这些机构id下实际存在的机构与用户有权的机构进行对比，如果相等则代表用户有权操作，不等则提示权限不足（存在下级未授权机构）
+ */
 public class OrganizationController extends BaseController {
     private static Logger logger = LogManager.getLogger(OrganizationController.class);
     @Autowired

@@ -308,7 +308,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, (layer - 1), isEnable);
         //查询所有相关的机构
         List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics(userSession.getArchiveId(), orgIdList, isEnable, new Date());
-
         //拿到根节点
         List<OrganizationVO> topOrgsList = allOrg.stream().filter(organization -> {
             if (organization.getOrgId() != null && organization.getOrgId().equals(orgId)) {
@@ -675,16 +674,20 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      */
     public void deleteOrganizationById(List<Integer> orgIds, boolean cascadeDeletePost, UserSession userSession) {
         List<Integer> idList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(orgIds)) {
-            for (Integer orgId : orgIds) {
-                //递归至每一层机构
-                idList.add(orgId);
-                //递归查找子机构id
-                recursiveFindOrgIds(orgId, idList);
+        if (CollectionUtils.isEmpty(orgIds)){
+            return ;
+        }
+        for (int i = orgIds.size() - 1; i >= 0; i--) {
+            boolean b = ensureRight(orgIds.get(i), userSession.getArchiveId(), new Date());
+            if(b){
+                idList.add(orgIds.get(i));
             }
         }
-        //去重
-        idList = MyCollectionUtil.removeDuplicate(idList);
+        if(CollectionUtils.isEmpty(idList)){
+            return;
+        }
+       /* //去重
+        idList = MyCollectionUtil.removeDuplicate(idList);*/
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
@@ -734,14 +737,17 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
         //ch查询用户有权的机构
         List<Integer> idList = new ArrayList<>();
-        for (Integer orgId : orgIds) {
-            List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
-            idList.addAll(orgIdList);
+        for (int i = orgIds.size() - 1; i >= 0; i--) {
+
+            boolean b = ensureRight(orgIds.get(i), archiveId, new Date());
+            if(b){
+                idList.add(orgIds.get(i));
+            }
+          /*  List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
+            idList.addAll(orgIdList);*/
         }
         if (!CollectionUtils.isEmpty(idList)) {
             organizationDao.updateEnable(idList, isEnable);
-        } else {
-            ExceptionCast.cast(CommonCode.FAIL);
         }
     }
 
@@ -1011,6 +1017,16 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }
         }
     }
+
+    /**
+     * 判断是否有操作权限
+     * @return
+     */
+    private boolean ensureRight(Integer orgId,Integer archiveId,Date now ){
+        int result = organizationDao.ensureRight(orgId,archiveId,now);
+        return result > 0 ? true : false;
+    }
+
 }
 
 
