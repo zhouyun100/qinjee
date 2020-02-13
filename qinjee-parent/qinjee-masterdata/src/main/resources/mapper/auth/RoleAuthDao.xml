@@ -107,7 +107,6 @@
                 and t_role_org_auth.org_id = t_organization.org_id
                 and t_role.is_delete = 0
                 and t_role_org_auth.is_delete = 0
-                and t_organization.is_enable = 1
         UNION
         select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
                 t_organization.org_parent_id,t_organization.org_full_name
@@ -120,7 +119,6 @@
                 ))
                 and t_user_org_auth.org_id = t_organization.org_id
                 and t_user_org_auth.is_delete = 0
-                and t_organization.is_enable = 1
         ) v1
         GROUP BY v1.org_id,v1.org_code,v1.org_name,v1.org_type,v1.org_parent_id,v1.org_full_name
         ) v
