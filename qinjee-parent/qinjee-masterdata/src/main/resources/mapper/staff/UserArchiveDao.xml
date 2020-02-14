@@ -747,7 +747,7 @@
     arch.user_name as supervisor_user_name
     FROM
     t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -830,7 +830,7 @@
       arch.user_name as supervisor_user_name
       FROM
       t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
       left join t_organization org on org.org_id=arc.business_unit_id
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -857,7 +857,7 @@
 
       left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-      where arc.is_delete=0
+      where arc.is_delete=0 and orga.company_id=#{companyId}
       <choose>
           <when test='archiveList != null and archiveList.size()>0'>
               and
@@ -973,7 +973,7 @@
       arch.user_name as supervisor_user_name
       FROM
       t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
       left join t_organization org on org.org_id=arc.business_unit_id
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -1024,7 +1024,7 @@
     )
     and ur.is_delete = 0
       left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
-    where roa.is_delete = 0
+    where roa.is_delete = 0 and orga.company_id=#{companyId}
     )
     order by arc.archive_id
   </select>
@@ -1042,7 +1042,7 @@
       arch.user_name as supervisor_user_name
       FROM
       t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
       left join t_organization org on org.org_id=arc.business_unit_id
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -1197,7 +1197,7 @@
     arch.user_name as supervisor_user_name
     FROM
     t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -1288,7 +1288,7 @@
     arch.user_name as supervisor_user_name
     FROM
     t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -1319,7 +1319,7 @@
     <foreach collection="list" item="item" open="(" separator="," close=")">
         #{item}
     </foreach>
-    and arc.is_delete=0
+    and arc.is_delete=0 and orga.company_id=#{companyId}
     and arc.archive_status='SERVICE'
     group by arc.archive_id
   </select>
@@ -1355,7 +1355,7 @@
         arch.user_name as supervisor_user_name
         FROM
         t_user_archive arc
-        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1 and orga.company_id=#{companyId}
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
         left join t_organization org on org.org_id=arc.business_unit_id
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
@@ -1382,7 +1382,7 @@
 
         left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-        where arc.is_delete=0
+        where arc.is_delete=0  and orga.company_id=#{companyId}
         <choose>
             <when test='integerList != null and integerList.size()>0'>
                 and relation.archive_id in
