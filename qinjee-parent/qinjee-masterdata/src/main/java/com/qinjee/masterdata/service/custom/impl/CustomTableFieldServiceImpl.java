@@ -106,10 +106,12 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 if ( customFieldMap.get(entry.getKey()) == null) {
                     continue;
                 }
-                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
 
                 //设置字段录入的值
+                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
                 customFieldMap.get(entry.getKey()).setFieldValue(String.valueOf(entry.getValue()));
+                customFieldMap.get(entry.getKey()).setCheckResult(true);
+                customFieldMap.get(entry.getKey()).setResultMsg(null);
                 //字段值规则校验
                 validCustomFieldValue( customFieldMap.get(entry.getKey()));
 
