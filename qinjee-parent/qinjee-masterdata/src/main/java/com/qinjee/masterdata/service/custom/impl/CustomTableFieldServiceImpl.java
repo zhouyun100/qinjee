@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
@@ -28,6 +29,7 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.RegexpUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -101,21 +103,21 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         //循环大表数据
         for (Map<Integer, Object> map : mapList) {
             List<CheckCustomFieldVO> customFieldValueList = new ArrayList<>();
-            resultMsg = new StringBuffer();
             CheckCustomTableVO customTableVO1 = new CheckCustomTableVO();
+            resultMsg=new StringBuffer();
             checkResult = true;
-
             //循环每条记录的每个字段对应的值
             for (Map.Entry<Integer, Object> entry : map.entrySet()) {
                 CheckCustomFieldVO customFieldVOTemp = new CheckCustomFieldVO();
                 //获取字段的配置信息
-
                 if ( customFieldMap.get(entry.getKey()) == null) {
                     continue;
                 }
-                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
                 //设置字段录入的值
+                customFieldMap.get(entry.getKey()).setFieldId(entry.getKey());
                 customFieldMap.get(entry.getKey()).setFieldValue(String.valueOf(entry.getValue()));
+                customFieldMap.get(entry.getKey()).setCheckResult(true);
+                customFieldMap.get(entry.getKey()).setResultMsg(null);
                 //字段值规则校验
                 validCustomFieldValue( customFieldMap.get(entry.getKey()));
 
@@ -127,7 +129,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 }
                 customFieldVOTemp = customFieldMap.get(entry.getKey()).clone();
                 customFieldValueList.add(customFieldVOTemp);
-
             }
             customTableVO1.setCustomFieldVOList(customFieldValueList);
             customTableVO1.setCheckResult(checkResult);
@@ -139,25 +140,26 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists,UserSession userSession) throws IllegalAccessException,  ParseException {
+      List<Object> objectList=new ArrayList<>();
+      Boolean checkResult=true;
         String idnumber=null;
         String phone=null;
-        List<Object> list = new ArrayList<>();
-        List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();
-
-        StringBuffer resultMsg = new StringBuffer();
-        InsideCheckAndImport insideCheckAndImport = new InsideCheckAndImport();
-        for (Map<String, String> map : lists) {
-            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
-            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
-                List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
+      List<CheckCustomTableVO> checkCustomTableVOS=new ArrayList<>();
+      InsideCheckAndImport insideCheckAndImport=new InsideCheckAndImport();
+        for (Map<String, String> list : lists) {
+            CheckCustomTableVO checkCustomTableVO=new CheckCustomTableVO();
+            List<CheckCustomFieldVO> checkCustomFieldVOS=new ArrayList<>();
+            StringBuffer resultMsg=new StringBuffer();
+            for (Map.Entry<String, String> integerStringEntry : list.entrySet()) {
+                CheckCustomFieldVO checkCustomFieldVO=new CheckCustomFieldVO();
                 for (Field declaredField : object.getClass().getDeclaredFields()) {
                     declaredField.setAccessible(true);
+                    //获得code
                     String s = HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey());
                     if (declaredField.getName().equals(s)) {
-                        CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO();
-                        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s,"ARC",userSession.getCompanyId());
+                        CustomFieldVO customFieldVO = customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s, "ARC", userSession.getCompanyId());
                         if(customFieldVO!=null){
-                        BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
+                            BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
                         }
                         Class typeClass = declaredField.getType();
                         int i = typeClass.getName().lastIndexOf(".");
@@ -166,67 +168,61 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         if ("Date".equals(type)) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                             Date parse = sdf.parse(integerStringEntry.getValue());
-                            //设置值类型
-                            checkCustomFieldVO.setTextType("date");
                             declaredField.set(object, parse);
+                            checkCustomFieldVO.setTextType("date");
                         }
                         if ("Integer".equals(type)) {
                             int i1 = Integer.parseInt(integerStringEntry.getValue());
-                            checkCustomFieldVO.setTextType("number");
                             declaredField.set(object, i1);
+                            checkCustomFieldVO.setTextType("integer");
                         }
                         if ("String".equals(type)) {
                             String value = integerStringEntry.getValue();
-                            checkCustomFieldVO.setTextType("text");
                             declaredField.set(object, value);
+                            checkCustomFieldVO.setTextType("text");
                         }
+                        checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
+                        if(StringUtils.isNotBlank(checkCustomFieldVO.getResultMsg())){
+                            resultMsg.append(checkCustomFieldVO.getResultMsg());
+                        }
+                        validCustomFieldValue(checkCustomFieldVO);
                         if ("id_number".equals ( checkCustomFieldVO.getFieldCode () )) {
-                           idnumber = checkCustomFieldVO.getFieldValue();
+                            if(StringUtils.isEmpty(checkCustomFieldVO.getFieldValue())){
+                                checkCustomFieldVO.setCheckResult(false);
+                                resultMsg.append("idnumber不能为空");
+                            }
                         }
                         if ("phone".equals ( checkCustomFieldVO.getFieldCode () )) {
                             phone = checkCustomFieldVO.getFieldValue();
-                        }
-                        if(!org.apache.commons.lang.StringUtils.isEmpty(idnumber)){
-                            resultMsg.append("idnumber不能为空");
-                        }
-                        if(!org.apache.commons.lang.StringUtils.isEmpty(phone)){
-                            resultMsg.append("phone不能为空");
+                            if(org.apache.commons.lang.StringUtils.isEmpty(phone)){
+                                checkCustomFieldVO.setCheckResult(false);
+                                resultMsg.append("phone不能为空");
+                            }
                         }
                         if(org.apache.commons.lang.StringUtils.isNotBlank(idnumber)&& org.apache.commons.lang.StringUtils.isNotBlank(phone)) {
                             List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
                             if (!org.springframework.util.CollectionUtils.isEmpty(blacklistList)) {
+                                checkCustomFieldVO.setCheckResult(false);
                                 resultMsg.append("此人员已经存在于黑名单！");
                             }
                         }
-
-                        //设置值
-                        checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
-                        //字段值规则校验
-                        validCustomFieldValue(checkCustomFieldVO);
-                        //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                        if (!checkCustomFieldVO.getCheckResult()) {
-                            //错误信息追加
-                            checkCustomFieldVO.setCheckResult(false);
+                        if(StringUtils.isNotBlank(checkCustomFieldVO.getResultMsg())){
                             resultMsg.append(checkCustomFieldVO.getResultMsg());
                         }
+                        checkResult=checkCustomFieldVO.getCheckResult();
                         checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
+                    checkCustomTableVO.setResultMsg(resultMsg.toString());
+                    checkCustomTableVO.setCheckResult(checkResult);
+                    checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
                 }
-                checkCustomTableVO.setResultMsg(resultMsg.toString());
-                checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
             }
-            Object o = deepCopyByJson(object);
-            list.add(o);
-            //检验多行的结果
+            objectList.add(object);
             checkCustomTableVOS.add(checkCustomTableVO);
         }
+        insideCheckAndImport.setObjectList(objectList);
         insideCheckAndImport.setList(checkCustomTableVOS);
-        insideCheckAndImport.setObjectList(list);
         return insideCheckAndImport;
-    }
-    private Object deepCopyByJson(Object obj) {
-        String json = JSON.toJSONString(obj);
-        return JSON.parseObject(json, Object.class);
     }
 
 
@@ -477,23 +473,24 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public InsideCheckAndImport checkInsideFieldValueContract(Object object, List<Map<String, String>> mapList, UserSession userSession) throws IllegalAccessException, ParseException {
+        List<Object> objectList=new ArrayList<>();
         String idnumber=null;
-        String phone=null;
-        List<Object> list = new ArrayList<>();
-        List<CheckCustomTableVO> checkCustomTableVOS = new ArrayList<>();
-
-        StringBuffer resultMsg = new StringBuffer();
-        InsideCheckAndImport insideCheckAndImport = new InsideCheckAndImport();
-        for (Map<String, String> map : mapList) {
-            CheckCustomTableVO checkCustomTableVO = new CheckCustomTableVO();
-            for (Map.Entry<String, String> integerStringEntry : map.entrySet()) {
-                List<CheckCustomFieldVO> checkCustomFieldVOS = new ArrayList<>();
+        String employeeNumber=null;
+        Boolean checkResult=true;
+        List<CheckCustomTableVO> checkCustomTableVOS=new ArrayList<>();
+        InsideCheckAndImport insideCheckAndImport=new InsideCheckAndImport();
+        for (Map<String, String> list : mapList) {
+            CheckCustomTableVO checkCustomTableVO=new CheckCustomTableVO();
+            List<CheckCustomFieldVO> checkCustomFieldVOS=new ArrayList<>();
+            StringBuffer resultMsg=new StringBuffer();
+            for (Map.Entry<String, String> integerStringEntry : list.entrySet()) {
+                CheckCustomFieldVO checkCustomFieldVO=new CheckCustomFieldVO();
                 for (Field declaredField : object.getClass().getDeclaredFields()) {
                     declaredField.setAccessible(true);
+                    //获得code
                     String s = HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey());
                     if (declaredField.getName().equals(s)) {
-                        CheckCustomFieldVO checkCustomFieldVO =new CheckCustomFieldVO();
-                        CustomFieldVO customFieldVO=customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s,"ARC",userSession.getCompanyId());
+                        CustomFieldVO customFieldVO = customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s, "ARC", userSession.getCompanyId());
                         if(customFieldVO!=null){
                             BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
                         }
@@ -504,44 +501,57 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         if ("Date".equals(type)) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                             Date parse = sdf.parse(integerStringEntry.getValue());
-                            //设置值类型
-                            checkCustomFieldVO.setTextType("date");
                             declaredField.set(object, parse);
+                            checkCustomFieldVO.setTextType("date");
                         }
                         if ("Integer".equals(type)) {
                             int i1 = Integer.parseInt(integerStringEntry.getValue());
-                            checkCustomFieldVO.setTextType("number");
                             declaredField.set(object, i1);
+                            checkCustomFieldVO.setTextType("integer");
                         }
                         if ("String".equals(type)) {
                             String value = integerStringEntry.getValue();
-                            checkCustomFieldVO.setTextType("text");
                             declaredField.set(object, value);
+                            checkCustomFieldVO.setTextType("text");
                         }
-
-                        //设置值
                         checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
-                        //字段值规则校验
-                        validCustomFieldValue(checkCustomFieldVO);
-                        //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
-                        if (!checkCustomFieldVO.getCheckResult()) {
-                            //错误信息追加
-                            checkCustomFieldVO.setCheckResult(false);
+                        if(StringUtils.isNotBlank(checkCustomFieldVO.getResultMsg())){
                             resultMsg.append(checkCustomFieldVO.getResultMsg());
+                        }
+                        validCustomFieldValue(checkCustomFieldVO);
+                        if ("id_number".equals ( checkCustomFieldVO.getFieldCode () )) {
+                            if(StringUtils.isEmpty(checkCustomFieldVO.getFieldValue())){
+                                checkResult=false;
+                                resultMsg.append("idnumber不能为空");
+                            }
+                        }
+                        if ("employee_number".equals ( checkCustomFieldVO.getFieldCode () )) {
+                            employeeNumber = checkCustomFieldVO.getFieldValue();
+                            if(org.apache.commons.lang.StringUtils.isEmpty(employeeNumber)){
+                                checkResult=false;
+                                resultMsg.append("phone不能为空");
+                            }
+                        }
+                        //根据证件号与工号找到人员id
+                        if(StringUtils.isNotBlank(idnumber)&&StringUtils.isNotBlank(employeeNumber)) {
+                            Integer businessId = userArchiveDao.selectIdByNumberAndEmploy(idnumber, employeeNumber);
+                            if (businessId == null || businessId == 0) {
+                                resultMsg.append("找不到合同归属人");
+                            }
                         }
                         checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
+                    checkCustomTableVO.setResultMsg(resultMsg.toString());
+                    checkCustomTableVO.setCheckResult(checkResult);
+                    checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
                 }
-                checkCustomTableVO.setResultMsg(resultMsg.toString());
-                checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
             }
-            Object o = deepCopyByJson(object);
-            list.add(o);
-            //检验多行的结果
+
+            objectList.add(object);
             checkCustomTableVOS.add(checkCustomTableVO);
         }
+        insideCheckAndImport.setObjectList(objectList);
         insideCheckAndImport.setList(checkCustomTableVOS);
-        insideCheckAndImport.setObjectList(list);
         return insideCheckAndImport;
     }
 

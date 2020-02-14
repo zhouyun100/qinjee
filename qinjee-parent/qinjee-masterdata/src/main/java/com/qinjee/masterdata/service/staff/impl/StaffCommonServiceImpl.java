@@ -317,12 +317,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 ExceptionCast.cast ( isExistBlacklistCommonCode );
                             }
                             if (userArchive.getPhone () != null) {
-                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
-                                if(id!=null && !id.equals (archiveId)){
-                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-                                }else {
+//                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
+//                                if(id!=null && !id.equals (archiveId)){
+//                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+//                                }else {
                                     userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
-                                }
+//                                }
                             }
 
 

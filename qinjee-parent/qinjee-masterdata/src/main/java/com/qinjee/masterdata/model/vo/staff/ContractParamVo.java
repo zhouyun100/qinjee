@@ -10,6 +10,10 @@ import java.util.List;
 @JsonInclude
 public class ContractParamVo implements Serializable {
     /**
+     * 合同id
+     */
+    private Integer contractParamId;
+    /**
      * 合同参数名称
      */
     private String  contractParamName;

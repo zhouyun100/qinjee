@@ -17,6 +17,11 @@ import lombok.NoArgsConstructor;
 @JsonInclude
 @ApiModel(description = "工号规则表Vo类")
 public class EmployeeNumberRuleVo {
+    /**
+     * 工号规则ID
+     */
+    @ApiModelProperty("工号规则ID")
+    private Integer enRuleId;
 
     /**
      * 工号前缀

@@ -87,7 +87,14 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resumeDeleteArchiveById(List < Integer > archiveid) {
-        userArchiveDao.resumeDeleteArchiveById ( archiveid );
+        for (Integer integer : archiveid) {
+            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(integer);
+            Integer isExistId=userArchiveDao.selectIsExist(userArchiveVo.getIdNumber(),userArchiveVo.getUserId());
+            if(isExistId==null|| isExistId==0){
+                userArchiveDao.resumeDeleteArchiveById(integer);
+            }
+        }
+
     }
 
     @Override
@@ -198,10 +205,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             for (QuerySchemeField querySchemeField : querySchemeFieldList) {
                 TableHead arcHead = new TableHead ();
                 arcHead.setIndex ( querySchemeField.getSort () );
-
                 CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
                         "ARC" );
                 arcHead.setName ( customFieldVO.getFieldName () );
+                if("姓名，性别，电话，年龄，出生日期".contains(customFieldVO.getFieldName ())){
+                    arcHead.setWidth("180px");
+                }
                 arcHead.setKey ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
                 if ("org_id".equals ( customFieldVO.getFieldCode () )) {
                     arcHead.setKey ( "orgName" );
@@ -621,6 +630,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
         for (int i = 0; i < strings.length; i++) {
             TableHead arcHead = new TableHead ();
+            if("姓名，性别，电话，年龄，出生日期".contains(strings[i])){
+                arcHead.setWidth("180px");
+            }
             arcHead.setName ( strings[i] );
             arcHead.setKey ( codeList[i] );
             arcHead.setIndex ( i );

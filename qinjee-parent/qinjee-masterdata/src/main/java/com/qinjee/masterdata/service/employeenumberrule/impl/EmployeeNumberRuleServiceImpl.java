@@ -40,7 +40,11 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         employeeNumberRule.setOperatorId(userSession.getArchiveId());
         employeeNumberRule.setCompanyId(userSession.getCompanyId());
         employeeNumberRule.setIsDelete((short) 0);
-        employeeNumberRuleDao.updateByPrimaryKeySelective (employeeNumberRule);
+        if(null!=employeeNumberRule.getEnRuleId()&& 0!=employeeNumberRule.getEnRuleId()){
+            employeeNumberRuleDao.updateByPrimaryKeySelective (employeeNumberRule);
+        }else{
+            employeeNumberRuleDao.insertSelective(employeeNumberRule);
+        }
     }
 
 
@@ -61,10 +65,10 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
         contractParam.setIsDelete((short) 0);
         contractParam.setIsEnable((short) 1);
         contractParam.setOperatorId(userSession.getArchiveId());
-        try {
+        if(null!=contractParam.getContractParamId()&& 0!=contractParam.getContractParamId()) {
             contractParamDao.updateContractSelective(contractParam);
-        } catch (Exception e) {
-            e.printStackTrace ();
+        }else{
+            contractParamDao.insertSelective(contractParam);
         }
     }
 

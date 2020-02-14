@@ -33,7 +33,7 @@ public interface UserArchiveDao {
 
    Integer deleteArchiveByIdList(@Param("archiveid") List<Integer> archiveid);
 
-    Integer resumeDeleteArchiveById(@Param("archiveid") List<Integer> archiveid);
+    Integer resumeDeleteArchiveById(@Param("archiveid")Integer archiveid);
 
 
     /**
@@ -113,4 +113,6 @@ public interface UserArchiveDao {
     List< UserArchiveVo> selectPartTimeArchive(@Param("integerList") List< Integer> integerList, @Param("companyId") Integer companyId);
 
    Integer selectIdByNumber(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
+
+   Integer selectIsExist(@Param("idNumber") String idNumber, @Param("userId") Integer userId);
 }

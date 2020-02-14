@@ -12,4 +12,5 @@ public class TableHead implements Serializable {
     private Integer index;
     private String  key;
     private Integer isShow;
+    private String width;
 }

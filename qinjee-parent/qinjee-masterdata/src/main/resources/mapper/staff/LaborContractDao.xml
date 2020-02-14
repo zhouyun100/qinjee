@@ -24,6 +24,7 @@
   </resultMap>
   <resultMap id="ExportCon" type="com.qinjee.masterdata.model.vo.staff.export.ContractVo">
     <id column="contract_id" jdbcType="INTEGER" property="id" />
+    <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
     <result column="id_number" jdbcType="VARCHAR" property="id_number" />
     <result column="employment_number" jdbcType="VARCHAR" property="employee_number" />
     <result column="contract_period_type" jdbcType="VARCHAR" property="contract_number" />

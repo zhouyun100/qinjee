@@ -730,10 +730,7 @@
     update t_user_archive
     set
     is_delete=0
-    where  archive_id in
-     <foreach collection="archiveid" item="item" separator="," open="(" close=")">
-    #{item}
-   </foreach>
+    where  archive_id =#{archiveid}
   </update>
 
   <select id="listUserArchiveByCompanyId" resultMap="BaseResultMap">
@@ -771,7 +768,7 @@
 
         left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
         left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -855,7 +852,7 @@
 
       left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
       left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -998,7 +995,7 @@
 
       left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
       left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -1067,7 +1064,7 @@
 
       left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
       left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -1222,7 +1219,7 @@
 
         left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
         left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -1313,7 +1310,7 @@
 
       left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
       left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -1380,7 +1377,7 @@
 
         left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
 
-        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTICATIC' AND professionalCertification.is_delete=0
+        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
 
         left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
 
@@ -1407,6 +1404,17 @@
         where id_number=#{idnumber}
         and company_id=#{companyId}
         and is_delete=0
+    </select>
+    <select id="selectIsExist" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+        select archive_id  from t_user_archive
+        where is_delete=0
+        and archive_status= 'SERVICE'
+        <if test="idNumber!=null">
+           or id_number=#{idNumber}
+        </if>
+        <if test="userId!=null">
+           or user_id=#{userId}
+        </if>
     </select>
 </mapper>
 
