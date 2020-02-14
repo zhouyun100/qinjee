@@ -25,7 +25,6 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
-import com.qinjee.masterdata.utils.BeanUtilsExtension;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -144,7 +143,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
 
             //删除关联的角色关系
-            archiveAuthService.delUserRoleRelationByUserId(operatorId,entry.getValue());
+            archiveAuthService.delUserRoleRelationByArchiveId(operatorId,entry.getValue());
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);

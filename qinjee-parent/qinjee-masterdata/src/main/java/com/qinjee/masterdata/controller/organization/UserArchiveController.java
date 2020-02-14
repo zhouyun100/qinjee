@@ -115,6 +115,9 @@ public class UserArchiveController extends BaseController {
 
     @PostMapping("/deleteUserArchive")
     @ApiOperation(value = "删除用户信息,参数Map<Integer,Integer>，map中key为userId，value为archiveId")
+    /**
+     * 不能删除当前登录用户
+     */
     public ResponseResult deleteUserArchive(@RequestBody Map<Integer,Integer> idsMap) throws Exception {
         if (checkParam(idsMap, getUserSession())) {
             userArchiveService.deleteUserArchive(idsMap,getUserSession().getCompanyId(),getUserSession().getArchiveId());

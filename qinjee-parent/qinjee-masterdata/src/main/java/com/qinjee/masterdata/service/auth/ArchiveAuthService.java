@@ -59,7 +59,7 @@ public interface ArchiveAuthService {
      * @param archiveId
      * @return
      */
-    void delUserRoleRelationByUserId(Integer operatorId,Integer archiveId);
+    void delUserRoleRelationByArchiveId(Integer operatorId, Integer archiveId);
 
 
 

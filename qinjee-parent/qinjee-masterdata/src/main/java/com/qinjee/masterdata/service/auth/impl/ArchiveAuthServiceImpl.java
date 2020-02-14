@@ -100,9 +100,8 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     }
 
     @Override
-    public void delUserRoleRelationByUserId(Integer operatorId, Integer archiveId) {
-        archiveAuthDao.delUserRoleRelationByUserId(operatorId,archiveId,new Date());
-
+    public void delUserRoleRelationByArchiveId(Integer operatorId, Integer archiveId) {
+        archiveAuthDao.delUserRoleRelationByUserId(operatorId,archiveId);
     }
 
     @Override
