@@ -39,6 +39,8 @@ public interface RoleAuthService {
      */
     List<MenuVO> searchRoleAuthTree(Integer operatorId, Integer roleId, Integer companyId);
 
+
+
     /**
      * 查询角色机构权限树
      * @param operatorId
