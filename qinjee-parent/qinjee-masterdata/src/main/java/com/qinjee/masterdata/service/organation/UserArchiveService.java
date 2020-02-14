@@ -39,7 +39,7 @@ public interface UserArchiveService {
      * @return
      */
     @Transactional
-    void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId,Integer operatorId);
+    void deleteUserArchive(Map<Integer, Integer> idsMap, Integer currentArchiveId, Integer companyId);
 
     @Transactional
     void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession);

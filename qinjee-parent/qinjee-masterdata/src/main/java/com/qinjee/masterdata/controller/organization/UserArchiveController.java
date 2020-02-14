@@ -119,8 +119,10 @@ public class UserArchiveController extends BaseController {
      * 不能删除当前登录用户
      */
     public ResponseResult deleteUserArchive(@RequestBody Map<Integer,Integer> idsMap) throws Exception {
+
         if (checkParam(idsMap, getUserSession())) {
-            userArchiveService.deleteUserArchive(idsMap,getUserSession().getCompanyId(),getUserSession().getArchiveId());
+            UserSession userSession = getUserSession();
+            userArchiveService.deleteUserArchive(idsMap,userSession.getArchiveId(),userSession.getCompanyId());
             return new ResponseResult();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

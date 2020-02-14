@@ -130,20 +130,23 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     /**
      * 删除时不要删除账号信息，只将用户当前企业下的档案信息，以及用户企业关系表的信息
-     *
+     *不能删除当前用户信息
      * @param idsMap
      * @return
      */
     @Override
-    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId,Integer operatorId) {
-
+    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer currentArchiveId,Integer companyId) {
+        //TODO 删人员在后续会通过走流程控制，目前只要有删除用户权限即可进行删除操作，可以先忽略这种情况
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
+            //TODO 权限判断 未完整
+            if(currentArchiveId.equals(entry.getValue())){//如果是当前登录用户
+                ExceptionCast.cast(CommonCode.DO_NOT_DEL_CURRENT_USER);
+            }
             //清除企业关联
             userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
-
-            //删除关联的角色关系
-            archiveAuthService.delUserRoleRelationByArchiveId(operatorId,entry.getValue());
+            /*//删除关联的角色关系
+            archiveAuthService.delUserRoleRelationByArchiveId(currentArchiveId,entry.getValue());*/
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);
