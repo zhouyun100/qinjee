@@ -58,7 +58,6 @@
             and t_organization.org_id = t_role_org_auth.org_id
             and t_user_role.is_delete = 0
             and t_role_org_auth.is_delete = 0
-            and t_organization.is_enable = 1
             UNION
             select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
             t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id
@@ -66,7 +65,6 @@
             where t_user_org_auth.archive_id = #{archiveId}
             and t_organization.org_id = t_user_org_auth.org_id
             and t_user_org_auth.is_delete = 0
-            and t_organization.is_enable = 1
         ) v
     </select>
 
@@ -100,6 +98,7 @@
             AND (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
         </if>
         AND t_user_archive.archive_status = 'SERVICE'
+        AND t_user_archive.is_delete = 0
         GROUP BY archive_id,user_name,employee_number,gender,business_unit_name,dept_name,post_name
     </select>
 

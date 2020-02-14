@@ -113,12 +113,12 @@ public class RoleAuthController extends BaseController{
 
     @ApiOperation(value="新增角色", notes="新增角色")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "roleGroupId", value = "角色组ID", dataType = "int"),
             @ApiImplicitParam(name = "roleName", value = "角色名称", required = true, dataType = "String")
     })
     @RequestMapping(value = "/addRole",method = RequestMethod.POST)
     public ResponseResult addRole(Integer roleGroupId, String roleName) {
-        if(null == roleGroupId || StringUtils.isEmpty(roleName)){
+        if(StringUtils.isEmpty(roleName)){
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("角色名称或父角色不能为空!");
             return responseResult;

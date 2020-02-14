@@ -20,11 +20,11 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
+import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
-import com.qinjee.masterdata.utils.BeanUtilsExtension;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -77,6 +77,9 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     private BlacklistDao blacklistDao;
     @Autowired
     private CompanyInfoDao companyInfoDao;
+    @Autowired
+    private ArchiveAuthService archiveAuthService;
+
 
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
@@ -111,7 +114,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
-        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
+        //0表示不查询封存机构下的用户
+        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), Short.valueOf("0"));
         logger.info("查询机构下用户，机构id：" + orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
@@ -126,17 +130,23 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     /**
      * 删除时不要删除账号信息，只将用户当前企业下的档案信息，以及用户企业关系表的信息
-     *
+     *不能删除当前用户信息
      * @param idsMap
      * @return
      */
     @Override
-    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId) {
-
+    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer currentArchiveId,Integer companyId) {
+        //TODO 删人员在后续会通过走流程控制，目前只要有删除用户权限即可进行删除操作，可以先忽略这种情况
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
+            //TODO 权限判断 未完整
+            if(currentArchiveId.equals(entry.getValue())){//如果是当前登录用户
+                ExceptionCast.cast(CommonCode.DO_NOT_DEL_CURRENT_USER);
+            }
             //清除企业关联
             userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
+            /*//删除关联的角色关系
+            archiveAuthService.delUserRoleRelationByArchiveId(currentArchiveId,entry.getValue());*/
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);

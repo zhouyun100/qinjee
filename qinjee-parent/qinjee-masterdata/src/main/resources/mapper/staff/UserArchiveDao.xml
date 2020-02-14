@@ -774,7 +774,6 @@
 
         left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
-    from t_user_archive where company_id =#{companyId} and is_delete =0
   </select>
   <select id="selectNameAndNumber" resultType="java.util.Map">
     select user_name,employee_number

@@ -133,7 +133,6 @@
     and t_organization.org_id = t_role_org_auth.org_id
     and t_user_role.is_delete = 0
     and t_role_org_auth.is_delete = 0
-    and t_organization.is_enable = 1
     UNION
     select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
     t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id
@@ -141,7 +140,6 @@
     where t_user_org_auth.archive_id = #{archiveId}
     and t_organization.org_id = t_user_org_auth.org_id
     and t_user_org_auth.is_delete = 0
-    and t_organization.is_enable = 1
     ) v GROUP BY v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.sort_id
     ORDER BY v.sort_id ASC
   </select>
@@ -209,7 +207,6 @@
         where t_role_org_auth.role_id = #{roleId,jdbcType=INTEGER}
         and t_role_org_auth.org_id = t_organization.org_id
         and t_role_org_auth.is_delete = 0
-        and t_organization.is_enable = 1
         UNION
         select t_organization.org_id,2 as has_org
         from t_user_org_auth,t_organization
@@ -222,7 +219,6 @@
         ))
         and t_user_org_auth.org_id = t_organization.org_id
         and t_user_org_auth.is_delete = 0
-        and t_organization.is_enable = 1
         ) t1 GROUP BY t1.org_id
     ) t ON v.org_id = t.org_id
     ORDER BY sort_id
@@ -275,4 +271,8 @@
         )
         and t_menu.func_type = 'BUTTON'
       </select>
+
+    <update id="delUserRoleRelationByUserId">
+        update t_user_role set is_delete =1 and operator_id = #{operatorId} where archive_id = #{archiveId}
+    </update>
 </mapper>
