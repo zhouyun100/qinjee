@@ -117,7 +117,7 @@ public class UserArchiveController extends BaseController {
     @ApiOperation(value = "删除用户信息,参数Map<Integer,Integer>，map中key为userId，value为archiveId")
     public ResponseResult deleteUserArchive(@RequestBody Map<Integer,Integer> idsMap) throws Exception {
         if (checkParam(idsMap, getUserSession())) {
-            userArchiveService.deleteUserArchive(idsMap,getUserSession().getCompanyId());
+            userArchiveService.deleteUserArchive(idsMap,getUserSession().getCompanyId(),getUserSession().getArchiveId());
             return new ResponseResult();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

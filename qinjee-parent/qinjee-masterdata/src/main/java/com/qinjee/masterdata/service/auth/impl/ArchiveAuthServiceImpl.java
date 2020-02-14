@@ -100,6 +100,12 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
     }
 
     @Override
+    public void delUserRoleRelationByUserId(Integer operatorId, Integer archiveId) {
+        archiveAuthDao.delUserRoleRelationByUserId(operatorId,archiveId,new Date());
+
+    }
+
+    @Override
     public List<OrganizationArchiveVO> getOrganizationArchiveTreeByArchiveId(Integer companyId, Integer archiveId) {
 
         List<OrganizationArchiveVO> organizationList = archiveAuthDao.searchOrganizationListByArchiveId(archiveId,new Date());

@@ -271,4 +271,8 @@
         )
         and t_menu.func_type = 'BUTTON'
       </select>
+
+    <update id="delUserRoleRelationByUserId">
+        update t_user_role set is_delete =1 and operator_id = #{operatorId} where archive_id = #{archiveId}
+    </update>
 </mapper>

@@ -20,6 +20,7 @@ import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
+import com.qinjee.masterdata.service.auth.ArchiveAuthService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.OrganizationService;
@@ -77,6 +78,9 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     private BlacklistDao blacklistDao;
     @Autowired
     private CompanyInfoDao companyInfoDao;
+    @Autowired
+    private ArchiveAuthService archiveAuthService;
+
 
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
@@ -111,7 +115,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
-        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), null);
+        //0表示不查询封存机构下的用户
+        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), Short.valueOf("0"));
         logger.info("查询机构下用户，机构id：" + orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
@@ -131,12 +136,15 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
      * @return
      */
     @Override
-    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId) {
+    public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer companyId,Integer operatorId) {
 
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
             //清除企业关联
             userInfoDao.clearUserCompany(entry.getKey(), companyId, new Date());
+
+            //删除关联的角色关系
+            archiveAuthService.delUserRoleRelationByUserId(operatorId,entry.getValue());
             //删除档案
             UserArchive userArchive = new UserArchive();
             userArchive.setIsDelete((short) 1);

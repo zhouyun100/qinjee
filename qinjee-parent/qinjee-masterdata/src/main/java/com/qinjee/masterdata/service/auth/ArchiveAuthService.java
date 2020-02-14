@@ -51,6 +51,18 @@ public interface ArchiveAuthService {
      */
     void delArchiveRole(Integer roleId, List<Integer> archiveIdList, Integer operatorId);
 
+
+    /**
+     * 根据archiveId 删除用户角色关联信息
+     * penghs
+     * @param operatorId
+     * @param archiveId
+     * @return
+     */
+    void delUserRoleRelationByUserId(Integer operatorId,Integer archiveId);
+
+
+
     /**
      * 查询当前机构员工树
      * @param companyId

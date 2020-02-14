@@ -105,4 +105,6 @@ public interface ArchiveAuthDao {
      * @return
      */
     List<MenuVO> searchMenuButtonList(Integer archiveId, Integer menuId,Date currentDateTime);
+
+    void delUserRoleRelationByUserId(Integer operatorId, Integer archiveId,Date now);
 }
