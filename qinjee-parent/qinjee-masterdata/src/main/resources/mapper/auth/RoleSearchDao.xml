@@ -98,6 +98,7 @@
             AND (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
         </if>
         AND t_user_archive.archive_status = 'SERVICE'
+        AND t_user_archive.is_delete = 0
         GROUP BY archive_id,user_name,employee_number,gender,business_unit_name,dept_name,post_name
     </select>
 
