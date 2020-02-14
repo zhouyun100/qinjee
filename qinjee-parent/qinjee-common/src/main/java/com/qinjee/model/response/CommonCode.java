@@ -62,7 +62,7 @@ public enum CommonCode implements ResultCode{
     PLAN_IS_NULL(false,10335, "查询方案为空"),
     PLAN_IS_MISTAKE(false,10336, "查询方案无字段内容"),
     FILE_IMPORT_FAILED(false,10333, "文件加载失败，请检查内容是否符合指定格式"),
-    DO_NOT_DEL_CURRENT_USER(false,10541, "当前用户不允许删除"),
+    DO_NOT_DEL_CURRENT_USER(false,10541, "不允许删除当前登录用户"),
     ;
 
 
