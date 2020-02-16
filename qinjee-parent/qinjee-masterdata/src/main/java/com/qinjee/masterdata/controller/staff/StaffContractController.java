@@ -457,7 +457,7 @@ public class StaffContractController extends BaseController {
     public ResponseResult<PageResult<ContractFormVo>> createContractForm(@RequestParam List<Integer> list,Integer pageSize,Integer currentPage) {
         Boolean b = checkParam(list,pageSize,currentPage,getUserSession ());
         if(b){
-                PageResult < ContractFormVo > userArchiveVoPageResult = staffContractService.createContractForm ( list,currentPage,pageSize,getUserSession () );
+                PageResult < ContractFormVo > userArchiveVoPageResult = staffContractService.createContractForm ( list,pageSize,currentPage,getUserSession () );
                     return new ResponseResult<>(userArchiveVoPageResult,CommonCode.SUCCESS);
 
         }
