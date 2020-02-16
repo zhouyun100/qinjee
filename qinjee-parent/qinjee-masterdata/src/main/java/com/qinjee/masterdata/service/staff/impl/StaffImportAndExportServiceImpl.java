@@ -139,16 +139,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 JSON.toJSONString ( insideCheckAndImport.getList () ) );
         CheckImportVo checkImportVo = new CheckImportVo ();
         checkImportVo.setList ( insideCheckAndImport.getList () );
-        //拼接head
-        List < TableHead > list = new ArrayList <> ();
-        for (CheckCustomFieldVO checkCustomFieldVO : insideCheckAndImport.getList().get(0).getCustomFieldVOList()) {
-            TableHead tableHead = new TableHead ();
-            tableHead.setIsShow ( 1 );
-            tableHead.setName ( checkCustomFieldVO.getFieldName () );
-            tableHead.setKey ( checkCustomFieldVO.getFieldCode () );
-            list.add(tableHead);
-        }
-        checkImportVo.setHeadList(list);
         return checkImportVo;
     }
 

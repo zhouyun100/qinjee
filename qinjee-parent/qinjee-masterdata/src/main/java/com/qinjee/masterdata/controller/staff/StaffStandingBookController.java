@@ -49,7 +49,6 @@ public class StaffStandingBookController extends BaseController {
         if (b) {
                 staffStandingBookService.insertBlackList(blacklists,getUserSession());
                 return ResponseResult.SUCCESS();
-
         }
         return failResponseResult("参数错误");
     }
