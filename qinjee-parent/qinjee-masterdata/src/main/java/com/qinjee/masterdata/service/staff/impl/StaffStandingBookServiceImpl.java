@@ -72,7 +72,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, UserSession userSession) throws IllegalAccessException {
         for (BlackListVo blacklistVo : blackListVos) {
-            checkBlackList(blacklistVo,userSession);
+            checkBlackList(blacklistVo, userSession);
             Blacklist blacklist = new Blacklist();
             BeanUtils.copyProperties(blacklistVo, blacklist);
             blacklist.setOperatorId(userSession.getArchiveId());
@@ -383,16 +383,20 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         if (!(flag2 || flag1)) {
             ExceptionCast.cast(CommonCode.CANNOT_TWO_NULL);
         }
-        List < Blacklist > blacklistList = blacklistDao.selectByPage ( userSession.getCompanyId () );
-        boolean bool = blacklistList.stream ().anyMatch ( a ->   blacklistVo.getPhone ().equals ( a.getPhone () ) ||
-                blacklistVo.getIdNumber ().equals ( a.getIdNumber () ) );
-            if (bool) {
-                CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () );
-                CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
-                SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy年MM月dd日" );
-                String msg = blacklistList.get ( 0 ).getUserName () + "曾于" + sdf.format ( blacklistList.get ( 0 ).getBlockTime () ) + "被" + companyInfo.getCompanyName () + "因[" + blacklistList.get ( 0 ).getBlockReason () + "]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
-                isExistBlacklistCommonCode.setMessage ( msg );
-                ExceptionCast.cast ( isExistBlacklistCommonCode );
+        List<Blacklist> blacklistList = blacklistDao.selectByPage(userSession.getCompanyId());
+        boolean bool = blacklistList.stream().anyMatch(a -> (null != blacklistVo.getPhone() && blacklistVo.getPhone().equals(a.getPhone())) ||
+                (null != blacklistVo.getIdNumber() && blacklistVo.getIdNumber().equals(a.getIdNumber())));
+        if (bool) {
+            CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey(userSession.getCompanyId());
+            CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+            String reason="";
+            if(null!=blacklistList.get(0).getBlockReason()){
+                reason=blacklistList.get(0).getBlockReason();
             }
+            String msg = blacklistList.get(0).getUserName() + "曾于" + sdf.format(blacklistList.get(0).getBlockTime()) + "被" + companyInfo.getCompanyName() + "因[ " + reason + " ]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
+            isExistBlacklistCommonCode.setMessage(msg);
+            ExceptionCast.cast(isExistBlacklistCommonCode);
         }
+    }
 }
