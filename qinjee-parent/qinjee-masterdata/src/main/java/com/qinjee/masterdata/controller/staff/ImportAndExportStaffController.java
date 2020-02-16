@@ -291,7 +291,7 @@ public class ImportAndExportStaffController extends BaseController {
                 }else{
                     Boolean aBoolean = checkParam ( orgIdList );
                     if(aBoolean) {
-                        List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList );
+                        List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList,userSession.getCompanyId() );
                         staffImportAndExportService.exportArcFile ( list1, response, getUserSession (), querySchemaId );
                         return null;
                     }else {

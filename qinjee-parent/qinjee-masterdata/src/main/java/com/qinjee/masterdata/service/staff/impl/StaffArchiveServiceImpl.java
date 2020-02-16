@@ -201,9 +201,14 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     public List < TableHead > setDefaultHead(UserSession userSession, Integer querySchemaId) {
         List < TableHead > headList = new ArrayList <> ();
-        List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
-        if(CollectionUtils.isEmpty (querySchemeFieldList)){
+        List < QuerySchemeField > querySchemeFieldList=null;
+        if(null!=querySchemaId&&0!=querySchemaId){
+        querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
+            if(CollectionUtils.isEmpty (querySchemeFieldList)){
             ExceptionCast.cast ( CommonCode.PLAN_IS_NULL );
+            }
+        }else{
+            headList = getDefaultArcHead();
         }
         try {
             for (QuerySchemeField querySchemeField : querySchemeFieldList) {
@@ -237,12 +242,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
 
         return headList;
-    }
-
-    public PageResult < UserArchiveVo > selectArchivebatchAndOrgList(UserSession userSession, List < Integer > orgList, Integer pageSize, Integer currentPage) {
-        PageHelper.startPage ( currentPage, pageSize );
-        List < UserArchiveVo > list = userArchiveDao.selectByOrgListAndAuth ( orgList, userSession.getArchiveId (), userSession.getCompanyId () );
-        return new PageResult <> ( list );
     }
 
     @Override

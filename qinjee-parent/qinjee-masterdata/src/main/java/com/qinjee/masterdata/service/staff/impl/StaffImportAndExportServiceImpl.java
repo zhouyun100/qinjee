@@ -271,8 +271,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 //                    stringBuffer.append("工号不能为空");
 //                }
             }
-
-
             //校验黑名单
             if(StringUtils.isNotBlank(idnumber)&& StringUtils.isNotBlank(phone)) {
                 List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
@@ -281,20 +279,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
             }
             checkCustomTableVO.setResultMsg ( stringBuffer.toString () );
-            if (systemDefine == 0) {
-                boolean result = false;
-                if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
-                    Integer pre = null;
-                    Integer achiveId = null;
-                    if ("PRE".equals ( funcCode )) {
-                        pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber,userSession.getCompanyId() );
-                    } else if ("ARC".equals ( funcCode )) {
-                        achiveId = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
-                    }
-                    if (pre != null || achiveId != null) {
-                        result = true;
-                    }
+            if(systemDefine==1){
+                boolean result = isResult(funcCode, userSession, idtype, idnumber);
+                if (result) {
+                    checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg () + "用户已存在" );
                 }
+            }
+            if (systemDefine == 0) {
+                boolean result = isResult(funcCode, userSession, idtype, idnumber);
                 if (!result) {
                     checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg () + "用户不存在" );
                 }
@@ -304,6 +296,23 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             }
         }
         return checkCustomTableVOS;
+    }
+
+    private boolean isResult(String funcCode, UserSession userSession, String idtype, String idnumber) {
+        boolean result = false;
+        if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
+            Integer pre = null;
+            Integer achiveId = null;
+            if ("PRE".equals ( funcCode )) {
+                pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber,userSession.getCompanyId() );
+            } else if ("ARC".equals ( funcCode )) {
+                achiveId = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
+            }
+            if (pre != null || achiveId != null) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     private void setCheck(CheckCustomFieldVO fieldVO, String code, String name) {

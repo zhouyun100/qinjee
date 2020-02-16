@@ -52,10 +52,9 @@ public class StaffContractController extends BaseController {
         Boolean b = checkParam(orgId, currentPage, pageSize,getUserSession ());
         if (b) {
             PageResult < UserArchiveVo > pageResult=
-            staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize );
+                staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize,userSession.getCompanyId() );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
-
                 userArchiveVoAndHeader.setHeads (getDefaultHeadCon ());
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
@@ -68,6 +67,9 @@ public class StaffContractController extends BaseController {
                 "probationPeriod","probationDueDate","userCategory",};
         for (int i = 0; i < strings.length; i++) {
             TableHead arcHead = new TableHead ();
+            if("姓名，性别，电话，年龄，出生日期".contains(strings[i])){
+                arcHead.setWidth("180px");
+            }
             arcHead.setName ( strings[i] );
             arcHead.setKey ( codeList[i] );
             arcHead.setIndex (i);

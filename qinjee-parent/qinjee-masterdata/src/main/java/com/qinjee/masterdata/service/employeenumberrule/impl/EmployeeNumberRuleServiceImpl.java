@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -129,12 +130,16 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
 
     @Override
     public List < ContractParam >  showCreateConRule(UserSession userSession) {
-        return  contractParamDao.findContractParamByCompanyId ( userSession.getCompanyId () );
+        List<ContractParam> contractParams=new ArrayList<>();
+        contractParams.add(contractParamDao.findContractParamByCompanyId ( userSession.getCompanyId () ).get(0));
+        return contractParams;
     }
 
     @Override
     public List < EmployeeNumberRule > showCreateEmpRule(UserSession userSession) {
-       return employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () );
+        List<EmployeeNumberRule> employeeNumberRules=new ArrayList<>();
+       employeeNumberRules.add(employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () ).get(0));
+       return employeeNumberRules;
     }
 
     private String getDateModel(String rule) {

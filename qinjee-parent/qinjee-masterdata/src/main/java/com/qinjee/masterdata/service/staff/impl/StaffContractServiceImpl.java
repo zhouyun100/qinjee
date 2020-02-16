@@ -62,17 +62,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     @Override
-    public PageResult < UserArchiveVo > selectNoLaborContract(List < Integer > orgId, Integer currentPage, Integer pageSize) {
+    public PageResult < UserArchiveVo > selectNoLaborContract(List < Integer > orgId, Integer currentPage, Integer pageSize,Integer companyId) {
         PageHelper.startPage ( currentPage, pageSize );
         //根据合同id找到没有合同的档案
-        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( orgId );
+        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( orgId,companyId );
         return new PageResult <> ( arcList );
     }
 
-    @Override
-    public PageResult < UserArchiveVo > selectNoLaborContract(Integer companyId, Integer currentPage, Integer pageSize) {
-        return null;
-    }
 
     /**
      * 展示全量未签合同人员
@@ -80,8 +76,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @param orgId
      * @return
      */
-    public List < Integer > selectNoLaborContractAll(List < Integer > orgId) {
-        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId );
+    public List < Integer > selectNoLaborContractAll(List < Integer > orgId,Integer companyId) {
+        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId,companyId );
         List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {
             integers.add ( userArchiveVo.getArchiveId () );
