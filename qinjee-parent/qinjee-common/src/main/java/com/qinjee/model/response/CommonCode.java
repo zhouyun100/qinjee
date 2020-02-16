@@ -61,7 +61,10 @@ public enum CommonCode implements ResultCode{
     SQL_MAY_MISTAKE(false,10334, "请检查左右括号是否有误"),
     PLAN_IS_NULL(false,10335, "查询方案为空"),
     PLAN_IS_MISTAKE(false,10336, "查询方案无字段内容"),
-    FILE_IMPORT_FAILED(false,10333, "文件加载失败，请检查内容是否符合指定格式");
+    FILE_IMPORT_FAILED(false,10333, "文件加载失败，请检查内容是否符合指定格式"),
+    DO_NOT_DEL_CURRENT_USER(false,10541, "不允许删除当前登录用户"),
+    ;
+
 
     /**
      * 操作是否成功

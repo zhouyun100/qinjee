@@ -36,14 +36,14 @@ public interface CustomTableFieldService {
      * @param mapList 自定义字段数据集列表
      * @return
      */
-    List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer,Object>> mapList);
+    List<CheckCustomTableVO> checkCustomFieldValue(List<Integer> fileIdList, List<Map<Integer, Object>> mapList);
 
     /**
      * 检验黑名单
      * @param object
      * @return
      */
-    InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String,String>> lists,UserSession userSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException;
+    InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists, UserSession userSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException;
     /**
      * 校验自定义字段值（单个校验）
      * @param checkCustomFieldVO
@@ -74,7 +74,7 @@ public interface CustomTableFieldService {
      * @param tableId
      * @return
      */
-    CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId,UserSession userSession);
+    CustomTableVO searchCustomTableGroupFieldListByTableId(Integer tableId, UserSession userSession);
 
 
     /**
@@ -82,14 +82,14 @@ public interface CustomTableFieldService {
      * @param mapValue 表单各字段数据值列表
      * @return
      */
-    CustomTableVO handlerCustomTableGroupFieldList( CustomTableVO customTableVO, Map<Integer,String> mapValue, Integer index);
+    CustomTableVO handlerCustomTableGroupFieldList(CustomTableVO customTableVO, Map<Integer, String> mapValue, Integer index);
 
     /**
      * 处理自定义组字段数据回填
      * @param customFieldList
      * @param mapValue
      */
-    void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList,Map<Integer,String> mapValue);
+    void handlerCustomTableGroupFieldList(List<CustomFieldVO> customFieldList, Map<Integer, String> mapValue);
 
     /**
      * 根据企业ID和功能CODE查询字段集合

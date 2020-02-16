@@ -161,7 +161,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Override
     public int addRole(Integer roleGroupId, String roleName, Integer companyId, Integer operatorId) {
-        if(StringUtils.isEmpty(roleName) || null == roleGroupId || null == companyId || null == operatorId){
+        if(StringUtils.isEmpty(roleName) || null == companyId || null == operatorId){
             return 0;
         }
         int resultNumber;
