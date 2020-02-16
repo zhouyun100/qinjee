@@ -22,7 +22,7 @@ public class SqlUtil {
                     if (customFieldVO.getTableId ().equals ( tableId )) {
                         Integer fieldId = customFieldVO.getFieldId ();
                          String fieldName = customFieldVO.getFieldName ();
-                        custom.add ( "substring_index(SUBSTRING(t" + tableId + ".big_data,instr(t" + tableId + ".big_data,'@@" + fieldId + "@@')+LENGTH('@@" + fieldId + "@@')+1),';@@',1)as  " + fieldName + "\t" + "," );
+                        custom.add ( "substring_index(SUBSTRING(t" + tableId + ".big_data,instr(t" + tableId + ".big_data,'@@" + fieldId + "@@')+LENGTH('@@" + fieldId + "@@')+1),'@@',1)as  " + fieldName + "\t" + "," );
                     }
                 }
             }

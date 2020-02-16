@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.dao.sys;
 
 import com.qinjee.masterdata.model.entity.SysDict;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -40,4 +41,5 @@ public interface SysDictDao {
      */
     SysDict searchSysDictByTypeAndCode(SysDict sysDict);
 
+    String searchCodeByTypeAndValue(@Param("dictType") String dictType, @Param("dictValue") String dictValue);
 }

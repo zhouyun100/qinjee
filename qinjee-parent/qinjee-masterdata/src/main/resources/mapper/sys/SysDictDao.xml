@@ -39,4 +39,11 @@
     and dict_code = #{dictCode,jdbcType=VARCHAR}
     and is_delete = 0
   </select>
+  <select id="searchCodeByTypeAndValue" resultType="java.lang.String">
+    select dict_code from
+    from t_sys_dict
+    where dict_type = #{dictType,jdbcType=VARCHAR}
+    and dict_value = #{dictValue,jdbcType=VARCHAR}
+    and is_delete = 0
+  </select>
 </mapper>

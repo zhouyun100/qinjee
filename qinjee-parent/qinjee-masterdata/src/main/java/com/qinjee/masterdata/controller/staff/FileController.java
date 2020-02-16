@@ -178,6 +178,21 @@ public class FileController extends BaseController {
         }
         return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
     }
+    /**
+     * 档案上传文件
+     * @param file 文件
+     */
+    @RequestMapping(value = "/uploadArcFile", method = RequestMethod.POST,headers="content-type=multipart/form-data")
+    @ApiOperation(value = "上传档案文件", notes = "hkt")
+    public ResponseResult uploadArcFile( @RequestParam MultipartFile file,Integer groupId,Integer archiveId,HttpServletResponse response) throws Exception {
+        Boolean b = checkParam(file,groupId,response,getUserSession());
+        if(b) {
+            response.setHeader ( "Access-Control-Allow-Origin","*" );
+            fileOperateService.putArcFile (file,groupId,getUserSession(),archiveId);
+            return new ResponseResult <> (null, CommonCode.SUCCESS);
+        }
+        return new ResponseResult <> (null, CommonCode.INVALID_PARAM);
+    }
 
     /**
      *展示预入职文件

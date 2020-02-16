@@ -60,4 +60,6 @@ public interface IFileOperateService {
     void moveFile(Integer attachmentId, Integer groupId,Integer companyId);
 
     List< AttchmentRecordVo> selectMyFileContents(Integer businessId, Integer groupId, Integer companyId) throws UnsupportedEncodingException;
+
+    void putArcFile(MultipartFile file, Integer groupId, UserSession userSession,Integer archiveId);
 }

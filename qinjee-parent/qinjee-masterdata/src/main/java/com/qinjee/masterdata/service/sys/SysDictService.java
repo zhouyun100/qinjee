@@ -34,4 +34,7 @@ public interface SysDictService {
      * @return
      */
     SysDict searchSysDictByTypeAndCode(String dictType, String dictCode);
+
+    String searchCodeByTypeAndValue(String dictType,String dictValue);
+
 }

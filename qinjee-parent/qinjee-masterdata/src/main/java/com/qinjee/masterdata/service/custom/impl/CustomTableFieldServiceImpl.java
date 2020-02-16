@@ -159,7 +159,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     if (declaredField.getName().equals(s)) {
                         CustomFieldVO customFieldVO = customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s, "ARC", userSession.getCompanyId());
                         if(customFieldVO!=null){
-                            BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
+                            CheckCustomFieldVO checkCustomFieldVOTemp=new CheckCustomFieldVO();
+                            BeanUtils.copyProperties(customFieldVO,checkCustomFieldVOTemp);
+                            checkCustomFieldVO=checkCustomFieldVOTemp.clone();
                         }
                         Class typeClass = declaredField.getType();
                         int i = typeClass.getName().lastIndexOf(".");

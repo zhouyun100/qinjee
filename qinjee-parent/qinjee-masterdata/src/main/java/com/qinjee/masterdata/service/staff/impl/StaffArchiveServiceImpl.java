@@ -228,6 +228,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 headList.add ( arcHead );
             }
         } catch (Exception e) {
+            e.printStackTrace();
             ExceptionCast.cast ( CommonCode.PLAN_IS_MISTAKE );
         }
 

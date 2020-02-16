@@ -9,8 +9,10 @@ import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
@@ -24,6 +26,7 @@ import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
@@ -90,6 +93,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private IStaffCommonService staffCommonService;
     @Autowired
     private OrganizationService organizationServiceImpl;
+    @Autowired
+    private SysDictService sysDictServiceImpl;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession,Integer systemDefine) throws Exception {
@@ -729,9 +735,18 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                    map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), "-2");
                }
              } else {
-                 Integer integer = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
-                 if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
-                     map.put(integer, value);
+                 CustomFieldVO customFieldVO = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
+                 if(!"code".equals(customFieldVO.getTextType())){
+                     Integer integer = customFieldVO.getFieldId();
+                     if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
+                         map.put(integer, value);
+                     }
+                 }else{
+                     Integer integer = customFieldVO.getFieldId();
+                     if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
+                         String s = sysDictServiceImpl.searchCodeByTypeAndValue(customFieldVO.getCode(), value);
+                         map.put(integer,s);
+                     }
                  }
              }
         }catch (Exception e) {

@@ -181,7 +181,7 @@ public interface CustomTableFieldDao {
      * @param funcCode
      * @return
      */
-    Integer selectFieldIdByFieldNameAndCompanyIdAndFuncCode(@Param("key") String key, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+    CustomFieldVO selectFieldIdByFieldNameAndCompanyIdAndFuncCode(@Param("key") String key, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
     /**
      * 根据id找到一系列属性

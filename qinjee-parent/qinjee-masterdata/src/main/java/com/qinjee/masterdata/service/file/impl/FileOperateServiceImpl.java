@@ -106,6 +106,25 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
         }
     }
+    @Override
+    public void putArcFile(MultipartFile file, Integer groupId, UserSession userSession,Integer archiveId) {
+        File file1 = null;
+        String groupName= attachmentGroupDao.selectGroupName(groupId);
+        try {
+            String puthUrl=userSession.getCompanyId()+File.separator+userSession.getArchiveId()+File.separator+groupName+File.separator+file.getOriginalFilename ();
+            file1=FileUploadUtils.multipartFileToFile ( file );
+            //新增上传记录
+          insertArcAttachment(file,groupName,puthUrl,userSession,archiveId);
+            UpAndDownUtil.putFile ( file1,puthUrl );
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(file1!=null) {
+                file1.delete ();
+            }
+        }
+    }
+
 
 
 
@@ -116,11 +135,24 @@ public class FileOperateServiceImpl implements IFileOperateService {
     public void insertPreAttachment(MultipartFile file,Integer preId,String groupName,Integer companyId,String pathUrl){
         AttachmentRecord attachmentRecord = getAttachmentRecord ( file, groupName, companyId );
         attachmentRecord.setBusinessId ( preId );
-        attachmentRecord.setBusinessType("PRE");
+        attachmentRecord.setBusinessModule("PRE");
         attachmentRecord.setBusinessType ( "employment" );
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)(file.getSize())/1024);
         attachmentRecord.setOperatorId(preId);
+        attachmentRecordDao.insertSelective(attachmentRecord);
+    }
+    /**
+     * 新增预入职模板上传附件记录
+     */
+    public void insertArcAttachment(MultipartFile file,String groupName,String pathUrl,UserSession userSession,Integer archiveId){
+        AttachmentRecord attachmentRecord = getAttachmentRecord ( file, groupName,userSession.getCompanyId()  );
+        attachmentRecord.setBusinessId ( archiveId );
+        attachmentRecord.setBusinessModule("ARC");
+        attachmentRecord.setBusinessType ( "archive" );
+        attachmentRecord.setAttachmentUrl(pathUrl);
+        attachmentRecord.setAttachmentSize((int)(file.getSize())/1024);
+        attachmentRecord.setOperatorId(userSession.getArchiveId());
         attachmentRecordDao.insertSelective(attachmentRecord);
     }
 
@@ -293,6 +325,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
     public List < AttchmentRecordVo > selectMyFileContents(Integer businessId, Integer groupId, Integer companyId)  {
         return attachmentRecordDao.selectFileFromPackage(businessId, groupId,companyId);
     }
+
+
 
     @Override
     public String

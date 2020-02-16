@@ -50,4 +50,9 @@ public class SysDictServiceImpl implements SysDictService {
         sysDict.setDictCode(dictCode);
         return sysDictDao.searchSysDictByTypeAndCode(sysDict);
     }
+
+    @Override
+    public String searchCodeByTypeAndValue(String dictType, String dictValue) {
+        return  sysDictDao.searchCodeByTypeAndValue(dictType,dictValue);
+    }
 }
