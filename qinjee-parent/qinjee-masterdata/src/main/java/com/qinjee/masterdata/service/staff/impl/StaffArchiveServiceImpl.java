@@ -203,12 +203,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List < TableHead > headList = new ArrayList <> ();
         List < QuerySchemeField > querySchemeFieldList=null;
         if(null!=querySchemaId&&0!=querySchemaId){
-        querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
+            querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
             if(CollectionUtils.isEmpty (querySchemeFieldList)){
             ExceptionCast.cast ( CommonCode.PLAN_IS_NULL );
             }
         }else{
             headList = getDefaultArcHead();
+            return headList;
         }
         try {
             for (QuerySchemeField querySchemeField : querySchemeFieldList) {
