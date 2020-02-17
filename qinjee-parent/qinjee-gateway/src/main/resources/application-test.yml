@@ -80,24 +80,24 @@ ribbon:
 #    enabled: true # 开启 okhttp 支持
 
 #
-hystrix:
-  command:
-    default:
-#    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
-      fallback:
-        enabled: true
-      execution:
-        timeout:
-          #如果enabled设置为false，则请求超时交给ribbon超时时间为准,为true,则超时以熔断时间为准
-          enabled: true
-        isolation:
-          #隔离策略，有THREAD和SEMAPHORE
-          #THREAD - 它在单独的线程上执行，并发请求受线程池中的线程数量的限制
-          #SEMAPHORE - 它在调用线程上执行，并发请求受到信号量计数的限制
-          #对比：https://www.cnblogs.com/java-synchronized/p/7927726.html
-          thread:
-            #断路器超时时间，默认1000ms
-            timeoutInMilliseconds: 60000
+#hystrix:
+#  command:
+#    default:
+##    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
+#      fallback:
+#        enabled: true
+#      execution:
+#        timeout:
+#          #如果enabled设置为false，则请求超时交给ribbon超时时间为准,为true,则超时以熔断时间为准
+#          enabled: true
+#        isolation:
+#          #隔离策略，有THREAD和SEMAPHORE
+#          #THREAD - 它在单独的线程上执行，并发请求受线程池中的线程数量的限制
+#          #SEMAPHORE - 它在调用线程上执行，并发请求受到信号量计数的限制
+#          #对比：https://www.cnblogs.com/java-synchronized/p/7927726.html
+#          thread:
+#            #断路器超时时间，默认1000ms
+#            timeoutInMilliseconds: 60000
 #
 #
 #feign:
