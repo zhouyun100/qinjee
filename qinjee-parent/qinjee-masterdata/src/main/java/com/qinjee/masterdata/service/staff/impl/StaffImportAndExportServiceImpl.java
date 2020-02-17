@@ -356,7 +356,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         if (redisClusterService.exists ( s1 )) {
             s = redisClusterService.get ( s1 );
         } else {
-            logger.error ( "获取缓存失败" );
+          ExceptionCast.cast(CommonCode.GET_CACHE_MISTAKE);
         }
         //还原成list
         List < Map < Integer, String > > list = ( List < Map < Integer, String > > ) JSONArray.parse ( s );
@@ -374,29 +374,30 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
      */
     @Override
     public void importBlaFile(UserSession userSession) throws Exception {
-        List < Blacklist > blacklistList = new ArrayList <> ();
+        List<Blacklist> blacklistList = new ArrayList<>();
         //从redis中取得文件
         //拼接key
-        String s1 = userSession.getCompanyId () + "BLACKLIST" + userSession.getArchiveId () + "import";
+        String s1 = userSession.getCompanyId() + "BLACKLIST" + userSession.getArchiveId() + "import";
         String s = null;
         //缓存中获取内容
-        if (redisClusterService.exists ( s1 )) {
-            s = redisClusterService.get ( s1 );
+        if (redisClusterService.exists(s1)) {
+            s = redisClusterService.get(s1);
         } else {
-            logger.error ( "获取缓存失败" );
+            ExceptionCast.cast(CommonCode.GET_CACHE_MISTAKE);
         }
         //还原成list
-        List < BlackListVo > list = JSONArray.parseArray ( s, BlackListVo.class );
-        assert list != null;
-        for (BlackListVo blackListVo : list) {
-            Blacklist blacklist = new Blacklist ();
-            setValue ( blackListVo, blacklist );
-            blacklist.setOperatorId ( userSession.getArchiveId () );
-            blacklist.setCompanyId ( userSession.getCompanyId () );
-            blacklistList.add ( blacklist );
+        List<BlackListVo> list = JSONArray.parseArray(s, BlackListVo.class);
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
+            for (BlackListVo blackListVo : list) {
+                Blacklist blacklist = new Blacklist();
+                setValue(blackListVo, blacklist);
+                blacklist.setOperatorId(userSession.getArchiveId());
+                blacklist.setCompanyId(userSession.getCompanyId());
+                blacklistList.add(blacklist);
+            }
+            blacklistDao.insertBatch(blacklistList);
+            //批量添加
         }
-        blacklistDao.insertBatch ( blacklistList );
-        //批量添加
     }
 
     /**
