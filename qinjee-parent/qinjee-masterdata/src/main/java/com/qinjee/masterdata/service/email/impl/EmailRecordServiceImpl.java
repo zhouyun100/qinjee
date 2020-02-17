@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.email.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.email.EmailConfigDao;
 import com.qinjee.masterdata.dao.email.EmailRecordDao;
@@ -13,9 +14,11 @@ import com.qinjee.masterdata.service.email.EmailConfigService;
 import com.qinjee.masterdata.service.email.EmailRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.SendManyMailsUtil;
 import com.qinjee.utils.ShortEncryptUtils;
 import entity.MailConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,12 @@ public class EmailRecordServiceImpl implements EmailRecordService {
             //找到预入职人详细信息
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById ( integer );
             List < String > objects = new ArrayList <> (1);
+            if(StringUtils.isEmpty(preEmploymentVo.getEmail())){
+                CommonCode emailCode=CommonCode.EMAIL_IS_MISTAKE;
+                String emailMsg=preEmploymentVo.getUserName()+"邮箱不存在，无法发送";
+                emailCode.setMessage(emailMsg);
+                ExceptionCast.cast(emailCode);
+            }
             objects.add ( preEmploymentVo.getEmail () );
             String keyValue = "preId=" + preEmploymentVo.getEmploymentId () +"&templateId="+ templateId+"&companyId="+userSession.getCompanyId ();
             String key = ShortEncryptUtils.shortEncrypt ( keyValue );

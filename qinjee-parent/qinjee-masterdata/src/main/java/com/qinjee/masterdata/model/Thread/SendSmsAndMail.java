@@ -34,7 +34,6 @@ public class SendSmsAndMail implements Runnable {
                 try {
                     smsRecordService.sendMessageSms ( list, preRegistVo.getTemplateId (), userSession );
                 } catch (Exception e) {
-                    e.printStackTrace ();
                     ExceptionCast.cast ( CommonCode.FAIL );
                 }
             } else if (sendWay.equals ( 2 )) {

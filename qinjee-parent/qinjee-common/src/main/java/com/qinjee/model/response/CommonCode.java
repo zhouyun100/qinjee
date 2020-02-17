@@ -63,7 +63,9 @@ public enum CommonCode implements ResultCode{
     PLAN_IS_MISTAKE(false,10336, "查询方案无字段内容"),
     FILE_IMPORT_FAILED(false,10333, "文件加载失败，请检查内容是否符合指定格式"),
     DO_NOT_DEL_CURRENT_USER(false,10541, "不允许删除当前登录用户"),
-    EXCEL_HEAD_WRONG(false,10542, "所传文件信息不符要求");
+    EXCEL_HEAD_WRONG(false,10542, "所传文件信息不符要求"),
+    MSG_IS_MISTAKE(false,10543, "信息发送失败"),
+    EMAIL_IS_MISTAKE(false,10544, "邮件发送失败");
 
     /**
      * 操作是否成功
