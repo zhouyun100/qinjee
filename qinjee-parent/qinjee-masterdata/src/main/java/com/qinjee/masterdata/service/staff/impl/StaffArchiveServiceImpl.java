@@ -218,7 +218,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
                         "ARC" );
                 arcHead.setName ( customFieldVO.getFieldName () );
-                if("姓名，性别，联系电话，年龄，出生日期，证件号，最高学历".contains(customFieldVO.getFieldName ())){
+                if("姓名，性别，联系电话，年龄，出生日期，证件号码，最高学历,电子邮箱".contains(customFieldVO.getFieldName ())){
                     arcHead.setWidth("180px");
                 }
                 arcHead.setKey ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
@@ -635,7 +635,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
         for (int i = 0; i < strings.length; i++) {
             TableHead arcHead = new TableHead ();
-            if("姓名，性别，联系电话，年龄，出生日期，证件号，最高学历".contains(strings[i])){
+            if("姓名，性别，联系电话，年龄，出生日期，证件号码，最高学历,电子邮箱".contains(strings[i])){
                 arcHead.setWidth("180px");
             }
             arcHead.setName ( strings[i] );

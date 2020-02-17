@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.Thread;
 
+import com.qinjee.exception.BusinessException;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.masterdata.service.email.EmailRecordService;
@@ -34,15 +35,25 @@ public class SendSmsAndMail implements Runnable {
                 try {
                     smsRecordService.sendMessageSms ( list, preRegistVo.getTemplateId (), userSession );
                 } catch (Exception e) {
-                    ExceptionCast.cast ( CommonCode.FAIL );
+                if( e instanceof BusinessException){
+                    ExceptionCast.cast(CommonCode.MSG_IS_MISTAKE);
+                }else{
+                    ExceptionCast.cast(CommonCode.FAIL);
                 }
+                }
+
             } else if (sendWay.equals ( 2 )) {
                 //邮件发送
                 try {
                     emailRecordService.SendMailForPreRegist ( userSession, list, preRegistVo.getTemplateId () );
                 } catch (Exception e) {
-                    ExceptionCast.cast ( CommonCode.FAIL );
+                    if( e instanceof BusinessException){
+                        ExceptionCast.cast(CommonCode.EMAIL_IS_MISTAKE);
+                    }else{
+                        ExceptionCast.cast(CommonCode.FAIL);
+                    }
                 }
+
             }
         }
     }
