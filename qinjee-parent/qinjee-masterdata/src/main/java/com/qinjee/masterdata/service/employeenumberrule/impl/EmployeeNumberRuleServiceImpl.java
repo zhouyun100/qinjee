@@ -131,14 +131,20 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     @Override
     public List < ContractParam >  showCreateConRule(UserSession userSession) {
         List<ContractParam> contractParams=new ArrayList<>();
-        contractParams.add(contractParamDao.findContractParamByCompanyId ( userSession.getCompanyId () ).get(0));
+        List<ContractParam> contractParamByCompanyId = contractParamDao.findContractParamByCompanyId(userSession.getCompanyId());
+        if(CollectionUtils.isNotEmpty(contractParamByCompanyId)){
+            contractParams.add(contractParamByCompanyId.get(0));
+        }
         return contractParams;
     }
 
     @Override
     public List < EmployeeNumberRule > showCreateEmpRule(UserSession userSession) {
         List<EmployeeNumberRule> employeeNumberRules=new ArrayList<>();
-       employeeNumberRules.add(employeeNumberRuleDao.selectByCompanyId ( userSession.getCompanyId () ).get(0));
+        List<EmployeeNumberRule> employeeNumberRules1 = employeeNumberRuleDao.selectByCompanyId(userSession.getCompanyId());
+        if(CollectionUtils.isNotEmpty(employeeNumberRules)){
+            employeeNumberRules.add(employeeNumberRules1.get(0));
+        }
        return employeeNumberRules;
     }
 
