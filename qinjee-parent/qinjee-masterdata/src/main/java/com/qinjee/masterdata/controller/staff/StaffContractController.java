@@ -170,7 +170,7 @@ public class StaffContractController extends BaseController {
      */
     @RequestMapping(value = "/SaveLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "保存合同", notes = "hkt")
-    public ResponseResult saveLaborContract(@RequestBody @Valid ContractVo contractVo) throws ParseException {
+    public ResponseResult saveLaborContract(@RequestBody @Valid ContractVo contractVo) throws Exception {
         Boolean b = checkParam(contractVo,getUserSession());
         if(b){
                 staffContractService.saveLaborContract(contractVo, getUserSession());
@@ -247,7 +247,7 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "档案id集合", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
-    public ResponseResult insertReNewLaborContractBatch(@RequestBody @Valid ContractVo contractVo) {
+    public ResponseResult insertReNewLaborContractBatch(@RequestBody @Valid ContractVo contractVo) throws Exception {
         Boolean b = checkParam(contractVo,getUserSession());
         if(b){
                 staffContractService.insertReNewLaborContractBatch(contractVo, getUserSession());

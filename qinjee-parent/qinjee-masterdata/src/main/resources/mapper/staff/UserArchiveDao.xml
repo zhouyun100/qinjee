@@ -1105,9 +1105,6 @@
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
         left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-        and  userCategory.dict_code in(
-        select application_scope_code from t_contract_param where company_id=#{companyId}
-        )
 
         left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
 
@@ -1137,7 +1134,9 @@
       <foreach collection="orgId" item='item' open="(" close=")" separator=",">
         #{item}
       </foreach>
-
+      and arc.user_category in(
+      select application_scope_code from t_contract_param where company_id=#{companyId} and is_enable=1 and is_delete=0
+        )
         and arc.archive_status='SERVICE'
         group by arc.archive_id
   </select>

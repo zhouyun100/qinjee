@@ -141,9 +141,9 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     @Override
     public List < EmployeeNumberRule > showCreateEmpRule(UserSession userSession) {
         List<EmployeeNumberRule> employeeNumberRules=new ArrayList<>();
-        List<EmployeeNumberRule> employeeNumberRules1 = employeeNumberRuleDao.selectByCompanyId(userSession.getCompanyId());
-        if(CollectionUtils.isNotEmpty(employeeNumberRules)){
-            employeeNumberRules.add(employeeNumberRules1.get(0));
+        List<EmployeeNumberRule> employeeNumberRule= employeeNumberRuleDao.selectByCompanyId(userSession.getCompanyId());
+        if(CollectionUtils.isNotEmpty(employeeNumberRule)){
+            employeeNumberRules.add(employeeNumberRule.get(0));
         }
        return employeeNumberRules;
     }

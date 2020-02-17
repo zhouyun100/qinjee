@@ -503,7 +503,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setTextType("text");
                         }
                         o = deepCopyByJson(object);
-                        checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
+                        if(StringUtils.isNotBlank(integerStringEntry.getValue())) {
+                            checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
+                        }
                         validCustomFieldValue(checkCustomFieldVO);
 
                         if (StringUtils.isNotBlank(checkCustomFieldVO.getResultMsg())) {
@@ -524,7 +526,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     private void checkContract(List<CheckCustomTableVO> checkCustomTableVOS,UserSession userSession){
         String idnumber = null;
-        String phone = null;
         for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
             for (CheckCustomFieldVO checkCustomFieldVO : checkCustomTableVO.getCustomFieldVOList()) {
                 if ("证件号码".equals(checkCustomFieldVO.getCode())) {

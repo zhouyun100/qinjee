@@ -83,7 +83,7 @@ public interface IStaffContractService {
      * @param userSession
      * @return
      */
-    void saveLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException;
+    void saveLaborContract(ContractVo contractVo, UserSession userSession) throws Exception;
 
     /**
      * 批量续签合同
@@ -91,7 +91,7 @@ public interface IStaffContractService {
      * @return
      */
     void insertReNewLaborContractBatch(ContractVo contractVo,
-                                       UserSession userSession);
+                                       UserSession userSession) throws Exception;
 
     /**
      * 展示已签合同人员

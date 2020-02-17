@@ -164,15 +164,15 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
             //批量新签合同
         for (int i = 0; i < contractVo.getList().size(); i++) {
-            String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+            String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
             mark ( contractVo.getLaborContractVo (), contractVo.getList().get(i), userSession.getArchiveId (), NEWMARK ,
                    empNumber);
         }
     }
 
     @Override
-    public void saveLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
-        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+    public void saveLaborContract(ContractVo contractVo, UserSession userSession) throws Exception {
+        String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
         mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NOTMARK ,
                 empNumber);
     }
@@ -222,10 +222,10 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertReNewLaborContractBatch(ContractVo contractVo, UserSession userSession) {
+    public void insertReNewLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
         for (int i = 0; i < contractVo.getList().size(); i++) {
     //新增续签
-            String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+            String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
             insertContinue ( contractVo, userSession, contractVo.getList().get(i),empNumber );
             //增加更改记录
 //            change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, integer, userSession.getArchiveId());
