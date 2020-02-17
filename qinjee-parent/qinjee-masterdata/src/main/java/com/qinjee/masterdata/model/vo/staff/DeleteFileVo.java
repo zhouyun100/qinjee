@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @JsonInclude
 public class DeleteFileVo implements Serializable {
-    private List < Integer > list;
+    private List < Integer > id;
     private Integer companyId;
 }

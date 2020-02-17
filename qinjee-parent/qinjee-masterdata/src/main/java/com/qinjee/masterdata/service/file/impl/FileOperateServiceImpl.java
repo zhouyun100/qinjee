@@ -256,12 +256,12 @@ public class FileOperateServiceImpl implements IFileOperateService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteFile(DeleteFileVo deleteFileVo) {
         //删除文件
-        List < AttachmentRecord > list = attachmentRecordDao.selectByList (deleteFileVo.getList ());
+        List < AttachmentRecord > list = attachmentRecordDao.selectByList (deleteFileVo.getId());
         for (AttachmentRecord attachmentRecord : list) {
             UpAndDownUtil.delFile ( attachmentRecord.getAttachmentUrl ());
         }
         //删除记录
-        attachmentRecordDao.deleteFile (deleteFileVo.getList (),deleteFileVo.getCompanyId ());
+        attachmentRecordDao.deleteFile (deleteFileVo.getId(),deleteFileVo.getCompanyId ());
     }
 
     @Override
