@@ -152,21 +152,24 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     public void insertLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
         //将合同vo设置进去
-        mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NEWMARK );
+        mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NEWMARK
+        ,contractVo.getContractNumber().get(0));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
             //批量新签合同
-            for (Integer integer : contractVo.getList ()) {
-                mark ( contractVo.getLaborContractVo (), integer, userSession.getArchiveId (), NEWMARK );
-            }
+        for (int i = 0; i < contractVo.getList().size(); i++) {
+            mark ( contractVo.getLaborContractVo (), contractVo.getList().get(i), userSession.getArchiveId (), NEWMARK ,
+                    contractVo.getContractNumber().get(i));
+        }
     }
 
     @Override
     public void saveLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
-        mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NOTMARK );
+        mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NOTMARK ,
+                contractVo.getContractNumber().get(0));
     }
 
 
@@ -196,7 +199,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContract(ContractVo contractVo, UserSession userSession) {
         //新增续签
-        insertContinue ( contractVo, userSession, contractVo.getList ().get ( 0 ) );
+        insertContinue ( contractVo, userSession, contractVo.getList ().get ( 0 ),contractVo.getContractNumber().get(0) );
         //增加更改记录（经过确认续签不用更改记录）
 //         change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, contractVo.getList ().get ( 0 ), userSession.getArchiveId());
     }
@@ -215,18 +218,19 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContractBatch(ContractVo contractVo, UserSession userSession) {
-        for (Integer integer : contractVo.getList ()) {
-            //新增续签
-            insertContinue ( contractVo, userSession, integer );
+        for (int i = 0; i < contractVo.getList().size(); i++) {
+    //新增续签
+            insertContinue ( contractVo, userSession, contractVo.getList().get(i),contractVo.getContractNumber().get(i) );
             //增加更改记录
 //            change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, integer, userSession.getArchiveId());
         }
     }
 
-    private void insertContinue(ContractVo contractVo, UserSession userSession, Integer id) {
+    private void insertContinue(ContractVo contractVo, UserSession userSession, Integer id,String contractNumber) {
         LaborContract laborContract = new LaborContract ();
         //设置其余字段
         BeanUtils.copyProperties ( contractVo.getLaborContractVo (), laborContract );
+        laborContract.setContractNumber(contractNumber);
         laborContract.setArchiveId ( id );
         laborContract.setOperatorId ( userSession.getArchiveId () );
         laborContract.setContractState ( RENEWMARK );
@@ -342,11 +346,12 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return new PageResult <> ( list );
     }
 
-    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state)  {
+    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state,String contractNumber)  {
         //新增合同
         LaborContract laborContract = new LaborContract ();
         //设置其余字段
         BeanUtils.copyProperties ( laborContractVo, laborContract );
+        laborContract.setContractNumber(contractNumber);
         laborContract.setContractSignDate (  laborContractVo.getContractSignDate () );
         laborContract.setArchiveId ( id );
         laborContract.setOperatorId ( archiveId );
