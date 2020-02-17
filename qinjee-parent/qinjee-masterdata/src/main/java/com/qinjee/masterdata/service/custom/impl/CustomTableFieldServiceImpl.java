@@ -140,7 +140,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public InsideCheckAndImport checkInsideFieldValue(Object object, List<Map<String, String>> lists,UserSession userSession) throws IllegalAccessException,  ParseException {
-      List<Object> objectList=new ArrayList<>();
+//        checkExcelHead(object, lists);
+        List<Object> objectList=new ArrayList<>();
       Boolean checkResult=true;
         String idnumber=null;
         String phone=null;
@@ -157,16 +158,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     //获得code
                     String s = HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey());
                     if (declaredField.getName().equals(s)) {
-                        CustomFieldVO customFieldVO = customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s, "ARC", userSession.getCompanyId());
                         CheckCustomFieldVO checkCustomFieldVOTemp = new CheckCustomFieldVO();
-                        if(customFieldVO!=null){
-                            BeanUtils.copyProperties(customFieldVO,checkCustomFieldVOTemp);
-                            checkCustomFieldVOTemp.setCode(s);
-                            checkCustomFieldVO = checkCustomFieldVOTemp.clone();
-                        }else{
-                            checkCustomFieldVOTemp.setCode(s);
-                            checkCustomFieldVO = checkCustomFieldVOTemp.clone();
-                        }
+                        checkCustomFieldVOTemp.setCode(integerStringEntry.getKey());
+                        checkCustomFieldVO = checkCustomFieldVOTemp.clone();
                         Class typeClass = declaredField.getType();
                         int i = typeClass.getName().lastIndexOf(".");
                         String type = typeClass.getTypeName().substring(i + 1);
@@ -229,6 +223,27 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
         insideCheckAndImport.setObjectList(objectList);
         insideCheckAndImport.setList(checkCustomTableVOS);
         return insideCheckAndImport;
+    }
+
+    private void checkExcelHead(Object object, List<Map<String, String>> lists) {
+        StringBuffer stringBuffer=new StringBuffer();
+        Integer check=0;
+        Field[] declaredFields = object.getClass().getDeclaredFields();
+        for (Field declaredField :declaredFields) {
+           stringBuffer.append(declaredField.getName());
+        }
+        for (int i = 0; i < lists.size(); i++) {
+            for (Map.Entry<String, String> stringStringEntry : lists.get(i).entrySet()) {
+                   String s= HeadFieldUtil.getFieldMap().get(stringStringEntry.getKey());
+                   check++;
+                   if(!stringBuffer.toString().contains(s)){
+                       ExceptionCast.cast(CommonCode.EXCEL_HEAD_WRONG);
+                   }
+            }
+        }
+        if(check!=declaredFields.length){
+            ExceptionCast.cast(CommonCode.EXCEL_HEAD_WRONG);
+        }
     }
 
 
@@ -479,10 +494,11 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
 
     @Override
     public InsideCheckAndImport checkInsideFieldValueContract(Object object, List<Map<String, String>> mapList, UserSession userSession) throws IllegalAccessException, ParseException {
+        //        checkExcelHead(object, lists);
         List<Object> objectList=new ArrayList<>();
+        Boolean checkResult=true;
         String idnumber=null;
         String employeeNumber=null;
-        Boolean checkResult=true;
         List<CheckCustomTableVO> checkCustomTableVOS=new ArrayList<>();
         InsideCheckAndImport insideCheckAndImport=new InsideCheckAndImport();
         for (Map<String, String> list : mapList) {
@@ -496,10 +512,9 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     //获得code
                     String s = HeadFieldUtil.getFieldMap().get(integerStringEntry.getKey());
                     if (declaredField.getName().equals(s)) {
-                        CustomFieldVO customFieldVO = customTableFieldDao.selectFieldByCodeAndFuncCodeAndComapnyId(s, "ARC", userSession.getCompanyId());
-                        if(customFieldVO!=null){
-                            BeanUtils.copyProperties(customFieldVO,checkCustomFieldVO);
-                        }
+                        CheckCustomFieldVO checkCustomFieldVOTemp = new CheckCustomFieldVO();
+                        checkCustomFieldVOTemp.setCode(integerStringEntry.getKey());
+                        checkCustomFieldVO = checkCustomFieldVOTemp.clone();
                         Class typeClass = declaredField.getType();
                         int i = typeClass.getName().lastIndexOf(".");
                         String type = typeClass.getTypeName().substring(i + 1);
@@ -527,24 +542,21 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                         validCustomFieldValue(checkCustomFieldVO);
                         if ("id_number".equals ( checkCustomFieldVO.getFieldCode () )) {
                             if(StringUtils.isEmpty(checkCustomFieldVO.getFieldValue())){
-                                checkResult=false;
+                                checkCustomFieldVO.setCheckResult(false);
                                 resultMsg.append("idnumber不能为空");
                             }
                         }
-                        if ("employee_number".equals ( checkCustomFieldVO.getFieldCode () )) {
-                            employeeNumber = checkCustomFieldVO.getFieldValue();
-                            if(org.apache.commons.lang.StringUtils.isEmpty(employeeNumber)){
-                                checkResult=false;
-                                resultMsg.append("phone不能为空");
-                            }
-                        }
                         //根据证件号与工号找到人员id
-                        if(StringUtils.isNotBlank(idnumber)&&StringUtils.isNotBlank(employeeNumber)) {
-                            Integer businessId = userArchiveDao.selectIdByNumberAndEmploy(idnumber, employeeNumber);
-                            if (businessId == null || businessId == 0) {
+                        if(StringUtils.isNotBlank(idnumber)) {
+                            Integer integer = userArchiveDao.selectIdByNumber(idnumber, userSession.getCompanyId());
+                            if (integer == null || integer == 0) {
                                 resultMsg.append("找不到合同归属人");
                             }
                         }
+                        if(StringUtils.isNotBlank(checkCustomFieldVO.getResultMsg())){
+                            resultMsg.append(checkCustomFieldVO.getResultMsg());
+                        }
+                        checkResult=checkCustomFieldVO.getCheckResult();
                         checkCustomFieldVOS.add(checkCustomFieldVO);
                     }
                     checkCustomTableVO.setResultMsg(resultMsg.toString());
@@ -552,7 +564,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     checkCustomTableVO.setCustomFieldVOList(checkCustomFieldVOS);
                 }
             }
-
             objectList.add(object);
             checkCustomTableVOS.add(checkCustomTableVO);
         }

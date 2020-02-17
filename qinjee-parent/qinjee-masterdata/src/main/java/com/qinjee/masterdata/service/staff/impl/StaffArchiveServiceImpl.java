@@ -201,9 +201,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     public List < TableHead > setDefaultHead(UserSession userSession, Integer querySchemaId) {
         List < TableHead > headList = new ArrayList <> ();
-        List < QuerySchemeField > querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
-        if(CollectionUtils.isEmpty (querySchemeFieldList)){
+        List < QuerySchemeField > querySchemeFieldList=null;
+        if(null!=querySchemaId&&0!=querySchemaId){
+            querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
+            if(CollectionUtils.isEmpty (querySchemeFieldList)){
             ExceptionCast.cast ( CommonCode.PLAN_IS_NULL );
+            }
+        }else{
+            headList = getDefaultArcHead();
+            return headList;
         }
         try {
             for (QuerySchemeField querySchemeField : querySchemeFieldList) {
@@ -212,7 +218,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 CustomFieldVO customFieldVO = customTableFieldDao.selectFieldById ( querySchemeField.getFieldId (), userSession.getCompanyId (),
                         "ARC" );
                 arcHead.setName ( customFieldVO.getFieldName () );
-                if("姓名，性别，电话，年龄，出生日期".contains(customFieldVO.getFieldName ())){
+                if("姓名，性别，联系电话，年龄，出生日期，证件号，最高学历".contains(customFieldVO.getFieldName ())){
                     arcHead.setWidth("180px");
                 }
                 arcHead.setKey ( FieldToProperty.fieldToProperty ( customFieldVO.getFieldCode () ) );
@@ -222,7 +228,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 if ("post_id".equals ( customFieldVO.getFieldCode () )) {
                     arcHead.setKey ( "postName" );
                 }
-                if ("bussiness_unit_id".equals ( customFieldVO.getFieldCode () )) {
+                if ("business_unit_id".equals ( customFieldVO.getFieldCode () )) {
                     arcHead.setKey ( "businessUnitName" );
                 }
                 if ("supervisor_id".equals ( customFieldVO.getFieldCode () )) {
@@ -237,12 +243,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
 
         return headList;
-    }
-
-    public PageResult < UserArchiveVo > selectArchivebatchAndOrgList(UserSession userSession, List < Integer > orgList, Integer pageSize, Integer currentPage) {
-        PageHelper.startPage ( currentPage, pageSize );
-        List < UserArchiveVo > list = userArchiveDao.selectByOrgListAndAuth ( orgList, userSession.getArchiveId (), userSession.getCompanyId () );
-        return new PageResult <> ( list );
     }
 
     @Override
@@ -635,7 +635,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
         for (int i = 0; i < strings.length; i++) {
             TableHead arcHead = new TableHead ();
-            if("姓名，性别，电话，年龄，出生日期".contains(strings[i])){
+            if("姓名，性别，联系电话，年龄，出生日期，证件号，最高学历".contains(strings[i])){
                 arcHead.setWidth("180px");
             }
             arcHead.setName ( strings[i] );

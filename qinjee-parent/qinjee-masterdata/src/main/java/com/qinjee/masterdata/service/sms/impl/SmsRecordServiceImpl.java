@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.sms.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.sms.SmsRecordDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -21,6 +22,7 @@ import com.qinjee.masterdata.service.sms.SmsConfigService;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.utils.KeyUtils;
 import com.qinjee.utils.SendMessage;
 import com.qinjee.utils.ShortEncryptUtils;
@@ -74,6 +76,12 @@ public class SmsRecordServiceImpl implements SmsRecordService {
             String companyName=companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () ).getCompanyName ();
 //            String companyId = String.valueOf (value.get ( "company_id" ));
             String phone = value.get ( "phone" );
+            if(StringUtils.isEmpty(phone)){
+                CommonCode msgCode=CommonCode.MSG_IS_MISTAKE;
+                String message=userName+"没有手机号，无法发送";
+                msgCode.setMessage(message);
+                ExceptionCast.cast(msgCode);
+            }
             List<String> phoneNumbers = new ArrayList<>();
             phoneNumbers.add(phone);
             //拼接短链接

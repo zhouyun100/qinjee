@@ -293,11 +293,8 @@
             <if test="isDelete != null">
                 is_delete= #{isDelete},
             </if>
-            <if test="contractParamId != null">
-                contract_param_id= #{contractParamId},
-            </if>
         </set>
-        where  company_id= #{companyId}
+        where contract_param_id= #{contractParamId}
     </update>
 
     <!-- 根据主键删除数据 -->

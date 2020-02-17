@@ -450,33 +450,19 @@
     where archive_id=#{archiveId}
   </select>
   <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
-    SELECT
-    orga.org_name businessUnitName,
-    org.org_name orgName,
-    COUNT(org.org_id) staffCount,
-    COUNT(contract.contract_id) signCount,
-    COUNT(org.org_id) - COUNT(contract.contract_id) noSignCount,
-    COUNT(
-    deline_contract.contract_id
-    ) delineCount -- 即将到期人数
-    FROM
-    t_organization org,
-    t_organization orga,
-    t_user_archive arc
+    SELECT org.org_id orgId,orga.org_name businessUnitName, org.org_name orgName, COUNT(arc.archive_id) staffCount, COUNT(contract.contract_id) signCount, COUNT(org.org_id) - COUNT(contract.contract_id) noSignCount, COUNT( deline_contract.contract_id ) delineCount -- 即将到期人数
+    from t_user_archive arc
+    left join  t_organization org on org.org_id =arc.org_id
+    left join  t_organization orga on orga.org_id =arc.business_unit_id
     LEFT JOIN t_labor_contract contract
     ON contract.archive_id = arc.archive_id
     LEFT JOIN t_labor_contract deline_contract
     ON deline_contract.archive_id = arc.archive_id
-    AND (SELECT
-    remember_days
-    FROM
-    t_contract_param WHERE company_id = #{companyId} limit 1) > DATEDIFF(
-    deline_contract.contract_end_date,
-    CURDATE())
-    WHERE org.org_id = arc.org_id
-    AND arc.business_unit_id = orga.org_id
-    AND arc.archive_status = 'SERVICE'
-    AND org.org_id IN
+    AND (SELECT remember_days
+    FROM t_contract_param
+    WHERE company_id = #{companyId}
+    LIMIT 1) > DATEDIFF( deline_contract.contract_end_date, CURDATE())
+    where  arc.is_delete =0 and  arc.org_id IN
     <foreach collection="list" item="orgId" open="(" close=")" separator=",">
       #{orgId}
     </foreach>

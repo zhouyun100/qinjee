@@ -85,11 +85,9 @@ public interface UserArchiveDao {
 
     List< UserArchiveVo> selectUserArchiveByName(@Param("name") String name, @Param("companyId") Integer companyId);
 
-    List< UserArchiveVo> selectByOrgListAndAuth(@Param("orgList") List< Integer> orgList, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
-
     List<UserArchiveVo> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
 
-    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") List<Integer> orgId);
+    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") List<Integer> orgId, @Param("companyId") Integer companyId);
 
     Map< String, Object> selectTransMessage(@Param("key") Integer key);
 

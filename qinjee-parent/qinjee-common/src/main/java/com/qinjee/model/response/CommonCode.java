@@ -58,13 +58,14 @@ public enum CommonCode implements ResultCode{
     CANNOT_TWO_NULL(false,10330, "证件号与手机号不能同时为空"),
     IS_EXIST_BLACKLIST(false,10331, "该人员已经存在与黑名单中"),
     IDNUMBER_ALREADY_EXIST(false,10332, "证件号已存在"),
-    SQL_MAY_MISTAKE(false,10334, "请检查左右括号是否有误"),
+    SQL_MAY_MISTAKE(false,10334, "请检查台账括号或者连接符是否有误"),
     PLAN_IS_NULL(false,10335, "查询方案为空"),
     PLAN_IS_MISTAKE(false,10336, "查询方案无字段内容"),
     FILE_IMPORT_FAILED(false,10333, "文件加载失败，请检查内容是否符合指定格式"),
     DO_NOT_DEL_CURRENT_USER(false,10541, "不允许删除当前登录用户"),
-    ;
-
+    EXCEL_HEAD_WRONG(false,10542, "所传文件信息不符要求"),
+    MSG_IS_MISTAKE(false,10543, "信息发送失败"),
+    EMAIL_IS_MISTAKE(false,10544, "邮件发送失败");
 
     /**
      * 操作是否成功

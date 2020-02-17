@@ -62,7 +62,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private final static String xlsx = "xlsx";
     private final static String ORGCODE = "部门编码";
     private final static String POSTCODE = "岗位编码";
-    private final static String SUPORCODE = "直接上级编码";
+    private final static String SUPORCODE = "直接上级工号";
     private final static String BUSINESSUNITCODE = "机构编码";
     private static final String ORGNAME = "部门";
     private static final String BUSINESSUNITNAME = "单位";
@@ -271,8 +271,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 //                    stringBuffer.append("工号不能为空");
 //                }
             }
-
-
             //校验黑名单
             if(StringUtils.isNotBlank(idnumber)&& StringUtils.isNotBlank(phone)) {
                 List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
@@ -280,30 +278,42 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     stringBuffer.append("此人员已经存在于黑名单！");
                 }
             }
-            checkCustomTableVO.setResultMsg ( stringBuffer.toString () );
-            if (systemDefine == 0) {
-                boolean result = false;
-                if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
-                    Integer pre = null;
-                    Integer achiveId = null;
-                    if ("PRE".equals ( funcCode )) {
-                        pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber,userSession.getCompanyId() );
-                    } else if ("ARC".equals ( funcCode )) {
-                        achiveId = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
-                    }
-                    if (pre != null || achiveId != null) {
-                        result = true;
-                    }
+
+            if(systemDefine==1){
+                boolean result = isResult(funcCode, userSession, idtype, idnumber);
+                if (result) {
+                    checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg () + "用户已存在" );
                 }
+            }
+            if (systemDefine == 0) {
+                boolean result = isResult(funcCode, userSession, idtype, idnumber);
                 if (!result) {
                     checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg () + "用户不存在" );
                 }
             }
+            checkCustomTableVO.setResultMsg ( stringBuffer.toString () );
             if(null==checkCustomTableVO.getResultMsg ()||"".equals ( checkCustomTableVO.getResultMsg () )){
                 checkCustomTableVO.setCheckResult ( true );
             }
         }
         return checkCustomTableVOS;
+    }
+
+    private boolean isResult(String funcCode, UserSession userSession, String idtype, String idnumber) {
+        boolean result = false;
+        if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
+            Integer pre = null;
+            Integer achiveId = null;
+            if ("PRE".equals ( funcCode )) {
+                pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber,userSession.getCompanyId() );
+            } else if ("ARC".equals ( funcCode )) {
+                achiveId = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
+            }
+            if (pre != null || achiveId != null) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     private void setCheck(CheckCustomFieldVO fieldVO, String code, String name) {
@@ -649,6 +659,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         String businessUnitId=null;
         String orgId=null;
         String postId=null;
+        String superId=null;
         try {
              if (BUSINESSUNITCODE.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
@@ -662,9 +673,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "99999" );
                     }
                 } else {
-                    if(StringUtils.isNotBlank(orgId)) {
+                    if(StringUtils.isNotBlank(businessUnitId)) {
                         map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("business_unit_id", funcCode, companyId),
-                                String.valueOf(organizationServiceImpl.getBusunessUnitIdByOrgId(Integer.parseInt(orgId))));
+                                String.valueOf(organizationServiceImpl.getBusunessUnitIdByOrgId(Integer.parseInt(businessUnitId))));
                     }else{
                         map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("business_unit_id", funcCode, companyId),"100000");
                     }
@@ -682,28 +693,29 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), orgId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "99999" );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), orgId );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "100000" );
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "99999" );
                 }
             } else if (ORGNAME.equals ( fieldName ) || ORGNAMEPRE.equals(fieldName)) {
                  if(StringUtils.isNotBlank(orgId)) {
-                     map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("business_unit_id", funcCode, companyId), orgId);
+                     map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("org_id", funcCode, companyId),
+                             String.valueOf(organizationServiceImpl.getBusunessUnitIdByOrgId(Integer.parseInt(orgId))));
+                 }else{
+                     map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("org_id", funcCode, companyId),"100000");
                  }
              } else if (SUPORCODE.equals ( fieldName ) ) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
                     List<Map < String, Integer >> map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
                     if (!CollectionUtils.isEmpty ( map1 )) {
-                        String archiveId = String.valueOf ( map1.get(0).get ( "archive_id" ) );
-                        if (StringUtils.isNotBlank ( archiveId )) {
-                            map.put ( map1.get(0).get ( "field_id" ), archiveId );
+                        superId = String.valueOf ( map1.get(0).get ( "archive_id" ) );
+                        if (StringUtils.isNotBlank ( superId )) {
+                            map.put ( map1.get(0).get ( "field_id" ), superId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "99999" );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), superId );
                     }
-                } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "100000" );
                 }
             }
            else if (POSTCODE.equals ( fieldName ) ) {
@@ -715,27 +727,31 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), postName );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "99999" );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), postId );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "100000" );
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "99999" );
                 }
              } else if (POSTNAME.equals(fieldName)) {
                if(StringUtils.isNotBlank(postId)) {
-                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), "-2");
+                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), postId);
+               }else{
+                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId),"100000");
                }
              } else {
                  CustomFieldVO customFieldVO = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
-                 if(!"code".equals(customFieldVO.getTextType())){
-                     Integer integer = customFieldVO.getFieldId();
-                     if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
-                         map.put(integer, value);
-                     }
-                 }else{
-                     Integer integer = customFieldVO.getFieldId();
-                     if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
-                         String s = sysDictServiceImpl.searchCodeByTypeAndValue(customFieldVO.getCode(), value);
-                         map.put(integer,s);
+                 if (customFieldVO != null) {
+                     if (!"code".equals(customFieldVO.getTextType())) {
+                         Integer integer = customFieldVO.getFieldId();
+                         if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
+                             map.put(integer, value);
+                         }
+                     } else {
+                         Integer integer = customFieldVO.getFieldId();
+                         if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
+                             String s = sysDictServiceImpl.searchCodeByTypeAndValue(customFieldVO.getCode(), value);
+                             map.put(integer, s);
+                         }
                      }
                  }
              }
