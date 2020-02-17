@@ -241,7 +241,7 @@ public class FileController extends BaseController {
     public ResponseResult<List<AttchmentRecordVo>> selectMyFileContents(Integer businessId, Integer groupId) throws UnsupportedEncodingException {
         Boolean b = checkParam(businessId, groupId, getUserSession());
         if (b) {
-            List<AttchmentRecordVo> list = fileOperateService.selectMyFileContents(872, groupId, getUserSession().getCompanyId());
+            List<AttchmentRecordVo> list = fileOperateService.selectMyFileContents(businessId, groupId, getUserSession().getCompanyId());
             return new ResponseResult<>(list, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
