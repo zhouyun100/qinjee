@@ -65,7 +65,8 @@ public enum CommonCode implements ResultCode{
     DO_NOT_DEL_CURRENT_USER(false,10541, "不允许删除当前登录用户"),
     EXCEL_HEAD_WRONG(false,10542, "所传文件信息不符要求"),
     MSG_IS_MISTAKE(false,10543, "信息发送失败"),
-    EMAIL_IS_MISTAKE(false,10544, "邮件发送失败");
+    EMAIL_IS_MISTAKE(false,10544, "邮件发送失败"),
+    GET_CACHE_MISTAKE(false,10545, "获取缓存失败，请联系厂商");
 
     /**
      * 操作是否成功
