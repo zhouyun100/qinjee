@@ -11,7 +11,5 @@ import java.util.List;
 public class ContractVo implements Serializable {
    private  LaborContractVo laborContractVo;
    private List <Integer> list;
-   @NotNull
-   private List<String> contractNumber;
    private LaborContractChangeVo laborContractChangeVo;
 }

@@ -10,6 +10,7 @@ import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -53,6 +54,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private LaborContractChangeDao laborContractChangeDao;
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
+    @Autowired
+    private IEmployeeNumberRuleService employeeNumberRuleService;
 
     /**
      * 展示未签合同的人员信息
@@ -153,7 +156,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void insertLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
         //将合同vo设置进去
         mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NEWMARK
-        ,contractVo.getContractNumber().get(0));
+        ,contractVo.getLaborContractVo().getContractNumber());
     }
 
     @Override
@@ -161,15 +164,17 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
             //批量新签合同
         for (int i = 0; i < contractVo.getList().size(); i++) {
+            String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
             mark ( contractVo.getLaborContractVo (), contractVo.getList().get(i), userSession.getArchiveId (), NEWMARK ,
-                    contractVo.getContractNumber().get(i));
+                   empNumber);
         }
     }
 
     @Override
     public void saveLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
+        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
         mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NOTMARK ,
-                contractVo.getContractNumber().get(0));
+                empNumber);
     }
 
 
@@ -199,7 +204,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContract(ContractVo contractVo, UserSession userSession) {
         //新增续签
-        insertContinue ( contractVo, userSession, contractVo.getList ().get ( 0 ),contractVo.getContractNumber().get(0) );
+        insertContinue ( contractVo, userSession, contractVo.getList ().get ( 0 ),contractVo.getLaborContractVo().getContractNumber() );
         //增加更改记录（经过确认续签不用更改记录）
 //         change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, contractVo.getList ().get ( 0 ), userSession.getArchiveId());
     }
@@ -220,7 +225,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void insertReNewLaborContractBatch(ContractVo contractVo, UserSession userSession) {
         for (int i = 0; i < contractVo.getList().size(); i++) {
     //新增续签
-            insertContinue ( contractVo, userSession, contractVo.getList().get(i),contractVo.getContractNumber().get(i) );
+            String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+            insertContinue ( contractVo, userSession, contractVo.getList().get(i),empNumber );
             //增加更改记录
 //            change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, integer, userSession.getArchiveId());
         }
@@ -252,7 +258,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void endlaborContractBatch(ContractVo contractVo, UserSession userSession) throws ParseException {
+    public void endlaborContractBatch(ContractVo contractVo, UserSession userSession)  {
         //将合同状态设置为终止
         for (Integer integer : contractVo.getList ()) {
             LaborContract laborContract = laborContractDao.selectByPrimaryKey ( integer );

@@ -272,7 +272,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 //                }
             }
             //校验黑名单
-            if(StringUtils.isNotBlank(idnumber)&& StringUtils.isNotBlank(phone)) {
+            if(StringUtils.isNotBlank(idnumber)|| StringUtils.isNotBlank(phone)) {
                 List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
                 if (!CollectionUtils.isEmpty(blacklistList)) {
                     stringBuffer.append("此人员已经存在于黑名单！");
@@ -294,6 +294,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             checkCustomTableVO.setResultMsg ( stringBuffer.toString () );
             if(null==checkCustomTableVO.getResultMsg ()||"".equals ( checkCustomTableVO.getResultMsg () )){
                 checkCustomTableVO.setCheckResult ( true );
+            }else{
+                checkCustomTableVO.setCheckResult(false);
             }
         }
         return checkCustomTableVOS;
