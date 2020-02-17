@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class ContractFormVo implements Serializable {
     private String  businessUnitName;
     private String  orgName;
+    private Integer  orgId;
     private Integer staffCount;
     private Integer signCount;
     private Integer noSignCount;
