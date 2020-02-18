@@ -45,6 +45,9 @@
       #{companyId,jdbcType=INTEGER}, #{sortId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{isEnable,jdbcType=SMALLINT})
   </insert>
+
+
+
     <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId"
             parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
         insert into t_organization
@@ -241,6 +244,66 @@
         v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
         ORDER BY v.sort_id ASC
     </select>
+ <select id="listAllOrgIdsByArchiveId" resultMap="BaseResultMap">
+        select
+        v.org_id,v.org_parent_id
+        from (
+        select t_organization.org_id,t_organization.org_manager_id,t_organization.org_parent_id
+        from t_organization,t_role_org_auth,t_user_role
+        where t_user_role.archive_id = #{archiveId}
+        and (t_user_role.is_trusteeship = 0
+        or (t_user_role.is_trusteeship = 1
+        and #{now} >= t_user_role.trusteeship_begin_time
+        and t_user_role.trusteeship_end_time >= #{now}
+        ))
+        and t_role_org_auth.role_id = t_user_role.role_id
+        and t_organization.org_id = t_role_org_auth.org_id
+        and t_user_role.is_delete = 0
+        and t_role_org_auth.is_delete = 0
+        <if test="isEnable != null ">
+            and t_organization.is_enable = 1
+        </if>
+        UNION
+        select t_organization.org_id,t_organization.org_manager_id,t_organization.org_parent_id
+        from t_organization,t_user_org_auth
+        where t_user_org_auth.archive_id = #{archiveId}
+        and t_organization.org_id = t_user_org_auth.org_id
+        and t_user_org_auth.is_delete = 0
+        <if test="isEnable != null ">
+            and t_organization.is_enable = 1
+        </if>
+        ) v LEFT JOIN t_organization parentOrg
+        ON parentOrg.org_id = v.org_parent_id
+        LEFT JOIN t_user_archive tua
+        ON v.org_manager_id = tua.archive_id
+    </select>
+
+    <select id="getOrgIds" resultType="integer">
+        select org_id from (
+              select t1.org_id,
+              if(find_in_set(org_parent_id, @pids) > 0, @pids := concat(@pids, ',', org_id), 0) as ischild
+              from (
+                   select t_org.org_id,t_org.org_parent_id from t_organization  t_org ,t_role_org_auth t_roa ,t_user_role t_ur
+											where t_ur.archive_id = #{archiveId}
+                                                and (t_ur.is_trusteeship = 0
+                                                    or (t_ur.is_trusteeship = 1
+                                                    and #{now} >= t_ur.trusteeship_begin_time
+                                                    and t_ur.trusteeship_end_time >= #{now}
+                                                    ))
+												and t_roa.role_id = t_ur.role_id
+												and t_org.org_id = t_roa.org_id
+												and t_ur.is_delete = 0
+												and t_roa.is_delete = 0   <if test="isEnable != null "> and t_org.is_enable =1 </if>
+										union
+									select t_org.org_id,t_org.org_parent_id from t_organization t_org,t_user_org_auth t_uoa
+										where t_uoa.archive_id = #{archiveId}
+											and t_org.org_id = t_uoa.org_id
+											and t_uoa.is_delete = 0  <if test="isEnable != null "> and t_org.is_enable =1 </if>
+                  ) t1,
+                  (select @pids := #{orgId} ) t2
+             ) t3 where ischild != 0 OR t3.org_id = #{orgId}
+    </select>
+
 
     <select id="listDirectOrganizationByCondition" resultMap="BaseResultMap">
         SELECT org.org_id,org.is_enable,org.org_code,org.org_manager_id,
@@ -534,7 +597,7 @@
         tps.position_name,
         v.org_parent_id,
         v.org_manager_id,
-        tar.attachment_url attachmentUrl
+        tui.headimgurl attachmentUrl
         FROM (
         SELECT t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
         t_organization.org_full_name,t_organization.org_parent_id,t_organization.org_manager_id,t_organization.sort_id,t_organization.is_enable
@@ -564,11 +627,12 @@
             and t_organization.is_enable = 1
         </if>
         ) v
-        LEFT JOIN t_attachment_record tar ON tar.business_id = v.org_manager_id AND tar.business_type = 'archive'
+
         LEFT JOIN t_user_archive tua
         ON tua.archive_id =v.org_manager_id
         LEFT JOIN t_post tp ON tp.post_id =tua.post_id
         LEFT JOIN t_position tps ON tps.position_id=tp.position_id
+        LEFT JOIN t_user_info	tui ON tui.user_id = tua.user_id
         <if test="orgIdList != null">
             where
             v.org_id in

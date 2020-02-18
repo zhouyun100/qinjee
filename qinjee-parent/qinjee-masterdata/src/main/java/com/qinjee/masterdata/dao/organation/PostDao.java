@@ -111,5 +111,8 @@ public interface PostDao {
     List< Post> selectPostByOrgId(@Param("orgId") Integer orgId, @Param("companyId") Integer companyId);
 
     List<Post> getPostListByCompanyId(Integer companyId);
+
+    List<Integer> getPostIds(Integer postId);
+
 }
 

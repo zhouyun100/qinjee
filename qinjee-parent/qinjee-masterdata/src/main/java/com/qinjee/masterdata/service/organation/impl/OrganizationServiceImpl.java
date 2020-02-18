@@ -305,7 +305,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (layer < 1) {
             layer = 2;
         }
-        orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, (layer - 1), isEnable);
+        orgIdList= organizationDao.getOrgIds(orgId,userSession.getArchiveId(),isEnable,new Date());
+        //orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, (layer - 1), isEnable);
         //查询所有相关的机构
         List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics(userSession.getArchiveId(), orgIdList, isEnable, new Date());
         //拿到根节点
@@ -335,7 +336,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     public List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, Integer archiveId) {
         List<OrganizationVO> orgList = null;
         if (CollectionUtils.isEmpty(orgIds)) {
-            List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, Short.parseShort("1"));
+            List<Integer> orgIdList= organizationDao.getOrgIds(orgId,archiveId,Short.parseShort("1"),new Date());
             orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, Short.parseShort("0"), new Date());
         } else {
             orgList = organizationDao.listOrganizationsByIds2(orgIds);
@@ -363,9 +364,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;
         Short isEnable = organizationPageVo.getIsEnable();
-        Integer orgId = organizationPageVo.getOrgParentId();
         //如果当前机构为空的话 返回空集合
-        orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, null, isEnable);
+        orgIdList = organizationDao.getOrgIds(organizationPageVo.getOrgParentId(),userSession.getArchiveId(),isEnable,new Date());
         if (!CollectionUtils.isEmpty(orgIdList)) {
             if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
                 PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
@@ -487,33 +487,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
     //=====================================================================
 
-    /**
-     * 遍历搜集机构下所有子机构的id
-     *
-     * @param multiValuedMap
-     * @param orgId
-     * @param idsList
-     */
-    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList, Integer layer) {
-        idsList.add(orgId);
-        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
-        for (Integer sonOrgId : sonOrgIds) {
 
-            if (layer != null && layer > 0) {
-                idsList.add(sonOrgId);
-                if (multiValuedMap.get(sonOrgId).size() > 0 && layer > 0) {
-                    collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
-                    layer--;
-                }
-            } else {
-                idsList.add(sonOrgId);
-                if (multiValuedMap.get(sonOrgId).size() > 0) {
-                    collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
-                }
-            }
-        }
-
-    }
 
     @Override
     protected List<OrganizationVO> checkExcel(List<OrganizationVO> dataList, UserSession userSession) {
@@ -996,7 +970,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             Integer orgId = org.getOrgId();
             //设置实有人数
             if (isContainsActualMembers) {
-                org.setStaffNumbers(userArchiveDao.countUserArchiveByOrgId(orgId));
+               //TODO  org.setStaffNumbers(userArchiveDao.countUserArchiveByOrgId(orgId));
             }
             //TODO 设置编制人数,先写死
             if (isContainsCompiler) {

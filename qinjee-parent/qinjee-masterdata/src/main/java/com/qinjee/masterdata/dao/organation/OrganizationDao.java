@@ -17,6 +17,17 @@ import java.util.Map;
 public interface OrganizationDao {
     int deleteByPrimaryKey(Integer orgId);
 
+    /**
+     * 根据 orgId查询该机构id及其所有子孙机构id（通过archiveId进行权限过滤，没有权限的不用查）
+      * @param orgId
+     * @param archiveId
+     * @param isEnable
+     * @param now
+     * @return
+     */
+    List<Integer> getOrgIds(@Param("orgId") Integer orgId,@Param("archiveId")Integer archiveId, @Param("isEnable") Short isEnable,
+                               @Param("now") Date now);
+
     int insert(OrganizationVO record);
 
     int insertSelective(OrganizationVO record);
@@ -37,6 +48,17 @@ public interface OrganizationDao {
      * @return
      */
     List<OrganizationVO> listAllOrganizationByArchiveId(@Param("archiveId") Integer archiveId,
+                                                        @Param("isEnable") Short isEnable,
+                                                        @Param("now") Date now);
+    /**
+     * 获取用户下所有机构
+     *
+     * @param archiveId
+     * @param isEnable
+     * @param now
+     * @return
+     */
+    List<OrganizationVO> listAllOrgIdsByArchiveId(@Param("archiveId") Integer archiveId,
                                                         @Param("isEnable") Short isEnable,
                                                         @Param("now") Date now);
 

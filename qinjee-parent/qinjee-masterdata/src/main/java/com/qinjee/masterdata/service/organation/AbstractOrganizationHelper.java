@@ -46,40 +46,6 @@ public abstract class AbstractOrganizationHelper<T> {
     @Autowired
     private OrganizationDao organizationDao;
 
-    protected List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Integer layer, Short isEnable) {
-        List<Integer> idsList = new ArrayList<>();
-
-        //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
-        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
-        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
-        for (OrganizationVO org : allOrgs) {
-            multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
-        }
-        //根据机构id递归，取出该机构下的所有子机构
-        collectOrgIds(multiValuedMap, orgId, idsList, layer);
-        return MyCollectionUtil.removeDuplicate(idsList);
-    }
-
-    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList, Integer layer) {
-        idsList.add(orgId);
-        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
-        for (Integer sonOrgId : sonOrgIds) {
-
-            if (layer != null && layer > 0) {
-                idsList.add(sonOrgId);
-                if (multiValuedMap.get(sonOrgId).size() > 0 && layer > 0) {
-                    collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
-                    layer--;
-                }
-            } else {
-                idsList.add(sonOrgId);
-                if (multiValuedMap.get(sonOrgId).size() > 0) {
-                    collectOrgIds(multiValuedMap, sonOrgId, idsList, layer);
-                }
-            }
-        }
-    }
 
     protected ResponseResult doUploadAndCheck(MultipartFile multfile, Class clazz, UserSession userSession, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult();

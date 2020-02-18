@@ -134,7 +134,6 @@
     select t_user_company.company_id,t_user_company.user_id
     from t_user_company
     where t_user_company.user_id = #{userId,jdbcType=INTEGER}
-    and t_user_company.company_id = #{companyId,jdbcType=INTEGER}
     and t_user_company.is_enable = 1
   </select>
 

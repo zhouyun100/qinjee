@@ -81,7 +81,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         //如果postId>0,则根据postId+orgId查询岗位
         if (null != postPageVo.getPostId() && postPageVo.getPostId() != 0) {
             //找出岗位id及子岗位id集合
-            postIdList = getPostIdList(postPageVo.getPostId(), userSession.getCompanyId(), postPageVo.getIsEnable());
+            postIdList = postDao.getPostIds(postPageVo.getPostId());
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
@@ -106,7 +106,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         }
     }
 
-    private List<Integer> getPostIdList(Integer postId, Integer companyId, Short isEnable) {
+  /*  private List<Integer> getPostIdList(Integer postId, Integer companyId, Short isEnable) {
         List<Integer> idsList = new ArrayList<>();
         List<Post> postList = postDao.listPostByCompanyId(companyId, isEnable);
         MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
@@ -116,7 +116,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         //根据机构id递归，取出该机构下的所有子机构
         collectIds(multiValuedMap, postId, idsList);
         return idsList;
-    }
+    }*/
 
     @Override
     public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId) {
@@ -343,36 +343,9 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
      * @return
      */
     private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Short isEnable) {
-        List<Integer> idsList = new ArrayList<>();
-        //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(), isEnable, new Date());
-        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
-        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
-        for (OrganizationVO org : allOrgs) {
-            multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
-        }
-        //根据机构id递归，取出该机构下的所有子机构
-        collectIds(multiValuedMap, orgId, idsList);
-        return MyCollectionUtil.removeDuplicate(idsList);
+        return organizationDao.getOrgIds(orgId,userSession.getArchiveId(),isEnable,new Date());
     }
 
-    /**
-     * 遍历搜集机构下所有子机构的id
-     *
-     * @param multiValuedMap
-     * @param orgId
-     * @param idsList
-     */
-    private void collectIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList) {
-        idsList.add(orgId);
-        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
-        for (Integer sonOrgId : sonOrgIds) {
-            idsList.add(sonOrgId);
-            if (multiValuedMap.get(sonOrgId).size() > 0) {
-                collectIds(multiValuedMap, sonOrgId, idsList);
-            }
-        }
-    }
 
 
     @Override
@@ -465,7 +438,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         if (layer < 1) {
             layer = 2;
         }
-        postIdList = getPostIdList(userSession, postId, (layer - 1), isEnable);
+        postIdList = postDao.getPostIds(postId);
         //查询所有相关的岗位
         List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
         if (CollectionUtils.isEmpty(allPost)) {
@@ -555,39 +528,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
     }
 
-    private List<Integer> getPostIdList(UserSession userSession, Integer postId, int layer, Short isEnable) {
-        List<Integer> idsList = new ArrayList<>();
-        //先查询到岗位
-        List<Post> listPost = postDao.listPostByCompanyId(userSession.getCompanyId(), isEnable);
-        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
-        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
-        for (Post post : listPost) {
-            multiValuedMap.put(post.getParentPostId(), post.getPostId());
-        }
-        //根据机构id递归，取出该机构下的所有子机构
-        collectIds(multiValuedMap, postId, idsList, layer);
-        return idsList;
-
-    }
-
-    private void collectIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer postId, List<Integer> idsList, Integer layer) {
-        idsList.add(postId);
-        Collection<Integer> sonPostIds = multiValuedMap.get(postId);
-        for (Integer sonPostId : sonPostIds) {
-
-            if (layer != null && layer > 0) {
-                idsList.add(sonPostId);
-                if (multiValuedMap.get(sonPostId).size() > 0 && layer > 0) {
-                    layer--;
-                    collectIds(multiValuedMap, sonPostId, idsList, layer);
-
-                }
-            } else {
-                idsList.add(sonPostId);
-
-            }
-        }
-    }
 
     /**
      * 删除修改不含有的岗位职等关系信息

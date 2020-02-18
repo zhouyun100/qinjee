@@ -86,36 +86,12 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Autowired
     private ContractParamDao contractParamDao;
 
-    private List<Integer> getOrgIdList(Integer archiveId, Integer orgId, Short isEnable) {
-        List<Integer> idsList = new ArrayList<>();
-        //先查询到所有机构
-        List<OrganizationVO> allOrgs = organizationDao.listAllOrganizationByArchiveId(archiveId, isEnable, new Date());
-        //将机构的id和父id存入MultiMap,父id作为key，子id作为value，一对多
-        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
-        for (OrganizationVO org : allOrgs) {
-            multiValuedMap.put(org.getOrgParentId(), org.getOrgId());
-        }
-        //根据机构id递归，取出该机构下的所有子机构
-        collectOrgIds(multiValuedMap, orgId, idsList);
-        return MyCollectionUtil.removeDuplicate(idsList);
-    }
 
-    private void collectOrgIds(MultiValuedMap<Integer, Integer> multiValuedMap, Integer orgId, List<Integer> idsList) {
-        idsList.add(orgId);
-        Collection<Integer> sonOrgIds = multiValuedMap.get(orgId);
-        for (Integer sonOrgId : sonOrgIds) {
-            idsList.add(sonOrgId);
-            if (multiValuedMap.get(sonOrgId).size() > 0) {
-                collectOrgIds(multiValuedMap, sonOrgId, idsList);
-            }
-
-        }
-    }
 
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
         //0表示不查询封存机构下的用户
-        List<Integer> orgIdList = getOrgIdList(userSession.getArchiveId(), pageQueryVo.getOrgId(), Short.valueOf("0"));
+        List<Integer> orgIdList = organizationDao.getOrgIds(pageQueryVo.getOrgId(),userSession.getArchiveId(),Short.valueOf("0"),new Date());
         logger.info("查询机构下用户，机构id：" + orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
@@ -160,10 +136,10 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     public void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
 
         logger.info("编辑用户信息：userArchiveVo：" + userArchiveVo);
-        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userSession.getCompanyId(), userArchiveVo.getUserId());
+        UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId( userArchiveVo.getUserId());
         UserInfo userByPhone = userInfoDao.getUserByPhone(userArchiveVo.getPhone());
         logger.info("根据手机号查到的用户：" + userByPhone);
-        if (Objects.nonNull(userByPhone) && userByPhone.getUserId() != userInfoVO.getUserId()) {
+        if (Objects.nonNull(userByPhone) && !userByPhone.getUserId() .equals( userInfoVO.getUserId())) {
 
             ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
         }

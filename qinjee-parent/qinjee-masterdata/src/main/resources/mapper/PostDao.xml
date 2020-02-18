@@ -556,4 +556,14 @@
         from t_post tp left join t_post  ptp  on tp.parent_post_id = ptp.post_id
         where tp.company_id=#{companyId} and tp.is_delete=0
     </select>
+    <select id="getPostIds" resultType="integer">
+        select post_id from (
+              select t1.post_id,
+              if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
+              from (
+                   select post_id ,parent_post_id from t_post WHERE is_delete =0
+                  ) t1,
+                  (select @pids := #{postId} ) t2
+             ) t3 where ischild != 0 OR t3.post_id = #{postId}
+    </select>
 </mapper>
