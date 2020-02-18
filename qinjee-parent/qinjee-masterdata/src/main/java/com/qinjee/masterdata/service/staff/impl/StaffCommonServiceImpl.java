@@ -497,9 +497,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     private Integer getPreemploymentId(Map < Integer, String > map, List < Integer > systemDefineList) {
         Integer integer1 = customTableFieldDao.selectSymbolForPhone ( systemDefineList );
+        Integer integer = customTableFieldDao.selectSymbolForPreIdNumber ( systemDefineList );
         String s3 = selectValueById ( map, integer1 );
-        if(!StringUtils.isEmpty ( s3 )) {
-            return preEmploymentDao.selectPreByPhone ( s3 );
+        String s4=selectValueById(map,integer);
+        List<Integer> list = preEmploymentDao.selectPreByPhone(s3, s4);
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
+            return list.get(0);
         }else{
             return null;
         }
@@ -510,8 +513,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         Integer integer1 = customTableFieldDao.selectSymbolForArcEmploymentNumber ( isSystemDefineList );
         String s2 = selectValueById ( map, integer );
         String s3 = selectValueById ( map, integer1 );
-        if(!StringUtils.isEmpty ( s2 )&&!StringUtils.isEmpty ( s3 )) {
-            return userArchiveDao.selectIdByNumberAndEmploy ( s2, s3 );
+        List<Integer> list = userArchiveDao.selectIdByNumberAndEmploy(s2, s3);
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
+            return list.get(0);
         }else{
             return null;
         }

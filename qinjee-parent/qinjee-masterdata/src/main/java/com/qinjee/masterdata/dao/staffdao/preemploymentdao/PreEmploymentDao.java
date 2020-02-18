@@ -67,9 +67,9 @@ public interface PreEmploymentDao {
     Map< Integer,Map< String, String>> selectNameAndOrg(@Param("list") List< Integer> list);
 
     PreEmploymentVo selectPreEmploymentVoById(@Param("businessId") Integer businessId);
-    Integer selectPreByIdtypeAndIdnumber(@Param("idtype") String idtype, @Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
+   List<Integer> selectPreByIdtypeAndIdnumber(@Param("phone") String phone, @Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
 
     PreEmployment selectByEmployNumber(@Param("s") String s);
 
-    Integer selectPreByPhone(@Param("s3") String s3);
+    List<Integer> selectPreByPhone(@Param("s3") String s3, @Param("s4") String s4);
 }

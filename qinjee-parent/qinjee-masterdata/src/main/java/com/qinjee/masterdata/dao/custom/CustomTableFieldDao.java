@@ -261,16 +261,9 @@ public interface CustomTableFieldDao {
 
     CustomArchiveField selectByPrimaryKey(Integer customArchiveFieldId);
 
-    List < String > selectFieldTypeByNameList(List < String > heads);
-
     List < CustomArchiveField > selectFieldNameByTableName(Integer companyId, String preEmployment);
 
     String selectTypeByFieldId(@Param("fieldId") Integer fieldId);
-
-    String selectPhysicName(Integer fieldId);
-
-    List < String > selectFieldCodeByList(List < Integer > integerList);
-
 
     List < Map < String, String > > selectCodAndIdByTableId(@Param("tableId") Integer tableId);
 
@@ -301,6 +294,8 @@ public interface CustomTableFieldDao {
     List< Map< String, Integer>> transSupiorIdByName(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     CustomFieldVO selectFieldByCodeAndFuncCodeAndComapnyId(@Param("s") String s, @Param("arc") String arc, @Param("companyId") Integer companyId);
+
+    CustomFieldVO selectTextTypeByFieldId(@Param("integer") Integer integer);
 }
 
 

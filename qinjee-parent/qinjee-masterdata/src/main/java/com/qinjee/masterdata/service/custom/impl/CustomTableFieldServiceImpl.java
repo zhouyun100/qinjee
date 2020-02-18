@@ -119,7 +119,11 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 customFieldMap.get(entry.getKey()).setCheckResult(true);
                 customFieldMap.get(entry.getKey()).setResultMsg(null);
                 //字段值规则校验
-                validCustomFieldValue( customFieldMap.get(entry.getKey()));
+                if(!("org_id".equals(customFieldMap.get(entry.getKey()).getFieldCode())||
+                "post_id".equals(customFieldMap.get(entry.getKey()).getFieldCode())||
+                "supervisor_id".equals(customFieldMap.get(entry.getKey()).getFieldCode()))) {
+                    validCustomFieldValue(customFieldMap.get(entry.getKey()));
+                }
 
                 //每条记录中但凡有一个字段校验不通过，则视为整行数据均不予通过
                 if (! customFieldMap.get(entry.getKey()).getCheckResult()) {
@@ -533,8 +537,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 }
             }
             if(StringUtils.isNotBlank(idnumber)) {
-                Integer integer = userArchiveDao.selectIdByNumber(idnumber, userSession.getCompanyId());
-                if (integer == null || integer == 0) {
+               List<Integer> integer = userArchiveDao.selectIdByNumber(idnumber, userSession.getCompanyId());
+                if (CollectionUtils.isEmpty(integer)) {
                     checkCustomTableVO.setCheckResult(false);
                     checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "证件号码不能为空");
                 }

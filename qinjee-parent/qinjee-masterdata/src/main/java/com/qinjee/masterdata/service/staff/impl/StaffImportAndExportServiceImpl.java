@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
@@ -12,6 +14,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
+import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
@@ -92,9 +95,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Autowired
     private IStaffCommonService staffCommonService;
     @Autowired
-    private OrganizationService organizationServiceImpl;
+    private OrganizationDao organizationDao;
     @Autowired
     private SysDictService sysDictServiceImpl;
+    @Autowired
+    private PostDao postDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -105,12 +110,33 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List < Map < Integer, String > > maps = getMaps ( multipartFile, funcCode, userSession );
         //获取检验结果
         List < CheckCustomTableVO > checkCustomTableVOS = checkFile ( maps, funcCode,systemDefine,userSession );
-        redisClusterService.setex ( userSession.getCompanyId () + funcCode + userSession.getArchiveId () + "import", 2 * 60 * 60,
-                JSON.toJSONString ( maps ) );
         //将获取的结果存进缓存中，有效期2小时
         redisClusterService.setex ( userSession.getCompanyId () + funcCode + userSession.getArchiveId () + "check", 2 * 60 * 60,
                 JSON.toJSONString ( checkCustomTableVOS ) );
-        //拼接head
+        //记录数据，后续存储到数据库
+        Map<Integer,CustomFieldVO> typeMap=new HashMap<>();
+        for (Map<Integer, String> map : maps) {
+            for (Integer integer : map.keySet()) {
+              CustomFieldVO customFieldVO=customTableFieldDao.selectTextTypeByFieldId(integer);
+                typeMap.put(integer,customFieldVO);
+            }
+        }
+        List<Map<Integer,String>> mapList=new ArrayList<>();
+        for (Map<Integer, String> map : maps) {
+            Map<Integer,String> stringMap=new HashMap<>();
+            for (Map.Entry<Integer, String> integerStringEntry : map.entrySet()) {
+                String s=null;
+                if("code".equals(typeMap.get(integerStringEntry.getKey()).getTextType())){
+                     s = sysDictServiceImpl.searchCodeByTypeAndValue(typeMap.get(integerStringEntry.getKey()).getCode(), integerStringEntry.getValue());
+                }else{
+                    s=integerStringEntry.getValue();
+                }
+                stringMap.put(integerStringEntry.getKey(),s);
+            }
+            mapList.add(stringMap);
+        }
+        redisClusterService.setex ( userSession.getCompanyId () + funcCode + userSession.getArchiveId () + "import", 2 * 60 * 60,
+                JSON.toJSONString ( mapList ) );
 
         //拼接head
         List < TableHead > list = new ArrayList <> ();
@@ -232,19 +258,31 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
             String idtype = null;
             String idnumber = null;
-//            String employmentNumber = null;
             String phone=null;
             StringBuffer stringBuffer=new StringBuffer (  );
             for (CheckCustomFieldVO fieldVO : checkCustomTableVO.getCustomFieldVOList ()) {
-                if ("id_type".equals ( fieldVO.getFieldCode () )) {
-                    idtype = fieldVO.getFieldValue ();
-                } else if ("id_number".equals ( fieldVO.getFieldCode () )) {
+                 if ("id_number".equals ( fieldVO.getFieldCode () )) {
                     idnumber = fieldVO.getFieldValue ();
-                }
-//                else if ("employment_number".equals ( fieldVO.getFieldCode () )) {
-//                    employmentNumber = fieldVO.getFieldValue ();}
-                else if("phone".equals ( fieldVO.getFieldCode () )){
+                } else if("phone".equals ( fieldVO.getFieldCode () )){
                     phone=fieldVO.getFieldValue ();
+                }
+                if("org_id".equals(fieldVO.getFieldCode())||"business_unit_id".equals(fieldVO.getFieldCode())){
+                    String s = organizationDao.selectOrgName(Integer.parseInt(fieldVO.getFieldValue()), userSession.getCompanyId());
+                   if(StringUtils.isNotBlank(s)){
+                   fieldVO.setFieldValue(s);
+                    }
+                }
+                if("post_id".equals(fieldVO.getFieldCode())){
+                     Post post = postDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
+                    if(post!=null){
+                        fieldVO.setFieldValue(post.getPostName());
+                    }
+                }
+                if("supervisor_id".equals(fieldVO.getFieldCode())){
+                    UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
+                    if(userArchiveVo!=null){
+                        fieldVO.setFieldValue(userArchiveVo.getUserName());
+                    }
                 }
                 //校验非空
                 setCheck ( fieldVO,"business_unit_id","单位编码" );
@@ -259,30 +297,20 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 if(idnumber==null){
                     stringBuffer.append("证件号不能为空");
                 }
-                if(idtype==null){
-                    stringBuffer.append("证件类型不能为空");
+                if(phone==null){
+                    stringBuffer.append("联系电话不能为空");
                 }
             }
             if("ARC".equalsIgnoreCase(funcCode)){
                 if(idnumber==null){
                     stringBuffer.append("证件号不能为空");
                 }
-//                if(employmentNumber==null){
-//                    stringBuffer.append("工号不能为空");
-//                }
             }
             //校验黑名单
             if(StringUtils.isNotBlank(idnumber)|| StringUtils.isNotBlank(phone)) {
                 List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
                 if (!CollectionUtils.isEmpty(blacklistList)) {
                     stringBuffer.append("此人员已经存在于黑名单！");
-                }
-            }
-
-            if(systemDefine==1){
-                boolean result = isResult(funcCode, userSession, idtype, idnumber);
-                if (result) {
-                    checkCustomTableVO.setResultMsg ( checkCustomTableVO.getResultMsg () + "用户已存在" );
                 }
             }
             if (systemDefine == 0) {
@@ -301,17 +329,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         return checkCustomTableVOS;
     }
 
-    private boolean isResult(String funcCode, UserSession userSession, String idtype, String idnumber) {
+    private boolean isResult(String funcCode, UserSession userSession, String phone, String idnumber) {
         boolean result = false;
-        if (StringUtils.isNotBlank ( idtype ) && StringUtils.isNotBlank ( idnumber )) {
-            Integer pre = null;
-            Integer achiveId = null;
+        if (StringUtils.isNotBlank ( phone ) && StringUtils.isNotBlank ( idnumber )) {
+            List<Integer> pre = null;
+            List<Integer> list= null;
             if ("PRE".equals ( funcCode )) {
-                pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( idtype, idnumber,userSession.getCompanyId() );
+                pre = preEmploymentDao.selectPreByIdtypeAndIdnumber ( phone, idnumber,userSession.getCompanyId() );
             } else if ("ARC".equals ( funcCode )) {
-                achiveId = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
+                 list = userArchiveDao.selectIdByNumber ( idnumber, userSession.getCompanyId() );
             }
-            if (pre != null || achiveId != null) {
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(pre) || org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
                 result = true;
             }
         }
@@ -673,21 +701,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put (map1.get(0).get ( "field_id" ), businessUnitId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "99999" );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-1" );
+
                     }
                 } else {
-                    if(StringUtils.isNotBlank(businessUnitId)) {
-                        map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("business_unit_id", funcCode, companyId),
-                                String.valueOf(organizationServiceImpl.getBusunessUnitIdByOrgId(Integer.parseInt(businessUnitId))));
-                    }else{
-                        map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("business_unit_id", funcCode, companyId),"100000");
-                    }
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-2" );
                 }
-            } else if (BUSINESSUNITNAME.equals ( fieldName )) {
-               if(StringUtils.isNotBlank(businessUnitId)) {
-                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("business_unit_id", funcCode, companyId), businessUnitId);
-               }
-            } else if (ORGCODE.equals ( fieldName ) || ORGCODEPRE.equals ( fieldName )) {
+            }else if(BUSINESSUNITNAME.equals(fieldName)){
+                 if(StringUtils.isNotBlank(businessUnitId)){
+                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), businessUnitId );
+                 }
+             } else if (ORGCODE.equals ( fieldName ) || ORGCODEPRE.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
                     List<Map < String, Integer >> map1 = customTableFieldDao.transOrgIdByCode ( funcCode, companyId, value );
                     if (!CollectionUtils.isEmpty ( map1 )) {
@@ -696,19 +720,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), orgId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), orgId );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-1" );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "99999" );
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-2" );
                 }
-            } else if (ORGNAME.equals ( fieldName ) || ORGNAMEPRE.equals(fieldName)) {
-                 if(StringUtils.isNotBlank(orgId)) {
-                     map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("org_id", funcCode, companyId),
-                             String.valueOf(organizationServiceImpl.getBusunessUnitIdByOrgId(Integer.parseInt(orgId))));
-                 }else{
-                     map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("org_id", funcCode, companyId),"100000");
+            }else if(ORGNAME.equals ( fieldName ) || ORGNAMEPRE.equals ( fieldName )){
+                 if(StringUtils.isNotBlank(orgId)){
+                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), orgId );
                  }
-             } else if (SUPORCODE.equals ( fieldName ) ) {
+            }
+             else if (SUPORCODE.equals ( fieldName ) ) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
                     List<Map < String, Integer >> map1 = customTableFieldDao.transSupiorId ( funcCode, companyId, value );
                     if (!CollectionUtils.isEmpty ( map1 )) {
@@ -717,7 +739,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), superId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), superId );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-1" );
                     }
                 }
             }
@@ -730,32 +752,23 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), postName );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), postId );
+                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-1" );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "99999" );
+                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-2" );
                 }
-             } else if (POSTNAME.equals(fieldName)) {
+             }else if(POSTNAME.equals ( fieldName )){
                if(StringUtils.isNotBlank(postId)) {
                    map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), postId);
-               }else{
-                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId),"100000");
                }
-             } else {
+             }
+           else  {
                  CustomFieldVO customFieldVO = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
                  if (customFieldVO != null) {
-                     if (!"code".equals(customFieldVO.getTextType())) {
                          Integer integer = customFieldVO.getFieldId();
                          if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
                              map.put(integer, value);
                          }
-                     } else {
-                         Integer integer = customFieldVO.getFieldId();
-                         if (integer != null && integer != 0 && null != value && !"null".equals(value) && !"".equals(value)) {
-                             String s = sysDictServiceImpl.searchCodeByTypeAndValue(customFieldVO.getCode(), value);
-                             map.put(integer, s);
-                         }
-                     }
                  }
              }
         }catch (Exception e) {

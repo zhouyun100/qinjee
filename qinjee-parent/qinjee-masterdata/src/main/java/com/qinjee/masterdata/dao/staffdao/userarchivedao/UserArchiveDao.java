@@ -73,7 +73,7 @@ public interface UserArchiveDao {
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
-    Integer selectIdByNumberAndEmploy(@Param("number") String number, @Param("employ") String employ);
+   List<Integer> selectIdByNumberAndEmploy(@Param("number") String number, @Param("employ") String employ);
 
     void insertBatch(@Param("userArchives") List< UserArchive> userArchives);
 
@@ -110,7 +110,7 @@ public interface UserArchiveDao {
 
     List< UserArchiveVo> selectPartTimeArchive(@Param("integerList") List< Integer> integerList, @Param("companyId") Integer companyId);
 
-   Integer selectIdByNumber(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
+   List<Integer> selectIdByNumber(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
 
    Integer selectIsExist(@Param("idNumber") String idNumber, @Param("userId") Integer userId);
 }

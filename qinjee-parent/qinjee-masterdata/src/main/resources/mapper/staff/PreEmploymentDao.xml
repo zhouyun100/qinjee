@@ -1061,13 +1061,23 @@
         select employment_id from t_pre_employment
         where is_delete=0
         and id_number=#{idnumber}
-        <if test="idtype !=null">
-            and id_type=#{idtype}
-        </if>
+        and phone=#{phone}
         and company_id=#{companyId}
         and is_delete=0
     </select>
 
+    <select id="selectPreByPhone" resultType="java.lang.Integer">
+        select employment_id
+        from t_pre_employment
+        where is_delete=0
+        <if test="s3!=null">
+         and phone=#{s3}
+        </if>
+        <if test="s4!=null">
+            and id_number=#{s4}
+        </if>
+
+    </select>
     <select id="selectNameAndOrg" resultType="java.util.Map">
         select employment_id,user_name,application_position,company_id,phone
         from t_pre_employment pre
@@ -1081,12 +1091,6 @@
         select <include refid="Base_Column_List"/>
         from t_pre_employment
         where id_number=#{s}
-        and is_delete=0
-    </select>
-    <select id="selectPreByPhone" resultType="java.lang.Integer">
-        select employment_id
-        from t_pre_employment
-        where phone=#{s3}
         and is_delete=0
     </select>
 </mapper>
