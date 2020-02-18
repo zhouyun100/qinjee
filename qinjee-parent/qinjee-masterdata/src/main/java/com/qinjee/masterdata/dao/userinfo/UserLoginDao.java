@@ -84,9 +84,10 @@ public interface UserLoginDao {
     /**
      * 根据userId和companyId查询用户企业关联记录
      * @param userId
+     * @param companyId
      * @return
      */
-    UserInfoVO searchUserCompanyByUserIdAndCompanyId(Integer userId);
+    UserInfoVO searchUserCompanyByUserIdAndCompanyId(Integer userId, Integer companyId);
 
     /**
      * 新增登录用户与企业关系记录

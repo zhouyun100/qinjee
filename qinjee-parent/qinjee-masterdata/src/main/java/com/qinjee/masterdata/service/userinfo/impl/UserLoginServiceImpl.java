@@ -145,7 +145,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         int userId = 0;
         UserInfo userInfo = userLoginDao.searchUserInfoDetailByPhone(phone);
         if(userInfo != null && userInfo.getUserId() != null){
-            UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userInfo.getUserId());
+            UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userInfo.getUserId(),companyId);
             if(userInfoVO == null){
                 userLoginDao.addCompanyUserInfo(companyId,userInfo.getUserId());
             }
