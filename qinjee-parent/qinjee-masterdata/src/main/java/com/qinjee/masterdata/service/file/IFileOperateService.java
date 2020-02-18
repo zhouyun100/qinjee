@@ -62,4 +62,6 @@ public interface IFileOperateService {
     List< AttchmentRecordVo> selectMyFileContents(Integer businessId, Integer groupId, Integer companyId) throws UnsupportedEncodingException;
 
     void putArcFile(MultipartFile file, Integer groupId, UserSession userSession,Integer archiveId);
+
+    void downLoadInsideFile(HttpServletResponse response, String url) throws IOException;
 }

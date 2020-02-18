@@ -1041,7 +1041,7 @@
         <if test="employ !=null">
             and  employee_number=#{employ}
         </if>
-        <if test="employ !=null">
+        <if test="id_number !=null">
             and id_number=#{number}
         </if>
     </select>

@@ -75,6 +75,17 @@ public class FileController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+    @RequestMapping(value = "/downLoadInsideFile", method = RequestMethod.POST)
+    @ApiOperation(value = "下载内部文件", notes = "hkt")
+    public ResponseResult downLoadInsideFile(HttpServletResponse response,String url) throws Exception {
+        Boolean b = checkParam(response, url);
+        if (b) {
+            //attachment_id
+            fileOperateService.downLoadInsideFile(response, url);
+            return null;
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
     /**
      * 展示文件
