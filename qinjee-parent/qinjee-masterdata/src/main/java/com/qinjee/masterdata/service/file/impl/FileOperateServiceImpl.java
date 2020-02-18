@@ -203,6 +203,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
         response.setContentType("multipart/form-data");
         if (cosObjectInputStream != null) {
             IOUtils.copy ( cosObjectInputStream, response.getOutputStream());
+        }else{
+            ExceptionCast.cast(CommonCode.FILE_EMPTY);
         }
     }
 
