@@ -349,11 +349,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private void setCheck(CheckCustomFieldVO fieldVO, String code, String name) {
         if (code.equals ( fieldVO.getFieldCode () )) {
             String orgId = fieldVO.getFieldValue ();
-            if ("99999".equals ( orgId )) {
+            if ("-1".equals ( orgId )) {
                 fieldVO.setCheckResult ( false );
                 fieldVO.setResultMsg ( name + "不存在" );
             }
-            if ("100000".equals ( orgId )) {
+            if ("-2".equals ( orgId )) {
                 fieldVO.setCheckResult ( false );
                 fieldVO.setResultMsg ( name + "不能为空" );
             }
