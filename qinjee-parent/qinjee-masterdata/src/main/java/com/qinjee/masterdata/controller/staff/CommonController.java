@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -432,10 +433,11 @@ public class CommonController extends BaseController {
             @RequestMapping(value = "/saveCustomArchiveTableData", method = RequestMethod.POST)
             @ApiOperation(value = "新增或者修改自定义字段表中的数据", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
-            public ResponseResult saveCustomArchiveTableData (@RequestBody @Valid CustomArchiveTableDataVo
-            customArchiveTableDataVo){
-                Boolean b = checkParam ( customArchiveTableDataVo, getUserSession () );
+            public ResponseResult saveCustomArchiveTableData (@RequestBody @Valid CustomArchiveTableDataVo customArchiveTableDataVo,
+                     HttpServletResponse response){
+                Boolean b = checkParam ( customArchiveTableDataVo, getUserSession (),response );
                 if (b) {
+                    response.setHeader ( "Access-Control-Allow-Origin","*" );
                     staffCommonService.updateCustomArchiveTableData ( customArchiveTableDataVo, getUserSession () );
                     return ResponseResult.SUCCESS ();
                 }

@@ -390,7 +390,6 @@ public class PreTemplateController extends BaseController {
     @ApiOperation(value = "保存自定义表字段配置", notes = "hkt")
     public ResponseResult  saveTemplate(@RequestBody SaveTemplateVo saveTemplateVo) {
         Boolean b = checkParam (getUserSession (),saveTemplateVo );
-
         if (b) {
             try {
                 templateCustomTableFieldService.saveTemplate ( getUserSession (),saveTemplateVo );

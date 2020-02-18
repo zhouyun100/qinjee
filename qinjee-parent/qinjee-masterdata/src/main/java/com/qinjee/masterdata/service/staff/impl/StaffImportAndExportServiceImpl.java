@@ -419,11 +419,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         List<BlackListVo> list = JSONArray.parseArray(s, BlackListVo.class);
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
             for (BlackListVo blackListVo : list) {
-                Blacklist blacklist = new Blacklist();
-                setValue(blackListVo, blacklist);
-                blacklist.setOperatorId(userSession.getArchiveId());
-                blacklist.setCompanyId(userSession.getCompanyId());
-                blacklistList.add(blacklist);
+                if(blackListVo!=null){
+                    Blacklist blacklist = new Blacklist();
+                    setValue(blackListVo, blacklist);
+                    blacklist.setOperatorId(userSession.getArchiveId());
+                    blacklist.setCompanyId(userSession.getCompanyId());
+                    blacklistList.add(blacklist);
+                }
             }
             blacklistDao.insertBatch(blacklistList);
             //批量添加

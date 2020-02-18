@@ -162,22 +162,27 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     private void checkBlackList(List<CheckCustomTableVO> checkCustomTableVOS,UserSession userSession){
         String idnumber = null;
         String phone = null;
+        String name=null;
         for (CheckCustomTableVO checkCustomTableVO : checkCustomTableVOS) {
             for (CheckCustomFieldVO checkCustomFieldVO : checkCustomTableVO.getCustomFieldVOList()) {
                 if ("证件号码".equals(checkCustomFieldVO.getCode())) {
                     idnumber = checkCustomFieldVO.getFieldValue();
                 }
+                if ("姓名".equals(checkCustomFieldVO.getCode())) {
+                    name = checkCustomFieldVO.getFieldValue();
+                }
                 if ("联系电话".equals(checkCustomFieldVO.getCode())) {
                     phone=checkCustomFieldVO.getFieldValue();
                 }
             }
-            if (StringUtils.isEmpty(idnumber)) {
+            if (StringUtils.isEmpty(idnumber)&&StringUtils.isEmpty(phone)) {
                 checkCustomTableVO.setCheckResult(false);
-                checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "证件号码不能为空");
+                checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "证件号码与联系电话不能同时为空不能为空");
             }
-            if (StringUtils.isEmpty(phone)) {
+
+            if (StringUtils.isEmpty(name)) {
                 checkCustomTableVO.setCheckResult(false);
-                checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "联系电话不能为空");
+                checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "姓名不能为空");
             }
 
             if (org.apache.commons.lang.StringUtils.isNotBlank(idnumber) || org.apache.commons.lang.StringUtils.isNotBlank(phone)) {
@@ -511,7 +516,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
                         }
                         validCustomFieldValue(checkCustomFieldVO);
-
                         if (StringUtils.isNotBlank(checkCustomFieldVO.getResultMsg())) {
                             resultMsg.append(checkCustomFieldVO.getResultMsg());
                         }
@@ -573,16 +577,17 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             for (CustomFieldVO fieldVO : customFieldList) {
                 //设置默认值
                 fieldVO.setDefaultValue(mapValue.get(fieldVO.getFieldId()));
-                if (StringUtils.isNotBlank(fieldVO.getTextType()) && fieldVO.getTextType().equals("code") && StringUtils.isNotBlank(fieldVO.getCode())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
+                if (StringUtils.isNotBlank(fieldVO.getTextType())&& StringUtils.isNotBlank(fieldVO.getCode()) && fieldVO.getTextType().equals("code") ) {
                     List<SysDict> dictList = sysDictService.searchSysDictListByDictType(fieldVO.getCode());
+                    //设置字典类
+                    fieldVO.setDictList(dictList);
                     for (SysDict dict : dictList) {
-                        if (dict.getDictCode().equals(mapValue.get(fieldVO.getFieldId()))) {
+                        if (dict.getDictCode().equals(mapValue.get(fieldVO.getFieldId()))){
                             //设置中文值
                             fieldVO.setChDefaultValue(dict.getDictValue());
                         }
                     }
-                    //设置字典类
-                    fieldVO.setDictList(dictList);
+
                 } else {
                     //如果是部门 单位 岗位 直接上级  也同样设置中文值
                     if (("business_unit_id".equals(fieldVO.getFieldCode()) || "org_id".equals(fieldVO.getFieldCode()))&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {

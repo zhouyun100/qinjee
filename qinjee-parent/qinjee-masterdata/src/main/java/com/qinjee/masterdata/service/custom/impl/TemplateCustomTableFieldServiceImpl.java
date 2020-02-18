@@ -11,12 +11,14 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.qinjee.masterdata.dao.custom.TemplateCustomTableFieldDao;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.entity.TemplateEntryRegistration;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.SaveTemplateVo;
 import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.custom.TemplateCustomTableFieldService;
 import com.qinjee.masterdata.service.staff.EntryRegistrationService;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.model.request.UserSession;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,9 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
 
     @Autowired
     private EntryRegistrationService entryRegistrationService;
+
+    @Autowired
+    private SysDictService sysDictService;
 
     @Override
     public List < TemplateCustomTableVO > searchTableListByCompanyIdAndTemplateId(Integer companyId, Integer templateId) {
@@ -152,6 +157,13 @@ public class TemplateCustomTableFieldServiceImpl implements TemplateCustomTableF
         List < EntryRegistrationTableVO > entryRegistrationTableList = templateCustomTableFieldDao.searchEntryRegistrationTableListByTemplateId ( templateId );
         for (EntryRegistrationTableVO tableVO : entryRegistrationTableList) {
             List < CustomFieldVO > customFieldList = templateCustomTableFieldDao.searchCustomFieldListByTemplateIdAndTableId ( tableVO.getTableId (),templateId );
+            for (CustomFieldVO customFieldVO : customFieldList) {
+                if("code".equals(customFieldVO.getTextType())){
+                    List<SysDict> dictList = sysDictService.searchSysDictListByDictType(customFieldVO.getCode());
+                    //设置字典类
+                    customFieldVO.setDictList(dictList);
+                }
+            }
             tableVO.setCustomFieldVOList ( customFieldList );
         }
         return entryRegistrationTableList;

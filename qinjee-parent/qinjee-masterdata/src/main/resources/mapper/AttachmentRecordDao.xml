@@ -366,28 +366,22 @@
     </update>
     <select id="selectByBusinessIdAndGroupNameAndBusinessType"
             resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
-          select
-          record.attachment_id as attatchmentId,
-          arc.user_name as  userName,
-          arc.employee_number as  employeeNumber,
-          org.org_name as orgName,
-          orga.org_name as businessUnitName,
-          record.create_time as  creatTime,
-          record.attachment_url as attatchmentUrl,
-          substring_index(record.attachment_url,'.',-1 ) as fileType,
-          record.attachment_name as fileName
-          FROM
-          t_user_archive  arc
-          left join t_attachment_record record on record.business_id=arc.archive_id and arc.is_delete=0
-          left join t_organization org on arc.org_id = org.org_id and org.is_enable=1
-          left join t_organization orga on arc.business_unit_id = arc.org_id and orga.is_enable=1
-          WHERE
-          business_id=#{businessId}
-          and record.group_id = #{groupId}
-          AND record.company_id = #{companyId}
-          AND record.business_type = 'employment'
-          AND record.is_delete = 0
-          group by fileName
+         SELECT
+        record.attachment_id as attatchmentId,
+        pre.user_name as  userName,
+        org.org_name as orgName,
+        record.create_time as  creatTime,
+        record.attachment_url as attatchmentUrl,
+        substring_index(record.attachment_url,'.',-1 ) as fileType,
+        record.attachment_name as  fileName
+        FROM t_attachment_record record
+        LEFT JOIN t_pre_employment pre
+            ON record.business_id=pre.employment_id
+        LEFT JOIN t_organization org
+            ON pre.org_id = org.org_id
+        WHERE record.business_id = #{businessId}  and record.group_id =#{groupId} and record.business_type = 'employment'
+         AND record.is_delete =0
+         AND record.company_id = #{companyId} AND record.is_delete = 0 group by fileName;
     </select>
     <select id="selectFileFromPackage" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
         SELECT

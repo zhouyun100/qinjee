@@ -159,7 +159,7 @@
     </trim>
   </insert>
   <insert id="insertBatch" keyColumn="blacklist_id" keyProperty="blacklistId" parameterType="com.qinjee.masterdata.model.entity.Blacklist" useGeneratedKeys="true">
-  <foreach collection="blacklistList" item="item" >
+  <foreach collection="blacklistList" item="item" separator=";">
     insert into t_blacklist
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="item.userName != null">
@@ -264,7 +264,7 @@
         #{item.orgName},
       </if>
       <if test="item.postName != null">
-        #{item.postName}
+        #{item.postName},
       </if>
     </trim>
   </foreach>

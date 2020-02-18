@@ -231,6 +231,9 @@ public class ExcelUtil {
         for (int i = 1; i < list.size ()-1; i++) {
             mapRow = new HashMap <> ();
             for (int j = 0; j < heads.size (); j++) {
+                if(StringUtils.isEmpty(list.get(i)[0])){
+                    return listMap;
+                }
                 if(StringUtils.isBlank ( list.get ( i )[j] )) {
                     mapRow.put ( heads.get ( j ), null );
                 }else{
@@ -239,7 +242,6 @@ public class ExcelUtil {
             }
             listMap.add ( mapRow );
         }
-
         return listMap;
     }
 
