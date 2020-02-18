@@ -1134,8 +1134,23 @@
       <foreach collection="orgId" item='item' open="(" close=")" separator=",">
         #{item}
       </foreach>
-      and arc.user_category in(
-      select application_scope_code from t_contract_param where company_id=#{companyId} and is_enable=1 and is_delete=0
+        AND arc.user_category IS NOT NULL
+        AND EXISTS (
+        SELECT
+        *
+        FROM
+        t_contract_param c
+        WHERE
+        c.company_id = #{companyId}
+        AND (
+        IF
+        ( c.application_scope_code LIKE '%REGULAR_EMPLOYEE%', 'REGULAR_EMPLOYEE', NULL ) = arc .user_category
+        OR
+        IF
+        ( c.application_scope_code LIKE '%INTERNSHIP%', 'INTERNSHIP', NULL ) = arc .user_category
+        OR
+        IF
+        ( c.application_scope_code LIKE '%ON_TRAIL%', 'ON_TRAIL', NULL ) = arc.user_category)
         )
         and arc.archive_status='SERVICE'
         group by arc.archive_id

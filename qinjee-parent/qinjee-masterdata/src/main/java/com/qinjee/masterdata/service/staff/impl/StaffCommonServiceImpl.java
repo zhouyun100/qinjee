@@ -306,20 +306,20 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                             }
-                            boolean bool = blacklistList.stream ().anyMatch ( a -> org.apache.commons.lang3.StringUtils.isNotBlank ( userArchive.getPhone () ) && userArchive.getPhone ().equals ( a.getPhone () ) ||
-                                    org.apache.commons.lang3.StringUtils.isNotBlank ( userArchive.getIdNumber () ) && userArchive.getIdNumber ().equals ( a.getIdNumber () ) );
-                            if (bool) {
-                                CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () );
-                                CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
-                                SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy年MM月dd日" );
-                                String reason="";
+//                            boolean bool = blacklistList.stream ().anyMatch ( a -> org.apache.commons.lang3.StringUtils.isNotBlank ( userArchive.getPhone () ) && userArchive.getPhone ().equals ( a.getPhone () ) ||
+//                                    org.apache.commons.lang3.StringUtils.isNotBlank ( userArchive.getIdNumber () ) && userArchive.getIdNumber ().equals ( a.getIdNumber () ) );
+//                            if (bool) {
+//                                CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () );
+//                                CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
+//                                SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy年MM月dd日" );
+//                                String reason="";
 //            if(null!=blacklistList.get(0).getBlockReason()){
 //                reason=blacklistList.get(0).getBlockReason();
 //            }
 //            String msg = blacklistList.get(0).getUserName() + "曾于" + sdf.format(blacklistList.get(0).getBlockTime()) + "被" + companyInfo.getCompanyName() + "因[ " + reason + " ]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
 //                                isExistBlacklistCommonCode.setMessage ( msg );
 //                                ExceptionCast.cast ( isExistBlacklistCommonCode );
-                            }
+//                            }
                             if (userArchive.getPhone () != null) {
 //                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
 //                                if(id!=null && !id.equals (archiveId)){
