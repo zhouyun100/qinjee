@@ -125,7 +125,7 @@ public interface IStaffCommonService {
      * @param  customArchiveTableDataVo
      * @return
      */
-    void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo,UserSession userSession);
+    void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo);
 
     /**
      * 展示自定义表数据内容,返回自定义表数据
@@ -194,5 +194,5 @@ public interface IStaffCommonService {
 
     List< Post> getPostListByOrgId(Integer orgId,Integer companyId);
 
-    void updateCustomArchiveTableDatas(List< CustomArchiveTableDataVo> list, UserSession userSession);
+    void updateCustomArchiveTableDatas(List< CustomArchiveTableDataVo> list);
 }

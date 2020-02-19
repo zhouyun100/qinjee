@@ -531,12 +531,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         customArchiveTableDataDao.insertSelective ( customArchiveTableData );
     }
 
+
+
     @Override
-    public void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo, UserSession userSession) {
+    public void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo) {
         StringBuilder stringBuilder=new StringBuilder (  );
         CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
         customArchiveTableData.setCreateTime ( new Date () );
-        customArchiveTableData.setOperatorId ( userSession.getArchiveId () );
         BeanUtils.copyProperties ( customArchiveTableDataVo, customArchiveTableData );
         List < CheckCustomFieldVO > customFieldVOList = customArchiveTableDataVo.getCustomFieldVOList ();
         for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
@@ -660,9 +661,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void updateCustomArchiveTableDatas(List < CustomArchiveTableDataVo > list, UserSession userSession) {
+    public void updateCustomArchiveTableDatas(List < CustomArchiveTableDataVo > list) {
         for (CustomArchiveTableDataVo customArchiveTableDataVo : list) {
-            updateCustomArchiveTableData(customArchiveTableDataVo,userSession);
+            updateCustomArchiveTableData(customArchiveTableDataVo);
         }
     }
 

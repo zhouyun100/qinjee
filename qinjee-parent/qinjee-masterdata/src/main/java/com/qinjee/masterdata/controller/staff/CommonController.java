@@ -439,7 +439,7 @@ public class CommonController extends BaseController {
                 Boolean b = checkParam ( customArchiveTableDataVo, getUserSession (),response );
                 if (b) {
                     response.setHeader ( "Access-Control-Allow-Origin","*" );
-                    staffCommonService.updateCustomArchiveTableData ( customArchiveTableDataVo, getUserSession () );
+                    staffCommonService.updateCustomArchiveTableData ( customArchiveTableDataVo );
                     return ResponseResult.SUCCESS ();
                 }
                 return failResponseResult ( "自定义数据参数错误" );
@@ -452,11 +452,10 @@ public class CommonController extends BaseController {
             @RequestMapping(value = "/saveCustomArchiveTableDatas", method = RequestMethod.POST)
             @ApiOperation(value = "批量新增或者修改自定义字段表中的数据", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
-            public ResponseResult saveCustomArchiveTableData
-            (@RequestBody @Valid List < CustomArchiveTableDataVo > list) {
-                Boolean b = checkParam ( list, getUserSession () );
+            public ResponseResult saveCustomArchiveTableData(@RequestBody @Valid List < CustomArchiveTableDataVo > list) {
+                Boolean b = checkParam ( list );
                 if (b) {
-                    staffCommonService.updateCustomArchiveTableDatas ( list, getUserSession () );
+                    staffCommonService.updateCustomArchiveTableDatas ( list );
                     return ResponseResult.SUCCESS ();
                 }
                 return failResponseResult ( "自定义数据参数错误" );

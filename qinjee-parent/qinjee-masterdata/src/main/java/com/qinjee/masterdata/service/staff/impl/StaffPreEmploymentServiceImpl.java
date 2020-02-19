@@ -230,11 +230,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updatePreEmployment(PreEmploymentVo preEmploymentVo, UserSession userSession) {
+    public void updatePreEmployment(PreEmploymentVo preEmploymentVo) {
         PreEmployment preEmployment = new PreEmployment ();
         BeanUtils.copyProperties ( preEmploymentVo, preEmployment );
-        preEmployment.setCompanyId ( userSession.getCompanyId () );
-        preEmployment.setOperatorId ( userSession.getArchiveId () );
+        preEmployment.setCompanyId ( preEmploymentVo.getCompanyId() );
         preEmployment.setIsDelete ( ( short ) 0 );
         preEmploymentDao.updateByPrimaryKey ( preEmployment );
     }

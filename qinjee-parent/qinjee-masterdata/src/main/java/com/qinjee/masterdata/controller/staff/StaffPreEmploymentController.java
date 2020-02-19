@@ -77,7 +77,7 @@ public class StaffPreEmploymentController extends BaseController {
         Boolean b = checkParam(preEmploymentVo,getUserSession(),response);
         response.setHeader ( "Access-Control-Allow-Origin","*" );
         if(b){
-                staffPreEmploymentService.updatePreEmployment(preEmploymentVo,getUserSession());
+                staffPreEmploymentService.updatePreEmployment(preEmploymentVo);
                 return ResponseResult.SUCCESS();
         }
         return  failResponseResult("参数错误");

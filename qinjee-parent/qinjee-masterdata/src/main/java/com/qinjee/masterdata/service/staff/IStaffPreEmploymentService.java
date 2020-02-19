@@ -44,7 +44,7 @@ public interface IStaffPreEmploymentService {
      * @param preEmploymentVo
      * @return
      */
-    void updatePreEmployment(PreEmploymentVo preEmploymentVo,UserSession userSession);
+    void updatePreEmployment(PreEmploymentVo preEmploymentVo);
 
     /**
      * 新增预入职表
