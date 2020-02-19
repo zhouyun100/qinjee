@@ -141,7 +141,7 @@ public class StaffArchiveController extends BaseController {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchive ( getUserSession () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                setHead ( querySchemaId, userArchiveVoAndHeader );
+                userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), querySchemaId ) );
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
 
         }
@@ -159,20 +159,13 @@ public class StaffArchiveController extends BaseController {
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveSingle ( id, getUserSession () );
                 userArchiveVoAndHeader.setPageResult (userArchiveVoPageResult  );
-                setHead ( querySchemaId, userArchiveVoAndHeader );
+                userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), querySchemaId ) );
                 return new ResponseResult<>(userArchiveVoAndHeader,CommonCode.SUCCESS);
 
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
-    private void setHead(Integer querySchemaId, UserArchiveVoAndHeader userArchiveVoAndHeader) {
-        if (querySchemaId != null && querySchemaId != 0) {
-            userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), querySchemaId ) );
-        } else {
-            userArchiveVoAndHeader.setHeads ( archiveService.getDefaultArcHead () );
-        }
-    }
 
     /**
      * 根据id查询人员信息
@@ -214,7 +207,7 @@ public class StaffArchiveController extends BaseController {
             userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
                        requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
-                setHead ( requestUserarchiveVo.getQuerySchemaId (), userArchiveVoAndHeader );
+                userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), requestUserarchiveVo.getQuerySchemaId() ) );
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_SESSION);

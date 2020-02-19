@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
@@ -9,10 +10,7 @@ import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
-import com.qinjee.masterdata.model.entity.Blacklist;
-import com.qinjee.masterdata.model.entity.CompanyInfo;
-import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.entity.StandingBookFilter;
+import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.*;
@@ -21,6 +19,7 @@ import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +177,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
 
     @Override
-    public List<UserArchiveVo> selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) {
+    public PageResult<UserArchiveVo> selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) {
         StringBuffer stringBuffer = new StringBuffer();
         List<Integer> fieldIdList = new ArrayList<>();
         List<CustomFieldVO> fieldVoList = new ArrayList<>();
@@ -211,30 +210,36 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             }
         }
         String sql = getBaseSql(userSession.getCompanyId(), fieldVoList, customTableVOS) + stringBuffer.toString();
-        PageHelper.startPage(standingBookReturnVo.getCurrentPage(), standingBookReturnVo.getPageSize());
         //主职集合
         List<Integer> integerList = null;
         try {
             integerList = userArchiveDao.selectStaff(sql, standingBookReturnVo.getArchiveType(),
-                    standingBookReturnVo.getOrgIdList(), "主职");
+                    standingBookReturnVo.getOrgIdList());
         } catch (Exception e) {
             ExceptionCast.cast(CommonCode.SQL_MAY_MISTAKE);
         }
-        List<UserArchiveVo> list = userArchiveDao.selectByPrimaryKeyList(integerList, userSession.getCompanyId());
         //兼职集合
-        List<UserArchiveVo> list2 = userArchiveDao.selectPartTimeArchive(integerList, userSession.getCompanyId());
         if (standingBookReturnVo.getType().contains("兼职") && !standingBookReturnVo.getType().contains("主职")) {
-            standingBookReturnVo.setTotal(list2.size());
-            return list2;
+            PageHelper.startPage(standingBookReturnVo.getCurrentPage(), standingBookReturnVo.getPageSize());
+            List<UserArchiveVo> list2 = userArchiveDao.selectPartTimeArchive(integerList, userSession.getCompanyId());
+            return new PageResult<>(list2);
         }
         if (!standingBookReturnVo.getType().contains("兼职") && standingBookReturnVo.getType().contains("主职")) {
-            standingBookReturnVo.setTotal(list.size());
-            return list;
+            PageHelper.startPage(standingBookReturnVo.getCurrentPage(), standingBookReturnVo.getPageSize());
+            List<UserArchiveVo> list = userArchiveDao.selectByPrimaryKeyList(integerList, userSession.getCompanyId());
+            return new PageResult<>(list);
         }
         if (standingBookReturnVo.getType().contains("兼职") && standingBookReturnVo.getType().contains("主职")) {
+            List<UserArchiveVo> list = userArchiveDao.selectByPrimaryKeyList(integerList, userSession.getCompanyId());
+            List<UserArchiveVo> list2 = userArchiveDao.selectPartTimeArchive(integerList, userSession.getCompanyId());
             list.addAll(list2);
-            standingBookReturnVo.setTotal(list.size());
-            return list;
+            List<Integer> integers=new ArrayList<>();
+            for (UserArchiveVo userArchiveVo : list) {
+                integers.add(userArchiveVo.getArchiveId());
+            }
+            PageHelper.startPage(standingBookReturnVo.getCurrentPage(), standingBookReturnVo.getPageSize());
+            List<UserArchiveVo> list3 = userArchiveDao.selectPartTimeArchive(integers, userSession.getCompanyId());
+            return  new PageResult<>(list3);
         }
         return null;
     }

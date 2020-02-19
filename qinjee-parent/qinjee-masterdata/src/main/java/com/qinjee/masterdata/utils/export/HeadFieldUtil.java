@@ -10,6 +10,7 @@ public class HeadFieldUtil {
         map.put("姓名", "user_name");
         map.put("证件号码", "id_number");
         map.put("联系电话", "phone");
+        map.put("手机号", "phone");
         map.put("工号", "employee_number");
         map.put("部门", "org_name");
         map.put("单位", "business_unit_name");

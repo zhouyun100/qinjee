@@ -8,6 +8,7 @@ import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
 import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.PageResult;
 
 import java.text.ParseException;
 import java.util.List;
@@ -86,7 +87,7 @@ public interface IStaffStandingBookService {
      * 人员查询操作
      * @return
      */
-    List< UserArchiveVo > selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) throws ParseException;
+   PageResult<UserArchiveVo>  selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) throws ParseException;
 
     void updateStandingBook(Integer standingBookId, String name,Short isShare);
 }

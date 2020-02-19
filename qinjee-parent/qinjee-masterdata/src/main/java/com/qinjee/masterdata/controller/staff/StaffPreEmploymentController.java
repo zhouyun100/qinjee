@@ -75,9 +75,9 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
-    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo, HttpServletResponse response){
-        Boolean b = checkParam(preEmploymentVo,getUserSession(),response);
-        response.setHeader ( "Access-Control-Allow-Origin","*" );
+    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo){
+        Boolean b = checkParam(preEmploymentVo,getUserSession());
+//        response.setHeader ( "Access-Control-Allow-Origin","*" );
         if(b){
                 staffPreEmploymentService.updatePreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();

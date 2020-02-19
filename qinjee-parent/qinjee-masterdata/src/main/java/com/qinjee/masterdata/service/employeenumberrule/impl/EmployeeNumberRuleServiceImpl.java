@@ -76,7 +76,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
     @Override
     public String createEmpNumber(Integer companyId) {
         List < EmployeeNumberRule > employeeNumberRules = employeeNumberRuleDao.selectByCompanyId ( companyId );
-
         if(CollectionUtils.isNotEmpty ( employeeNumberRules )) {
             CreatNumberVo creatNumberVo = new CreatNumberVo ();
             BeanUtils.copyProperties ( employeeNumberRules.get ( 0 ), creatNumberVo );
@@ -84,8 +83,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             String dateModel = getDateModel ( creatNumberVo.getDateRule () );
             String employeeNumberInfix = creatNumberVo.getEmployeeNumberInfix ();
             String employeeNumberSuffix = creatNumberVo.getEmployeeNumberSuffix ();
-//            String s=employeeNumberRuleDao.selectMaxNumberForEmp(creatNumberVo,companyId,dateModel);
-//            return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );
             String string = employeeNumberPrefix + dateModel + employeeNumberInfix + employeeNumberSuffix;
             String s=employeeNumberRuleDao.selectMaxNumberForEmp(employeeNumberPrefix,dateModel,employeeNumberInfix,employeeNumberSuffix,companyId, string);
             return getString ( creatNumberVo, employeeNumberPrefix, dateModel, employeeNumberInfix, employeeNumberSuffix, s );

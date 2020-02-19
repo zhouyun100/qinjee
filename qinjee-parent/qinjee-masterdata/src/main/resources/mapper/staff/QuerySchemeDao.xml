@@ -150,4 +150,10 @@
     where  archive_id=#{archiveId,jdbcType=INTEGER}
     and is_delete=0
   </select>
+    <select id="selectDefaultQuerySchemaIdByArchiveId" resultType="java.lang.Integer">
+      select query_scheme_id from t_query_scheme
+      where  archive_id=#{archiveId,jdbcType=INTEGER}
+      and is_delete=0
+      and is_default=1
+    </select>
 </mapper>

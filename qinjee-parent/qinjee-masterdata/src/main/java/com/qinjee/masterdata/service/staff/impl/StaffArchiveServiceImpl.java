@@ -63,8 +63,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Autowired
     private UserLoginService userLoginService;
     @Autowired
-    private ContractParamDao contractParamDao;
-    @Autowired
     private CustomTableFieldDao customTableFieldDao;
     @Autowired
     private ArchiveCareerTrackDao archiveCareerTrackdao;
@@ -119,9 +117,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     private List < TableHead > getHeadList(UserSession userSession, List < QueryScheme > list1) {
         List < TableHead > headList = new ArrayList <> ();
-        if (CollectionUtils.isEmpty ( list1 )) {
-            headList = getDefaultArcHead ();
-        }
         //非默认显示方案表头
         for (QueryScheme queryScheme : list1) {
             if (queryScheme.getIsDefault ().equals ( 1 )) {
@@ -201,15 +196,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     public List < TableHead > setDefaultHead(UserSession userSession, Integer querySchemaId) {
         List < TableHead > headList = new ArrayList <> ();
-        List < QuerySchemeField > querySchemeFieldList=null;
-        if(null!=querySchemaId&&0!=querySchemaId){
-            querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
-            if(CollectionUtils.isEmpty (querySchemeFieldList)){
+        if(null==querySchemaId|| 0==querySchemaId){
+            return getDefaultArcHead();
+        }
+        List < QuerySchemeField >   querySchemeFieldList = querySchemeFieldDao.selectByQuerySchemeId ( querySchemaId );
+        if(CollectionUtils.isEmpty (querySchemeFieldList)){
             ExceptionCast.cast ( CommonCode.PLAN_IS_NULL );
-            }
-        }else{
-            headList = getDefaultArcHead();
-            return headList;
         }
         try {
             for (QuerySchemeField querySchemeField : querySchemeFieldList) {
@@ -241,7 +233,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             e.printStackTrace();
             ExceptionCast.cast ( CommonCode.PLAN_IS_MISTAKE );
         }
-
         return headList;
     }
 
@@ -385,7 +376,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public List < TableHead > getHeadList(UserSession userSession) {
         List < QueryScheme > list1 = querySchemeDao.selectQueryByArchiveId ( userSession.getArchiveId () );
         //组装默认显示方案表头
-        return getHeadList ( userSession, list1 );
+        if(CollectionUtils.isEmpty(list1)){
+            return getDefaultArcHead();
+        }else{
+            return getHeadList ( userSession, list1 );
+        }
     }
 
     private Map < Integer, Map < String, Object > > getMap(List < Integer > archiveIdList, List < ExportArcVo > exportArcVoList) throws IllegalAccessException {
@@ -629,23 +624,32 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     public List < TableHead > getDefaultArcHead() {
-        List < TableHead > headList = new ArrayList <> ();
-        String[] strings = {"姓名", "工号", "单位", "部门", "岗位", "入职日期", "试用期到期时间", "直接上级", "联系电话", "任职类型"};
-        String[] codeList = {"userName", "employeeNumber", "businessUnitName", "orgName", "postName", "hireDate",
-                "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
-        for (int i = 0; i < strings.length; i++) {
-            TableHead arcHead = new TableHead ();
-            if("姓名，性别，联系电话，年龄，出生日期，证件号码，最高学历,电子邮箱".contains(strings[i])){
-                arcHead.setWidth("180px");
+            List<TableHead> headList = new ArrayList<>();
+            String[] strings = {"姓名", "工号", "单位", "部门", "岗位", "入职日期", "试用期到期时间", "直接上级", "联系电话", "任职类型"};
+            String[] codeList = {"userName", "employeeNumber", "businessUnitName", "orgName", "postName", "hireDate",
+                    "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
+            for (int i = 0; i < strings.length; i++) {
+                TableHead arcHead = new TableHead();
+                if ("姓名，性别，联系电话，年龄，出生日期，证件号码，最高学历,电子邮箱".contains(strings[i])) {
+                    arcHead.setWidth("180px");
+                }
+                arcHead.setName(strings[i]);
+                arcHead.setKey(codeList[i]);
+                arcHead.setIndex(i);
+                arcHead.setIsShow(1);
+                headList.add(arcHead);
             }
-            arcHead.setName ( strings[i] );
-            arcHead.setKey ( codeList[i] );
-            arcHead.setIndex ( i );
-            arcHead.setIsShow ( 1 );
-            headList.add ( arcHead );
+            return headList;
         }
-        return headList;
-    }
+
+//    private Integer getQuerySchemaId(Integer archiveId){
+//        Integer querySchemaId=querySchemeDao.selectDefaultQuerySchemaIdByArchiveId(archiveId);
+//        if(null!=querySchemaId && 0!=querySchemaId){
+//            return null;
+//        }else {
+//            return querySchemaId;
+//        }
+//    }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
         String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );

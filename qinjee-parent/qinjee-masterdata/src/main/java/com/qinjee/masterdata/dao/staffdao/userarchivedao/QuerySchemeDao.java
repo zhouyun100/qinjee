@@ -31,7 +31,7 @@ public interface QuerySchemeDao {
 
     List< QueryScheme> selectQueryByArchiveId(@Param("archiveId") Integer archiveId);
 
-
+    Integer selectDefaultQuerySchemaIdByArchiveId(@Param("archiveId") Integer archiveId);
 }
 
 

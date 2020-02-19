@@ -174,10 +174,13 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 if ("联系电话".equals(checkCustomFieldVO.getCode())) {
                     phone=checkCustomFieldVO.getFieldValue();
                 }
+                if ("手机号".equals(checkCustomFieldVO.getCode())) {
+                    phone=checkCustomFieldVO.getFieldValue();
+                }
             }
             if (StringUtils.isEmpty(idnumber)&&StringUtils.isEmpty(phone)) {
                 checkCustomTableVO.setCheckResult(false);
-                checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "证件号码与联系电话不能同时为空不能为空");
+                checkCustomTableVO.setResultMsg(checkCustomTableVO.getResultMsg() + "证件号码与联系电话不能同时为空");
             }
 
             if (StringUtils.isEmpty(name)) {
