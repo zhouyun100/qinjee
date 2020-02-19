@@ -88,15 +88,17 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void putPreFile(MultipartFile file, Integer preId, Integer groupId, Integer companyId) throws Exception {
+    public void putPreFile(MultipartFile[] file, Integer preId, Integer groupId, Integer companyId) throws Exception {
            File file1 = null;
           String groupName= attachmentGroupDao.selectGroupName(groupId);
         try {
-            String puthUrl=companyId+File.separator+preId+File.separator+groupName+File.separator+file.getOriginalFilename ();
-            file1=FileUploadUtils.multipartFileToFile ( file );
-            //新增上传记录
-            insertPreAttachment ( file,preId,groupName,companyId,puthUrl );
-            UpAndDownUtil.putFile ( file1,puthUrl );
+            for (MultipartFile multipartFile : file) {
+                String puthUrl = companyId + File.separator + preId + File.separator + groupName + File.separator + multipartFile.getOriginalFilename();
+                file1 = FileUploadUtils.multipartFileToFile(multipartFile);
+                //新增上传记录
+                insertPreAttachment(multipartFile, preId, groupName, companyId, puthUrl);
+                UpAndDownUtil.putFile(file1, puthUrl);
+            }
         } finally {
             if(file1!=null) {
                 file1.delete ();
@@ -104,15 +106,17 @@ public class FileOperateServiceImpl implements IFileOperateService {
         }
     }
     @Override
-    public void putArcFile(MultipartFile file, Integer groupId, UserSession userSession,Integer archiveId) {
+    public void putArcFile(MultipartFile[] file, Integer groupId, UserSession userSession,Integer archiveId) {
         File file1 = null;
         String groupName= attachmentGroupDao.selectGroupName(groupId);
         try {
-            String puthUrl=userSession.getCompanyId()+File.separator+userSession.getArchiveId()+File.separator+groupName+File.separator+file.getOriginalFilename ();
-            file1=FileUploadUtils.multipartFileToFile ( file );
-            //新增上传记录
-          insertArcAttachment(file,groupName,puthUrl,userSession,archiveId);
-            UpAndDownUtil.putFile ( file1,puthUrl );
+            for (MultipartFile multipartFile : file) {
+                String puthUrl = userSession.getCompanyId() + File.separator + userSession.getArchiveId() + File.separator + groupName + File.separator + multipartFile.getOriginalFilename();
+                file1 = FileUploadUtils.multipartFileToFile(multipartFile);
+                //新增上传记录
+                insertArcAttachment(multipartFile, groupName, puthUrl, userSession, archiveId);
+                UpAndDownUtil.putFile(file1, puthUrl);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

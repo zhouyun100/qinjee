@@ -15,10 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -75,9 +72,9 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
-    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo){
-        Boolean b = checkParam(preEmploymentVo,getUserSession());
-//        response.setHeader ( "Access-Control-Allow-Origin","*" );
+    public ResponseResult updatePreEmployment(@RequestBody @Valid PreEmploymentVo preEmploymentVo,HttpServletResponse response){
+        Boolean b = checkParam(preEmploymentVo,getUserSession(),response);
+        response.setHeader ( "Access-Control-Allow-Origin","*" );
         if(b){
                 staffPreEmploymentService.updatePreEmployment(preEmploymentVo,getUserSession());
                 return ResponseResult.SUCCESS();
@@ -89,13 +86,13 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 修改预入职信息(显示字段的信息)
      */
+    @CrossOrigin
     @RequestMapping(value = "/updatePreEmploymentField", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map,HttpServletResponse response) throws Exception {
-        Boolean b = checkParam(map,response);
+    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map) throws Exception {
+        Boolean b = checkParam(map);
         if(b){
-                response.setHeader ( "Access-Control-Allow-Origin","*" );
                 staffPreEmploymentService.updatePreEmploymentField(map);
                 return ResponseResult.SUCCESS();
         }

@@ -447,6 +447,7 @@ public class CommonController extends BaseController {
             /**
              * 批量新增或者修改自定义字段表中的数据
              */
+            @CrossOrigin
             @RequestMapping(value = "/saveCustomArchiveTableDatas", method = RequestMethod.POST)
             @ApiOperation(value = "批量新增或者修改自定义字段表中的数据", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)

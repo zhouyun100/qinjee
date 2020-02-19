@@ -192,8 +192,9 @@ public class PreTemplateController extends BaseController {
     @CrossOrigin
     @RequestMapping(value = "/getTemplateEntryRegistrationByTemplateId", method = RequestMethod.GET)
     @ApiOperation(value = "根据模板ID获取模板详情", notes = "hkt")
-    public ResponseResult < TemplateEntryRegistration > getTemplateEntryRegistrationByTemplateId(Integer templateId) {
-        Boolean b = checkParam ( templateId );
+    public ResponseResult < TemplateEntryRegistration > getTemplateEntryRegistrationByTemplateId(Integer templateId,HttpServletResponse response) {
+        Boolean b = checkParam ( templateId,response );
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if (b) {
                 TemplateEntryRegistration templateEntryRegistrationByTemplateId =
                         entryRegistrationService.getTemplateEntryRegistrationByTemplateId ( templateId );

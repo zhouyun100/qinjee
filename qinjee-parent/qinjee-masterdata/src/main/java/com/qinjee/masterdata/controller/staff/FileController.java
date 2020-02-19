@@ -77,7 +77,7 @@ public class FileController extends BaseController {
     }
     @RequestMapping(value = "/downLoadInsideFile", method = RequestMethod.POST)
     @ApiOperation(value = "下载内部文件", notes = "hkt")
-    public ResponseResult downLoadInsideFile(HttpServletResponse response,String url) throws Exception {
+    public ResponseResult downLoadInsideFile(HttpServletResponse response,@RequestBody String url) throws Exception {
         Boolean b = checkParam(response, url);
         if (b) {
             //attachment_id
@@ -186,9 +186,10 @@ public class FileController extends BaseController {
      *
      * @param file 文件
      */
+    @CrossOrigin
     @RequestMapping(value = "/uploadPreFile", method = RequestMethod.POST, headers = "content-type=multipart/form-data")
     @ApiOperation(value = "上传预入职文件", notes = "hkt")
-    public ResponseResult uploadPreFile(@RequestParam MultipartFile file, Integer preId, Integer groupId, Integer companyId, HttpServletResponse response) throws Exception {
+    public ResponseResult uploadPreFile(@RequestParam MultipartFile[] file, Integer preId, Integer groupId, Integer companyId, HttpServletResponse response) throws Exception {
         Boolean b = checkParam(file, preId, groupId, companyId, response);
         if (b) {
             response.setHeader("Access-Control-Allow-Origin", "*");
@@ -205,10 +206,9 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/uploadArcFile", method = RequestMethod.POST, headers = "content-type=multipart/form-data")
     @ApiOperation(value = "上传档案文件", notes = "hkt")
-    public ResponseResult uploadArcFile(@RequestParam MultipartFile file, Integer groupId, Integer archiveId, HttpServletResponse response) throws Exception {
-        Boolean b = checkParam(file, groupId, response, getUserSession());
+    public ResponseResult uploadArcFile(@RequestParam MultipartFile[] file, Integer groupId, Integer archiveId) throws Exception {
+        Boolean b = checkParam(file, groupId, getUserSession());
         if (b) {
-            response.setHeader("Access-Control-Allow-Origin", "*");
             fileOperateService.putArcFile(file, groupId, getUserSession(), archiveId);
             return new ResponseResult<>(null, CommonCode.SUCCESS);
         }
