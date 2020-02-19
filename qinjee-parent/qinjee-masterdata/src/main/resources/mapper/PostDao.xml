@@ -344,13 +344,13 @@
         ON torg.org_id=tp.org_id
         where 1=1
 
-        <if test="orgIdList != null">
+        <if test="orgIdList != null and orgIdList.size > 0 ">
             and tp.org_id in
             <foreach collection="orgIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="postIdList != null">
+        <if test="postIdList != null and  postIdList.size > 0 ">
             and tp.post_id in
             <foreach collection="postIdList" item="item" separator="," open="(" close=")">
                 #{item}
