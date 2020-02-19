@@ -73,7 +73,7 @@ public interface UserArchiveDao {
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
-   List<Integer> selectIdByNumberAndEmploy(@Param("number") String number, @Param("employ") String employ);
+   List<Integer> selectIdByNumberAndEmploy(@Param("number") String number, @Param("employ") String employ, @Param("companyId") Integer companyId);
 
     void insertBatch(@Param("userArchives") List< UserArchive> userArchives);
 
@@ -95,7 +95,7 @@ public interface UserArchiveDao {
 
     List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
 
-    Integer selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
+    List<Integer> selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 
     List< UserArchiveVo> selectUserArchiveVo(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
     Integer selectByIDNumberAndCompanyId(@Param("idType") String idType, @Param("idNumber") String idNumber, @Param("companyId") Integer companyId);

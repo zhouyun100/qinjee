@@ -98,8 +98,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 //预入职信息转化为档案信息
                 //新增档案表
                 String phone = preEmployment.getPhone ();
-                Integer integer = userArchiveDao.selectByPhoneAndCompanyId ( phone, userSession.getCompanyId () );
-                if(null!=integer && 0!=integer){
+                List<Integer> integer = userArchiveDao.selectByPhoneAndCompanyId ( phone, userSession.getCompanyId () );
+                if(CollectionUtils.isNotEmpty(integer)){
                     ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
                 }else{
                   List<UserArchiveVo> userArchiveVo=userArchiveDao.selectByIdNumber ( preEmployment.getIdNumber (),userSession.getCompanyId () );

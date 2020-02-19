@@ -237,9 +237,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
-        List<Integer> list= null;
-            list = new ArrayList <> (  );
+    public void saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
+//        List<Integer> list= null;
+//            list = new ArrayList <> (  );
             List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
             Set < Integer > isSystemDefineSet = new HashSet <> ();
             List < Integer > isSystemDefineList = new ArrayList <> ();
@@ -274,8 +274,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 //进行对象组装
                 for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                     UserArchive userArchive = new UserArchive ();
-                    Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
-                    List < Blacklist > blacklistList = blacklistDao.selectByPage ( userSession.getCompanyId () );
+                    Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList,userSession );
                     if (checkMap ( map )) {
                         for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                             for (Integer integer : integerListEntry.getValue ()) {
@@ -306,31 +305,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                             }
-//                            boolean bool = blacklistList.stream ().anyMatch ( a -> org.apache.commons.lang3.StringUtils.isNotBlank ( userArchive.getPhone () ) && userArchive.getPhone ().equals ( a.getPhone () ) ||
-//                                    org.apache.commons.lang3.StringUtils.isNotBlank ( userArchive.getIdNumber () ) && userArchive.getIdNumber ().equals ( a.getIdNumber () ) );
-//                            if (bool) {
-//                                CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () );
-//                                CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
-//                                SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy年MM月dd日" );
-//                                String reason="";
-//            if(null!=blacklistList.get(0).getBlockReason()){
-//                reason=blacklistList.get(0).getBlockReason();
-//            }
-//            String msg = blacklistList.get(0).getUserName() + "曾于" + sdf.format(blacklistList.get(0).getBlockTime()) + "被" + companyInfo.getCompanyName() + "因[ " + reason + " ]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
-//                                isExistBlacklistCommonCode.setMessage ( msg );
-//                                ExceptionCast.cast ( isExistBlacklistCommonCode );
-//                            }
                             if (userArchive.getPhone () != null) {
-//                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
-//                                if(id!=null && !id.equals (archiveId)){
-//                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-//                                }else {
                                     userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
-//                                }
                             }
-
-
-                            if (archiveId != null && archiveId != 0) {
+                            if (null!=archiveId && 0!=archiveId) {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveId ( archiveId );
@@ -343,7 +321,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 checkEmployeeNumber ( userSession, userArchive );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             }
-                                list.add ( userArchive.getArchiveId () );
+//                                list.add ( userArchive.getArchiveId () );
                         }
                     }else {
                         if (archiveId != null && archiveId != 0) {
@@ -363,7 +341,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         }
                                     }
                                     customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                                    list.add ( customArchiveTableData.getBusinessId () );
+//                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
                             }
                         }
@@ -374,14 +352,13 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                     PreEmployment preEmployment = new PreEmployment ();
                     Integer preemploymentId = getPreemploymentId ( integerStringMap, isSystemDefineList );
-                    List < Blacklist > blacklistList = blacklistDao.selectByPage ( userSession.getCompanyId () );
                     if (checkMap ( map )) {
                     for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                             for (Integer integer : integerListEntry.getValue ()) {
                                 Map < String, String > map1 = customTableFieldDao.selectCodeAndTypeById ( integer );
                                 preEmployment.setEmploymentState ( "未入职" );
                                 preEmployment.setEmploymentRegister ( "未发送" );
-                                preEmployment.setDataSource ( "手工录入" );
+                                preEmployment.setDataSource ( "文件导入" );
                                 preEmployment.setCompanyId ( userSession.getCompanyId () );
                                 preEmployment.setOperatorId ( userSession.getArchiveId () );
                                 Field[] declaredFields = preEmployment.getClass ().getDeclaredFields ();
@@ -410,26 +387,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                             }
-                        boolean bool = blacklistList.stream ().anyMatch ( a -> org.apache.commons.lang3.StringUtils.isNotBlank ( preEmployment.getPhone () ) && preEmployment.getPhone ().equals ( a.getPhone () ) ||
-                                org.apache.commons.lang3.StringUtils.isNotBlank ( preEmployment.getIdNumber () ) && preEmployment.getIdNumber ().equals ( a.getIdNumber () ) );
-                        if (bool) {
-                            CompanyInfo companyInfo = companyInfoDao.selectByPrimaryKey ( userSession.getCompanyId () );
-                            CommonCode isExistBlacklistCommonCode = CommonCode.IS_EXIST_BLACKLIST;
-                            SimpleDateFormat sdf = new SimpleDateFormat ( "yyyy年MM月dd日" );
-                            String reason="";
-            if(null!=blacklistList.get(0).getBlockReason()){
-                reason=blacklistList.get(0).getBlockReason();
-            }
-            String msg = blacklistList.get(0).getUserName() + "曾于" + sdf.format(blacklistList.get(0).getBlockTime()) + "被" + companyInfo.getCompanyName() + "因[ " + reason + " ]原因列入黑名单，不允许入职/投递简历，请联系该公司处理!";
-                            isExistBlacklistCommonCode.setMessage ( msg );
-                            ExceptionCast.cast ( isExistBlacklistCommonCode );
-                        }
-                            if(preEmployment.getPhone ()!=null){
-                                List<Integer> integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
-                                if(!CollectionUtils.isEmpty ( integer )){
-                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-                                }
-                            }
+//                            if(preEmployment.getPhone ()!=null){
+//                                List<Integer> integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
+//                                if(!CollectionUtils.isEmpty ( integer )){
+//                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+//                                }
+//                            }
                             if (preemploymentId != null && preemploymentId != 0) {
                                 preEmployment.setEmploymentId ( preemploymentId );
                                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
@@ -437,7 +400,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 preEmploymentDao.insert ( preEmployment );
                                 preemploymentId=preEmployment.getEmploymentId (  );
                             }
-                            list.add ( preemploymentId );
+//                            list.add ( preemploymentId );
                         }
                     }else {
                         if (preemploymentId != null && preemploymentId != 0) {
@@ -457,14 +420,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         }
                                     }
                                     customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                                    list.add ( customArchiveTableData.getBusinessId () );
+//                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
                             }
                         }
                     }
                 }
             }
-            return list;
+//            return list;
         }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
@@ -508,12 +471,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
     }
 
-    private Integer getArchiveId(Map < Integer, String > map, List < Integer > isSystemDefineList) {
+    private Integer getArchiveId(Map < Integer, String > map, List < Integer > isSystemDefineList,UserSession userSession) {
         Integer integer = customTableFieldDao.selectSymbolForArcIdNumber ( isSystemDefineList );
         Integer integer1 = customTableFieldDao.selectSymbolForArcEmploymentNumber ( isSystemDefineList );
         String s2 = selectValueById ( map, integer );
         String s3 = selectValueById ( map, integer1 );
-        List<Integer> list = userArchiveDao.selectIdByNumberAndEmploy(s2, s3);
+        List<Integer> list = userArchiveDao.selectIdByNumberAndEmploy(s2, s3,userSession.getCompanyId());
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
             return list.get(0);
         }else{

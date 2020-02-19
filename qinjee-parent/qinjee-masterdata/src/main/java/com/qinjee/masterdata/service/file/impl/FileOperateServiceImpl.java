@@ -31,10 +31,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -128,7 +125,6 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
 
 
-
     /**
      * 新增预入职模板上传附件记录
      */
@@ -168,7 +164,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 List < AttachmentRecord > attchmentRecordVos = attachmentRecordDao.selectByList ( list );
                 for (int i = 0; i < attchmentRecordVos.size (); i++) {
                     String attatchmentUrl = attchmentRecordVos.get ( i ).getAttachmentUrl ();
-                    int j = attatchmentUrl.lastIndexOf ( "\\" );
+                    int j = attatchmentUrl.lastIndexOf ( "/" );
                     fileName = attatchmentUrl.substring ( j + 1 );
                     COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( attatchmentUrl );
                     if (cosObjectInputStream != null) {
@@ -193,6 +189,22 @@ public class FileOperateServiceImpl implements IFileOperateService {
             if(temp!=null){
               temp.deleteOnExit ();
             }
+        }
+    }
+    @Override
+    public void downLoadInsideFile(HttpServletResponse response, String url) throws IOException {
+        COSObjectInputStream cosObjectInputStream = UpAndDownUtil.downFile ( url );
+        int j = url.lastIndexOf ( "/" );
+        String fileName = url.substring ( j + 1 );
+        response.reset ();
+        // 将文件输入流写入response的输出流中
+        response.setHeader ( "Content-disposition", "attachment; filename=\"" + URLEncoder.encode ( fileName, "UTF-8" )   );
+        response.setHeader ( "fileName", URLEncoder.encode ( fileName, "UTF-8" ) );
+        response.setContentType("multipart/form-data");
+        if (cosObjectInputStream != null) {
+            IOUtils.copy ( cosObjectInputStream, response.getOutputStream());
+        }else{
+            ExceptionCast.cast(CommonCode.FILE_EMPTY);
         }
     }
 
@@ -329,8 +341,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
 
     @Override
-    public String
-    checkFielName(List<String> fileName, UserSession userSession) {
+    public String checkFielName(List<String> fileName, UserSession userSession) {
         Map<String,String> map=new HashMap <> (  );
         Integer j=0;
         for (int i = 0; i < fileName.size (); i++) {

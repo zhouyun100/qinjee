@@ -92,9 +92,10 @@ public class StaffPreEmploymentController extends BaseController {
     @RequestMapping(value = "/updatePreEmploymentField", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(显示字段的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "map", value = "字段id与对应的字段名", paramType = "form",  required = true)
-    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map) throws Exception {
-        Boolean b = checkParam(map);
+    public ResponseResult updatePreEmploymentField(@RequestBody Map<Integer,String> map,HttpServletResponse response) throws Exception {
+        Boolean b = checkParam(map,response);
         if(b){
+                response.setHeader ( "Access-Control-Allow-Origin","*" );
                 staffPreEmploymentService.updatePreEmploymentField(map);
                 return ResponseResult.SUCCESS();
         }

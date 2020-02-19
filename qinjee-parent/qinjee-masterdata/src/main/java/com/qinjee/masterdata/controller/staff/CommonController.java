@@ -354,11 +354,11 @@ public class CommonController extends BaseController {
     @RequestMapping(value = "/SaveFieldAndValue", method = RequestMethod.POST)
     @ApiOperation(value = "将传过来的字段id与值进行入库操作", notes = "hkt")
 
-    public ResponseResult<List<Integer>> saveFieldAndValue(@RequestBody InsertDataVo insertDataVo) throws Exception {
+    public ResponseResult saveFieldAndValue(@RequestBody InsertDataVo insertDataVo) throws Exception {
         Boolean b = checkParam(insertDataVo, getUserSession());
         if (b) {
-            List<Integer> businessId = staffCommonService.saveFieldAndValue(getUserSession(), insertDataVo);
-            return new ResponseResult<>(businessId, CommonCode.SUCCESS);
+             staffCommonService.saveFieldAndValue(getUserSession(), insertDataVo);
+            return new ResponseResult<>(CommonCode.SUCCESS);
         }else {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
