@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -77,11 +78,11 @@ public class FileController extends BaseController {
     }
     @RequestMapping(value = "/downLoadInsideFile", method = RequestMethod.POST)
     @ApiOperation(value = "下载内部文件", notes = "hkt")
-    public ResponseResult downLoadInsideFile(HttpServletResponse response,@RequestBody String url) throws Exception {
-        Boolean b = checkParam(response, url);
+    public ResponseResult downLoadInsideFile(HttpServletResponse response,@RequestBody Map<String,String> paramMap) throws Exception {
+        Boolean b = checkParam(response, paramMap,paramMap.get("url"));
         if (b) {
             //attachment_id
-            fileOperateService.downLoadInsideFile(response, url);
+            fileOperateService.downLoadInsideFile(response, paramMap.get("url"));
             return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
