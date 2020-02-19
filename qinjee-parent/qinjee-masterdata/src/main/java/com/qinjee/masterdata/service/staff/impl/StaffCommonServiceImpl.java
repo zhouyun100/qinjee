@@ -544,7 +544,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
            stringBuilder.append ( "@@" ).append ( checkCustomFieldVO.getFieldId () ).append ( "@@:" ).append ( checkCustomFieldVO.getFieldValue () );
         }
         customArchiveTableData.setBigData ( stringBuilder.toString () );
-        if (customArchiveTableDataVo.getId () != null && !customArchiveTableDataVo.getId ().equals ( 0 )) {
+        customArchiveTableData.setOperatorId(1);
+        if (null!=customArchiveTableDataVo.getId ()  && !customArchiveTableDataVo.getId ().equals ( 0 )) {
             customArchiveTableData.setUpdateTime ( new Date (  ) );
             customArchiveTableDataDao.updateByPrimaryKeySelective ( customArchiveTableData );
         } else {
