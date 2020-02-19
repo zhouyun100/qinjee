@@ -66,7 +66,6 @@ public abstract class AbstractOrganizationHelper<T> {
         String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random( 6, true, true);
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
         responseResult.setResult(resultMap);
-        resultMap = null;
         return responseResult;
     }
 
