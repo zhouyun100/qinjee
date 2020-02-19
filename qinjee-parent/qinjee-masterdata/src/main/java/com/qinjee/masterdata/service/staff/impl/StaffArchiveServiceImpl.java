@@ -165,8 +165,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
         }
         if(StringUtils.isNoneBlank ( userArchive.getPhone() )){
-            Integer id = userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone(), userSession.getCompanyId());
-            if (id != null) {
+            List<Integer> id = userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone(), userSession.getCompanyId());
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(id)) {
                 ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
             }
         }

@@ -341,8 +341,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
 
     @Override
-    public String
-    checkFielName(List<String> fileName, UserSession userSession) {
+    public String checkFielName(List<String> fileName, UserSession userSession) {
         Map<String,String> map=new HashMap <> (  );
         Integer j=0;
         for (int i = 0; i < fileName.size (); i++) {

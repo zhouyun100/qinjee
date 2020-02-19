@@ -237,9 +237,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
-        List<Integer> list= null;
-            list = new ArrayList <> (  );
+    public void saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
+//        List<Integer> list= null;
+//            list = new ArrayList <> (  );
             List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
             Set < Integer > isSystemDefineSet = new HashSet <> ();
             List < Integer > isSystemDefineList = new ArrayList <> ();
@@ -274,7 +274,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                 //进行对象组装
                 for (Map < Integer, String > integerStringMap : insertDataVo.getList ()) {
                     UserArchive userArchive = new UserArchive ();
-                    Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList );
+                    Integer archiveId = getArchiveId ( integerStringMap, isSystemDefineList,userSession );
                     if (checkMap ( map )) {
                         for (Map.Entry < Integer, List < Integer > > integerListEntry : map.entrySet ()) {
                             for (Integer integer : integerListEntry.getValue ()) {
@@ -306,14 +306,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 }
                             }
                             if (userArchive.getPhone () != null) {
-                                Integer id=userArchiveDao.selectByPhoneAndCompanyId(userArchive.getPhone (),userSession.getCompanyId ());
-                                if(id!=null && !id.equals (archiveId)){
-                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-                                }else {
                                     userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
-                                }
                             }
-                            if (archiveId != null && archiveId != 0) {
+                            if (null!=archiveId && 0!=archiveId) {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveId ( archiveId );
@@ -326,7 +321,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 checkEmployeeNumber ( userSession, userArchive );
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             }
-                                list.add ( userArchive.getArchiveId () );
+//                                list.add ( userArchive.getArchiveId () );
                         }
                     }else {
                         if (archiveId != null && archiveId != 0) {
@@ -346,7 +341,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         }
                                     }
                                     customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                                    list.add ( customArchiveTableData.getBusinessId () );
+//                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
                             }
                         }
@@ -392,12 +387,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                     }
                                 }
                             }
-                            if(preEmployment.getPhone ()!=null){
-                                List<Integer> integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
-                                if(!CollectionUtils.isEmpty ( integer )){
-                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
-                                }
-                            }
+//                            if(preEmployment.getPhone ()!=null){
+//                                List<Integer> integer = preEmploymentDao.selectIdByNumber ( preEmployment.getPhone (), userSession.getCompanyId () );
+//                                if(!CollectionUtils.isEmpty ( integer )){
+//                                    ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
+//                                }
+//                            }
                             if (preemploymentId != null && preemploymentId != 0) {
                                 preEmployment.setEmploymentId ( preemploymentId );
                                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
@@ -405,7 +400,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 preEmploymentDao.insert ( preEmployment );
                                 preemploymentId=preEmployment.getEmploymentId (  );
                             }
-                            list.add ( preemploymentId );
+//                            list.add ( preemploymentId );
                         }
                     }else {
                         if (preemploymentId != null && preemploymentId != 0) {
@@ -425,14 +420,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         }
                                     }
                                     customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-                                    list.add ( customArchiveTableData.getBusinessId () );
+//                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
                             }
                         }
                     }
                 }
             }
-            return list;
+//            return list;
         }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
@@ -476,12 +471,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         }
     }
 
-    private Integer getArchiveId(Map < Integer, String > map, List < Integer > isSystemDefineList) {
+    private Integer getArchiveId(Map < Integer, String > map, List < Integer > isSystemDefineList,UserSession userSession) {
         Integer integer = customTableFieldDao.selectSymbolForArcIdNumber ( isSystemDefineList );
         Integer integer1 = customTableFieldDao.selectSymbolForArcEmploymentNumber ( isSystemDefineList );
         String s2 = selectValueById ( map, integer );
         String s3 = selectValueById ( map, integer1 );
-        List<Integer> list = userArchiveDao.selectIdByNumberAndEmploy(s2, s3);
+        List<Integer> list = userArchiveDao.selectIdByNumberAndEmploy(s2, s3,userSession.getCompanyId());
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)) {
             return list.get(0);
         }else{

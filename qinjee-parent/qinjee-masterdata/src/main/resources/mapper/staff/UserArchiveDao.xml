@@ -1038,10 +1038,11 @@
         from t_user_archive
         where is_delete=0
         and archive_status='SERVICE'
+        and company_id=#{companyId}
         <if test="employ !=null">
             and  employee_number=#{employ}
         </if>
-        <if test="id_number !=null">
+        <if test="number !=null">
             and id_number=#{number}
         </if>
     </select>

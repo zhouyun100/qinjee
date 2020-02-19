@@ -294,11 +294,16 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 }
             }
             if("PRE".equalsIgnoreCase(funcCode)){
-                if(idnumber==null){
-                    stringBuffer.append("证件号不能为空");
-                }
                 if(phone==null){
                     stringBuffer.append("联系电话不能为空");
+                }else {
+                    List<Integer> integer = preEmploymentDao.selectIdByNumber ( phone, userSession.getCompanyId () );
+                    if(!CollectionUtils.isEmpty ( integer )){
+                        stringBuffer.append("联系电话已经存在本企业中");
+                    }
+                }
+                if(idnumber==null){
+                    stringBuffer.append("证件号码不能为空");
                 }
             }
             if("ARC".equalsIgnoreCase(funcCode)){
@@ -395,7 +400,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         insertDataVo.setFuncCode ( funcCode );
         insertDataVo.setList ( list );
         staffCommonService.saveFieldAndValue ( userSession, insertDataVo );
-
     }
 
 
