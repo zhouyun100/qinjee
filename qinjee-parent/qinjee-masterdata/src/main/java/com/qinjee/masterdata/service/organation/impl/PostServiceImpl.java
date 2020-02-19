@@ -81,7 +81,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         //如果postId>0,则根据postId+orgId查询岗位
         if (null != postPageVo.getPostId() && postPageVo.getPostId() != 0) {
             //找出岗位id及子岗位id集合
-            postIdList = postDao.getPostIds(postPageVo.getPostId());
+            postIdList = postDao.getPostIds(postPageVo.getPostId(),postPageVo.getIsEnable());
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
@@ -439,7 +439,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         if (layer < 1) {
             layer = 2;
         }
-        postIdList = postDao.getPostIds(postId);
+        postIdList = postDao.getPostIds(postId,isEnable);
         //查询所有相关的岗位
         List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
         if (CollectionUtils.isEmpty(allPost)) {

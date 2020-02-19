@@ -112,7 +112,7 @@ public interface PostDao {
 
     List<Post> getPostListByCompanyId(Integer companyId);
 
-    List<Integer> getPostIds(Integer postId);
+    List<Integer> getPostIds(Integer postId,Short isEnable);
 
 }
 

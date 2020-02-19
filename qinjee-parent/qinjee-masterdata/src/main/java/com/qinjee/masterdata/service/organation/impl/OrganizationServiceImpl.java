@@ -215,12 +215,12 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     public Integer getBusunessUnitIdByOrgId(Integer orgId) {
         //判断当前机构类型是否是单位，如果是 则直接返回机构id，如果不是则查询上级机构，直至机构类型为单位或到顶级机构为止
         OrganizationVO org = organizationDao.getOrganizationById(orgId);
-        int tempUnitId=0;
+        int tempUnitId = 0;
         if (Objects.isNull(org)) {
             return orgId;
         }
-        if (!"UNIT".equalsIgnoreCase(org.getOrgType())||org.getOrgParentId()==0) {
-            tempUnitId=getBusunessUnitIdByOrgId(org.getOrgParentId());
+        if (!"UNIT".equalsIgnoreCase(org.getOrgType()) || org.getOrgParentId() == 0) {
+            tempUnitId = getBusunessUnitIdByOrgId(org.getOrgParentId());
         } else {
             return org.getOrgId();
         }
@@ -287,7 +287,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         recursiveUpdateOrgFullName(organization);
     }
 
-//=====================================================================
+    //=====================================================================
 
     /**
      * @param userSession
@@ -305,7 +305,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (layer < 1) {
             layer = 2;
         }
-        orgIdList= organizationDao.getOrgIds(orgId,userSession.getArchiveId(),isEnable,new Date());
+        orgIdList = organizationDao.getOrgIds(orgId, userSession.getArchiveId(), isEnable, new Date());
         //orgIdList = getOrgIdList(userSession.getArchiveId(), orgId, (layer - 1), isEnable);
         //查询所有相关的机构
         List<OrganizationVO> allOrg = organizationDao.getOrganizationGraphics(userSession.getArchiveId(), orgIdList, isEnable, new Date());
@@ -313,7 +313,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         List<OrganizationVO> topOrgsList = allOrg.stream().filter(organization -> {
             if (organization.getOrgId() != null && organization.getOrgId().equals(orgId)) {
                 return true;
-            } else if (orgId == 0) {//TODO 如果是顶级机构
+            } else if (orgId == 0) {         //TODO 如果是顶级机构
                 return true;
             } else {
                 return false;
@@ -336,7 +336,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     public List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, Integer archiveId) {
         List<OrganizationVO> orgList = null;
         if (CollectionUtils.isEmpty(orgIds)) {
-            List<Integer> orgIdList= organizationDao.getOrgIds(orgId,archiveId,Short.parseShort("1"),new Date());
+            List<Integer> orgIdList = organizationDao.getOrgIds(orgId, archiveId, Short.parseShort("1"), new Date());
             orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, Short.parseShort("0"), new Date());
         } else {
             orgList = organizationDao.listOrganizationsByIds2(orgIds);
@@ -348,7 +348,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     }
 
 
-//==========================================================
+    //==========================================================
 
     /**
      * 分页查询用户下所有机构包含子孙
@@ -365,7 +365,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         List<Integer> orgIdList = null;
         Short isEnable = organizationPageVo.getIsEnable();
         //如果当前机构为空的话 返回空集合
-        orgIdList = organizationDao.getOrgIds(organizationPageVo.getOrgParentId(),userSession.getArchiveId(),isEnable,new Date());
+        orgIdList = organizationDao.getOrgIds(organizationPageVo.getOrgParentId(), userSession.getArchiveId(), isEnable, new Date());
         if (!CollectionUtils.isEmpty(orgIdList)) {
             if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
                 PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
@@ -486,7 +486,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
 
     //=====================================================================
-
 
 
     @Override
@@ -642,26 +641,26 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     @Transactional
     @Override
     @OrganizationDeleteAnno
-    /**
-     * 删除机构时，如果该机构以及其下级机构存在人员则无法删除
-     * 如果机构以及其下级机构没有人员，但有岗位时，则给出提示“机构下含有岗位，请确认是否一并删除这些岗位”
-     */
+/**
+ * 删除机构时，如果该机构以及其下级机构存在人员则无法删除
+ * 如果机构以及其下级机构没有人员，但有岗位时，则给出提示“机构下含有岗位，请确认是否一并删除这些岗位”
+ */
     public void deleteOrganizationById(List<Integer> orgIds, boolean cascadeDeletePost, UserSession userSession) {
         List<Integer> idList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(orgIds)){
-            return ;
+        if (CollectionUtils.isEmpty(orgIds)) {
+            return;
         }
         for (int i = orgIds.size() - 1; i >= 0; i--) {
             boolean b = ensureRight(orgIds.get(i), userSession.getArchiveId(), new Date());
-            if(b){
+            if (b) {
                 idList.add(orgIds.get(i));
             }
         }
-        if(CollectionUtils.isEmpty(idList)){
+        if (CollectionUtils.isEmpty(idList)) {
             return;
         }
-       /* //去重
-        idList = MyCollectionUtil.removeDuplicate(idList);*/
+/*          //去重
+ idList = MyCollectionUtil.removeDuplicate(idList);*/
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
@@ -714,11 +713,11 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         for (int i = orgIds.size() - 1; i >= 0; i--) {
 
             boolean b = ensureRight(orgIds.get(i), archiveId, new Date());
-            if(b){
+            if (b) {
                 idList.add(orgIds.get(i));
             }
-          /*  List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
-            idList.addAll(orgIdList);*/
+/*  List<Integer> orgIdList = getOrgIdList(archiveId, orgId, null, null);
+  idList.addAll(orgIdList);*/
         }
         if (!CollectionUtils.isEmpty(idList)) {
             organizationDao.updateEnable(idList, isEnable);
@@ -840,18 +839,25 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //T拿到未被封存的机构树
         List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession.getArchiveId(), Short.parseShort("1"));
         //递归设置机构下的岗位
+        //获取企业下所有的岗位作为缓存
+        List<Post> posts = postDao.listPostByCompanyId(userSession.getCompanyId(), isEnable);
         //TODO 暂时不设置岗位下的子岗位
-        handlerOrganizationPost(organizationVOTreeList, isEnable);
+        handlerOrganizationPost(posts, organizationVOTreeList, userSession, isEnable);
         return organizationVOTreeList;
     }
 
     //=====================================================================
-    public void handlerOrganizationPost(List<OrganizationVO> orgList, Short isEnable) {
+    public void handlerOrganizationPost(List<Post> posts, List<OrganizationVO> orgList, UserSession userSession, Short isEnable) {
         for (OrganizationVO organizationVO : orgList) {
-            List<Post> postList = postDao.getPostListByOrgId(organizationVO.getOrgId(), isEnable);
+            List<Post> postList = posts.stream().filter(a -> {
+                if (a.getOrgId().equals(organizationVO.getOrgId())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
             organizationVO.setPostList(postList);
             if (organizationVO.getChildList() != null && organizationVO.getChildList().size() > 0) {
-                handlerOrganizationPost(organizationVO.getChildList(), isEnable);
+                handlerOrganizationPost(posts, organizationVO.getChildList(), userSession, isEnable);
             }
         }
     }
@@ -867,7 +873,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         return organizationDao.listSonOrganization(orgId);
     }
 
-//=====================================================================
+    //=====================================================================
 
     /**
      * 获取所有的机构树
@@ -895,7 +901,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     }
 
 
-//=====================================================================
+    //=====================================================================
 
     /**
      * 执行机构划转
@@ -957,7 +963,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }
         }
     }
-//=====================================================================
+    //=====================================================================
 
     /**
      * 处理所有机构以图形结构展示
@@ -970,7 +976,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             Integer orgId = org.getOrgId();
             //设置实有人数
             if (isContainsActualMembers) {
-               //TODO  org.setStaffNumbers(userArchiveDao.countUserArchiveByOrgId(orgId));
+                //TODO  org.setStaffNumbers(userArchiveDao.countUserArchiveByOrgId(orgId));
+                org.setStaffNumbers(100);
             }
             //TODO 设置编制人数,先写死
             if (isContainsCompiler) {
@@ -994,10 +1001,11 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
     /**
      * 判断是否有操作权限
+     *
      * @return
      */
-    private boolean ensureRight(Integer orgId,Integer archiveId,Date now ){
-        int result = organizationDao.ensureRight(orgId,archiveId,now);
+    private boolean ensureRight(Integer orgId, Integer archiveId, Date now) {
+        int result = organizationDao.ensureRight(orgId, archiveId, now);
         return result > 0 ? true : false;
     }
 

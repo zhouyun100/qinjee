@@ -432,11 +432,12 @@
   </select>
 
     <select id="listPostByCompanyId" resultMap="BaseResultMap">
-        select post_id,parent_post_id,org_id,position_id
-        from t_post where company_id =#{companyId}
+        select post_id,post_name,parent_post_id,org_id,position_id
+        from t_post where company_id =#{companyId} and is_delete =0
         <if test="isEnable != null ">
             and is_enable = 1
         </if>
+
     </select>
 
     <select id="getPostGraphics" resultMap="BaseResultMap">
@@ -447,7 +448,7 @@
         LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
         <where>
             1=1
-            <if test="postIdList != null">
+            <if test="postIdList != null and postIdList.size > 0 ">
                 and tp.post_id in
                 <foreach collection="postIdList" item="item" open="(" close=")" separator=",">
                     #{item}
@@ -562,6 +563,9 @@
               if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
               from (
                    select post_id ,parent_post_id from t_post WHERE is_delete =0
+                   <if test="isEnable != null ">
+                     and is_enable = 1
+                    </if>
                   ) t1,
                   (select @pids := #{postId} ) t2
              ) t3 where ischild != 0 OR t3.post_id = #{postId}
