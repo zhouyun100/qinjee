@@ -69,6 +69,7 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 修改预入职信息(值的信息)
      */
+    @CrossOrigin
     @RequestMapping(value = "/updatePreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "修改预入职信息(值的信息)", notes = "hkt")
 //    @ApiImplicitParam(name = "PreEmployment", value = "PreEmployment", paramType = "form",  required = true)
