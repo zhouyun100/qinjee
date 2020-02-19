@@ -47,4 +47,5 @@ public interface LaborContractDao {
     List< ContractWithArchiveVo> selectHasPowerContract(@Param("orgIdList") List< Integer> orgIdList, @Param("status") List< String> status);
 
 
+    List<ContractWithArchiveVo> selectAboutToExpireContracts(List<Integer> orgIds, Integer companyId);
 }

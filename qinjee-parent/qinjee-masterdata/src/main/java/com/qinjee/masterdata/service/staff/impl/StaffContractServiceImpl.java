@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
@@ -56,6 +57,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
+    @Autowired
+    private OrganizationDao organizationDao;
 
     /**
      * 展示未签合同的人员信息
@@ -349,6 +352,14 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public PageResult < ContractRenewalIntention > selectContractRenewalIntentionByOrg(List < Integer > orgId, Integer pageSize, Integer currentPage) {
         PageHelper.startPage ( currentPage, pageSize );
         List < ContractRenewalIntention > list = contractRenewalIntentionDao.selectByorgId ( orgId );
+        return new PageResult <> ( list );
+    }
+
+    @Override
+    public PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId,Integer companyId,Integer currentPage, Integer pageSize) {
+        PageHelper.startPage ( currentPage, pageSize );
+        List<Integer> orgIds = organizationDao.getOrgIds(orgId, archiveId, Short.valueOf("0"), new Date());
+        List < ContractWithArchiveVo > list =  laborContractDao.selectAboutToExpireContracts(orgIds,companyId);
         return new PageResult <> ( list );
     }
 

@@ -461,7 +461,7 @@
     AND (SELECT remember_days
     FROM t_contract_param
     WHERE company_id = #{companyId}
-    LIMIT 1) > DATEDIFF( deline_contract.contract_end_date, CURDATE())
+    LIMIT 1) > DATEDIFF( deline_contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
     where  arc.is_delete =0 and  arc.org_id IN
     <foreach collection="list" item="orgId" open="(" close=")" separator=",">
       #{orgId}
@@ -503,5 +503,37 @@
         #{item}
       </foreach>
     </if>
+  </select> <select id="selectAboutToExpireContracts" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
+    select
+    org.org_name as orgName,
+    orga.org_name as businessUnitName,
+    arch.employee_number as employeeNumber,
+    arch.id_number as idNumber,
+    arch.user_name as userName,
+    contract.archive_id as archiveId,
+    contract.contract_id as contractId,
+    contract.contract_number as contractNumber,
+    contract.contract_begin_date as contractBeginDate,
+    contract.contract_sign_date as contractSignDate,
+    contract.contract_end_date as contractEndDate,
+    contract.contract_period_type as contractPeriodType,
+    contract.contract_period_month as contractPeriodMonth,
+    contract.sign_number as signNumber,
+    contract.contract_subject as contractSubject,
+    contract.contract_state as contractState,
+    contract.contract_remark as contractRemark
+    from t_labor_contract contract
+    left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
+    left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
+    left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
+    where  contract.archive_id in
+    (select archive_id from t_user_archive WHERE org_id IN
+    <foreach collection="orgIds" item="item" open="(" separator="," close=")">
+        #{item}
+    </foreach>
+    ) AND (SELECT remember_days
+        FROM t_contract_param
+        WHERE company_id = #{companyId}
+        LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
   </select>
 </mapper>

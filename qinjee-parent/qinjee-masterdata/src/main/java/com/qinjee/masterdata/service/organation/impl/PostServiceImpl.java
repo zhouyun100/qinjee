@@ -375,6 +375,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     @Transactional
     public void importToDatabase(String redisKey, UserSession userSession) {
         String data = redisService.get(redisKey.trim());
+        //postDao.getAllPostsByCompanyId(userSession.getCompanyId());
         //将其转为对象集合
         List<Post> list = JSONArray.parseArray(data, Post.class);
         LinkedMultiValueMap<String, Post> multiValuedMap = new LinkedMultiValueMap<>();
@@ -401,7 +402,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
                     //return Long.compare(Long.parseLong(post1.getPostCode()), Long.parseLong(post2.getPostCode()));
                 }
             });
-            //TODO
+            //TODO 45
             int sortId = 1000;
             for (Post vo : orgLost) {
                 Post ifExistVo = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());

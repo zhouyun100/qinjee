@@ -8,7 +8,6 @@ import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
-import com.qinjee.masterdata.service.staff.impl.StaffArchiveServiceImpl;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -35,7 +34,7 @@ public class StaffContractController extends BaseController {
     @Autowired
     private IStaffContractService staffContractService;
     @Autowired
-    private StaffArchiveServiceImpl archiveService;
+    private IStaffArchiveService staffArchiveService;
     private static final Logger logger = LoggerFactory.getLogger(StaffContractController.class);
 
     /**
@@ -56,12 +55,29 @@ public class StaffContractController extends BaseController {
                 staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize,userSession.getCompanyId() );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
-                userArchiveVoAndHeader.setHeads (archiveService.getHeadList (getUserSession()));
+                userArchiveVoAndHeader.setHeads (getDefaultHeadCon ());
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
+    private List < TableHead > getDefaultHeadCon() {
+        List < TableHead > headList = new ArrayList <> ();
+        String[] strings={"姓名","工号","单位","部门","岗位","入职日期","试用期限（月）","试用期到期日期","人员分类"};
+        String[] codeList={"userName","employeeNumber","businessUnitName","orgName","postName","hireDate",
+                "probationPeriod","probationDueDate","userCategory",};
+        for (int i = 0; i < strings.length; i++) {
+            TableHead arcHead = new TableHead ();
+            if("姓名，性别，电话，年龄，出生日期".contains(strings[i])){
+                arcHead.setWidth("180px");
+            }
+            arcHead.setName ( strings[i] );
+            arcHead.setKey ( codeList[i] );
+            arcHead.setIndex (i);
+            arcHead.setIsShow ( 1 );
+            headList.add ( arcHead );
+        }
+        return headList;
+    }
 
     /**合同状态  新签、变更   续签、解除、终止
      *  合同标识  有效、无效（根据合同状态与合同起始状态确定是否有效）
@@ -128,6 +144,18 @@ public class StaffContractController extends BaseController {
         return  failResponseResult("参数错误");
     }
 
+    @RequestMapping(value = "/selectAboutToExpireContracts", method = RequestMethod.GET)
+    @ApiOperation(value = "根据部门id展示合同即将到期的人员信息", notes = "phs")
+    public ResponseResult<PageResult<ContractWithArchiveVo>> selectAboutToExpireContracts( Integer orgId, Integer currentPage,
+                                                                                           Integer pageSize) throws Exception {
+        Boolean b = checkParam(orgId, currentPage, pageSize, getUserSession());
+        if (b) {
+            PageResult<ContractWithArchiveVo> pageResult =
+                    staffContractService.selectAboutToExpireContracts(orgId, getUserSession().getArchiveId(),getUserSession().getCompanyId(),currentPage, pageSize);
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
     /**id
      * 批量新签合同（合同编号不支持输入，需系统自动生成，对应的是提交，就是合同已经生效，此时字段是否已签改为是否已签）
