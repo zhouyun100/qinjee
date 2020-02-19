@@ -21,6 +21,7 @@
         FROM t_attachment_group ag LEFT JOIN t_template_attachment_group tag
         ON tag.template_id = #{templateId,jdbcType=INTEGER} AND ag.group_id = tag.group_id AND tag.is_delete = 0
         WHERE ag.group_type = 'GROUP'
+        and ag.parent_group_id != 13
         <if test="isAll == null or isAll == 1">
             AND tag.tag_id IS NOT NULL
             ORDER BY tag.sort
