@@ -189,7 +189,7 @@
     <!-- 新增预入职模板登记附件 -->
     <insert id="addTemplateAttachmentGroup" parameterType="com.qinjee.masterdata.model.entity.TemplateAttachmentGroup">
       INSERT INTO t_template_attachment_group(template_id,group_id,description,is_must,sort,operator_id)
-        select #{templateId},group_id,description,1,1,1 from t_attachment_group where group_type = 'GROUP'
+        select #{templateId},group_id,description,1,1,1 from t_attachment_group where group_type = 'GROUP' and parent_group_id != 13
   </insert>
 
     <!-- 新增预入职模板登记自定义表 -->
