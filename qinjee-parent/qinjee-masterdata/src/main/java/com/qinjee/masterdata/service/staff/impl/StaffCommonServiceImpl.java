@@ -237,9 +237,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
-//        List<Integer> list= null;
-//            list = new ArrayList <> (  );
+    public List<Integer> saveFieldAndValue(UserSession userSession, InsertDataVo insertDataVo) throws IllegalAccessException, ParseException {
+        List<Integer> list= new ArrayList<>();
+
             List < Integer > idList = new ArrayList <> ( insertDataVo.getList ().get ( 0 ).keySet () );
             Set < Integer > isSystemDefineSet = new HashSet <> ();
             List < Integer > isSystemDefineList = new ArrayList <> ();
@@ -312,16 +312,16 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveId ( archiveId );
+
                                 userArchiveDao.updateByPrimaryKeySelective ( userArchive );
                             } else {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveStatus ( "SERVICE" );
-                                userArchiveDao.insertSelective ( userArchive );
                                 checkEmployeeNumber ( userSession, userArchive );
-                                userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+                                userArchiveDao.insertSelective ( userArchive );
                             }
-//                                list.add ( userArchive.getArchiveId () );
+                                list.add ( userArchive.getArchiveId () );
                         }
                     }else {
                         if (archiveId != null && archiveId != 0) {
@@ -340,8 +340,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                             customArchiveTableData.setBigData ( stringBuilder.toString () );
                                         }
                                     }
+
                                     customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-//                                    list.add ( customArchiveTableData.getBusinessId () );
+                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
                             }
                         }
@@ -395,12 +396,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 //                            }
                             if (preemploymentId != null && preemploymentId != 0) {
                                 preEmployment.setEmploymentId ( preemploymentId );
+
                                 preEmploymentDao.updateByPrimaryKey ( preEmployment );
                             } else {
                                 preEmploymentDao.insert ( preEmployment );
+
                                 preemploymentId=preEmployment.getEmploymentId (  );
                             }
-//                            list.add ( preemploymentId );
+                            list.add ( preemploymentId );
                         }
                     }else {
                         if (preemploymentId != null && preemploymentId != 0) {
@@ -420,19 +423,20 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                         }
                                     }
                                     customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-//                                    list.add ( customArchiveTableData.getBusinessId () );
+                                    list.add ( customArchiveTableData.getBusinessId () );
                                 }
                             }
                         }
                     }
                 }
             }
-//            return list;
+
+            return list;
         }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
         String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
-        if(null==userArchive.getEmployeeNumber ()||"".equals (userArchive.getEmployeeNumber ()  )) {
+        if(StringUtils.isEmpty(userArchive.getEmployeeNumber())) {
             userArchive.setEmployeeNumber ( empNumber );
         }else{
             List < Integer > employnumberList = userArchiveDao.selectEmployNumberByCompanyId ( userSession.getCompanyId (), userArchive.getEmployeeNumber () );
@@ -537,18 +541,22 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo) {
         StringBuilder stringBuilder=new StringBuilder (  );
         CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
-        customArchiveTableData.setCreateTime ( new Date () );
+
         BeanUtils.copyProperties ( customArchiveTableDataVo, customArchiveTableData );
         List < CheckCustomFieldVO > customFieldVOList = customArchiveTableDataVo.getCustomFieldVOList ();
         for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
            stringBuilder.append ( "@@" ).append ( checkCustomFieldVO.getFieldId () ).append ( "@@:" ).append ( checkCustomFieldVO.getFieldValue () );
         }
         customArchiveTableData.setBigData ( stringBuilder.toString () );
-        customArchiveTableData.setOperatorId(1);
         if (null!=customArchiveTableDataVo.getId ()  && !customArchiveTableDataVo.getId ().equals ( 0 )) {
             customArchiveTableData.setUpdateTime ( new Date (  ) );
+            if(null==customArchiveTableData.getOperatorId()&& customArchiveTableData.getOperatorId ().equals ( 0 )){
+                customArchiveTableData.setOperatorId(1);
+            }
             customArchiveTableDataDao.updateByPrimaryKeySelective ( customArchiveTableData );
         } else {
+            customArchiveTableData.setCreateTime ( new Date () );
+            customArchiveTableData.setOperatorId(1);
             customArchiveTableDataDao.insertSelective ( customArchiveTableData );
         }
     }

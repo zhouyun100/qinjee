@@ -339,218 +339,345 @@
     </trim>
   </insert>
   <insert id="insertBatch" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
-    <foreach collection="userArchives" item="item" open="(" separator="," close=")">
+    <foreach collection="userArchives" item="item" separator=";">
       insert into t_user_archive
-      <trim prefix="(" suffix=")" suffixOverrides=",">
-        <if test="employeeNumber != null">
+      <trim prefix="(" suffix=")" suffixOverrides=";">
+        <if test="item.employeeNumber != null">
           employee_number,
         </if>
-        <if test="userId != null">
+        <if test="item.userId != null">
           user_id,
         </if>
-        <if test="companyId != null">
+        <if test="item.companyId != null">
           company_id,
         </if>
-        <if test="userCategory != null">
+        <if test="item.userCategory != null">
           user_category,
         </if>
-        <if test="businessUnitId != null">
+        <if test="item.businessUnitId != null">
           business_unit_id,
         </if>
-        <if test="userName != null">
+        <if test="item.userName != null">
           user_name,
         </if>
-        <if test="idType != null">
+        <if test="item.idType != null">
           id_type,
         </if>
-        <if test="idNumber != null">
+        <if test="item.idNumber != null">
           id_number,
         </if>
-        <if test="gender != null">
+        <if test="item.gender != null">
           gender,
         </if>
-        <if test="birthDate != null">
+        <if test="item.birthDate != null">
           birth_date,
         </if>
-        <if test="age != null">
+        <if test="item.age != null">
           age,
         </if>
-        <if test="nationality != null">
+        <if test="item.nationality != null">
           nationality,
         </if>
-        <if test="birthplace != null">
+        <if test="item.birthplace != null">
           birthplace,
         </if>
-        <if test="politicalStatus != null">
+        <if test="item.politicalStatus != null">
           political_status,
         </if>
-        <if test="maritalStatus != null">
+        <if test="item.maritalStatus != null">
           marital_status,
         </if>
-        <if test="firstWorkDate != null">
+        <if test="item.firstWorkDate != null">
           first_work_date,
         </if>
-        <if test="hireDate != null">
+        <if test="item.hireDate != null">
           hire_date,
         </if>
-        <if test="servingAge != null">
+        <if test="item.servingAge != null">
           serving_age,
         </if>
-        <if test="workingPeriod != null">
+        <if test="item.workingPeriod != null">
           working_period,
         </if>
-        <if test="probationDueDate != null">
+        <if test="item.probationDueDate != null">
           probation_due_date,
         </if>
-        <if test="probationPeriod != null">
+        <if test="item.probationPeriod != null">
           probation_period,
         </if>
-        <if test="converseDate != null">
+        <if test="item.converseDate != null">
           converse_date,
         </if>
-        <if test="firstDegree != null">
+        <if test="item.firstDegree != null">
           first_degree,
         </if>
-        <if test="highestDegree != null">
+        <if test="item.highestDegree != null">
           highest_degree,
         </if>
-        <if test="phone != null">
+        <if test="item.phone != null">
           phone,
         </if>
-        <if test="email != null">
+        <if test="item.email != null">
           email,
         </if>
-        <if test="address != null">
+        <if test="item.address != null">
           address,
         </if>
-        <if test="professionalCertification != null">
+        <if test="item.professionalCertification != null">
           professional_certification,
         </if>
-        <if test="professionalTitle != null">
+        <if test="item.professionalTitle != null">
           professional_title,
         </if>
-        <if test="professionalLevel != null">
+        <if test="item.professionalLevel != null">
           professional_level,
         </if>
-        <if test="attritionDate != null">
+        <if test="item.attritionDate != null">
           attrition_date,
         </if>
-        <if test="attritionType != null">
+        <if test="item.attritionType != null">
           attrition_type,
         </if>
-        <if test="operatorId != null">
-          operator_id
+        <if test="item.operatorId != null">
+          operator_id,
         </if>
-          <if test="archiveStatus != null">
+          <if test="item.archiveStatus != null">
               archive_status
           </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
-        <if test="employeeNumber != null">
+        <if test="item.employeeNumber != null">
           #{item.employeeNumber,jdbcType=VARCHAR},
         </if>
-        <if test="userId != null">
+        <if test="item.userId != null">
           #{item.userId,jdbcType=INTEGER},
         </if>
-        <if test="companyId != null">
+        <if test="item.companyId != null">
           #{item.companyId,jdbcType=INTEGER},
         </if>
-        <if test="userCategory != null">
+        <if test="item.userCategory != null">
           #{item.userCategory,jdbcType=VARCHAR},
         </if>
-        <if test="businessUnitId != null">
+        <if test="item.businessUnitId != null">
           #{item.businessUnitId,jdbcType=INTEGER},
         </if>
-        <if test="userName != null">
+        <if test="item.userName != null">
           #{item.userName,jdbcType=VARCHAR},
         </if>
-        <if test="idType != null">
+        <if test="item.idType != null">
           #{item.idType,jdbcType=VARCHAR},
         </if>
-        <if test="idNumber != null">
+        <if test="item.idNumber != null">
           #{item.idNumber,jdbcType=VARCHAR},
         </if>
-        <if test="gender != null">
+        <if test="item.gender != null">
           #{item.gender,jdbcType=VARCHAR},
         </if>
-        <if test="birthDate != null">
+        <if test="item.birthDate != null">
           #{item.birthDate,jdbcType=DATE},
         </if>
-        <if test="age != null">
+        <if test="item.age != null">
           #{item.age,jdbcType=SMALLINT},
         </if>
-        <if test="nationality != null">
+        <if test="item.nationality != null">
           #{item.nationality,jdbcType=INTEGER},
         </if>
-        <if test="birthplace != null">
+        <if test="item.birthplace != null">
           #{item.birthplace,jdbcType=VARCHAR},
         </if>
-        <if test="politicalStatus != null">
+        <if test="item.politicalStatus != null">
           #{item.politicalStatus,jdbcType=INTEGER},
         </if>
-        <if test="maritalStatus != null">
+        <if test="item.maritalStatus != null">
           #{item.maritalStatus,jdbcType=VARCHAR},
         </if>
-        <if test="firstWorkDate != null">
+        <if test="item.firstWorkDate != null">
           #{item.firstWorkDate,jdbcType=DATE},
         </if>
-        <if test="hireDate != null">
+        <if test="item.hireDate != null">
           #{item.hireDate,jdbcType=DATE},
         </if>
-        <if test="servingAge != null">
+        <if test="item.servingAge != null">
           #{item.servingAge,jdbcType=INTEGER},
         </if>
-        <if test="workingPeriod != null">
+        <if test="item.workingPeriod != null">
           #{item.workingPeriod,jdbcType=INTEGER},
         </if>
-        <if test="probationDueDate != null">
+        <if test="item.probationDueDate != null">
           #{item.probationDueDate,jdbcType=DATE},
         </if>
-        <if test="probationPeriod != null">
+        <if test="item.probationPeriod != null">
           #{item.probationPeriod,jdbcType=INTEGER},
         </if>
-        <if test="converseDate != null">
+        <if test="item.converseDate != null">
           #{item.converseDate,jdbcType=DATE},
         </if>
-        <if test="firstDegree != null">
+        <if test="item.firstDegree != null">
           #{item.firstDegree,jdbcType=VARCHAR},
         </if>
-        <if test="highestDegree != null">
+        <if test="item.highestDegree != null">
           #{item.highestDegree,jdbcType=VARCHAR},
         </if>
-        <if test="phone != null">
+        <if test="item.phone != null">
           #{item.phone,jdbcType=VARCHAR},
         </if>
-        <if test="email != null">
+        <if test="item.email != null">
           #{item.email,jdbcType=VARCHAR},
         </if>
-        <if test="address != null">
+        <if test="item.address != null">
           #{item.address,jdbcType=VARCHAR},
         </if>
-        <if test="professionalCertification != null">
+        <if test="item.professionalCertification != null">
           #{item.professionalCertification,jdbcType=VARCHAR},
         </if>
-        <if test="professionalTitle != null">
+        <if test="item.professionalTitle != null">
           #{item.professionalTitle,jdbcType=VARCHAR},
         </if>
-        <if test="professionalLevel != null">
+        <if test="item.professionalLevel != null">
           #{item.professionalLevel,jdbcType=VARCHAR},
         </if>
-        <if test="attritionDate != null">
+        <if test="item.attritionDate != null">
           #{item.attritionDate,jdbcType=DATE},
         </if>
-        <if test="attritionType != null">
+        <if test="item.attritionType != null">
           #{item.attritionType,jdbcType=VARCHAR},
         </if>
-        <if test="operatorId != null">
-          #{item.operatorId,jdbcType=INTEGER}
+        <if test="item.operatorId != null">
+          #{item.operatorId,jdbcType=INTEGER},
         </if>
-          <if test="archiveStatus != null">
+          <if test="item.archiveStatus != null">
               #{item.archiveStatus,jdbcType=VARCHAR}
           </if>
       </trim>
     </foreach>
   </insert>
+    <update id="updateBatch">
+        <foreach collection="list1" index="index" item="item" separator=";">
+            <set>
+                <if test="item.orgId != null">
+                    org_id = #{item.orgId,jdbcType=INTEGER},
+                </if>
+                <if test="item.postId != null">
+                    post_id = #{item.postId,jdbcType=INTEGER},
+                </if>
+                <if test="item.businessUnitId != null">
+                    business_unit_id = #{item.businessUnitId,jdbcType=INTEGER},
+                </if>
+                <if test="item.userId != null">
+                    user_id = #{item.userId,jdbcType=INTEGER},
+                </if>
+                <if test="item.employeeNumber != null">
+                    employee_number = #{item.employeeNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="item.companyId != null">
+                    company_id = #{item.companyId,jdbcType=INTEGER},
+                </if>
+                <if test="item.userCategory != null">
+                    user_category = #{item.userCategory,jdbcType=VARCHAR},
+                </if>
+                <if test="item.supervisorId != null">
+                    supervisor_id = #{item.supervisorId,jdbcType=INTEGER},
+                </if>
+                <if test="item.userName != null">
+                    user_name = #{item.userName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.idType != null">
+                    id_type = #{item.idType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.idNumber != null">
+                    id_number = #{item.idNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="item.gender != null">
+                    gender = #{item.gender,jdbcType=VARCHAR},
+                </if>
+                <if test="item.birthDate != null">
+                    birth_date = #{item.birthDate,jdbcType=DATE},
+                </if>
+                <if test="item.age != null">
+                    age = #{item.age,jdbcType=SMALLINT},
+                </if>
+                <if test="item.nationality != null">
+                    nationality = #{item.nationality,jdbcType=INTEGER},
+                </if>
+                <if test="item.birthplace != null">
+                    birthplace = #{item.birthplace,jdbcType=VARCHAR},
+                </if>
+                <if test="item.politicalStatus != null">
+                    political_status = #{item.politicalStatus,jdbcType=INTEGER},
+                </if>
+                <if test="item.maritalStatus != null">
+                    marital_status = #{item.maritalStatus,jdbcType=VARCHAR},
+                </if>
+                <if test="item.firstWorkDate != null">
+                    first_work_date = #{item.firstWorkDate,jdbcType=DATE},
+                </if>
+                <if test="item.hireDate != null">
+                    hire_date = #{item.hireDate,jdbcType=DATE},
+                </if>
+                <if test="item.servingDate != null">
+                    serving_date = #{item.servingDate,jdbcType=DATE},
+                </if>
+                <if test="item.servingAge != null">
+                    serving_age = #{item.servingAge,jdbcType=INTEGER},
+                </if>
+                <if test="item.workingPeriod != null">
+                    working_period = #{item.workingPeriod,jdbcType=INTEGER},
+                </if>
+                <if test="item.probationDueDate != null">
+                    probation_due_date = #{item.probationDueDate,jdbcType=DATE},
+                </if>
+                <if test="item.probationPeriod != null">
+                    probation_period = #{item.probationPeriod,jdbcType=INTEGER},
+                </if>
+                <if test="item.converseDate != null">
+                    converse_date = #{item.converseDate,jdbcType=DATE},
+                </if>
+                <if test="item.firstDegree != null">
+                    first_degree = #{item.firstDegree,jdbcType=VARCHAR},
+                </if>
+                <if test="item.highestDegree != null">
+                    highest_degree = #{item.highestDegree,jdbcType=VARCHAR},
+                </if>
+                <if test="item.phone != null">
+                    phone = #{item.phone,jdbcType=VARCHAR},
+                </if>
+                <if test="item.email != null">
+                    email = #{item.email,jdbcType=VARCHAR},
+                </if>
+                <if test="item.address != null">
+                    address = #{item.address,jdbcType=VARCHAR},
+                </if>
+                <if test="item.professionalCertification != null">
+                    professional_certification = #{item.professionalCertification,jdbcType=VARCHAR},
+                </if>
+                <if test="item.professionalTitle != null">
+                    professional_title = #{item.professionalTitle,jdbcType=VARCHAR},
+                </if>
+                <if test="item.professionalLevel != null">
+                    professional_level = #{item.professionalLevel,jdbcType=VARCHAR},
+                </if>
+                <if test="item.attritionDate != null">
+                    attrition_date = #{item.attritionDate,jdbcType=DATE},
+                </if>
+                <if test="item.attritionType != null">
+                    attrition_type = #{item.attritionType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.operatorId != null">
+                    operator_id = #{item.operatorId,jdbcType=INTEGER},
+                </if>
+                <if test="item.createTime != null">
+                    create_time = #{item.createTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="item.isDelete != null">
+                    is_delete = #{item.isDelete,jdbcType=TIMESTAMP},
+                </if>
+                <if test="item.updateTime != null">
+                    update_time = #{item.updateTime,jdbcType=TIMESTAMP},
+                </if>
+            </set>
+            where archive_id = #{item.archiveId,jdbcType=INTEGER}
+        </foreach>
+    </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
     update t_user_archive
     <set>
@@ -1056,7 +1183,8 @@
    set is_delete=1
    where archive_id=#{businessId}
  </update>
-  <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
+
+    <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
     select arc.*
     from t_user_archive arc
     left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id

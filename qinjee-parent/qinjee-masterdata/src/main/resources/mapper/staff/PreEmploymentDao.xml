@@ -368,231 +368,231 @@
         <foreach collection="list" item="item"  separator=";" >
             INSERT INTO t_pre_employment
             <trim prefix="(" suffix=")" suffixOverrides=";">
-                <if test="employmentId != null">
+                <if test="item.employmentId != null">
                     employment_id,
                 </if>
-                <if test="userName != null">
+                <if test="item.userName != null">
                     user_name,
                 </if>
-                <if test="phone != null">
+                <if test="item.phone != null">
                     phone,
                 </if>
 
-                <if test="gender != null">
+                <if test="item.gender != null">
                     gender,
                 </if>
-                <if test="email != null">
+                <if test="item.email != null">
                     email,
                 </if>
-                <if test="idType != null">
+                <if test="item.idType != null">
                     id_type,
                 </if>
-                <if test="idNumber != null">
+                <if test="item.idNumber != null">
                     id_number,
                 </if>
-                <if test="age != null">
+                <if test="item.age != null">
                     age,
                 </if>
-                <if test="firstWorkDate != null">
+                <if test="item.firstWorkDate != null">
                     first_work_date,
                 </if>
-                <if test="maritalStatus != null">
+                <if test="item.maritalStatus != null">
                     marital_status,
                 </if>
-                <if test="highestDegree != null">
+                <if test="item.highestDegree != null">
                     highest_degree,
                 </if>
-                <if test="graduatedSchool != null">
+                <if test="item.graduatedSchool != null">
                     graduated_school,
                 </if>
-                <if test="graduatedSpeciality != null">
+                <if test="item.graduatedSpeciality != null">
                     graduated_speciality,
                 </if>
-                <if test="lastWorkCompany != null">
+                <if test="item.lastWorkCompany != null">
                     last_work_company,
                 </if>
-                <if test="isGiveBirth != null">
+                <if test="item.isGiveBirth != null">
                     is_give_birth,
                 </if>
-                <if test="residentCharacter != null">
+                <if test="item.residentCharacter != null">
                     resident_character,
                 </if>
-                <if test="height != null">
+                <if test="item.height != null">
                     height,
                 </if>
-                <if test="bloodType != null">
+                <if test="item.bloodType != null">
                     blood_type,
                 </if>
-                <if test="englishName != null">
+                <if test="item.englishName != null">
                     english_name,
                 </if>
-                <if test="nationality != null">
+                <if test="item.nationality != null">
                     nationality,
                 </if>
-                <if test="birthDate != null">
+                <if test="item.birthDate != null">
                     birth_date,
                 </if>
-                <if test="politicalStatus != null">
+                <if test="item.politicalStatus != null">
                     political_status,
                 </if>
-                <if test="birthplace != null">
+                <if test="item.birthplace != null">
                     birthplace,
                 </if>
-                <if test="applicationPosition != null">
+                <if test="item.applicationPosition != null">
                     application_position,
                 </if>
-                <if test="probationPeriod != null">
+                <if test="item.probationPeriod != null">
                     probation_period,
                 </if>
-                <if test="hireDate != null">
+                <if test="item.hireDate != null">
                     hire_date,
                 </if>
-                <if test="orgId != null">
+                <if test="item.orgId != null">
                     org_id,
                 </if>
-                <if test="postId != null">
+                <if test="item.postId != null">
                     post_id,
                 </if>
-                <if test="employmentState != null">
+                <if test="item.employmentState != null">
                     employment_state,
                 </if>
-                <if test="employmentRegister != null">
+                <if test="item.employmentRegister != null">
                     employment_register,
                 </if>
-                <if test="description != null">
+                <if test="item.description != null">
                     description,
                 </if>
-                <if test="dataSource != null">
+                <if test="item.dataSource != null">
                     data_source,
                 </if>
-                <if test="companyId != null">
+                <if test="item.companyId != null">
                     company_id,
                 </if>
-                <if test="operatorId != null">
+                <if test="item.operatorId != null">
                     operator_id,
                 </if>
-                <if test="createTime != null">
+                <if test="item.createTime != null">
                     create_time,
                 </if>
-                <if test="updateTime != null">
+                <if test="item.updateTime != null">
                     update_time,
                 </if>
-                <if test="isDelete != null">
+                <if test="item.isDelete != null">
                     is_delete,
                 </if>
 
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
-                <if test="employmentId != null">
+                <if test="item.employmentId != null">
                     #{item.employmentId},
                 </if>
-                <if test="userName != null">
+                <if test="item.userName != null">
                     #{item.userName},
                 </if>
-                <if test="phone != null">
+                <if test="item.phone != null">
                     #{item.phone},
                 </if>
 
-                <if test="gender != null">
+                <if test="item.gender != null">
                     #{item.gender},
                 </if>
-                <if test="email != null">
+                <if test="item.email != null">
                     #{item.email},
                 </if>
-                <if test="idType != null">
+                <if test="item.idType != null">
                     #{item.idType},
                 </if>
-                <if test="idNumber != null">
+                <if test="item.idNumber != null">
                     #{item.idNumber},
                 </if>
-                <if test="age != null">
+                <if test="item.age != null">
                     #{item.age},
                 </if>
-                <if test="firstWorkDate != null">
+                <if test="item.firstWorkDate != null">
                     #{item.firstWorkDate},
                 </if>
-                <if test="maritalStatus != null">
+                <if test="item.maritalStatus != null">
                     #{item.maritalStatus},
                 </if>
-                <if test="highestDegree != null">
+                <if test="item.highestDegree != null">
                     #{item.highestDegree},
                 </if>
-                <if test="graduatedSchool != null">
+                <if test="item.graduatedSchool != null">
                     #{item.graduatedSchool},
                 </if>
-                <if test="graduatedSpeciality != null">
+                <if test="item.graduatedSpeciality != null">
                     #{item.graduatedSpeciality},
                 </if>
-                <if test="lastWorkCompany != null">
+                <if test="item.lastWorkCompany != null">
                     #{item.lastWorkCompany},
                 </if>
-                <if test="isGiveBirth != null">
+                <if test="item.isGiveBirth != null">
                     #{item.isGiveBirth},
                 </if>
-                <if test="residentCharacter != null">
+                <if test="item.residentCharacter != null">
                     #{item.residentCharacter},
                 </if>
-                <if test="height != null">
+                <if test="item.height != null">
                     #{item.height},
                 </if>
-                <if test="bloodType != null">
+                <if test="item.bloodType != null">
                     #{item.bloodType},
                 </if>
-                <if test="englishName != null">
+                <if test="item.englishName != null">
                     #{item.englishName},
                 </if>
-                <if test="nationality != null">
+                <if test="item.nationality != null">
                     #{item.nationality},
                 </if>
-                <if test="birthDate != null">
+                <if test="item.birthDate != null">
                     #{item.birthDate},
                 </if>
-                <if test="politicalStatus != null">
+                <if test="item.politicalStatus != null">
                     #{item.politicalStatus},
                 </if>
-                <if test="birthplace != null">
+                <if test="item.birthplace != null">
                     #{item.birthplace},
                 </if>
-                <if test="applicationPosition != null">
+                <if test="item.applicationPosition != null">
                     #{item.applicationPosition},
                 </if>
-                <if test="probationPeriod != null">
+                <if test="item.probationPeriod != null">
                     #{item.probationPeriod},
                 </if>
-                <if test="hireDate != null">
+                <if test="item.hireDate != null">
                     #{item.hireDate},
                 </if>
-                <if test="orgId != null">
+                <if test="item.orgId != null">
                     #{item.orgId},
                 </if>
-                <if test="postId != null">
+                <if test="item.postId != null">
                     #{item.postId},
                 </if>
-                <if test="employmentState != null">
+                <if test="item.employmentState != null">
                     #{item.employmentState},
                 </if>
-                <if test="employmentRegister != null">
+                <if test="item.employmentRegister != null">
                     #{item.employmentRegister},
                 </if>
-                <if test="description != null">
+                <if test="item.description != null">
                     #{item.description},
                 </if>
-                <if test="dataSource != null">
+                <if test="item.dataSource != null">
                     #{item.dataSource},
                 </if>
-                <if test="companyId != null">
+                <if test="item.companyId != null">
                     #{item.companyId},
                 </if>
-                <if test="operatorId != null">
+                <if test="item.operatorId != null">
                     #{item.item.operatorId},
                 </if>
-                <if test="createTime != null">
+                <if test="item.createTime != null">
                     #{item.item.createTime},
                 </if>
-                <if test="updateTime != null">
+                <if test="item.updateTime != null">
                     #{item.item.updateTime},
                 </if>
-                <if test="isDelete != null">
+                <if test="item.isDelete != null">
                     #{item.isDelete}
                 </if>
             </trim>

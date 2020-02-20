@@ -170,6 +170,57 @@
     (#{fieldSql})
     values (#(valueSal))
   </insert>
+  <insert id="insertBatch">
+    <foreach collection="list5" item="item"  separator=";" >
+      insert into t_custom_archive_table_data
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.tableId != null">
+          table_id,
+        </if>
+        <if test="item.businessId != null">
+          business_id,
+        </if>
+        <if test="item.operatorId != null">
+          operator_id,
+        </if>
+        <if test="item.createTime != null">
+          create_time,
+        </if>
+        <if test="item.updateTime != null">
+          update_time,
+        </if>
+        <if test="item.bigData != null">
+          big_data,
+        </if>
+        <if test="item.isDelete != null">
+          is_delete,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="item.tableId != null">
+          #{item.tableId,jdbcType=INTEGER},
+        </if>
+        <if test="item.businessId != null">
+          #{item.businessId,jdbcType=INTEGER},
+        </if>
+        <if test="item.operatorId != null">
+          #{item.operatorId,jdbcType=INTEGER},
+        </if>
+        <if test="item.createTime != null">
+          #{item.createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.updateTime != null">
+          #{item.updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.bigData != null">
+          #{item.bigData,jdbcType=VARCHAR},
+        </if>
+        <if test="item.isDelete != null">
+          #{item.isDelete,jdbcType=INTEGER},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
   <select id="selectTableIdByBusinessIdAndTableId" resultType="java.lang.Integer">
     select id
     from t_custom_archive_table_data

@@ -4,6 +4,7 @@ package com.qinjee.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.mock.web.MockMultipartFile;
@@ -12,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ExcelUtil {
@@ -285,7 +288,16 @@ public class ExcelUtil {
         switch (cell.getCellType ()) {
             // 数字
             case NUMERIC:
-                cellValue = String.valueOf ( new Double (cell.getNumericCellValue ()).intValue () );
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    Date tempValue = cell.getDateCellValue();
+                    SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    cellValue = simpleFormat.format(tempValue);
+                }else {
+                    DecimalFormat df = new DecimalFormat("0");
+                    cellValue = df.format(cell.getNumericCellValue());
+                }
+//                cellValue = String.valueOf ( new Double ((long)cell.getNumericCellValue ()) );
+
                 break;
             // 字符串
             case STRING:

@@ -161,7 +161,7 @@ public interface IStaffCommonService {
      */
     List<String> selectFieldValueById(Integer customArchiveFieldId);
 
-   void saveFieldAndValue (UserSession userSession, InsertDataVo insertDataVo) throws Exception;
+    List<Integer> saveFieldAndValue (UserSession userSession, InsertDataVo insertDataVo) throws Exception;
 
     /**
      *

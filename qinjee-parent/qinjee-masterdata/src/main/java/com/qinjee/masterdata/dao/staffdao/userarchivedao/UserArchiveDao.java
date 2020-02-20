@@ -27,7 +27,6 @@ public interface UserArchiveDao {
 
     int updateByPrimaryKeySelective(UserArchive record);
 
-
     List<UserArchiveVo> listUserArchiveByCompanyId(Integer companyId);
     int updateByPrimaryKey(UserArchive record);
 
@@ -113,4 +112,6 @@ public interface UserArchiveDao {
    List<Integer> selectIdByNumber(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
 
    Integer selectIsExist(@Param("idNumber") String idNumber, @Param("userId") Integer userId);
+
+    int updateBatch(@Param("list1") List<UserArchive> list1);
 }

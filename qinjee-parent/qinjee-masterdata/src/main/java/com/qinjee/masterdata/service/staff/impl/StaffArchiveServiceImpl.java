@@ -165,8 +165,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 ExceptionCast.cast ( CommonCode.PHONE_ALREADY_EXIST );
             }
         }
-        int userId = userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () );
-        userArchive.setUserId ( userId );
+        if(StringUtils.isNotBlank(userArchive.getPhone())) {
+            int userId = userLoginService.getUserIdByPhone(userArchive.getPhone(), userSession.getCompanyId());
+            userArchive.setUserId ( userId );
+        }
         userArchive.setArchiveStatus ( "SERVICE" );
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
