@@ -538,6 +538,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo) {
         StringBuilder stringBuilder=new StringBuilder (  );
         CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
@@ -547,17 +548,14 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
            stringBuilder.append ( "@@" ).append ( checkCustomFieldVO.getFieldId () ).append ( "@@:" ).append ( checkCustomFieldVO.getFieldValue () );
         }
-        customArchiveTableData.setBigData ( stringBuilder.toString () );
-        if (null!=customArchiveTableDataVo.getId ()  && !customArchiveTableDataVo.getId ().equals ( 0 )) {
-            customArchiveTableData.setUpdateTime ( new Date (  ) );
-            if(null==customArchiveTableData.getOperatorId()&& customArchiveTableData.getOperatorId ().equals ( 0 )){
+           customArchiveTableData.setBigData ( stringBuilder.toString () );
+            if(null ==customArchiveTableData.getId()) {
+                customArchiveTableData.setCreateTime ( new Date () );
                 customArchiveTableData.setOperatorId(1);
-            }
-            customArchiveTableDataDao.updateByPrimaryKeySelective ( customArchiveTableData );
+                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
         } else {
-            customArchiveTableData.setCreateTime ( new Date () );
-            customArchiveTableData.setOperatorId(1);
-            customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+                customArchiveTableData.setUpdateTime ( new Date (  ) );
+                customArchiveTableDataDao.updateByPrimaryKeySelective(customArchiveTableData);
         }
     }
 
@@ -677,9 +675,3 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
 }
-
-
-
-
-
-

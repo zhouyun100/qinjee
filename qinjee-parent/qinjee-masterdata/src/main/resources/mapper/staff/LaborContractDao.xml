@@ -503,6 +503,12 @@
         #{item}
       </foreach>
     </if>
+    <if test="contain != null">
+      AND (SELECT remember_days
+      FROM t_contract_param
+      WHERE company_id = #{companyId}
+      LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
+    </if>
   </select> <select id="selectAboutToExpireContracts" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select
     org.org_name as orgName,

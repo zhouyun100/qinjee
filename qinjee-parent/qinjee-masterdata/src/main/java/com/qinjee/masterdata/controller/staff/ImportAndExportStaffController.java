@@ -250,7 +250,7 @@ public class ImportAndExportStaffController extends BaseController {
                     Boolean aBoolean = checkParam ( exportReadyConVo.getOrgIdList (), exportReadyConVo.getStatus ());
                     if(aBoolean) {
                         list= staffContractService.selectLaborContractserUserAll ( exportReadyConVo.getOrgIdList (),
-                                exportReadyConVo.getStatus () );
+                                exportReadyConVo.getStatus (),userSession.getCompanyId() );
                     }else{
                         return  failResponseResult("参数错误");
                     }

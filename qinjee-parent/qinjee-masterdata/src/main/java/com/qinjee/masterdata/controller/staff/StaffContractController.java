@@ -87,7 +87,7 @@ public class StaffContractController extends BaseController {
         Boolean b = checkParam(orgIdList, currentPage, pageSize,status,getUserSession ());
         if (b) {
                 PageResult<ContractWithArchiveVo> pageResult =
-                        staffContractService.selectLaborContractserUser(orgIdList, currentPage, pageSize,status);
+                        staffContractService.selectLaborContractserUser(orgIdList, currentPage, pageSize,status,getUserSession());
              return new ResponseResult<> ( pageResult,CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

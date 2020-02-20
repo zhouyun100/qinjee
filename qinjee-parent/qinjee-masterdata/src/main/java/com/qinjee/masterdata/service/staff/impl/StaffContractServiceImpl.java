@@ -117,16 +117,19 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     public PageResult < ContractWithArchiveVo > selectLaborContractserUser(List < Integer > orgIdList, Integer currentPage,
-                                                                   Integer pageSize, List < String > status) {
+                                                                   Integer pageSize, List < String > status,UserSession userSession) {
         PageHelper.startPage (currentPage,pageSize );
-        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( orgIdList, status );
+        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( orgIdList, status ,userSession.getCompanyId());
         return new PageResult <> ( list );
     }
 
-    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status) {
-
-        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status );
-            for (ContractWithArchiveVo contractWithArchiveVo : list) {
+    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId) {
+        String contain=null;
+        if(status.contains("即将到期")){
+          contain="contain";
+        }
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,contain,companyId );
+        for (ContractWithArchiveVo contractWithArchiveVo : list) {
               if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ()) ){
                   contractWithArchiveVo.setIsEnable ( ( short ) 0 );
               }else {
@@ -142,8 +145,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @param orgIdList
      * @param status
      */
-    public List < ContractWithArchiveVo > selectLaborContractserUserAll(List < Integer > orgIdList, List < String > status) {
-        return getContractWithArchiveVos ( orgIdList, status );
+    public List < ContractWithArchiveVo > selectLaborContractserUserAll(List < Integer > orgIdList, List < String > status,Integer companyId) {
+        return getContractWithArchiveVos ( orgIdList, status,companyId );
     }
 
     /**

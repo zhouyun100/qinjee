@@ -102,7 +102,7 @@ public interface IStaffContractService {
      */
     PageResult<ContractWithArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
                                                        Integer pageSize,
-                                                       List<String> status) throws Exception;
+                                                       List<String> status,UserSession userSession) throws Exception;
 
     /**
      * 终止合同
