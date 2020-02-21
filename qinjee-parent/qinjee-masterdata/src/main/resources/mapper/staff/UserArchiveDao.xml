@@ -1219,7 +1219,7 @@
       #{item}
     </foreach>
   </select>
-    ma<select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+    <select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
         select
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
         arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
@@ -1517,7 +1517,6 @@
                 and 1=0
             </otherwise>
         </choose>
-
         group by relation.archive_id
 
     </select>
@@ -1538,14 +1537,12 @@
            or user_id=#{userId}
         </if>
     </select>
-    <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
-        select  select <include refid="Base_Column_List"/>
+    <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
         from t_user_archive
         where is_delete=0
         and company_id=#{companyId}
         and (id_number=#{idnumber}or employee_number=#{idnumber})
-
-
     </select>
 </mapper>
 
