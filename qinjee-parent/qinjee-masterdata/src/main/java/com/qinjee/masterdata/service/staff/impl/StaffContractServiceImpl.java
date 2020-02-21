@@ -360,8 +360,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     @Override
     public PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId,Integer companyId,Integer currentPage, Integer pageSize) {
-        PageHelper.startPage ( currentPage, pageSize );
         List<Integer> orgIds = organizationDao.getOrgIds(orgId, archiveId, Short.valueOf("0"), new Date());
+        PageHelper.startPage ( currentPage, pageSize );
         List < ContractWithArchiveVo > list =  laborContractDao.selectAboutToExpireContracts(orgIds,companyId);
         return new PageResult <> ( list );
     }
