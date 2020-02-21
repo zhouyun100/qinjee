@@ -11,6 +11,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
@@ -191,10 +192,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public PageResult < UserArchiveVo > selectArchivebatch(UserSession userSession, List < Integer > orgId, Integer pageSize, Integer currentPage) {
         String message=null;
-        List<Organization> list=organizationDao.selectByOrgId(orgId);
-        List<Organization> collect = list.stream().filter(a -> null == a.getOrgParentId() || a.getOrgParentId() == 0).collect(Collectors.toList());
-        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(collect)){
-           message="contain";
+        if(CollectionUtils.isEmpty(orgId)){
+            message="contain";
+        }else {
+            List<OrganizationVO> list = organizationDao.selectByOrgId(orgId);
+            for (OrganizationVO organizationVO : list) {
+                if (null == organizationVO.getOrgParentId()) {
+                    message = "contain";
+                    break;
+                }
+            }
         }
         PageHelper.startPage ( currentPage, pageSize );
         List < UserArchiveVo > list2 = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId (),message );
@@ -559,10 +566,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     public List < UserArchiveVo > selectByOrgList(List < Integer > list, UserSession userSession) {
         String message=null;
-        List<Organization> list1=organizationDao.selectByOrgId(list);
-        List<Organization> collect = list1.stream().filter(a -> null == a.getOrgParentId() || a.getOrgParentId().equals(0)).collect(Collectors.toList());
-        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(collect)){
+        if(CollectionUtils.isEmpty(list)){
             message="contain";
+        }else {
+            List<OrganizationVO> list1 = organizationDao.selectByOrgId(list);
+            for (OrganizationVO organizationVO : list1) {
+                if (null == organizationVO.getOrgParentId()) {
+                    message = "contain";
+                    break;
+                }
+            }
         }
         return userArchiveDao.selectByOrgAndAuth ( list, userSession.getArchiveId (), userSession.getCompanyId (),message );
     }

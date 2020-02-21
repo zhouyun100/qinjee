@@ -152,5 +152,5 @@ public interface OrganizationDao {
 
     int ensureRight(Integer orgId, Integer archiveId, Date now);
 
-    List<Organization> selectByOrgId(@Param("orgId") List<Integer> orgId);
+    List<OrganizationVO> selectByOrgId(@Param("orgId") List<Integer> orgId);
 }
