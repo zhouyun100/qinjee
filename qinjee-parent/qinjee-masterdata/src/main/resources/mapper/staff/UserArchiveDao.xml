@@ -935,6 +935,9 @@
         #{orgId}
       </foreach>
     </if>
+    <if test="isContains">
+        or tua.org_id is null
+    </if>
   </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id

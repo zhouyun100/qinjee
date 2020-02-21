@@ -450,23 +450,27 @@
     where archive_id=#{archiveId}
   </select>
   <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
-    SELECT org.org_id orgId,orga.org_name businessUnitName, org.org_name orgName, COUNT(arc.archive_id) staffCount, COUNT(contract.contract_id) signCount, COUNT(org.org_id) - COUNT(contract.contract_id) noSignCount, COUNT( deline_contract.contract_id ) delineCount -- 即将到期人数
-    from t_user_archive arc
-    left join  t_organization org on org.org_id =arc.org_id
-    left join  t_organization orga on orga.org_id =arc.business_unit_id
-    LEFT JOIN t_labor_contract contract
-    ON contract.archive_id = arc.archive_id
+    select v.orgName,v.orgId,v.businessUnitName, count(v.archive_id) staffCount,sum(v.signCount) signCount ,sum(v.noSignCount) noSignCount,sum(v.delineCount) delineCount from (
+    select org.org_id orgId,orga.org_name businessUnitName, org.org_name orgName,a.archive_id,COUNT(contract.contract_id) signCount,
+    COUNT(org.org_id) - COUNT(contract.contract_id) noSignCount, COUNT( deline_contract.contract_id ) delineCount
+    from t_user_archive a
+    LEFT JOIN t_organization org
+    ON org.org_id =a.org_id
+    LEFT JOIN t_organization orga
+    ON orga.org_id =a.business_unit_id
+    LEFT join t_labor_contract contract
+    on a.archive_id = contract.archive_id
     LEFT JOIN t_labor_contract deline_contract
-    ON deline_contract.archive_id = arc.archive_id
-    AND (SELECT remember_days
+    ON deline_contract.archive_id = a.archive_id AND (SELECT remember_days
     FROM t_contract_param
-    WHERE company_id = #{companyId}
+    WHERE company_id = 31
     LIMIT 1) > DATEDIFF( deline_contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
-    where  arc.is_delete =0 and  arc.org_id IN
+    WHERE a.is_delete =0 and a.org_id IN
     <foreach collection="list" item="orgId" open="(" close=")" separator=",">
       #{orgId}
     </foreach>
-    GROUP BY org.org_id
+    group by a.org_id,a.archive_id
+    ) v group by v.orgId
   </select>
   <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select

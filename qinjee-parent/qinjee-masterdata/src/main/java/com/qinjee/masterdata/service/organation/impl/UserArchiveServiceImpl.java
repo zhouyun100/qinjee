@@ -90,13 +90,21 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
     @Override
     public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
+
+        //判断是否是顶级机构，如果是 则将没有机构id的用户也查出来
+        OrganizationVO org = organizationDao.getOrganizationById(pageQueryVo.getOrgId());
+        boolean isContains=false;
+        if(org.getOrgParentId()==null||org.getOrgParentId().equals(0)){
+            isContains=true;
+        }
+
         //0表示不查询封存机构下的用户
         List<Integer> orgIdList = organizationDao.getOrgIds(pageQueryVo.getOrgId(),userSession.getArchiveId(),Short.valueOf("0"),new Date());
         logger.info("查询机构下用户，机构id：" + orgIdList);
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        List<UserArchiveVo> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList);
+        List<UserArchiveVo> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList,isContains);
         PageInfo<UserArchiveVo> pageInfo = new PageInfo<>(userArchiveList);
         PageResult<UserArchiveVo> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
