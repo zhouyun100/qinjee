@@ -450,27 +450,64 @@
     where archive_id=#{archiveId}
   </select>
   <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
-    select v.orgName,v.orgId,v.businessUnitName, count(v.archive_id) staffCount,sum(v.signCount) signCount ,sum(v.noSignCount) noSignCount,sum(v.delineCount) delineCount from (
-    select org.org_id orgId,orga.org_name businessUnitName, org.org_name orgName,a.archive_id,COUNT(contract.contract_id) signCount,
-    COUNT(org.org_id) - COUNT(contract.contract_id) noSignCount, COUNT( deline_contract.contract_id ) delineCount
-    from t_user_archive a
-    LEFT JOIN t_organization org
-    ON org.org_id =a.org_id
-    LEFT JOIN t_organization orga
-    ON orga.org_id =a.business_unit_id
-    LEFT join t_labor_contract contract
-    on a.archive_id = contract.archive_id
-    LEFT JOIN t_labor_contract deline_contract
-    ON deline_contract.archive_id = a.archive_id AND (SELECT remember_days
-    FROM t_contract_param
-    WHERE company_id = 31
-    LIMIT 1) > DATEDIFF( deline_contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
-    WHERE a.is_delete =0 and a.org_id IN
-    <foreach collection="list" item="orgId" open="(" close=")" separator=",">
-      #{orgId}
-    </foreach>
-    group by a.org_id,a.archive_id
-    ) v group by v.orgId
+    SELECT
+     o.orgName,
+     o.orgId,
+     o.businessUnitName,
+     sum( o.staffCount ) staffCount,
+     sum( o.signCount ) signCount,
+     sum( o.noSignCount ) noSignCount,
+     sum( o.delineCount ) delineCount
+    FROM
+    (
+      SELECT
+      v.orgName,
+      v.orgId orgId,
+      v.businessUnitName,
+      count( v.archive_id ) staffCount,
+      CASE
+
+      WHEN v.signCount > 0 THEN
+      sum( 1 ) ELSE sum( 0 )
+      END signCount,
+      CASE
+
+      WHEN v.noSignCount > 0 THEN
+      sum( 1 ) ELSE sum( 0 )
+      END noSignCount,
+      CASE
+
+      WHEN ( SELECT remember_days FROM t_contract_param WHERE company_id = #{companyId} LIMIT 1 ) > DATEDIFF( v.contract_end_date, CURDATE( ) )
+      AND DATEDIFF( v.contract_end_date, CURDATE( ) ) >= 0 THEN
+      sum( 1 ) ELSE sum( 0 )
+      END delineCount
+      FROM
+      (
+      SELECT
+      org.org_id orgId,
+      a.archive_id,
+      orga.org_name businessUnitName,
+      contract.contract_end_date,
+      org.org_name orgName,
+      COUNT( contract.contract_id ) signCount,
+      COUNT( a.archive_id ) - COUNT( contract.contract_id ) noSignCount
+      FROM
+      t_user_archive a
+      LEFT JOIN t_organization org ON org.org_id = a.org_id
+      LEFT JOIN t_organization orga ON orga.org_id = a.business_unit_id
+      LEFT JOIN t_labor_contract contract ON a.archive_id = contract.archive_id
+      AND contract.contract_state != '解除'
+      WHERE
+      a.is_delete = 0
+      AND a.org_id IN
+      <foreach collection="list" item="orgId" open="(" close=")" separator=",">
+        #{orgId}
+      </foreach>
+      GROUP BY a.org_id,a.archive_id
+      ) v
+    GROUP BY v.archive_id,v.orgId
+    ) o
+    GROUP BY o.orgId
   </select>
   <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select
@@ -507,12 +544,6 @@
         #{item}
       </foreach>
     </if>
-    <if test="contain != null">
-      AND (SELECT remember_days
-      FROM t_contract_param
-      WHERE company_id = #{companyId}
-      LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
-    </if>
   </select> <select id="selectAboutToExpireContracts" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select
     org.org_name as orgName,
@@ -544,6 +575,6 @@
     ) AND (SELECT remember_days
         FROM t_contract_param
         WHERE company_id = #{companyId}
-        LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0
-  </select>
+        LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0 and contract.contract_state != '解除'
+</select>
 </mapper>

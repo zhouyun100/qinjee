@@ -659,8 +659,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (CollectionUtils.isEmpty(idList)) {
             return;
         }
-/*          //去重
- idList = MyCollectionUtil.removeDuplicate(idList);*/
+        /*          //去重
+        idList = MyCollectionUtil.removeDuplicate(idList);*/
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
