@@ -53,7 +53,7 @@ public enum CommonCode implements ResultCode{
     STAFF_IS_EXIST(false,10326, "此人员已经在档案信息中存在"),
     STANDINGBOOK_IS_EMPTY(false,10327, "台账无内容"),
     ORG_HAVE_POST(false,10328, "机构下存在岗位，是否继续删除？"),
-    EMPLOYEENUMBER_IS_EXIST(false,10328, "工号已存在，请重新操作"),
+    EMPLOYEENUMBER_IS_EXIST(false,10328, "工号已被占用"),
     ARCHIVEID_IS_TOOLONG(false,10329, "请增加规则容量"),
     CANNOT_TWO_NULL(false,10330, "证件号与手机号不能同时为空"),
     IS_EXIST_BLACKLIST(false,10331, "该人员已经存在与黑名单中"),

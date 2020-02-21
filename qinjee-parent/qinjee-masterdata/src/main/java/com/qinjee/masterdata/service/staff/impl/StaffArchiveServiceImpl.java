@@ -34,6 +34,7 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -173,7 +174,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         userArchive.setOperatorId ( userSession.getArchiveId () );
         userArchive.setIsDelete ( ( short ) 0 );
         userArchive.setCompanyId ( userSession.getCompanyId () );
-//        userArchiveDao.insertSelective ( userArchive );
         checkEmployeeNumber ( userSession, userArchive );
         userArchiveDao.insertSelective ( userArchive );
         List < Integer > integers = new ArrayList <> ();
@@ -190,9 +190,15 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public PageResult < UserArchiveVo > selectArchivebatch(UserSession userSession, List < Integer > orgId, Integer pageSize, Integer currentPage) {
+        String message=null;
+        List<Organization> list=organizationDao.selectByOrgId(orgId);
+        List<Organization> collect = list.stream().filter(a -> null == a.getOrgParentId() || a.getOrgParentId() == 0).collect(Collectors.toList());
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(collect)){
+           message="contain";
+        }
         PageHelper.startPage ( currentPage, pageSize );
-        List < UserArchiveVo > list = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId () );
-        return new PageResult <> ( list );
+        List < UserArchiveVo > list2 = userArchiveDao.selectByOrgAndAuth ( orgId, userSession.getArchiveId (), userSession.getCompanyId (),message );
+        return new PageResult <> ( list2 );
 
     }
 
@@ -552,7 +558,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public List < UserArchiveVo > selectByOrgList(List < Integer > list, UserSession userSession) {
-        return userArchiveDao.selectByOrgAndAuth ( list, userSession.getArchiveId (), userSession.getCompanyId () );
+        String message=null;
+        List<Organization> list1=organizationDao.selectByOrgId(list);
+        List<Organization> collect = list1.stream().filter(a -> null == a.getOrgParentId() || a.getOrgParentId().equals(0)).collect(Collectors.toList());
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(collect)){
+            message="contain";
+        }
+        return userArchiveDao.selectByOrgAndAuth ( list, userSession.getArchiveId (), userSession.getCompanyId (),message );
     }
 
     @Override
@@ -654,19 +666,14 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 //    }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-        String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
-        if (null == userArchive.getEmployeeNumber () || "".equals ( userArchive.getEmployeeNumber () )) {
-            userArchive.setEmployeeNumber ( empNumber );
+        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+        List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId()))) {
+            userArchive.setEmployeeNumber(empNumber);
         } else {
-            List < Integer > employnumberList = userArchiveDao.selectEmployNumberByCompanyId ( userSession.getCompanyId (), userArchive.getEmployeeNumber () );
-            if (CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size () == 1 && employnumberList.get ( 0 ).equals ( userArchive.getArchiveId () ))) {
-                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
-            } else {
-                ExceptionCast.cast ( CommonCode.EMPLOYEENUMBER_IS_EXIST );
-            }
+            ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
         }
     }
-
 }
 
 

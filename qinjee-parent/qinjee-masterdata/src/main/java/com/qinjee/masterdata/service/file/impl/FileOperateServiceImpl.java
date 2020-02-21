@@ -21,6 +21,7 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.utils.CompressFileUtil;
 import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -213,6 +214,15 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
+    public List<URL> getUrl(List<String> paths) {
+        List<URL> list=new ArrayList<>();
+        for (String path : paths) {
+            list.add(UpAndDownUtil.getTempPath(path));
+        }
+        return list;
+    }
+
+    @Override
     public List<URL> getFilePath(UserSession userSession, String groupName, Integer id) {
         List<URL> stringList=new ArrayList<>();
         List<String> list = attachmentRecordDao.selectFilePath(groupName,id,userSession.getCompanyId());
@@ -233,7 +243,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
 //        }
         AttachmentRecord attachmentRecord = getAttachmentRecord ( multipartFile, s, userSession.getCompanyId () );
         String idnumber = multipartFile.getOriginalFilename ().split ( "#" )[0];
-        List<UserArchiveVo> list = userArchiveDao.selectByIdNumber ( idnumber,userSession.getCompanyId () );
+        List<UserArchiveVo> list = userArchiveDao.selectByIdNumberOrEmploy ( idnumber,userSession.getCompanyId () );
         attachmentRecord.setBusinessId ( list.get(0).getArchiveId () );
         attachmentRecord.setBusinessType ( "archive" );
         attachmentRecord.setAttachmentUrl(pathUrl);
@@ -351,7 +361,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
         for (int i = 0; i < fileName.size (); i++) {
             Boolean flag=false;
             String s =fileName.get ( i ).split ( "#" )[0];
-            List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumber(s,userSession.getCompanyId ());
+            List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumberOrEmploy(s,userSession.getCompanyId ());
             List < String > list = attachmentRecordDao.selectGroup ();
             String name = null;
             try {
@@ -367,7 +377,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                     }
                 }
             }
-            if (userArchiveVos.size ()==1 && flag ) {
+            if (CollectionUtils.isNotEmpty(userArchiveVos) && flag ) {
                flag=true;
             } else {
                flag=false;

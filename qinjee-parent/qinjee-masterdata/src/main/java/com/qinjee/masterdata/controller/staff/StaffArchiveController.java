@@ -45,11 +45,11 @@ public class StaffArchiveController extends BaseController {
     @RequestMapping(value = "/insertArchive", method = RequestMethod.POST)
     @ApiOperation(value = "新增档案表", notes = "hkt")
 //    @ApiImplicitParam(name = "UserArchive", value = "人员档案", paramType = "form", required = true)
-    public ResponseResult insertArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) throws Exception {
+    public ResponseResult<List<Integer>> insertArchive(@RequestBody @Valid UserArchiveVo userArchiveVo) throws Exception {
         Boolean b = checkParam(userArchiveVo,getUserSession());
         if(b){
             List<Integer> integer = staffArchiveService.insertArchive ( userArchiveVo, getUserSession () );
-            return new ResponseResult ( integer,CommonCode.SUCCESS );
+            return new ResponseResult<> ( integer,CommonCode.SUCCESS );
         }
         return  failResponseResult("档案表参数错误");
     }

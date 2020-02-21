@@ -778,4 +778,13 @@
         and company_id = #{companyId}
         and is_enable=1
     </select>
+    <select id="selectByOrgId" resultType="com.qinjee.masterdata.model.entity.Organization">
+    select <include refid="com.qinjee.masterdata.dao.AttachmentGroupDao.allColumns"/>
+        from t_organization
+        where org_id in
+        <foreach collection="orgId" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and is_enable=1
+    </select>
 </mapper>

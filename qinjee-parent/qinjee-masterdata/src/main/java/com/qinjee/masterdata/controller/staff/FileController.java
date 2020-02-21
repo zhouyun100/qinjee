@@ -288,7 +288,19 @@ public class FileController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-
+    /**
+     * 返回前端url
+     */
+    @RequestMapping(value = "/getUrl", method = RequestMethod.GET)
+    @ApiOperation(value = "获取url", notes = "hkt")
+    public ResponseResult<List<URL>> getUrl( List<String> paths) {
+        Boolean b = checkParam(paths);
+        if (b) {
+            List<URL> list=fileOperateService.getUrl(paths);
+            return new ResponseResult<>(null, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
     /**
      * 修改文件名称
      *

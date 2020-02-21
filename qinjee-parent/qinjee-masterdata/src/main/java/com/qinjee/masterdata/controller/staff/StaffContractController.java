@@ -55,7 +55,7 @@ public class StaffContractController extends BaseController {
                 staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize,userSession.getCompanyId() );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
-                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList(userSession));
+//                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList(userSession));
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

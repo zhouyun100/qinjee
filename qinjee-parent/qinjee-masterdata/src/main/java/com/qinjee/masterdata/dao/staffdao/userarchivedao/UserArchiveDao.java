@@ -68,7 +68,8 @@ public interface UserArchiveDao {
 
     Date selectDateByStatus(@Param("string") String string);
 
-    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") List<Integer> orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
+    List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") List<Integer> orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId
+    , @Param("message") String message);
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
@@ -114,4 +115,6 @@ public interface UserArchiveDao {
    Integer selectIsExist(@Param("idNumber") String idNumber, @Param("userId") Integer userId);
 
     int updateBatch(@Param("list1") List<UserArchive> list1);
+
+    List<UserArchiveVo> selectByIdNumberOrEmploy(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
 }

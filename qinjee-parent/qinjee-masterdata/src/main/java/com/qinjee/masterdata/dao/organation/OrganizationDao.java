@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.organation;
 
 
+import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
@@ -150,4 +151,6 @@ public interface OrganizationDao {
     List<OrganizationVO> listSonFullNameAndType(Integer orgId);
 
     int ensureRight(Integer orgId, Integer archiveId, Date now);
+
+    List<Organization> selectByOrgId(@Param("orgId") List<Integer> orgId);
 }

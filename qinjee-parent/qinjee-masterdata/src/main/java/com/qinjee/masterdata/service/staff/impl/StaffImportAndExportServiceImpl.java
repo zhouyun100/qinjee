@@ -259,13 +259,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             String idtype = null;
             String idnumber = null;
             String phone=null;
+            String emplyeeNumber=null;
             StringBuffer stringBuffer=new StringBuffer (  );
             for (CheckCustomFieldVO fieldVO : checkCustomTableVO.getCustomFieldVOList ()) {
                  if ("id_number".equals ( fieldVO.getFieldCode () )) {
                     idnumber = fieldVO.getFieldValue ();
                 } else if("phone".equals ( fieldVO.getFieldCode () )){
                     phone=fieldVO.getFieldValue ();
-                }
+                } else if("employee_number".equals ( fieldVO.getFieldCode () )){
+                     emplyeeNumber=fieldVO.getFieldValue ();
+                 }
+
                 if("org_id".equals(fieldVO.getFieldCode())||"business_unit_id".equals(fieldVO.getFieldCode())){
                     String s = organizationDao.selectOrgName(Integer.parseInt(fieldVO.getFieldValue()), userSession.getCompanyId());
                    if(StringUtils.isNotBlank(s)){
@@ -284,6 +288,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         fieldVO.setFieldValue(userArchiveVo.getUserName());
                     }
                 }
+
                 //校验非空
                 setCheck ( fieldVO,"business_unit_id","单位编码" );
                 setCheck ( fieldVO, "org_id", "部门编码" );
@@ -316,6 +321,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
                 if (!CollectionUtils.isEmpty(blacklistList)) {
                     stringBuffer.append("此人员已经存在于黑名单！");
+                }
+            }if(StringUtils.isNotBlank(emplyeeNumber)){
+                List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), emplyeeNumber);
+                if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(employnumberList)){
+                    stringBuffer.append("此工号已被占用");
                 }
             }
             if (systemDefine == 0) {

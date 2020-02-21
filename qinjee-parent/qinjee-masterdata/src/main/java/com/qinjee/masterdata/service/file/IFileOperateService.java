@@ -64,4 +64,6 @@ public interface IFileOperateService {
     void putArcFile(MultipartFile[] file, Integer groupId, UserSession userSession,Integer archiveId);
 
     void downLoadInsideFile(HttpServletResponse response, String url) throws IOException;
+
+    List<URL> getUrl(List<String> paths);
 }
