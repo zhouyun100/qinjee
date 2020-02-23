@@ -43,7 +43,7 @@ public interface IFileOperateService {
 
     String checkFielName(List<String> fileName, UserSession userSession);
 
-    void exportCheckFile(UserSession userSession,HttpServletResponse response) throws  IOException;
+    void exportCheckFile(UserSession userSession,HttpServletResponse response,String type) throws  IOException;
 
     String checkImg(MultipartFile[] files, UserSession userSession) throws Exception;
 
@@ -66,4 +66,8 @@ public interface IFileOperateService {
     void downLoadInsideFile(HttpServletResponse response, String url) throws IOException;
 
     List<URL> getUrl(List<String> paths);
+
+    String checkHeadImg(List<String> fileName, UserSession userSession);
+
+    void uploadImg(MultipartFile[] files, UserSession userSession);
 }

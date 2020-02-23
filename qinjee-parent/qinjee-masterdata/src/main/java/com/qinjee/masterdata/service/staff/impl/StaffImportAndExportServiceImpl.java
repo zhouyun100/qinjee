@@ -286,6 +286,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
                     if(userArchiveVo!=null){
                         fieldVO.setFieldValue(userArchiveVo.getUserName());
+                    }else{
+                        stringBuffer.append("直接上级工号不存在");
                     }
                 }
 
@@ -293,7 +295,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 setCheck ( fieldVO,"business_unit_id","单位编码" );
                 setCheck ( fieldVO, "org_id", "部门编码" );
                 setCheck ( fieldVO, "post_id", "岗位编码" );
-                setCheck ( fieldVO, "supervisor_id", "直接上级工号" );
                 if(fieldVO.getResultMsg ()!=null) {
                     stringBuffer.append ( fieldVO.getResultMsg ()+ "\t" );
                 }
@@ -757,8 +758,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     } else {
                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-1" );
                     }
-                }else{
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-2" );
                 }
             }
            else if (POSTCODE.equals ( fieldName ) ) {

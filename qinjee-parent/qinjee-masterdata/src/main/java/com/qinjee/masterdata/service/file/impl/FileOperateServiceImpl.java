@@ -35,10 +35,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -83,8 +80,43 @@ public class FileOperateServiceImpl implements IFileOperateService {
             }
         }
 
+    @Override
+    public void uploadImg(MultipartFile[] files, UserSession userSession) {
+        File file1 = null;
+        for (int i = 0; i < files.length; i++) {
+            try {
+                String fileName = files[i].getOriginalFilename();
+                String s =fileName.split ( "#" )[0];
+                String name=fileName.split("#")[1].split("\\.")[0];
+                file1 = FileUploadUtils.multipartFileToFile(files[i]);
+                String pathUrl = "图像" + File.separator + userSession.getCompanyId() + File.separator +name+File.separator+fileName;
+                inserHeadAttchmentRecord(files[i], userSession, fileName, s, pathUrl);
+                UpAndDownUtil.putFile(file1, pathUrl);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (file1 != null) {
+                    file1.delete();
+                }
+            }
+        }
+    }
 
-
+    private void inserHeadAttchmentRecord(MultipartFile files, UserSession userSession, String fileName, String s, String pathUrl) {
+        AttachmentRecord attachmentRecord=new AttachmentRecord();
+        attachmentRecord.setOperatorId(userSession.getArchiveId());
+        attachmentRecord.setCompanyId(userSession.getCompanyId());
+        attachmentRecord.setAttachmentName(fileName);
+        List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumberOrEmploy(s,userSession.getCompanyId ());
+        Integer archiveId = userArchiveVos.get(0).getArchiveId();
+        attachmentRecord.setBusinessId(archiveId);
+        attachmentRecord.setAttachmentUrl(pathUrl);
+        attachmentRecord.setAttachmentSize((int)files.getSize()/1024);
+        attachmentRecord.setCreateTime(new Date());
+        attachmentRecord.setBusinessModule("ARC");
+        attachmentRecord.setBusinessType("archive");
+        attachmentRecordDao.insertSelective(attachmentRecord);
+    }
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -222,6 +254,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
         return list;
     }
 
+
+
     @Override
     public List<URL> getFilePath(UserSession userSession, String groupName, Integer id) {
         List<URL> stringList=new ArrayList<>();
@@ -353,6 +387,46 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
 
+    @Override
+    public String checkHeadImg(List<String> fileName, UserSession userSession) {
+        Map<String,String> map=new HashMap <> (  );
+        Integer j=0;
+        for (int i = 0; i < fileName.size (); i++) {
+            Boolean flag1=false;
+            Boolean flag2=false;
+            String s =fileName.get ( i ).split ( "#" )[0];
+            String name=fileName.get(i).split("#")[1].split("\\.")[0];
+            String type=fileName.get(i).split("#")[1].split("\\.")[1];
+            if("bmp,jpg,png,tif,gif,pcx,tga,exif,fpx,svg,psd,cdr,pcd,dxf,ufo,eps,ai,raw,WMF,webp".contains(type)){
+                flag1=true;
+            }
+            List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumberOrEmploy(s,userSession.getCompanyId ());
+            if(!CollectionUtils.isEmpty(userArchiveVos)){
+                for (UserArchiveVo userArchiveVo : userArchiveVos) {
+                    if(name.equals(userArchiveVo.getUserName())){
+                        flag2=true;
+                        break;
+                    }
+                }
+            }
+            if(!(flag1&&flag2)) {
+                map.put ( fileName.get ( i ), "验证不通过" );
+                j++;
+            }else{
+                map.put ( fileName.get ( i ),"验证通过！" );
+            }
+        }
+        redisClusterService.setex ( userSession.getCompanyId ()+"图像验证"+userSession.getArchiveId (),2*60*60,
+                JSON.toJSONString (map));
+        if(j>0){
+            map.put ( "flag","false" );
+            return JSON.toJSONString ( map );
+        }else{
+            return JSON.toJSONString ( map );
+        }
+    }
+
+
 
     @Override
     public String checkFielName(List<String> fileName, UserSession userSession) {
@@ -389,7 +463,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 map.put ( fileName.get ( i ),"验证通过！" );
             }
         }
-        redisClusterService.setex ( userSession.getCompanyId ()+"证件号验证"+userSession.getArchiveId (),2*60*60,
+        redisClusterService.setex ( userSession.getCompanyId ()+"文件验证"+userSession.getArchiveId (),2*60*60,
                 JSON.toJSONString (map));
         if(j>0){
             map.put ( "flag","false" );
@@ -401,9 +475,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
 
     @Override
-    public void exportCheckFile(UserSession userSession,HttpServletResponse response) throws IOException {
+    public void exportCheckFile(UserSession userSession,HttpServletResponse response,String type) throws IOException {
         String value=null;
-        String s = userSession.getCompanyId () + "证件号验证" + userSession.getArchiveId ();
+        String s = userSession.getCompanyId () + type + userSession.getArchiveId ();
         if (redisClusterService.exists ( s )) {
             value = redisClusterService.get ( s );
         } else {

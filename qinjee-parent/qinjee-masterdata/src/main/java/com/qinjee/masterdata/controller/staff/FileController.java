@@ -59,6 +59,27 @@ public class FileController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+    /**
+     * 上传文件
+     *
+     * @param files 上传照片数组
+     * @return
+     */
+    @RequestMapping(value = "/uploadImg", method = RequestMethod.POST, headers = "content-type=multipart/form-data")
+    @ApiOperation(value = "上传照片数组", notes = "hkt")
+    public ResponseResult uploadImg(@RequestParam MultipartFile[] files) {
+        Boolean b = checkParam(getUserSession(), files);
+        if (b) {
+            try {
+                fileOperateService.uploadImg(files, getUserSession());
+                return new ResponseResult<>(null, CommonCode.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseResult<>(null, CommonCode.FAIL);
+            }
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
     /**
      * 下载档案文件
@@ -149,7 +170,21 @@ public class FileController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
-
+    /**
+     * 验证照片是否合法
+     *
+     * @param fileName 文件名集合
+     */
+    @RequestMapping(value = "/checkHeadImg", method = RequestMethod.POST)
+    @ApiOperation(value = "验证照片是否合法", notes = "hkt")
+    public ResponseResult checkHeadImg(@RequestParam List<String> fileName) {
+        Boolean b = checkParam(fileName, getUserSession());
+        if (b) {
+            String s = fileOperateService.checkHeadImg(fileName, getUserSession());
+            return new ResponseResult<>(s, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
 
     /**
      * 验证图片比例关系
@@ -173,10 +208,10 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/exportCheckFile", method = RequestMethod.POST)
     @ApiOperation(value = "导出校验文件", notes = "hkt")
-    public ResponseResult exportCheckFile(HttpServletResponse response) throws IOException {
-        Boolean b = checkParam(getUserSession(), response);
+    public ResponseResult exportCheckFile(HttpServletResponse response,String type) throws IOException {
+        Boolean b = checkParam(getUserSession(), response,type);
         if (b) {
-            fileOperateService.exportCheckFile(getUserSession(), response);
+            fileOperateService.exportCheckFile(getUserSession(), response,type);
             return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
