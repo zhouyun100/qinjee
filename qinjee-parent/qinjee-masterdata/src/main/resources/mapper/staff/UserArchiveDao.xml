@@ -1159,6 +1159,7 @@
     <if test="message !=null">
         or arc.org_id is null
     </if>
+    and arc.company_id=#{companyId}
     order by arc.archive_id
   </select>
 
