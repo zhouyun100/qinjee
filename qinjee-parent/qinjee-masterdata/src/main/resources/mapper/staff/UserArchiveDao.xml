@@ -344,6 +344,9 @@
         <if test="item.employeeNumber != null">
           employee_number,
         </if>
+          <if test="item.probationDueDate != null">
+              probation_due_date,
+          </if>
         <if test="item.userId != null">
           user_id,
         </if>
@@ -460,6 +463,9 @@
         <if test="item.employeeNumber != null">
           #{item.employeeNumber,jdbcType=VARCHAR},
         </if>
+          <if test="item.probationDueDate != null">
+              #{item.probationDueDate},
+          </if>
         <if test="item.userId != null">
           #{item.userId,jdbcType=INTEGER},
         </if>
