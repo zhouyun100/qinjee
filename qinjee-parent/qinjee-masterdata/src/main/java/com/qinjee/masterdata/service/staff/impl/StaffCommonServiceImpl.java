@@ -309,6 +309,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                             if (userArchive.getPhone () != null) {
                                     userArchive.setUserId ( userLoginService.getUserIdByPhone ( userArchive.getPhone (), userSession.getCompanyId () ) );
                             }
+                            if(StringUtils.isEmpty(userArchive.getEmployeeNumber())){
+                                userArchive.setEmployeeNumber(employeeNumberRuleService.createEmpNumber(userSession.getCompanyId()));
+                            }
                             if (null!=archiveId && 0!=archiveId) {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );

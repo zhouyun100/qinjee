@@ -298,6 +298,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         stringBuffer.append("直接上级工号不存在");
                     }
                 }
+                if(StringUtils.isNotBlank(emplyeeNumber)){
+                    List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), emplyeeNumber);
+                    if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(employnumberList)){
+                        stringBuffer.append("此工号已被占用");
+                    }
+                }
                 if(fieldVO.getResultMsg ()!=null) {
                     stringBuffer.append ( fieldVO.getResultMsg ()+ "\t" );
                 }
@@ -325,11 +331,6 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 List<Blacklist> blacklistList = blacklistDao.selectByIdNumberAndPhone(idnumber, phone, userSession.getCompanyId());
                 if (!CollectionUtils.isEmpty(blacklistList)) {
                     stringBuffer.append("此人员已经存在于黑名单！");
-                }
-            }if(StringUtils.isNotBlank(emplyeeNumber)){
-                List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), emplyeeNumber);
-                if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(employnumberList)){
-                    stringBuffer.append("此工号已被占用");
                 }
             }
             if (systemDefine == 0) {

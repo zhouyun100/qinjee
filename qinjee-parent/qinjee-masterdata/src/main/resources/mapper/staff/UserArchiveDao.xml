@@ -238,105 +238,104 @@
             <if test="businessUnitId != null">
                 #{businessUnitId,jdbcType=INTEGER},
             </if>
+          <if test="supervisorId != null">
+            #{supervisorId,jdbcType=INTEGER},
+          </if>
+          <if test="orgId != null">
+            #{orgId,jdbcType=INTEGER},
+          </if>
+          <if test="postId != null">
+            #{postId,jdbcType=INTEGER},
+          </if>
 
-      <if test="supervisorId != null">
-        #{supervisorId,jdbcType=INTEGER},
-      </if>
-      <if test="orgId != null">
-        #{orgId,jdbcType=INTEGER},
-      </if>
-      <if test="postId != null">
-        #{postId,jdbcType=INTEGER},
-      </if>
-
-      <if test="userName != null">
-        #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="idType != null">
-        #{idType,jdbcType=VARCHAR},
-      </if>
-      <if test="idNumber != null">
-        #{idNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="gender != null">
-        #{gender,jdbcType=VARCHAR},
-      </if>
-      <if test="birthDate != null">
-        #{birthDate,jdbcType=DATE},
-      </if>
-      <if test="age != null">
-        #{age,jdbcType=SMALLINT},
-      </if>
-      <if test="nationality != null">
-        #{nationality,jdbcType=INTEGER},
-      </if>
-      <if test="birthplace != null">
-        #{birthplace,jdbcType=VARCHAR},
-      </if>
-      <if test="politicalStatus != null">
-        #{politicalStatus,jdbcType=INTEGER},
-      </if>
-      <if test="maritalStatus != null">
-        #{maritalStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="firstWorkDate != null">
-        #{firstWorkDate,jdbcType=DATE},
-      </if>
-      <if test="hireDate != null">
-        #{hireDate,jdbcType=DATE},
-      </if>
-      <if test="servingAge != null">
-        #{servingAge,jdbcType=INTEGER},
-      </if>
-      <if test="workingPeriod != null">
-        #{workingPeriod,jdbcType=INTEGER},
-      </if>
-      <if test="probationDueDate != null">
-        #{probationDueDate,jdbcType=DATE},
-      </if>
-      <if test="probationPeriod != null">
-        #{probationPeriod,jdbcType=INTEGER},
-      </if>
-      <if test="converseDate != null">
-        #{converseDate,jdbcType=DATE},
-      </if>
-      <if test="firstDegree != null">
-        #{firstDegree,jdbcType=VARCHAR},
-      </if>
-      <if test="highestDegree != null">
-        #{highestDegree,jdbcType=VARCHAR},
-      </if>
-      <if test="phone != null">
-        #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="address != null">
-        #{address,jdbcType=VARCHAR},
-      </if>
-      <if test="professionalCertification != null">
-        #{professionalCertification,jdbcType=VARCHAR},
-      </if>
-      <if test="professionalTitle != null">
-        #{professionalTitle,jdbcType=VARCHAR},
-      </if>
-      <if test="professionalLevel != null">
-        #{professionalLevel,jdbcType=VARCHAR},
-      </if>
-      <if test="attritionDate != null">
-        #{attritionDate,jdbcType=DATE},
-      </if>
-      <if test="attritionType != null">
-        #{attritionType,jdbcType=VARCHAR},
-      </if>
-      <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="archiveStatus != null">
-        #{archiveStatus,jdbcType=VARCHAR}
-      </if>
-    </trim>
+          <if test="userName != null">
+            #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="idType != null">
+            #{idType,jdbcType=VARCHAR},
+          </if>
+          <if test="idNumber != null">
+            #{idNumber,jdbcType=VARCHAR},
+          </if>
+          <if test="gender != null">
+            #{gender,jdbcType=VARCHAR},
+          </if>
+          <if test="birthDate != null">
+            #{birthDate,jdbcType=DATE},
+          </if>
+          <if test="age != null">
+            #{age,jdbcType=SMALLINT},
+          </if>
+          <if test="nationality != null">
+            #{nationality,jdbcType=INTEGER},
+          </if>
+          <if test="birthplace != null">
+            #{birthplace,jdbcType=VARCHAR},
+          </if>
+          <if test="politicalStatus != null">
+            #{politicalStatus,jdbcType=INTEGER},
+          </if>
+          <if test="maritalStatus != null">
+            #{maritalStatus,jdbcType=VARCHAR},
+          </if>
+          <if test="firstWorkDate != null">
+            #{firstWorkDate,jdbcType=DATE},
+          </if>
+          <if test="hireDate != null">
+            #{hireDate,jdbcType=DATE},
+          </if>
+          <if test="servingAge != null">
+            #{servingAge,jdbcType=INTEGER},
+          </if>
+          <if test="workingPeriod != null">
+            #{workingPeriod,jdbcType=INTEGER},
+          </if>
+          <if test="probationDueDate != null">
+            #{probationDueDate,jdbcType=DATE},
+          </if>
+          <if test="probationPeriod != null">
+            #{probationPeriod,jdbcType=INTEGER},
+          </if>
+          <if test="converseDate != null">
+            #{converseDate,jdbcType=DATE},
+          </if>
+          <if test="firstDegree != null">
+            #{firstDegree,jdbcType=VARCHAR},
+          </if>
+          <if test="highestDegree != null">
+            #{highestDegree,jdbcType=VARCHAR},
+          </if>
+          <if test="phone != null">
+            #{phone,jdbcType=VARCHAR},
+          </if>
+          <if test="email != null">
+            #{email,jdbcType=VARCHAR},
+          </if>
+          <if test="address != null">
+            #{address,jdbcType=VARCHAR},
+          </if>
+          <if test="professionalCertification != null">
+            #{professionalCertification,jdbcType=VARCHAR},
+          </if>
+          <if test="professionalTitle != null">
+            #{professionalTitle,jdbcType=VARCHAR},
+          </if>
+          <if test="professionalLevel != null">
+            #{professionalLevel,jdbcType=VARCHAR},
+          </if>
+          <if test="attritionDate != null">
+            #{attritionDate,jdbcType=DATE},
+          </if>
+          <if test="attritionType != null">
+            #{attritionType,jdbcType=VARCHAR},
+          </if>
+          <if test="operatorId != null">
+            #{operatorId,jdbcType=INTEGER},
+          </if>
+          <if test="archiveStatus != null">
+            #{archiveStatus,jdbcType=VARCHAR}
+          </if>
+        </trim>
   </insert>
   <insert id="insertBatch" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
     <foreach collection="userArchives" item="item" separator=";">
@@ -441,9 +440,21 @@
         <if test="item.operatorId != null">
           operator_id,
         </if>
-          <if test="item.archiveStatus != null">
-              archive_status
-          </if>
+      <if test="item.archiveStatus != null">
+          archive_status,
+      </if>
+      <if test="item.orgId != null">
+          org_id,
+      </if>
+      <if test="item.supervisorId != null">
+          supervisor_id,
+      </if>
+      <if test="item.servingDate != null">
+          serving_date,
+      </if>
+      <if test="item.postId != null">
+          post_id
+      </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
         <if test="item.employeeNumber != null">
@@ -546,13 +557,26 @@
           #{item.operatorId,jdbcType=INTEGER},
         </if>
           <if test="item.archiveStatus != null">
-              #{item.archiveStatus,jdbcType=VARCHAR}
+              #{item.archiveStatus,jdbcType=VARCHAR},
+          </if>
+          <if test="item.orgId != null">
+              #{item.orgId},
+          </if>
+          <if test="item.supervisorId != null">
+              #{item.supervisorId},
+          </if>
+          <if test="item.servingDate != null">
+              #{item.servingDate},
+          </if>
+          <if test="item.postId != null">
+              #{item.postId}
           </if>
       </trim>
     </foreach>
   </insert>
     <update id="updateBatch">
         <foreach collection="list1" index="index" item="item" separator=";">
+            update t_user_archive
             <set>
                 <if test="item.orgId != null">
                     org_id = #{item.orgId,jdbcType=INTEGER},
