@@ -269,17 +269,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 } else if("employee_number".equals ( fieldVO.getFieldCode () )){
                      emplyeeNumber=fieldVO.getFieldValue ();
                  }
-
+                //校验非空
+                setCheck ( fieldVO,"business_unit_id","单位编码" );
+                setCheck ( fieldVO, "org_id", "部门编码" );
+                setCheck ( fieldVO, "post_id", "岗位编码" );
                 if("org_id".equals(fieldVO.getFieldCode())||"business_unit_id".equals(fieldVO.getFieldCode())){
                     String s = organizationDao.selectOrgName(Integer.parseInt(fieldVO.getFieldValue()), userSession.getCompanyId());
                    if(StringUtils.isNotBlank(s)){
                    fieldVO.setFieldValue(s);
-                    }
+                    }else{
+                       fieldVO.setFieldValue("未知部门");
+                   }
                 }
                 if("post_id".equals(fieldVO.getFieldCode())){
                      Post post = postDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
                     if(post!=null){
                         fieldVO.setFieldValue(post.getPostName());
+                    }else{
+                        fieldVO.setFieldValue("未知岗位");
                     }
                 }
                 if("supervisor_id".equals(fieldVO.getFieldCode())){
@@ -287,14 +294,10 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     if(userArchiveVo!=null){
                         fieldVO.setFieldValue(userArchiveVo.getUserName());
                     }else{
+                        fieldVO.setFieldValue("未知直接上级");
                         stringBuffer.append("直接上级工号不存在");
                     }
                 }
-
-                //校验非空
-                setCheck ( fieldVO,"business_unit_id","单位编码" );
-                setCheck ( fieldVO, "org_id", "部门编码" );
-                setCheck ( fieldVO, "post_id", "岗位编码" );
                 if(fieldVO.getResultMsg ()!=null) {
                     stringBuffer.append ( fieldVO.getResultMsg ()+ "\t" );
                 }
