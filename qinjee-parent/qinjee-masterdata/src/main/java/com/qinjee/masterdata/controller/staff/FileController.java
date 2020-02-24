@@ -326,7 +326,7 @@ public class FileController extends BaseController {
     /**
      * 返回前端url
      */
-    @RequestMapping(value = "/getUrl", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUrl", method = RequestMethod.POST)
     @ApiOperation(value = "获取url", notes = "hkt")
     public ResponseResult<List<URL>> getUrl(@RequestBody List<String> paths) {
         Boolean b = checkParam(paths);
