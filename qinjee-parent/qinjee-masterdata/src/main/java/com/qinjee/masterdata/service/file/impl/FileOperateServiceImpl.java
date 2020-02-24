@@ -249,7 +249,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
     public List<URL> getUrl(List<String> paths) {
         List<URL> list=new ArrayList<>();
         for (String path : paths) {
-            list.add(UpAndDownUtil.getTempPath(path));
+            list.add(UpAndDownUtil.getPath(path));
         }
         return list;
     }
