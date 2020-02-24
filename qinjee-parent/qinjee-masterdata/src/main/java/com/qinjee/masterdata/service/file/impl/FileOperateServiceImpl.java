@@ -102,6 +102,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
         }
     }
 
+    @Override
+    public List<AttchmentRecordVo> showMyAllFile(UserSession userSession, String type, Integer id) {
+         return  attachmentRecordDao.selectByBuinessIdAndType(id,type,userSession.getCompanyId());
+    }
+
     private void inserHeadAttchmentRecord(MultipartFile files, UserSession userSession, String fileName, String s, String pathUrl) {
         AttachmentRecord attachmentRecord=new AttachmentRecord();
         attachmentRecord.setOperatorId(userSession.getArchiveId());

@@ -274,8 +274,7 @@
         record.create_time as creatTime,
         record.attachment_url as attatchmentUrl,
         substring_index(record.attachment_url,'.',-1 ) as fileType,
-        concat(substring_index(record.attachment_url, '/', 1),'#',substring_index(record.attachment_url, '/', -1)) as
-        fileName
+        attachment_name as fileName
         FROM
         t_user_archive arc
         left join t_attachment_record record on record.business_id=arc.archive_id and arc.is_delete=0
@@ -422,4 +421,22 @@
         where  company_id=#{companyId}
         and  attachment_id=#{attachmentId}
     </update>
+    <select id="selectByBuinessIdAndType" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
+         SELECT
+        record.attachment_id as attatchmentId,
+        pre.user_name as  userName,
+        org.org_name as orgName,
+        record.create_time as  creatTime,
+        record.attachment_url as attatchmentUrl,
+        substring_index(record.attachment_url,'.',-1 ) as fileType,
+        record.attachment_name as  fileName
+        FROM t_attachment_record record
+        LEFT JOIN t_pre_employment pre ON record.business_id=pre.employment_id
+        LEFT JOIN t_organization org ON pre.org_id = org.org_id
+        WHERE record.business_id = #{id}
+        and record.business_type = #{type}
+        AND record.is_delete =0
+        AND record.company_id = #{companyId}
+        AND record.is_delete = 0 group by fileName;
+    </select>
 </mapper>

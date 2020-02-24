@@ -70,4 +70,6 @@ public interface IFileOperateService {
     String checkHeadImg(List<String> fileName, UserSession userSession);
 
     void uploadImg(MultipartFile[] files, UserSession userSession);
+
+    List<AttchmentRecordVo> showMyAllFile(UserSession userSession, String type, Integer id);
 }

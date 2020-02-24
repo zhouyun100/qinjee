@@ -81,6 +81,7 @@ public class FileController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
+
     /**
      * 下载档案文件
      *
@@ -119,6 +120,19 @@ public class FileController extends BaseController {
         if (b) {
             PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach(orgIdList, getUserSession(), pageSize, currengPage);
             return new ResponseResult<>(attchmentRecordVoPageResult, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 根据人员展示文件所属
+     */
+    @RequestMapping(value = "/showMyAllFile", method = RequestMethod.POST)
+    @ApiOperation(value = "根据人员展示文件所属", notes = "hkt")
+    public ResponseResult<List<AttchmentRecordVo>> showMyAllFile(String type, Integer id) {
+        Boolean b = checkParam(type, getUserSession(), id);
+        if (b) {
+            List<AttchmentRecordVo> attchmentRecordVos = fileOperateService.showMyAllFile(getUserSession(), type, id);
+            return new ResponseResult<>(attchmentRecordVos, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }

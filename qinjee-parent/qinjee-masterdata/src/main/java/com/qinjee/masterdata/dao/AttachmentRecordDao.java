@@ -50,4 +50,6 @@ public interface AttachmentRecordDao {
     List<AttachmentRecord> selectByBuinessId(@Param("employmentId") Integer employmentId, @Param("type") String employment, @Param("companyId") Integer companyId);
 
     void updateByPrimaryKeySelectiveList(@Param("list") List< AttachmentRecord> list);
+
+    List<AttchmentRecordVo> selectByBuinessIdAndType(@Param("id") Integer id, @Param("type") String type, @Param("companyId") Integer companyId);
 }
