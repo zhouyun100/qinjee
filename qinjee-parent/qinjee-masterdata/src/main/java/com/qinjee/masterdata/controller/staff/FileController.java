@@ -177,7 +177,7 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/checkHeadImg", method = RequestMethod.POST)
     @ApiOperation(value = "验证照片是否合法", notes = "hkt")
-    public ResponseResult checkHeadImg(@RequestParam List<String> fileName) {
+    public ResponseResult checkHeadImg(@RequestBody List<String> fileName) {
         Boolean b = checkParam(fileName, getUserSession());
         if (b) {
             String s = fileOperateService.checkHeadImg(fileName, getUserSession());
@@ -208,10 +208,10 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/exportCheckFile", method = RequestMethod.POST)
     @ApiOperation(value = "导出校验文件", notes = "hkt")
-    public ResponseResult exportCheckFile(HttpServletResponse response,String type) throws IOException {
-        Boolean b = checkParam(getUserSession(), response,type);
+    public ResponseResult exportCheckFile(HttpServletResponse response) throws IOException {
+        Boolean b = checkParam(getUserSession(), response);
         if (b) {
-            fileOperateService.exportCheckFile(getUserSession(), response,type);
+            fileOperateService.exportCheckFile(getUserSession(), response);
             return null;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

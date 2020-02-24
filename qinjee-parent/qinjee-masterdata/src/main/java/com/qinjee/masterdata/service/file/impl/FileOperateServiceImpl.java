@@ -475,9 +475,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
 
 
     @Override
-    public void exportCheckFile(UserSession userSession,HttpServletResponse response,String type) throws IOException {
+    public void exportCheckFile(UserSession userSession,HttpServletResponse response) throws IOException {
         String value=null;
-        String s = userSession.getCompanyId () + type + userSession.getArchiveId ();
+        String s = userSession.getCompanyId () + "文件验证" + userSession.getArchiveId ();
         if (redisClusterService.exists ( s )) {
             value = redisClusterService.get ( s );
         } else {

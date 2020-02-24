@@ -25,6 +25,7 @@ import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
+import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -100,6 +101,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private SysDictService sysDictServiceImpl;
     @Autowired
     private PostDao postDao;
+    @Autowired
+    private IEmployeeNumberRuleService employeeNumberRuleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -298,10 +301,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                         stringBuffer.append("直接上级工号不存在");
                     }
                 }
-                if(StringUtils.isNotBlank(emplyeeNumber)){
-                    List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), emplyeeNumber);
-                    if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(employnumberList)){
-                        stringBuffer.append("此工号已被占用");
+                if("employee_number".equals(fieldVO.getFieldCode())) {
+                    if (StringUtils.isNotBlank(emplyeeNumber)) {
+                        List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), emplyeeNumber);
+                        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(employnumberList)) {
+                            stringBuffer.append("此工号已被占用");
+                        }
                     }
                 }
                 if(fieldVO.getResultMsg ()!=null) {

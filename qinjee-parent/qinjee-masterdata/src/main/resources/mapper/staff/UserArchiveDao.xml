@@ -966,7 +966,7 @@
       </foreach>
     </if>
     <if test="isContains">
-        or tua.org_id is null
+        or (tua.org_id is null and tua.is_delete=0)
     </if>
   </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
@@ -1187,7 +1187,7 @@
     where roa.is_delete = 0 and orga.company_id=#{companyId}
     )
     <if test="message !=null">
-        or arc.org_id is null
+        or (arc.org_id is null and arc.is_delete=0)
     </if>
     and arc.company_id=#{companyId}
     order by arc.archive_id
@@ -1308,6 +1308,7 @@
         t_contract_param c
         WHERE
         c.company_id = #{companyId}
+        and c.is_delete=0
         AND (
         IF
         ( c.application_scope_code LIKE '%REGULAR_EMPLOYEE%', 'REGULAR_EMPLOYEE', NULL ) = arc .user_category

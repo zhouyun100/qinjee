@@ -263,8 +263,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             }else{
                 ExceptionCast.cast ( CommonCode.FAIL );
             }
-            List<UserArchive> list1=new ArrayList<>();
-            List<UserArchive> list2=new ArrayList<>();
             List<PreEmployment> list3=new ArrayList<>();
             List<PreEmployment> list4=new ArrayList<>();
             List<CustomArchiveTableData> list5=new ArrayList<>();
@@ -316,12 +314,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveId ( archiveId );
-                                list1.add(userArchive);
+                               userArchiveDao.updateByPrimaryKeySelective(userArchive);
                             } else {
                                 userArchive.setOperatorId ( userSession.getArchiveId () );
                                 userArchive.setCompanyId ( userSession.getCompanyId () );
                                 userArchive.setArchiveStatus ( "SERVICE" );
-                                list2.add(userArchive);
+                               userArchiveDao.insertSelective(userArchive);
                             }
                                 list.add ( userArchive.getArchiveId () );
                         }
@@ -423,12 +421,6 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                     }
                 }
             }
-        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list1)){
-        userArchiveDao.updateBatch(list1);
-        }
-        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list2)){
-        userArchiveDao.insertBatch(list2);
-        }
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list3)){
         preEmploymentDao.updateBatch(list3);
         }
