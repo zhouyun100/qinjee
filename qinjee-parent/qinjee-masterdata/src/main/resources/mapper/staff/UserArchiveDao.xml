@@ -58,6 +58,19 @@
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisor_user_name" />
     <result column="employment_type" jdbcType="VARCHAR" property="employment_type" />
   </resultMap>
+    <resultMap id="noconarc" type="com.qinjee.masterdata.model.vo.staff.export.NoConArc">
+        <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
+        <result column="employee_number" jdbcType="VARCHAR" property="employee_number" />
+        <result column="org_name" jdbcType="VARCHAR" property="org_name" />
+        <result column="hire_date" jdbcType="TIMESTAMP" property="hire_date" />
+        <result column="post_name" jdbcType="VARCHAR" property="post_name" />
+        <result column="user_name" jdbcType="VARCHAR" property="user_name" />
+        <result column="business_unit_name" jdbcType="VARCHAR" property="business_unit_name" />
+        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date" />
+        <result column="probation_period" jdbcType="INTEGER" property="probation_period" />
+        <result column="user_category" jdbcType="VARCHAR" property="user_category" />
+        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date" />
+    </resultMap>
 
     <sql id="Base_Column_List">
     archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
@@ -1572,11 +1585,36 @@
         </if>
     </select>
     <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+        select *
         from t_user_archive
         where is_delete=0
         and company_id=#{companyId}
         and (id_number=#{idnumber}or employee_number=#{idnumber})
+    </select>
+    <select id="selectNoConArcByIdList" resultType="com.qinjee.masterdata.model.vo.staff.export.NoConArc" resultMap="noconarc">
+        SELECT
+        arc.archive_id,
+        arc.user_name,
+        arc.employee_number,
+        org.org_name as business_unit_name,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        arc.hire_date as hire_date,
+        arc.probation_period as probation_period,
+        arch.user_name as supervisor_user_name,
+        userCategory.dict_value as user_category
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+        where arc.archive_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and arc.is_delete=0
     </select>
 </mapper>
 

@@ -34,6 +34,10 @@ public class HeadFieldUtil {
         map.put("试用期限（月）", "probation_period");
         map.put ( "人员编号","employee_number" );
         map.put("合同标识","is_enable");
+        map.put("人员分类","user_category");
+        map.put("试用期到期日期","probation_due_date");
+        map.put("入职时间","hire_date");
+
         return map;
     }
     public static Map<String, String> getFieldCode() {

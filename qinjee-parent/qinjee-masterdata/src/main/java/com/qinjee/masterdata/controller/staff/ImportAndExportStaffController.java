@@ -277,22 +277,22 @@ public class ImportAndExportStaffController extends BaseController {
         Boolean b = checkParam(response,getUserSession (),exportArcParamVo);
         if(b){
                 List < Integer > list = exportArcParamVo.getList ();
-                Integer querySchemaId=0;
-                List < QueryScheme > list2 = querySchemeDao.selectQueryByArchiveId ( getUserSession ().getArchiveId () );
-                for (QueryScheme queryScheme : list2) {
-                    if(1==queryScheme.getIsDefault ()){
-                       querySchemaId=queryScheme.getQuerySchemeId ();
-                       break;
-                    }
-                }
+//                Integer querySchemaId=0;
+//                List < QueryScheme > list2 = querySchemeDao.selectQueryByArchiveId ( getUserSession ().getArchiveId () );
+//                for (QueryScheme queryScheme : list2) {
+//                    if(1==queryScheme.getIsDefault ()){
+//                       querySchemaId=queryScheme.getQuerySchemeId ();
+//                       break;
+//                    }
+//                }
                 List < Integer > orgIdList = exportArcParamVo.getOrgIdList ();
                 if(!CollectionUtils.isEmpty ( list )){
-                    staffImportAndExportService.exportArcFile( list,response,getUserSession (),querySchemaId);
+                    staffImportAndExportService.exportNoConArc( list,response,getUserSession ());
                 }else{
                     Boolean aBoolean = checkParam ( orgIdList );
                     if(aBoolean) {
                         List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList,userSession.getCompanyId() );
-                        staffImportAndExportService.exportArcFile ( list1, response, getUserSession (), querySchemaId );
+                        staffImportAndExportService.exportNoConArc ( list1, response, getUserSession ());
                         return null;
                     }else {
                         return  failResponseResult("参数错误");

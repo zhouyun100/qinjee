@@ -286,7 +286,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     private ExportFile getExportFile(UserSession userSession, List < Integer > archiveIdList, ExportFile exportFile, List < CustomFieldVO > orderNotIn, Integer schemaId) {
-        Map < Integer, Map < String, Object > > userArchiveListCustom;
+        Map < Integer, Map < String, Object > > userArchiveListCustom=new HashMap<>();
         StringBuilder stringBuffer = new StringBuilder ();
         String order = null;
         //根据查询方案id找到需要展示字段的id以及按顺序排序
@@ -300,23 +300,29 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         //找到tableId
 
         //拼接order
-        List < CustomFieldVO > customFields = customTableFieldDao.selectFieldByIdList ( integers2, userSession.getCompanyId (), "ARC" );
-        for (CustomFieldVO customFieldVO : customFields) {
-            if (customFieldVO.getIsSystemDefine () == 1) {
-                stringBuffer.append ( "t." ).append ( customTableFieldDao.selectFieldCodeById ( customFieldVO.getFieldId () ) + "\t" )
-                        .append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId (), schemaId ) ) ).append ( "," );
-            } else {
-                orderNotIn.add ( customFieldVO );
-                stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () + "\t" ).
-                        append ( getSort ( querySchemeSortDao.selectSortById ( customFieldVO.getFieldId (), schemaId ) ) ).append ( "," );
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(integers2)) {
+            List<CustomFieldVO> customFields = customTableFieldDao.selectFieldByIdList(integers2, userSession.getCompanyId(), "ARC");
+            for (CustomFieldVO customFieldVO : customFields) {
+                if (customFieldVO.getIsSystemDefine() == 1) {
+                    stringBuffer.append("t.").append(customTableFieldDao.selectFieldCodeById(customFieldVO.getFieldId()) + "\t")
+                            .append(getSort(querySchemeSortDao.selectSortById(customFieldVO.getFieldId(), schemaId))).append(",");
+                } else {
+                    orderNotIn.add(customFieldVO);
+                    stringBuffer.append("t.").append(customFieldVO.getFieldName() + "\t").
+                            append(getSort(querySchemeSortDao.selectSortById(customFieldVO.getFieldId(), schemaId))).append(",");
+                }
             }
+            assert order != null;
+            int i = stringBuffer.toString().lastIndexOf(",");
+            order = stringBuffer.toString().substring(0, i);
         }
-        assert order != null;
-        int i = stringBuffer.toString ().lastIndexOf ( "," );
-        order = stringBuffer.toString ().substring ( 0, i );
         //调用接口查询机构权限范围内的档案集合
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(integers1)) {
+            userArchiveListCustom = userArchiveDao.getUserArchiveListCustom(getBaseSql(orderNotIn, integers1, userSession.getCompanyId(), customTableVOS), order);
+        }else{
+            ExceptionCast.cast(CommonCode.PLAN_IS_MISTAKE);
+        }
         //进行sql查询，返回数据，档案在机构范围内
-        userArchiveListCustom = userArchiveDao.getUserArchiveListCustom ( getBaseSql ( orderNotIn, integers1, userSession.getCompanyId (), customTableVOS ), order );
         List < Integer > integers = new ArrayList <> ( userArchiveListCustom.keySet () );
         integers.removeAll ( archiveIdList );
         for (Integer integer : integers) {

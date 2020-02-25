@@ -20,9 +20,9 @@ import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomTableVO;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.export.*;
 import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
-import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
@@ -638,6 +638,40 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 HeadMapUtil.getHeadsForConWithArc (),
                 getDatesForConWithArc ( list, HeadMapUtil.getHeadsForConWithArc () ),
                 getTypeMap ( HeadMapUtil.getHeadsForConWithArc () ) );
+    }
+
+    @Override
+    public void exportNoConArc(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException {
+        String[] strings={"姓名","工号","单位","部门","岗位","入职时间","试用期限（月）","试用期到期日期","人员分类"};
+        List<String> strings1 = Arrays.asList(strings);
+        LinkedList<String> strings2 = new LinkedList<>(strings1);
+        List<NoConArc> list1=userArchiveDao.selectNoConArcByIdList(list);
+        List<Map<String,String>> maps=new ArrayList<>();
+        String format=null;
+        for (NoConArc noConArc : list1) {
+            Map<String, String> map = new LinkedHashMap<>();
+            for (String string : strings2) {
+                Class aClass = noConArc.getClass();
+                for (Field declaredField : aClass.getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    if (declaredField.getName().equals(HeadFieldUtil.getFieldMap().get(string))){
+                        String s = declaredField.getType ().toString ();
+                        if(s.contains("Date")){
+                            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+                            if(declaredField.get(noConArc)!=null) {
+                                format= simpleDateFormat.format(declaredField.get(noConArc));
+                            }
+                            map.put(string,format);
+                        }else {
+                            map.put(string, String.valueOf(declaredField.get(noConArc)));
+                        }
+                    }
+                }
+            }
+            maps.add(map);
+        }
+        ExcelUtil.download ( response,"未签合同人员", strings1,maps,
+                getTypeMap ( strings1 ) );
     }
 
     @Override

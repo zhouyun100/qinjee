@@ -3,6 +3,7 @@ package com.qinjee.masterdata.dao.staffdao.userarchivedao;
 import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
+import com.qinjee.masterdata.model.vo.staff.export.NoConArc;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -117,4 +118,6 @@ public interface UserArchiveDao {
     int updateBatch(@Param("list1") List<UserArchive> list1);
 
     List<UserArchiveVo> selectByIdNumberOrEmploy(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
+
+    List<NoConArc> selectNoConArcByIdList(@Param("list") List<Integer> list);
 }

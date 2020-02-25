@@ -112,4 +112,6 @@ public interface IStaffImportAndExportService {
     CheckImportVo importFileAndCheckFileContract(MultipartFile multipartFile, UserSession userSession) throws Exception;
 
     void exportContractWithArc(List< ContractWithArchiveVo> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException;
+
+    void exportNoConArc(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException;
 }
