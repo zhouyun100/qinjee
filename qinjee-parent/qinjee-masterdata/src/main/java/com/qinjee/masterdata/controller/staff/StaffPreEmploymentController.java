@@ -189,12 +189,8 @@ public class StaffPreEmploymentController extends BaseController {
     public ResponseResult confirmPreemployment(@RequestBody List<Integer> list) throws Exception {
         Boolean b = checkParam ( list, getUserSession () );
         if (b) {
-            try {
                 staffPreEmploymentService.confirmEmployment ( list,getUserSession ());
-            } catch (Exception e) {
-                e.printStackTrace ();
-            }
-            return ResponseResult.SUCCESS ();
+                return ResponseResult.SUCCESS ();
         }
         return failResponseResult ( "参数错误" );
     }

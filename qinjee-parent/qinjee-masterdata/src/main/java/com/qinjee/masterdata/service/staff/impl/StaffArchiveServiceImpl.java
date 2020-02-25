@@ -276,8 +276,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         if (querySchemaId != null && querySchemaId != 0) {
             return getExportFile ( userSession, archiveIdList, exportFile, orderNotIn, querySchemaId );
         } else {
-            List < ExportArcVo > exportArcVoList;
-            exportArcVoList = userArchiveDao.selectDownLoadVoList ( archiveIdList );
+            List < ExportArcVo > exportArcVoList = userArchiveDao.selectDownLoadVoList ( archiveIdList );
             userArchiveListCustom = getMap ( archiveIdList, exportArcVoList );
             exportFile.setMap ( userArchiveListCustom );
             exportFile.setTittle ( "ARC" );
@@ -296,7 +295,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         CustomTableVO customTableVO = new CustomTableVO ();
         customTableVO.setCompanyId ( userSession.getCompanyId () );
         customTableVO.setFuncCode ( "ARC" );
-        List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
+       List < CustomTableVO > customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode ( customTableVO );
         //找到tableId
 
         //拼接order
@@ -440,7 +439,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         outList.addAll ( notIn );
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
-        String b = "select distinct t.archive_id, ";
+        String b = "select  t.archive_id, ";
         String c = null;
         String d = "FROM ( select t0.*";
         for (CustomFieldVO customFieldVO : inList) {

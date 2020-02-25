@@ -560,6 +560,17 @@
         where field_id=#{integer}
         and is_delete=0
     </select>
+    <select id="selectTextCodeByName" resultType="java.lang.String">
+        select field.code
+        from t_custom_archive_field field
+        left join t_custom_archive_table tab on tab.table_id=field.table_id
+        where field.field_name=#{s}
+        and tab.is_delete=0
+        and tab.company_id=#{companyId}
+        and tab.func_code=#{funcCode}
+        and field.is_delete=0
+        group by field.code
+    </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>

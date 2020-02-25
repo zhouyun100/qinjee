@@ -642,8 +642,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     @Override
     public void exportNoConArc(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException {
-        String[] strings={"姓名","工号","单位","部门","岗位","入职时间","试用期限（月）","试用期到期日期","人员分类"};
-        List<String> strings1 = Arrays.asList(strings);
+        List<String> strings1 = HeadMapUtil.getHeadsForNoConArc();
         LinkedList<String> strings2 = new LinkedList<>(strings1);
         List<NoConArc> list1=userArchiveDao.selectNoConArcByIdList(list);
         List<Map<String,String>> maps=new ArrayList<>();
@@ -670,7 +669,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             }
             maps.add(map);
         }
-        ExcelUtil.download ( response,"未签合同人员", strings1,maps,
+        ExcelUtil.download ( response,"NOCONARC", strings1,maps,
                 getTypeMap ( strings1 ) );
     }
 
@@ -873,6 +872,11 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 String date = isDate ( String.valueOf ( o ) );
                 if (date != null) {
                     o = date;
+                }
+                String type=customTableFieldDao.selectTextCodeByName(head,companyId,"ARC");
+                if(StringUtils.isNotBlank(type)){
+                    SysDict sysDict = sysDictServiceImpl.searchSysDictByTypeAndCode(type, String.valueOf(o));
+                    o=sysDict.getDictValue();
                 }
                 stringMap.put ( head, String.valueOf ( o ) );
                 if ("任职类型".equals ( head )) {

@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.graphbuilder.struc.LinkedList;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
@@ -38,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -374,8 +376,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     @Override
     public List<CustomTableVO> searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO) {
         customTableVO.setIsEnable(Short.valueOf("1"));
-        List<CustomTableVO> customTableList = customTableFieldDao.searchCustomTableListByCompanyIdAndFuncCode(customTableVO);
-        return customTableList;
+        List<CustomTableVO> customTableVOS = customTableFieldDao.searchCustomTableListByCompanyIdAndFuncCode(customTableVO);
+        return customTableVOS;
     }
 
     @Override

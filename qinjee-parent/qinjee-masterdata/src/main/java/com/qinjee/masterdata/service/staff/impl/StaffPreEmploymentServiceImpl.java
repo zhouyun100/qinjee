@@ -107,15 +107,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                       ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
                   }else{
                       UserArchive userArchive = new UserArchive ();
-                      preEmployment.setEmploymentState ( CHANGSTATUS_READY );
                       BeanUtils.copyProperties ( preEmployment, userArchive );
-                      Integer userId = userLoginService.getUserIdByPhone ( phone,userSession.getCompanyId () );
+                      if(StringUtils.isNotBlank(phone)) {
+                          Integer userId = userLoginService.getUserIdByPhone(phone, userSession.getCompanyId());
+                          userArchive.setUserId ( userId );
+                      }
                       //目前一家公司只有一个参数表
-                      userArchive.setUserId ( userId );
-                      userArchiveDao.insertSelective ( userArchive );
-
                       checkEmployeeNumber ( userSession,userArchive );
-                      userArchiveDao.updateByPrimaryKeySelective ( userArchive );
+                      userArchiveDao.insertSelective ( userArchive );
                      //将附件信息同步到档案
                       List<AttachmentRecord> list=attachmentRecordDao.selectByBuinessId(preEmployment.getEmploymentId (),"employment",userSession.getCompanyId ());
                       for (AttachmentRecord attachmentRecord : list) {
@@ -124,7 +123,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                           attachmentRecord.setBusinessModule ( "ARC" );
                           attachmentRecord.setOperatorId ( userSession.getArchiveId () );
                       }
-                      attachmentRecordDao.updateByPrimaryKeySelectiveList (list);
+                      if(CollectionUtils.isNotEmpty(list)) {
+                          attachmentRecordDao.updateByPrimaryKeySelectiveList(list);
+                      }
                   }
                 }
             }

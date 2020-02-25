@@ -131,6 +131,16 @@ public class HeadMapUtil {
         keyList.addAll(Arrays.asList(strings));
         return keyList;
     }
+    /**
+     * 未签合同
+     * @return
+     */
+    public static List<String> getHeadsForNoConArc(){
+        List<String> keyList=new LinkedList <> (  );
+        String[] strings={"姓名","工号","单位","部门","岗位","入职时间","试用期限（月）","试用期到期日期","人员分类"};
+        keyList.addAll(Arrays.asList(strings));
+        return keyList;
+    }
     public static  List<String> getBusinessHead(String tableName){
         if("教育经历".equals(tableName)){
             return getHeadsForEduLine();

@@ -18,6 +18,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public interface CustomTableFieldDao {
      * @param customTableVO
      * @return
      */
-    List < CustomTableVO > searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO);
+    LinkedList < CustomTableVO > searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO);
 
     /**
      * 查询表对应的组信息列表
@@ -296,6 +297,8 @@ public interface CustomTableFieldDao {
     CustomFieldVO selectFieldByCodeAndFuncCodeAndComapnyId(@Param("s") String s, @Param("arc") String arc, @Param("companyId") Integer companyId);
 
     CustomFieldVO selectTextTypeByFieldId(@Param("integer") Integer integer);
+
+    String selectTextCodeByName(@Param("s") String s, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 }
 
 
