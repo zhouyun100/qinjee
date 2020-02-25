@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.service.file;
 
+import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
@@ -71,5 +72,5 @@ public interface IFileOperateService {
 
     void uploadImg(MultipartFile[] files, UserSession userSession);
 
-    List<AttchmentRecordVo> showMyAllFile(UserSession userSession, String type, Integer id);
+    List<AttachmentRecord> showMyAllFile(UserSession userSession, String type, Integer id);
 }

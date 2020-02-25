@@ -2,6 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
 import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
@@ -128,10 +129,10 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showMyAllFile", method = RequestMethod.POST)
     @ApiOperation(value = "根据人员展示文件所属", notes = "hkt")
-    public ResponseResult<List<AttchmentRecordVo>> showMyAllFile(String type, Integer id) {
+    public ResponseResult<List<AttachmentRecord>> showMyAllFile(String type, Integer id) {
         Boolean b = checkParam(type, getUserSession(), id);
         if (b) {
-            List<AttchmentRecordVo> attchmentRecordVos = fileOperateService.showMyAllFile(getUserSession(), type, id);
+            List<AttachmentRecord> attchmentRecordVos = fileOperateService.showMyAllFile(getUserSession(), type, id);
             return new ResponseResult<>(attchmentRecordVos, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

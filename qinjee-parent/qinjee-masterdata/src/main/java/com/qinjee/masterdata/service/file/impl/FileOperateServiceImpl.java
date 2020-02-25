@@ -103,7 +103,7 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public List<AttchmentRecordVo> showMyAllFile(UserSession userSession, String type, Integer id) {
+    public List<AttachmentRecord> showMyAllFile(UserSession userSession, String type, Integer id) {
          return  attachmentRecordDao.selectByBuinessIdAndType(id,type,userSession.getCompanyId());
     }
 
