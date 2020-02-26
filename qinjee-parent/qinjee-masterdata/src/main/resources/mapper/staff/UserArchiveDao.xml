@@ -1313,26 +1313,8 @@
       <foreach collection="orgId" item='item' open="(" close=")" separator=",">
         #{item}
       </foreach>
-        AND arc.user_category IS NOT NULL
-        AND EXISTS (
-        SELECT
-        *
-        FROM
-        t_contract_param c
-        WHERE
-        c.company_id = #{companyId}
-        and c.is_delete=0
-        AND (
-        IF
-        ( c.application_scope_code LIKE '%REGULAR_EMPLOYEE%', 'REGULAR_EMPLOYEE', NULL ) = arc .user_category
-        OR
-        IF
-        ( c.application_scope_code LIKE '%INTERNSHIP%', 'INTERNSHIP', NULL ) = arc .user_category
-        OR
-        IF
-        ( c.application_scope_code LIKE '%ON_TRAIL%', 'ON_TRAIL', NULL ) = arc.user_category)
-        )
         and arc.archive_status='SERVICE'
+        AND NOT EXISTS (SELECT 1 FROM t_labor_contract  WHERE archive_id IN (SELECT archive_id FROM t_user_archive WHERE org_id IN (1105) AND archive_status='SERVICE' ) )
         group by arc.archive_id
   </select>
 
