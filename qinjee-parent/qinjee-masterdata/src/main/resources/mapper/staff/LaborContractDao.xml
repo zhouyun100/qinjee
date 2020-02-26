@@ -451,67 +451,76 @@
   </select>
   <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
     SELECT
-    o.orgName,
-    o.orgId,
-    o.businessUnitName,
-    COUNT(DISTINCT(o.archive_id)) staffCount,
-    COUNT(DISTINCT(o.contract_archive_id)) signCount,
-    SUM(o.noSignCount) noSignCount,
-    SUM(o.delineCount) delineCount
+    o2.orgName,
+    o2.orgId,
+    o2.businessUnitName,
+    COUNT(DISTINCT (o2.archive_id)) staffCount,
+    COUNT(DISTINCT (o2.contract_archive_id)) signCount,
+    SUM(o2.noSignCount) noSignCount,
+    COUNT(IF(o2.delineCount > 0, 1, NULL)) delineCount
     FROM
     (SELECT
-    v.orgName,
-    v.orgId orgId,
-    v.businessUnitName,
-    v.contract_end_date,
-    v.archive_id,
-    v.contract_archive_id,			--
-    CASE
-    WHEN v.noSignCount > 0
-    THEN SUM(1)
-    ELSE SUM(0)
-    END noSignCount,
-    CASE
-    WHEN
-    (SELECT
-    remember_days
-    FROM
-    t_contract_param
-    WHERE company_id = #{companyId}
-    LIMIT 1) > DATEDIFF(v.contract_end_date, CURDATE())
-    AND DATEDIFF(v.contract_end_date, CURDATE()) >= 0
-    THEN SUM(1)
-    ELSE SUM(0)
-    END delineCount
-    FROM
-    (SELECT
-    org.org_id orgId,
-    a.archive_id,
-    contract.archive_id contract_archive_id,
-    contract.contract_id,
-    orga.org_name businessUnitName,
-    contract.contract_end_date,
-    org.org_name orgName,
-    COUNT(a.archive_id) - COUNT(contract.archive_id) noSignCount
-    FROM
-    t_user_archive a
-    LEFT JOIN t_organization org
-    ON org.org_id = a.org_id
-    LEFT JOIN t_organization orga
-    ON orga.org_id = a.business_unit_id
-    LEFT JOIN t_labor_contract contract
-    ON a.archive_id = contract.archive_id
-    AND contract.contract_state != '解除'
-    WHERE a.is_delete = 0 AND a.archive_status ='service'
-    AND a.org_id IN
-        <foreach collection="list" item="orgId" open="(" close=")" separator=",">
-         #{orgId}
-         </foreach>
-    GROUP BY a.org_id,a.archive_id,contract.contract_id
-    ) v
-    GROUP BY v.orgId, v.archive_id,v.contract_id
-    ) o
-    GROUP BY o.orgId
+        o.orgName,
+        o.orgId,
+        o.businessUnitName,
+        o.archive_id,
+        o.contract_archive_id,
+        o.noSignCount,
+        SUM(o.delineCount) delineCount
+         FROM
+        (SELECT
+        v.orgName,
+        v.orgId orgId,
+        v.businessUnitName,
+        v.contract_end_date,
+        v.archive_id,
+        v.contract_archive_id,
+        CASE
+            WHEN v.noSignCount > 0
+            THEN 1
+            ELSE 0
+            END noSignCount,
+        CASE
+            WHEN
+            (SELECT
+            remember_days
+            FROM
+            t_contract_param
+            WHERE company_id = #{companyId}
+            LIMIT 1) > DATEDIFF(v.contract_end_date, CURDATE())
+            AND DATEDIFF(v.contract_end_date, CURDATE()) >= 0
+            THEN 1
+            ELSE 0
+            END delineCount
+        FROM
+        (SELECT
+            org.org_id orgId,
+            a.archive_id,
+            contract.archive_id contract_archive_id,
+            contract.contract_id,
+            orga.org_name businessUnitName,
+            contract.contract_end_date,
+            org.org_name orgName,
+            COUNT(a.archive_id) - COUNT(contract.archive_id) noSignCount
+            FROM
+            t_user_archive a
+            LEFT JOIN t_organization org
+            ON org.org_id = a.org_id
+            LEFT JOIN t_organization orga
+            ON orga.org_id = a.business_unit_id
+            LEFT JOIN t_labor_contract contract
+            ON a.archive_id = contract.archive_id
+            AND contract.contract_state != '解除'
+            WHERE a.is_delete = 0
+            AND a.archive_status = 'service'
+            AND a.org_id IN
+            <foreach collection="list" item="orgId" open="(" close=")" separator=",">
+              #{orgId}
+            </foreach>
+            GROUP BY a.org_id,a.archive_id,contract.contract_id) v
+        GROUP BY v.orgId,v.archive_id,v.contract_id) o
+        GROUP BY o.orgId,o.archive_id) o2
+    GROUP BY o2.orgId
   </select>
   <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select
