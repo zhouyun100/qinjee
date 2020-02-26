@@ -52,4 +52,6 @@ public interface CustomArchiveTableDataDao {
     List< CustomArchiveTableData> selectByBusinessIdAndCompanyId(@Param("employmentId") Integer employmentId, @Param("companyId") Integer companyId);
 
     int insertBatch(@Param("list5") List<CustomArchiveTableData> list5);
+
+    List<CustomArchiveTableData> selectByCompanyIdAndBusinessId(@Param("companyId") Integer companyId, @Param("employmentId") Integer employmentId);
 }

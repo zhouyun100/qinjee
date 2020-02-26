@@ -299,6 +299,8 @@ public interface CustomTableFieldDao {
     CustomFieldVO selectTextTypeByFieldId(@Param("integer") Integer integer);
 
     String selectTextCodeByName(@Param("s") String s, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+
+    Integer selectFieldIdByFieldIdAndFunccode(@Param("key") Integer key, @Param("companyId") Integer companyId);
 }
 
 

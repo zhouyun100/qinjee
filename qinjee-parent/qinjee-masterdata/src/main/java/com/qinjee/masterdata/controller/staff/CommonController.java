@@ -374,7 +374,7 @@ public class CommonController extends BaseController {
         Boolean b = checkParam ( tableId, businessId );
         if (b) {
             List < CustomTableVO > list = new ArrayList <> ();
-            CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId, userSession );
+            CustomTableVO customTableVO = customTableFieldService.searchCustomTableGroupFieldListByTableId ( tableId, getUserSession() );
              List < Map < Integer, String > > mapList = staffCommonService.selectValue ( tableId, businessId );
             for (int i = 0; i < mapList.size (); i++) {
                 CustomTableVO customTableVO1 = customTableFieldService.handlerCustomTableGroupFieldList ( customTableVO, mapList.get ( i ), i );

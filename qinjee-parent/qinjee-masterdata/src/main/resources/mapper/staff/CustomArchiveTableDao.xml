@@ -270,4 +270,13 @@
     AND tab.company_id=#{companyId}
     and tab.is_system_define=0
   </select>
+  <select id="selectTabIdByTabIdAndFuncCode" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table
+    where is_delete=0
+    and func_code="ARC"
+    and company_id=#{companyId}
+    and `table_name` in (select `table_name` from  t_custom_archive_table where table_id=#{tableId} and is_delete=0 and func_code="PRE")
+
+  </select>
 </mapper>

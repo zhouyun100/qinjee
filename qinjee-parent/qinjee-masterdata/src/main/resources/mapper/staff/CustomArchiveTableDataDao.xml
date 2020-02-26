@@ -304,4 +304,12 @@
     and business_id=#{employmentId}
     and is_delete=0
   </select>
+  <select id="selectByCompanyIdAndBusinessId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from  t_custom_archive_table_data
+    where is_delete=0
+    and business_id=#{employmentId}
+    and table_id in
+    (select table_id from  t_custom_archive_table where company_id=#{companyId} and is_delete=0 and func_code="PRE")
+  </select>
 </mapper>

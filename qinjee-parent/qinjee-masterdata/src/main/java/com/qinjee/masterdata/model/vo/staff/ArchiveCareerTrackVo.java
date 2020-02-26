@@ -26,9 +26,10 @@ public class ArchiveCareerTrackVo implements Serializable {
     /** 人员分类 */
     private String userCategory;
     /** 单位 */
+    @NotNull
     private Integer businessUnitId;
     /** 单位 */
-    @NotNull
+
     private String businessUnitName;
     /** 部门 */
     @NotNull

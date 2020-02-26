@@ -517,8 +517,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
         ExportFile exportFile = staffArchiveService.selectArchiveByQueryScheme ( userSession, list, querySchemaId );
         for (Map.Entry < Integer, Map < String, Object > > integerMapEntry : exportFile.getMap ().entrySet ()) {
             map = userArchiveDao.selectTransMessage ( integerMapEntry.getKey () );
-            map.putAll ( integerMapEntry.getValue () );
-            integerMapEntry.setValue ( map );
+            integerMapEntry.getValue().putAll(map);
         }
         if ( null!=querySchemaId || 0!=querySchemaId) {
             headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );

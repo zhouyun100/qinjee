@@ -354,8 +354,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         ArchiveCareerTrack archiveCareerTrack = new ArchiveCareerTrack ();
         BeanUtils.copyProperties ( archiveCareerTrackVo, archiveCareerTrack );
         archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
-        Integer unitId = organizationDao.selectBusinessUnitIdByName ( archiveCareerTrackVo.getBusinessUnitName (), userSession.getCompanyId () );
-        archiveCareerTrack.setAfterBusinessUnitId ( unitId );
+//        Integer unitId = organizationDao.selectBusinessUnitIdByName ( archiveCareerTrackVo.getBusinessUnitName (), userSession.getCompanyId () );
+//        archiveCareerTrack.setAfterBusinessUnitId ( unitId );
+        archiveCareerTrack.setAfterBusinessUnitId(archiveCareerTrackVo.getBusinessUnitId());
         archiveCareerTrack.setAfterOrgId ( archiveCareerTrackVo.getOrgId () );
         archiveCareerTrack.setAfterPostId ( archiveCareerTrackVo.getPostId () );
         archiveCareerTrack.setAfterPositionId ( archiveCareerTrackVo.getPositionId () );
@@ -429,27 +430,37 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List < CustomFieldVO > inList = new ArrayList <> ();
         List < CustomFieldVO > outList = new ArrayList <> ();
         List < CustomFieldVO > list = customTableFieldDao.selectFieldByIdList ( integers, companyId, "ARC" );
-        for (CustomFieldVO customFieldVO : list) {
-            if (customFieldVO.getIsSystemDefine () == 0) {
-                outList.add ( customFieldVO );
-            } else {
-                inList.add ( customFieldVO );
-            }
-        }
-        outList.addAll ( notIn );
+        list.addAll(notIn);
+
+//        for (CustomFieldVO customFieldVO : list) {
+//            if (customFieldVO.getIsSystemDefine () == 0) {
+//                outList.add ( customFieldVO );
+//            } else {
+//                inList.add ( customFieldVO );
+//            }
+//        }
+//        outList.addAll ( notIn );
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
         String b = "select  t.archive_id, ";
         String c = null;
         String d = "FROM ( select t0.*";
-        for (CustomFieldVO customFieldVO : inList) {
-            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
+        for (CustomFieldVO customFieldVO : list) {
+           if(customFieldVO.getIsSystemDefine()==0){
+               stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
+           } else{
+               stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
+           }
         }
-        if (!CollectionUtils.isEmpty ( outList )) {
-            for (CustomFieldVO customFieldVO : outList) {
-                stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
-            }
-        }
+
+//        for (CustomFieldVO customFieldVO : inList) {
+//            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
+//        }
+//        if (!CollectionUtils.isEmpty ( outList )) {
+//            for (CustomFieldVO customFieldVO : outList) {
+//                stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
+//            }
+//        }
         int i1 = stringBuffer.toString ().lastIndexOf ( "," );
         a = stringBuffer.toString ().substring ( 0, i1 );
         if (CollectionUtils.isEmpty ( outList )) {

@@ -5,15 +5,20 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
+import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
+import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
+import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.model.request.UserSession;
@@ -29,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -65,6 +67,12 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private CompanyInfoDao companyInfoDao;
     @Autowired
     private AttachmentRecordDao attachmentRecordDao;
+    @Autowired
+    private CustomArchiveTableDataDao customArchiveTableDataDao;
+    @Autowired
+    private CustomArchiveTableDao customArchiveTableDao;
+    @Autowired
+    private IStaffCommonService staffCommonService;
 
 
     /**
@@ -76,7 +84,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo)  {
+    public void insertStatusChange(UserSession userSession, StatusChangeVo statusChangeVo) throws IllegalAccessException {
         String changeState = statusChangeVo.getChangeState ();
         List < Integer > preEmploymentList = statusChangeVo.getPreEmploymentList ();
         for (Integer preEmploymentId : preEmploymentList) {
@@ -105,26 +113,56 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                   List<UserArchiveVo> userArchiveVo=userArchiveDao.selectByIdNumber ( preEmployment.getIdNumber (),userSession.getCompanyId () );
                   if(CollectionUtils.isNotEmpty ( userArchiveVo )){
                       ExceptionCast.cast ( CommonCode.STAFF_IS_EXIST );
-                  }else{
-                      UserArchive userArchive = new UserArchive ();
-                      BeanUtils.copyProperties ( preEmployment, userArchive );
-                      if(StringUtils.isNotBlank(phone)) {
+                  }else {
+                      UserArchive userArchive = new UserArchive();
+                      BeanUtils.copyProperties(preEmployment, userArchive);
+                      if (StringUtils.isNotBlank(phone)) {
                           Integer userId = userLoginService.getUserIdByPhone(phone, userSession.getCompanyId());
-                          userArchive.setUserId ( userId );
+                          userArchive.setUserId(userId);
                       }
                       //目前一家公司只有一个参数表
-                      checkEmployeeNumber ( userSession,userArchive );
-                      userArchiveDao.insertSelective ( userArchive );
-                     //将附件信息同步到档案
-                      List<AttachmentRecord> list=attachmentRecordDao.selectByBuinessId(preEmployment.getEmploymentId (),"employment",userSession.getCompanyId ());
+                      checkEmployeeNumber(userSession, userArchive);
+                      userArchiveDao.insertSelective(userArchive);
+                      //将附件信息同步到档案
+                      List<AttachmentRecord> list = attachmentRecordDao.selectByBuinessId(preEmployment.getEmploymentId(), "employment", userSession.getCompanyId());
                       for (AttachmentRecord attachmentRecord : list) {
-                          attachmentRecord.setBusinessType ( "archive" );
-                          attachmentRecord.setBusinessId ( userArchive.getArchiveId () );
-                          attachmentRecord.setBusinessModule ( "ARC" );
-                          attachmentRecord.setOperatorId ( userSession.getArchiveId () );
+                          attachmentRecord.setBusinessType("archive");
+                          attachmentRecord.setBusinessId(userArchive.getArchiveId());
+                          attachmentRecord.setBusinessModule("ARC");
+                          attachmentRecord.setOperatorId(userSession.getArchiveId());
                       }
-                      if(CollectionUtils.isNotEmpty(list)) {
+                      if (CollectionUtils.isNotEmpty(list)) {
                           attachmentRecordDao.updateByPrimaryKeySelectiveList(list);
+                      }
+                      //将附件子集信息也进行同步
+                      //通过companyId与preId找到自定义表记录
+                      List<CustomArchiveTableData> list1 = customArchiveTableDataDao.
+                              selectByCompanyIdAndBusinessId(userSession.getCompanyId(), preEmployment.getEmploymentId());
+                      if (CollectionUtils.isNotEmpty(list1)) {
+                          for (CustomArchiveTableData customArchiveTableData : list1) {
+                              //查询出id与值进行对应替换
+                              List<Map<Integer, String>> mapList =
+                                      staffCommonService.selectValue(customArchiveTableData.getTableId(), customArchiveTableData.getBusinessId());
+                              for (Map<Integer, String> stringMap : mapList) {
+                                  CustomArchiveTableDataVo customArchiveTableDataVo = new CustomArchiveTableDataVo();
+                                  //根据预入职的table_id找到对应的档案table_id
+                                  Integer tabId = customArchiveTableDao.selectTabIdByTabIdAndFuncCode(customArchiveTableData.getTableId(),userSession.getCompanyId());
+                                  customArchiveTableDataVo.setBusinessId(userArchive.getArchiveId());
+                                  customArchiveTableDataVo.setTableId(tabId);
+                                  List<CheckCustomFieldVO> list3=new ArrayList<>();
+                                  for (Map.Entry<Integer, String> integerStringEntry : stringMap.entrySet()) {
+                                      if(integerStringEntry.getKey()!=null && integerStringEntry.getKey()!=-1) {
+                                          CheckCustomFieldVO checkCustomFieldVO = new CheckCustomFieldVO();
+                                          checkCustomFieldVO.setFieldValue(integerStringEntry.getValue());
+                                          Integer fieldId = customTableFieldDao.selectFieldIdByFieldIdAndFunccode(integerStringEntry.getKey(), userSession.getCompanyId());
+                                          checkCustomFieldVO.setFieldId(fieldId);
+                                          list3.add(checkCustomFieldVO);
+                                      }
+                                  }
+                                  customArchiveTableDataVo.setCustomFieldVOList(list3);
+                                  staffCommonService.updateCustomArchiveTableData(customArchiveTableDataVo);
+                              }
+                          }
                       }
                   }
                 }
@@ -296,7 +334,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void confirmEmployment(List < Integer > list, UserSession userSession){
+    public void confirmEmployment(List < Integer > list, UserSession userSession) throws IllegalAccessException {
         StatusChangeVo statusChangeVo = new StatusChangeVo ();
         statusChangeVo.setPreEmploymentList ( list );
         statusChangeVo.setAbandonReason ( "" );

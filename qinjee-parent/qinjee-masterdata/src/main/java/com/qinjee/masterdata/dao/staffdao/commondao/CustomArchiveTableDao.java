@@ -52,4 +52,6 @@ public interface CustomArchiveTableDao {
 
 
     List< Integer> selectFieldIdNotInside(Integer companyId);
+
+    Integer selectTabIdByTabIdAndFuncCode(@Param("tableId") Integer tableId, @Param("companyId") Integer companyId);
 }

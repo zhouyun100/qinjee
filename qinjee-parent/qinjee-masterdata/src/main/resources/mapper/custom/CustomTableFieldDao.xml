@@ -571,6 +571,18 @@
         and field.is_delete=0
         group by field.code
     </select>
+    <select id="selectFieldIdByFieldIdAndFunccode" resultType="java.lang.Integer">
+        select field_id
+        from t_custom_archive_field
+        where is_delete=0
+        and field_name in
+        (select field_name from t_custom_archive_field where field_id=#{key} and is_delete=0)
+        and table_id in
+        (select table_id from t_custom_archive_table where company_id=#{companyId} and func_code="ARC")
+
+
+
+    </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
