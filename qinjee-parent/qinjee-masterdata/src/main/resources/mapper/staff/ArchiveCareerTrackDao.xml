@@ -36,22 +36,34 @@
     <!-- 查询所有数据 -->
     <select id="selectCareerTrack"  resultType="com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo" >
         SELECT
-        arc.archive_id as archiveId,
-        arc.user_category as userCategory,
-        orga.org_name as businssUnitName,
-        org.org_name as orgName,
-        pos.position_name as positionName,
-        post.post_name as postName,
-        track.change_type as changeType,
-        track.change_date as changeDate,
-        track.change_reason as changeReason
-        FROM t_archive_career_track track
-        left join t_user_archive arc on arc.archive_id=track.archive_id and arc.is_delete=0
-        left join t_organization org on org.org_id = track.before_org_id and org.is_enable=1
-        left join t_organization orga on orga.org_id = track.before_business_unit_id and  orga.is_enable=1
-        left join t_post post on post.post_id = track.before_post_id and post.is_enable=1 and post.is_delete=0
-        left join t_position pos on pos.position_id = track.before_position_id and pos.is_delete=0
-        where track.archive_id=#{id}
+            arc.archive_id AS archiveId,
+            userCategory.dict_value AS userCategory,
+            orga.org_name AS businssUnitName,
+            org.org_name AS orgName,
+            pos.position_name AS positionName,
+            post.post_name AS postName,
+            changeType.dict_value AS changeType,
+            track.change_date AS changeDate,
+            track.change_reason AS changeReason
+        FROM
+            t_archive_career_track track
+            LEFT JOIN t_user_archive arc ON arc.archive_id = track.archive_id
+            AND arc.is_delete = 0
+            LEFT JOIN t_organization org ON org.org_id = track.after_org_id
+            AND org.is_enable = 1
+            LEFT JOIN t_organization orga ON orga.org_id = track.after_business_unit_id
+            AND orga.is_enable = 1
+            LEFT JOIN t_post post ON post.post_id = track.after_post_id
+            AND post.is_enable = 1
+            AND post.is_delete = 0
+            LEFT JOIN t_position pos ON pos.position_id = track.after_position_id
+            AND pos.is_delete = 0
+            LEFT JOIN t_sys_dict userCategory ON userCategory.dict_code = track.after_user_category
+            AND userCategory.dict_type = 'USER_CATEGORY' AND userCategory.is_delete = 0
+            LEFT JOIN t_sys_dict changeType ON changeType.dict_code = track.change_type AND changeType.dict_type = 'ARCHIVE_CHANGE_TYPE'
+            AND changeType.is_delete = 0
+        WHERE
+            track.archive_id = #{id}
     </select>
 
     <!-- 插入数据 -->
@@ -75,6 +87,9 @@
             </if>
             <if test="beforeOrgId != null">
                 before_orgId,
+            </if>
+            <if test="afterOrgId != null">
+                after_orgId,
             </if>
             <if test="afterPostId != null">
                 after_post_id,
@@ -116,6 +131,9 @@
             </if>
             <if test="beforeOrgId != null">
                 #{beforeOrgId},
+            </if>
+            <if test="afterOrgId != null">
+                #{afterOrgId},
             </if>
             <if test="afterPostId != null">
                 #{afterPostId},

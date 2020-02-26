@@ -524,16 +524,8 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo) {
-        StringBuilder stringBuilder=new StringBuilder (  );
-        CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData ();
-
-        BeanUtils.copyProperties ( customArchiveTableDataVo, customArchiveTableData );
-        List < CheckCustomFieldVO > customFieldVOList = customArchiveTableDataVo.getCustomFieldVOList ();
-        for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
-           stringBuilder.append ( "@@" ).append ( checkCustomFieldVO.getFieldId () ).append ( "@@:" ).append ( checkCustomFieldVO.getFieldValue () );
-        }
-           customArchiveTableData.setBigData ( stringBuilder.toString () );
-            if(null ==customArchiveTableData.getId()) {
+        CustomArchiveTableData customArchiveTableData = getCustomArchiveTableData(customArchiveTableDataVo);
+        if(null ==customArchiveTableData.getId()) {
                 customArchiveTableData.setCreateTime ( new Date () );
                 customArchiveTableData.setOperatorId(1);
                 customArchiveTableDataDao.insertSelective ( customArchiveTableData );
@@ -577,7 +569,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
             if (!CollectionUtils.isEmpty ( list1)) {
                 for (int j = 0; j < list1.size (); j++) {
                     if (Strings.isNotBlank ( list1.get(j).getBigData () )) {
-                        Map < Integer, String > map = new HashMap <> ();
+                        Map < Integer, String > map = new LinkedHashMap<>();
                         String[] split = list1.get(j).getBigData ().split ( "@@" );
                         for (int i = 1; i < split.length; i = i + 2) {
                             map.put ( Integer.parseInt ( split[i] ), split[i + 1].split ( ":" )[1] );
@@ -653,9 +645,38 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public void updateCustomArchiveTableDatas(List < CustomArchiveTableDataVo > list) {
+        //先逻辑删除所有相关的表记录
+        HashSet<Integer> set = new HashSet<>();
         for (CustomArchiveTableDataVo customArchiveTableDataVo : list) {
-            updateCustomArchiveTableData(customArchiveTableDataVo);
+            set.add(customArchiveTableDataVo.getTableId());
         }
+        ArrayList<Integer> integers = new ArrayList<>(set);
+        customArchiveTableDataDao.deleteByBussinessIdAndTableId(list.get(0).getBusinessId(),integers);
+        //更新的时候将is_delete更新过来
+        for (CustomArchiveTableDataVo customArchiveTableDataVo : list) {
+            CustomArchiveTableData customArchiveTableData = getCustomArchiveTableData(customArchiveTableDataVo);
+            if(null ==customArchiveTableData.getId()) {
+                customArchiveTableData.setCreateTime ( new Date () );
+                customArchiveTableData.setOperatorId(1);
+                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
+            } else {
+                customArchiveTableData.setUpdateTime ( new Date (  ) );
+                customArchiveTableData.setIsDelete(0);
+                customArchiveTableDataDao.updateByPrimaryKeySelective(customArchiveTableData);
+            }
+        }
+    }
+
+    private CustomArchiveTableData getCustomArchiveTableData(CustomArchiveTableDataVo customArchiveTableDataVo) {
+        StringBuilder stringBuilder = new StringBuilder();
+        CustomArchiveTableData customArchiveTableData = new CustomArchiveTableData();
+        BeanUtils.copyProperties(customArchiveTableDataVo, customArchiveTableData);
+        List<CheckCustomFieldVO> customFieldVOList = customArchiveTableDataVo.getCustomFieldVOList();
+        for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
+            stringBuilder.append("@@").append(checkCustomFieldVO.getFieldId()).append("@@:").append(checkCustomFieldVO.getFieldValue());
+        }
+        customArchiveTableData.setBigData(stringBuilder.toString());
+        return customArchiveTableData;
     }
 
 }

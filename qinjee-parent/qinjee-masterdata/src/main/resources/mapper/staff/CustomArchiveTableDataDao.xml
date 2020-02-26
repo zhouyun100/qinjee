@@ -312,4 +312,13 @@
     and table_id in
     (select table_id from  t_custom_archive_table where company_id=#{companyId} and is_delete=0 and func_code="PRE")
   </select>
+  <update id="deleteByBussinessIdAndTableId">
+    update t_custom_archive_table_data
+    set is_delete=1
+    where business_id=#{businessId}
+    and table_id in
+    <foreach collection="integers" item="item" open="(" separator=";" close=")">
+      #{item}
+    </foreach>
+  </update>
 </mapper>

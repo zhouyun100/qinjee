@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,4 +55,6 @@ public interface CustomArchiveTableDataDao {
     int insertBatch(@Param("list5") List<CustomArchiveTableData> list5);
 
     List<CustomArchiveTableData> selectByCompanyIdAndBusinessId(@Param("companyId") Integer companyId, @Param("employmentId") Integer employmentId);
+
+    void deleteByBussinessIdAndTableId(@Param("businessId") Integer businessId, @Param("integers") ArrayList<Integer> integers);
 }

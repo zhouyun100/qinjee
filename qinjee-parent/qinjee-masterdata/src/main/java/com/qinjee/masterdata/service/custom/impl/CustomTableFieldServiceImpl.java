@@ -569,7 +569,6 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                 }
             }
             if (StringUtils.isNotBlank(mapValue.get(-index-1))) {
-
                 customTableVO.setBigDataId(Integer.parseInt(mapValue.get(-index-1)));
             }
         }

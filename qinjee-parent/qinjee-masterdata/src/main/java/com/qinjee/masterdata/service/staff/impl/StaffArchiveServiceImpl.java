@@ -354,8 +354,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         ArchiveCareerTrack archiveCareerTrack = new ArchiveCareerTrack ();
         BeanUtils.copyProperties ( archiveCareerTrackVo, archiveCareerTrack );
         archiveCareerTrack.setOperatorId ( userSession.getArchiveId () );
-//        Integer unitId = organizationDao.selectBusinessUnitIdByName ( archiveCareerTrackVo.getBusinessUnitName (), userSession.getCompanyId () );
-//        archiveCareerTrack.setAfterBusinessUnitId ( unitId );
         archiveCareerTrack.setAfterBusinessUnitId(archiveCareerTrackVo.getBusinessUnitId());
         archiveCareerTrack.setAfterOrgId ( archiveCareerTrackVo.getOrgId () );
         archiveCareerTrack.setAfterPostId ( archiveCareerTrackVo.getPostId () );
