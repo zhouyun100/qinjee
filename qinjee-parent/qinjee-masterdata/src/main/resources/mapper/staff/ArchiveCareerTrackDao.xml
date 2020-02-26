@@ -86,10 +86,10 @@
                 after_business_unit_id,
             </if>
             <if test="beforeOrgId != null">
-                before_orgId,
+                before_org_id,
             </if>
             <if test="afterOrgId != null">
-                after_orgId,
+                after_org_id,
             </if>
             <if test="afterPostId != null">
                 after_post_id,

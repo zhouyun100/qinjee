@@ -574,7 +574,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         for (int i = 1; i < split.length; i = i + 2) {
                             map.put ( Integer.parseInt ( split[i] ), split[i + 1].split ( ":" )[1] );
                         }
-                        map.put ( -j-1,String.valueOf (list1.get(j).getId ()) );
+                        map.put (-1,String.valueOf (list1.get(j).getId ()) );
                         list.add ( map );
                     }
 

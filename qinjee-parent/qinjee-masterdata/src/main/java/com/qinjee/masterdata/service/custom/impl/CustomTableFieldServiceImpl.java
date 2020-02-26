@@ -556,7 +556,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
     }
 
     @Override
-    public CustomTableVO handlerCustomTableGroupFieldList( CustomTableVO customTableVO1, Map<Integer, String> mapValue,Integer index) {
+    public CustomTableVO handlerCustomTableGroupFieldList( CustomTableVO customTableVO1, Map<Integer, String> mapValue) {
 
         CustomTableVO customTableVO = SerializationUtils.clone(customTableVO1);
         if (customTableVO != null && mapValue != null) {
@@ -568,8 +568,8 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                     handlerCustomTableGroupFieldList(fieldList, mapValue);
                 }
             }
-            if (StringUtils.isNotBlank(mapValue.get(-index-1))) {
-                customTableVO.setBigDataId(Integer.parseInt(mapValue.get(-index-1)));
+            if (StringUtils.isNotBlank(mapValue.get(-1))) {
+                customTableVO.setBigDataId(Integer.parseInt(mapValue.get(-1)));
             }
         }
         return customTableVO;
