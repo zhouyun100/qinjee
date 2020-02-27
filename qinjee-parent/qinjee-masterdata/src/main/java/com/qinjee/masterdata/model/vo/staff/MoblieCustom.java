@@ -11,4 +11,5 @@ import java.util.List;
 public class MoblieCustom implements Serializable {
     private List<Integer> tableIdList;
     private List<CustomArchiveTableDataVo> list;
+    private Integer businessId;
 }

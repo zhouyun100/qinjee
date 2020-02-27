@@ -645,21 +645,23 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateCustomArchiveTableDatas(MoblieCustom moblieCustom) {
         //先逻辑删除所有相关的表记录
-        @NotNull Integer businessId = moblieCustom.getList().get(0).getBusinessId();
-        customArchiveTableDataDao.deleteByBussinessIdAndTableId(businessId,moblieCustom.getTableIdList());
+        customArchiveTableDataDao.deleteByBussinessIdAndTableId(moblieCustom.getBusinessId(),moblieCustom.getTableIdList());
         //更新的时候将is_delete更新过来
-        for (CustomArchiveTableDataVo customArchiveTableDataVo : moblieCustom.getList()) {
-            CustomArchiveTableData customArchiveTableData = getCustomArchiveTableData(customArchiveTableDataVo);
-            if(null ==customArchiveTableData.getId()) {
-                customArchiveTableData.setCreateTime ( new Date () );
-                customArchiveTableData.setOperatorId(1);
-                customArchiveTableDataDao.insertSelective ( customArchiveTableData );
-            } else {
-                customArchiveTableData.setUpdateTime ( new Date (  ) );
-                customArchiveTableData.setIsDelete(0);
-                customArchiveTableDataDao.updateByPrimaryKeySelective(customArchiveTableData);
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(moblieCustom.getList())) {
+            for (CustomArchiveTableDataVo customArchiveTableDataVo : moblieCustom.getList()) {
+                CustomArchiveTableData customArchiveTableData = getCustomArchiveTableData(customArchiveTableDataVo);
+                if (null == customArchiveTableData.getId()) {
+                    customArchiveTableData.setCreateTime(new Date());
+                    customArchiveTableData.setOperatorId(1);
+                    customArchiveTableDataDao.insertSelective(customArchiveTableData);
+                } else {
+                    customArchiveTableData.setUpdateTime(new Date());
+                    customArchiveTableData.setIsDelete(0);
+                    customArchiveTableDataDao.updateByPrimaryKeySelective(customArchiveTableData);
+                }
             }
         }
     }
