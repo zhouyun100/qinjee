@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Welcome to use the TableGo Tools.
+    
+    http://vipbooks.iteye.com
+    http://blog.csdn.net/vipbooks
+    http://www.cnblogs.com/vipbooks
+    
+    Author:bianj
+    Email:edinsker@163.com
+    Version:5.8.0
+-->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 附件组表(t_attachment_group) -->
+<mapper namespace="com.qinjee.masterdata.dao.AttachmentGroupDao">
+    <!-- 结果映射 -->
+    <resultMap id="t_attachment_groupMap" type="com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo">
+        <id column="group_id" property="groupId" jdbcType="INTEGER" />
+        <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+        <result column="group_type" property="groupType" jdbcType="VARCHAR" />
+        <result column="parent_group_id" property="parentGroupId" jdbcType="INTEGER" />
+        <result column="attachment_number" property="attachmentNumber" jdbcType="INTEGER" />
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+        <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        t_attachment_group.group_id, t_attachment_group.group_name, t_attachment_group.group_type, t_attachment_group.parent_group_id, t_attachment_group.attachment_number, t_attachment_group.operator_id, 
+        t_attachment_group.create_time, t_attachment_group.update_time, t_attachment_group.is_delete
+    </sql>
+
+    <select id="selectGroupTop" resultType="com.qinjee.masterdata.model.entity.AttachmentGroup" resultMap="t_attachment_groupMap">
+        select  <include refid="allColumns"/>
+        from t_attachment_group
+        where  is_delete=0
+    </select>
+
+    <select id="selectGroupName" resultType="java.lang.String">
+        select group_name from t_attachment_group
+        where group_id=#{groupId}
+        and is_delete=0
+    </select>
+
+</mapper>

@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.ContractRenewalIntention">
+    <id column="renewal_intention_id" jdbcType="INTEGER" property="renewalIntentionId" />
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="contract_begin_date" jdbcType="DATE" property="contractBeginDate" />
+    <result column="contract_end_date" jdbcType="DATE" property="contractEndDate" />
+    <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth" />
+    <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType" />
+    <result column="contract_number" jdbcType="VARCHAR" property="contractNumber" />
+    <result column="intention_status" jdbcType="VARCHAR" property="intentionStatus" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="is_agree" jdbcType="SMALLINT" property="isAgree" />
+    <result column="renewal_opinion" jdbcType="VARCHAR" property="renewalOpinion" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    renewal_intention_id, archive_id,contract_number,intention_status,company_id, contract_begin_date, contract_end_date, contract_period_month,
+    contract_period_type, is_agree, renewal_opinion, operator_id, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_contract_renewal_intention
+    where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_contract_renewal_intention
+    where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="renewal_intention_id" keyProperty="renewalIntentionId" parameterType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" useGeneratedKeys="true">
+    insert into t_contract_renewal_intention (archive_id, contract_number,intention_status,company_id,contract_begin_date, contract_end_date,
+      contract_period_month, contract_period_type, 
+      is_agree, renewal_opinion, operator_id, 
+      create_time, update_time)
+    values (#{archiveId,jdbcType=INTEGER},#{contractNumber,jdbcType=VARCHAR},#{intentionStatus,jdbcType=VARCHAR},#{companyId,jdbcType=INTEGER}, #{contractBeginDate,jdbcType=DATE}, #{contractEndDate,jdbcType=DATE},
+      #{contractPeriodMonth,jdbcType=INTEGER}, #{contractPeriodType,jdbcType=VARCHAR}, 
+      #{isAgree,jdbcType=SMALLINT}, #{renewalOpinion,jdbcType=VARCHAR}, #{operatorId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertBatch" keyColumn="renewal_intention_id" keyProperty="renewalIntentionId" parameterType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" useGeneratedKeys="true">
+    <foreach collection="contractRenewalIntentions" item="con"  separator=";" >
+    insert into t_contract_renewal_intention
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="con.archiveId != null">
+        archive_id,
+      </if>
+      <if test="con.contractNumber != null">
+        contract_number,
+      </if>
+      <if test="con.intentionStatus != null">
+        intention_status,
+      </if>
+      <if test="con.companyId != null">
+        company_id,
+      </if>
+      <if test="con.contractBeginDate != null">
+        contract_begin_date,
+      </if>
+      <if test="con.contractEndDate != null">
+        contract_end_date,
+      </if>
+      <if test="con.contractPeriodMonth != null">
+        contract_period_month,
+      </if>
+      <if test="con.contractPeriodType != null">
+        contract_period_type,
+      </if>
+      <if test="con.isAgree != null">
+        is_agree,
+      </if>
+      <if test="con.renewalOpinion != null">
+        renewal_opinion,
+      </if>
+      <if test="con.operatorId != null">
+        operator_id,
+      </if>
+      <if test="con.createTime != null">
+        create_time,
+      </if>
+      <if test="con.updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="con.archiveId != null">
+        #{con.archiveId,jdbcType=INTEGER},
+      </if>
+      <if test="con.contractNumber != null">
+        #{con.contractNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="con.intentionStatus != null">
+        #{con.intentionStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="con.companyId != null">
+        #{con.companyId,jdbcType=INTEGER},
+      </if>
+      <if test="con.contractBeginDate != null">
+        #{con.contractBeginDate,jdbcType=DATE},
+      </if>
+      <if test="con.contractEndDate != null">
+        #{con.contractEndDate,jdbcType=DATE},
+      </if>
+      <if test="con.contractPeriodMonth != null">
+        #{con.contractPeriodMonth,jdbcType=INTEGER},
+      </if>
+      <if test="con.contractPeriodType != null">
+        #{con.contractPeriodType,jdbcType=VARCHAR},
+      </if>
+      <if test="con.isAgree != null">
+        #{con.isAgree,jdbcType=SMALLINT},
+      </if>
+      <if test="con.renewalOpinion != null">
+        #{con.renewalOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="con.operatorId != null">
+        #{con.operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="con.createTime != null">
+        #{con.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="con.updateTime != null">
+        #{con.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    </foreach>
+  </insert>
+  <insert id="insertSelective" keyColumn="renewal_intention_id" keyProperty="renewalIntentionId" parameterType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" useGeneratedKeys="true">
+    insert into t_contract_renewal_intention
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="archiveId != null">
+        archive_id,
+      </if>
+      <if test="contractNumber != null">
+        contract_number,
+      </if>
+      <if test="intentionStatus != null">
+        intention_status,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="contractBeginDate != null">
+        contract_begin_date,
+      </if>
+      <if test="contractEndDate != null">
+        contract_end_date,
+      </if>
+      <if test="contractPeriodMonth != null">
+        contract_period_month,
+      </if>
+      <if test="contractPeriodType != null">
+        contract_period_type,
+      </if>
+      <if test="isAgree != null">
+        is_agree,
+      </if>
+      <if test="renewalOpinion != null">
+        renewal_opinion,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="archiveId != null">
+        #{archiveId,jdbcType=INTEGER},
+      </if>
+      <if test="contractNumber != null">
+         #{contractNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="intentionStatus != null">
+        #{intentionStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="contractBeginDate != null">
+        #{contractBeginDate,jdbcType=DATE},
+      </if>
+      <if test="contractEndDate != null">
+        #{contractEndDate,jdbcType=DATE},
+      </if>
+      <if test="contractPeriodMonth != null">
+        #{contractPeriodMonth,jdbcType=INTEGER},
+      </if>
+      <if test="contractPeriodType != null">
+        #{contractPeriodType,jdbcType=VARCHAR},
+      </if>
+      <if test="isAgree != null">
+        #{isAgree,jdbcType=SMALLINT},
+      </if>
+      <if test="renewalOpinion != null">
+        #{renewalOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.ContractRenewalIntention">
+    update t_contract_renewal_intention
+    <set>
+      <if test="archiveId != null">
+        archive_id = #{archiveId,jdbcType=INTEGER},
+      </if>
+        <if test="contractNumber != null">
+        contract_number = #{contractNumber,jdbcType=VARCHAR}
+        </if>
+        <if test="intentionStatus != null">
+        intention_status = #{intentionStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="companyId != null">
+        company_id  =  #{companyId,jdbcType=INTEGER}
+        </if>
+      <if test="contractBeginDate != null">
+        contract_begin_date = #{contractBeginDate,jdbcType=DATE},
+      </if>
+      <if test="contractEndDate != null">
+        contract_end_date = #{contractEndDate,jdbcType=DATE},
+      </if>
+      <if test="contractPeriodMonth != null">
+        contract_period_month = #{contractPeriodMonth,jdbcType=INTEGER},
+      </if>
+      <if test="contractPeriodType != null">
+        contract_period_type = #{contractPeriodType,jdbcType=VARCHAR},
+      </if>
+      <if test="isAgree != null">
+        is_agree = #{isAgree,jdbcType=SMALLINT},
+      </if>
+      <if test="renewalOpinion != null">
+        renewal_opinion = #{renewalOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.ContractRenewalIntention">
+    update t_contract_renewal_intention
+    set archive_id = #{archiveId,jdbcType=INTEGER},
+        intention_status = #{intentionStatus,jdbcType=VARCHAR},
+        company_id  =  #{companyId,jdbcType=INTEGER}
+        contract_number = #{contractNumber,jdbcType=VARCHAR},
+      contract_begin_date = #{contractBeginDate,jdbcType=DATE},
+      contract_end_date = #{contractEndDate,jdbcType=DATE},
+      contract_period_month = #{contractPeriodMonth,jdbcType=INTEGER},
+      contract_period_type = #{contractPeriodType,jdbcType=VARCHAR},
+      is_agree = #{isAgree,jdbcType=SMALLINT},
+      renewal_opinion = #{renewalOpinion,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByArchiveId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention" >
+    select arc.user_name as userName,
+           arc.employee_number as employeeNumber ,
+           org.org_name as orgName,
+           orga.org_name as bussinessUnitName,
+           post.post_name as postName,
+           intention.update_time as sendTime,
+           intention.renewal_opinion as renewalOpinion,
+           intention.renewal_intention_id as renewalIntentionId,
+           intention.contract_number as contractNumber,
+           intention.intention_status as intentionStatus,
+           intention.company_id as companyId,
+           intention.contract_begin_date as contractBeginDate,
+           intention.contract_end_date as contractEndDate,
+           intention.contract_period_month as contractPeriodMonth,
+           intention.contract_period_type as contractPeriodType,
+           intention.is_agree as isAgree,
+           intention.create_time as createTiem,
+           arch.user_name as sendUser,
+           arc.archive_id as archiveId
+    from t_contract_renewal_intention intention
+    left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
+    left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1
+    left join t_organization orga on orga.org_id = arc.business_unit_id and orga.is_enable=1
+    left join t_post post on post.post_id=arc.post_id and post.is_enable=1 and post.is_delete=0
+    left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
+    where arc.archive_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo"  >
+    select arc.user_name as userName,
+    arc.employee_number as employeeNumber ,
+    org.org_name as orgName,
+    orga.org_name as bussinessUnitName,
+    post.post_name as postName,
+    intention.update_time as sendTime,
+    intention.renewal_opinion as renewalOpinion,
+    intention.renewal_intention_id as renewalIntentionId,
+    intention.contract_number as contractNumber,
+    intention.intention_status as intentionStatus,
+    intention.company_id as companyId,
+    intention.contract_begin_date as contractBeginDate,
+    intention.contract_end_date as contractEndDate,
+    intention.contract_period_month as contractPeriodMonth,
+    intention.contract_period_type as contractPeriodType,
+    intention.is_agree as isAgree,
+    intention.create_time as createTiem,
+    arch.user_name as sendUser,
+    arc.archive_id as archiveId
+    from t_contract_renewal_intention intention
+    left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
+    left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1
+    left join t_organization orga on orga.org_id = arc.business_unit_id and orga.is_enable=1
+    left join t_post post on post.post_id=arc.post_id and post.is_enable=1 and post.is_delete=0
+    left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
+    where arc.archive_id in
+    (select arc.archive_id from t_user_archive arc
+     left join t_organization org on org.org_id=arc.org_id
+     and org.is_enable=1 and arc.is_delete=0
+     where org.org_id in
+     <foreach collection="list" item="item" open="(" separator="," close=")">
+       #{item}
+    </foreach>)
+
+  </select>
+</mapper>

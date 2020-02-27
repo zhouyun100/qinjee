@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.custom.CustomTableFieldDao">
+
+  <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
+
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
+    <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+    <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+    <result column="input_type" jdbcType="VARCHAR" property="inputType" />
+    <result column="text_type" jdbcType="VARCHAR" property="textType" />
+    <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
+    <result column="placeholder" jdbcType="VARCHAR" property="placeholder" />
+    <result column="max_length" jdbcType="INTEGER" property="maxLength" />
+    <result column="min_length" jdbcType="INTEGER" property="minLength" />
+    <result column="max_number" jdbcType="INTEGER" property="maxNumber" />
+    <result column="min_number" jdbcType="INTEGER" property="minNumber" />
+    <result column="float_length" jdbcType="INTEGER" property="floatLength" />
+    <result column="is_time_range" jdbcType="INTEGER" property="isTimeRange" />
+    <result column="min_time" jdbcType="VARCHAR" property="minTime" />
+    <result column="max_time" jdbcType="VARCHAR" property="maxTime" />
+    <result column="format_time" jdbcType="VARCHAR" property="formatTime" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="is_must" jdbcType="INTEGER" property="isMust" />
+    <result column="rule" jdbcType="VARCHAR" property="rule" />
+    <result column="is_only_read" jdbcType="INTEGER" property="isOnlyRead" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="is_show" jdbcType="SMALLINT" property="isShow" />
+    <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="read_write_code" jdbcType="INTEGER" property="readWriteCode" />
+  </resultMap>
+
+
+  <resultMap id="GroupResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomGroupVO">
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+    <result column="table_id" jdbcType="VARCHAR" property="tableId" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+  </resultMap>
+
+
+  <resultMap id="TableResultMap" type="com.qinjee.masterdata.model.vo.custom.CustomTableVO">
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="is_system_define" jdbcType="VARCHAR" property="isSystemDefine" />
+    <result column="is_enable" jdbcType="VARCHAR" property="isEnable" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+  </resultMap>
+  <insert id="insertSelective"></insert>
+
+  <!-- 根据字段ID列表查询字段详细信息列表 -->
+  <select id="searchCustomFieldListByFieldIdList" parameterType="list" resultMap="FieldResultMap">
+    select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort,code
+    from t_custom_archive_field
+    WHERE field_id in
+    <foreach item="fieldId" collection="list"
+             open="(" separator="," close=")">
+      #{fieldId}
+    </foreach>
+    and is_delete = 0
+  </select>
+
+
+  <!-- 根据根据企业ID和功能CODE查询表列表 -->
+  <select id="searchCustomTableListByCompanyIdAndFuncCode" parameterType="com.qinjee.masterdata.model.vo.custom.CustomTableVO" resultMap="TableResultMap">
+    select table_id,table_code,table_name,func_code,company_id,is_system_define,is_enable,sort
+    from t_custom_archive_table
+    where company_id = #{companyId,jdbcType=INTEGER}
+    and func_code = #{funcCode,jdbcType=VARCHAR}
+    and is_enable = #{isEnable,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
+
+
+  <!-- 根据根据企业ID和功能CODE或表ID查询组列表 -->
+  <select id="searchCustomGroupList" resultMap="GroupResultMap">
+    select g.group_id,g.group_name,g.table_id,g.sort
+    from t_custom_archive_group g
+    where g.group_id in (
+      select group_id from t_custom_archive_field f
+      WHERE f.is_delete = 0
+    <if test="tableId != null">
+       and f.table_id = #{tableId,jdbcType=INTEGER}
+    </if>
+    <if test="tableId == null">
+      and f.table_id in (
+      SELECT t.table_id FROM t_custom_archive_table t
+      WHERE t.company_id = #{companyId,jdbcType=INTEGER}
+      AND t.table_code = #{tableCode,jdbcType=VARCHAR}
+      AND t.is_enable = 1
+      AND t.is_delete = 0
+      )
+    </if>
+      GROUP BY f.group_id
+	)
+    and g.is_delete = 0
+  </select>
+
+
+  <!-- 根据根据企业ID和功能CODE或表ID查询字段列表 -->
+  <select id="searchCustomFieldList" resultMap="FieldResultMap">
+    select
+      field.field_id,field.field_code,field.field_name,field.field_type,field.input_type,field.text_type,field.default_value,
+      field.placeholder,field.max_length,field.min_length,field.max_number,field.min_number,field.float_length,
+      field.is_time_range,field.min_time,field.max_time,field.format_time,field.code,field.is_must,field.rule,field.is_only_read,
+      field.table_id,field.group_id,field.is_show,field.is_system_define,field.sort,auth.read_write_code
+    from t_custom_archive_field field
+    left join t_role_custom_field_auth auth on auth.field_id=field.field_id and auth.is_delete=0
+    and auth.role_id in
+    (select role_id from t_user_role where archive_id=#{archiveId} and is_delete=0)
+    where field.is_delete = 0
+    <if test="tableId != null">
+      and field.table_id = #{tableId,jdbcType=INTEGER}
+    </if>
+    <if test="tableId == null">
+      and field.table_id in(
+      select t.table_id from t_custom_archive_table t
+      where t.company_id = #{companyId,jdbcType=INTEGER}
+      and t.table_code = #{tableCode,jdbcType=VARCHAR}
+      and t.is_enable = 1
+      and t.is_delete = 0
+      )
+    </if>
+      group by field.field_id
+  </select>
+
+
+    <!-- 根据企业ID和功能CODE查询字段集合 -->
+    <select id="searchCustomFieldListByCompanyIdAndFuncCode" resultMap="FieldResultMap">
+        select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+        table_id,group_id,is_show,is_system_define,sort
+        from t_custom_archive_field
+        where table_id in(
+            select t.table_id from t_custom_archive_table t
+            where t.company_id = #{companyId,jdbcType=INTEGER}
+            and t.func_code = #{funcCode,jdbcType=VARCHAR}
+            and t.is_enable = 1
+            and t.is_delete = 0
+            )
+        and is_delete = 0
+    </select>
+
+  <update id="deleteCustomField">
+    update  t_custom_archive_field
+    set
+    is_delete=1
+    where field_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+  </foreach>
+  </update>
+
+
+
+  <update id="updatePreEmploymentField" parameterType="map" >
+    <foreach item="value" index="key" collection="map.entrySet()" separator=";" >
+      UPDATE t_custom_archive_field
+      <set>
+        field_name= $(#{value})
+      </set>
+      WHERE field_id= #{key} AND is_delete=0
+    </foreach>
+  </update>
+    <update id="updateByPrimaryKeySelective"></update>
+
+
+    <select id="selectFieldByTableIdAndAuth" resultType="java.lang.String">
+  select field.field_name from
+    t_user_archive arc
+    right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{archiveId})
+    right join t_role_custom_field_auth auth on role.role_id=auth.role_id
+    right join t_custom_archive_field field on field.field_id=auth.field_id
+    where field.table_id=#{tableId}
+    and arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0
+  </select>
+
+  <select id="selectFieldByArcAndAuth" resultType="java.lang.String">
+ select DISTINCT(field.field_name) from
+    t_user_archive arc
+    right join t_user_role role on (role.archive_id=arc.archive_id and arc.archive_id=#{achiveId})
+    right join t_role_custom_field_auth auth on role.role_id=auth.role_id
+    right join t_custom_archive_table arctable on (arctable.func_code="ARCHIVE" and arctable.company_id=#{companyId})
+    right join t_custom_archive_field field on arctable.table_id=field.table_id
+    where  arc.is_delete=0 and role.is_delete=0 and auth.is_delete=0 and field.is_delete=0 and arctable.is_delete=0
+  </select>
+
+
+  <select id="selectFieldIdByFieldNameAndCompanyId" resultType="java.lang.Integer">
+    select field_id
+    from t_custom_archive_field field
+    inner join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code=#{funcCode}
+    and field.field_name in
+    <foreach collection="fieldNames" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field.is_delete=0
+    and tab.is_delete=0
+    and table.is_enable=1
+  </select>
+
+  <select id="seleleIsSysAndTableIdAndTableName" resultType="java.util.Map">
+    select field.table_id,field.is_system_define,tab.table_name
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id= field.table_id
+    where field.is_delete=0
+    and tab.is_delete=0
+    and field_name in
+    <foreach collection="strings" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectFieldCodeByName" resultType="java.lang.String">
+   select field_code
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on field.table_id=tab.table_id
+    where field_name=#{head}
+    and tab.company_id=#{companyId}
+    and field.is_delete=0
+    and tab.func_code=#{funcCode}
+  </select>
+  <select id="selectFieldIdByFieldNameAndCompanyIdAndFuncCode" resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO" resultMap="FieldResultMap">
+    select
+     field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort,code
+    from t_custom_archive_field field
+    where  field.field_name =#{key}
+    and field.is_delete=0
+    and field.table_id in(
+    select table_id from t_custom_archive_table where
+    func_code=#{funcCode} AND is_delete=0 AND company_id=#{companyId}
+)
+  </select>
+  <select id="selectFieldCodeByNameAndFuncCodeAndCompanyId" resultType="java.lang.String">
+    select field_code
+    from t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where field_name=#{s}
+    and tab.func_code=#{funcCode}
+    and tab.company_id=#{companyId}
+    and field.is_delete=0
+    and tab.is_enable=1
+    and tab.is_delete=0
+  </select>
+  <select id="selectFieldNameByCode" resultType="java.lang.String">
+    select  field_name
+    from  t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.company_id=#{companyId}
+    and tab.func_code="ARC"
+    and tab.is_delete=0
+    and tab.is_enable=1
+    and tab.func_code=#{funcCode}
+    and field_code =#{fieldCode}
+    AND field. is_delete=0
+  </select>
+  <select id="selectNameAndIdAndIsSystemDefine" resultType="java.util.Map">
+    select field_id,is_system_define,table_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="idList" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and table_id in
+    (select table_id from t_custom_archive_table where company_id =#{companyId} and is_enable=1)
+    and is_delete=0
+  </select>
+    <select id="selectFieldById" resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO" resultMap="FieldResultMap" >
+        select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+        field.table_id,group_id,is_show,field.is_system_define,field.sort,code
+        from t_custom_archive_field field
+        left join t_custom_archive_table tab on tab.table_id=field.table_id and tab.is_delete=0 and tab.is_enable=1
+        where field.field_id=#{fieldId}
+        and tab.company_id=#{companyId}
+        and tab.func_code=#{arc}
+        and field.is_delete=0
+    </select>
+
+    <select id="selectFieldByIdList" resultMap="FieldResultMap">
+        select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+        field.table_id,group_id,is_show,field.is_system_define,field.sort,code
+        from t_custom_archive_field field
+        left join t_custom_archive_table tab on tab.table_id=field.table_id and tab.is_delete=0 and tab.is_enable=1
+        where field.field_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and tab.company_id=#{companyId}
+        and tab.func_code=#{funcCode}
+        and field.is_delete=0
+    </select>
+
+  <select id="selectSymbolForPreIdNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field_code="id_number"
+  </select>
+
+
+  <select id="selectSymbolForPreIdType" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and field_code="id_type"
+  </select>
+  <select id="selectSymbolForArcEmploymentNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and  field_code='employee_number'
+  </select>
+  <select id="selectSymbolForArcIdNumber" resultType="java.lang.Integer">
+    select
+    field_id
+    from t_custom_archive_field
+    where field_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and  field_code = 'id_number'
+    and is_delete=0
+  </select>
+  <select id="selectTableIdByFieldId" resultType="java.lang.Integer">
+    select table_id from t_custom_archive_field where field_id=#{integer1} and is_delete=0
+  </select>
+
+  <select id="selectCodeAndTypeById" resultType="java.util.Map">
+    select field_id,text_type,field_code
+    from t_custom_archive_field
+    where field_id=#{integer}
+    and is_delete=0
+  </select>
+    <select id="selectCodAndIdByTableId" resultType="java.util.Map">
+        select field_id,field_code
+        from t_custom_archive_field
+        where table_id=#{tableId}
+        and is_delete=0
+    </select>
+
+    <select id="transOrgId" resultType="java.util.Map">
+        select t.field_id,t.org_id from(
+        SELECT
+            field.field_id,
+            field.table_id,
+            org.org_id
+        FROM
+            t_custom_archive_field field,
+            t_organization org
+        WHERE
+            org.org_name =#{value}
+        and org.company_id=#{companyId}
+        AND field.field_code = 'org_id'
+        AND org.is_enable = 1
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id AND tab.is_delete = 0 AND tab.is_enable = 1
+        where  tab.company_id =#{companyId}
+         AND tab.func_code =#{funcCode}
+    </select>
+    <select id="transOrgIdByCode" resultType="java.util.Map">
+        select t.field_id,t.org_id from(
+        SELECT
+            field.field_id,
+            field.table_id,
+            org.org_id
+        FROM
+            t_custom_archive_field field,
+            t_organization org
+        WHERE
+            org.org_code =#{value}
+        and org.company_id=#{companyId}
+        AND field.field_code = 'org_id'
+        AND org.is_enable = 1
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id AND tab.is_delete = 0 AND tab.is_enable = 1
+        where  tab.company_id =#{companyId}
+         AND tab.func_code =#{funcCode}
+    </select>
+    <select id="transSupiorId" resultType="java.util.Map">
+       select t.field_id,t.archive_id from(
+        SELECT
+            field.field_id,
+            field.table_id,
+            arc.archive_id
+        FROM
+            t_custom_archive_field field,
+            t_user_archive arc
+        WHERE
+           arc.employee_number=#{value}
+           and arc.company_id=#{companyId}
+        AND field.field_code = 'supervisor_id'
+        AND arc.is_delete = 0
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id
+        where  tab.company_id =#{companyId}
+         AND tab.is_delete = 0
+         AND tab.is_enable = 1
+         AND tab.func_code =#{funcCode}
+    </select>
+
+    <select id="transPostId" resultType="java.util.Map">
+                SELECT t.field_id,t.post_id FROM(
+                SELECT
+                    field.field_id,
+                    field.table_id,
+                    post.post_id
+                FROM
+                    t_custom_archive_field field,
+                    t_post post
+                WHERE
+                    post.post_code=#{value}
+                and post.company_id=#{companyId}
+                AND field.field_code = 'post_id'
+                AND post.is_delete = 0
+                AND field.is_delete = 0
+                ) t
+                LEFT JOIN t_custom_archive_table tab ON t.table_id = tab.table_id
+                WHERE
+                    tab.company_id =#{companyId}
+                AND tab.is_delete = 0
+                AND tab.is_enable = 1
+                AND tab.func_code = #{funcCode}
+                    </select>
+    <select id="selectFieldCodeById" resultType="java.lang.String">
+        select field_code
+        from t_custom_archive_field
+        where field_id =#{integer}
+        and is_delete=0
+    </select>
+
+
+    <select id="selectTypeByFieldId" resultType="java.lang.String">
+        select text_type from t_custom_archive_field
+        where field_id=#{fieldId}
+        and is_delete=0
+    </select>
+  <select id="selectFieldCodeListByTableIdList" resultType="java.lang.String">
+
+  </select>
+  <select id="selectCustomArchiveField" resultMap="FieldResultMap">
+    select  field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort,code from
+    t_custom_archive_field field
+    left join t_custom_archive_table tab on field.table_id = tab.table_id
+    and tab.func_code=#{funcCode}
+    and tab.company_id=#{companyId}
+    and field.field_id=#{id}
+    and field.is_delete=0
+    and tab.is_delete=0
+    and tab.is_enable=1
+  </select>
+    <select id="selectTableIdByCompanyIdAndFuncCode" resultType="java.lang.Integer">
+        select table_id
+        from t_custom_archive_table
+        where company_id=#{companyId}
+        and func_code=#{funcCode}
+        and is_enable=1
+        and is_delete=0
+    </select>
+    <select id="selectFieldListByTableId" resultMap="FieldResultMap" >
+       select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,field.code,
+        field.table_id,group_id,is_show,field.is_system_define,field.sort
+        from t_custom_archive_field field
+        left join t_custom_archive_table tab on tab.table_id=field.table_id and tab.is_delete=0 and tab.is_enable=1
+        where field.table_id=#{tableId} and field.is_delete=0
+    </select>
+    <select id="selectFieldIdByCodeAndFuncCodeAndComapnyId" resultType="java.lang.Integer">
+        select field_id from t_custom_archive_field
+        where field_code=#{code}
+        and is_delete=0
+        and table_id in
+        (select table_id from t_custom_archive_table where is_delete=0
+        and func_code=#{funcCode} and company_id=#{companyId})
+    </select>
+    <select id="selectFieldByCodeAndFuncCodeAndComapnyId" resultMap="FieldResultMap"
+            resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
+          select
+        field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+        table_id,group_id,is_show,is_system_define,sort,code
+          from t_custom_archive_field
+        where field_code=#{s}
+        and is_delete=0
+        and table_id in
+        (select table_id from t_custom_archive_table where is_delete=0
+        and func_code=#{arc} and company_id=#{companyId})
+    </select>
+    <select id="selectSymbolForPhone" resultType="java.lang.Integer">
+        select
+        field_id
+        from t_custom_archive_field
+        where field_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and field_code="phone"
+    </select>
+    <select id="transSupiorIdByName" resultType="java.util.Map">
+          select t.field_id,t.archive_id from(
+        SELECT
+            field.field_id,
+            field.table_id,
+            arc.archive_id
+        FROM
+            t_custom_archive_field field,
+            t_user_archive arc
+        WHERE
+           arc.user_name=#{value}
+        AND field.field_code = 'supervisor_id'
+        AND arc.is_delete = 0
+        AND field.is_delete = 0)t
+        left join t_custom_archive_table tab on t.table_id = tab.table_id
+        where  tab.company_id =#{companyId}
+         AND tab.is_delete = 0
+         AND tab.is_enable = 1
+         AND tab.func_code =#{funcCode}
+    </select>
+    <select id="selectTextTypeByFieldId" resultMap="FieldResultMap"
+            resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
+       select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+       placeholder,max_length,min_length,max_number,min_number,float_length,
+       is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+       table_id,group_id,is_show,is_system_define,sort,code
+       from t_custom_archive_field
+        where field_id=#{integer}
+        and is_delete=0
+    </select>
+    <select id="selectTextCodeByName" resultType="java.lang.String">
+        select field.code
+        from t_custom_archive_field field
+        left join t_custom_archive_table tab on tab.table_id=field.table_id
+        where field.field_name=#{s}
+        and tab.is_delete=0
+        and tab.company_id=#{companyId}
+        and tab.func_code=#{funcCode}
+        and field.is_delete=0
+        group by field.code
+    </select>
+    <select id="selectFieldIdByFieldIdAndFunccode" resultType="java.lang.Integer">
+        select field_id
+        from t_custom_archive_field
+        where is_delete=0
+        and field_name in
+        (select field_name from t_custom_archive_field where field_id=#{key} and is_delete=0)
+        and table_id in
+        (select table_id from t_custom_archive_table where company_id=#{companyId} and func_code="ARC")
+
+
+
+    </select>
+  <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+  <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+  <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+     <select id="selectCodeId" resultType="java.lang.Integer"></select>
+
+
+
+</mapper>

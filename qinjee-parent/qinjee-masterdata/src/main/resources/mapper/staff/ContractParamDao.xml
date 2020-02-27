@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 合同参数表(t_contract_param) -->
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao">
+    <!-- 结果映射 -->
+    <resultMap id="ContractParamMap" type="com.qinjee.masterdata.model.entity.ContractParam">
+        <id column="contract_param_id" property="contractParamId" jdbcType="INTEGER" />
+        <result column="contract_param_name" property="contractParamName" jdbcType="VARCHAR" />
+        <result column="contract_param_describe" property="contractParamDescribe" jdbcType="VARCHAR" />
+        <result column="application_scope_code" property="applicationScopeCode" jdbcType="VARCHAR" />
+        <result column="remember_days" property="rememberDays" jdbcType="VARCHAR" />
+        <result column="contract_rule_prefix" property="contractRulePrefix" jdbcType="VARCHAR" />
+        <result column="date_rule" property="dateRule" jdbcType="VARCHAR" />
+        <result column="contract_rule_infix" property="contractRuleInfix" jdbcType="VARCHAR" />
+        <result column="digit_capacity" property="digitCapacity" jdbcType="VARCHAR" />
+        <result column="contract_rule_suffix" property="contractRuleSuffix" jdbcType="VARCHAR" />
+        <result column="company_id" property="companyId" jdbcType="INTEGER" />
+        <result column="is_enable" property="isEnable" jdbcType="VARCHAR" />
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        tContractParam.contract_param_id, tContractParam.contract_param_name, tContractParam.contract_param_describe, tContractParam.application_scope_code, tContractParam.remember_days, tContractParam.contract_rule_prefix,
+        tContractParam.date_rule, tContractParam.contract_rule_infix, tContractParam.digit_capacity, tContractParam.contract_rule_suffix, tContractParam.company_id, tContractParam.is_enable,
+        tContractParam.operator_id, tContractParam.create_time, tContractParam.update_time, tContractParam.is_delete
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="findContractParamAll" resultMap="ContractParamMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM t_contract_param
+    </select>
+
+    <!-- 根据条件查询数据 -->
+    <select id="findContractParamByCondition" resultMap="ContractParamMap" >
+        SELECT
+        <include refid="allColumns" />
+        FROM t_contract_param tContractParam  WHERE tContractParam.contract_param_id =#{id}
+        and tContractParam.is_delete=0
+    </select>
+    <select id="findContractParamByCompanyId" resultMap="ContractParamMap" >
+        SELECT
+        <include refid="allColumns" />
+        FROM t_contract_param tContractParam
+        WHERE tContractParam.company_id =#{id}
+        and tContractParam.is_delete=0
+    </select>
+    <!-- 根据主键查询数据 -->
+    <select id="findContractParamByIds" resultMap="ContractParamMap" parameterType="list" >
+        SELECT
+        <include refid="allColumns" />
+        FROM t_contract_param tContractParam WHERE tContractParam.contract_param_id IN
+        <foreach collection="list" index="index" item="contractParamId" open="(" separator="," close=")">
+            #{contractParamId}
+        </foreach>
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="insertContractParam" parameterType="map">
+        INSERT INTO t_contract_param (
+            contract_param_id, contract_param_name, contract_param_describe, application_scope_code, remember_days, contract_rule_prefix,
+            date_rule, contract_rule_infix, digit_capacity, contract_rule_suffix, company_id, is_enable,
+            operator_id, create_time, update_time, is_delete
+        ) VALUES (
+            #{contractParamId},
+            #{contractParamName},
+            #{contractParamDescribe},
+            #{applicationScopeCode},
+            #{rememberDays},
+            #{contractRulePrefix},
+            #{dateRule},
+            #{contractRuleInfix},
+            #{digitCapacity},
+            #{contractRuleSuffix},
+            #{companyId},
+            #{isEnable},
+            #{operatorId},
+            #{createTime},
+            #{updateTime},
+            #{isDelete}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.qinjee.masterdata.model.entity.ContractParam" useGeneratedKeys="true">
+        insert into t_contract_param
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractParamName != null">
+                contract_param_name,
+            </if>
+            <if test="contractParamDescribe != null">
+                contract_param_describe,
+            </if>
+            <if test="applicationScopeCode != null">
+                application_scope_code,
+            </if>
+            <if test="rememberDays != null">
+                remember_days,
+            </if>
+            <if test="contractRulePrefix != null">
+                contract_rule_prefix,
+            </if>
+            <if test="dateRule != null">
+                date_rule,
+            </if>
+            <if test="contractRuleInfix != null">
+                contract_rule_infix,
+            </if>
+            <if test="digitCapacity != null">
+                digit_capacity,
+            </if>
+            <if test="contractRuleSuffix != null">
+                contract_rule_suffix,
+            </if>
+            <if test="isEnable != null">
+                is_enable,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractParamName != null">
+                #{contractParamName},
+            </if>
+            <if test="contractParamDescribe != null">
+                #{contractParamDescribe},
+            </if>
+            <if test="applicationScopeCode != null">
+                #{applicationScopeCode},
+            </if>
+            <if test="rememberDays != null">
+                #{rememberDays},
+            </if>
+            <if test="contractRulePrefix != null">
+                #{contractRulePrefix},
+            </if>
+            <if test="dateRule != null">
+                #{dateRule},
+            </if>
+            <if test="contractRuleInfix != null">
+                #{contractRuleInfix},
+            </if>
+            <if test="digitCapacity != null">
+                #{digitCapacity},
+            </if>
+            <if test="contractRuleSuffix != null">
+                #{contractRuleSuffix},
+            </if>
+            <if test="isEnable != null">
+                #{isEnable},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId},
+            </if>
+            <if test="companyId != null">
+                #{companyId},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete},
+            </if>
+
+        </trim>
+    </insert>
+
+    <!-- 批量插入数据 -->
+    <insert id="insertContractParams" parameterType="list">
+        INSERT INTO t_contract_param (
+        contract_param_id, contract_param_name, contract_param_describe, application_scope_code, remember_days, contract_rule_prefix,
+        date_rule, contract_rule_infix, digit_capacity, contract_rule_suffix, company_id, is_enable,
+        operator_id, create_time, update_time, is_delete
+        ) VALUES (
+        <foreach collection="list" index="index" item="item" separator=",">
+            (
+            #{item.contractParamId},
+            #{item.contractParamName},
+            #{item.contractParamDescribe},
+            #{item.applicationScopeCode},
+            #{item.rememberDays},
+            #{item.contractRulePrefix},
+            #{item.dateRule},
+            #{item.contractRuleInfix},
+            #{item.digitCapacity},
+            #{item.contractRuleSuffix},
+            #{item.companyId},
+            #{item.isEnable},
+            #{item.operatorId},
+            #{item.createTime},
+            #{item.updateTime},
+            #{item.isDelete}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 修改数据 -->
+    <update id="updateContractParam" parameterType="map">
+        UPDATE t_contract_param SET
+            contract_param_name = #{contractParamName},
+            contract_param_describe = #{contractParamDescribe},
+            application_scope_code = #{applicationScopeCode},
+            remember_days = #{rememberDays},
+            contract_rule_prefix = #{contractRulePrefix},
+            date_rule = #{dateRule},
+            contract_rule_infix = #{contractRuleInfix},
+            digit_capacity = #{digitCapacity},
+            contract_rule_suffix = #{contractRuleSuffix},
+            company_id = #{companyId},
+            is_enable = #{isEnable},
+            operator_id = #{operatorId},
+            create_time = #{createTime},
+            update_time = #{updateTime},
+            is_delete = #{isDelete}
+        WHERE contract_param_id = #{contractParamId}
+    </update>
+
+    <!-- 批量修改数据 -->
+    <update id="updateContractParams" parameterType="list">
+        <foreach collection="list" index="index" item="item" separator=";">
+            UPDATE t_contract_param SET
+            contract_param_name = #{item.contractParamName},
+            contract_param_describe = #{item.contractParamDescribe},
+            application_scope_code = #{item.applicationScopeCode},
+            remember_days = #{item.rememberDays},
+            contract_rule_prefix = #{item.contractRulePrefix},
+            date_rule = #{item.dateRule},
+            contract_rule_infix = #{item.contractRuleInfix},
+            digit_capacity = #{item.digitCapacity},
+            contract_rule_suffix = #{item.contractRuleSuffix},
+            company_id = #{item.companyId},
+            is_enable = #{item.isEnable},
+            operator_id = #{item.operatorId},
+            create_time = #{item.createTime},
+            update_time = #{item.updateTime},
+            is_delete = #{item.isDelete}
+            WHERE contract_param_id = #{item.contractParamId}
+        </foreach>
+    </update>
+    <update id="updateContractSelective" parameterType="com.qinjee.masterdata.model.entity.ContractParam">
+        UPDATE t_contract_param
+        <set>
+            <if test="contractParamName != null">
+                contract_param_name= #{contractParamName},
+            </if>
+            <if test="contractParamDescribe != null">
+                contract_param_describe= #{contractParamDescribe},
+            </if>
+            <if test="applicationScopeCode != null">
+                application_scope_code= #{applicationScopeCode},
+            </if>
+            <if test="rememberDays != null">
+                remember_days= #{rememberDays},
+            </if>
+            <if test="contractRulePrefix != null">
+                contract_rule_prefix= #{contractRulePrefix},
+            </if>
+            <if test="dateRule != null">
+                date_rule= #{dateRule},
+            </if>
+            <if test="contractRuleInfix != null">
+                contract_rule_infix= #{contractRuleInfix},
+            </if>
+            <if test="digitCapacity != null">
+                digit_capacity= #{digitCapacity},
+            </if>
+            <if test="contractRuleSuffix != null">
+                contract_rule_suffix= #{contractRuleSuffix},
+            </if>
+            <if test="isEnable != null">
+                is_enable= #{isEnable},
+            </if>
+            <if test="operatorId != null">
+                operator_id= #{operatorId},
+            </if>
+            <if test="updateTime != null">
+                update_time= #{updateTime},
+            </if>
+            <if test="isDelete != null">
+                is_delete= #{isDelete},
+            </if>
+        </set>
+        where contract_param_id= #{contractParamId}
+    </update>
+
+    <!-- 根据主键删除数据 -->
+    <delete id="deleteContractParamById" parameterType="java.lang.Integer">
+        DELETE FROM t_contract_param WHERE contract_param_id = #{contractParamId}
+    </delete>
+
+    <!-- 根据主键批量删除数据 -->
+    <delete id="deleteContractParamByIds" parameterType="list">
+        DELETE FROM t_contract_param WHERE contract_param_id IN
+        <foreach collection="list" index="index" item="contractParamId" open="(" separator="," close=")">
+            #{contractParamId}
+        </foreach>
+    </delete>
+
+    <select id="selectRuleIdByCompanyId" resultType="java.lang.Integer">
+        select  en_rule_id
+        from t_employee_number_rule
+        where company_id=#{companyId}
+        and is_delete=0
+    </select>
+
+</mapper>

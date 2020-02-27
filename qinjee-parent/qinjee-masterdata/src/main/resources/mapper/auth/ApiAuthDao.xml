@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.auth.ApiAuthDao">
+
+
+    <select id="searchParentOrgIdAutoAuthChildOrgRoleList" parameterType="java.lang.Integer" resultType="com.qinjee.masterdata.model.entity.Role">
+        select t_role.role_id as roleId,t_role.role_name as roleName
+        from t_role,t_role_org_auth,t_organization
+        where t_organization.org_id = #{orgId,jdbcType=INTEGER}
+        and t_organization.org_parent_id = t_role_org_auth.org_id
+        and t_role.role_id = t_role_org_auth.role_id
+        and is_auto_auth_child_org = 1
+        and t_organization.is_enable = 1
+        and t_role.is_delete = 0
+        and t_role_org_auth.is_delete = 0
+    </select>
+
+    <!--根据机构ID查询自动授权子集机构的角色列表 -->
+    <select id="searchAutoAuthChildOrgRoleList" parameterType="java.lang.Integer" resultType="com.qinjee.masterdata.model.entity.Role">
+        select t_role.role_id as roleId, t_role.role_name as roleName
+        from t_role,t_role_org_auth
+        where t_role_org_auth.org_id = #{orgId,jdbcType=INTEGER}
+        and t_role.role_id = t_role_org_auth.role_id
+        and t_role.is_delete = 0
+        and t_role_org_auth.is_delete = 0
+        and is_auto_auth_child_org = 1
+    </select>
+
+
+    <!--查询子集机构列表列表 -->
+    <select id="searchChildOrganizationList" parameterType="list" resultType="java.lang.Integer">
+        SELECT
+            org.org_id
+        FROM
+        t_organization org
+        WHERE org.is_enable = 1
+        and org.org_parent_id in
+        <foreach item="orgId" collection="list"
+                 open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </select>
+
+    <!-- 新增角色机构范围权限 -->
+    <insert id="insertRoleOrg">
+        insert into t_role_org_auth (org_id,role_id,operator_id)
+        values (#{orgId,jdbcType=INTEGER},#{roleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 删除不在职员工角色权限(离职、退休) -->
+    <update id="deleteRoleOrgAuth">
+        update t_role_org_auth set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where is_delete = 0
+        <if test="roleId != null">
+            and role_id = #{roleId,jdbcType=INTEGER}
+        </if>
+        and org_id in
+        <foreach item="orgId" collection="orgIdList"
+                 open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </update>
+
+    <!-- 删除不在职员工角色权限(离职、退休) -->
+    <update id="deleteArchiveRoleAuth">
+        update t_user_role set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where archive_id = #{archiveId,jdbcType=INTEGER}
+        and is_delete = 0
+    </update>
+
+    <!-- 删除员工机构权限(离职、退休或删除机构) -->
+    <update id="deleteArchiveOrgAuth">
+        update t_user_org_auth set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where is_delete = 0
+        <if test="archiveId != null">
+            and archive_id = #{archiveId,jdbcType=INTEGER}
+        </if>
+        <if test="orgId != null">
+            and org_id = #{orgId,jdbcType=INTEGER}
+        </if>
+    </update>
+
+    <!-- 新增角色机构范围权限 -->
+    <insert id="insertUserOrg">
+        insert into t_user_org_auth (org_id,archive_id,role_id,operator_id)
+        values (#{orgId,jdbcType=INTEGER},#{archiveId,jdbcType=INTEGER},#{roleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
+</mapper>

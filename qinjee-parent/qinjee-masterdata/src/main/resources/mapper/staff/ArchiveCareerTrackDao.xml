@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 员工职业轨迹表(t_archive_career_track) -->
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.ArchiveCareerTrackDao">
+    <!-- 结果映射 -->
+    <resultMap id="t_archive_career_trackMap" type="com.qinjee.masterdata.model.entity.ArchiveCareerTrack">
+        <id column="change_id" property="changeId" jdbcType="INTEGER" />
+        <result column="archive_id" property="archiveId" jdbcType="INTEGER" />
+        <result column="before_user_category" property="beforeUserCategory" jdbcType="VARCHAR" />
+        <result column="after_user_category" property="afterUserCategory" jdbcType="VARCHAR" />
+        <result column="before_business_unit_id" property="beforeBusinessUnitId" jdbcType="INTEGER" />
+        <result column="after_business_unit_id" property="afterBusinessUnitId" jdbcType="INTEGER" />
+        <result column="before_org_id" property="beforeOrgId" jdbcType="INTEGER" />
+        <result column="after_org_id" property="afterOrgId" jdbcType="INTEGER" />
+        <result column="before_post_id" property="beforePostId" jdbcType="INTEGER" />
+        <result column="after_post_id" property="afterPostId" jdbcType="INTEGER" />
+        <result column="before_position_id" property="beforePositionId" jdbcType="INTEGER" />
+        <result column="after_position_id" property="afterPositionId" jdbcType="INTEGER" />
+        <result column="change_type" property="changeType" jdbcType="VARCHAR" />
+        <result column="change_date" property="changeDate" jdbcType="VARCHAR" />
+        <result column="change_reason" property="changeReason" jdbcType="VARCHAR" />
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        t_archive_career_track.change_id, t_archive_career_track.archive_id, t_archive_career_track.before_user_category, t_archive_career_track.after_user_category, t_archive_career_track.before_business_unit_id, t_archive_career_track.after_business_unit_id,
+        t_archive_career_track.before_org_id, t_archive_career_track.after_org_id, t_archive_career_track.before_post_id, t_archive_career_track.after_post_id, t_archive_career_track.before_position_id, t_archive_career_track.after_position_id,
+        t_archive_career_track.change_type, t_archive_career_track.change_date, t_archive_career_track.change_reason, t_archive_career_track.operator_id, t_archive_career_track.create_time
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="selectCareerTrack"  resultType="com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo" >
+        SELECT
+            arc.archive_id AS archiveId,
+            userCategory.dict_value AS userCategory,
+            orga.org_name AS businssUnitName,
+            org.org_name AS orgName,
+            pos.position_name AS positionName,
+            post.post_name AS postName,
+            changeType.dict_value AS changeType,
+            track.change_date AS changeDate,
+            track.change_reason AS changeReason
+        FROM
+            t_archive_career_track track
+            LEFT JOIN t_user_archive arc ON arc.archive_id = track.archive_id
+            AND arc.is_delete = 0
+            LEFT JOIN t_organization org ON org.org_id = track.after_org_id
+            AND org.is_enable = 1
+            LEFT JOIN t_organization orga ON orga.org_id = track.after_business_unit_id
+            AND orga.is_enable = 1
+            LEFT JOIN t_post post ON post.post_id = track.after_post_id
+            AND post.is_enable = 1
+            AND post.is_delete = 0
+            LEFT JOIN t_position pos ON pos.position_id = track.after_position_id
+            AND pos.is_delete = 0
+            LEFT JOIN t_sys_dict userCategory ON userCategory.dict_code = track.after_user_category
+            AND userCategory.dict_type = 'USER_CATEGORY' AND userCategory.is_delete = 0
+            LEFT JOIN t_sys_dict changeType ON changeType.dict_code = track.change_type AND changeType.dict_type = 'ARCHIVE_CHANGE_TYPE'
+            AND changeType.is_delete = 0
+        WHERE
+            track.archive_id = #{id}
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="insertArchiveCareerTrack" keyColumn="change_id" keyProperty="changeId" parameterType="com.qinjee.masterdata.model.entity.ArchiveCareerTrack" useGeneratedKeys="true">
+        insert into t_archive_career_track
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="changeId != null">
+                change_id,
+            </if>
+            <if test="archiveId != null">
+                archive_id,
+            </if>
+            <if test="beforeUserCategory!= null">
+                before_user_category,
+            </if>
+            <if test="afterUserCategory!= null">
+                after_user_category,
+            </if>
+            <if test="afterBusinessUnitId != null">
+                after_business_unit_id,
+            </if>
+            <if test="beforeOrgId != null">
+                before_org_id,
+            </if>
+            <if test="afterOrgId != null">
+                after_org_id,
+            </if>
+            <if test="afterPostId != null">
+                after_post_id,
+            </if>
+            <if test="beforePositionId != null">
+                before_position_id,
+            </if>
+            <if test="afterPositionId != null">
+                after_position_id,
+            </if>
+            <if test="changeType != null">
+                change_type,
+            </if>
+            <if test="changeDate != null">
+                change_date,
+            </if>
+            <if test="changeReason != null">
+                change_reason,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="changeId != null">
+                #{changeId},
+            </if>
+            <if test="archiveId != null">
+                #{archiveId},
+            </if>
+            <if test="beforeUserCategory!= null">
+                #{beforeUserCategory},
+            </if>
+            <if test="afterUserCategory!= null">
+                #{afterUserCategory},
+            </if>
+            <if test="afterBusinessUnitId != null">
+                #{afterBusinessUnitId},
+            </if>
+            <if test="beforeOrgId != null">
+                #{beforeOrgId},
+            </if>
+            <if test="afterOrgId != null">
+                #{afterOrgId},
+            </if>
+            <if test="afterPostId != null">
+                #{afterPostId},
+            </if>
+            <if test="beforePositionId != null">
+                #{beforePositionId},
+            </if>
+            <if test="afterPositionId != null">
+                #{afterPositionId},
+            </if>
+            <if test="changeType != null">
+                #{changeType},
+            </if>
+            <if test="changeDate != null">
+                #{changeDate},
+            </if>
+            <if test="changeReason != null">
+                #{changeReason},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId}
+            </if>
+        </trim>
+    </insert>
+<!--    &lt;!&ndash; 批量插入数据 &ndash;&gt;-->
+<!--    <insert id="insertT_archive_career_tracks" parameterType="list">-->
+<!--        INSERT INTO t_archive_career_track (-->
+<!--        change_id, archive_id, before_user_category, after_user_category, before_business_unit_id, after_business_unit_id,-->
+<!--        before_org_id, after_org_id, before_post_id, after_post_id, before_position_id, after_position_id,-->
+<!--        change_type, change_date, change_reason, operator_id, create_time-->
+<!--        ) VALUES (-->
+<!--        <foreach collection="list" index="index" item="item" separator=",">-->
+<!--            (-->
+<!--            #{item.change_id},-->
+<!--            #{item.archive_id},-->
+<!--            #{item.before_user_category},-->
+<!--            #{item.after_user_category},-->
+<!--            #{item.before_business_unit_id},-->
+<!--            #{item.after_business_unit_id},-->
+<!--            #{item.before_org_id},-->
+<!--            #{item.after_org_id},-->
+<!--            #{item.before_post_id},-->
+<!--            #{item.after_post_id},-->
+<!--            #{item.before_position_id},-->
+<!--            #{item.after_position_id},-->
+<!--            #{item.change_type},-->
+<!--            #{item.change_date},-->
+<!--            #{item.change_reason},-->
+<!--            #{item.operator_id},-->
+<!--            #{item.create_time}-->
+<!--            )-->
+<!--        </foreach>-->
+<!--    </insert>-->
+
+    <!-- 修改数据 -->
+    <update id="updateArchiveCareerTrack" parameterType="map">
+        UPDATE t_archive_career_track SET
+            archive_id = #{archive_id},
+            before_user_category = #{before_user_category},
+            after_user_category = #{after_user_category},
+            before_business_unit_id = #{before_business_unit_id},
+            after_business_unit_id = #{after_business_unit_id},
+            before_org_id = #{before_org_id},
+            after_org_id = #{after_org_id},
+            before_post_id = #{before_post_id},
+            after_post_id = #{after_post_id},
+            before_position_id = #{before_position_id},
+            after_position_id = #{after_position_id},
+            change_type = #{change_type},
+            change_date = #{change_date},
+            change_reason = #{change_reason},
+            operator_id = #{operator_id},
+            create_time = #{create_time}
+        WHERE change_id = #{change_id}
+    </update>
+
+<!--    &lt;!&ndash; 批量修改数据 &ndash;&gt;-->
+<!--    <update id="updateT_archive_career_tracks" parameterType="list">-->
+<!--        <foreach collection="list" index="index" item="item" separator=";">-->
+<!--            UPDATE t_archive_career_track SET-->
+<!--            archive_id = #{item.archive_id},-->
+<!--            before_user_category = #{item.before_user_category},-->
+<!--            after_user_category = #{item.after_user_category},-->
+<!--            before_business_unit_id = #{item.before_business_unit_id},-->
+<!--            after_business_unit_id = #{item.after_business_unit_id},-->
+<!--            before_org_id = #{item.before_org_id},-->
+<!--            after_org_id = #{item.after_org_id},-->
+<!--            before_post_id = #{item.before_post_id},-->
+<!--            after_post_id = #{item.after_post_id},-->
+<!--            before_position_id = #{item.before_position_id},-->
+<!--            after_position_id = #{item.after_position_id},-->
+<!--            change_type = #{item.change_type},-->
+<!--            change_date = #{item.change_date},-->
+<!--            change_reason = #{item.change_reason},-->
+<!--            operator_id = #{item.operator_id},-->
+<!--            create_time = #{item.create_time}-->
+<!--            WHERE change_id = #{item.change_id}-->
+<!--        </foreach>-->
+<!--    </update>-->
+
+    <!-- 根据主键删除数据 -->
+    <delete id="deleteCareerTrack" parameterType="integer">
+        DELETE FROM t_archive_career_track WHERE change_id = #{change_id}
+    </delete>
+
+
+</mapper>

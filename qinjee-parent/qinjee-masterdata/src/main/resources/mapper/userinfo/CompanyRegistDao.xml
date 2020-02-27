@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.userinfo.CompanyRegistDao">
+
+  <resultMap id="TableResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="is_system_define" jdbcType="VARCHAR" property="isSystemDefine" />
+    <result column="is_enable" jdbcType="VARCHAR" property="isEnable" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+  </resultMap>
+
+  <resultMap id="GroupResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveGroup">
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+    <result column="table_id" jdbcType="VARCHAR" property="tableId" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+  </resultMap>
+
+
+  <resultMap id="FieldResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveField">
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="field_code" jdbcType="VARCHAR" property="fieldCode" />
+    <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+    <result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+    <result column="input_type" jdbcType="VARCHAR" property="inputType" />
+    <result column="text_type" jdbcType="VARCHAR" property="textType" />
+    <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
+    <result column="placeholder" jdbcType="VARCHAR" property="placeholder" />
+    <result column="max_length" jdbcType="INTEGER" property="maxLength" />
+    <result column="min_length" jdbcType="INTEGER" property="minLength" />
+    <result column="max_number" jdbcType="INTEGER" property="maxNumber" />
+    <result column="min_number" jdbcType="INTEGER" property="minNumber" />
+    <result column="float_length" jdbcType="INTEGER" property="floatLength" />
+    <result column="is_time_range" jdbcType="INTEGER" property="isTimeRange" />
+    <result column="min_time" jdbcType="VARCHAR" property="minTime" />
+    <result column="max_time" jdbcType="VARCHAR" property="maxTime" />
+    <result column="format_time" jdbcType="VARCHAR" property="formatTime" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="is_must" jdbcType="INTEGER" property="isMust" />
+    <result column="rule" jdbcType="VARCHAR" property="rule" />
+    <result column="is_only_read" jdbcType="INTEGER" property="isOnlyRead" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="is_show" jdbcType="SMALLINT" property="isShow" />
+    <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+  </resultMap>
+
+  <!-- 新增企业 -->
+  <insert id="addCompany" keyColumn="company_id" keyProperty="companyId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo">
+      INSERT INTO t_company_info (company_name, user_number, valid_end_date)
+      VALUES (#{companyName}, #{userNumber}, #{validEndDate});
+  </insert>
+
+  <!-- 新增登录用户 -->
+  <insert id="addUserInfo" keyColumn="user_id" keyProperty="userId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.UserInfo">
+      INSERT INTO t_user_info (phone, password, user_name)
+      value (#{phone,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 新增登录用户 -->
+  <insert id="addUserArchive" keyColumn="archive_id" keyProperty="archiveId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
+      INSERT INTO t_user_archive (user_id, user_name, id_type, id_number, phone,org_id, company_id, operator_id)
+      value (#{userId}, #{userName}, #{idType}, #{idNumber}, #{phone}, #{orgId}, #{companyId}, 1)
+  </insert>
+
+  <!-- 新增企业登录用户关系 -->
+  <insert id="addUserCompany" parameterType="com.qinjee.masterdata.model.entity.UserCompany">
+      INSERT INTO t_user_company (user_id, company_id, is_enable)
+      value (#{userId}, #{companyId}, #{isEnable})
+  </insert>
+
+  <!-- 新增企业邮箱配置 -->
+  <insert id="addEmailConfig" parameterType="com.qinjee.masterdata.model.entity.EmailConfig">
+      INSERT INTO t_email_config (transport_protocol, host, port, ssl_enable, account, password, sender_nick, auth_code, company_id, operator_id)
+      VALUES ('smtp', 'smtp.exmail.qq.com', '465', 'true', 'system@qinjee.cn', 'ASMB2DN5re4a2QjfcGH8QvfgfirdwzvMSmesvznKwzY=', '勤杰软件', 'true',  #{companyId}, '1');
+  </insert>
+
+  <!-- 新增企业机构信息 -->
+  <insert id="addOrganization" keyColumn="org_id" keyProperty="orgId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.Organization">
+      INSERT INTO t_organization (org_code, org_name, org_type, org_parent_id, company_id, operator_id) VALUES ('1', #{orgName}, 'GROUP', 0,  #{companyId}, 1);
+  </insert>
+
+  <!-- 新增角色信息 -->
+  <insert id="addRole" keyColumn="role_id" keyProperty="roleId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.Role">
+      INSERT INTO t_role (role_name,is_auto_auth_child_org, company_id, is_system_define, operator_id) VALUES ('系统管理员', 1, #{companyId}, 1, 1);
+  </insert>
+
+  <!-- 新增用户角色信息 -->
+  <insert id="addUserRole" parameterType="com.qinjee.masterdata.model.entity.UserRole">
+      INSERT INTO t_user_role (role_id, archive_id, operator_id) VALUES (#{roleId}, #{archiveId}, 1);
+  </insert>
+
+  <!-- 初始化角色机构权限 -->
+  <insert id="initRoleOrgAuth" >
+      INSERT INTO t_role_org_auth(org_id, role_id, operator_id)
+      select t_organization.org_id,t_role.role_id,t_role.operator_id from t_role,t_company_info,t_organization
+      where t_company_info.company_id = #{companyId}
+      and t_company_info.company_id = t_role.company_id
+      and t_company_info.company_id = t_organization.company_id
+  </insert>
+
+  <!-- 初始化角色菜单权限 -->
+  <insert id="initRoleMenuAuth" >
+      INSERT INTO t_role_menu_auth(role_id, menu_id, operator_id)
+      select t_role.role_id,t_menu.menu_id,t_role.operator_id
+      from t_role,t_company_info,t_menu
+      where t_company_info.company_id = #{companyId}
+      and t_company_info.company_id = t_role.company_id
+  </insert>
+
+  <!-- 初始化企业菜单权限 -->
+  <insert id="initCompanyMenu" >
+      insert into t_company_menu(company_id,menu_id,menu_name,icon_url,operator_id)
+      select t_company_info.company_id,t_menu.menu_id,t_menu.menu_name,t_menu.icon_url,t_menu.operator_id
+      from t_menu,t_company_info
+      where t_company_info.company_id = #{companyId}
+  </insert>
+
+  <!-- 查询自定义表 -->
+  <select id="searchCustomArchiveTable" resultMap="TableResultMap">
+    select table_id,table_code,table_name,func_code,company_id,is_system_define,is_enable,sort
+    from t_custom_archive_table
+    where company_id = #{companyId,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
+
+  <!-- 查询自定义表字段分组 -->
+  <select id="searchCustomArchiveGroup" resultMap="GroupResultMap">
+    select g.group_id,g.group_name,g.table_id,g.sort
+    from t_custom_archive_group g
+    where g.table_id = #{tableId,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
+
+
+  <!-- 查询自定义表字段 -->
+  <select id="searchCustomArchiveField" resultMap="FieldResultMap">
+    select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,code,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort
+    from t_custom_archive_field
+    where table_id = #{tableId,jdbcType=INTEGER}
+    <if test="groupId != null">
+        and group_id = #{groupId,jdbcType=INTEGER}
+    </if>
+    and is_delete = 0
+  </select>
+
+  <!-- 新增自定义表 -->
+  <insert id="addCustomTable" keyColumn="table_id" keyProperty="tableId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+      insert into t_custom_archive_table (table_name, table_code, func_code, company_id, is_system_define, is_enable, sort, creator_id)
+      values (#{tableName,jdbcType=VARCHAR}, #{tableCode,jdbcType=VARCHAR}, #{funcCode,jdbcType=VARCHAR}, #{companyId,jdbcType=INTEGER}, #{isSystemDefine,jdbcType=SMALLINT}, #{isEnable,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, 1)
+  </insert>
+
+  <!-- 新增自定义组 -->
+  <insert id="addCustomGroup" keyColumn="group_id" keyProperty="groupId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveGroup">
+      insert into t_custom_archive_group (group_name, table_id, sort, creator_id)
+      values (#{groupName,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 1)
+  </insert>
+
+  <!-- 新增自定义表字段 -->
+  <insert id="addCustomField" keyColumn="field_id" keyProperty="fieldId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveField">
+      INSERT INTO t_custom_archive_field (field_code, field_name, field_type, input_type, text_type,
+      default_value, placeholder, max_length, min_length, max_number, min_number, float_length, is_time_range, min_time, max_time,
+      format_time, code, is_must, rule, is_only_read, table_id, group_id, is_show, is_system_define, sort, creator_id)
+      VALUES (#{fieldCode}, #{fieldName}, #{fieldType}, #{inputType}, #{textType}, #{defaultValue},
+       #{placeholder}, #{maxLength}, #{minLength}, #{maxNumber}, #{minNumber}, #{floatLength}, #{isTimeRange}, #{minTime}, #{maxTime},
+       #{formatTime}, #{code}, #{isMust}, #{rule}, #{isOnlyRead}, #{tableId}, #{groupId}, #{isShow}, #{isSystemDefine}, #{sort}, 1)
+  </insert>
+
+    <!-- 新增角色自定义字段权限 -->
+    <insert id="addRoleCustomFieldAuth" >
+      insert into t_role_custom_field_auth (role_id,field_id,read_write_code,operator_id)
+      VALUES (#{roleId},#{fieldId},'WRITE',1)
+  </insert>
+
+    <!-- 新增预入职模板登记 -->
+    <insert id="addTemplateEntryRegistration" keyColumn="template_id" keyProperty="templateId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.TemplateEntryRegistration">
+      INSERT INTO t_template_entry_registration (template_name, template_description, receive_ids, title, welcome_speech, logo_url, background_img_url, company_id, is_enable, operator_id)
+        VALUES ('入职登记', '邀请待入职人员填写入职登记，提高入职率', #{receiveIds}, '欢迎加入', '亲爱的小伙伴，\r\n为方便HR给您办理入职手续，请尽可能完整地填写入职登记表和入职材料，并确保您所填写的信息准确、真实、有效。\r\n    愿我们携手同行、共创辉煌！', 'http://www.dhr360.com/file/company/logo/1.png', 'http://www.dhr360.com/file/company/welcome_bg1_cover_pc.jpg', #{companyId}, '1', 1)
+  </insert>
+
+    <!-- 新增预入职模板登记附件 -->
+    <insert id="addTemplateAttachmentGroup" parameterType="com.qinjee.masterdata.model.entity.TemplateAttachmentGroup">
+      INSERT INTO t_template_attachment_group(template_id,group_id,description,is_must,sort,operator_id)
+        select #{templateId},group_id,description,1,1,1 from t_attachment_group where group_type = 'GROUP' and parent_group_id != 13
+  </insert>
+
+    <!-- 新增预入职模板登记自定义表 -->
+    <insert id="addTemplateCustomTable" parameterType="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO">
+      INSERT INTO t_template_custom_table(template_id,table_id,sort,operator_id)
+      VALUES(#{templateId},#{tableId},#{sort},1)
+  </insert>
+
+    <!-- 新增预入职模板登记自定义字段 -->
+    <insert id="addTemplateCustomField" parameterType="com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO">
+        INSERT INTO t_template_custom_table_field(template_id,table_id,field_id,is_must,sort,placeholder,operator_id)
+        VALUES (#{templateId},#{tableId},#{fieldId},#{isMust},#{sort},#{placeholder},1)
+  </insert>
+</mapper>

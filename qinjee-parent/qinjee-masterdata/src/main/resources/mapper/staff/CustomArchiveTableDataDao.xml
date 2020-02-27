@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="big_data" jdbcType="VARCHAR" property="bigData" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, table_id, business_id, operator_id, create_time, update_time,is_delete,CONVERT(big_data USING utf8) as big_data
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_table_data
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_custom_archive_table_data
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" useGeneratedKeys="true">
+    insert into t_custom_archive_table_data (table_id, business_id, operator_id,
+      create_time, update_time, big_data,is_delete
+      )
+    values (#{tableId,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{bigData,jdbcType=LONGVARBINARY}
+      #{isDelete,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" useGeneratedKeys="true">
+    insert into t_custom_archive_table_data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tableId != null">
+        table_id,
+      </if>
+      <if test="businessId != null">
+        business_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="bigData != null">
+        big_data,
+      </if>
+      <if test="isDelete != null">
+       is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tableId != null">
+        #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="businessId != null">
+        #{businessId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bigData != null">
+        #{bigData,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+    update t_custom_archive_table_data
+    <set>
+      <if test="tableId != null">
+        table_id = #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="businessId != null">
+        business_id = #{businessId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bigData != null">
+      big_data = #{bigData,jdbcType=LONGVARBINARY},
+    </if>
+      <if test="isDelete != null">
+       is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+    update t_custom_archive_table_data
+    set table_id = #{tableId,jdbcType=INTEGER},
+      business_id = #{businessId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      big_data = #{bigData,jdbcType=LONGVARBINARY}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+    update t_custom_archive_table_data
+    set
+      business_id = #{businessId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      big_data=#{bigData}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectCustomArchiveTableId" resultType="java.lang.Integer">
+    select  id
+    from t_custom_archive_table_data
+    where table_id = #{customArchiveTableId,jdbcType=INTEGER}
+     AND
+    is_delete=0
+  </select>
+  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_table_data
+    where id
+    in <foreach collection="integerList" item="item" open="(" separator="," close=")">
+    #{item}
+    AND
+    is_delete=0
+  </foreach>
+  </select>
+  <select id="selectTableIdByBusinessId" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table_data
+    where business_id = #{businessId,jdbcType=INTEGER}
+     AND
+    is_delete=0
+  </select>
+  <select id="selectByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_table_data
+    where
+    table_id = #{tableId,jdbcType=INTEGER}
+    AND
+    is_delete=0
+  </select>
+  <insert id="insertCustom">
+    insert into #{s}
+    (#{fieldSql})
+    values (#(valueSal))
+  </insert>
+  <insert id="insertBatch">
+    <foreach collection="list5" item="item"  separator=";" >
+      insert into t_custom_archive_table_data
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.tableId != null">
+          table_id,
+        </if>
+        <if test="item.businessId != null">
+          business_id,
+        </if>
+        <if test="item.operatorId != null">
+          operator_id,
+        </if>
+        <if test="item.createTime != null">
+          create_time,
+        </if>
+        <if test="item.updateTime != null">
+          update_time,
+        </if>
+        <if test="item.bigData != null">
+          big_data,
+        </if>
+        <if test="item.isDelete != null">
+          is_delete,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="item.tableId != null">
+          #{item.tableId,jdbcType=INTEGER},
+        </if>
+        <if test="item.businessId != null">
+          #{item.businessId,jdbcType=INTEGER},
+        </if>
+        <if test="item.operatorId != null">
+          #{item.operatorId,jdbcType=INTEGER},
+        </if>
+        <if test="item.createTime != null">
+          #{item.createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.updateTime != null">
+          #{item.updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.bigData != null">
+          #{item.bigData,jdbcType=VARCHAR},
+        </if>
+        <if test="item.isDelete != null">
+          #{item.isDelete,jdbcType=INTEGER},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+  <select id="selectTableIdByBusinessIdAndTableId" resultType="java.lang.Integer">
+    select id
+    from t_custom_archive_table_data
+    where
+    business_id = #{businessId,jdbcType=INTEGER}
+    AND
+    table_id = #{tableId,jdbcType=INTEGER}
+    AND
+    is_delete=0
+  </select>
+  <select id="selectBigDataBybusinessIdAndTableId"
+          resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select   <include refid="Base_Column_List"/>
+    from t_custom_archive_table_data
+    where
+    business_id = #{businessId,jdbcType=INTEGER}
+    AND table_id = #{tableId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="selectBigDataByBusinessIdAndTitleListAndCompanyId" resultType="hashmap">
+    select  adata.business_id,adata.big_data
+    from t_custom_archive_table_data adata
+    left join t_custom_archive_table tab on adata.table_id=tab.table_id
+    where tab.is_delete=0 and tab .is_enable=1
+    and tab.table_name=#{title}
+    and tab.company_id=#{companyId}
+    and adata.business_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
+
+  <update id="deleteByBusinessIdAndFuncode">
+        UPDATE t_custom_archive_table_data
+    SET is_delete = 1
+    WHERE
+        business_id = #{id}
+    AND table_id IN (
+        SELECT
+            table_id
+        FROM
+            t_custom_archive_table
+        WHERE
+    company_id=#{CompanyId}
+        and func_code = #{funcCode}
+      and is_delete=0
+      and is_enable=1
+)
+
+  </update>
+<update id="deleteByPrimaryKeyList">
+  update
+  t_custom_archive_table_data
+   SET is_delete = 1
+   id in
+   <foreach collection="list" item="item" open="(" separator="," close=")">
+     #{item}
+   </foreach>
+</update>
+  <update id="deleteByBusinessIdAndTableId">
+    UPDATE t_custom_archive_table_data
+     SET is_delete = 1
+     where business_id=#{id}
+     and table_id=#{tableId}
+  </update>
+  <update id="deleteById">
+    UPDATE t_custom_archive_table_data
+     SET is_delete = 1
+     where id=#{id}
+  </update>
+  <select id="selectByBusinessIdAndCompanyId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from t_custom_archive_table_data
+    where table_id in (
+    select table_id from t_custom_archive_table
+    where company_id=#{companyId}
+    and is_delete=0
+    and is_enable=1
+    )
+    and business_id=#{employmentId}
+    and is_delete=0
+  </select>
+  <select id="selectByCompanyIdAndBusinessId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveTableData" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from  t_custom_archive_table_data
+    where is_delete=0
+    and business_id=#{employmentId}
+    and table_id in
+    (select table_id from  t_custom_archive_table where company_id=#{companyId} and is_delete=0 and func_code="PRE")
+  </select>
+  <update id="deleteByBussinessIdAndTableId">
+    update t_custom_archive_table_data
+    set is_delete=1
+    where business_id=#{businessId}
+    and table_id in
+    <foreach collection="integers" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+</mapper>
