@@ -859,7 +859,7 @@
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
         <if test="headImgUrl!=null">
-            headimgurl={headImgUrl}
+            headimgurl=#{headImgUrl}
         </if>
     </set>
     where archive_id = #{archiveId,jdbcType=INTEGER}
