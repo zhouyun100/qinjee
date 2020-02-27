@@ -431,7 +431,6 @@ public class PreTemplateController extends BaseController {
     public ResponseResult <List < EntryTableListWithValueVo >> handlerCustomTableGroupFieldList(Integer preId, Integer templateId, Integer companyId )  {
         Boolean b = checkParam (preId,templateId,companyId);
         if (b) {
-
             List < EntryTableListWithValueVo > list =
                     null;
             try {

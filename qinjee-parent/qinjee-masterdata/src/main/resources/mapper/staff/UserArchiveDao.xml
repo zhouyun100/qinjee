@@ -44,6 +44,7 @@
     <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
     <result column="archive_status" jdbcType="INTEGER" property="archiveStatus" />
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
+    <result column="headimgurl" jdbcType="VARCHAR" property="headImgUrl" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
@@ -73,7 +74,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
+    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,headimgurl,
     user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
     marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, phone, email, address,
@@ -232,7 +233,10 @@
                 operator_id,
             </if>
             <if test="archiveStatus != null">
-                archive_status
+                archive_status,
+            </if>
+            <if test="headImgUrl!=null">
+                headimgurl
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -346,8 +350,11 @@
             #{operatorId,jdbcType=INTEGER},
           </if>
           <if test="archiveStatus != null">
-            #{archiveStatus,jdbcType=VARCHAR}
+            #{archiveStatus,jdbcType=VARCHAR},
           </if>
+            <if test="headImgUrl!=null">
+                #{headImgUrl}
+            </if>
         </trim>
   </insert>
   <insert id="insertBatch" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
@@ -469,7 +476,10 @@
           serving_date,
       </if>
       <if test="item.postId != null">
-          post_id
+          post_id,
+      </if>
+      <if test="item.headImgUrl!=null">
+          headimgurl
       </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -588,7 +598,10 @@
               #{item.servingDate},
           </if>
           <if test="item.postId != null">
-              #{item.postId}
+              #{item.postId},
+          </if>
+          <if test="item.headImgUrl!=null">
+              #{item.headImgUrl}
           </if>
       </trim>
     </foreach>
@@ -717,6 +730,9 @@
                 <if test="item.updateTime != null">
                     update_time = #{item.updateTime,jdbcType=TIMESTAMP},
                 </if>
+                <if test="item.headImgUrl!=null">
+                    headimgurl=#{headImgUrl}
+                </if>
             </set>
             where archive_id = #{item.archiveId,jdbcType=INTEGER}
         </foreach>
@@ -842,6 +858,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+        <if test="headImgUrl!=null">
+            headimgurl={headImgUrl}
+        </if>
     </set>
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>

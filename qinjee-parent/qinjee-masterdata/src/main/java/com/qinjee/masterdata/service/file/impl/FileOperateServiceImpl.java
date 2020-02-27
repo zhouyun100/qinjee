@@ -81,7 +81,8 @@ public class FileOperateServiceImpl implements IFileOperateService {
         }
 
     @Override
-    public void uploadImg(MultipartFile[] files, UserSession userSession) {
+    @Transactional(rollbackFor = Exception.class)
+    public void uploadImg(MultipartFile[] files, UserSession userSession) throws Exception {
         File file1 = null;
         for (int i = 0; i < files.length; i++) {
             try {
@@ -90,10 +91,14 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 String name=fileName.split("#")[1].split("\\.")[0];
                 file1 = FileUploadUtils.multipartFileToFile(files[i]);
                 String pathUrl = "图像" + File.separator + userSession.getCompanyId() + File.separator +name+File.separator+fileName;
-                inserHeadAttchmentRecord(files[i], userSession, fileName, s, pathUrl);
+                List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumberOrEmploy(s,userSession.getCompanyId ());
+                //新增上传记录
+                Integer archiveId = userArchiveVos.get(0).getArchiveId();
+                inserHeadAttchmentRecord(files[i], userSession, fileName, archiveId, pathUrl);
+                //上传文件
                 UpAndDownUtil.putFile(file1, pathUrl);
-            } catch (Exception e) {
-                e.printStackTrace();
+                //设置图像
+                userArchiveVos.get(0).setHeadImgUrl(UpAndDownUtil.getPath(pathUrl).toString());
             } finally {
                 if (file1 != null) {
                     file1.delete();
@@ -107,13 +112,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
          return  attachmentRecordDao.selectByBuinessIdAndType(id,type,userSession.getCompanyId());
     }
 
-    private void inserHeadAttchmentRecord(MultipartFile files, UserSession userSession, String fileName, String s, String pathUrl) {
+    private void inserHeadAttchmentRecord(MultipartFile files, UserSession userSession, String fileName, Integer archiveId, String pathUrl) {
         AttachmentRecord attachmentRecord=new AttachmentRecord();
         attachmentRecord.setOperatorId(userSession.getArchiveId());
         attachmentRecord.setCompanyId(userSession.getCompanyId());
         attachmentRecord.setAttachmentName(fileName);
-        List<UserArchiveVo> userArchiveVos=userArchiveDao.selectByIdNumberOrEmploy(s,userSession.getCompanyId ());
-        Integer archiveId = userArchiveVos.get(0).getArchiveId();
         attachmentRecord.setBusinessId(archiveId);
         attachmentRecord.setAttachmentUrl(pathUrl);
         attachmentRecord.setAttachmentSize((int)files.getSize()/1024);

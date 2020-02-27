@@ -578,9 +578,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         map.put (-1,String.valueOf (list1.get(j).getId ()) );
                         list.add ( map );
                     }
-
                 }
-
             }
         }
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "PRE" )) {
