@@ -1,0 +1,116 @@
+spring:
+  #应用名
+  application:
+    name: gateway-dev
+
+  #  redis集群
+  redis:
+    cluster:
+      nodes: 193.112.188.180:7001,193.112.188.180:7002,193.112.188.180:7003,193.112.188.180:7004,193.112.188.180:7005,193.112.188.180:7006
+      max-redirects: 6
+    timeout: 2000
+    password: qinjee2019
+
+  #  文件上传限制
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB  #文件最大单次上传限制
+      max-request-size: 5MB
+
+zuul:
+  host:
+    connect-timeout-millis: 60000
+    socket-timeout-millis: 60000
+  #  sensitiveHeaders的默认值初始值是"Cookie", "Set-Cookie", "Authorization"这三项，不设置为空会导致无法设置cookie
+  sensitive-headers:
+  prefix: /api
+  routes:
+    qinjee-masterdata:
+      path: /masterdata/**
+      serviceId: masterdata-dev
+
+  #security:
+  #  basic:
+  #    enabled: false
+  #  oauth2:
+  #    client:
+  #      access-token-uri: http://localhost:7777/uaa/oauth/token #令牌端点
+  #      user-authorization-uri: http://localhost:7777/uaa/oauth/authorize #授权端点
+  #      client-id: qinjee-zuul #OAuth2客户端ID
+  #      client-secret: secret #OAuth2客户端密钥
+  #    resource:
+  #      jwt:
+  #        key-value: springcloud123
+
+#注册中心指向start
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    #以IP地址进行注册
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    #表示eureka client发送心跳给server的频率
+    lease-renewal-interval-in-seconds: 30
+    #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，如果在这个时间段内没有收到下一次心跳，则将该 instance移除
+    lease-expiration-duration-in-seconds: 90
+  client:
+    service-url:
+      defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
+
+
+server:
+  port: 8010
+  tomcat:
+    accesslog:
+      enabled: false
+
+masterdata-dev-zhouyun:
+  ribbon:
+    ReadTimeout: 10000 # ribbon read超时时间
+    SocketTimeout: 10000 #ribbon请求连接的超时时间，默认值1000
+    OkToRetryOnAllOperations: false #对所有操作请求都进行重试,默认false
+    MaxAutoRetries: 0     #对当前实例的重试次数，默认0
+    MaxAutoRetriesNextServer: 0 #对切换实例的重试次数，默认1
+    http:
+      client:
+        enabled: false # 关闭 httpclient 支持
+    okhttp:
+      enabled: true # 开启 okhttp 支持
+
+hystrix:
+  threadpool:
+    default:
+      # 核心线程池大小  默认10
+      coreSize: 20
+      # 最大最大线程池大小
+      maximumSize: 30
+      # 此属性允许maximumSize的配置生效。 那么该值可以等于或高于coreSize。 设置coreSize <maximumSize会创建一个线程池，该线程池可以支持maximumSize并发，但在相对不活动期间将向系统返回线程。 （以keepAliveTimeInMinutes为准）
+      allowMaximumSizeToDivergeFromCoreSize: true
+      # 请求等待队列
+      maxQueueSize: 10
+      # 队列大小拒绝阀值 在还未超过请求等待队列时也会拒绝的大小
+      queueSizeRejectionThreshold: 10
+  command:
+    masterdata-dev-zhouyun:
+#    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
+      fallback:
+        enabled: true
+      execution:
+        timeout:
+          #如果enabled设置为false，则请求超时交给ribbon超时时间为准,为true,则超时以熔断时间为准
+          enabled: true
+        isolation:
+          #隔离策略，有THREAD和SEMAPHORE
+          #THREAD - 它在单独的线程上执行，并发请求受线程池中的线程数量的限制
+          #SEMAPHORE - 它在调用线程上执行，并发请求受到信号量计数的限制
+          #对比：https://www.cnblogs.com/java-synchronized/p/7927726.html
+          thread:
+            timeoutInMilliseconds: 10000 #断路器超时时间，默认1000ms
+
+feign:
+  hystrix:
+    enabled: true
+
+logging:
+  config: classpath:log4j/log4j2_dev.xml

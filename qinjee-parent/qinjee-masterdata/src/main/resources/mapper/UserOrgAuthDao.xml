@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.UserOrgAuthDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.UserOrgAuth">
+    <id column="auth_id" jdbcType="INTEGER" property="authId" />
+    <result column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    auth_id, org_id, archive_id, operator_id, create_time, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_user_org_auth
+    where auth_id = #{authId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user_org_auth
+    where auth_id = #{authId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.UserOrgAuth" useGeneratedKeys="true">
+    insert into t_user_org_auth (org_id, archive_id, operator_id,
+      create_time, is_delete)
+    values (#{orgId,jdbcType=INTEGER}, #{archiveId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.UserOrgAuth" useGeneratedKeys="true">
+    insert into t_user_org_auth
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orgId != null">
+        org_id,
+      </if>
+      <if test="archiveId != null">
+        archive_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orgId != null">
+        #{orgId,jdbcType=INTEGER},
+      </if>
+      <if test="archiveId != null">
+        #{archiveId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.UserOrgAuth">
+    update t_user_org_auth
+    <set>
+      <if test="orgId != null">
+        org_id = #{orgId,jdbcType=INTEGER},
+      </if>
+      <if test="archiveId != null">
+        archive_id = #{archiveId,jdbcType=INTEGER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where auth_id = #{authId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.UserOrgAuth">
+    update t_user_org_auth
+    set org_id = #{orgId,jdbcType=INTEGER},
+      archive_id = #{archiveId,jdbcType=INTEGER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=SMALLINT}
+    where auth_id = #{authId,jdbcType=INTEGER}
+  </update>
+  <select id="selectCompanyIdByArchive" resultType="java.lang.Integer">
+    select  org_id
+    from t_user_org_auth
+    where  archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
+  </select>
+
+  <select id="selectArchiveIdByOrg" resultType="java.lang.Integer">
+    select archive_id
+    from t_user_org_auth
+    where  org_id= #{integer,jdbcType=INTEGER} AND is_delete=0
+  </select>
+  <select id="selectOrgByArc" resultType="java.lang.Integer">
+    select org_id
+    from t_user_org_auth
+    where is_delete=0
+    AND archive_id = #{archiveId,jdbcType=INTEGER}
+  </select>
+</mapper>

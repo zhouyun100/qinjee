@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.auth.ArchiveAuthDao">
+
+  <resultMap id="ArchiveResultMap" type="com.qinjee.masterdata.model.vo.auth.ArchiveInfoVO">
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
+    <result column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+    <result column="dept_full_name" jdbcType="VARCHAR" property="deptFullName" />
+    <result column="post_name" jdbcType="VARCHAR" property="postName" />
+  </resultMap>
+
+  <resultMap id="OrgArchiveResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationArchiveVO">
+    <id column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_type" jdbcType="VARCHAR" property="orgType" />
+    <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+    <result column="has_org" jdbcType="INTEGER" property="hasOrg" />
+  </resultMap>
+
+  <resultMap id="OrgResultMap" type="com.qinjee.masterdata.model.vo.auth.OrganizationVO">
+    <id column="org_id" jdbcType="INTEGER" property="orgId" />
+    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_type" jdbcType="VARCHAR" property="orgType" />
+    <result column="org_parent_id" jdbcType="INTEGER" property="orgParentId" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
+    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+    <result column="has_org" jdbcType="INTEGER" property="hasOrg" />
+  </resultMap>
+
+  <resultMap id="UserRoleMap" type="com.qinjee.masterdata.model.entity.UserRole">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
+    <result column="is_trusteeship" jdbcType="TINYINT" property="isTrusteeship" />
+    <result column="trusteeship_begin_time" jdbcType="TIMESTAMP" property="trusteeshipBeginTime" />
+    <result column="trusteeship_end_time" jdbcType="TIMESTAMP" property="trusteeshipEndTime" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+  </resultMap>
+
+  <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
+    <id column="menu_id" jdbcType="INTEGER" property="menuId" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+    <result column="func_type" jdbcType="VARCHAR" property="funcType" />
+    <result column="func_url" jdbcType="VARCHAR" property="funcUrl" />
+    <result column="button_code" jdbcType="VARCHAR" property="buttonCode" />
+    <result column="parent_menu_id" jdbcType="INTEGER" property="parentMenuId" />
+    <result column="has_menu" jdbcType="INTEGER" property="hasMenu" />
+  </resultMap>
+
+  <!-- 根据角色ID查询档案列表 -->
+  <select id="searchArchiveListByRoleId" parameterType="java.lang.Integer" resultMap="ArchiveResultMap">
+    select t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,
+        t_sys_dict.dict_value gender,a.org_name business_unit_name,b.org_name dept_name,t_post.post_name
+    from t_user_role,t_user_archive
+    LEFT JOIN t_post on t_user_archive.post_id = t_post.post_id
+    LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
+    LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
+    LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE'
+    AND t_user_archive.gender = t_sys_dict.dict_code
+    where t_user_role.role_id = #{roleId,jdbcType=INTEGER}
+    and t_user_archive.archive_status = 'SERVICE'
+    and t_user_role.archive_id = t_user_archive.archive_id
+    and t_user_role.is_delete = 0
+  </select>
+
+  <!-- 业务上根据档案ID和角色ID移除，库表修改删除标识，不进行物理删除 -->
+  <update id="delArchiveRole" parameterType="com.qinjee.masterdata.model.entity.UserRole">
+    update t_user_role
+    set is_delete = 1,
+      operator_id = #{operatorId,jdbcType=INTEGER}
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+    and role_id = #{roleId,jdbcType=INTEGER}
+    and is_delete = 0;
+  </update>
+
+  <!-- 添加用户角色关系 -->
+  <insert id="addArchiveRole" keyColumn="id" keyProperty="id" parameterType="com.qinjee.masterdata.model.entity.UserRole" useGeneratedKeys="true">
+    insert into t_user_role (role_id, archive_id,
+    <if test="isTrusteeship != null">
+        is_trusteeship,
+    </if>
+    <if test="trusteeshipBeginTime != null">
+        trusteeship_begin_time,
+    </if>
+    <if test="trusteeshipEndTime != null">
+        trusteeship_end_time,
+    </if>
+      operator_id)
+    values (#{roleId,jdbcType=INTEGER}, #{archiveId,jdbcType=INTEGER},
+    <if test="isTrusteeship != null">
+      #{isTrusteeship,jdbcType=TINYINT},
+    </if>
+    <if test="trusteeshipBeginTime != null">
+      #{trusteeshipBeginTime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="trusteeshipEndTime != null">
+      #{trusteeshipEndTime,jdbcType=TIMESTAMP},
+    </if>
+      #{operatorId,jdbcType=INTEGER})
+  </insert>
+
+  <!--根据档案ID查询已有的机构列表 -->
+  <select id="searchArchiveRoleByArchiveId" parameterType="java.lang.Integer" resultMap="UserRoleMap">
+    select id,role_id,archive_id,is_trusteeship,trusteeship_begin_time,trusteeship_end_time,operator_id
+    from t_user_role
+    where archive_id = #{archiveId,jdbcType=INTEGER}
+    and is_delete = 0
+  </select>
+
+  <!-- 根据档案ID查询所有机构列表 -->
+  <select id="searchOrganizationListByArchiveId" resultMap="OrgArchiveResultMap">
+    select v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.sort_id from (
+    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+    t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id
+    from t_organization,t_role_org_auth,t_user_role
+    where t_user_role.archive_id = #{archiveId}
+    and (t_user_role.is_trusteeship = 0
+    or (t_user_role.is_trusteeship = 1
+    and #{now} >= t_user_role.trusteeship_begin_time
+    and t_user_role.trusteeship_end_time >= #{now}
+    ))
+    and t_role_org_auth.role_id = t_user_role.role_id
+    and t_organization.org_id = t_role_org_auth.org_id
+    and t_user_role.is_delete = 0
+    and t_role_org_auth.is_delete = 0
+    UNION
+    select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+    t_organization.org_full_name,t_organization.org_parent_id,t_organization.sort_id
+    from t_organization,t_user_org_auth
+    where t_user_org_auth.archive_id = #{archiveId}
+    and t_organization.org_id = t_user_org_auth.org_id
+    and t_user_org_auth.is_delete = 0
+    ) v GROUP BY v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.sort_id
+    ORDER BY v.sort_id ASC
+  </select>
+
+  <!-- 根据企业ID查询所有档案列表 -->
+  <select id="searchArchiveListByCompanyId" resultMap="ArchiveResultMap">
+    SELECT
+        t_user_archive.archive_id,
+        t_user_archive.user_name,
+        t_user_archive.employee_number,
+        t_user_archive.org_id,
+        t_sys_dict.dict_value gender,
+        a.org_name business_unit_name,
+        b.org_name dept_name,
+        b.org_full_name dept_full_name,
+        t_post.post_name
+    FROM
+        t_user_archive
+    LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
+    LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
+    LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
+    LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE'
+    AND t_user_archive.gender = t_sys_dict.dict_code
+    WHERE t_user_archive.company_id = #{companyId}
+    AND t_user_archive.archive_status = 'SERVICE'
+    and t_user_archive.is_delete = 0
+  </select>
+
+
+  <!--根据档案ID查询人员机构树 -->
+  <select id="searchOrgAuthTree" parameterType="com.qinjee.masterdata.model.vo.auth.RequestRoleVO" resultMap="OrgResultMap">
+    SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_parent_id,v.org_full_name,
+        CASE WHEN t.has_org is not NULL THEN t.has_org ELSE 0 END has_org
+    from (
+        select t_organization.org_id,t_organization.org_code,t_organization.org_name,t_organization.org_type,
+        t_organization.org_parent_id,t_organization.org_full_name,t_organization.sort_id
+        from t_organization,(
+            select roa.org_id from t_role_org_auth roa
+            where roa.role_id in (
+            select role_id from t_user_role ur
+            WHERE ur.archive_id = #{operatorId,jdbcType=INTEGER}
+            and (ur.is_trusteeship = 0
+            or (ur.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= ur.trusteeship_begin_time
+            and ur.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+            ))
+            and ur.is_delete = 0
+            )
+            and roa.is_delete = 0
+            UNION
+            select uoa.org_id from t_user_org_auth uoa
+            where uoa.archive_id = #{operatorId,jdbcType=INTEGER}
+            and (uoa.is_trusteeship = 0
+            or (uoa.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= uoa.trusteeship_begin_time
+            and uoa.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+            ))
+            and uoa.is_delete = 0
+        ) v1
+        WHERE t_organization.org_id = v1.org_id
+    ) v
+    LEFT JOIN (
+        select t1.org_id,t1.has_org from (
+        select t_organization.org_id,1 as has_org from t_role_org_auth,t_organization
+        where t_role_org_auth.role_id = #{roleId,jdbcType=INTEGER}
+        and t_role_org_auth.org_id = t_organization.org_id
+        and t_role_org_auth.is_delete = 0
+        UNION
+        select t_organization.org_id,2 as has_org
+        from t_user_org_auth,t_organization
+        where t_user_org_auth.archive_id = #{archiveId,jdbcType=INTEGER}
+        and t_user_org_auth.role_id = #{roleId,jdbcType=INTEGER}
+        and (t_user_org_auth.is_trusteeship = 0
+        or (t_user_org_auth.is_trusteeship = 1
+        and #{currentDateTime,jdbcType=TIMESTAMP} >= t_user_org_auth.trusteeship_begin_time
+        and t_user_org_auth.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+        ))
+        and t_user_org_auth.org_id = t_organization.org_id
+        and t_user_org_auth.is_delete = 0
+        ) t1 GROUP BY t1.org_id
+    ) t ON v.org_id = t.org_id
+    ORDER BY sort_id
+  </select>
+
+  <!--根据档案ID查询已有的机构列表 -->
+  <select id="searchArchiveOrgListByRoleId" parameterType="java.lang.Integer" resultMap="OrgResultMap">
+        select org_id from t_user_org_auth
+        where archive_id = #{archiveId,jdbcType=INTEGER}
+        and role_id = #{roleId,jdbcType=INTEGER}
+        and is_delete = 0
+    </select>
+
+  <!-- 新增档案机构权限 -->
+  <insert id="addArchiveOrgAuth" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.UserOrgAuth" useGeneratedKeys="true">
+        insert into t_user_org_auth (archive_id,org_id,role_id,operator_id)
+        values (#{archiveId,jdbcType=INTEGER}, #{orgId,jdbcType=INTEGER},#{roleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+    </insert>
+
+  <!-- 删除档案机构权限 -->
+  <update id="delArchiveOrgAuth" parameterType="com.qinjee.masterdata.model.entity.UserOrgAuth">
+        update t_user_org_auth set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where archive_id = #{archiveId,jdbcType=INTEGER}
+        and role_id = #{roleId,jdbcType=INTEGER}
+        <if test="orgId != null">
+          and org_id = #{orgId,jdbcType=INTEGER}
+        </if>
+        and is_delete = 0
+    </update>
+
+
+    <!-- 根据档案ID和菜单ID查询菜单按钮列表 -->
+    <select id="searchMenuButtonList" resultMap="MenuResultMap">
+        select t_menu.menu_id,t_menu.button_code,t_menu.menu_name,t_menu.func_type
+        from t_menu
+        where t_menu.parent_menu_id = #{menuId,jdbcType=INTEGER}
+        and t_menu.menu_id in(
+        select a.menu_id
+        from t_user_role r,t_role_menu_auth a
+        WHERE r.archive_id = #{archiveId,jdbcType=INTEGER}
+        and (r.is_trusteeship = 0
+            or (r.is_trusteeship = 1
+            and #{currentDateTime,jdbcType=TIMESTAMP} >= r.trusteeship_begin_time
+            and r.trusteeship_end_time >= #{currentDateTime,jdbcType=TIMESTAMP}
+        ))
+        and r.role_id = a.role_id
+        and r.is_delete = 0
+        and a.is_delete = 0
+        GROUP BY a.menu_id
+        )
+        and t_menu.func_type = 'BUTTON'
+      </select>
+
+    <update id="delUserRoleRelationByUserId">
+        update t_user_role set is_delete =1 and operator_id = #{operatorId} where archive_id = #{archiveId}
+    </update>
+</mapper>

@@ -1,6 +1,0 @@
-spring: 
-  application:
-    name: qinjee-zuul
-  #资源文件
-  profiles:
-    active: dev

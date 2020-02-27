@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+    <id column="table_id" jdbcType="INTEGER" property="tableId" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="table_code" jdbcType="VARCHAR" property="tableCode" />
+    <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="is_system_define" jdbcType="SMALLINT" property="isSystemDefine" />
+    <result column="is_enable" jdbcType="SMALLINT" property="isEnable" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    table_id, `table_name`,table_code,func_code, company_id, is_system_define, is_enable, sort, creator_id,
+    create_time, update_time, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_table
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_custom_archive_table
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable" useGeneratedKeys="true">
+    insert into t_custom_archive_table (`table_name`,table_code,func_code, company_id,func_code, is_system_define,
+      is_enable, sort, creator_id,
+      create_time, update_time, is_delete
+      )
+    values (#{tableName,jdbcType=VARCHAR}, #{tableCode,jdbcType=VARCHAR},#{companyId,jdbcType=INTEGER},#{funcCode,jdbcType=VARCHAR}, #{isSystemDefine,jdbcType=SMALLINT},
+      #{isEnable,jdbcType=SMALLINT}, #{sort,jdbcType=INTEGER}, #{creatorId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="table_id" keyProperty="tableId" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable" useGeneratedKeys="true">
+    insert into t_custom_archive_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tableName != null">
+        `table_name`,
+      </if>
+      <if test="tableCode != null">
+        table_code,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="funcCode != null">
+        func_code,
+      </if>
+      <if test="isSystemDefine != null">
+        is_system_define,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="creatorId != null">
+        creator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tableName != null">
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null">
+        #{tableCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="funcCode != null">
+        #{funcCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isSystemDefine != null">
+        #{isSystemDefine,jdbcType=SMALLINT},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=SMALLINT},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="creatorId != null">
+        #{creatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+    update t_custom_archive_table
+    <set>
+      <if test="tableName != null">
+        `table_name` = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null">
+        table_code = #{tableCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+      company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="funcCode != null">
+        func_code = #{funcCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isSystemDefine != null">
+        is_system_define = #{isSystemDefine,jdbcType=SMALLINT},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=SMALLINT},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="creatorId != null">
+        creator_id = #{creatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.CustomArchiveTable">
+    update t_custom_archive_table
+    set `table_name` = #{tableName,jdbcType=VARCHAR},
+      table_code = #{tableCode,jdbcType=INTEGER},
+      is_enable = #{isEnable,jdbcType=SMALLINT},
+      sort = #{sort,jdbcType=INTEGER},
+      creator_id = #{creatorId,jdbcType=INTEGER},
+    where table_id = #{tableId,jdbcType=INTEGER}
+  </update>
+  <select id="selectMaxPrimaryKey" resultType="java.lang.Integer">
+    select MAX(table_id)
+    from  t_custom_archive_table
+    where is_delete=0
+  </select>
+
+  <update id="deleteCustomTable">
+    update t_custom_archive_table
+    set
+      is_delete = 1
+    where table_id
+    in <foreach collection="list" item="item" open="(" separator="," close=")">
+    #{item}
+     </foreach>
+  </update>
+  <select id="selectByPrimaryKeyList" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_custom_archive_table
+    where is_delete=0 AND table_id
+    in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_custom_archive_table
+    where is_delete=0
+    AND company_id=#{comId,jdbcType=INTEGER}
+  </select>
+  <select id="selectidbycomidandfunccode" resultType="java.lang.Integer">
+    select  table_id
+    from t_custom_archive_table
+    where
+    company_id = #{companyId,jdbcType=INTEGER}
+    AND is_delete=0
+    AND (func_code="ARC" or func_code="PRE")
+  </select>
+  <select id="selectInside" resultType="java.lang.Integer">
+     select  is_system_define
+    from t_custom_archive_table
+    where
+    table_id=#{tableId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="selectTableName" resultType="java.lang.String">
+    select `table_name`
+     from t_custom_archive_table
+    where
+    table_id=#{tableId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="selectTableIdByNameAndCompanyId" resultType="java.lang.Integer">
+    select table_id
+    from t_custom_archive_table
+    where
+    table_name=#{tableName,jdbcType=VARCHAR}
+    and company_id=#{companyId}
+    and is_enable=1 and is_delete=0
+  </select>
+  <select id="selectFuncCode" resultType="java.lang.String">
+    select func_code
+    from t_custom_archive_table
+    where
+    table_id=#{tableId,jdbcType=INTEGER}
+    AND is_delete=0
+  </select>
+  <select id="selectByComIdAndPhyName" resultType="java.lang.Integer">
+    select table_id
+    form t_custom_archive_table
+    where
+     company_id=#{companyId,jdbcType=INTEGER}
+     `table_name`=#{archive,jdbcType=VARCHAR}
+  </select>
+  <select id="selectNotInsideTableId" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table
+    where
+     company_id=#{companyId,jdbcType=INTEGER}
+     AND is_system_define=0
+     AND func_code=#{archive,jdbcType=VARCHAR}
+     AND is_delete=0
+  </select>
+  <select id="selectNameBycomId" resultType="java.lang.String">
+    select  `table_name`
+    from   t_custom_archive_table
+    where is_delete=0
+    AND  company_id=#{companyId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectIsSysAndFuncCode" resultType="java.util.Map">
+    select  is_system_define,func_code
+    from  t_custom_archive_table
+    where table_id=#{tableId}
+    and is_delete=0
+    and is_enable=1
+  </select>
+
+  <select id="selectFieldIdNotInside" resultType="java.lang.Integer">
+    select field_id
+    from  t_custom_archive_field field
+    left join t_custom_archive_table tab on tab.table_id=field.table_id
+    where tab.is_enable=1
+    and tab.is_delete=0
+    and tab.func_code="ARC"
+    AND tab.company_id=#{companyId}
+    and tab.is_system_define=0
+  </select>
+  <select id="selectTabIdByTabIdAndFuncCode" resultType="java.lang.Integer">
+    select table_id
+    from  t_custom_archive_table
+    where is_delete=0
+    and func_code="ARC"
+    and company_id=#{companyId}
+    and `table_name` in (select `table_name` from  t_custom_archive_table where table_id=#{tableId} and is_delete=0 and func_code="PRE")
+
+  </select>
+</mapper>

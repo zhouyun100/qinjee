@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.organation.PostInstructionsDao">
+  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PostInstructions">
+    <id column="instruction_id" jdbcType="INTEGER" property="instructionId" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="instruction_attachment_url" jdbcType="VARCHAR" property="instructionAttachmentUrl" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qinjee.masterdata.model.entity.PostInstructions">
+    <result column="instruction_content" jdbcType="LONGVARBINARY" property="instructionContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    instruction_id, post_id, instruction_attachment_url, operator_id, create_time, is_delete
+  </sql>
+  <sql id="Blob_Column_List">
+    instruction_content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_post_instructions
+    where instruction_id = #{instructionId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_post_instructions
+    where instruction_id = #{instructionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="instruction_id" keyProperty="instructionId" parameterType="com.qinjee.masterdata.model.entity.PostInstructions" useGeneratedKeys="true">
+    insert into t_post_instructions (post_id, instruction_attachment_url,
+      operator_id, create_time, is_delete,
+      instruction_content)
+    values (#{postId,jdbcType=INTEGER}, #{instructionAttachmentUrl,jdbcType=VARCHAR},
+      #{operatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=SMALLINT},
+      #{instructionContent,jdbcType=LONGVARBINARY})
+  </insert>
+  <insert id="insertSelective" keyColumn="instruction_id" keyProperty="instructionId" parameterType="com.qinjee.masterdata.model.entity.PostInstructions" useGeneratedKeys="true">
+    insert into t_post_instructions
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="postId != null">
+        post_id,
+      </if>
+      <if test="instructionAttachmentUrl != null">
+        instruction_attachment_url,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="instructionContent != null">
+        instruction_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="postId != null">
+        #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="instructionAttachmentUrl != null">
+        #{instructionAttachmentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=SMALLINT},
+      </if>
+      <if test="instructionContent != null">
+        #{instructionContent,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.PostInstructions">
+    update t_post_instructions
+    <set>
+      <if test="postId != null">
+        post_id = #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="instructionAttachmentUrl != null">
+        instruction_attachment_url = #{instructionAttachmentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=SMALLINT},
+      </if>
+      <if test="instructionContent != null">
+        instruction_content = #{instructionContent,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where instruction_id = #{instructionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qinjee.masterdata.model.entity.PostInstructions">
+    update t_post_instructions
+    set post_id = #{postId,jdbcType=INTEGER},
+      instruction_attachment_url = #{instructionAttachmentUrl,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=SMALLINT},
+      instruction_content = #{instructionContent,jdbcType=LONGVARBINARY}
+    where instruction_id = #{instructionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PostInstructions">
+    update t_post_instructions
+    set post_id = #{postId,jdbcType=INTEGER},
+      instruction_attachment_url = #{instructionAttachmentUrl,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=SMALLINT}
+    where instruction_id = #{instructionId,jdbcType=INTEGER}
+  </update>
+  <select id="getPostInstructionsByPostId" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_post_instructions
+    where is_delete = 0 and post_id = #{postId}
+  </select>
+</mapper>

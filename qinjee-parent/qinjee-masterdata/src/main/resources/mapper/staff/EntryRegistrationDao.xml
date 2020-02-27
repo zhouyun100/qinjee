@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinjee.masterdata.dao.staffdao.entryregistration.EntryRegistrationDao">
+
+    <resultMap id="EntryRegistrationResultMap" type="com.qinjee.masterdata.model.vo.staff.entryregistration.TemplateEntryRegistrationVO">
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="template_name" jdbcType="VARCHAR" property="templateName" />
+        <result column="template_description" jdbcType="VARCHAR" property="templateDescription" />
+        <result column="receive_ids" jdbcType="VARCHAR" property="receiveIds" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="welcome_speech" jdbcType="VARCHAR" property="welcomeSpeech" />
+        <result column="logo_url" jdbcType="VARCHAR" property="logoUrl" />
+        <result column="background_img_url" jdbcType="VARCHAR" property="backgroundImgUrl" />
+        <result column="company_id" jdbcType="INTEGER" property="companyId" />
+        <result column="is_enable" jdbcType="INTEGER" property="isEnable" />
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="create_time" jdbcType="DATE" property="createTime" />
+        <result column="creator" jdbcType="VARCHAR" property="creator" />
+    </resultMap>
+
+
+    <!-- 根据企业ID查询入职登记模板列表 -->
+    <select id="searchTemplateEntryRegistrationList" resultMap="EntryRegistrationResultMap">
+        select t1.template_id,t1.template_name,t1.template_description,t1.receive_ids,t1.title,t1.welcome_speech,
+        t1.logo_url,t1.background_img_url,t1.company_id,t1.is_enable,t1.operator_id,t1.create_time,t2.user_name creator
+        from t_template_entry_registration t1 LEFT JOIN t_user_archive t2 ON t2.company_id = #{companyId,jdbcType=INTEGER} and t1.operator_id = t2.archive_id
+        WHERE t1.company_id = #{companyId,jdbcType=INTEGER}
+        and t1.is_delete=0
+        and t1.is_enable=1
+    </select>
+
+
+    <!-- 根据模板ID获取模板详情 -->
+    <select id="getTemplateEntryRegistrationByTemplateId" resultMap="EntryRegistrationResultMap">
+        select template_id,template_name,template_description,receive_ids,title,welcome_speech,
+        logo_url,background_img_url,company_id,is_enable,operator_id
+        from t_template_entry_registration
+        WHERE template_id = #{templateId,jdbcType=INTEGER}
+    </select>
+
+
+    <!-- 删除入职登记模板 -->
+    <update id="deleteTemplateEntryRegistration">
+        update t_template_entry_registration set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where template_id = #{templateId,jdbcType=INTEGER}
+    </update>
+
+
+    <!-- 新增入职登记模板 -->
+    <insert id="addTemplateEntryRegistration" parameterType="com.qinjee.masterdata.model.entity.TemplateEntryRegistration">
+        INSERT INTO t_template_entry_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateName != null">
+                template_name,
+            </if>
+            <if test="templateDescription != null">
+                template_description,
+            </if>
+            <if test="receiveIds != null">
+                receive_ids,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="welcomeSpeech != null">
+                welcome_speech,
+            </if>
+            <if test="logoUrl != null">
+                logo_url,
+            </if>
+            <if test="backgroundImgUrl != null">
+                background_img_url,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="isEnable != null">
+                is_enable,
+            </if>
+            operator_id,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateName != null">
+                #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="templateDescription != null">
+                #{templateDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveIds != null">
+                #{receiveIds,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="welcomeSpeech != null">
+                #{welcomeSpeech,jdbcType=VARCHAR},
+            </if>
+            <if test="logoUrl != null">
+                #{logoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="backgroundImgUrl != null">
+                #{backgroundImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null">
+                #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="isEnable != null">
+                #{isEnable,jdbcType=INTEGER},
+            </if>
+            #{operatorId,jdbcType=INTEGER},
+        </trim>
+    </insert>
+
+
+    <!-- 修改入职登记模板 -->
+    <update id="modifyTemplateEntryRegistration" parameterType="com.qinjee.masterdata.model.entity.TemplateEntryRegistration">
+        update t_template_entry_registration
+        <set>
+            <if test="templateName != null">
+                template_name = #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="templateDescription != null">
+                template_description = #{templateDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveIds != null">
+                receive_ids = #{receiveIds,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="welcomeSpeech != null">
+                welcome_speech = #{welcomeSpeech,jdbcType=VARCHAR},
+            </if>
+            <if test="logoUrl != null">
+                logo_url = #{logoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="backgroundImgUrl != null">
+                background_img_url = #{backgroundImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="isEnable != null">
+                is_enable = #{isEnable,jdbcType=INTEGER},
+            </if>
+            operator_id = #{operatorId,jdbcType=INTEGER}
+        </set>
+        where template_id = #{templateId,jdbcType=INTEGER}
+        and is_delete = 0
+    </update>
+    <select id="searchLogurlByComanyIdAnadTemplateId" resultType="java.lang.String">
+        select logo_url
+        from t_template_entry_registration
+        where company_id=#{companyId}
+        and template_id=#{templateId}
+        and is_enable=1
+    </select>
+</mapper>
