@@ -9,6 +9,7 @@ import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
 import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
+import com.qinjee.masterdata.model.vo.staff.MoblieCustom;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
@@ -452,10 +453,10 @@ public class CommonController extends BaseController {
             @RequestMapping(value = "/saveCustomArchiveTableDatas", method = RequestMethod.POST)
             @ApiOperation(value = "批量新增或者修改自定义字段表中的数据", notes = "hkt")
 //    @ApiImplicitParam(name = "CustomArchiveTableData", value = "自定义表数据信息", paramType = "form", required = true)
-            public ResponseResult saveCustomArchiveTableData(@RequestBody @Valid List < CustomArchiveTableDataVo > list) {
-                Boolean b = checkParam ( list );
+            public ResponseResult saveCustomArchiveTableData(@RequestBody @Valid MoblieCustom moblieCustom) {
+                Boolean b = checkParam ( moblieCustom );
                 if (b) {
-                    staffCommonService.updateCustomArchiveTableDatas ( list );
+                    staffCommonService.updateCustomArchiveTableDatas ( moblieCustom );
                     return ResponseResult.SUCCESS ();
                 }
                 return failResponseResult ( "自定义数据参数错误" );

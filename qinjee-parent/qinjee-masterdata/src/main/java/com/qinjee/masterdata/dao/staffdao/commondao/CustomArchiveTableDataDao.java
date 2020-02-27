@@ -56,5 +56,5 @@ public interface CustomArchiveTableDataDao {
 
     List<CustomArchiveTableData> selectByCompanyIdAndBusinessId(@Param("companyId") Integer companyId, @Param("employmentId") Integer employmentId);
 
-    void deleteByBussinessIdAndTableId(@Param("businessId") Integer businessId, @Param("integers") ArrayList<Integer> integers);
+    void deleteByBussinessIdAndTableId(@Param("businessId") Integer businessId, @Param("integers") List<Integer> integers);
 }

@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -644,16 +645,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     }
 
     @Override
-    public void updateCustomArchiveTableDatas(List < CustomArchiveTableDataVo > list) {
+    public void updateCustomArchiveTableDatas(MoblieCustom moblieCustom) {
         //先逻辑删除所有相关的表记录
-        HashSet<Integer> set = new HashSet<>();
-        for (CustomArchiveTableDataVo customArchiveTableDataVo : list) {
-            set.add(customArchiveTableDataVo.getTableId());
-        }
-        ArrayList<Integer> integers = new ArrayList<>(set);
-        customArchiveTableDataDao.deleteByBussinessIdAndTableId(list.get(0).getBusinessId(),integers);
+        @NotNull Integer businessId = moblieCustom.getList().get(0).getBusinessId();
+        customArchiveTableDataDao.deleteByBussinessIdAndTableId(businessId,moblieCustom.getTableIdList());
         //更新的时候将is_delete更新过来
-        for (CustomArchiveTableDataVo customArchiveTableDataVo : list) {
+        for (CustomArchiveTableDataVo customArchiveTableDataVo : moblieCustom.getList()) {
             CustomArchiveTableData customArchiveTableData = getCustomArchiveTableData(customArchiveTableDataVo);
             if(null ==customArchiveTableData.getId()) {
                 customArchiveTableData.setCreateTime ( new Date () );

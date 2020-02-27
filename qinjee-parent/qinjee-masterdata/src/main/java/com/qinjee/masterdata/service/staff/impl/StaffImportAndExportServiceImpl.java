@@ -875,7 +875,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 String type=customTableFieldDao.selectTextCodeByName(head,companyId,"ARC");
                 if(StringUtils.isNotBlank(type)){
                     SysDict sysDict = sysDictServiceImpl.searchSysDictByTypeAndCode(type, String.valueOf(o));
-                    o=sysDict.getDictValue();
+                    if(sysDict!=null) {
+                        o = sysDict.getDictValue();
+                    }
                 }
                 stringMap.put ( head, String.valueOf ( o ) );
                 if ("任职类型".equals ( head )) {

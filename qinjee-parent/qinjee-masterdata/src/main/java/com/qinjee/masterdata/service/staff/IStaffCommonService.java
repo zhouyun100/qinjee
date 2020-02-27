@@ -2,10 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.staff.BigDataVo;
-import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
-import com.qinjee.masterdata.model.vo.staff.InsertDataVo;
-import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -194,5 +191,5 @@ public interface IStaffCommonService {
 
     List< Post> getPostListByOrgId(Integer orgId,Integer companyId);
 
-    void updateCustomArchiveTableDatas(List< CustomArchiveTableDataVo> list);
+    void updateCustomArchiveTableDatas(MoblieCustom moblieCustom);
 }
