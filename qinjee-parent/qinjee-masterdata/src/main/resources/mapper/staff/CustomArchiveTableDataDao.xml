@@ -317,7 +317,7 @@
     set is_delete=1
     where business_id=#{businessId}
     and table_id in
-    <foreach collection="integers" item="item" open="(" separator=";" close=")">
+    <foreach collection="integers" item="item" open="(" separator="," close=")">
       #{item}
     </foreach>
   </update>
