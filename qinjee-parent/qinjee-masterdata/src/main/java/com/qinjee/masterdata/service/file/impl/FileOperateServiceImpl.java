@@ -9,6 +9,7 @@ import com.qinjee.masterdata.dao.AttachmentGroupDao;
 import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
+import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
@@ -23,6 +24,7 @@ import com.qinjee.utils.FileUploadUtils;
 import com.qinjee.utils.UpAndDownUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,6 +101,9 @@ public class FileOperateServiceImpl implements IFileOperateService {
                 UpAndDownUtil.putFile(file1, pathUrl);
                 //设置图像
                 userArchiveVos.get(0).setHeadImgUrl(UpAndDownUtil.getPath(pathUrl).toString());
+                UserArchive userArchive=new UserArchive();
+                BeanUtils.copyProperties(userArchiveVos.get(0),userArchive);
+                userArchiveDao.updateByPrimaryKeySelective(userArchive);
             } finally {
                 if (file1 != null) {
                     file1.delete();
