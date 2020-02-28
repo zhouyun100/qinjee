@@ -87,14 +87,18 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resumeDeleteArchiveById(List < Integer > archiveid) {
+        Integer isExistId=null;
         for (Integer integer : archiveid) {
-            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(integer);
-            Integer isExistId=userArchiveDao.selectIsExist(userArchiveVo.getIdNumber(),userArchiveVo.getUserId());
-            if(isExistId==null|| isExistId==0){
+            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKeyAndIsDelete(integer);
+            String idNumber = userArchiveVo.getIdNumber();
+            Integer userId = userArchiveVo.getUserId();
+            if(StringUtils.isNotBlank(idNumber)|| (userId!=null&& !userId.equals(0))) {
+                isExistId= userArchiveDao.selectIsExist(idNumber,userId );
+            }
+            if(isExistId==null|| isExistId.equals(0)){
                 userArchiveDao.resumeDeleteArchiveById(integer);
             }
         }
-
     }
 
     @Override

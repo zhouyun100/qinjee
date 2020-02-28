@@ -120,4 +120,6 @@ public interface UserArchiveDao {
     List<UserArchiveVo> selectByIdNumberOrEmploy(@Param("idnumber") String idnumber, @Param("companyId") Integer companyId);
 
     List<NoConArc> selectNoConArcByIdList(@Param("list") List<Integer> list);
+
+    UserArchiveVo selectByPrimaryKeyAndIsDelete(@Param("integer") Integer integer);
 }

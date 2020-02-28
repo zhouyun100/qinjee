@@ -87,6 +87,12 @@
     from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </select>
+    <select id="selectByPrimaryKeyAndIsDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_archive
+        where archive_id = #{integer,jdbcType=INTEGER} and is_delete=1
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
@@ -1578,10 +1584,10 @@
         where is_delete=0
         and archive_status= 'SERVICE'
         <if test="idNumber!=null">
-           or id_number=#{idNumber}
+           or (id_number=#{idNumber} and is_delete=0)
         </if>
         <if test="userId!=null">
-           or user_id=#{userId}
+           or (user_id=#{userId}and is_delete=0)
         </if>
     </select>
     <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
