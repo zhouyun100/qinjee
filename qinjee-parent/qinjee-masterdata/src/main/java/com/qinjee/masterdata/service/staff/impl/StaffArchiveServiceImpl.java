@@ -603,7 +603,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return userArchiveDao.selectByPrimaryKey ( id );
     }
 
-
+    @Override
+    public void deleteCareerTrack(Integer id) {
+        archiveCareerTrackdao.deleteCareerTrack(id);
+    }
 
 
     @Transactional(rollbackFor = Exception.class)

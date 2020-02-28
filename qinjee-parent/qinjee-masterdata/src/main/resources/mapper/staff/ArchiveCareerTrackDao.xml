@@ -44,7 +44,8 @@
             post.post_name AS postName,
             changeType.dict_value AS changeType,
             track.change_date AS changeDate,
-            track.change_reason AS changeReason
+            track.change_reason AS changeReason,
+            track.change_id as changeId
         FROM
             t_archive_career_track track
             LEFT JOIN t_user_archive arc ON arc.archive_id = track.archive_id
@@ -236,7 +237,10 @@
 
     <!-- 根据主键删除数据 -->
     <delete id="deleteCareerTrack" parameterType="integer">
-        DELETE FROM t_archive_career_track WHERE change_id = #{change_id}
+        update
+        t_archive_career_track
+        set is_delete=1
+         WHERE change_id = #{id}
     </delete>
 
 

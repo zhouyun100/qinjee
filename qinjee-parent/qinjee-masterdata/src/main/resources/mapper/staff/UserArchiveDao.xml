@@ -1589,6 +1589,7 @@
         <if test="userId!=null">
            or (user_id=#{userId}and is_delete=0)
         </if>
+        limit 1
     </select>
     <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
         select *
