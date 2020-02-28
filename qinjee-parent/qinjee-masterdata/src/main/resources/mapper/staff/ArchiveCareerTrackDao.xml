@@ -65,6 +65,8 @@
             AND changeType.is_delete = 0
         WHERE
             track.archive_id = #{id}
+            and track.is_delete=0
+            group by tarck.change_id
     </select>
 
     <!-- 插入数据 -->

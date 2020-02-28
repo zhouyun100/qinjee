@@ -1346,7 +1346,7 @@
   <select id="selectTransMessage" resultType="java.util.LinkedHashMap">
       SELECT
 	 org.org_name AS org_name,
-     arch.user_name AS supervisor_name,
+     arch.user_name AS supervisor_user_name,
      orga.org_name AS business_unit_name ,
      post.post_name AS post_name
     FROM

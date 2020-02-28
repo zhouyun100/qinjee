@@ -178,46 +178,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
     @Override
     public PageResult<UserArchiveVo> selectStaff(StandingBookReturnVo standingBookReturnVo, UserSession userSession) {
-        StringBuffer stringBuffer = new StringBuffer();
-        List<Integer> fieldIdList = new ArrayList<>();
-        List<CustomFieldVO> fieldVoList = new ArrayList<>();
-        stringBuffer.append(" where ");
-        //在查询台账之前被筛选的数据
-        //存储大数据表字段解析出的档案id
-        //key是用来存是第几个筛选条件，value存档案id(可能多个)
-        //没经过台账之前筛选的档案id
-        //通过id查询档案
-        //通过台账id找到台账筛选表，直接返回台账筛选表对象
-        List<StandingBookFilterVo> filters = standingBookFilterDao.selectByStandingBookId(standingBookReturnVo.getStangdingBookId());
-        if (!CollectionUtils.isEmpty(filters)) {
-            for (StandingBookFilterVo filter : filters) {
-                stringBuffer.append(filter.getSqlStr());
-            }
-            for (StandingBookFilterVo filter : filters) {
-                fieldIdList.add(filter.getFieldId());
-            }
-        } else {
-            ExceptionCast.cast(CommonCode.STANDINGBOOK_IS_EMPTY);
-        }
-        CustomTableVO customTableVO = new CustomTableVO();
-        customTableVO.setCompanyId(userSession.getCompanyId());
-        customTableVO.setFuncCode("ARC");
-        List<CustomTableVO> customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode(customTableVO);
-        List<CustomFieldVO> list1 = customTableFieldDao.selectFieldByIdList(fieldIdList, userSession.getCompanyId(), "ARC");
-        for (CustomFieldVO customFieldVO : list1) {
-            if (customFieldVO.getIsSystemDefine() == 0) {
-                fieldVoList.add(customFieldVO);
-            }
-        }
-        String sql = getBaseSql(userSession.getCompanyId(), fieldVoList, customTableVOS) + stringBuffer.toString();
-        //主职集合
-        List<Integer> integerList = null;
-        try {
-            integerList = userArchiveDao.selectStaff(sql, standingBookReturnVo.getArchiveType(),
-                    standingBookReturnVo.getOrgIdList());
-        } catch (Exception e) {
-            ExceptionCast.cast(CommonCode.SQL_MAY_MISTAKE);
-        }
+        List<Integer> integerList = getArchiveId(standingBookReturnVo.getStangdingBookId(),standingBookReturnVo.getArchiveType(),
+                standingBookReturnVo.getOrgIdList(),userSession);
         //兼职集合
         if (standingBookReturnVo.getType().contains("兼职") && !standingBookReturnVo.getType().contains("主职")) {
             PageHelper.startPage(standingBookReturnVo.getCurrentPage(), standingBookReturnVo.getPageSize());
@@ -242,6 +204,50 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             return  new PageResult<>(list3);
         }
         return null;
+    }
+
+    public List<Integer> getArchiveId(Integer stangdingBookId,List<String> archiveType,List<Integer> orgIdList, UserSession userSession) {
+        StringBuffer stringBuffer = new StringBuffer();
+        List<Integer> fieldIdList = new ArrayList<>();
+        List<CustomFieldVO> fieldVoList = new ArrayList<>();
+        stringBuffer.append(" where ");
+        //在查询台账之前被筛选的数据
+        //存储大数据表字段解析出的档案id
+        //key是用来存是第几个筛选条件，value存档案id(可能多个)
+        //没经过台账之前筛选的档案id
+        //通过id查询档案
+        //通过台账id找到台账筛选表，直接返回台账筛选表对象
+        List<StandingBookFilterVo> filters = standingBookFilterDao.selectByStandingBookId(stangdingBookId);
+        if (!CollectionUtils.isEmpty(filters)) {
+            for (StandingBookFilterVo filter : filters) {
+                stringBuffer.append(filter.getSqlStr());
+            }
+            for (StandingBookFilterVo filter : filters) {
+                fieldIdList.add(filter.getFieldId());
+            }
+        } else {
+            ExceptionCast.cast(CommonCode.STANDINGBOOK_IS_EMPTY);
+        }
+        CustomTableVO customTableVO = new CustomTableVO();
+        customTableVO.setCompanyId(userSession.getCompanyId());
+        customTableVO.setFuncCode("ARC");
+        List<CustomTableVO> customTableVOS = customTableFieldService.searchCustomTableListByCompanyIdAndFuncCode(customTableVO);
+        List<CustomFieldVO> list1 = customTableFieldDao.selectFieldByIdList(fieldIdList, userSession.getCompanyId(), "ARC");
+        for (CustomFieldVO customFieldVO : list1) {
+            if (customFieldVO.getIsSystemDefine() == 0) {
+                fieldVoList.add(customFieldVO);
+            }
+        }
+        String sql = getBaseSql(userSession.getCompanyId(), fieldVoList, customTableVOS) + stringBuffer.toString();
+        //主职集合
+        List<Integer> integerList = null;
+        try {
+            integerList = userArchiveDao.selectStaff(sql, archiveType,
+                   orgIdList);
+        } catch (Exception e) {
+            ExceptionCast.cast(CommonCode.SQL_MAY_MISTAKE);
+        }
+        return integerList;
     }
 
     @Override
