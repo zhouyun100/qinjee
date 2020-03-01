@@ -4,6 +4,7 @@ import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.NoConArc;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -56,7 +57,7 @@ public interface UserArchiveDao {
 
     List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
 
-    List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") List<String> archiveType, @Param("list") List<Integer> list);
+    List<Integer> selectStaff(@Param("sql") String sql, @Param("archiveType") List<String> archiveType, @Param("list") List<Integer> list, @Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId);
 
      @MapKey("archive_id")
      Map<Integer,Map<String,Object>> getUserArchiveListCustom(@Param("baseSql") String baseSql, @Param("order") String order);
@@ -106,8 +107,6 @@ public interface UserArchiveDao {
     List<UserArchiveVo> getByCompanyId(Integer employeeNumber);
 
     UserArchiveVo selectByUserId(Integer userId,Integer companyId);
-
-
 
     List< UserArchiveVo> selectPartTimeArchive(@Param("integerList") List< Integer> integerList, @Param("companyId") Integer companyId);
 

@@ -243,7 +243,7 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
         List<Integer> integerList = null;
         try {
             integerList = userArchiveDao.selectStaff(sql, archiveType,
-                   orgIdList);
+                   orgIdList,userSession.getCompanyId(),userSession.getArchiveId());
         } catch (Exception e) {
             ExceptionCast.cast(CommonCode.SQL_MAY_MISTAKE);
         }
