@@ -5,7 +5,7 @@ import lombok.ToString;
 /**
  * 公共的响应代码枚举类
  * @date 2019/10-16
- * @author 高雄
+ * @author 彭洪思
  */
 @ToString
 public enum CommonCode implements ResultCode{

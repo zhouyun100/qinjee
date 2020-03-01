@@ -5,7 +5,7 @@ import com.qinjee.masterdata.model.entity.UserRole;
 import java.util.List;
 
 /**
- * @author 高雄
+ * @author 彭洪思
  * @version 1.0.0
  * @Description TODO
  * @createTime 2019年09月17日 17:53:00
