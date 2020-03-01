@@ -35,7 +35,7 @@
 
     <!-- 查询所有数据 -->
     <select id="selectCareerTrack"  resultType="com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo" >
-        SELECT
+        SELECT distinct
             arc.archive_id AS archiveId,
             userCategory.dict_value AS userCategory,
             orga.org_name AS businssUnitName,
@@ -66,7 +66,7 @@
         WHERE
             track.archive_id = #{id}
             and track.is_delete=0
-            group by tarck.change_id
+
     </select>
 
     <!-- 插入数据 -->
