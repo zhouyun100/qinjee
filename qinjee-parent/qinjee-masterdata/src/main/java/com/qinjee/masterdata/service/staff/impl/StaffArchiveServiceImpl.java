@@ -665,9 +665,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     public List < TableHead > getDefaultArcHead() {
             List<TableHead> headList = new ArrayList<>();
-            String[] strings = {"姓名", "工号", "单位", "部门", "岗位", "入职日期", "试用期到期时间", "直接上级", "联系电话", "任职类型"};
-            String[] codeList = {"userName", "employeeNumber", "businessUnitName", "orgName", "postName", "hireDate",
-                    "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
+            String[] strings = {"姓名","单位","部门","联系电话","任职类型","工号","直接上级","岗位","试用期到期时间","入职时间"};
+            String[] codeList = {"userName",  "businessUnitName", "orgName","phone","employment_type","employeeNumber", "supervisorUserName","postName",
+                    "probationDueDate", "hireDate"};
             for (int i = 0; i < strings.length; i++) {
                 TableHead arcHead = new TableHead();
                 if ("姓名，性别，联系电话，年龄，出生日期，证件号码，最高学历,电子邮箱".contains(strings[i])) {
