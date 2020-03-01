@@ -25,7 +25,7 @@ public class PositionGroupController extends BaseController {
   @Autowired
   private PositionGroupService positionGroupService;
 
-  @ApiOperation(value = "展示职位族-职位树", notes = "高雄")
+  @ApiOperation(value = "展示职位族-职位树", notes = "彭洪思")
   @GetMapping("/getAllPositionGroupTree")
   public ResponseResult<List<PositionGroup>> getAllPositionGroupTree() {
     ResponseResult<List<PositionGroup>> allPositionGroupTree = positionGroupService.getAllPositionGroupTree(getUserSession());
@@ -34,21 +34,21 @@ public class PositionGroupController extends BaseController {
   }
 
 
-  @ApiOperation(value = "新增职位族", notes = "高雄")
+  @ApiOperation(value = "新增职位族", notes = "彭洪思")
   @GetMapping("/addPositionGroup")
   public ResponseResult addPositionGroup(@RequestParam @ApiParam(value = "职位族名称", example = "研发族", required = true) String positionGroupName) {
     //logger.info("新增职位族,positionGroupName》："+positionGroupName);
     return positionGroupService.addPositionGroup(getUserSession(), positionGroupName);
   }
 
-  @ApiOperation(value = "编辑职位族", notes = "高雄")
+  @ApiOperation(value = "编辑职位族", notes = "彭洪思")
   @PostMapping("/editPositionGroup")
   public ResponseResult editPositionGroup(@RequestBody PositionGroupVo positionGroupVo) {
     //logger.info("编辑职位族：positionGroupVo》"+positionGroupVo);
     return positionGroupService.editPositionGroup(getUserSession(), positionGroupVo);
   }
 
-  @ApiOperation(value = "删除职位族", notes = "高雄")
+  @ApiOperation(value = "删除职位族", notes = "彭洪思")
   @PostMapping("/deletePositionGroup")
   public ResponseResult deletePositionGroup(@RequestBody List<Integer> positionGroupIds) {
     //logger.info("删除职位族:positionGroupIds》"+positionGroupIds);
@@ -60,7 +60,7 @@ public class PositionGroupController extends BaseController {
   @ApiImplicitParams({
       @ApiImplicitParam(name = "positionGroupIds", value = "需要排序的职位族id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
   })
-  @ApiOperation(value = "职位族排序", notes = "高雄")
+  @ApiOperation(value = "职位族排序", notes = "彭洪思")
   @GetMapping("/sortPositionGroup")
   public ResponseResult sortPositionGroup(@RequestParam LinkedList<String> positionGroupIds) {
     //logger.info("职位族排序:positionGroupIds》"+positionGroupIds);

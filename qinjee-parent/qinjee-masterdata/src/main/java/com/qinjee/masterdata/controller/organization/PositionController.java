@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author 高雄
+ * @author 彭洪思
  * @version 1.0.0
  * @Description TODO
  * @createTime 2019年09月11日 10:23:00
@@ -53,7 +53,7 @@ public class PositionController extends BaseController {
     }
 
 
-    @ApiOperation(value = "ok，分页查询职位信息", notes = "高雄")
+    @ApiOperation(value = "ok，分页查询职位信息", notes = "彭洪思")
     @PostMapping("/getPositionPage")
     public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
         if (checkParam(positionPageVo, getUserSession())) {
@@ -66,7 +66,7 @@ public class PositionController extends BaseController {
 
     }
 
-    @ApiOperation(value = "ok，查询所有职位", notes = "高雄")
+    @ApiOperation(value = "ok，查询所有职位", notes = "彭洪思")
     @GetMapping("/getAllPositions")
     public ResponseResult<List<Position>> getAllPositions() {
         if (checkParam(getUserSession())) {
