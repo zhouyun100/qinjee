@@ -277,8 +277,30 @@ public class WeChatUtils {
     }
 
     public static void main(String [] args){
-        String accessToken = getWeChatAccessToken(WECHAT_SUBSCRIPTION_APPID,WECHAT_SUBSCRIPTION_SECRET);
-        System.out.println(getTicketByAccessToken(accessToken));
+
+        /**
+         * 方式一
+         *
+         * 微信开放平台：https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
+         * 微信二维码地址Demo：https://open.weixin.qq.com/connect/qrconnect?appid=wx0fbbbb3716bc7b87&redirect_uri=http://www.dhr360.com&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect
+         * redirect_uri：登录成功后的跳转地址
+         */
+//        WeChatToken weChatToken = getWeChatToken("001eaAXO0W8of627aAZO0aZOXO0eaAXn");
+//        System.out.println(weChatToken);
+//        WeChatUserInfo weChatUserInfo = getWeChatUserInfo(weChatToken);
+//        System.out.println(weChatUserInfo);
+
+
+        /**
+         * 方式二
+         *
+         * 微信公众平台：https://developers.weixin.qq.com/doc/offiaccount/Account_Management/Generating_a_Parametric_QR_Code.html
+         * 涉及微信公众号基本配置：服务器配置(未启用)，启用后会影响公众号菜单
+         *
+         */
+//        String accessToken = getWeChatAccessToken(WECHAT_SUBSCRIPTION_APPID,WECHAT_SUBSCRIPTION_SECRET);
+//        System.out.println(accessToken);
+//        System.out.println(getTicketByAccessToken(accessToken));
     }
 
 }
