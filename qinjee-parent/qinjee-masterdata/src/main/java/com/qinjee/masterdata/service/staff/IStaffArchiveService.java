@@ -164,5 +164,5 @@ public interface IStaffArchiveService {
 
     UserArchiveVo selectById(Integer id);
 
-
+    void deleteCareerTrack(Integer id);
 }

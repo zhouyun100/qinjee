@@ -126,7 +126,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
+    where employment_id = #{employmentId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_pre_employment

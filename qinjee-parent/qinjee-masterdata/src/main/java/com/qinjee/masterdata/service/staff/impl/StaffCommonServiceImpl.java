@@ -555,15 +555,17 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "ARC" )) {
             Map < Integer, String > map = new HashMap <> ();
             UserArchiveVo userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
-            for (Field declaredField : userArchive.getClass ().getDeclaredFields ()) {
-                declaredField.setAccessible ( true );
-                for (Map < String, String > stringMap : mapList) {
-                    if (FieldToProperty.fieldToProperty ( stringMap.get ( "field_code" ) ).equals ( declaredField.getName () )) {
-                        map.put ( Integer.parseInt ( String.valueOf ( stringMap.get ( "field_id" ) ) ), String.valueOf ( declaredField.get ( userArchive ) ) );
+            if(userArchive!=null) {
+                for (Field declaredField : userArchive.getClass().getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    for (Map<String, String> stringMap : mapList) {
+                        if (FieldToProperty.fieldToProperty(stringMap.get("field_code")).equals(declaredField.getName())) {
+                            map.put(Integer.parseInt(String.valueOf(stringMap.get("field_id"))), String.valueOf(declaredField.get(userArchive)));
+                        }
                     }
                 }
+                list.add(map);
             }
-            list.add ( map );
         }
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "0" )) {
             List < CustomArchiveTableData > list1 = customArchiveTableDataDao.selectBigDataBybusinessIdAndTableId ( businessId, tableId );
@@ -578,23 +580,23 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
                         map.put (-1,String.valueOf (list1.get(j).getId ()) );
                         list.add ( map );
                     }
-
                 }
-
             }
         }
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "PRE" )) {
             PreEmployment preEmployment = preEmploymentDao.selectByPrimaryKey ( businessId );
             Map < Integer, String > map = new HashMap <> ();
-            for (Field declaredField : preEmployment.getClass ().getDeclaredFields ()) {
-                declaredField.setAccessible ( true );
-                for (Map < String, String > stringMap : mapList) {
-                    if (FieldToProperty.fieldToProperty ( stringMap.get ( "field_code" ) ).equals ( declaredField.getName () )) {
-                        map.put ( Integer.parseInt ( String.valueOf ( stringMap.get ( "field_id" ) ) ), String.valueOf ( declaredField.get ( preEmployment ) ) );
+            if(preEmployment!=null) {
+                for (Field declaredField : preEmployment.getClass().getDeclaredFields()) {
+                    declaredField.setAccessible(true);
+                    for (Map<String, String> stringMap : mapList) {
+                        if (FieldToProperty.fieldToProperty(stringMap.get("field_code")).equals(declaredField.getName())) {
+                            map.put(Integer.parseInt(String.valueOf(stringMap.get("field_id"))), String.valueOf(declaredField.get(preEmployment)));
+                        }
                     }
                 }
+                list.add(map);
             }
-            list.add ( map );
         }
 
         return list;

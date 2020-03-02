@@ -10,6 +10,8 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
@@ -101,8 +103,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private SysDictService sysDictServiceImpl;
     @Autowired
     private PostDao postDao;
-    @Autowired
-    private IEmployeeNumberRuleService employeeNumberRuleService;
+   @Autowired
+   private QuerySchemeFieldDao querySchemeFieldDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -514,13 +516,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     public void exportArcFile(List < Integer > list, HttpServletResponse response, UserSession userSession, Integer querySchemaId) throws IOException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         List < String > headsByArc;
         Map < String, Object > map;
+        List<CustomFieldVO> list1=new ArrayList<>();
         ExportFile exportFile = staffArchiveService.selectArchiveByQueryScheme ( userSession, list, querySchemaId );
         for (Map.Entry < Integer, Map < String, Object > > integerMapEntry : exportFile.getMap ().entrySet ()) {
             map = userArchiveDao.selectTransMessage ( integerMapEntry.getKey () );
             integerMapEntry.getValue().putAll(map);
         }
-        if ( null!=querySchemaId || 0!=querySchemaId) {
-            headsByArc = getHeadsByArc ( exportFile, userSession.getCompanyId () );
+        if ( null!=querySchemaId &&  !querySchemaId.equals(0)) {
+            List < Integer > integers1 = querySchemeFieldDao.selectFieldIdWithSort ( querySchemaId );
+            if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(integers1)) {
+                 list1 = customTableFieldDao.selectFieldByIdList(integers1, userSession.getCompanyId(), "ARC");
+            }else{
+                ExceptionCast.cast(CommonCode.PLAN_IS_MISTAKE);
+            }
+            LinkedList<String> strings = new LinkedList<>();
+            for (CustomFieldVO customFieldVO : list1) {
+                strings.add(customFieldVO.getFieldName());
+            }
+           headsByArc=new ArrayList<>(strings);
         } else {
             headsByArc = HeadMapUtil.getHeadForArc ();
         }
@@ -530,32 +543,32 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 getTypeMap ( headsByArc ) );
     }
 
-    /**
-     * 分情况获得文件头
-     *
-     * @param exportFile
-     * @return
-     */
-    private List < String > getHeadsByArc(ExportFile exportFile, Integer companyId) {
-        Set < String > keySet = new LinkedHashSet <> ();
-        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getMap ().values () );
-        for (Map < String, Object > stringObjectMap : maps) {
-            for (String s : stringObjectMap.keySet ()) {
-                if (HeadFieldUtil.getFieldCode ().get ( s ) != null) {
-                    keySet.add ( HeadFieldUtil.getFieldCode ().get ( s ) );
-                } else {
-                    String arc = customTableFieldDao.selectFieldNameByCode ( s, companyId, "ARC" );
-                    if (arc != null) {
-                        keySet.add ( arc );
-                    }
-                }
-                if ("employment_type".equals ( s )) {
-                    keySet.add ( "任职类型" );
-                }
-            }
-        }
-        return new ArrayList <> ( keySet );
-    }
+//    /**
+//     * 分情况获得文件头
+//     *
+//     * @param exportFile
+//     * @return
+//     */
+//    private List < String > getHeadsByArc(ExportFile exportFile, Integer companyId) {
+//        Set < String > keySet = new LinkedHashSet <> ();
+//        List < Map < String, Object > > maps = new ArrayList <> ( exportFile.getMap ().values () );
+//        for (Map < String, Object > stringObjectMap : maps) {
+//            for (String s : stringObjectMap.keySet ()) {
+//                if (HeadFieldUtil.getFieldCode ().get ( s ) != null) {
+//                    keySet.add ( HeadFieldUtil.getFieldCode ().get ( s ) );
+//                } else {
+//                    String arc = customTableFieldDao.selectFieldNameByCode ( s, companyId, "ARC" );
+//                    if (arc != null) {
+//                        keySet.add ( arc );
+//                    }
+//                }
+//                if ("employment_type".equals ( s )) {
+//                    keySet.add ( "任职类型" );
+//                }
+//            }
+//        }
+//        return new ArrayList <> ( keySet );
+//    }
 
     /**
      * 导出预入职
@@ -864,8 +877,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                 if ("单位".equals ( head )) {
                     stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "business_unit_name" ) ) );
                 }
-                if ("直接领导".equals ( head )) {
-                    stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "supervisor_name" ) ) );
+                if ("直接上级".equals ( head )) {
+                    stringMap.put ( head, String.valueOf ( stringObjectMap.get ( "supervisor_user_name" ) ) );
                 }
                 Object o = stringObjectMap.get ( s );
                 String date = isDate ( String.valueOf ( o ) );

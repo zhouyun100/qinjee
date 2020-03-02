@@ -432,6 +432,20 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
+    /**
+     * 删除员工轨迹
+     */
+    @RequestMapping(value = "/deleteCareerTrack", method = RequestMethod.GET)
+    @ApiOperation(value = "删除员工轨迹", notes = "hkt")
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
+    public ResponseResult deleteCareerTrack(Integer id)  {
+        Boolean b = checkParam(id);
+        if(b){
+            staffArchiveService.deleteCareerTrack(id);
+            return  ResponseResult.SUCCESS();
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
 
 
     /**
