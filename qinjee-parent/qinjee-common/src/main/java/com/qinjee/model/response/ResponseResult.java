@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * 响应结果类
- * @author 高雄
+ * @author 彭洪思
  * @date 2019/10/16
  */
 @Data

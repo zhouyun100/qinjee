@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
- * @author 高雄
+ * @author 彭洪思
  * @version 1.0.0
  * @Description 返回json空值去掉null和""
  * @createTime 2019年08月20日 15:29:00

@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author 彭洪思
  * @version 1.0.0
  * @Description TODO
- * @createTime 2019年09月11日 16:39:00
+ * @createTime 2020年02月28日 16:39:00
  */
 @ApiModel(description = "岗位分页实体Vo类")
 @Data

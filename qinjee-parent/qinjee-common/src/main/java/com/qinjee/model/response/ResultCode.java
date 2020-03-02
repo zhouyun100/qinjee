@@ -3,7 +3,7 @@ package com.qinjee.model.response;
 /**
  * API接口返回数据规范
  * @date 2019/10/16
- * @author 高雄
+ * @author 彭洪思
  */
 public interface ResultCode {
 

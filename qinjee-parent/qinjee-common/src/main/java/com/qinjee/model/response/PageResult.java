@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * 分页查询结果封装类
  * @param <T>
- * @author 高雄
+ * @author 彭洪思
  * @date 2019/10/16
  */
 @Data
