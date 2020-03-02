@@ -157,9 +157,13 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                     //属性对象组装
                     for (int i = 0; i < mapList.size (); i++) {
                         for (Map.Entry < Integer, String > integerStringEntry : mapList.get(i).entrySet ()) {
-                            map.put ( integerStringEntry.getKey (), integerStringEntry.getValue () );
-                            if(StringUtils.isNotBlank (mapList.get(i).get(-i-1))){
-                                bigDataId= Integer.parseInt ( mapList.get(i).get(-i-1) );
+                            Integer key = integerStringEntry.getKey();
+                            if(!key.equals(-1)) {
+                                map.put(key, integerStringEntry.getValue());
+                            }else {
+                                if (StringUtils.isNotBlank(integerStringEntry.getValue())) {
+                                    bigDataId = Integer.parseInt(integerStringEntry.getValue());
+                                }
                             }
                         }
                         //通过tableid寻找对应的值

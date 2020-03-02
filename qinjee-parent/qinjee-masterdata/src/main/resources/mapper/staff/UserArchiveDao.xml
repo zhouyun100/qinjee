@@ -44,6 +44,7 @@
     <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
     <result column="archive_status" jdbcType="INTEGER" property="archiveStatus" />
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
+    <result column="headimgurl" jdbcType="VARCHAR" property="headImgUrl" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
@@ -73,7 +74,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,
+    archive_id, user_id, employee_number, company_id, user_category, business_unit_id, org_id, post_id,headimgurl,
     user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
     marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, phone, email, address,
@@ -84,8 +85,14 @@
     select
     <include refid="Base_Column_List" />
     from t_user_archive
-    where archive_id = #{archiveId,jdbcType=INTEGER} AND is_delete=0
+    where archive_id = #{archiveId,jdbcType=INTEGER}
   </select>
+    <select id="selectByPrimaryKeyAndIsDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_archive
+        where archive_id = #{integer,jdbcType=INTEGER} and is_delete=1
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
@@ -232,7 +239,10 @@
                 operator_id,
             </if>
             <if test="archiveStatus != null">
-                archive_status
+                archive_status,
+            </if>
+            <if test="headImgUrl!=null">
+                headimgurl
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -346,8 +356,11 @@
             #{operatorId,jdbcType=INTEGER},
           </if>
           <if test="archiveStatus != null">
-            #{archiveStatus,jdbcType=VARCHAR}
+            #{archiveStatus,jdbcType=VARCHAR},
           </if>
+            <if test="headImgUrl!=null">
+                #{headImgUrl}
+            </if>
         </trim>
   </insert>
   <insert id="insertBatch" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
@@ -469,7 +482,10 @@
           serving_date,
       </if>
       <if test="item.postId != null">
-          post_id
+          post_id,
+      </if>
+      <if test="item.headImgUrl!=null">
+          headimgurl
       </if>
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -588,7 +604,10 @@
               #{item.servingDate},
           </if>
           <if test="item.postId != null">
-              #{item.postId}
+              #{item.postId},
+          </if>
+          <if test="item.headImgUrl!=null">
+              #{item.headImgUrl}
           </if>
       </trim>
     </foreach>
@@ -717,6 +736,9 @@
                 <if test="item.updateTime != null">
                     update_time = #{item.updateTime,jdbcType=TIMESTAMP},
                 </if>
+                <if test="item.headImgUrl!=null">
+                    headimgurl=#{headImgUrl}
+                </if>
             </set>
             where archive_id = #{item.archiveId,jdbcType=INTEGER}
         </foreach>
@@ -842,6 +864,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+        <if test="headImgUrl!=null">
+            headimgurl=#{headImgUrl}
+        </if>
     </set>
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
@@ -965,7 +990,7 @@
     tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.phone, tua.email,
     tua.address, tua.professional_certification, tua.professional_title, tua.professional_level, tua.attrition_date, tua.attrition_type,
     tua.increase_type, tua.archive_status, tua.supervisor_id,tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name business_unit_name,
-    dept.org_name org_name, tp.post_name post_name, tua2.user_name supervisor_user_name
+    dept.org_name org_name, tp.post_name post_name, tua2.user_name supervisor_user_name,tua.headimgurl
     FROM t_user_archive tua
     LEFT JOIN t_post tp ON tua.post_id = tp.post_id
     LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id
@@ -996,7 +1021,7 @@
       maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
       arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
       professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
       orga.org_name as org_name ,
       post.post_name as post_name ,
       org.org_name as business_unit_name,
@@ -1069,10 +1094,24 @@
               #{item}
           </foreach>
       </if>
-
       <if test="sql != null">
           and arc.archive_id in( ${sql})
       </if>
+      and arc.org_id in(
+      select org.org_id from t_user_org_auth oa
+      left join  t_organization org on org.org_id=oa.org_id and org.is_enable=1
+      where oa.archive_id = #{archiveId}
+      and (oa.is_trusteeship = 0
+      or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time )
+      and oa.is_delete = 0
+      UNION
+      select org.org_id from t_role_org_auth roa
+      left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
+      left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
+      where roa.is_delete = 0 and org.company_id=#{companyId}	and org.org_id is not NULL
+      and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )
+      and ur.is_delete = 0
+      )
 
   </select>
   <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
@@ -1139,7 +1178,7 @@
       maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
       arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
       professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
       orga.org_name as org_name ,
       post.post_name as post_name ,
       org.org_name as business_unit_name,
@@ -1192,12 +1231,10 @@
     UNION
     select org.org_id from t_role_org_auth roa
     left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
-    and (ur.is_trusteeship = 0
-    or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time)
-    )
-    and ur.is_delete = 0
-      left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
-    where roa.is_delete = 0 and orga.company_id=#{companyId}
+    left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
+    where roa.is_delete = 0 and org.company_id=#{companyId}	and org.org_id is not NULL
+      and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )
+      and ur.is_delete = 0
     )
     <if test="message !=null">
         or (arc.org_id is null and arc.is_delete=0)
@@ -1272,7 +1309,7 @@
         maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
         arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
@@ -1321,7 +1358,7 @@
   <select id="selectTransMessage" resultType="java.util.LinkedHashMap">
       SELECT
 	 org.org_name AS org_name,
-     arch.user_name AS supervisor_name,
+     arch.user_name AS supervisor_user_name,
      orga.org_name AS business_unit_name ,
      post.post_name AS post_name
     FROM
@@ -1341,7 +1378,7 @@
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
    arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
@@ -1388,7 +1425,7 @@
     arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
     arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
     arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
@@ -1430,9 +1467,9 @@
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+      arc.probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
@@ -1499,7 +1536,7 @@
         maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
         arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
@@ -1559,11 +1596,12 @@
         where is_delete=0
         and archive_status= 'SERVICE'
         <if test="idNumber!=null">
-           or id_number=#{idNumber}
+           or (id_number=#{idNumber} and is_delete=0)
         </if>
         <if test="userId!=null">
-           or user_id=#{userId}
+           or (user_id=#{userId}and is_delete=0)
         </if>
+        limit 1
     </select>
     <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
         select *

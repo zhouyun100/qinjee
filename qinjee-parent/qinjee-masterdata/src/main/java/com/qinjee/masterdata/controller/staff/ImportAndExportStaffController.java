@@ -1,15 +1,20 @@
 package com.qinjee.masterdata.controller.staff;
 
+import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
+import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.export.ExportStanding;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.service.staff.impl.StaffContractServiceImpl;
+import com.qinjee.masterdata.service.staff.impl.StaffStandingBookServiceImpl;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
+import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,9 +45,11 @@ public class ImportAndExportStaffController extends BaseController {
     @Autowired
     private StaffContractServiceImpl staffContractService;
     @Autowired
-    private QuerySchemeDao querySchemeDao;
+    private StaffStandingBookServiceImpl standingBookService;
     @Autowired
     private IStaffArchiveService staffArchiveService;
+    @Autowired
+    private UserArchiveDao userArchiveDao;
 
 
     /**
@@ -228,6 +236,63 @@ public class ImportAndExportStaffController extends BaseController {
                 return null;
         }
         return  failResponseResult("参数错误");
+    }
+    /**
+     * 模板导出台账
+     */
+    @RequestMapping(value = "/exportStandingFile", method = RequestMethod.POST)
+    @ApiOperation(value = "模板导出台账", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "path", value = "文档下载路径", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "title", value = "excel标题", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "QuerySchemeId", value = "查询方案id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "list", value = "人员id集合", paramType = "query", required = true),
+//    })
+    //导出的文件应该是以.xls结尾
+    public ResponseResult exportStandingFile(@RequestBody ExportStanding exportStanding, HttpServletResponse response) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
+        Boolean b = checkParam(getUserSession(), exportStanding, response);
+        if (b) {
+            List<Integer> list4 = new ArrayList<>();
+            if (org.apache.commons.collections4.CollectionUtils.isEmpty(exportStanding.getList())) {
+                List<Integer> integerList = standingBookService.getArchiveId(exportStanding.getStangdingBookId(),
+                        exportStanding.getArchiveType(), exportStanding.getOrgIdList(), getUserSession());
+                if (exportStanding.getType().contains("兼职") && !exportStanding.getType().contains("主职")) {
+                    List<UserArchiveVo> list2 = userArchiveDao.selectPartTimeArchive(integerList, userSession.getCompanyId());
+                    list4 = getList(list2);
+                }
+                if (!exportStanding.getType().contains("兼职") && exportStanding.getType().contains("主职")) {
+                    List<UserArchiveVo> list = userArchiveDao.selectByPrimaryKeyList(integerList, userSession.getCompanyId());
+                    list4 = getList(list);
+                }
+                if (exportStanding.getType().contains("兼职") && exportStanding.getType().contains("主职")) {
+                    List<UserArchiveVo> list = userArchiveDao.selectByPrimaryKeyList(integerList, userSession.getCompanyId());
+                    List<UserArchiveVo> list2 = userArchiveDao.selectPartTimeArchive(integerList, userSession.getCompanyId());
+                    list.addAll(list2);
+                    List<Integer> integers = new ArrayList<>();
+                    for (UserArchiveVo userArchiveVo : list) {
+                        integers.add(userArchiveVo.getArchiveId());
+                    }
+                    List<UserArchiveVo> list3 = userArchiveDao.selectPartTimeArchive(integers, userSession.getCompanyId());
+                    list4 = getList(list3);
+                }
+                staffImportAndExportService.exportArcFile(list4, response, getUserSession(), exportStanding.getQuerySchemaId());
+                return null;
+            }else{
+                staffImportAndExportService.exportArcFile(exportStanding.getList(), response, getUserSession(), exportStanding.getQuerySchemaId());
+                return null;
+            }
+        }else{
+            return failResponseResult("参数错误");
+        }
+    }
+    public List<Integer> getList(List<UserArchiveVo> list){
+        List<Integer> integers = new ArrayList<>();
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(list)){
+            for (UserArchiveVo userArchiveVo : list) {
+                integers.add(userArchiveVo.getArchiveId());
+            }
+        }
+      return integers;
     }
     /**
      * 导出已签合同人员

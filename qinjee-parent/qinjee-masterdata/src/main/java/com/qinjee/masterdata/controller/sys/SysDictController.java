@@ -50,7 +50,7 @@ public class SysDictController extends BaseController {
             @ApiImplicitParam(name = "dictType", value = "字典类型", required = true, dataType = "String")
     })
     @RequestMapping(value = "/searchSysDictListByDictType",method = RequestMethod.POST)
-    public ResponseResult<MenuVO> searchSysDictListByDictType(String dictType) {
+    public ResponseResult searchSysDictListByDictType(String dictType) {
         try{
             userSession = getUserSession();
             if(userSession == null){
