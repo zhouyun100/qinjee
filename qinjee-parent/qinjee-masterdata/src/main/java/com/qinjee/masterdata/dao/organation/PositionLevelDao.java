@@ -23,4 +23,8 @@ public interface PositionLevelDao {
     int getLastSortId(Integer companyId);
 
     int update(PositionLevel positionLevel);
+
+    int sort(List<Integer> positionLevelIds, Integer operatorId);
+
+    List<PositionLevel> listByPositionGradeId(@Param("positionGradeIds") List<Integer> positionGradeIds);
 }

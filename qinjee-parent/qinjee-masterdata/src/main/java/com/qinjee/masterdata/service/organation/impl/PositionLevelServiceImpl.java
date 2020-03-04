@@ -73,12 +73,12 @@ public class PositionLevelServiceImpl implements PositionLevelService {
         //判断职级是否被岗位引用
         List<Post> posts = postDao.listPostsByPositionLevelId(positionLevelIds);
         if (CollectionUtils.isNotEmpty(posts))
-            ExceptionCast.cast(CommonCode.SERVER_ERROR);
+            ExceptionCast.cast(CommonCode.LEVEL_USE_IN_POST);
         return positionLevelDao.batchDelete(positionLevelIds);
     }
 
     @Override
     public int sortPositionLevel(List<Integer> positionLevelIds, UserSession userSession) {
-        return 0;
+       return positionLevelDao.sort(positionLevelIds,userSession.getArchiveId());
     }
 }

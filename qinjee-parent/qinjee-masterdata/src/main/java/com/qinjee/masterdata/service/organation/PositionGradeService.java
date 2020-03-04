@@ -17,19 +17,13 @@ import java.util.List;
  */
 public interface PositionGradeService {
 
-    /**
-     * 分页查询职等列表
-     * @param pageVo
-     * @return
-     */
-    ResponseResult<PageResult<PositionGrade>> getPositionLevelList(PageVo pageVo, UserSession userSession);
 
     /**
      * 新增职等
      * @param positionGrade
      * @return
      */
-    ResponseResult addPositionGrade(PositionGrade positionGrade, UserSession userSession);
+    int addPositionGrade(PositionGrade positionGrade, UserSession userSession);
 
     /**
      * 编辑职等
@@ -37,7 +31,7 @@ public interface PositionGradeService {
      * @param userSession
      * @return
      */
-    ResponseResult editPositionGrade(PositionGrade positionGrade, UserSession userSession);
+    int editPositionGrade(PositionGrade positionGrade, UserSession userSession);
 
     /**
      * 删除职等
@@ -45,12 +39,14 @@ public interface PositionGradeService {
      * @param positionGradeIds
      * @return
      */
-    ResponseResult deletePositionGrade(UserSession userSession, List<Integer> positionGradeIds);
+    int batchDeletePositionGrade(UserSession userSession, List<Integer> positionGradeIds);
     /**
      * 职等排序
      * @param userSession
      * @param positionGradeIds
      * @return
      */
-    ResponseResult sortPositionGrade(UserSession userSession, List<Integer> positionGradeIds);
+    int sortPositionGrade(UserSession userSession, List<Integer> positionGradeIds);
+
+    PageResult<PositionGrade> listPositionGrade(PageVo pageVo, UserSession userSession);
 }

@@ -1,8 +1,11 @@
 package com.qinjee.model.request;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.ToString;
+
+import java.io.Serializable;
 
 /**
  * 请求参数封装类
@@ -10,7 +13,8 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class PageVo {
+@ApiModel(description = "分页Vo类")
+public class PageVo implements Serializable {
 
     @ApiModelProperty(name = "pageSize", value = "每页大小", required = true, example = "10")
     private Integer pageSize;

@@ -1,67 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.organation.PositionLevelDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionLevel">
-    <id column="position_level_id" jdbcType="INTEGER" property="positionLevelId" />
-    <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId" />
-    <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName" />
-    <result column="position_level_remark" jdbcType="VARCHAR" property="positionLevelRemark" />
-    <result column="sort_id" jdbcType="INTEGER" property="sortId" />
-    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="is_delete" jdbcType="SMALLINT" property="isDelete" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionLevel">
+        <id column="position_level_id" jdbcType="INTEGER" property="positionLevelId"/>
+        <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
+        <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName"/>
+        <result column="position_level_remark" jdbcType="VARCHAR" property="positionLevelRemark"/>
+        <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
+        <result column="company_id" jdbcType="INTEGER" property="companyId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     position_level_id, position_level_name, position_grade_id,position_level_remark, sort_id, operator_id,
     create_time, is_delete
   </sql>
 
-  <insert id="insert" parameterType="com.qinjee.masterdata.model.entity.PositionLevel">
-    insert into t_position_level(position_level_id, position_level_name, position_grade_id,operator_id,position_level_remark, sort_id,company_id)
-    value(#{positionLevelId},#{positionLevelName},#{positionGradeId},#{operatorId},#{positionLevelRemark},#{sortId},#{companyId})
+    <insert id="insert" parameterType="com.qinjee.masterdata.model.entity.PositionLevel">
+    insert into t_position_level(position_level_name, position_grade_id,operator_id,position_level_remark, sort_id,company_id)
+    value(#{positionLevelName},#{positionGradeId},#{operatorId},#{positionLevelRemark},#{sortId},#{companyId})
   </insert>
 
-  <select id="list" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"></include>
-    from t_position_level
-    where company_id=#{companyId} and is_delete =0
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_position_level
+        where company_id=#{companyId} and is_delete =0
 
-  </select>
-  <select id="getLastSortId" resultType="int">
+    </select>
+    <select id="getLastSortId" resultType="int">
     SELECT sort_id FROM t_position_level WHERE company_id=#{companyId} and  is_delete =0 ORDER BY sort_id DESC LIMIT 1
   </select>
 
-  <update id="update" parameterType="com.qinjee.masterdata.model.entity.PositionLevel">
-    update t_position_level
-    <set>
-      <if test="positionLevelName != null">
-        position_level_name = #{positionLevelName,jdbcType=VARCHAR},
-      </if>
-      <if test="positionGradeId != null">
-        position_grade_id = #{positionGradeId,jdbcType=VARCHAR},
-      </if>
-      <if test="positionLevelRemark != null">
-        position_level_remark = #{positionLevelRemark,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
+    <update id="update" parameterType="com.qinjee.masterdata.model.entity.PositionLevel">
+        update t_position_level
+        <set>
+            <if test="positionLevelName != null">
+                position_level_name = #{positionLevelName,jdbcType=VARCHAR},
+            </if>
+            <if test="positionGradeId != null">
+                position_grade_id = #{positionGradeId,jdbcType=VARCHAR},
+            </if>
+            <if test="positionLevelRemark != null">
+                position_level_remark = #{positionLevelRemark,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
 
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=SMALLINT},
-      </if>
-    </set>
-    where position_level_id = #{positionLevelId,jdbcType=INTEGER}
-  </update>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where position_level_id = #{positionLevelId,jdbcType=INTEGER}
+    </update>
 
-  <update id="batchDelete">
-    update t_position_level set  is_delete = 1
-    where position_level_id in
-    <foreach collection="positionLevelIds" open="(" item="id" separator="," close=")">
-      #{id}
-    </foreach>
+    <update id="batchDelete">
+        update t_position_level set is_delete = 1
+        where position_level_id in
+        <foreach collection="positionLevelIds" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
 
-  </update>
+    </update>
 
+    <update id="sort">
+        <foreach collection="positionLevelIds" item="id" index="index" open="" close="" separator=";">
+            UPDATE t_position_level
+            <set>
+                sort_id=(#{index}+1) ,operator_id = #{operatorId,jdbcType=INTEGER}
+            </set>
+            <where>
+                position_level_id = #{id}
+            </where>
+        </foreach>
+    </update>
+    <select id="listByPositionGradeId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_position_level where position_grade_id in
+        <foreach collection="positionGradeIds" item="positionGradeId" separator="," open="(" close=")">
+            #{positionGradeId}
+        </foreach>
+
+    </select>
 </mapper>

@@ -7,23 +7,22 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface PositionGradeDao {
-    int deleteByPrimaryKey(Integer positionGradeId);
+    int batchDelete(List<Integer> positionGradeIds);
 
     int insert(PositionGrade record);
 
-    int insertSelective(PositionGrade record);
-
-    PositionGrade selectByPrimaryKey(Integer positionGradeId);
-
-    int updateByPrimaryKeySelective(PositionGrade record);
-
-    int updateByPrimaryKey(PositionGrade record);
 
 
+    int update(PositionGrade record);
 
+
+    int getLastSortId(Integer companyId);
     /**
      * 查询所有职等
      * @return
      */
-    List<PositionGrade> getPositionLevelList(Integer companyId);
+    List<PositionGrade> list(Integer companyId);
+
+
+    int sort(Integer operatorId, List<Integer> positionGradeIds);
 }
