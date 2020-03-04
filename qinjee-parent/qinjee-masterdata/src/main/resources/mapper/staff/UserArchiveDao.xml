@@ -246,8 +246,7 @@
                 archive_status,
             </if>
             <if test="headImgUrl!=null">
-                headimgurl
-                archive_status,
+                headimgurl,
             </if>
             <if test="positionGradeId != null">
                 position_grade_id,
@@ -370,7 +369,7 @@
             #{archiveStatus,jdbcType=VARCHAR},
           </if>
             <if test="headImgUrl!=null">
-                #{headImgUrl}
+                #{headImgUrl},
             </if>
             <if test="positionGradeId != null">
                  #{positionGradeId},
@@ -502,8 +501,7 @@
           post_id,
       </if>
       <if test="item.headImgUrl!=null">
-          headimgurl
-          post_id,
+          headimgurl,
       </if>
           <if test="item.positionGradeId != null">
               position_grade_id,
@@ -631,8 +629,7 @@
               #{item.postId},
           </if>
           <if test="item.headImgUrl!=null">
-              #{item.headImgUrl}
-              #{item.postId},
+              #{item.headImgUrl},
           </if>
           <if test="item.positionGradeId != null">
                #{item.positionGradeId},
@@ -768,7 +765,7 @@
                     update_time = #{item.updateTime,jdbcType=TIMESTAMP},
                 </if>
                 <if test="item.headImgUrl!=null">
-                    headimgurl=#{headImgUrl}
+                    headimgurl=#{headImgUrl},
                 </if>
                 <if test="item.positionGradeId != null">
                     position_grade_id= #{item.positionGradeId},
@@ -902,7 +899,7 @@
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
         <if test="headImgUrl!=null">
-            headimgurl=#{headImgUrl}
+            headimgurl=#{headImgUrl},
         </if>
         <if test="positionGradeId != null">
            position_grade_id= #{positionGradeId},

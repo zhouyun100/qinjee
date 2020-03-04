@@ -702,8 +702,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
     }
     @Override
-    public List<UserArchiveVo> selectArchiveByHead(TableSelectParam tableSelectParam, UserSession userSession) {
+    public List<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch, Integer pggeSize,Integer currentPage,UserSession userSession) {
         return null;
+    }
+
+    @Override
+    public void deleteCareerTrack(Integer id) {
+       archiveCareerTrackdao.deleteCareerTrack(id);
     }
 
 

@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.QueryScheme;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
@@ -169,6 +170,6 @@ public interface IStaffArchiveService {
 
     List<CustomFieldVO> selectFieldListForPre(UserSession userSession);
 
-    List<UserArchiveVo> selectArchiveByHead(TableSelectParam tableSelectParam, UserSession userSession);
+    List<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage,UserSession userSession);
     void deleteCareerTrack(Integer id);
 }

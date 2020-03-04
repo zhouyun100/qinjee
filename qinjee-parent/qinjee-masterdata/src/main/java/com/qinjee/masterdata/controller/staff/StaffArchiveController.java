@@ -513,10 +513,10 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectArchiveByHead", method = RequestMethod.GET)
     @ApiOperation(value = "自定义表头查询数据（档案）", notes = "hkt")
-    public ResponseResult<List<UserArchiveVo>> selectArchiveByHead(@RequestBody TableSelectParam tableSelectParam) {
-        Boolean b = checkParam(getUserSession (),tableSelectParam);
+    public ResponseResult<List<UserArchiveVo>> selectArchiveByHead(@RequestBody List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage) {
+        Boolean b = checkParam(getUserSession (),fieldValueForSearch,pageSize,currentPage);
         if(b){
-            List<UserArchiveVo> list=staffArchiveService. selectArchiveByHead(tableSelectParam,getUserSession ());
+            List<UserArchiveVo> list=staffArchiveService. selectArchiveByHead(fieldValueForSearch,pageSize,currentPage,getUserSession ());
             return new ResponseResult <> ( list,CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
