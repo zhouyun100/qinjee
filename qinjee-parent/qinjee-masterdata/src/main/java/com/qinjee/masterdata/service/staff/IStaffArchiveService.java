@@ -170,6 +170,6 @@ public interface IStaffArchiveService {
 
     List<CustomFieldVO> selectFieldListForPre(UserSession userSession);
 
-    List<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage,UserSession userSession);
+    PageResult<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage,UserSession userSession);
     void deleteCareerTrack(Integer id);
 }

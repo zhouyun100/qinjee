@@ -68,7 +68,8 @@ public enum CommonCode implements ResultCode{
     EMAIL_IS_MISTAKE(false,10544, "邮件发送失败"),
     GET_CACHE_MISTAKE(false,10545, "获取缓存失败，请联系厂商"),
     GRADE_USE_IN_LEVEL(false,10546, "职等被职级引用，不允许删除"),
-    LEVEL_USE_IN_POST(false,10546, "职级被岗位引用，不允许删除"),
+    LEVEL_USE_IN_POST(false,10547, "职级被岗位引用，不允许删除"),
+    PARAM_IS_WRONG(false,10548, "参数格式错误");
 
     ;
 

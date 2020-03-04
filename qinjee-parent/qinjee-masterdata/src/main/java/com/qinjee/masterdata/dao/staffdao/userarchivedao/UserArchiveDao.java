@@ -121,4 +121,6 @@ public interface UserArchiveDao {
     List<NoConArc> selectNoConArcByIdList(@Param("list") List<Integer> list);
 
     UserArchiveVo selectByPrimaryKeyAndIsDelete(@Param("integer") Integer integer);
+
+    List<UserArchiveVo> selectArchiveByHead(@Param("whereSql") String whereSql, @Param("companyId") Integer companyId);
 }

@@ -20,6 +20,7 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
@@ -702,8 +703,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
     }
     @Override
-    public List<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch, Integer pggeSize,Integer currentPage,UserSession userSession) {
-        return null;
+    public PageResult<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch, Integer pggeSize,Integer currentPage,UserSession userSession) {
+        String whereSql = DealHeadParamUtil.getWhereSql(fieldValueForSearch,"arc.");
+        PageHelper.startPage(currentPage,pggeSize);
+       List<UserArchiveVo> list= userArchiveDao.selectArchiveByHead(whereSql,userSession.getCompanyId());
+       return new PageResult<>(list);
     }
 
     @Override

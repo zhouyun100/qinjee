@@ -1,7 +1,7 @@
 spring:
   #应用名
   application:
-    name: masterdata_hkt
+    name: masterdata
 
   jackson:
     date-format: yyyy-MM-dd

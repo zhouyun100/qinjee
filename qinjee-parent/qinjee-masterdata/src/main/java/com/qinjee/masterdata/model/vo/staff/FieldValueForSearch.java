@@ -9,4 +9,5 @@ public class FieldValueForSearch {
     private String fieldName;
     private Object fieldValue;
     private String orderBy;
+    private String fieldType;
 }
