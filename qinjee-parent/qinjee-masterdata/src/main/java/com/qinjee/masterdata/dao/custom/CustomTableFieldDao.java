@@ -301,6 +301,10 @@ public interface CustomTableFieldDao {
     String selectTextCodeByName(@Param("s") String s, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
     Integer selectFieldIdByFieldIdAndFunccode(@Param("key") Integer key, @Param("companyId") Integer companyId);
+
+    List<CustomFieldVO> selectFieldIdListByCodeList(@Param("strings") List<String> strings, @Param("companyId") Integer companyId, @Param("arc") String arc);
+
+    List<CustomFieldVO> selectFieldCodeByNameListAndFuncCodeAndCompanyId(@Param("headsForPre") List<String> headsForPre, @Param("pre") String pre, @Param("companyId") Integer companyId);
 }
 
 

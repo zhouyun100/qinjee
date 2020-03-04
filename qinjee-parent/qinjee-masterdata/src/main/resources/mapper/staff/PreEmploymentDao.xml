@@ -40,6 +40,9 @@
     <result column="create_time" property="createTime" jdbcType="VARCHAR" />
     <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
     <result column="is_delete" property="isDelete" jdbcType="TINYINT" />
+    <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER" />
+    <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER" />
+    <result column="template_id" property="templateId" jdbcType="INTEGER" />
   </resultMap>
     <resultMap id="t_pre_employmentMap" type="com.qinjee.masterdata.model.vo.staff.export.ExportPreVo">
         <result column="user_name" property="user_name" jdbcType="VARCHAR" />
@@ -108,6 +111,11 @@
         <result column="post_code" property="postCode" jdbcType="VARCHAR" />
         <result column="org_code" property="orgCode" jdbcType="VARCHAR" />
         <result column="company_id" property="companyId" jdbcType="INTEGER" />
+        <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER" />
+        <result column="position_level_name" property="positionLevelName" jdbcType="VARCHAR" />
+        <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER" />
+        <result column="position_grade_name" property="positionGradeName" jdbcType="VARCHAR" />
+        <result column="template_id" property="templateId" jdbcType="INTEGER" />
 
     </resultMap>
 
@@ -119,18 +127,18 @@
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
         t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id, t_pre_employment.operator_id, t_pre_employment.create_time, t_pre_employment.update_time,
-        t_pre_employment.is_delete
+        t_pre_employment.is_delete, t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id
     </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List" />
-    from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}
+    <include refid="Base_Column_List"/>
+    from t_pre_employment   t_pre_employment
+    where   t_pre_employment.employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_pre_employment
-    where employment_id = #{employmentId,jdbcType=INTEGER}
+    delete from t_pre_employment   t_pre_employment
+    where   t_pre_employment.employment_id = #{employmentId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
      INSERT INTO t_pre_employment
@@ -247,6 +255,15 @@
           <if test="isDelete != null">
               is_delete,
           </if>
+          <if test="positionLevelId != null">
+              position_level_id ,
+          </if>
+          <if test="positionGradeId != null">
+              position_grade_id,
+          </if>
+          <if test="templateId != null">
+              template_id
+          </if>
 
       </trim>
       <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -360,7 +377,16 @@
               #{updateTime},
           </if>
           <if test="isDelete != null">
-              #{isDelete}
+              #{isDelete},
+          </if>
+          <if test="positionLevelId != null">
+              #{positionLevelId} ,
+          </if>
+          <if test="positionGradeId != null">
+              #{positionGradeId},
+          </if>
+          <if test="templateId != null">
+              #{templateId}
           </if>
       </trim>
   </insert>
@@ -480,6 +506,15 @@
                 <if test="item.isDelete != null">
                     is_delete,
                 </if>
+                <if test="item.positionLevelId != null">
+                    position_level_id ,
+                </if>
+                <if test="item.positionGradeId != null">
+                    position_grade_id,
+                </if>
+                <if test="item.templateId != null">
+                    template_id
+                </if>
 
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -584,16 +619,25 @@
                     #{item.companyId},
                 </if>
                 <if test="item.operatorId != null">
-                    #{item.item.operatorId},
+                    #{item.operatorId},
                 </if>
                 <if test="item.createTime != null">
-                    #{item.item.createTime},
+                    #{item.createTime},
                 </if>
                 <if test="item.updateTime != null">
-                    #{item.item.updateTime},
+                    #{item.updateTime},
                 </if>
                 <if test="item.isDelete != null">
-                    #{item.isDelete}
+                    #{item.isDelete},
+                </if>
+                <if test="item.positionLevelId != null">
+                    #{item.positionLevelId} ,
+                </if>
+                <if test="item.positionGradeId != null">
+                    #{item.positionGradeId},
+                </if>
+                <if test="templateId != null">
+                    #{item.templateId}
                 </if>
             </trim>
 
@@ -817,8 +861,17 @@
           operator_id = #{operatorId},
       </if>
       <if test="isDelete != null">
-          is_delete = #{isDelete}
+          is_delete = #{isDelete},
       </if>
+     <if test="positionLevelId != null">
+       position_level_id= #{positionLevelId} ,
+     </if>
+     <if test="positionGradeId != null">
+         position_grade_id=#{positionGradeId},
+     </if>
+     <if test="templateId != null">
+        template_id=#{templateId}
+     </if>
       </set>
         WHERE employment_id = #{employmentId}
     </update>
@@ -925,7 +978,16 @@
             operator_id = #{item.operatorId},
         </if>
         <if test="item.isDelete != null">
-            is_delete = #{item.isDelete}
+            is_delete = #{item.isDelete},
+        </if>
+        <if test="item.positionLevelId != null">
+            position_level_id= #{item.positionLevelId} ,
+        </if>
+        <if test="item.positionGradeId != null">
+            position_grade_id=#{item.positionGradeId},
+        </if>
+        <if test="item.templateId != null">
+            template_id=#{item.templateId}
         </if>
         </set>
         WHERE employment_id = #{item.employmentId}
@@ -1044,7 +1106,8 @@
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
         t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
-        dict1.dict_value as marry_status_name,post.post_code,org.org_code
+        dict1.dict_value as marry_status_name,post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
+        grade.position_grade_name as positionGradeName,level.position_level_name as positionLevelName
         from t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
         left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1
@@ -1052,9 +1115,18 @@
         left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status
         left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree
         left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender
+        left join t_position_grade grade on grade.position_grade_id= t_pre_employment.position_grade_id
+        left join t_position_level level on level.position_level_id= t_pre_employment.position_level_id
         where
         t_pre_employment.employment_id=#{businessId}
         and t_pre_employment.is_delete=0
+        and post.is_delete=0
+        and dict.is_delete=0
+        and dict1.is_deiete=0
+        and dict2.is_delete=0
+        and dict3.is_delete=0
+        and grade.is_delete=0
+        and level.is_delete=0
 
     </select>
     <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
@@ -1092,5 +1164,27 @@
         from t_pre_employment
         where id_number=#{s}
         and is_delete=0
+    </select>
+    <select id="selectemploymentRegisterByPreId" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_pre_employment
+        where is_delete=0
+        and company_id=#{companyId}
+        and employment_id=#{preId}
+        and employment_register='审核中'
+    </select>
+    <select id="selectReadyCount" resultType="java.lang.Integer">
+        select count(*)
+        from  t_pre_employment
+        where is_delete=0
+        and   company_id=#{companyId}
+        and   employment_register='审核中'
+        and template_id in(
+        select template_id from t_template_entry_registration
+        where company_id=#{companyId}
+        and is_delete=0
+        and FIND_IN_SET(#{archiveId},receive_ids)
+        )
+
     </select>
 </mapper>

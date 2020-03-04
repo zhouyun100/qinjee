@@ -238,4 +238,24 @@ public class PreEmploymentVo implements Serializable {
      * 岗位编码
      */
     private String postCode;
+    /**
+     * 职级id
+     */
+    private Integer positionLevelId;
+    /**
+     * 职等id
+     */
+    private Integer positionGradeId;
+    /**
+     * 职级名称
+     */
+    private Integer positionLevelName;
+    /**
+     * 职等名称
+     */
+    private Integer positionGradeName;
+    /**
+     * 模板id
+     */
+    private Integer templateId;
 }

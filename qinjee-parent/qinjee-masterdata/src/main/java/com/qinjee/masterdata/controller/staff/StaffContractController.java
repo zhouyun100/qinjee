@@ -33,8 +33,6 @@ import java.util.List;
 public class StaffContractController extends BaseController {
     @Autowired
     private IStaffContractService staffContractService;
-    @Autowired
-    private IStaffArchiveService staffArchiveService;
     private static final Logger logger = LoggerFactory.getLogger(StaffContractController.class);
 
     /**

@@ -303,7 +303,7 @@
     left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
     where arc.archive_id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo"  >
+  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention"  >
     select arc.user_name as userName,
     arc.employee_number as employeeNumber ,
     org.org_name as orgName,
@@ -338,5 +338,10 @@
        #{item}
     </foreach>)
 
+  </select>
+  <select id="selectCountRenew" resultType="java.lang.Integer">
+    select count(*) from t_contract_renewal_intention
+    where archive_id=#{archiveId}
+    and intention_status='待确认'
   </select>
 </mapper>

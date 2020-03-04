@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.vo.staff.DetailCount;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -193,6 +194,23 @@ public class StaffPreEmploymentController extends BaseController {
                 return ResponseResult.SUCCESS ();
         }
         return failResponseResult ( "参数错误" );
+    }
+    /**
+     * 待办提醒任务
+     */
+    @RequestMapping(value = "/getReadyCount", method = RequestMethod.GET)
+    @ApiOperation(value = "待办提醒任务", notes = "hkt")
+    //    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
+//    })
+    public ResponseResult<DetailCount> getReadyCount() {
+        Boolean b = checkParam ( getUserSession () );
+        if (b) {
+            DetailCount detailCount=staffPreEmploymentService.getReadyCount ( getUserSession ());
+            return new ResponseResult<>(detailCount,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     private Boolean checkParam(Object... params) {

@@ -8,6 +8,7 @@ import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
@@ -21,6 +22,7 @@ import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.SqlUtil;
+import com.qinjee.masterdata.utils.export.HeadMapUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -77,6 +80,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
+    @Autowired
+    private SysDictDao sysDictDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -87,18 +92,14 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resumeDeleteArchiveById(List < Integer > archiveid) {
-        Integer isExistId=null;
         for (Integer integer : archiveid) {
-            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKeyAndIsDelete(integer);
-            String idNumber = userArchiveVo.getIdNumber();
-            Integer userId = userArchiveVo.getUserId();
-            if(StringUtils.isNotBlank(idNumber)|| (userId!=null&& !userId.equals(0))) {
-                isExistId= userArchiveDao.selectIsExist(idNumber,userId );
-            }
-            if(isExistId==null|| isExistId.equals(0)){
+            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(integer);
+            Integer isExistId=userArchiveDao.selectIsExist(userArchiveVo.getIdNumber(),userArchiveVo.getUserId());
+            if(isExistId==null|| isExistId==0){
                 userArchiveDao.resumeDeleteArchiveById(integer);
             }
         }
+
     }
 
     @Override
@@ -275,9 +276,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public ExportFile selectArchiveByQueryScheme(UserSession userSession, List < Integer > archiveIdList, Integer querySchemaId) throws IllegalAccessException {
         ExportFile exportFile = new ExportFile ();
+        List < CustomFieldVO > orderNotIn = new ArrayList <> ();
         Map < Integer, Map < String, Object > > userArchiveListCustom;
         if (querySchemaId != null && querySchemaId != 0) {
-            return getExportFile ( userSession, archiveIdList, exportFile, querySchemaId );
+            return getExportFile ( userSession, archiveIdList, exportFile, orderNotIn, querySchemaId );
         } else {
             List < ExportArcVo > exportArcVoList = userArchiveDao.selectDownLoadVoList ( archiveIdList );
             userArchiveListCustom = getMap ( archiveIdList, exportArcVoList );
@@ -287,9 +289,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
     }
 
-    private ExportFile getExportFile(UserSession userSession, List < Integer > archiveIdList, ExportFile exportFile, Integer schemaId) {
+    private ExportFile getExportFile(UserSession userSession, List < Integer > archiveIdList, ExportFile exportFile, List < CustomFieldVO > orderNotIn, Integer schemaId) {
         Map < Integer, Map < String, Object > > userArchiveListCustom=new HashMap<>();
-        List < CustomFieldVO > orderNotIn = new ArrayList <> ();
         StringBuilder stringBuffer = new StringBuilder ();
         String order = null;
         //根据查询方案id找到需要展示字段的id以及按顺序排序
@@ -433,28 +434,36 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List < CustomFieldVO > outList = new ArrayList <> ();
         List < CustomFieldVO > list = customTableFieldDao.selectFieldByIdList ( integers, companyId, "ARC" );
         list.addAll(notIn);
-        for (CustomFieldVO customFieldVO : list) {
-            if (customFieldVO.getIsSystemDefine () == 0) {
-                outList.add ( customFieldVO );
-            } else {
-                inList.add ( customFieldVO );
-            }
-        }
-        outList.addAll ( notIn );
+
+//        for (CustomFieldVO customFieldVO : list) {
+//            if (customFieldVO.getIsSystemDefine () == 0) {
+//                outList.add ( customFieldVO );
+//            } else {
+//                inList.add ( customFieldVO );
+//            }
+//        }
+//        outList.addAll ( notIn );
         StringBuilder stringBuffer = new StringBuilder ();
         String a = "";
         String b = "select  t.archive_id, ";
         String c = null;
         String d = "FROM ( select t0.*";
+        for (CustomFieldVO customFieldVO : list) {
+           if(customFieldVO.getIsSystemDefine()==0){
+               stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
+           } else{
+               stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
+           }
+        }
 
-        for (CustomFieldVO customFieldVO : inList) {
-            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
-        }
-        if (!CollectionUtils.isEmpty ( outList )) {
-            for (CustomFieldVO customFieldVO : outList) {
-                stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
-            }
-        }
+//        for (CustomFieldVO customFieldVO : inList) {
+//            stringBuffer.append ( "t." ).append ( customFieldVO.getFieldCode () ).append ( "," );
+//        }
+//        if (!CollectionUtils.isEmpty ( outList )) {
+//            for (CustomFieldVO customFieldVO : outList) {
+//                stringBuffer.append ( "t." ).append ( customFieldVO.getFieldName () ).append ( "," );
+//            }
+//        }
         int i1 = stringBuffer.toString ().lastIndexOf ( "," );
         a = stringBuffer.toString ().substring ( 0, i1 );
         if (CollectionUtils.isEmpty ( outList )) {
@@ -596,10 +605,40 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public void deleteCareerTrack(Integer id) {
-        archiveCareerTrackdao.deleteCareerTrack(id);
+    public List<CustomFieldVO> selectFieldListByqueryId(Integer queryschemaId, UserSession userSession) {
+        List<CustomFieldVO> customFieldVOS=null;
+        if(queryschemaId!=null && !queryschemaId.equals(0) ){
+            List<Integer> integers = querySchemeFieldDao.selectFieldIdWithSort(queryschemaId);
+            if(!CollectionUtils.isEmpty(integers)) {
+                customFieldVOS = customTableFieldDao.searchCustomFieldListByFieldIdList(integers);
+            }else{
+                ExceptionCast.cast(CommonCode.PLAN_IS_MISTAKE);
+            }
+        }else{
+            String[] codeList = {"user_name", "employee_number","business_unit_id","org_id","hireDate",
+                    "probation_due_date", "supervisor_id", "phone"};
+            List<String> strings = Arrays.asList(codeList);
+             customFieldVOS=customTableFieldDao.selectFieldIdListByCodeList(strings,userSession.getCompanyId(),"ARC");
+        }
+        for (CustomFieldVO customFieldVO : customFieldVOS) {
+            if("code".equals(customFieldVO.getTextType())){
+                customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
+            }
+        }
+        return customFieldVOS;
     }
 
+    @Override
+    public List<CustomFieldVO> selectFieldListForPre(UserSession userSession) {
+        List<String> headsForPre = HeadMapUtil.getHeadsForPre();
+        List<CustomFieldVO> customFieldVOS=customTableFieldDao.selectFieldCodeByNameListAndFuncCodeAndCompanyId(headsForPre,"PRE",userSession.getCompanyId());
+        for (CustomFieldVO customFieldVO : customFieldVOS) {
+            if("code".equals(customFieldVO.getTextType())){
+                customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
+            }
+        }
+        return customFieldVOS;
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public Integer insertQueryScheme(QuerySchemaVo querySchemaVo) {
@@ -662,12 +701,17 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             }
         }
     }
+    @Override
+    public List<UserArchiveVo> selectArchiveByHead(TableSelectParam tableSelectParam, UserSession userSession) {
+        return null;
+    }
+
 
     public List < TableHead > getDefaultArcHead() {
             List<TableHead> headList = new ArrayList<>();
-            String[] strings = {"姓名","单位","部门","联系电话","任职类型","工号","直接上级","岗位","试用期到期时间","入职时间"};
-            String[] codeList = {"userName",  "businessUnitName", "orgName","phone","employment_type","employeeNumber", "supervisorUserName","postName",
-                    "probationDueDate", "hireDate"};
+            String[] strings = {"姓名", "工号", "单位", "部门", "岗位", "入职日期", "试用期到期时间", "直接上级", "联系电话", "任职类型"};
+            String[] codeList = {"userName", "employeeNumber", "businessUnitName", "orgName", "postName", "hireDate",
+                    "probationDueDate", "supervisorUserName", "phone", "emplymentType"};
             for (int i = 0; i < strings.length; i++) {
                 TableHead arcHead = new TableHead();
                 if ("姓名，性别，联系电话，年龄，出生日期，证件号码，最高学历,电子邮箱".contains(strings[i])) {

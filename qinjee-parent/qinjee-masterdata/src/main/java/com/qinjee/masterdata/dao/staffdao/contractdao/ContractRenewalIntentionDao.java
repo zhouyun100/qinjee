@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
+import com.qinjee.masterdata.model.vo.staff.ContractRenewalIntentionVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -27,5 +28,7 @@ public interface ContractRenewalIntentionDao {
 
     void insertBatch(@Param("contractRenewalIntentions") List<ContractRenewalIntention> contractRenewalIntentions);
 
-    List< ContractRenewalIntention> selectByorgId(@Param("list") List<Integer> orgId);
+    List<ContractRenewalIntention> selectByorgId(@Param("list") List<Integer> orgId);
+
+    Integer selectCountRenew(@Param("archiveId") Integer archiveId);
 }

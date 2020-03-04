@@ -302,9 +302,14 @@ public class UserArchive implements Serializable {
      */
     private String  archiveStatus;
     /**
-     * 用户头像
+     * 职级id
      */
-    private String  headImgUrl;
+    private Integer positionLevelId;
+    /**
+     * 职等id
+     */
+    private Integer positionGradeId;
+
     private static final long serialVersionUID = 1L;
 
 }

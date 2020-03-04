@@ -2,7 +2,10 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
+import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.QueryScheme;
+import com.qinjee.masterdata.model.entity.UserArchive;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
@@ -479,8 +482,45 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
-
+    /**
+     * 自定义表头获取动态表头（档案需要传参）
+     */
+    @RequestMapping(value = "/selectFieldListByqueryId", method = RequestMethod.GET)
+    @ApiOperation(value = "自定义表头获取动态表头（档案需要传参）", notes = "hkt")
+    public ResponseResult<List<CustomFieldVO>> selectFieldListByqueryId(Integer queryschemaId) {
+        Boolean b = checkParam(getUserSession ());
+        if(b){
+            List<CustomFieldVO> list=staffArchiveService. selectFieldListByqueryId(queryschemaId,getUserSession ());
+            return new ResponseResult <> ( list,CommonCode.SUCCESS );
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 自定义表头获取动态表头（预入职不需传参）
+     */
+    @RequestMapping(value = "/selectFieldListForPre", method = RequestMethod.GET)
+    @ApiOperation(value = "自定义表头获取动态表头（预入职不需传参）", notes = "hkt")
+    public ResponseResult<List<CustomFieldVO>> selectFieldListForPre() {
+        Boolean b = checkParam(getUserSession ());
+        if(b){
+            List<CustomFieldVO> list=staffArchiveService. selectFieldListForPre(getUserSession ());
+            return new ResponseResult <> ( list,CommonCode.SUCCESS );
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 自定义表头查询数据（档案）
+     */
+    @RequestMapping(value = "/selectArchiveByHead", method = RequestMethod.GET)
+    @ApiOperation(value = "自定义表头查询数据（档案）", notes = "hkt")
+    public ResponseResult<List<UserArchiveVo>> selectArchiveByHead(@RequestBody TableSelectParam tableSelectParam) {
+        Boolean b = checkParam(getUserSession (),tableSelectParam);
+        if(b){
+            List<UserArchiveVo> list=staffArchiveService. selectArchiveByHead(tableSelectParam,getUserSession ());
+            return new ResponseResult <> ( list,CommonCode.SUCCESS );
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {

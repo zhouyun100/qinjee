@@ -72,4 +72,8 @@ public interface PreEmploymentDao {
     PreEmployment selectByEmployNumber(@Param("s") String s);
 
     List<Integer> selectPreByPhone(@Param("s3") String s3, @Param("s4") String s4);
+
+    PreEmployment selectemploymentRegisterByPreId(@Param("preId") Integer preId, @Param("companyId") Integer companyId);
+
+    Integer selectReadyCount(@Param("archiveId") String archiveId, @Param("companyId") Integer companyId);
 }

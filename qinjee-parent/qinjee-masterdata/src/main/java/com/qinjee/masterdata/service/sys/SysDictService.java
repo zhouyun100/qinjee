@@ -13,6 +13,7 @@ package com.qinjee.masterdata.service.sys;
 import com.qinjee.masterdata.model.entity.SysDict;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 周赟
@@ -37,4 +38,5 @@ public interface SysDictService {
 
     String searchCodeByTypeAndValue(String dictType,String dictValue);
 
+    Map<String, List<SysDict>> selectMoreDict(List<String> dictCodeList);
 }

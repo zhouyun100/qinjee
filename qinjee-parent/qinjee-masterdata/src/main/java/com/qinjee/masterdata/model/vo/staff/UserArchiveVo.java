@@ -349,6 +349,23 @@ public class UserArchiveVo implements Serializable {
      * 用户头像
      */
     private String headImgUrl;
+    /**
+     * 职级id
+     */
+    private Integer positionLevelId;
+    /**
+     * 职等id
+     */
+    private Integer positionGradeId;
+    /**
+     * 职级名称
+     */
+    private Integer positionLevelName;
+    /**
+     * 职等名称
+     */
+    private Integer positionGradeName;
+
     private static final long serialVersionUID = 1L;
 
 

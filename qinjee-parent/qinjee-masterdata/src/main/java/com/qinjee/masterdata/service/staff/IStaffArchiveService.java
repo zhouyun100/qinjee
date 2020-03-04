@@ -164,5 +164,11 @@ public interface IStaffArchiveService {
 
     UserArchiveVo selectById(Integer id);
 
+
+    List<CustomFieldVO> selectFieldListByqueryId(Integer queryschemaId, UserSession userSession);
+
+    List<CustomFieldVO> selectFieldListForPre(UserSession userSession);
+
+    List<UserArchiveVo> selectArchiveByHead(TableSelectParam tableSelectParam, UserSession userSession);
     void deleteCareerTrack(Integer id);
 }

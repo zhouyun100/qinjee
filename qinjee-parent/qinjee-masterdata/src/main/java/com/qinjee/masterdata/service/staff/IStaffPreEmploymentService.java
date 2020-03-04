@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
+import com.qinjee.masterdata.model.vo.staff.DetailCount;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.model.request.UserSession;
@@ -64,4 +65,6 @@ public interface IStaffPreEmploymentService {
     PreEmployment selectPreEmploymentSingle(Integer employeeId);
 
     void confirmEmployment(List<Integer> list,UserSession userSession) throws Exception;
+
+    DetailCount getReadyCount(UserSession userSession);
 }

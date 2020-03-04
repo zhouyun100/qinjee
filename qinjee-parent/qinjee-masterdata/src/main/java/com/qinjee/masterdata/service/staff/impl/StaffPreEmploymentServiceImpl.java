@@ -7,16 +7,14 @@ import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
+import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
-import com.qinjee.masterdata.model.vo.staff.CustomArchiveTableDataVo;
-import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
-import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
@@ -73,6 +71,9 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private CustomArchiveTableDao customArchiveTableDao;
     @Autowired
     private IStaffCommonService staffCommonService;
+    @Autowired
+    private ContractRenewalIntentionDao contractRenewalIntentionDao;
+
 
 
     /**
@@ -341,6 +342,19 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         statusChangeVo.setChangeState ( CHANGSTATUS_READY );
         insertStatusChange ( userSession, statusChangeVo );
     }
+
+    @Override
+    public DetailCount getReadyCount(UserSession userSession) {
+        //关联查询出我的预入职待审核人数
+        Integer preCount=preEmploymentDao.selectReadyCount(String.valueOf(userSession.getArchiveId()),userSession.getCompanyId());
+        //查询出我是否有续签反馈
+        Integer conCount=contractRenewalIntentionDao.selectCountRenew(userSession.getArchiveId());
+        DetailCount detailCount=new DetailCount();
+        detailCount.setPreCount(preCount);
+        detailCount.setConCount(conCount);
+        return detailCount;
+    }
+
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive)  {
         String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
         if(null==userArchive.getEmployeeNumber ()||"".equals (userArchive.getEmployeeNumber ()  )) {

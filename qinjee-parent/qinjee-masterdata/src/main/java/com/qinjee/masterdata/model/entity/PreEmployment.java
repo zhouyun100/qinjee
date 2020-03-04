@@ -202,6 +202,18 @@ public class PreEmployment implements Serializable {
          */
 
         private Date updateTime;
+        /**
+         * 职级id
+         */
+        private Integer positionLevelId;
+        /**
+         * 职等id
+         */
+        private Integer positionGradeId;
+        /**
+         * 模板id
+         */
+        private Integer templateId;
 
         /**
          * 是否删除

@@ -208,9 +208,26 @@
     </foreach>
     and field.is_delete=0
     and tab.is_delete=0
-    and table.is_enable=1
+    and tab.is_enable=1
   </select>
-
+<select id="selectFieldCodeByNameListAndFuncCodeAndCompanyId"
+        resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO" resultMap="FieldResultMap">
+    select
+     field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+    placeholder,max_length,min_length,max_number,min_number,float_length,
+    is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+    table_id,group_id,is_show,is_system_define,sort,code
+    from t_custom_archive_field field
+    where  field.field_name in
+    <foreach collection="headsForPre" item="item" open="(" separator="," close=")">
+        #{item}
+    </foreach>
+    and field.is_delete=0
+    and field.table_id in(
+    select table_id from t_custom_archive_table where
+    func_code=#{pre} AND is_delete=0 AND company_id=#{companyId}
+)
+</select>
   <select id="seleleIsSysAndTableIdAndTableName" resultType="java.util.Map">
     select field.table_id,field.is_system_define,tab.table_name
     from t_custom_archive_field field
@@ -579,9 +596,17 @@
         (select field_name from t_custom_archive_field where field_id=#{key} and is_delete=0)
         and table_id in
         (select table_id from t_custom_archive_table where company_id=#{companyId} and func_code="ARC")
-
-
-
+    </select>
+    <select id="selectFieldIdListByCodeList"  resultMap="FieldResultMap">
+        select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
+        placeholder,max_length,min_length,max_number,min_number,float_length,
+        is_time_range,min_time,max_time,format_time,is_must,rule,is_only_read,
+        table_id,group_id,is_show,is_system_define,sort
+        from t_custom_archive_field
+        where is_delete=0
+        and table_id in
+        (select table_id from t_custom_archive_table where is_delete=0
+        and func_code=#{arc} and company_id=#{companyId} and func_code=#{arc})
     </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
