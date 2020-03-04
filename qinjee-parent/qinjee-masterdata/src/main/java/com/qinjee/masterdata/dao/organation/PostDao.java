@@ -18,29 +18,13 @@ public interface PostDao {
 
     int insertSelective(Post record);
 
-    Post selectByPrimaryKey(Integer postId);
-
     int updateByPrimaryKeySelective(Post record);
 
     int updateByPrimaryKey(Post record);
 
-    /**
-     * 分页查询岗位列表
-     *
-     * @param postPageVo
-     * @param sortFieldStr
-     * @param archiveId
-     * @return
-     */
-    List<Post> getPostList(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId, @Param("now") Date now);
+    void batchDeletePosts(@Param("idList") List<Integer> idList);
 
-    /**
-     * 根据机构id查询机构下的岗位
-     *
-     * @param orgId
-     * @return
-     */
-    List<Post> getPostListByOrgId(@Param("orgId") Integer orgId, @Param("isEnable") Short isEnable);
+    Post getPostById(Integer postId);
 
     /**
      * 查询机构的顶级岗位，也就是父级岗位id为0
@@ -49,8 +33,6 @@ public interface PostDao {
      * @return
      */
     List<Post> getLastTopPostByOrgId(Integer orgId);
-
-
 
     /**
      * 查找对应的岗位
@@ -61,12 +43,26 @@ public interface PostDao {
      */
     Post getPostByPostCodeAndName(@Param("postCode") String postCode, @Param("postName") String postName);
 
+    Map<String, Integer> getPostIdAndOrgId(@Param("org_code") String org_code, @Param("post_code") String post_code);
+
+    Post getPostsByPostCode(String postCode, Integer companyId);
+
+    Post getPostByPostId(String postId);
+
+
+    //-----------------------------------------
+
     /**
-     * 根据岗位id查询岗位
-     * @param postIds
+     * 分页查询岗位列表
+     *
+     * @param postPageVo
+     * @param sortFieldStr
+     * @param archiveId
      * @return
      */
-    List<Post> getPostListByPostIds(@Param("postIds")List<Integer> postIds);
+    List<Post> listPosts(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId, @Param("now") Date now);
+
+    List<Post> listPostsByOrgId(@Param("orgId") Integer orgId, @Param("companyId") Integer companyId);
 
     /**
      * 根据机构id查询机构下的岗位
@@ -74,45 +70,54 @@ public interface PostDao {
      * @param orgId
      * @return
      */
-    List<Map<Integer,String>> getPostByOrgId(@Param("orgId") Integer orgId);
+    List<Post> listPostsByOrgIdAndEnable(@Param("orgId") Integer orgId, @Param("isEnable") Short isEnable);
 
 
+    /**
+     * 根据岗位id查询岗位
+     *
+     * @param postIds
+     * @return
+     */
+    List<Post> listPostsByPostIds(@Param("postIds") List<Integer> postIds);
+
+    /**
+     * 根据机构id查询机构下的岗位
+     *
+     * @param orgId
+     * @return
+     */
+    List<Map<Integer, String>> listPostMapByOrgId(@Param("orgId") Integer orgId);
 
 
     List<Post> listPostByParentPostId(@Param("parentPostId") Integer parentPostId);
 
-    List<Post> listPostByOrgIds(@Param("orgidList")List<Integer> orgidList);
+    List<Post> listPostsByOrgIds(@Param("orgidList") List<Integer> orgidList);
 
 
-    List<Post> getPostConditionPages(@Param("postPageVo") PostPageVo postPageVo,@Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList);
+    List<Post> listPostsByCondition(@Param("postPageVo") PostPageVo postPageVo, @Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList);
 
-    Integer sortPorts(@Param("postIds")List<Integer> postIds);
+    Integer sortPorts(@Param("postIds") List<Integer> postIds);
 
-    Map< String, Integer> selectPostIdAndOrgId(@Param("org_code") String org_code, @Param("post_code") String post_code);
 
-    Map< String, Integer> selectPostIdAndOrgIdAndsupiorId(@Param("org_code") String org_code, @Param("post_code") String post_code, @Param("code") String code);
+    Map<String, Integer> getPostIdAndOrgIdAndSupiorId(@Param("org_code") String org_code, @Param("post_code") String post_code, @Param("code") String code);
 
-  List<UserArchivePostRelation> getPostSuccessive(@Param("postId")Integer postId);
+    List<UserArchivePostRelation> getPostSuccessive(@Param("postId") Integer postId);
 
-    List<Post> getPostGraphics( List<Integer> postIdList, Short isEnable);
+    List<Post> getPostGraphics(List<Integer> postIdList, Short isEnable);
 
-    List<Post> listPostByCompanyId(Integer companyId, Short isEnable);
+    List<Post> listPostsByCompanyIdAndEnable(Integer companyId, Short isEnable);
 
     List<Post> listDirectPostPage(PostPageVo postPageVo);
 
-    Post getPostByPostCode(String postCode, Integer companyId);
 
-    void batchDelete(@Param("idList") List<Integer> idList);
+    List<Post> listPostsByPisitionId(@Param("positionIds") List<Integer> positionIds);
 
-    List<Post> listPostByPisitionId(@Param("positionIds")List<Integer> positionIds);
 
-    Post getPostById(String postId);
+    List<Post> listPostsByCompanyId(Integer companyId);
 
-    List< Post> selectPostByOrgId(@Param("orgId") Integer orgId, @Param("companyId") Integer companyId);
+    List<Integer> getPostIds(Integer postId, Short isEnable);
 
-    List<Post> getPostListByCompanyId(Integer companyId);
-
-    List<Integer> getPostIds(Integer postId,Short isEnable);
-
+    List<Post> listPostsByPositionLevelId( @Param("positionLevelIds") List<Integer> positionLevelIds);
 }
 

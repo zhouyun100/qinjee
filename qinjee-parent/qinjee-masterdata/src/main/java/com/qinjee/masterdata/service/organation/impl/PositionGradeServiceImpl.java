@@ -28,63 +28,29 @@ public class PositionGradeServiceImpl implements PositionGradeService {
     @Autowired
     private PositionGradeDao positionGradeDao;
 
+
     @Override
-    public List<PositionGrade> getPositionGradeListByPositionId(Integer positionId) {
-        return positionGradeDao.getPositionGradeListByPositionId(positionId);
+    public ResponseResult<PageResult<PositionGrade>> getPositionLevelList(PageVo pageVo, UserSession userSession) {
+        return null;
     }
 
     @Override
-    public ResponseResult<PageResult<PositionGrade>> getPositionLevelList(PageVo pageVo) {
-        if(pageVo != null && (pageVo.getCurrentPage() != null && pageVo.getPageSize() != null)){
-            PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
-        }
-        List<PositionGrade> positionGradeList = positionGradeDao.getPositionLevelList();
-        PageResult<PositionGrade> pageResult = new PageResult<>(positionGradeList);
-        return new ResponseResult<>(pageResult);
+    public ResponseResult addPositionGrade(PositionGrade positionGrade, UserSession userSession) {
+        return null;
     }
 
     @Override
-    public ResponseResult addPositionGrade(PositionGradeVo positionGradeVo, UserSession userSession) {
-        List<PositionGrade> positionLevelList = positionGradeDao.getPositionLevelList();
-        PositionGrade lastPositionGrade;
-        Integer sortId;
-        if(!CollectionUtils.isEmpty(positionLevelList)){
-            lastPositionGrade = positionLevelList.get(positionLevelList.size() - 1);
-            sortId = lastPositionGrade.getSortId() + 1000;
-        }else {
-            sortId = 1000;
-        }
-        PositionGrade positionGrade = new PositionGrade();
-        BeanUtils.copyProperties(positionGradeVo, positionGrade);
-        positionGrade.setSortId(sortId);
-        positionGrade.setIsDelete((short) 0);
-        positionGrade.setOperatorId(userSession.getArchiveId());
-        positionGradeDao.insertSelective(positionGrade);
-        return new ResponseResult();
+    public ResponseResult editPositionGrade(PositionGrade positionGrade, UserSession userSession) {
+        return null;
     }
 
-    @Transactional
-    @Override
-    public ResponseResult editPositionGrade(PositionGradeVo positionGradeVo, UserSession userSession) {
-        PositionGrade positionGrade = new PositionGrade();
-        BeanUtils.copyProperties(positionGradeVo, positionGrade);
-        positionGrade.setOperatorId(userSession.getArchiveId());
-        positionGradeDao.updateByPrimaryKeySelective(positionGrade);
-        return new ResponseResult();
-    }
-
-    @Transactional
     @Override
     public ResponseResult deletePositionGrade(UserSession userSession, List<Integer> positionGradeIds) {
-        if(!CollectionUtils.isEmpty(positionGradeIds)){
-            for (Integer positionGradeId : positionGradeIds) {
-                PositionGrade positionGrade = new PositionGrade();
-                positionGrade.setOperatorId(userSession.getArchiveId());
-                positionGrade.setIsDelete((short) 1);
-                positionGrade.setPositionGradeId(positionGradeId);
-                positionGradeDao.updateByPrimaryKeySelective(positionGrade);
-            }
-        }
-        return new ResponseResult();
+        return null;
+    }
+
+    @Override
+    public ResponseResult sortPositionGrade(UserSession userSession, List<Integer> positionGradeIds) {
+        return null;
     }
 }

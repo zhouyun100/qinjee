@@ -2,32 +2,25 @@ package com.qinjee.masterdata.dao.organation;
 
 
 import com.qinjee.masterdata.model.entity.PositionLevel;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface PositionLevelDao {
-    int deleteByPrimaryKey(Integer positionLevelId);
+    int batchDelete(@Param("positionLevelIds") List<Integer> positionLevelIds);
 
     int insert(PositionLevel record);
 
-    int insertSelective(PositionLevel record);
-
-    PositionLevel selectByPrimaryKey(Integer positionLevelId);
-
-    int updateByPrimaryKeySelective(PositionLevel record);
-
-    int updateByPrimaryKey(PositionLevel record);
-
-    /**
-     * 根据职位id获取对应的职级
-     * @param positionId
-     * @return
-     */
-    List<PositionLevel> getPositionLevelListByPositionId(Integer positionId);
 
     /**
      * 获取所以职级
      * @return
      */
-    List<PositionLevel> getPositionLevelList();
+    List<PositionLevel> list(Integer companyId);
+
+    int getLastSortId(Integer companyId);
+
+    int update(PositionLevel positionLevel);
 }

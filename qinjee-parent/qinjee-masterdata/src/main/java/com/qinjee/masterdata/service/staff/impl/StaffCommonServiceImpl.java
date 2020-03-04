@@ -5,14 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
-import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
-import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -36,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -217,9 +214,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public String getPostByOrgId(Integer orgId, UserSession userSession) {
         if (orgId == null || orgId == 0) {
-            JSON.toJSONString ( postDao.getPostByOrgId ( userSession.getCompanyId () ) );
+            JSON.toJSONString ( postDao.listPostsByCompanyId( userSession.getCompanyId () ) );
         } else {
-            return JSON.toJSONString ( postDao.getPostByOrgId ( orgId ) );
+            return JSON.toJSONString ( postDao.listPostsByOrgId( orgId ,userSession.getCompanyId ()) );
         }
         return null;
     }
@@ -633,7 +630,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public Post getPostById(Integer postId,UserSession userSession) {
-        return postDao.selectByPrimaryKey ( postId );
+        return postDao.getPostById( postId );
     }
 
     @Override
@@ -643,7 +640,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List < Post > getPostListByOrgId(Integer orgId,Integer companyId) {
-       return postDao.selectPostByOrgId(orgId,companyId);
+       return postDao.listPostsByOrgId(orgId,companyId);
     }
 
     @Override

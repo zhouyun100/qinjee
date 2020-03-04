@@ -30,10 +30,7 @@ import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.MD5Utils;
-import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -325,7 +322,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         }
         //设置岗位id
         if (StringUtils.isNotBlank(excelArchiveVo.getPostCode())) {
-            Post post = postDao.getPostByPostCode(excelArchiveVo.getPostCode(), userSession.getCompanyId());
+            Post post = postDao.getPostsByPostCode(excelArchiveVo.getPostCode(), userSession.getCompanyId());
             userArchive.setPostId(post.getPostId());
         }
         //设置直接上级id
@@ -440,7 +437,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         List<OrganizationVO> organizationVOListMem = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(), null, new Date());
         //根据有权的机构id查询岗位
         List<Integer> orgIds = organizationVOListMem.stream().map(OrganizationVO::getOrgId).collect(Collectors.toList());
-        List<Post> postsMem = postDao.listPostByOrgIds(orgIds);
+        List<Post> postsMem = postDao.listPostsByOrgIds(orgIds);
 
         List<Blacklist> blacklistsMem = blacklistDao.selectByPage(userSession.getCompanyId());
 

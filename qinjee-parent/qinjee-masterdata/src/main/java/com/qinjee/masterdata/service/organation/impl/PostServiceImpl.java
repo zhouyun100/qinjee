@@ -1,8 +1,6 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
@@ -21,9 +19,6 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.MyCollectionUtil;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,9 +31,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,7 +77,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList);
+            List<Post> postList = postDao.listPostsByCondition(postPageVo, orgIdList, postIdList);
             PageInfo<Post> pageInfo = new PageInfo<>(postList);
             PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
@@ -98,7 +90,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
                 PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
             }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList);
+            List<Post> postList = postDao.listPostsByCondition(postPageVo, orgIdList, postIdList);
             PageInfo<Post> pageInfo = new PageInfo<>(postList);
             PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
@@ -133,7 +125,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     public void addPost(PostVo postVo, UserSession userSession) {
 
         //校验orgCode是否已存在
-        Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
+        Post postByPostCode = postDao.getPostsByPostCode(postVo.getPostCode(), userSession.getCompanyId());
         if (Objects.nonNull(postByPostCode)) {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
@@ -156,7 +148,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     private Integer generatePostSortId(Integer orgId, Integer parentPostId) {
         Integer sortId = 1000;
         List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
-        List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+        List<Post> sonPostsByOrgId = postDao.listPostsByOrgIdAndEnable(orgId, null);
         if (!CollectionUtils.isEmpty(sonPostsByOrgId)) {
             int maxSortId = sonPostsByOrgId.stream().mapToInt(Post::getSortId).max().getAsInt();
             sortId = maxSortId + 1000;
@@ -173,7 +165,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     public String generatePostCode(Integer orgId, Integer parentPostId) {
         logger.info("根据机构id生成岗位编码：orgId=" + orgId);
         //TODO 不需要根据父岗位编码
-        List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+        List<Post> sonPostsByOrgId = postDao.listPostsByOrgIdAndEnable(orgId, null);
         if (CollectionUtils.isEmpty(sonPostsByOrgId)) {
             OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
             return superOrg.getOrgCode() + "01";
@@ -214,7 +206,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
     @Override
     public Post getPostById(String postId) {
-        return postDao.getPostById(postId);
+        return postDao.getPostByPostId(postId);
 
     }
 
@@ -225,13 +217,13 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
         //判断机构编码是否唯一
         Post post = new Post();
-        Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
+        Post postByPostCode = postDao.getPostsByPostCode(postVo.getPostCode(), userSession.getCompanyId());
         if (Objects.nonNull(postByPostCode) && !postVo.getPostId().equals(postByPostCode.getPostId())) {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
-        Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
+        Post post1 = postDao.getPostById(postVo.getPostId());
         if (!postVo.getOrgId().equals(post1.getOrgId()) || !postVo.getParentPostId().equals(post1.getParentPostId())) {
             Integer sortId = generatePostSortId(postVo.getOrgId(), postVo.getParentPostId());
             post.setSortId(sortId);
@@ -291,7 +283,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     @Transactional
     @Override
     public void sortPorts(List<Integer> postIds, UserSession userSession) {
-        List<Post> postList = postDao.getPostListByPostIds(postIds);
+        List<Post> postList = postDao.listPostsByPostIds(postIds);
         Set<Integer> parentPostSet = new HashSet<>();
         for (Post post : postList) {
             parentPostSet.add(post.getParentPostId());
@@ -308,7 +300,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     public void copyPost(List<Integer> postIds, UserSession userSession, Integer orgId) {
         if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
-                Post post = postDao.selectByPrimaryKey(postId);
+                Post post = postDao.getPostById(postId);
                 post.setOrgId(orgId);
                 post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
@@ -331,7 +323,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     public List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable) {
         //递归拿到机构及所有子机构id
         List<Integer> orgIdList = getOrgIdList(userSession, orgId, isEnable);
-        List<Post> postList = postDao.listPostByOrgIds(orgIdList);
+        List<Post> postList = postDao.listPostsByOrgIds(orgIdList);
         return postList;
     }
 
@@ -358,9 +350,9 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
         if (CollectionUtils.isEmpty(postIds)) {
             List<Integer> orgIdList = getOrgIdList(userSession, orgId, null);
-            return postDao.listPostByOrgIds(orgIdList);
+            return postDao.listPostsByOrgIds(orgIdList);
         } else {
-            return postDao.getPostListByPostIds(postIds);
+            return postDao.listPostsByPostIds(postIds);
         }
     }
 
@@ -405,8 +397,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             //TODO 45
             int sortId = 1000;
             for (Post vo : orgLost) {
-                Post ifExistVo = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
-                Post parentPost = postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
+                Post ifExistVo = postDao.getPostsByPostCode(vo.getPostCode(), userSession.getCompanyId());
+                Post parentPost = postDao.getPostsByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
                 OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
                 Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(), userSession.getCompanyId());
                 vo.setOrgId(orgVo.getOrgId());
@@ -461,13 +453,13 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         //allPost最后只会有一个元素
         handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
         //TODO 拿出根节点，设置上两级父级岗位
-        Post parentPost = postDao.selectByPrimaryKey(allPost.get(0).getParentPostId());
+        Post parentPost = postDao.getPostById(allPost.get(0).getParentPostId());
 
         if (Objects.nonNull(parentPost)) {
             parentPost.setChildList(allPost);
             List<Post> pList = new ArrayList<>();
             pList.add(parentPost);
-            Post parentPost2 = postDao.selectByPrimaryKey(parentPost.getParentPostId());
+            Post parentPost2 = postDao.getPostById(parentPost.getParentPostId());
             if (Objects.nonNull(parentPost2)) {
                 parentPost2.setChildList(pList);
                 List<Post> pList2 = new ArrayList<>();
@@ -669,7 +661,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             }
         });
         List<OrganizationVO> organizationVOListMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId());
-        List<Post> postMem = postDao.getPostListByCompanyId(userSession.getCompanyId());
+        List<Post> postMem = postDao.listPostsByCompanyId(userSession.getCompanyId());
         List<Position> positionListMem = positionDao.getPositionListByCompanyId(userSession.getCompanyId());
 
         List<Post> checkVos = new ArrayList<>(dataList.size());

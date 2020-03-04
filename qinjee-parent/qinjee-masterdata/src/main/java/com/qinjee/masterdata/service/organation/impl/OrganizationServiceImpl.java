@@ -27,9 +27,7 @@ import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -672,14 +670,14 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //如果所有机构下都不存在相关人员资料
         if (!isExsit) {
             //判断是否存在岗位
-            List<Post> posts = postDao.listPostByOrgIds(idList);
+            List<Post> posts = postDao.listPostsByOrgIds(idList);
             if (!CollectionUtils.isEmpty(posts) && !cascadeDeletePost) {
                 ExceptionCast.cast(CommonCode.ORG_HAVE_POST);
             } else {
                 //物理删除机构表
                 organizationDao.batchDeleteOrganization(idList);
                 //逻辑删除岗位表
-                postDao.batchDelete(idList);
+                postDao.batchDeletePosts(idList);
             }
         }
         // 回收机构权限
@@ -840,7 +838,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         List<OrganizationVO> organizationVOTreeList = getAllOrganizationTree(userSession.getArchiveId(), Short.parseShort("1"));
         //递归设置机构下的岗位
         //获取企业下所有的岗位作为缓存
-        List<Post> posts = postDao.listPostByCompanyId(userSession.getCompanyId(), isEnable);
+        List<Post> posts = postDao.listPostsByCompanyIdAndEnable(userSession.getCompanyId(), isEnable);
         //TODO 暂时不设置岗位下的子岗位
         handlerOrganizationPost(posts, organizationVOTreeList, userSession, isEnable);
         return organizationVOTreeList;

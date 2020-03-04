@@ -10,10 +10,8 @@ import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.Post;
@@ -27,8 +25,6 @@ import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
-import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
-import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
@@ -287,7 +283,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                    }
                 }
                 if("post_id".equals(fieldVO.getFieldCode())){
-                     Post post = postDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
+                     Post post = postDao.getPostById(Integer.parseInt(fieldVO.getFieldValue()));
                     if(post!=null){
                         fieldVO.setFieldValue(post.getPostName());
                     }else{

@@ -35,19 +35,19 @@ public class PositionGradeController extends BaseController {
   @GetMapping("/getPositionGradeList")
   @ApiOperation(value = "分页查询职等列表", notes = "彭洪思")
   public ResponseResult<PageResult<PositionGrade>> getPositionLevelListPage(PageVo pageVo) {
-    return positionGradeService.getPositionLevelList(pageVo);
+    return null;
   }
 
   @PostMapping("/addPositionGrade")
   @ApiOperation(value = "新增职等", notes = "彭洪思")
   public ResponseResult addPositionGrade(PositionGradeVo positionGradeVo) {
-    return positionGradeService.addPositionGrade(positionGradeVo, getUserSession());
+    return null;
   }
 
   @PostMapping("/editPositionGrade")
   @ApiOperation(value = "编辑职等", notes = "彭洪思")
   public ResponseResult editPositionGrade(PositionGradeVo positionGradeVo) {
-    return positionGradeService.editPositionGrade(positionGradeVo, getUserSession());
+    return null;
   }
 
   @GetMapping("/deletePositionGrade")

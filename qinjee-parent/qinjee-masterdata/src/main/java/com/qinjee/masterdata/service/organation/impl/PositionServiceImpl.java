@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author 彭洪思
@@ -123,23 +122,6 @@ public class PositionServiceImpl implements PositionService {
         position.setSortId(sortId);
         positionDao.insertSelective(position);
 
-       /* List<Integer> positionLevelIds = positionVo.getPositionGradeIds();
-        //职位职等关系表
-        if (!CollectionUtils.isEmpty(positionLevelIds)) {
-            for (Integer positionLevel : positionLevelIds) {
-                //新增职位职等关系表
-                addPositionGradeRelation(userSession, position, positionLevel);
-            }
-        }
-
-        List<Integer> positionGradeIds = positionVo.getPositionLevelIds();
-        //职位职级关系表
-        if (!CollectionUtils.isEmpty(positionGradeIds)) {
-            for (Integer positionLevelId : positionGradeIds) {
-                //新增职位职级关系表
-                addPositionLevelRelation(userSession, position, positionLevelId);
-            }
-        }*/
         return new ResponseResult();
     }
 
@@ -259,7 +241,7 @@ public class PositionServiceImpl implements PositionService {
     public ResponseResult deletePosition(List<Integer> positionIds, UserSession userSession) {
         if(!CollectionUtils.isEmpty(positionIds)){
 
-            List<Post> posts=postDao.listPostByPisitionId(positionIds);
+            List<Post> posts=postDao.listPostsByPisitionId(positionIds);
             if(!CollectionUtils.isEmpty(posts)){
                 ExceptionCast.cast(CommonCode.POSITION_USED_NY_POST);
             }
