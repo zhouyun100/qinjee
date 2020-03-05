@@ -6,6 +6,7 @@ import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.DetailCount;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import com.qinjee.masterdata.model.vo.staff.pre.PreRegistVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -39,6 +40,19 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 员工登记表打印的数据查询接口
      */
+    @PostMapping(value = "/getEmploymentRegisterInfo")
+    @ApiOperation(value = "员工登记表打印的数据查询接口", notes = "phs")
+    public ResponseResult<List<PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> employmentIds )  {
+        Boolean b = checkParam(employmentIds,getUserSession());
+        if(b){
+
+           List<PreRegistVo> preRegistList= staffPreEmploymentService.getEmploymentRegisterInfo(employmentIds);
+           return new ResponseResult(preRegistList);
+        }
+        return  failResponseResult("参数错误");
+    }
+
+
 
 
     /**
