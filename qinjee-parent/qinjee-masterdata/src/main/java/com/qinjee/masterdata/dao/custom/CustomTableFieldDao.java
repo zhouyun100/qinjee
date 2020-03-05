@@ -35,7 +35,7 @@ public interface CustomTableFieldDao {
      * @param fileIdList
      * @return
      */
-    List < CustomFieldVO > searchCustomFieldListByFieldIdList(List < Integer > fileIdList);
+    List<CustomFieldVO> searchCustomFieldListByFieldIdList(List<Integer> fileIdList);
 
     /**
      * 查询对应业务模块的自定义表
@@ -43,7 +43,7 @@ public interface CustomTableFieldDao {
      * @param customTableVO
      * @return
      */
-    LinkedList < CustomTableVO > searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO);
+    LinkedList<CustomTableVO> searchCustomTableListByCompanyIdAndFuncCode(CustomTableVO customTableVO);
 
     /**
      * 查询表对应的组信息列表
@@ -53,7 +53,7 @@ public interface CustomTableFieldDao {
      * @param tableId   表ID
      * @return
      */
-    List < CustomGroupVO > searchCustomGroupList(Integer companyId, String tableCode, Integer tableId);
+    List<CustomGroupVO> searchCustomGroupList(Integer companyId, String tableCode, Integer tableId);
 
     /**
      * 查询字段信息列表
@@ -64,7 +64,7 @@ public interface CustomTableFieldDao {
      * @param tableId   表ID
      * @return
      */
-    List < CustomFieldVO > searchCustomFieldList(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId, @Param("tableCode") String tableCode, @Param("tableId") Integer tableId);
+    List<CustomFieldVO> searchCustomFieldList(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId, @Param("tableCode") String tableCode, @Param("tableId") Integer tableId);
 
     /**
      * 根据企业ID和功能CODE查询字段集合
@@ -73,7 +73,7 @@ public interface CustomTableFieldDao {
      * @param funcCode
      * @return
      */
-    List < CustomFieldVO > searchCustomFieldListByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+    List<CustomFieldVO> searchCustomFieldListByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
 
     /**
@@ -82,7 +82,7 @@ public interface CustomTableFieldDao {
      * @param list
      * @return
      */
-    Integer deleteCustomField(@Param("list") List < Integer > list);
+    Integer deleteCustomField(@Param("list") List<Integer> list);
 
 
     /**
@@ -101,7 +101,7 @@ public interface CustomTableFieldDao {
      * @param map
      * @return
      */
-    Integer updatePreEmploymentField(@Param("map") Map < Integer, String > map);
+    Integer updatePreEmploymentField(@Param("map") Map<Integer, String> map);
 
 
     /**
@@ -111,7 +111,7 @@ public interface CustomTableFieldDao {
      * @param companyId
      * @return
      */
-     String  selectFieldNameByCode(@Param("fieldCode") String fieldCode, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+    String selectFieldNameByCode(@Param("fieldCode") String fieldCode, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
 
     /**
@@ -121,7 +121,7 @@ public interface CustomTableFieldDao {
      * @param archiveId
      * @return
      */
-    List < String > selectFieldByTableIdAndAuth(@Param("tableId") Integer tableId, @Param("archiveId") Integer archiveId);
+    List<String> selectFieldByTableIdAndAuth(@Param("tableId") Integer tableId, @Param("archiveId") Integer archiveId);
 
     /**
      * achiveId
@@ -130,7 +130,7 @@ public interface CustomTableFieldDao {
      * @param companyId
      * @return
      */
-    List < String > selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
+    List<String> selectFieldByArcAndAuth(@Param("achiveId") Integer achiveId, @Param("companyId") Integer companyId);
 
 
     /**
@@ -152,8 +152,19 @@ public interface CustomTableFieldDao {
      * @param funcCode
      * @return
      */
-    List < Integer > selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List < String > fieldNames, @Param("companyId") Integer companyId,
-                                                          @Param("funcCode") String funcCode);
+    List<Integer> selectFieldIdByFieldNameAndCompanyId(@Param("fieldNames") List<String> fieldNames, @Param("companyId") Integer companyId,
+                                                       @Param("funcCode") String funcCode);
+
+    /**
+     * fieldName
+     *
+     * @param tableName
+     * @param companyId
+     * @param funcCode
+     * @return
+     */
+    Integer selectTableIdByTableNameAndCompanyId(@Param("tableName") String tableName, @Param("companyId") Integer companyId,
+                                                  @Param("funcCode") String funcCode);
 
     /**
      * strings
@@ -162,7 +173,7 @@ public interface CustomTableFieldDao {
      * @return
      */
     @MapKey("field_name")
-    Map < String, Map < String, String > > seleleIsSysAndTableIdAndTableName(@Param("strings") List < String > strings);
+    Map<String, Map<String, String>> seleleIsSysAndTableIdAndTableName(@Param("strings") List<String> strings);
 
 
     /**
@@ -192,7 +203,7 @@ public interface CustomTableFieldDao {
      * @return
      */
     @MapKey("field_id")
-    Map < Integer, Map < String, Integer > > selectNameAndIdAndIsSystemDefine(@Param("idList") List < Integer > idList, @Param("companyId") Integer companyId);
+    Map<Integer, Map<String, Integer>> selectNameAndIdAndIsSystemDefine(@Param("idList") List<Integer> idList, @Param("companyId") Integer companyId);
 
     /**
      * 预入职唯一标识证件号对应的fieldId
@@ -200,7 +211,7 @@ public interface CustomTableFieldDao {
      * @param list
      * @return
      */
-    Integer selectSymbolForPreIdNumber(@Param("list") List < Integer > list);
+    Integer selectSymbolForPreIdNumber(@Param("list") List<Integer> list);
 
     /**
      * 预入职唯一标识证件类型对应的fieldId
@@ -208,7 +219,7 @@ public interface CustomTableFieldDao {
      * @param list
      * @return
      */
-    Integer selectSymbolForPreIdType(@Param("list") List < Integer > list);
+    Integer selectSymbolForPreIdType(@Param("list") List<Integer> list);
 
     /**
      * 档案唯一标识工号类型对应的fieldId
@@ -216,7 +227,7 @@ public interface CustomTableFieldDao {
      * @param list
      * @return
      */
-    Integer selectSymbolForArcEmploymentNumber(@Param("list") List < Integer > list);
+    Integer selectSymbolForArcEmploymentNumber(@Param("list") List<Integer> list);
 
     /**
      * 预入职唯一标识证件类型对应的fieldId
@@ -224,7 +235,7 @@ public interface CustomTableFieldDao {
      * @param list
      * @return
      */
-    Integer selectSymbolForArcIdNumber(@Param("list") List < Integer > list);
+    Integer selectSymbolForArcIdNumber(@Param("list") List<Integer> list);
 
     /**
      * 通过字段id找到tableId
@@ -241,7 +252,7 @@ public interface CustomTableFieldDao {
      * @return
      */
 
-    Map < String, String > selectCodeAndTypeById(@Param("integer") Integer integer);
+    Map<String, String> selectCodeAndTypeById(@Param("integer") Integer integer);
 
     /**
      * 根据tableId集合找到对应的物理code
@@ -249,50 +260,50 @@ public interface CustomTableFieldDao {
      * @param tableIdList
      * @return
      */
-    List < String > selectFieldCodeListByTableIdList(@Param("tableIdList") List < Integer > tableIdList);
+    List<String> selectFieldCodeListByTableIdList(@Param("tableIdList") List<Integer> tableIdList);
 
 
-    List < CustomArchiveField > selectCustomArchiveField(Integer customArchiveGroupId);
+    List<CustomArchiveField> selectCustomArchiveField(Integer customArchiveGroupId);
 
     void insertSelective(CustomArchiveField customArchiveField);
 
     void updateByPrimaryKeySelective(CustomArchiveField customArchiveField);
 
-    List < CustomArchiveField > selectFieldByTableId(Integer customArchiveTableId);
+    List<CustomArchiveField> selectFieldByTableId(Integer customArchiveTableId);
 
     CustomArchiveField selectByPrimaryKey(Integer customArchiveFieldId);
 
-    List < CustomArchiveField > selectFieldNameByTableName(Integer companyId, String preEmployment);
+    List<CustomArchiveField> selectFieldNameByTableName(Integer companyId, String preEmployment);
 
     String selectTypeByFieldId(@Param("fieldId") Integer fieldId);
 
-    List < Map < String, String > > selectCodAndIdByTableId(@Param("tableId") Integer tableId);
+    List<Map<String, String>> selectCodAndIdByTableId(@Param("tableId") Integer tableId);
 
-    List<Map< String, Integer>> transOrgId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map<String, Integer>> transOrgId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
-    List<Map< String, Integer>> transSupiorId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map<String, Integer>> transSupiorId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
 
-    List<Map< String, Integer>> transPostId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map<String, Integer>> transPostId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     String selectFieldCodeById(@Param("integer") Integer integer);
 
-    List< CustomFieldVO> selectFieldByIdList(@Param("list") List < Integer > integers2, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
+    List<CustomFieldVO> selectFieldByIdList(@Param("list") List<Integer> integers2, @Param("companyId") Integer companyId, @Param("funcCode") String funcCode);
 
     CustomFieldVO selectFieldById(@Param("fieldId") Integer fieldId, @Param("companyId") Integer companyId, @Param("arc") String arc);
 
 
-    List< Integer> selectTableIdByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String pre);
+    List<Integer> selectTableIdByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String pre);
 
-    List< CustomFieldVO> selectFieldListByTableId(Integer tableId);
+    List<CustomFieldVO> selectFieldListByTableId(Integer tableId);
 
-    List<Map< String, Integer>> transOrgIdByCode(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map<String, Integer>> transOrgIdByCode(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     Integer selectFieldIdByCodeAndFuncCodeAndComapnyId(@Param("code") String code, @Param("funcCode") String funcCode, @Param("companyId") Integer companyId);
 
-    Integer selectSymbolForPhone(List< Integer> isSystemDefineList);
+    Integer selectSymbolForPhone(List<Integer> isSystemDefineList);
 
-    List< Map< String, Integer>> transSupiorIdByName(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+    List<Map<String, Integer>> transSupiorIdByName(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     CustomFieldVO selectFieldByCodeAndFuncCodeAndComapnyId(@Param("s") String s, @Param("arc") String arc, @Param("companyId") Integer companyId);
 

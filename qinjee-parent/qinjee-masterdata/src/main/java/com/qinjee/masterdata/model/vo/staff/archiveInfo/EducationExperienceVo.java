@@ -11,8 +11,8 @@ import java.util.Date;
 @Data
 public class EducationExperienceVo implements Serializable {
 
-    private Date startSchoolDate;//入学时间
-    private Date graduateDate;//毕业时间
+    private String startSchoolDate;//入学时间
+    private String graduateDate;//毕业时间
     private String educationBackground;//学历
     private String graduateSchool;//毕业院校
     private String major;//专业

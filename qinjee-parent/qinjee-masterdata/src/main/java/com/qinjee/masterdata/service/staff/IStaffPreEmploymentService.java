@@ -69,5 +69,5 @@ public interface IStaffPreEmploymentService {
 
     DetailCount getReadyCount(UserSession userSession);
 
-    List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds);
+    List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds) throws IllegalAccessException;
 }

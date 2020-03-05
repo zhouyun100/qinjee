@@ -210,6 +210,15 @@
     and tab.is_delete=0
     and tab.is_enable=1
   </select>
+    <select id="selectTableIdByTableNameAndCompanyId" resultType="java.lang.Integer">
+    select table_id
+    from t_custom_archive_table
+    where table_name = #{tableName}
+    and func_code = #{funcCode}
+    and company_id =#{companyId}
+    and is_delete=0
+
+  </select>
 <select id="selectFieldCodeByNameListAndFuncCodeAndCompanyId"
         resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO" resultMap="FieldResultMap">
     select
@@ -608,7 +617,12 @@
         (select table_id from t_custom_archive_table where is_delete=0
         and func_code=#{arc} and company_id=#{companyId} and func_code=#{arc})
     </select>
-  <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
+  <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
+       select field_id fieldId,field_code fieldCode,field_name fieldName,field_type fieldType
+        from t_custom_archive_field
+        where is_delete=0
+        and table_id =#{tableId}
+  </select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
      <select id="selectCodeId" resultType="java.lang.Integer"></select>

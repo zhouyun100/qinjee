@@ -42,10 +42,9 @@ public class StaffPreEmploymentController extends BaseController {
      */
     @PostMapping(value = "/getEmploymentRegisterInfo")
     @ApiOperation(value = "员工登记表打印的数据查询接口", notes = "phs")
-    public ResponseResult<List<PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> employmentIds )  {
+    public ResponseResult<List<PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> employmentIds ) throws IllegalAccessException {
         Boolean b = checkParam(employmentIds,getUserSession());
         if(b){
-
            List<PreRegistVo> preRegistList= staffPreEmploymentService.getEmploymentRegisterInfo(employmentIds);
            return new ResponseResult(preRegistList);
         }

@@ -1,126 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao">
-  <!-- 结果映射 -->
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PreEmployment">
-    <id column="employment_id" property="employmentId" jdbcType="INTEGER" />
-    <result column="user_name" property="userName" jdbcType="VARCHAR" />
-    <result column="phone" property="phone" jdbcType="VARCHAR" />
-    <result column="gender" property="gender" jdbcType="VARCHAR" />
-    <result column="email" property="email" jdbcType="VARCHAR" />
-    <result column="id_type" property="idType" jdbcType="VARCHAR" />
-    <result column="id_number" property="idNumber" jdbcType="VARCHAR" />
-    <result column="age" property="age" jdbcType="INTEGER" />
-    <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR" />
-    <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR" />
-    <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR" />
-    <result column="graduated_school" property="graduatedSchool" jdbcType="VARCHAR" />
-    <result column="graduated_speciality" property="graduatedSpeciality" jdbcType="VARCHAR" />
-    <result column="last_work_company" property="lastWorkCompany" jdbcType="VARCHAR" />
-    <result column="is_give_birth" property="isGiveBirth" jdbcType="VARCHAR" />
-    <result column="resident_character" property="residentCharacter" jdbcType="VARCHAR" />
-    <result column="height" property="height" jdbcType="VARCHAR" />
-    <result column="blood_type" property="bloodType" jdbcType="VARCHAR" />
-    <result column="english_name" property="englishName" jdbcType="VARCHAR" />
-    <result column="nationality" property="nationality" jdbcType="INTEGER" />
-    <result column="birth_date" property="birthDate" jdbcType="VARCHAR" />
-    <result column="political_status" property="politicalStatus" jdbcType="INTEGER" />
-    <result column="birthplace" property="birthplace" jdbcType="VARCHAR" />
-    <result column="application_position" property="applicationPosition" jdbcType="VARCHAR" />
-    <result column="probation_period" property="probationPeriod" jdbcType="VARCHAR" />
-    <result column="hire_date" property="hireDate" jdbcType="VARCHAR" />
-    <result column="org_id" property="orgId" jdbcType="INTEGER" />
-    <result column="post_id" property="postId" jdbcType="INTEGER" />
-    <result column="employment_state" property="employmentState" jdbcType="VARCHAR" />
-    <result column="employment_register" property="employmentRegister" jdbcType="VARCHAR" />
-    <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="data_source" property="dataSource" jdbcType="VARCHAR" />
-    <result column="company_id" property="companyId" jdbcType="INTEGER" />
-    <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
-    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
-    <result column="is_delete" property="isDelete" jdbcType="TINYINT" />
-    <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER" />
-    <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER" />
-    <result column="template_id" property="templateId" jdbcType="INTEGER" />
-  </resultMap>
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PreEmployment">
+        <id column="employment_id" property="employmentId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="id_type" property="idType" jdbcType="VARCHAR"/>
+        <result column="id_number" property="idNumber" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR"/>
+        <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR"/>
+        <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR"/>
+        <result column="graduated_school" property="graduatedSchool" jdbcType="VARCHAR"/>
+        <result column="graduated_speciality" property="graduatedSpeciality" jdbcType="VARCHAR"/>
+        <result column="last_work_company" property="lastWorkCompany" jdbcType="VARCHAR"/>
+        <result column="is_give_birth" property="isGiveBirth" jdbcType="VARCHAR"/>
+        <result column="resident_character" property="residentCharacter" jdbcType="VARCHAR"/>
+        <result column="height" property="height" jdbcType="VARCHAR"/>
+        <result column="blood_type" property="bloodType" jdbcType="VARCHAR"/>
+        <result column="english_name" property="englishName" jdbcType="VARCHAR"/>
+        <result column="nationality" property="nationality" jdbcType="INTEGER"/>
+        <result column="birth_date" property="birthDate" jdbcType="VARCHAR"/>
+        <result column="political_status" property="politicalStatus" jdbcType="INTEGER"/>
+        <result column="birthplace" property="birthplace" jdbcType="VARCHAR"/>
+        <result column="application_position" property="applicationPosition" jdbcType="VARCHAR"/>
+        <result column="probation_period" property="probationPeriod" jdbcType="VARCHAR"/>
+        <result column="hire_date" property="hireDate" jdbcType="VARCHAR"/>
+        <result column="org_id" property="orgId" jdbcType="INTEGER"/>
+        <result column="post_id" property="postId" jdbcType="INTEGER"/>
+        <result column="employment_state" property="employmentState" jdbcType="VARCHAR"/>
+        <result column="employment_register" property="employmentRegister" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="data_source" property="dataSource" jdbcType="VARCHAR"/>
+        <result column="company_id" property="companyId" jdbcType="INTEGER"/>
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="is_delete" property="isDelete" jdbcType="TINYINT"/>
+        <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER"/>
+        <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER"/>
+        <result column="template_id" property="templateId" jdbcType="INTEGER"/>
+    </resultMap>
     <resultMap id="t_pre_employmentMap" type="com.qinjee.masterdata.model.vo.staff.export.ExportPreVo">
-        <result column="user_name" property="user_name" jdbcType="VARCHAR" />
-        <result column="employment_id" property="employment_id" jdbcType="VARCHAR" />
-        <result column="phone" property="phone" jdbcType="VARCHAR" />
-        <result column="gender" property="gender" jdbcType="VARCHAR" />
-        <result column="email" property="email" jdbcType="VARCHAR" />
-        <result column="id_type" property="id_type" jdbcType="VARCHAR" />
-        <result column="id_number" property="id_number" jdbcType="VARCHAR" />
-        <result column="age" property="age" jdbcType="INTEGER" />
-        <result column="first_work_date" property="first_work_date" jdbcType="VARCHAR" />
-        <result column="highest_degree" property="highest_degree" jdbcType="VARCHAR" />
-        <result column="graduated_school" property="graduated_school" jdbcType="VARCHAR" />
-        <result column="graduated_speciality" property="graduated_speciality" jdbcType="VARCHAR" />
-        <result column="last_work_company" property="last_work_company" jdbcType="VARCHAR" />
-        <result column="probation_period" property="probation_period" jdbcType="VARCHAR" />
-        <result column="hire_date" property="hire_date" jdbcType="VARCHAR" />
-        <result column="org_id" property="org_id" jdbcType="INTEGER" />
-        <result column="post_id" property="post_id" jdbcType="INTEGER" />
-        <result column="description" property="description" jdbcType="VARCHAR" />
-        <result column="org_name" property="org_name" jdbcType="VARCHAR" />
-        <result column="org_code" property="org_code" jdbcType="VARCHAR" />
-        <result column="post_name" property="post_name" jdbcType="VARCHAR" />
-        <result column="post_code" property="post_code" jdbcType="VARCHAR" />
-        <result column="application_position" property="application_position" jdbcType="VARCHAR" />
+        <result column="user_name" property="user_name" jdbcType="VARCHAR"/>
+        <result column="employment_id" property="employment_id" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="id_type" property="id_type" jdbcType="VARCHAR"/>
+        <result column="id_number" property="id_number" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="first_work_date" property="first_work_date" jdbcType="VARCHAR"/>
+        <result column="highest_degree" property="highest_degree" jdbcType="VARCHAR"/>
+        <result column="graduated_school" property="graduated_school" jdbcType="VARCHAR"/>
+        <result column="graduated_speciality" property="graduated_speciality" jdbcType="VARCHAR"/>
+        <result column="last_work_company" property="last_work_company" jdbcType="VARCHAR"/>
+        <result column="probation_period" property="probation_period" jdbcType="VARCHAR"/>
+        <result column="hire_date" property="hire_date" jdbcType="VARCHAR"/>
+        <result column="org_id" property="org_id" jdbcType="INTEGER"/>
+        <result column="post_id" property="post_id" jdbcType="INTEGER"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="org_name" property="org_name" jdbcType="VARCHAR"/>
+        <result column="org_code" property="org_code" jdbcType="VARCHAR"/>
+        <result column="post_name" property="post_name" jdbcType="VARCHAR"/>
+        <result column="post_code" property="post_code" jdbcType="VARCHAR"/>
+        <result column="application_position" property="application_position" jdbcType="VARCHAR"/>
 
     </resultMap>
     <resultMap id="PreVo" type="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo">
-        <id column="employment_id" property="employmentId" jdbcType="INTEGER" />
-        <result column="user_name" property="userName" jdbcType="VARCHAR" />
-        <result column="phone" property="phone" jdbcType="VARCHAR" />
-        <result column="gender" property="gender" jdbcType="VARCHAR" />
-        <result column="email" property="email" jdbcType="VARCHAR" />
-        <result column="id_type" property="idType" jdbcType="VARCHAR" />
-        <result column="id_number" property="idNumber" jdbcType="VARCHAR" />
-        <result column="age" property="age" jdbcType="INTEGER" />
-        <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR" />
-        <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR" />
-        <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR" />
-        <result column="graduated_school" property="graduatedSchool" jdbcType="VARCHAR" />
-        <result column="graduated_speciality" property="graduatedSpeciality" jdbcType="VARCHAR" />
-        <result column="last_work_company" property="lastWorkCompany" jdbcType="VARCHAR" />
-        <result column="is_give_birth" property="isGiveBirth" jdbcType="VARCHAR" />
-        <result column="resident_character" property="residentCharacter" jdbcType="VARCHAR" />
-        <result column="height" property="height" jdbcType="VARCHAR" />
-        <result column="blood_type" property="bloodType" jdbcType="VARCHAR" />
-        <result column="english_name" property="englishName" jdbcType="VARCHAR" />
-        <result column="nationality" property="nationality" jdbcType="INTEGER" />
-        <result column="birth_date" property="birthDate" jdbcType="VARCHAR" />
-        <result column="political_status" property="politicalStatus" jdbcType="INTEGER" />
-        <result column="birthplace" property="birthplace" jdbcType="VARCHAR" />
-        <result column="application_position" property="applicationPosition" jdbcType="VARCHAR" />
-        <result column="probation_period" property="probationPeriod" jdbcType="INTEGER" />
-        <result column="hire_date" property="hireDate" jdbcType="VARCHAR" />
-        <result column="org_id" property="orgId" jdbcType="INTEGER" />
-        <result column="post_id" property="postId" jdbcType="INTEGER" />
-        <result column="employment_state" property="employmentState" jdbcType="VARCHAR" />
-        <result column="employment_register" property="employmentRegister" jdbcType="VARCHAR" />
-        <result column="description" property="description" jdbcType="VARCHAR" />
-        <result column="data_source" property="dataSource" jdbcType="VARCHAR" />
-        <result column="org_name" property="orgName" jdbcType="VARCHAR" />
-        <result column="post_name" property="postName" jdbcType="VARCHAR" />
-        <result column="id_type_name" property="idTypeName" jdbcType="VARCHAR" />
-        <result column="highest_degree_name" property="highestDegreeName" jdbcType="VARCHAR" />
-        <result column="marry_status_name" property="marryStatusName" jdbcType="VARCHAR" />
-        <result column="post_code" property="postCode" jdbcType="VARCHAR" />
-        <result column="org_code" property="orgCode" jdbcType="VARCHAR" />
-        <result column="company_id" property="companyId" jdbcType="INTEGER" />
-        <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER" />
-        <result column="position_level_name" property="positionLevelName" jdbcType="VARCHAR" />
-        <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER" />
-        <result column="position_grade_name" property="positionGradeName" jdbcType="VARCHAR" />
-        <result column="template_id" property="templateId" jdbcType="INTEGER" />
+        <id column="employment_id" property="employmentId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="id_type" property="idType" jdbcType="VARCHAR"/>
+        <result column="id_number" property="idNumber" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="first_work_date" property="firstWorkDate" jdbcType="VARCHAR"/>
+        <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR"/>
+        <result column="highest_degree" property="highestDegree" jdbcType="VARCHAR"/>
+        <result column="graduated_school" property="graduatedSchool" jdbcType="VARCHAR"/>
+        <result column="graduated_speciality" property="graduatedSpeciality" jdbcType="VARCHAR"/>
+        <result column="last_work_company" property="lastWorkCompany" jdbcType="VARCHAR"/>
+        <result column="is_give_birth" property="isGiveBirth" jdbcType="VARCHAR"/>
+        <result column="resident_character" property="residentCharacter" jdbcType="VARCHAR"/>
+        <result column="height" property="height" jdbcType="VARCHAR"/>
+        <result column="blood_type" property="bloodType" jdbcType="VARCHAR"/>
+        <result column="english_name" property="englishName" jdbcType="VARCHAR"/>
+        <result column="nationality" property="nationality" jdbcType="INTEGER"/>
+        <result column="birth_date" property="birthDate" jdbcType="VARCHAR"/>
+        <result column="political_status" property="politicalStatus" jdbcType="INTEGER"/>
+        <result column="birthplace" property="birthplace" jdbcType="VARCHAR"/>
+        <result column="application_position" property="applicationPosition" jdbcType="VARCHAR"/>
+        <result column="probation_period" property="probationPeriod" jdbcType="INTEGER"/>
+        <result column="hire_date" property="hireDate" jdbcType="VARCHAR"/>
+        <result column="org_id" property="orgId" jdbcType="INTEGER"/>
+        <result column="post_id" property="postId" jdbcType="INTEGER"/>
+        <result column="employment_state" property="employmentState" jdbcType="VARCHAR"/>
+        <result column="employment_register" property="employmentRegister" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="data_source" property="dataSource" jdbcType="VARCHAR"/>
+        <result column="org_name" property="orgName" jdbcType="VARCHAR"/>
+        <result column="post_name" property="postName" jdbcType="VARCHAR"/>
+        <result column="id_type_name" property="idTypeName" jdbcType="VARCHAR"/>
+        <result column="highest_degree_name" property="highestDegreeName" jdbcType="VARCHAR"/>
+        <result column="marry_status_name" property="marryStatusName" jdbcType="VARCHAR"/>
+        <result column="post_code" property="postCode" jdbcType="VARCHAR"/>
+        <result column="org_code" property="orgCode" jdbcType="VARCHAR"/>
+        <result column="company_id" property="companyId" jdbcType="INTEGER"/>
+        <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER"/>
+        <result column="position_level_name" property="positionLevelName" jdbcType="VARCHAR"/>
+        <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER"/>
+        <result column="position_grade_name" property="positionGradeName" jdbcType="VARCHAR"/>
+        <result column="template_id" property="templateId" jdbcType="INTEGER"/>
 
     </resultMap>
 
-  <!-- 表所有字段 -->
-  <sql id="Base_Column_List">
+    <!-- 表所有字段 -->
+    <sql id="Base_Column_List">
         t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
         t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
@@ -130,268 +130,270 @@
         t_pre_employment.is_delete, t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id
     </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List"/>
-    from t_pre_employment   t_pre_employment
-    where   t_pre_employment.employment_id = #{employmentId,jdbcType=INTEGER}  AND  is_delete = 0
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_pre_employment t_pre_employment
+        where t_pre_employment.employment_id = #{employmentId,jdbcType=INTEGER} AND is_delete = 0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_pre_employment   t_pre_employment
     where   t_pre_employment.employment_id = #{employmentId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
-     INSERT INTO t_pre_employment
-      <trim prefix="(" suffix=")" suffixOverrides=",">
-          <if test="employmentId != null">
-              employment_id,
-          </if>
-          <if test="userName != null">
-              user_name,
-          </if>
-          <if test="phone != null">
-              phone,
-          </if>
+    <insert id="insert" keyColumn="employment_id" keyProperty="employmentId"
+            parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
+        INSERT INTO t_pre_employment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="employmentId != null">
+                employment_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
 
-          <if test="gender != null">
-              gender,
-          </if>
-          <if test="email != null">
-              email,
-          </if>
-          <if test="idType != null">
-              id_type,
-          </if>
-          <if test="idNumber != null">
-              id_number,
-          </if>
-          <if test="age != null">
-              age,
-          </if>
-          <if test="firstWorkDate != null">
-              first_work_date,
-          </if>
-          <if test="maritalStatus != null">
-              marital_status,
-          </if>
-          <if test="highestDegree != null">
-              highest_degree,
-          </if>
-          <if test="graduatedSchool != null">
-              graduated_school,
-          </if>
-          <if test="graduatedSpeciality != null">
-              graduated_speciality,
-          </if>
-          <if test="lastWorkCompany != null">
-              last_work_company,
-          </if>
-          <if test="isGiveBirth != null">
-              is_give_birth,
-          </if>
-          <if test="residentCharacter != null">
-              resident_character,
-          </if>
-          <if test="height != null">
-              height,
-          </if>
-          <if test="bloodType != null">
-              blood_type,
-          </if>
-          <if test="englishName != null">
-              english_name,
-          </if>
-          <if test="nationality != null">
-              nationality,
-          </if>
-          <if test="birthDate != null">
-              birth_date,
-          </if>
-          <if test="politicalStatus != null">
-              political_status,
-          </if>
-          <if test="birthplace != null">
-              birthplace,
-          </if>
-          <if test="applicationPosition != null">
-              application_position,
-          </if>
-          <if test="probationPeriod != null">
-              probation_period,
-          </if>
-          <if test="hireDate != null">
-              hire_date,
-          </if>
-          <if test="orgId != null">
-              org_id,
-          </if>
-          <if test="postId != null">
-              post_id,
-          </if>
-          <if test="employmentState != null">
-              employment_state,
-          </if>
-          <if test="employmentRegister != null">
-              employment_register,
-          </if>
-          <if test="description != null">
-              description,
-          </if>
-          <if test="dataSource != null">
-              data_source,
-          </if>
-          <if test="companyId != null">
-              company_id,
-          </if>
-          <if test="operatorId != null">
-              operator_id,
-          </if>
-          <if test="createTime != null">
-              create_time,
-          </if>
-          <if test="updateTime != null">
-              update_time,
-          </if>
-          <if test="isDelete != null">
-              is_delete,
-          </if>
-          <if test="positionLevelId != null">
-              position_level_id ,
-          </if>
-          <if test="positionGradeId != null">
-              position_grade_id,
-          </if>
-          <if test="templateId != null">
-              template_id
-          </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="idType != null">
+                id_type,
+            </if>
+            <if test="idNumber != null">
+                id_number,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="firstWorkDate != null">
+                first_work_date,
+            </if>
+            <if test="maritalStatus != null">
+                marital_status,
+            </if>
+            <if test="highestDegree != null">
+                highest_degree,
+            </if>
+            <if test="graduatedSchool != null">
+                graduated_school,
+            </if>
+            <if test="graduatedSpeciality != null">
+                graduated_speciality,
+            </if>
+            <if test="lastWorkCompany != null">
+                last_work_company,
+            </if>
+            <if test="isGiveBirth != null">
+                is_give_birth,
+            </if>
+            <if test="residentCharacter != null">
+                resident_character,
+            </if>
+            <if test="height != null">
+                height,
+            </if>
+            <if test="bloodType != null">
+                blood_type,
+            </if>
+            <if test="englishName != null">
+                english_name,
+            </if>
+            <if test="nationality != null">
+                nationality,
+            </if>
+            <if test="birthDate != null">
+                birth_date,
+            </if>
+            <if test="politicalStatus != null">
+                political_status,
+            </if>
+            <if test="birthplace != null">
+                birthplace,
+            </if>
+            <if test="applicationPosition != null">
+                application_position,
+            </if>
+            <if test="probationPeriod != null">
+                probation_period,
+            </if>
+            <if test="hireDate != null">
+                hire_date,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="postId != null">
+                post_id,
+            </if>
+            <if test="employmentState != null">
+                employment_state,
+            </if>
+            <if test="employmentRegister != null">
+                employment_register,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="dataSource != null">
+                data_source,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="positionLevelId != null">
+                position_level_id ,
+            </if>
+            <if test="positionGradeId != null">
+                position_grade_id,
+            </if>
+            <if test="templateId != null">
+                template_id
+            </if>
 
-      </trim>
-      <trim prefix="values (" suffix=")" suffixOverrides=",">
-          <if test="employmentId != null">
-              #{employmentId},
-          </if>
-          <if test="userName != null">
-              #{userName},
-          </if>
-          <if test="phone != null">
-              #{phone},
-          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="employmentId != null">
+                #{employmentId},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
 
-          <if test="gender != null">
-              #{gender},
-          </if>
-          <if test="email != null">
-              #{email},
-          </if>
-          <if test="idType != null">
-              #{idType},
-          </if>
-          <if test="idNumber != null">
-              #{idNumber},
-          </if>
-          <if test="age != null">
-              #{age},
-          </if>
-          <if test="firstWorkDate != null">
-              #{firstWorkDate},
-          </if>
-          <if test="maritalStatus != null">
-              #{maritalStatus},
-          </if>
-          <if test="highestDegree != null">
-              #{highestDegree},
-          </if>
-          <if test="graduatedSchool != null">
-              #{graduatedSchool},
-          </if>
-          <if test="graduatedSpeciality != null">
-              #{graduatedSpeciality},
-          </if>
-          <if test="lastWorkCompany != null">
-              #{lastWorkCompany},
-          </if>
-          <if test="isGiveBirth != null">
-              #{isGiveBirth},
-          </if>
-          <if test="residentCharacter != null">
-              #{residentCharacter},
-          </if>
-          <if test="height != null">
-              #{height},
-          </if>
-          <if test="bloodType != null">
-              #{bloodType},
-          </if>
-          <if test="englishName != null">
-              #{englishName},
-          </if>
-          <if test="nationality != null">
-              #{nationality},
-          </if>
-          <if test="birthDate != null">
-              #{birthDate},
-          </if>
-          <if test="politicalStatus != null">
-              #{politicalStatus},
-          </if>
-          <if test="birthplace != null">
-              #{birthplace},
-          </if>
-          <if test="applicationPosition != null">
-              #{applicationPosition},
-          </if>
-          <if test="probationPeriod != null">
-              #{probationPeriod},
-          </if>
-          <if test="hireDate != null">
-              #{hireDate},
-          </if>
-          <if test="orgId != null">
-              #{orgId},
-          </if>
-          <if test="postId != null">
-              #{postId},
-          </if>
-          <if test="employmentState != null">
-              #{employmentState},
-          </if>
-          <if test="employmentRegister != null">
-              #{employmentRegister},
-          </if>
-          <if test="description != null">
-              #{description},
-          </if>
-          <if test="dataSource != null">
-              #{dataSource},
-          </if>
-          <if test="companyId != null">
-              #{companyId},
-          </if>
-          <if test="operatorId != null">
-              #{operatorId},
-          </if>
-          <if test="createTime != null">
-              #{createTime},
-          </if>
-          <if test="updateTime != null">
-              #{updateTime},
-          </if>
-          <if test="isDelete != null">
-              #{isDelete},
-          </if>
-          <if test="positionLevelId != null">
-              #{positionLevelId} ,
-          </if>
-          <if test="positionGradeId != null">
-              #{positionGradeId},
-          </if>
-          <if test="templateId != null">
-              #{templateId}
-          </if>
-      </trim>
-  </insert>
-    <insert id="insertBatch" keyColumn="employment_id" keyProperty="employmentId" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
-        <foreach collection="list" item="item"  separator=";" >
+            <if test="gender != null">
+                #{gender},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+            <if test="idType != null">
+                #{idType},
+            </if>
+            <if test="idNumber != null">
+                #{idNumber},
+            </if>
+            <if test="age != null">
+                #{age},
+            </if>
+            <if test="firstWorkDate != null">
+                #{firstWorkDate},
+            </if>
+            <if test="maritalStatus != null">
+                #{maritalStatus},
+            </if>
+            <if test="highestDegree != null">
+                #{highestDegree},
+            </if>
+            <if test="graduatedSchool != null">
+                #{graduatedSchool},
+            </if>
+            <if test="graduatedSpeciality != null">
+                #{graduatedSpeciality},
+            </if>
+            <if test="lastWorkCompany != null">
+                #{lastWorkCompany},
+            </if>
+            <if test="isGiveBirth != null">
+                #{isGiveBirth},
+            </if>
+            <if test="residentCharacter != null">
+                #{residentCharacter},
+            </if>
+            <if test="height != null">
+                #{height},
+            </if>
+            <if test="bloodType != null">
+                #{bloodType},
+            </if>
+            <if test="englishName != null">
+                #{englishName},
+            </if>
+            <if test="nationality != null">
+                #{nationality},
+            </if>
+            <if test="birthDate != null">
+                #{birthDate},
+            </if>
+            <if test="politicalStatus != null">
+                #{politicalStatus},
+            </if>
+            <if test="birthplace != null">
+                #{birthplace},
+            </if>
+            <if test="applicationPosition != null">
+                #{applicationPosition},
+            </if>
+            <if test="probationPeriod != null">
+                #{probationPeriod},
+            </if>
+            <if test="hireDate != null">
+                #{hireDate},
+            </if>
+            <if test="orgId != null">
+                #{orgId},
+            </if>
+            <if test="postId != null">
+                #{postId},
+            </if>
+            <if test="employmentState != null">
+                #{employmentState},
+            </if>
+            <if test="employmentRegister != null">
+                #{employmentRegister},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="dataSource != null">
+                #{dataSource},
+            </if>
+            <if test="companyId != null">
+                #{companyId},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete},
+            </if>
+            <if test="positionLevelId != null">
+                #{positionLevelId} ,
+            </if>
+            <if test="positionGradeId != null">
+                #{positionGradeId},
+            </if>
+            <if test="templateId != null">
+                #{templateId}
+            </if>
+        </trim>
+    </insert>
+    <insert id="insertBatch" keyColumn="employment_id" keyProperty="employmentId"
+            parameterType="com.qinjee.masterdata.model.entity.PreEmployment" useGeneratedKeys="true">
+        <foreach collection="list" item="item" separator=";">
             INSERT INTO t_pre_employment
             <trim prefix="(" suffix=")" suffixOverrides=";">
                 <if test="item.employmentId != null">
@@ -645,403 +647,403 @@
 
     </insert>
     <!-- 根据条件查询数据 -->
-<!--  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="map">-->
-<!--    SELECT-->
-<!--    <include refid="Base_Column_List" />-->
-<!--    FROM t_pre_employment t_pre_employment WHERE 1 = 1-->
-<!--    <if test="user_name != null and user_name != ''">-->
-<!--      AND t_pre_employment.user_name LIKE CONCAT('%',#{user_name},'%')-->
-<!--    </if>-->
-<!--    <if test="phone != null and phone != ''">-->
-<!--      AND t_pre_employment.phone LIKE CONCAT('%',#{phone},'%')-->
-<!--    </if>-->
-<!--    <if test="gender != null and gender != ''">-->
-<!--      AND t_pre_employment.gender LIKE CONCAT('%',#{gender},'%')-->
-<!--    </if>-->
-<!--    <if test="email != null and email != ''">-->
-<!--      AND t_pre_employment.email LIKE CONCAT('%',#{email},'%')-->
-<!--    </if>-->
-<!--    <if test="id_type != null and id_type != ''">-->
-<!--      AND t_pre_employment.id_type LIKE CONCAT('%',#{id_type},'%')-->
-<!--    </if>-->
-<!--    <if test="id_number != null and id_number != ''">-->
-<!--      AND t_pre_employment.id_number LIKE CONCAT('%',#{id_number},'%')-->
-<!--    </if>-->
-<!--    <if test="age != null">-->
-<!--      AND t_pre_employment.age = #{age}-->
-<!--    </if>-->
-<!--    <if test="first_work_date != null">-->
-<!--      AND t_pre_employment.first_work_date = #{first_work_date}-->
-<!--    </if>-->
-<!--    <if test="marital_status != null and marital_status != ''">-->
-<!--      AND t_pre_employment.marital_status LIKE CONCAT('%',#{marital_status},'%')-->
-<!--    </if>-->
-<!--    <if test="highest_degree != null and highest_degree != ''">-->
-<!--      AND t_pre_employment.highest_degree LIKE CONCAT('%',#{highest_degree},'%')-->
-<!--    </if>-->
-<!--    <if test="graduated_school != null and graduated_school != ''">-->
-<!--      AND t_pre_employment.graduated_school LIKE CONCAT('%',#{graduated_school},'%')-->
-<!--    </if>-->
-<!--    <if test="graduated_speciality != null and graduated_speciality != ''">-->
-<!--      AND t_pre_employment.graduated_speciality LIKE CONCAT('%',#{graduated_speciality},'%')-->
-<!--    </if>-->
-<!--    <if test="last_work_company != null and last_work_company != ''">-->
-<!--      AND t_pre_employment.last_work_company LIKE CONCAT('%',#{last_work_company},'%')-->
-<!--    </if>-->
-<!--    <if test="is_give_birth != null">-->
-<!--      AND t_pre_employment.is_give_birth = #{is_give_birth}-->
-<!--    </if>-->
-<!--    <if test="resident_character != null and resident_character != ''">-->
-<!--      AND t_pre_employment.resident_character LIKE CONCAT('%',#{resident_character},'%')-->
-<!--    </if>-->
-<!--    <if test="height != null">-->
-<!--      AND t_pre_employment.height = #{height}-->
-<!--    </if>-->
-<!--    <if test="blood_type != null and blood_type != ''">-->
-<!--      AND t_pre_employment.blood_type LIKE CONCAT('%',#{blood_type},'%')-->
-<!--    </if>-->
-<!--    <if test="english_name != null and english_name != ''">-->
-<!--      AND t_pre_employment.english_name LIKE CONCAT('%',#{english_name},'%')-->
-<!--    </if>-->
-<!--    <if test="nationality != null">-->
-<!--      AND t_pre_employment.nationality = #{nationality}-->
-<!--    </if>-->
-<!--    <if test="birth_date != null">-->
-<!--      AND t_pre_employment.birth_date = #{birth_date}-->
-<!--    </if>-->
-<!--    <if test="political_status != null">-->
-<!--      AND t_pre_employment.political_status = #{political_status}-->
-<!--    </if>-->
-<!--    <if test="birthplace != null and birthplace != ''">-->
-<!--      AND t_pre_employment.birthplace LIKE CONCAT('%',#{birthplace},'%')-->
-<!--    </if>-->
-<!--    <if test="application_position != null and application_position != ''">-->
-<!--      AND t_pre_employment.application_position LIKE CONCAT('%',#{application_position},'%')-->
-<!--    </if>-->
-<!--    <if test="probation_period != null">-->
-<!--      AND t_pre_employment.probation_period = #{probation_period}-->
-<!--    </if>-->
-<!--    <if test="hire_date != null">-->
-<!--      AND t_pre_employment.hire_date = #{hire_date}-->
-<!--    </if>-->
-<!--    <if test="org_id != null">-->
-<!--      AND t_pre_employment.org_id = #{org_id}-->
-<!--    </if>-->
-<!--    <if test="post_id != null">-->
-<!--      AND t_pre_employment.post_id = #{post_id}-->
-<!--    </if>-->
-<!--    <if test="employment_state != null and employment_state != ''">-->
-<!--      AND t_pre_employment.employment_state LIKE CONCAT('%',#{employment_state},'%')-->
-<!--    </if>-->
-<!--    <if test="employment_register != null and employment_register != ''">-->
-<!--      AND t_pre_employment.employment_register LIKE CONCAT('%',#{employment_register},'%')-->
-<!--    </if>-->
-<!--    <if test="description != null and description != ''">-->
-<!--      AND t_pre_employment.description LIKE CONCAT('%',#{description},'%')-->
-<!--    </if>-->
-<!--    <if test="data_source != null and data_source != ''">-->
-<!--      AND t_pre_employment.data_source LIKE CONCAT('%',#{data_source},'%')-->
-<!--    </if>-->
-<!--    <if test="company_id != null">-->
-<!--      AND t_pre_employment.company_id = #{company_id}-->
-<!--    </if>-->
-<!--    <if test="operator_id != null">-->
-<!--      AND t_pre_employment.operator_id = #{operator_id}-->
-<!--    </if>-->
-<!--    <if test="create_time != null">-->
-<!--      AND t_pre_employment.create_time = #{create_time}-->
-<!--    </if>-->
-<!--    <if test="update_time != null">-->
-<!--      AND t_pre_employment.update_time = #{update_time}-->
-<!--    </if>-->
-<!--    <if test="is_delete != null">-->
-<!--      AND t_pre_employment.is_delete = #{is_delete}-->
-<!--    </if>-->
-<!--  </select>-->
-<!--   批量插入数据 -->
+    <!--  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="map">-->
+    <!--    SELECT-->
+    <!--    <include refid="Base_Column_List" />-->
+    <!--    FROM t_pre_employment t_pre_employment WHERE 1 = 1-->
+    <!--    <if test="user_name != null and user_name != ''">-->
+    <!--      AND t_pre_employment.user_name LIKE CONCAT('%',#{user_name},'%')-->
+    <!--    </if>-->
+    <!--    <if test="phone != null and phone != ''">-->
+    <!--      AND t_pre_employment.phone LIKE CONCAT('%',#{phone},'%')-->
+    <!--    </if>-->
+    <!--    <if test="gender != null and gender != ''">-->
+    <!--      AND t_pre_employment.gender LIKE CONCAT('%',#{gender},'%')-->
+    <!--    </if>-->
+    <!--    <if test="email != null and email != ''">-->
+    <!--      AND t_pre_employment.email LIKE CONCAT('%',#{email},'%')-->
+    <!--    </if>-->
+    <!--    <if test="id_type != null and id_type != ''">-->
+    <!--      AND t_pre_employment.id_type LIKE CONCAT('%',#{id_type},'%')-->
+    <!--    </if>-->
+    <!--    <if test="id_number != null and id_number != ''">-->
+    <!--      AND t_pre_employment.id_number LIKE CONCAT('%',#{id_number},'%')-->
+    <!--    </if>-->
+    <!--    <if test="age != null">-->
+    <!--      AND t_pre_employment.age = #{age}-->
+    <!--    </if>-->
+    <!--    <if test="first_work_date != null">-->
+    <!--      AND t_pre_employment.first_work_date = #{first_work_date}-->
+    <!--    </if>-->
+    <!--    <if test="marital_status != null and marital_status != ''">-->
+    <!--      AND t_pre_employment.marital_status LIKE CONCAT('%',#{marital_status},'%')-->
+    <!--    </if>-->
+    <!--    <if test="highest_degree != null and highest_degree != ''">-->
+    <!--      AND t_pre_employment.highest_degree LIKE CONCAT('%',#{highest_degree},'%')-->
+    <!--    </if>-->
+    <!--    <if test="graduated_school != null and graduated_school != ''">-->
+    <!--      AND t_pre_employment.graduated_school LIKE CONCAT('%',#{graduated_school},'%')-->
+    <!--    </if>-->
+    <!--    <if test="graduated_speciality != null and graduated_speciality != ''">-->
+    <!--      AND t_pre_employment.graduated_speciality LIKE CONCAT('%',#{graduated_speciality},'%')-->
+    <!--    </if>-->
+    <!--    <if test="last_work_company != null and last_work_company != ''">-->
+    <!--      AND t_pre_employment.last_work_company LIKE CONCAT('%',#{last_work_company},'%')-->
+    <!--    </if>-->
+    <!--    <if test="is_give_birth != null">-->
+    <!--      AND t_pre_employment.is_give_birth = #{is_give_birth}-->
+    <!--    </if>-->
+    <!--    <if test="resident_character != null and resident_character != ''">-->
+    <!--      AND t_pre_employment.resident_character LIKE CONCAT('%',#{resident_character},'%')-->
+    <!--    </if>-->
+    <!--    <if test="height != null">-->
+    <!--      AND t_pre_employment.height = #{height}-->
+    <!--    </if>-->
+    <!--    <if test="blood_type != null and blood_type != ''">-->
+    <!--      AND t_pre_employment.blood_type LIKE CONCAT('%',#{blood_type},'%')-->
+    <!--    </if>-->
+    <!--    <if test="english_name != null and english_name != ''">-->
+    <!--      AND t_pre_employment.english_name LIKE CONCAT('%',#{english_name},'%')-->
+    <!--    </if>-->
+    <!--    <if test="nationality != null">-->
+    <!--      AND t_pre_employment.nationality = #{nationality}-->
+    <!--    </if>-->
+    <!--    <if test="birth_date != null">-->
+    <!--      AND t_pre_employment.birth_date = #{birth_date}-->
+    <!--    </if>-->
+    <!--    <if test="political_status != null">-->
+    <!--      AND t_pre_employment.political_status = #{political_status}-->
+    <!--    </if>-->
+    <!--    <if test="birthplace != null and birthplace != ''">-->
+    <!--      AND t_pre_employment.birthplace LIKE CONCAT('%',#{birthplace},'%')-->
+    <!--    </if>-->
+    <!--    <if test="application_position != null and application_position != ''">-->
+    <!--      AND t_pre_employment.application_position LIKE CONCAT('%',#{application_position},'%')-->
+    <!--    </if>-->
+    <!--    <if test="probation_period != null">-->
+    <!--      AND t_pre_employment.probation_period = #{probation_period}-->
+    <!--    </if>-->
+    <!--    <if test="hire_date != null">-->
+    <!--      AND t_pre_employment.hire_date = #{hire_date}-->
+    <!--    </if>-->
+    <!--    <if test="org_id != null">-->
+    <!--      AND t_pre_employment.org_id = #{org_id}-->
+    <!--    </if>-->
+    <!--    <if test="post_id != null">-->
+    <!--      AND t_pre_employment.post_id = #{post_id}-->
+    <!--    </if>-->
+    <!--    <if test="employment_state != null and employment_state != ''">-->
+    <!--      AND t_pre_employment.employment_state LIKE CONCAT('%',#{employment_state},'%')-->
+    <!--    </if>-->
+    <!--    <if test="employment_register != null and employment_register != ''">-->
+    <!--      AND t_pre_employment.employment_register LIKE CONCAT('%',#{employment_register},'%')-->
+    <!--    </if>-->
+    <!--    <if test="description != null and description != ''">-->
+    <!--      AND t_pre_employment.description LIKE CONCAT('%',#{description},'%')-->
+    <!--    </if>-->
+    <!--    <if test="data_source != null and data_source != ''">-->
+    <!--      AND t_pre_employment.data_source LIKE CONCAT('%',#{data_source},'%')-->
+    <!--    </if>-->
+    <!--    <if test="company_id != null">-->
+    <!--      AND t_pre_employment.company_id = #{company_id}-->
+    <!--    </if>-->
+    <!--    <if test="operator_id != null">-->
+    <!--      AND t_pre_employment.operator_id = #{operator_id}-->
+    <!--    </if>-->
+    <!--    <if test="create_time != null">-->
+    <!--      AND t_pre_employment.create_time = #{create_time}-->
+    <!--    </if>-->
+    <!--    <if test="update_time != null">-->
+    <!--      AND t_pre_employment.update_time = #{update_time}-->
+    <!--    </if>-->
+    <!--    <if test="is_delete != null">-->
+    <!--      AND t_pre_employment.is_delete = #{is_delete}-->
+    <!--    </if>-->
+    <!--  </select>-->
+    <!--   批量插入数据 -->
 
-  <!-- 修改数据 -->
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PreEmployment" >
-     UPDATE  t_pre_employment
+    <!-- 修改数据 -->
+    <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PreEmployment">
+        UPDATE t_pre_employment
         <set>
-      <if test="userName != null">
-          user_name = #{userName},
-      </if>
-      <if test="phone != null">
-          phone = #{phone},
-      </if>
-      <if test="gender != null">
-          gender = #{gender},
-      </if>
-      <if test="email != null">
-          email = #{email},
-      </if>
-      <if test="idType != null">
-          id_type = #{idType},
-      </if>
-      <if test="idNumber != null">
-          id_number = #{idNumber},
-      </if>
-      <if test="age != null">
-          age = #{age},
-      </if>
-      <if test="firstWorkDate != null">
-          first_work_date = #{firstWorkDate},
-      </if>
-      <if test="maritalStatus != null">
-          marital_status = #{maritalStatus},
-      </if>
-      <if test="highestDegree != null">
-          highest_degree = #{highestDegree},
-      </if>
-      <if test="graduatedSchool != null">
-          graduated_school = #{graduatedSchool},
-      </if>
-      <if test="graduatedSpeciality != null">
-          graduated_speciality = #{graduatedSpeciality},
-      </if>
-      <if test="lastWorkCompany != null">
-          last_work_company = #{lastWorkCompany},
-      </if>
-      <if test="isGiveBirth != null">
-          is_give_birth = #{isGiveBirth},
-      </if>
-      <if test="residentCharacter != null">
-          resident_character = #{residentCharacter},
-      </if>
-      <if test="height != null">
-          height = #{height},
-      </if>
-      <if test="bloodType != null">
-          blood_type = #{bloodType},
-      </if>
-      <if test="englishName != null">
-          english_name = #{englishName},
-      </if>
-      <if test="nationality != null">
-          nationality = #{nationality},
-      </if>
-      <if test="birthDate != null">
-          birth_date = #{birthDate},
-      </if>
-      <if test="politicalStatus != null">
-          political_status = #{politicalStatus},
-      </if>
-      <if test="birthplace != null">
-          birthplace = #{birthplace},
-      </if>
-      <if test="applicationPosition != null">
-          application_position = #{applicationPosition},
-      </if>
-      <if test="probationPeriod != null">
-          probation_period = #{probationPeriod},
-      </if>
-      <if test="hireDate != null">
-          hire_date = #{hireDate},
-      </if>
-      <if test="orgId != null">
-          org_id = #{orgId},
-      </if>
-      <if test="postId != null">
-          post_id = #{postId},
-      </if>
-      <if test="employmentState != null">
-          employment_state = #{employmentState},
-      </if>
-      <if test="employmentRegister != null">
-          employment_register = #{employmentRegister},
-      </if>
-      <if test="description != null">
-          description = #{description},
-      </if>
-      <if test="dataSource != null">
-          data_source = #{dataSource},
-      </if>
-      <if test="operatorId != null">
-          operator_id = #{operatorId},
-      </if>
-      <if test="isDelete != null">
-          is_delete = #{isDelete},
-      </if>
-     <if test="positionLevelId != null">
-       position_level_id= #{positionLevelId} ,
-     </if>
-     <if test="positionGradeId != null">
-         position_grade_id=#{positionGradeId},
-     </if>
-     <if test="templateId != null">
-        template_id=#{templateId}
-     </if>
-      </set>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="idType != null">
+                id_type = #{idType},
+            </if>
+            <if test="idNumber != null">
+                id_number = #{idNumber},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="firstWorkDate != null">
+                first_work_date = #{firstWorkDate},
+            </if>
+            <if test="maritalStatus != null">
+                marital_status = #{maritalStatus},
+            </if>
+            <if test="highestDegree != null">
+                highest_degree = #{highestDegree},
+            </if>
+            <if test="graduatedSchool != null">
+                graduated_school = #{graduatedSchool},
+            </if>
+            <if test="graduatedSpeciality != null">
+                graduated_speciality = #{graduatedSpeciality},
+            </if>
+            <if test="lastWorkCompany != null">
+                last_work_company = #{lastWorkCompany},
+            </if>
+            <if test="isGiveBirth != null">
+                is_give_birth = #{isGiveBirth},
+            </if>
+            <if test="residentCharacter != null">
+                resident_character = #{residentCharacter},
+            </if>
+            <if test="height != null">
+                height = #{height},
+            </if>
+            <if test="bloodType != null">
+                blood_type = #{bloodType},
+            </if>
+            <if test="englishName != null">
+                english_name = #{englishName},
+            </if>
+            <if test="nationality != null">
+                nationality = #{nationality},
+            </if>
+            <if test="birthDate != null">
+                birth_date = #{birthDate},
+            </if>
+            <if test="politicalStatus != null">
+                political_status = #{politicalStatus},
+            </if>
+            <if test="birthplace != null">
+                birthplace = #{birthplace},
+            </if>
+            <if test="applicationPosition != null">
+                application_position = #{applicationPosition},
+            </if>
+            <if test="probationPeriod != null">
+                probation_period = #{probationPeriod},
+            </if>
+            <if test="hireDate != null">
+                hire_date = #{hireDate},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId},
+            </if>
+            <if test="postId != null">
+                post_id = #{postId},
+            </if>
+            <if test="employmentState != null">
+                employment_state = #{employmentState},
+            </if>
+            <if test="employmentRegister != null">
+                employment_register = #{employmentRegister},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="dataSource != null">
+                data_source = #{dataSource},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete},
+            </if>
+            <if test="positionLevelId != null">
+                position_level_id= #{positionLevelId} ,
+            </if>
+            <if test="positionGradeId != null">
+                position_grade_id=#{positionGradeId},
+            </if>
+            <if test="templateId != null">
+                template_id=#{templateId}
+            </if>
+        </set>
         WHERE employment_id = #{employmentId}
     </update>
 
-<!--  &lt;!&ndash; 批量修改数据 &ndash;&gt;-->
-  <update id="updateBatch" parameterType="list">
-    <foreach collection="list" index="index" item="item" separator=";">
-        UPDATE  t_pre_employment
-        <set>
-        <if test="item.userName != null">
-            user_name = #{item.userName},
-        </if>
-        <if test="item.phone != null">
-            phone = #{item.phone},
-        </if>
-        <if test="item.gender != null">
-            gender = #{item.gender},
-        </if>
-        <if test="item.email != null">
-            email = #{item.email},
-        </if>
-        <if test="item.idType != null">
-            id_type = #{item.idType},
-        </if>
-        <if test="item.idNumber != null">
-            id_number = #{item.idNumber},
-        </if>
-        <if test="item.age != null">
-            age = #{item.age},
-        </if>
-        <if test="item.firstWorkDate != null">
-            first_work_date = #{item.firstWorkDate},
-        </if>
-        <if test="item.maritalStatus != null">
-            marital_status = #{item.maritalStatus},
-        </if>
-        <if test="item.highestDegree != null">
-            highest_degree = #{item.highestDegree},
-        </if>
-        <if test="item.graduatedSchool != null">
-            graduated_school = #{item.graduatedSchool},
-        </if>
-        <if test="item.graduatedSpeciality != null">
-            graduated_speciality = #{item.graduatedSpeciality},
-        </if>
-        <if test="item.lastWorkCompany != null">
-            last_work_company = #{item.lastWorkCompany},
-        </if>
-        <if test="item.isGiveBirth != null">
-            is_give_birth = #{item.isGiveBirth},
-        </if>
-        <if test="item.residentCharacter != null">
-            resident_character = #{item.residentCharacter},
-        </if>
-        <if test="item.height != null">
-            height = #{item.height},
-        </if>
-        <if test="item.bloodType != null">
-            blood_type = #{item.bloodType},
-        </if>
-        <if test="item.englishName != null">
-            english_name = #{item.englishName},
-        </if>
-        <if test="item.nationality != null">
-            nationality = #{item.nationality},
-        </if>
-        <if test="item.birthDate != null">
-            birth_date = #{item.birthDate},
-        </if>
-        <if test="item.politicalStatus != null">
-            political_status = #{item.politicalStatus},
-        </if>
-        <if test="item.birthplace != null">
-            birthplace = #{item.birthplace},
-        </if>
-        <if test="item.applicationPosition != null">
-            application_position = #{item.applicationPosition},
-        </if>
-        <if test="item.probationPeriod != null">
-            probation_period = #{item.probationPeriod},
-        </if>
-        <if test="item.hireDate != null">
-            hire_date = #{item.hireDate},
-        </if>
-        <if test="item.orgId != null">
-            org_id = #{item.orgId},
-        </if>
-        <if test="item.postId != null">
-            post_id = #{item.postId},
-        </if>
-        <if test="item.employmentState != null">
-            employment_state = #{item.employmentState},
-        </if>
-        <if test="item.employmentRegister != null">
-            employment_register = #{item.employmentRegister},
-        </if>
-        <if test="item.description != null">
-            description = #{item.description},
-        </if>
-        <if test="item.dataSource != null">
-            data_source = #{item.dataSource},
-        </if>
-        <if test="item.operatorId != null">
-            operator_id = #{item.operatorId},
-        </if>
-        <if test="item.isDelete != null">
-            is_delete = #{item.isDelete},
-        </if>
-        <if test="item.positionLevelId != null">
-            position_level_id= #{item.positionLevelId} ,
-        </if>
-        <if test="item.positionGradeId != null">
-            position_grade_id=#{item.positionGradeId},
-        </if>
-        <if test="item.templateId != null">
-            template_id=#{item.templateId}
-        </if>
-        </set>
-        WHERE employment_id = #{item.employmentId}
-    </foreach>
-  </update>
-  <select id="selectMaxId" resultType="java.lang.Integer">
+    <!--  &lt;!&ndash; 批量修改数据 &ndash;&gt;-->
+    <update id="updateBatch" parameterType="list">
+        <foreach collection="list" index="index" item="item" separator=";">
+            UPDATE t_pre_employment
+            <set>
+                <if test="item.userName != null">
+                    user_name = #{item.userName},
+                </if>
+                <if test="item.phone != null">
+                    phone = #{item.phone},
+                </if>
+                <if test="item.gender != null">
+                    gender = #{item.gender},
+                </if>
+                <if test="item.email != null">
+                    email = #{item.email},
+                </if>
+                <if test="item.idType != null">
+                    id_type = #{item.idType},
+                </if>
+                <if test="item.idNumber != null">
+                    id_number = #{item.idNumber},
+                </if>
+                <if test="item.age != null">
+                    age = #{item.age},
+                </if>
+                <if test="item.firstWorkDate != null">
+                    first_work_date = #{item.firstWorkDate},
+                </if>
+                <if test="item.maritalStatus != null">
+                    marital_status = #{item.maritalStatus},
+                </if>
+                <if test="item.highestDegree != null">
+                    highest_degree = #{item.highestDegree},
+                </if>
+                <if test="item.graduatedSchool != null">
+                    graduated_school = #{item.graduatedSchool},
+                </if>
+                <if test="item.graduatedSpeciality != null">
+                    graduated_speciality = #{item.graduatedSpeciality},
+                </if>
+                <if test="item.lastWorkCompany != null">
+                    last_work_company = #{item.lastWorkCompany},
+                </if>
+                <if test="item.isGiveBirth != null">
+                    is_give_birth = #{item.isGiveBirth},
+                </if>
+                <if test="item.residentCharacter != null">
+                    resident_character = #{item.residentCharacter},
+                </if>
+                <if test="item.height != null">
+                    height = #{item.height},
+                </if>
+                <if test="item.bloodType != null">
+                    blood_type = #{item.bloodType},
+                </if>
+                <if test="item.englishName != null">
+                    english_name = #{item.englishName},
+                </if>
+                <if test="item.nationality != null">
+                    nationality = #{item.nationality},
+                </if>
+                <if test="item.birthDate != null">
+                    birth_date = #{item.birthDate},
+                </if>
+                <if test="item.politicalStatus != null">
+                    political_status = #{item.politicalStatus},
+                </if>
+                <if test="item.birthplace != null">
+                    birthplace = #{item.birthplace},
+                </if>
+                <if test="item.applicationPosition != null">
+                    application_position = #{item.applicationPosition},
+                </if>
+                <if test="item.probationPeriod != null">
+                    probation_period = #{item.probationPeriod},
+                </if>
+                <if test="item.hireDate != null">
+                    hire_date = #{item.hireDate},
+                </if>
+                <if test="item.orgId != null">
+                    org_id = #{item.orgId},
+                </if>
+                <if test="item.postId != null">
+                    post_id = #{item.postId},
+                </if>
+                <if test="item.employmentState != null">
+                    employment_state = #{item.employmentState},
+                </if>
+                <if test="item.employmentRegister != null">
+                    employment_register = #{item.employmentRegister},
+                </if>
+                <if test="item.description != null">
+                    description = #{item.description},
+                </if>
+                <if test="item.dataSource != null">
+                    data_source = #{item.dataSource},
+                </if>
+                <if test="item.operatorId != null">
+                    operator_id = #{item.operatorId},
+                </if>
+                <if test="item.isDelete != null">
+                    is_delete = #{item.isDelete},
+                </if>
+                <if test="item.positionLevelId != null">
+                    position_level_id= #{item.positionLevelId} ,
+                </if>
+                <if test="item.positionGradeId != null">
+                    position_grade_id=#{item.positionGradeId},
+                </if>
+                <if test="item.templateId != null">
+                    template_id=#{item.templateId}
+                </if>
+            </set>
+            WHERE employment_id = #{item.employmentId}
+        </foreach>
+    </update>
+    <select id="selectMaxId" resultType="java.lang.Integer">
     select MAX(employment_id)
     from t_pre_employment
      WHERE  is_delete = 0
   </select>
-  <select id="getPhoneNumber" resultType="java.lang.String">
-    select phone
-    from t_pre_employment
-    where employment_id
-    in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    and is_delete=0
-  </select>
-  <select id="getMail" resultType="java.lang.String" >
-    select email
-    from t_pre_employment
-    where  is_delete = 0
-    AND
-    employment_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
-  <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
-    select
-    <include refid="Base_Column_List" />
-    from t_pre_employment
-    where  company_id = #{companyId,jdbcType=INTEGER}
-    AND
-    is_delete =0
-  </select>
-  <update id="deletePreEmployment">
+    <select id="getPhoneNumber" resultType="java.lang.String">
+        select phone
+        from t_pre_employment
+        where employment_id
+        in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and is_delete=0
+    </select>
+    <select id="getMail" resultType="java.lang.String">
+        select email
+        from t_pre_employment
+        where is_delete = 0
+        AND
+        employment_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectPreEmployment" resultType="com.qinjee.masterdata.model.entity.PreEmployment">
+        select
+        <include refid="Base_Column_List"/>
+        from t_pre_employment
+        where company_id = #{companyId,jdbcType=INTEGER}
+        AND
+        is_delete =0
+    </select>
+    <update id="deletePreEmployment">
     update  t_pre_employment
     set
     is_delete=1
     where employment_id = #{integer,jdbcType=INTEGER}
   </update>
 
-  <update id="deletePreEmploymentList">
-    update  t_pre_employment
-    set
-    is_delete=1
-    where employment_id  in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </update>
+    <update id="deletePreEmploymentList">
+        update t_pre_employment
+        set
+        is_delete=1
+        where employment_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
     <select id="selectIdByNumber" resultType="java.lang.Integer">
     select employment_id
     from  t_pre_employment
@@ -1056,30 +1058,34 @@
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete = 0
     </select>
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_pre_employment
-    where employment_id
-    in <foreach collection="list" item="item" open="(" separator="," close=")">
-    #{item}
-  </foreach>
-    AND  is_delete = 0
-  </select>
+    <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.PreEmployment"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_pre_employment
+        where employment_id
+        in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND is_delete = 0
+    </select>
     <select id="selectExportPreList" resultType="hashmap">
-        select pre.employment_id,pre.user_name,pre.phone,pre.gender,pre.email,pre.id_type,pre.id_number,pre.age,pre.first_work_date,pre.highest_degree,
+        select
+        pre.employment_id,pre.user_name,pre.phone,pre.gender,pre.email,pre.id_type,pre.id_number,pre.age,pre.first_work_date,pre.highest_degree,
         pre.graduated_school,pre.graduated_speciality,pre.last_work_company,pre.probation_period,pre.hire_date,org.org_code,post.post_code,
         pre.description,org.org_name as org_name,post.post_name as post_name,pre.application_position
         from t_pre_employment pre
         left join t_organization org on org.org_id = pre.org_id and org.is_enable=1
         left join t_post post on pre.post_id = post.post_id and post.is_delete=0
-        where  pre.employment_id in
+        where pre.employment_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND pre.is_delete=0  and pre.company_id=#{companyId}
+        AND pre.is_delete=0 and pre.company_id=#{companyId}
     </select>
-    <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
+    <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo"
+            resultMap="PreVo">
         select
         t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, dict3.dict_value as gender, t_pre_employment.email, t_pre_employment.id_type,
         t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
@@ -1098,36 +1104,37 @@
         where t_pre_employment.company_id = #{companyId}
         and t_pre_employment.is_delete = 0
     </select>
-    <select id="selectPreEmploymentVoById" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
-        select
-        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
-        t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
-        t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
-        t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
-        t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
-        dict1.dict_value as marry_status_name,post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
-        grade.position_grade_name as positionGradeName,level.position_level_name as positionLevelName
-        from t_pre_employment
-        left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
-        left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1
-        left join t_sys_dict dict on dict.dict_type = 'CARD_TYPE' and dict.dict_code = t_pre_employment.id_type
-        left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status
-        left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree
-        left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender
-        left join t_position_grade grade on grade.position_grade_id= t_pre_employment.position_grade_id
-        left join t_position_level level on level.position_level_id= t_pre_employment.position_level_id
-        where
-        t_pre_employment.employment_id=#{businessId}
-        and t_pre_employment.is_delete=0
-        and post.is_delete=0
-        and dict.is_delete=0
-        and dict1.is_deiete=0
-        and dict2.is_delete=0
-        and dict3.is_delete=0
-        and grade.is_delete=0
-        and level.is_delete=0
-
+    <select id="selectPreEmploymentVoById" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo"
+            resultMap="PreVo">
+         SELECT t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender,
+            t_pre_employment.email, t_pre_employment.id_type, t_pre_employment.id_number, t_pre_employment.age,
+            t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree,
+             t_pre_employment.graduated_school, t_pre_employment.graduated_speciality, t_pre_employment.last_work_company,
+              t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
+               t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status,
+                t_pre_employment.birthplace, t_pre_employment.application_position, t_pre_employment.probation_period, t_pre_employment.hire_date,
+                t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
+                t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value AS id_type_name,
+                dict2.dict_value AS highest_degree_name, dict1.dict_value AS marry_status_name,post.post_code,org.org_code,t_pre_employment.position_level_id,
+                t_pre_employment.position_grade_id, t_pre_employment.template_id, grade.position_grade_name AS positionGradeName,level.position_level_name AS positionLevelName
+             FROM t_pre_employment
+             LEFT JOIN t_organization org
+             ON org.org_id=t_pre_employment.org_id AND org.is_enable=1
+             LEFT JOIN t_post post
+             ON post.post_id = t_pre_employment.post_id AND post.is_enable=1 AND post.is_delete=0
+             LEFT JOIN t_sys_dict dict
+             ON dict.dict_type = 'CARD_TYPE' AND dict.dict_code = t_pre_employment.id_type AND dict.is_delete=0
+             LEFT JOIN t_sys_dict dict1
+             ON dict1.dict_type = 'MARITAL_STATUS' AND dict1.dict_code = t_pre_employment.marital_status AND dict1.is_delete=0
+             LEFT JOIN t_sys_dict dict2
+             ON dict2.dict_type = 'DEGREE' AND dict2.dict_code = t_pre_employment.highest_degree  AND dict2.is_delete=0
+             LEFT JOIN t_sys_dict dict3
+             ON dict3.dict_type = 'SEX_TYPE' AND dict3.dict_code = t_pre_employment.gender AND dict3.is_delete=0
+             LEFT JOIN t_position_grade grade
+             ON grade.position_grade_id= t_pre_employment.position_grade_id AND  grade.is_delete=0
+             LEFT JOIN t_position_level level
+             ON level.position_level_id= t_pre_employment.position_level_id AND level.is_delete=0
+             WHERE t_pre_employment.employment_id=#{businessId} AND t_pre_employment.is_delete=0
     </select>
     <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
         select employment_id from t_pre_employment
@@ -1143,7 +1150,7 @@
         from t_pre_employment
         where is_delete=0
         <if test="s3!=null">
-         and phone=#{s3}
+            and phone=#{s3}
         </if>
         <if test="s4!=null">
             and id_number=#{s4}
@@ -1159,14 +1166,18 @@
         </foreach>
         and is_delete=0
     </select>
-    <select id="selectByEmployNumber" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+    <select id="selectByEmployNumber" resultType="com.qinjee.masterdata.model.entity.PreEmployment"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
         from t_pre_employment
         where id_number=#{s}
         and is_delete=0
     </select>
-    <select id="selectemploymentRegisterByPreId" resultType="com.qinjee.masterdata.model.entity.PreEmployment" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+    <select id="selectemploymentRegisterByPreId" resultType="com.qinjee.masterdata.model.entity.PreEmployment"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
         from t_pre_employment
         where is_delete=0
         and company_id=#{companyId}

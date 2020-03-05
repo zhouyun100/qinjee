@@ -1,10 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff.pre;
 
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
-import com.qinjee.masterdata.model.vo.staff.archiveInfo.ChangeOfPersonnelVo;
-import com.qinjee.masterdata.model.vo.staff.archiveInfo.EducationExperienceVo;
-import com.qinjee.masterdata.model.vo.staff.archiveInfo.FamilyMemberAndSocialRelationsVo;
-import com.qinjee.masterdata.model.vo.staff.archiveInfo.TitleInformationVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -33,5 +30,5 @@ public class PreRegistVo implements Serializable {
     /**
      * 工作经历
      */
-    private List<EducationExperienceVo> workExperienceList;
+    private List<WorkExperienceVo> workExperienceList;
 }

@@ -11,8 +11,8 @@ import java.util.Date;
 @Data
 public class WorkExperienceVo implements Serializable {
 
-    private Date startDate;//起始时间
-    private Date endDate;//结束时间
+    private String startDate;//起始时间
+    private String endDate;//结束时间
     private String postName;//岗位名称
     private String businessUnitName;//单位名称
 }
