@@ -34,6 +34,13 @@ public class StaffPreEmploymentController extends BaseController {
     private static final String CHANGSTATUS_READY = "已入职";
     @Autowired
     private IStaffPreEmploymentService staffPreEmploymentService;
+
+
+    /**
+     * 员工登记表打印的数据查询接口
+     */
+
+
     /**
      * 新增预入职
      * 预入职表与档案表用物理表进行对应，此时需要物理表的存在，新增两个自定义表，新增n个自定义字段，物理字段名与物理属性名分别是物理表与属性的对应

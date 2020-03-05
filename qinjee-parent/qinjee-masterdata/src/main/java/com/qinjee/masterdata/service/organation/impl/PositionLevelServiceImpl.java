@@ -6,6 +6,7 @@ import com.qinjee.masterdata.dao.organation.PositionLevelDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.PositionLevel;
 import com.qinjee.masterdata.model.entity.Post;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
@@ -33,13 +34,20 @@ public class PositionLevelServiceImpl implements PositionLevelService {
 
 
     @Override
-    public PageResult<PositionLevel> listPositionLevel(PageVo pageVo, UserSession userSession) {
+    public PageResult<PositionLevelVo> listPositionLevel(PageVo pageVo, UserSession userSession) {
         if (null != pageVo.getCurrentPage() && null != pageVo.getPageSize())
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
-        List<PositionLevel> positionLevelList = positionLevelDao.list(userSession.getCompanyId());
-        PageResult<PositionLevel> pageResult = new PageResult<>(positionLevelList);
+        List<PositionLevelVo> positionLevelList = positionLevelDao.list(userSession.getCompanyId());
+        PageResult<PositionLevelVo> pageResult = new PageResult<>(positionLevelList);
         return pageResult;
 
+    }
+
+    @Override
+    public List<PositionLevelVo> listByPositionGradeId(Integer positionGradeId) {
+
+        List<PositionLevelVo> positionLevelList = positionLevelDao.listByPositionGradeId(positionGradeId);
+        return positionLevelList;
     }
 
     @Override
@@ -80,5 +88,10 @@ public class PositionLevelServiceImpl implements PositionLevelService {
     @Override
     public int sortPositionLevel(List<Integer> positionLevelIds, UserSession userSession) {
        return positionLevelDao.sort(positionLevelIds,userSession.getArchiveId());
+    }
+
+    @Override
+    public PositionLevelVo getPositionLevelById(Integer id) {
+       return positionLevelDao.get(id);
     }
 }

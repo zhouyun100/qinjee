@@ -2,6 +2,7 @@ package com.qinjee.masterdata.dao.organation;
 
 
 import com.qinjee.masterdata.model.entity.PositionLevel;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +19,7 @@ public interface PositionLevelDao {
      * 获取所以职级
      * @return
      */
-    List<PositionLevel> list(Integer companyId);
+    List<PositionLevelVo> list(Integer companyId);
 
     int getLastSortId(Integer companyId);
 
@@ -26,5 +27,8 @@ public interface PositionLevelDao {
 
     int sort(List<Integer> positionLevelIds, Integer operatorId);
 
-    List<PositionLevel> listByPositionGradeId(@Param("positionGradeIds") List<Integer> positionGradeIds);
+    List<PositionLevelVo> listByPositionGradeIds(@Param("positionGradeIds") List<Integer> positionGradeIds);
+    List<PositionLevelVo> listByPositionGradeId(@Param("positionGradeId") Integer positionGradeId);
+
+    PositionLevelVo get(@Param("id") Integer id);
 }

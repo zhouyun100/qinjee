@@ -24,7 +24,9 @@ public interface PositionLevelService {
      * @param pageVo
      * @return
      */
-    PageResult<PositionLevel> listPositionLevel(PageVo pageVo,UserSession userSession);
+    PageResult<PositionLevelVo> listPositionLevel(PageVo pageVo,UserSession userSession);
+
+    List<PositionLevelVo> listByPositionGradeId(Integer positionGradeId);
 
     /**
      * 新增职级
@@ -58,4 +60,5 @@ public interface PositionLevelService {
      */
     int sortPositionLevel(List<Integer> positionLevelIds, UserSession userSession);
 
+    PositionLevelVo getPositionLevelById(Integer id);
 }

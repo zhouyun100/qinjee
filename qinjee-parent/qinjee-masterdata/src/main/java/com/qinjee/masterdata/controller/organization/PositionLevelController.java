@@ -3,6 +3,7 @@ package com.qinjee.masterdata.controller.organization;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PositionLevel;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
@@ -45,13 +46,31 @@ public class PositionLevelController extends BaseController {
         return true;
     }
 
+    @GetMapping("/get{id}")
+    @ApiOperation(value = "根据id查询职级", notes = "彭洪思")
+    public ResponseResult<PositionLevelVo> get(@PathVariable("id") Integer id) {
+        if (!checkParam( id)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        PositionLevelVo positionLevelVo = positionLevelService.getPositionLevelById(id);
+        return new ResponseResult<>(positionLevelVo);
+    }
     @GetMapping("/list")
     @ApiOperation(value = "分页查询职级列表", notes = "彭洪思")
-    public ResponseResult<PageResult<PositionLevel>> get(PageVo pageVo) {
+    public ResponseResult<PageResult<PositionLevelVo>> list(PageVo pageVo) {
         if (!checkParam(getUserSession(), pageVo)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
-        PageResult<PositionLevel> positionLevelList = positionLevelService.listPositionLevel(pageVo, getUserSession());
+        PageResult<PositionLevelVo> positionLevelList = positionLevelService.listPositionLevel(pageVo, getUserSession());
+        return new ResponseResult<>(positionLevelList);
+    }
+    @GetMapping("/listByPositionGradeId/{id}")
+    @ApiOperation(value = "根据职等id查询职级列表", notes = "彭洪思")
+    public ResponseResult<List<PositionLevelVo>> listByPositionGradeId(@PathVariable("id") Integer id) {
+        if (!checkParam( id)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        List<PositionLevelVo> positionLevelList = positionLevelService.listByPositionGradeId(id);
         return new ResponseResult<>(positionLevelList);
     }
 

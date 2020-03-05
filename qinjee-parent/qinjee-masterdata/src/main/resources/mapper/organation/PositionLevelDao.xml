@@ -12,6 +12,15 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
     </resultMap>
+
+    <resultMap id="PositionLevelVoMap" type="com.qinjee.masterdata.model.vo.organization.PositionLevelVo">
+        <id column="position_level_id" jdbcType="INTEGER" property="positionLevelId"/>
+        <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
+        <id column="position_grade_name" jdbcType="INTEGER" property="positionGradeName"/>
+        <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName"/>
+        <result column="position_level_remark" jdbcType="VARCHAR" property="positionLevelRemark"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
     position_level_id, position_level_name, position_grade_id,position_level_remark, sort_id, operator_id,
     create_time, is_delete
@@ -22,11 +31,11 @@
     value(#{positionLevelName},#{positionGradeId},#{operatorId},#{positionLevelRemark},#{sortId},#{companyId})
   </insert>
 
-    <select id="list" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"></include>
-        from t_position_level
-        where company_id=#{companyId} and is_delete =0
+    <select id="list" resultMap="PositionLevelVoMap">
+     SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
+        FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
+        ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
+        where t_level.company_id=#{companyId} and t_level.is_delete =0
 
     </select>
     <select id="getLastSortId" resultType="int">
@@ -76,13 +85,28 @@
             </where>
         </foreach>
     </update>
-    <select id="listByPositionGradeId" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"></include>
-        from t_position_level where position_grade_id in
+    <select id="listByPositionGradeIds" resultMap="PositionLevelVoMap">
+        SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
+        FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
+        ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
+        where t_level.position_grade_id in
         <foreach collection="positionGradeIds" item="positionGradeId" separator="," open="(" close=")">
             #{positionGradeId}
         </foreach>
 
+    </select>
+
+    <select id="listByPositionGradeId" resultMap="PositionLevelVoMap">
+        SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
+        FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
+        ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
+        where t_level.position_grade_id =#{positionGradeId}
+    </select>
+    <select id="get" resultMap="PositionLevelVoMap">
+       SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
+        FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
+        ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
+        WHERE
+        position_level_id = #{id} AND t_level.is_delete =0
     </select>
 </mapper>

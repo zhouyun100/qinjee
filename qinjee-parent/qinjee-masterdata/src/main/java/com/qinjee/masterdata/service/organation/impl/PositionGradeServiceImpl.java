@@ -8,6 +8,7 @@ import com.qinjee.masterdata.model.entity.PositionGrade;
 import com.qinjee.masterdata.model.entity.PositionLevel;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.vo.organization.PositionGradeVo;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.service.organation.PositionGradeService;
 import com.qinjee.model.request.PageVo;
 import com.qinjee.model.request.UserSession;
@@ -55,7 +56,7 @@ public class PositionGradeServiceImpl implements PositionGradeService {
     @Override
     public int batchDeletePositionGrade(UserSession userSession, List<Integer> positionGradeIds) {
         //判断职等是否被职级引用
-        List<PositionLevel> positionLevels = positionLevelDao.listByPositionGradeId(positionGradeIds);
+        List<PositionLevelVo> positionLevels = positionLevelDao.listByPositionGradeIds(positionGradeIds);
         if (CollectionUtils.isNotEmpty(positionLevels))
             ExceptionCast.cast(CommonCode.GRADE_USE_IN_LEVEL);
         return positionLevelDao.batchDelete(positionGradeIds);
