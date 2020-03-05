@@ -138,6 +138,78 @@ public class SmsRecordServiceImpl implements SmsRecordService {
     }
 
     @Override
+    public void sendSmsRegistCode(String phone) {
+        /**
+         * 查询注册短信验证码的配置信息
+         */
+        SmsConfig smsConfig = smsConfigService.selectRegistCodeSmsConfig();
+
+        /**
+         * 生成6位随机数字验证码
+         */
+        String smsCode = KeyUtils.getNonceCodeNumber(6);
+        List<String> params = new ArrayList<>();
+        params.add(smsCode);
+        params.add(String.valueOf(SMS_CODE_VALID_MINUTE));
+        redisClusterService.setex("REGIST_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
+
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add(phone);
+        SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,params);
+
+        //添加短信记录
+        insertSmsRecord(smsConfig,phone,params);
+    }
+
+    @Override
+    public void sendSmsWechatBindCode(String phone) {
+        /**
+         * 查询微信绑定短信验证码的配置信息
+         */
+        SmsConfig smsConfig = smsConfigService.selectWechatBindCodeSmsConfig();
+
+        /**
+         * 生成6位随机数字验证码
+         */
+        String smsCode = KeyUtils.getNonceCodeNumber(6);
+        List<String> params = new ArrayList<>();
+        params.add(smsCode);
+        params.add(String.valueOf(SMS_CODE_VALID_MINUTE));
+        redisClusterService.setex("WECHAT_BIND_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
+
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add(phone);
+        SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,params);
+
+        //添加短信记录
+        insertSmsRecord(smsConfig,phone,params);
+    }
+
+    @Override
+    public void sendSmsForgetPasswordCode(String phone) {
+        /**
+         * 查询忘记密码短信验证码的配置信息
+         */
+        SmsConfig smsConfig = smsConfigService.selectForgetPasswordCodeSmsConfig();
+
+        /**
+         * 生成6位随机数字验证码
+         */
+        String smsCode = KeyUtils.getNonceCodeNumber(6);
+        List<String> params = new ArrayList<>();
+        params.add(smsCode);
+        params.add(String.valueOf(SMS_CODE_VALID_MINUTE));
+        redisClusterService.setex("FORGET_PASSWORD_" + phone,SMS_CODE_VALID_MINUTE * 60, smsCode);
+
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add(phone);
+        SendMessage.sendMessageMany(smsConfig.getAppId(),smsConfig.getAppKey(),smsConfig.getTemplateId(),smsConfig.getSmsSign(),phoneNumbers,params);
+
+        //添加短信记录
+        insertSmsRecord(smsConfig,phone,params);
+    }
+
+    @Override
     public void sendSmsPreLoginCode(String phone) {
         /**
          * 查询预入职手机号验证码登录短信配置信息

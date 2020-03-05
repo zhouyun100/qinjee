@@ -25,6 +25,14 @@ import java.util.List;
 @Repository
 public interface CompanyRegistDao {
 
+
+    /**
+     * 根据手机号查询注册的企业数量
+     * @param phone
+     * @return
+     */
+    Integer searchRegistCompanyCountByPhone(String phone);
+
     int addCompany(CompanyInfo companyInfo);
 
     int addUserInfo(UserInfo userInfo);

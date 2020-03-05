@@ -50,10 +50,17 @@
     <result column="sort" jdbcType="INTEGER" property="sort" />
   </resultMap>
 
+    <!-- 根据手机号查询注册的企业数量 -->
+    <select id="searchRegistCompanyCountByPhone"  resultType="java.lang.Integer">
+        select count(1) from t_user_info ui,t_company_info ci
+        where ui.phone = #{phone,jdbcType=VARCHAR}
+        and ui.user_id = ci.regist_user_id
+    </select>
+
   <!-- 新增企业 -->
   <insert id="addCompany" keyColumn="company_id" keyProperty="companyId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo">
-      INSERT INTO t_company_info (company_name, user_number, valid_end_date)
-      VALUES (#{companyName}, #{userNumber}, #{validEndDate});
+      INSERT INTO t_company_info (company_name, company_type, user_number, valid_end_date)
+      VALUES (#{companyName}, #{companyType}, #{userNumber}, #{validEndDate})
   </insert>
 
   <!-- 新增登录用户 -->

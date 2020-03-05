@@ -81,7 +81,6 @@
     and t_user_company.company_id = t_company_info.company_id
     and t_user_info.user_id = t_user_archive.user_id
     and t_user_company.company_id = t_user_archive.company_id
-    and t_user_company.is_enable = 1
     and t_company_info.is_enable = 1
     and t_user_archive.is_delete = 0
   </select>
@@ -89,6 +88,25 @@
   <update id="updateUserPasswordByUserIdAndPassword" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO">
     update t_user_info set password = #{newPassword,jdbcType=VARCHAR}
     where user_id = #{userId,jdbcType=INTEGER} and password = #{password,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateUserPasswordByUserId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO">
+    update t_user_info set password = #{newPassword,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateUserWechatBindByPhone" parameterType="com.qinjee.masterdata.model.vo.userinfo.WechatBindParamVO">
+    update t_user_info set
+    nickname = #{nickname,jdbcType=VARCHAR},
+    sex = #{sex,jdbcType=VARCHAR},
+    province = #{province,jdbcType=VARCHAR},
+    city = #{city,jdbcType=VARCHAR},
+    country = #{country,jdbcType=VARCHAR},
+    headimgurl = #{headimgurl,jdbcType=VARCHAR},
+    privilege = #{privilege,jdbcType=VARCHAR},
+    open_id = #{openId,jdbcType=VARCHAR},
+    union_id = #{unionid,jdbcType=VARCHAR}
+    where phone = #{phone,jdbcType=INTEGER}
   </update>
 
   <!-- 各数据库取当前时间的函数不一致，故由java代码生成当前系统时间传入 -->

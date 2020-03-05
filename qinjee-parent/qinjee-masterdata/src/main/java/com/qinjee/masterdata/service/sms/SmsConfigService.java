@@ -24,6 +24,24 @@ public interface SmsConfigService {
      */
     SmsConfig selectLoginCodeSmsConfig();
 
+    /**
+     * 查询手机号验证码注册短信配置信息
+     * @return
+     */
+    SmsConfig selectRegistCodeSmsConfig();
+
+    /**
+     * 查询手机号验证码微信绑定短信配置信息
+     * @return
+     */
+    SmsConfig selectWechatBindCodeSmsConfig();
+
+    /**
+     * 查询手机号验证码忘记密码短信配置信息
+     * @return
+     */
+    SmsConfig selectForgetPasswordCodeSmsConfig();
+
 
     /**
      * 查询预入职短信配置信息
