@@ -94,7 +94,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      * @return
      */
     @Override
-    public List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds) {
+    public List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds,UserSession userSession) {
         ArrayList<PreRegistVo> preRegistList = new ArrayList<>();
         for (Integer employmentId : employmentIds) {
             //组装成一个大的对象用来封装所有页面需要的信息
@@ -128,6 +128,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    ExceptionCast.cast(CommonCode.SERVER_ERROR);
                 }
             });
 

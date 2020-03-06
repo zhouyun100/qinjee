@@ -72,5 +72,5 @@ public interface IStaffPreEmploymentService {
 
     PageResult<PreEmploymentVo> searchByHead(UserSession userSession, Integer currentPage, Integer pageSize, List<FieldValueForSearch> list);
 
-    List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds) throws IllegalAccessException;
+    List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds,UserSession userSession) ;
 }
