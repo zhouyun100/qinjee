@@ -17,6 +17,15 @@
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
     </resultMap>
+
+    <resultMap id="UserCompanyMap" type="com.qinjee.masterdata.model.entity.CompanyInfo">
+        <id column="company_id" jdbcType="INTEGER" property="companyId" />
+        <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+        <result column="company_type" jdbcType="VARCHAR" property="companyType" />
+        <result column="user_number" jdbcType="INTEGER" property="userNumber" />
+        <result column="is_enable" jdbcType="INTEGER" property="isEnable" />
+    </resultMap>
+
     <sql id="Base_Column_List">
         user_id,phone ,user_name,email
     </sql>
@@ -62,5 +71,22 @@
 
     <update id="update">
         update t_user_info set email  =#{email} where user_id =#{userId}
+    </update>
+
+    <!-- 根据userID查询企业列表 -->
+    <select id="selectCompanyListByUserId" resultMap="UserCompanyMap">
+        select ci.company_id,ci.company_name,ci.company_type,ci.user_number,uc.is_enable
+        from t_user_company uc,t_company_info ci
+        where uc.user_id = #{userId}
+        and uc.company_id = ci.company_id
+        and uc.is_delete = 0
+    </select>
+
+    <update id="setUserCompanyDefaultLogin">
+        update t_user_company set is_enable = 1 where user_id = #{userId} and company_id = #{companyId} and is_delete = 0
+    </update>
+
+    <update id="setUserCompanyNoneDefaultLogin">
+        update t_user_company set is_enable = 0 where user_id = #{userId} and company_id != #{companyId} and is_delete = 0
     </update>
 </mapper>

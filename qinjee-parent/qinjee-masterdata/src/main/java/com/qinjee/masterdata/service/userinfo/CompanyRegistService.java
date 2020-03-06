@@ -10,6 +10,7 @@
  */
 package com.qinjee.masterdata.service.userinfo;
 
+import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.userinfo.CompanyRegistParamVO;
 
 import java.util.Date;
@@ -31,5 +32,5 @@ public interface CompanyRegistService {
      * 注册企业
      * @param companyRegistParamVO
      */
-    void registCompany(CompanyRegistParamVO companyRegistParamVO);
+    UserInfoVO registCompany(CompanyRegistParamVO companyRegistParamVO);
 }

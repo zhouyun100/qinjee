@@ -12,10 +12,12 @@ package com.qinjee.masterdata.service.userinfo.impl;
 
 import com.qinjee.masterdata.dao.userinfo.CompanyRegistDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
 import com.qinjee.masterdata.model.vo.userinfo.CompanyRegistParamVO;
 import com.qinjee.masterdata.service.userinfo.CompanyRegistService;
+import com.qinjee.masterdata.service.userinfo.UserInfoService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.utils.MD5Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +47,9 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
     @Autowired
     private UserLoginService userLoginService;
 
+    @Autowired
+    private UserInfoService userInfoService;
+
     @Override
     public Integer searchRegistCompanyCountByPhone(String phone) {
         return companyRegistDao.searchRegistCompanyCountByPhone(phone);
@@ -52,9 +57,9 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void registCompany(CompanyRegistParamVO companyRegistParamVO) {
+    public UserInfoVO registCompany(CompanyRegistParamVO companyRegistParamVO) {
 
-        logger.info("REGIST START!");
+        UserInfoVO userInfoVO = null;
 
         //添加企业信息
         CompanyInfo companyInfo = new CompanyInfo();
@@ -205,8 +210,10 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
 
                 }
             }
+            userInfoService.changeCompany(userId,companyId);
+            userInfoVO = userLoginService.searchUserInfoByUserIdAndCompanyId(userId,companyId);
         }
-        logger.info("REGIST FINISHED!");
+        return userInfoVO;
     }
 
     /**
