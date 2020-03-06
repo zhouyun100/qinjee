@@ -377,9 +377,13 @@ public class OrganizationController extends BaseController {
     }
 
 
+    /**
+     * 如果划转机构前后  单位发生了变化，则人员的单位要修改
+     * @param paramMap
+     * @return
+     */
     @ApiOperation(value = "ok，划转机构,参数demo  {\"orgIds\":[1001,1002],\"targetOrgId\":1003}")
     @PostMapping("/transferOrganization")
-    //TODO 还需要将人员进行划转
     public ResponseResult transferOrganization(@RequestBody Map<String, Object> paramMap) {
         //校验参数
         if (checkParam(paramMap, getUserSession())) {

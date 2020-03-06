@@ -1708,6 +1708,16 @@
         </if>
         limit 1
     </select>
+
+    <update id="batchUpdateBusunessUnitId">
+        update t_user_archive set business_unit_id =#{targetBusunessUnitId}
+        where is_delete =0 and  org_id in
+        <foreach collection="orgIds" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+
+    </update>
+
     <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         SELECT
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
