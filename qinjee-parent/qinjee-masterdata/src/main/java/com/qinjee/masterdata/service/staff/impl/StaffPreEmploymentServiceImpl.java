@@ -464,14 +464,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
 
-    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
-        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
-        if (null == userArchive.getEmployeeNumber() || "".equals(userArchive.getEmployeeNumber())) {
-            userArchive.setEmployeeNumber(empNumber);
-        } else {
-            List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
-            if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId()))) {
-                userArchive.setEmployeeNumber(userArchive.getEmployeeNumber());
+
     @Override
     public PageResult<PreEmploymentVo> searchByHead(UserSession userSession, Integer currentPage, Integer pageSize, List<FieldValueForSearch> list) {
         PageHelper.startPage(currentPage,pageSize);
