@@ -511,7 +511,7 @@ public class StaffArchiveController extends BaseController {
     /**
      * 自定义表头查询数据（档案）
      */
-    @RequestMapping(value = "/selectArchiveByHead", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchiveByHead", method = RequestMethod.POST)
     @ApiOperation(value = "自定义表头查询数据（档案）", notes = "hkt")
     public ResponseResult<PageResult<UserArchiveVo>> selectArchiveByHead(@RequestBody List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage) {
         Boolean b = checkParam(getUserSession (),fieldValueForSearch,pageSize,currentPage);

@@ -44,8 +44,7 @@ public class DealHeadParamUtil {
 
     private static String getIntSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-            if (fieldValueForSearch.getFieldValue() instanceof List) {
-                List fieldValue = (List) fieldValueForSearch.getFieldValue();
+                List fieldValue = fieldValueForSearch.getFieldValue();
                if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(fieldValue.get(0)).append("and");
                }
@@ -53,15 +52,11 @@ public class DealHeadParamUtil {
                     stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(fieldValue.get(1)).append("and");
                 }
                 return stringBuffer.toString();
-            } else {
-                ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
-            }
         }
         return null;
     }
     private static String getCodeSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-            if (fieldValueForSearch.getFieldValue() instanceof List) {
                 List fieldValue = (List) fieldValueForSearch.getFieldValue();
                 stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("in (");
                 for (Object o : fieldValue) {
@@ -72,28 +67,20 @@ public class DealHeadParamUtil {
                         }
                     }
                 stringBuffer.append(") and");
-                }
                 return stringBuffer.toString();
-            } else {
-                ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
-            }
-        return null;
+                }
+           return null;
     }
     private static String getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-            if (fieldValueForSearch.getFieldValue() instanceof String) {
-               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("like %").append(fieldValueForSearch.getFieldValue()).append("% and");
+               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("like %").append(fieldValueForSearch.getFieldValue().get(0)).append("% and");
                 return stringBuffer.toString();
-            } else {
-                ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
-            }
         }
         return null;
     }
     private static String getDateSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-            if (fieldValueForSearch.getFieldValue() instanceof List) {
-                List fieldValue = (List) fieldValueForSearch.getFieldValue();
+                List fieldValue = fieldValueForSearch.getFieldValue();
                 if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
                     String date1 = isDate(String.valueOf(fieldValue.get(0)));
                     if(date1!=null) {
@@ -111,9 +98,6 @@ public class DealHeadParamUtil {
                     }
                 }
                 return stringBuffer.toString();
-            } else {
-                ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
-            }
         }
         return null;
     }
@@ -143,4 +127,6 @@ public class DealHeadParamUtil {
             return null;
         }
     }
+
+
 }
