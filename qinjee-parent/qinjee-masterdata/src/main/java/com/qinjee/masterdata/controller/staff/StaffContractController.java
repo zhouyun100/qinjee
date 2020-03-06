@@ -381,7 +381,18 @@ public class StaffContractController extends BaseController {
         return  failResponseResult("参数错误");
 
     }
+    @RequestMapping(value = "/insertMessqge", method = RequestMethod.POST)
+    @ApiOperation(value = "添加续签信息", notes = "hkt")
+    //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "续签反馈表", paramType = "form", required = true)
+    public ResponseResult insertMessqge(@RequestBody @Valid InsertRenewContractMessage insertRenewContractMessage) {
+        Boolean b = checkParam(insertRenewContractMessage);
+        if(b){
+            staffContractService.insertMessqge(insertRenewContractMessage);
+            return ResponseResult.SUCCESS();
+        }
+        return  failResponseResult("参数错误");
 
+    }
     /**
      * 展示我的续签意向
      */
@@ -393,6 +404,20 @@ public class StaffContractController extends BaseController {
         if(b){
                 List<ContractRenewalIntention> list = staffContractService.selectContractRenewalIntention(id);
                     return new ResponseResult<>(list,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 劳动合同到期续签通知书
+     */
+    @RequestMapping(value = "/getRenewalContract", method = RequestMethod.GET)
+    @ApiOperation(value = "劳动合同到期续签通知书", notes = "hkt")
+//    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
+    public ResponseResult<List<RenewIntionAboutUser>> getRenewalContract() {
+        Boolean b = checkParam(getUserSession());
+        if(b){
+            List<RenewIntionAboutUser> list = staffContractService.getRenewalContract(getUserSession().getArchiveId());
+            return new ResponseResult<>(list,CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
@@ -424,7 +449,6 @@ public class StaffContractController extends BaseController {
                 return ResponseResult.SUCCESS();
         }
         return  failResponseResult("参数错误");
-
     }
 
     /**

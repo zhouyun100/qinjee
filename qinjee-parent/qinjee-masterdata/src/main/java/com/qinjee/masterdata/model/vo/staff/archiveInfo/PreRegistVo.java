@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.staff.pre;
+package com.qinjee.masterdata.model.vo.staff.archiveInfo;
 
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.*;

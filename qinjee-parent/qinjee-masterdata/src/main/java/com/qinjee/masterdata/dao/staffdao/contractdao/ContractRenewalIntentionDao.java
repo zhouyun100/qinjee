@@ -2,6 +2,7 @@ package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.vo.staff.ContractRenewalIntentionVo;
+import com.qinjee.masterdata.model.vo.staff.RenewIntionAboutUser;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -31,4 +32,6 @@ public interface ContractRenewalIntentionDao {
     List<ContractRenewalIntention> selectByorgId(@Param("list") List<Integer> orgId);
 
     Integer selectCountRenew(@Param("archiveId") Integer archiveId);
+
+    List<RenewIntionAboutUser> getRenewalContract(@Param("archiveId") Integer archiveId);
 }

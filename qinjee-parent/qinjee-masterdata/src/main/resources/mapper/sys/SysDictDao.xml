@@ -53,4 +53,13 @@
       where dict_type =#{dictType}
      and is_delete = 0 ORDER BY id
     </select>
+
+  <select id="selectByCode" resultType="string">
+    select
+    dict_value
+    from t_sys_dict
+    where
+    dict_code = #{code,jdbcType=VARCHAR}
+    and is_delete = 0 limit 1
+  </select>
 </mapper>

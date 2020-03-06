@@ -13,18 +13,21 @@ import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.EducationExperienceVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.FamilyMemberAndSocialRelationsVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.WorkExperienceVo;
-import com.qinjee.masterdata.model.vo.staff.pre.PreRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
+import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
+import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -78,6 +81,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Autowired
     private IStaffCommonService staffCommonService;
     @Autowired
+    private SysDictDao sysDictDao;
+    @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
 
 
@@ -109,48 +114,19 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     List<Map<String, String>> customDataList = getCustomDataByTableIdAndEmploymentId(employmentId, tableId);
                     //3.将resMapList填充到preRegistVo中对应得属性中
                     if ("教育经历".equals(tableName)) {
-                        List<EducationExperienceVo> educationExperienceList = new ArrayList<>();
-                        for (Map<String, String> item : customDataList) {
-                            EducationExperienceVo educationExperienceVo = new EducationExperienceVo();
-                            educationExperienceVo.setDegree(item.get("学位"));
-                            educationExperienceVo.setEducationBackground(item.get("学历"));
-                            educationExperienceVo.setGraduateDate(item.get("毕业时间"));
-                            educationExperienceVo.setGraduateSchool(item.get("毕业学校"));
-                            educationExperienceVo.setMajor(item.get("专业"));
-                            educationExperienceVo.setStartSchoolDate(item.get("入学时间"));
-                            educationExperienceList.add(educationExperienceVo);
-                        }
+                        //转化为对象vo
+                        List<EducationExperienceVo> educationExperienceList = new TransCustomFieldMapHelper<EducationExperienceVo>().transToObeject(customDataList, EducationExperienceVo.class,sysDictDao);
                         preRegistVo.setEducationExperienceList(educationExperienceList);
                     }
                     if ("工作经历".equals(tableName)) {
-                        List<WorkExperienceVo> workExperienceList = new ArrayList<>();
-                        for (Map<String, String> item : customDataList) {
-                            WorkExperienceVo workExperienceVo = new WorkExperienceVo();
-                            workExperienceVo.setStartDate(item.get("起始时间"));
-                            workExperienceVo.setBusinessUnitName(item.get("所在单位"));
-                            workExperienceVo.setEndDate(item.get("终止时间"));
-                            workExperienceVo.setPostName(item.get("所在岗位"));
-                            workExperienceList.add(workExperienceVo);
-                        }
+                        List<WorkExperienceVo> workExperienceList = new TransCustomFieldMapHelper<WorkExperienceVo>().transToObeject(customDataList, WorkExperienceVo.class,sysDictDao);
                         preRegistVo.setWorkExperienceList(workExperienceList);
                     }
                     if ("家庭成员".equals(tableName)) {
-                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new ArrayList<>();
-                        for (Map<String, String> item : customDataList) {
-                            FamilyMemberAndSocialRelationsVo familyMemberAndSocialRelationVo = new FamilyMemberAndSocialRelationsVo();
-                            familyMemberAndSocialRelationVo.setName(item.get("成员姓名"));
-                            familyMemberAndSocialRelationVo.setBirthDate(item.get("成员出生日期"));
-                            familyMemberAndSocialRelationVo.setBusinessUnitName(item.get("成员工作单位"));
-                            familyMemberAndSocialRelationVo.setPhone(item.get("成员电话"));
-                            familyMemberAndSocialRelationVo.setPositiionName(item.get("成员职位"));
-                            familyMemberAndSocialRelationVo.setSalutation(item.get("与本人关系"));
-                            FamilyMemberAndSocialRelationsList.add(familyMemberAndSocialRelationVo);
-                        }
+                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new TransCustomFieldMapHelper<FamilyMemberAndSocialRelationsVo>().transToObeject(customDataList, FamilyMemberAndSocialRelationsVo.class,sysDictDao);
                         preRegistVo.setFamilyMemberAndSocialRelationsList(FamilyMemberAndSocialRelationsList);
                     }
-
-
-                } catch (IllegalAccessException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
@@ -174,7 +150,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 //比较
                 for (CustomArchiveField customArchiveField : fieldList) {
                     if (customArchiveField.getFieldId().equals(key)) {
-                        resMap.put(customArchiveField.getFieldName(), value);
+                        //拼接fieldCode+textType
+                        resMap.put(customArchiveField.getFieldCode()+"@@"+customArchiveField.getTextType(), value);
                     }
                 }
             });
@@ -464,23 +441,22 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
 
-
     @Override
     public PageResult<PreEmploymentVo> searchByHead(UserSession userSession, Integer currentPage, Integer pageSize, List<FieldValueForSearch> list) {
-        PageHelper.startPage(currentPage,pageSize);
-        List<PreEmploymentVo> preEmploymentVos=
-                preEmploymentDao.searchByHead(DealHeadParamUtil.getWhereSql(list,"t_pre_employment."),userSession.getCompanyId());
+        PageHelper.startPage(currentPage, pageSize);
+        List<PreEmploymentVo> preEmploymentVos =
+                preEmploymentDao.searchByHead(DealHeadParamUtil.getWhereSql(list, "t_pre_employment."), userSession.getCompanyId());
         return new PageResult<>(preEmploymentVos);
     }
 
-    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive)  {
-        String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
-        if(null==userArchive.getEmployeeNumber ()||"".equals (userArchive.getEmployeeNumber ()  )) {
-            userArchive.setEmployeeNumber ( empNumber );
-        }else{
-            List < Integer > employnumberList = userArchiveDao.selectEmployNumberByCompanyId ( userSession.getCompanyId (), userArchive.getEmployeeNumber () );
-            if (CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size () == 1 && employnumberList.get ( 0 ).equals ( userArchive.getArchiveId () ))) {
-                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
+        String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());
+        if (null == userArchive.getEmployeeNumber() || "".equals(userArchive.getEmployeeNumber())) {
+            userArchive.setEmployeeNumber(empNumber);
+        } else {
+            List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
+            if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId()))) {
+                userArchive.setEmployeeNumber(userArchive.getEmployeeNumber());
             } else {
                 ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
             }

@@ -123,4 +123,8 @@ public interface UserArchiveDao {
     UserArchiveVo selectByPrimaryKeyAndIsDelete(@Param("integer") Integer integer);
 
     List<UserArchiveVo> selectArchiveByHead(@Param("whereSql") String whereSql, @Param("companyId") Integer companyId);
+
+    int batchUpdateBusunessUnitId(List<Integer> orgIds,Integer targetBusunessUnitId);
+
+    int moveToNewOrg(List<Integer> orgIds, Integer newOrgId);
 }

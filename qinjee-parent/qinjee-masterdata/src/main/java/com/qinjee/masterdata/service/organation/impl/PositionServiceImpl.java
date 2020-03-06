@@ -280,7 +280,7 @@ public class PositionServiceImpl implements PositionService {
         }
         //判断是否在同一级职位族下
         if (parentOrgSet.size() > 1) {
-            ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
+            ExceptionCast.cast(CommonCode.NOT_SAME_LEVEL_EXCEPTION);
         }
         positionDao.sortPosition(positionIds);
     }

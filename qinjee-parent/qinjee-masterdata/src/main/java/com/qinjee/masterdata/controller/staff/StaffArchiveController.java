@@ -487,10 +487,10 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectFieldListByqueryId", method = RequestMethod.GET)
     @ApiOperation(value = "自定义表头获取动态表头（档案需要传参）", notes = "hkt")
-    public ResponseResult<List<CustomFieldVO>> selectFieldListByqueryId(Integer queryschemaId) {
+    public ResponseResult<List<CustomFieldForHead>> selectFieldListByqueryId(Integer queryschemaId) {
         Boolean b = checkParam(getUserSession ());
         if(b){
-            List<CustomFieldVO> list=staffArchiveService. selectFieldListByqueryId(queryschemaId,getUserSession ());
+            List<CustomFieldForHead> list=staffArchiveService. selectFieldListByqueryId(queryschemaId,getUserSession ());
             return new ResponseResult <> ( list,CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
@@ -500,10 +500,10 @@ public class StaffArchiveController extends BaseController {
      */
     @RequestMapping(value = "/selectFieldListForPre", method = RequestMethod.GET)
     @ApiOperation(value = "自定义表头获取动态表头（预入职不需传参）", notes = "hkt")
-    public ResponseResult<List<CustomFieldVO>> selectFieldListForPre() {
+    public ResponseResult<List<CustomFieldForHead>> selectFieldListForPre() {
         Boolean b = checkParam(getUserSession ());
         if(b){
-            List<CustomFieldVO> list=staffArchiveService. selectFieldListForPre(getUserSession ());
+            List<CustomFieldForHead> list=staffArchiveService. selectFieldListForPre(getUserSession ());
             return new ResponseResult <> ( list,CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

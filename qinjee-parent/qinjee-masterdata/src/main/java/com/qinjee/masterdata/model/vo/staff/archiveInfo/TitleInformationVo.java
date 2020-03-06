@@ -10,7 +10,12 @@ import java.io.Serializable;
 @Data
 public class TitleInformationVo implements Serializable {
 
-    private String titleName;//职称名称
+    @CustomFieldMapAnno("title")
+    private String title;//职称名称
+
+    @CustomFieldMapAnno("title_level")
     private String titleLevel;//职称等级
+
+    @CustomFieldMapAnno("get_title_date")
     private String getTheDate;//获得日期
 }

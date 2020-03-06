@@ -177,4 +177,8 @@ public interface IStaffContractService {
    PageResult<ContractRenewalIntention> selectContractRenewalIntentionByOrg(List<Integer> orgId,Integer pageSIze,Integer currentPage);
 
     PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId,Integer companyId,Integer currentPage, Integer pageSize);
+
+    List<RenewIntionAboutUser> getRenewalContract(Integer archiveId);
+
+    void insertMessqge(InsertRenewContractMessage insertRenewContractMessage);
 }

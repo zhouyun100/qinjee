@@ -17,6 +17,10 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+  <resultMap id="renewAboutUser" type="com.qinjee.masterdata.model.vo.staff.RenewIntionAboutUser" extends="BaseResultMap">
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
+  </resultMap>
   <sql id="Base_Column_List">
     renewal_intention_id, archive_id,contract_number,intention_status,company_id, contract_begin_date, contract_end_date, contract_period_month,
     contract_period_type, is_agree, renewal_opinion, operator_id, create_time, update_time
@@ -343,5 +347,12 @@
     select count(*) from t_contract_renewal_intention
     where archive_id=#{archiveId}
     and intention_status='待确认'
+  </select>
+  <select id="getRenewalContract" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntionAboutUser" resultMap="renewAboutUser">
+    select *
+    from
+    t_contract_renewal_intention intention
+    left join t_user_archive arc on arc.archive_id = intention.archive_id and arc.is_delete=0
+    where intention.archive_id=#{archiveId}
   </select>
 </mapper>

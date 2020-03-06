@@ -301,6 +301,8 @@ public class UserArchive implements Serializable {
      * 档案状态(默认在职)
      */
     private String  archiveStatus;
+
+    private String  headImgUrl;
     /**
      * 职级id
      */

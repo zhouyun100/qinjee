@@ -5,7 +5,7 @@ import com.qinjee.masterdata.model.vo.staff.DetailCount;
 import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
-import com.qinjee.masterdata.model.vo.staff.pre.PreRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
