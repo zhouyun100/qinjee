@@ -605,7 +605,7 @@
         and func_code=#{arc} and company_id=#{companyId} and func_code=#{arc})
     </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
-       select field_id fieldId,field_code fieldCode,field_name fieldName,field_type fieldType
+       select field_id fieldId,field_code fieldCode,field_name fieldName,field_type fieldType,text_type textType
         from t_custom_archive_field
         where is_delete=0
         and table_id =#{tableId}

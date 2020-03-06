@@ -46,4 +46,7 @@ public interface SysDictDao {
     String searchCodeByTypeAndValue(@Param("dictType") String dictType, @Param("dictValue") String dictValue);
 
     List<SysDict> selectMoreDict(@Param("dictType") String dictType);
+
+    String selectByCode(@Param("code") String code);
 }
+

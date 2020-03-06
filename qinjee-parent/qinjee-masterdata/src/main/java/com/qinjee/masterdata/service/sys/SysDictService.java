@@ -39,4 +39,5 @@ public interface SysDictService {
     String searchCodeByTypeAndValue(String dictType,String dictValue);
 
     Map<String, List<SysDict>> selectMoreDict(List<String> dictCodeList);
+
 }

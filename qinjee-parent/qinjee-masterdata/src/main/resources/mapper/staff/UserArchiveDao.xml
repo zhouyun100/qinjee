@@ -1718,6 +1718,14 @@
         </foreach>
 
     </update>
+    <update id="moveToNewOrg">
+      update t_user_archive set org_id =#{newOrgId}
+      where is_delete =0 and org_id in
+      <foreach collection="orgIds" item="id" separator="," open="(" close=")">
+          #{id}
+      </foreach>
+
+    </update>
 
     <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         SELECT

@@ -290,7 +290,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         }
         //判断是否在同一级机构下
         if (parentPostSet.size() > 1) {
-            ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
+            ExceptionCast.cast(CommonCode.NOT_SAME_LEVEL_EXCEPTION);
         }
         postDao.sortPorts(postIds);
     }
