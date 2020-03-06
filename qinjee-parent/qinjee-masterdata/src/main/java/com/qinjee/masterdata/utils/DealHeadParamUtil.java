@@ -14,29 +14,27 @@ public class DealHeadParamUtil {
     public static String getWhereSql(List<FieldValueForSearch> tableSelectParam,String nickName){
         StringBuffer stringBuffer=new StringBuffer();
         if(CollectionUtils.isNotEmpty(tableSelectParam)){
-            stringBuffer.append("and");
+            stringBuffer.append("and ");
             for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
                 if("int".equals(fieldValueForSearch.getFieldType())){
                     //进行数字类型的处理
-                    String intSql = getIntSql(fieldValueForSearch,stringBuffer,nickName);
-                    stringBuffer.append(intSql);
+                     getIntSql(fieldValueForSearch,stringBuffer,nickName);
+
                 }else if("code".equals(fieldValueForSearch.getFieldType())){
                     //进行代码类型的处理
-                    String codeSql = getCodeSql(fieldValueForSearch,stringBuffer,nickName);
-                    stringBuffer.append(codeSql);
+                   getCodeSql(fieldValueForSearch,stringBuffer,nickName);
+
                 }else if("string".equals(fieldValueForSearch.getFieldType())){
                     //进行字符串类型的处理
-                    String stringSql = getStringSql(fieldValueForSearch,stringBuffer,nickName);
-                    stringBuffer.append(stringSql);
+                   getStringSql(fieldValueForSearch,stringBuffer,nickName);
                 }else if("date".equals(fieldValueForSearch.getFieldType())){
                     //进行日期类型的处理
-                    String dateSql = getDateSql(fieldValueForSearch,stringBuffer,nickName);
-                    stringBuffer.append(dateSql);
+                     getDateSql(fieldValueForSearch,stringBuffer,nickName);
                 }
             }
             String string = stringBuffer.toString();
             int and = string.lastIndexOf("and");
-            String substring = string.substring(0, and + 1);
+            String substring = string.substring(0, and );
             return substring+getOrdersql(tableSelectParam);
         }
         return null;
@@ -73,7 +71,7 @@ public class DealHeadParamUtil {
     }
     private static String getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("like %").append(fieldValueForSearch.getFieldValue().get(0)).append("% and");
+               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" like ").append( "'%").append(fieldValueForSearch.getFieldValue().get(0)).append( "%'").append(" and");
                 return stringBuffer.toString();
         }
         return null;
@@ -103,7 +101,6 @@ public class DealHeadParamUtil {
     }
     private static String getOrdersql(List<FieldValueForSearch> tableSelectParam){
         StringBuffer stringBuffer=new StringBuffer();
-        stringBuffer.append("order by");
         for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
             if(StringUtils.isNotBlank(fieldValueForSearch.getOrderBy())){
                 stringBuffer.append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy()));

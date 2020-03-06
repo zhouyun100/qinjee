@@ -137,6 +137,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void insertCustomArchiveField(CustomArchiveField customArchiveField, UserSession userSession) {
         customArchiveField.setCreatorId ( userSession.getArchiveId () );
         customArchiveField.setIsDelete ( ( short ) 0 );
+        //这个dao层方法需要重新编写
         customTableFieldDao.insertSelective ( customArchiveField );
     }
 

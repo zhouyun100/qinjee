@@ -319,6 +319,19 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return contractRenewalIntentionDao.selectByArchiveId ( id );
 
     }
+    @Override
+    public List<RenewIntionAboutUser> getRenewalContract(Integer archiveId) {
+        return contractRenewalIntentionDao.getRenewalContract ( archiveId);
+    }
+
+    @Override
+    public void insertMessqge(InsertRenewContractMessage insertRenewContractMessage) {
+        ContractRenewalIntention contractRenewalIntention=new ContractRenewalIntention();
+        contractRenewalIntention.setRenewalIntentionId(insertRenewContractMessage.getId());
+        contractRenewalIntention.setRenewalOpinion(insertRenewContractMessage.getMessage());
+        contractRenewalIntention.setUpdateTime(new Date());
+        contractRenewalIntentionDao.updateByPrimaryKeySelective(contractRenewalIntention);
+    }
 
     @Override
     public void agreeRenew(Integer xuqianId) {
@@ -365,6 +378,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
         List < ContractWithArchiveVo > list =  laborContractDao.selectAboutToExpireContracts(orgIds,companyId);
         return new PageResult <> ( list );
     }
+
+
 
     private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state,String contractNumber)  {
         //新增合同

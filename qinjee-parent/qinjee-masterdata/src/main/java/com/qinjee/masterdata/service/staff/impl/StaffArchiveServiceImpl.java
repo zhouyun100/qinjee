@@ -606,12 +606,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public List<CustomFieldVO> selectFieldListByqueryId(Integer queryschemaId, UserSession userSession) {
-        List<CustomFieldVO> customFieldVOS=null;
+    public List<CustomFieldForHead> selectFieldListByqueryId(Integer queryschemaId, UserSession userSession) {
+        List<CustomFieldForHead> customFieldVOS=null;
         if(queryschemaId!=null && !queryschemaId.equals(0) ){
             List<Integer> integers = querySchemeFieldDao.selectFieldIdWithSort(queryschemaId);
             if(!CollectionUtils.isEmpty(integers)) {
-                customFieldVOS = customTableFieldDao.searchCustomFieldListByFieldIdList(integers);
+                customFieldVOS = customTableFieldDao.searchCustomFieldForHeadListByFieldIdList(integers);
             }else{
                 ExceptionCast.cast(CommonCode.PLAN_IS_MISTAKE);
             }
@@ -621,7 +621,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             List<String> strings = Arrays.asList(codeList);
              customFieldVOS=customTableFieldDao.selectFieldIdListByCodeList(strings,userSession.getCompanyId(),"ARC");
         }
-        for (CustomFieldVO customFieldVO : customFieldVOS) {
+        for (CustomFieldForHead customFieldVO : customFieldVOS) {
             if("code".equals(customFieldVO.getTextType())){
                 customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
             }
@@ -630,10 +630,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public List<CustomFieldVO> selectFieldListForPre(UserSession userSession) {
+    public List<CustomFieldForHead> selectFieldListForPre(UserSession userSession) {
         List<String> headsForPre = HeadMapUtil.getHeadsForPre();
-        List<CustomFieldVO> customFieldVOS=customTableFieldDao.selectFieldCodeByNameListAndFuncCodeAndCompanyId(headsForPre,"PRE",userSession.getCompanyId());
-        for (CustomFieldVO customFieldVO : customFieldVOS) {
+        List<CustomFieldForHead> customFieldVOS=customTableFieldDao.selectFieldCodeByNameListAndFuncCodeAndCompanyId(headsForPre,"PRE",userSession.getCompanyId());
+        for (CustomFieldForHead customFieldVO : customFieldVOS) {
             if("code".equals(customFieldVO.getTextType())){
                 customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
             }

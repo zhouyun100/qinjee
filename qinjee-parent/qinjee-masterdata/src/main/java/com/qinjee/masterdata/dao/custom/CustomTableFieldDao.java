@@ -14,6 +14,7 @@ import com.qinjee.masterdata.model.entity.CustomArchiveField;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomGroupVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
+import com.qinjee.masterdata.model.vo.staff.CustomFieldForHead;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -313,9 +314,11 @@ public interface CustomTableFieldDao {
 
     Integer selectFieldIdByFieldIdAndFunccode(@Param("key") Integer key, @Param("companyId") Integer companyId);
 
-    List<CustomFieldVO> selectFieldIdListByCodeList(@Param("strings") List<String> strings, @Param("companyId") Integer companyId, @Param("arc") String arc);
+    List<CustomFieldForHead> selectFieldIdListByCodeList(@Param("strings") List<String> strings, @Param("companyId") Integer companyId, @Param("arc") String arc);
 
-    List<CustomFieldVO> selectFieldCodeByNameListAndFuncCodeAndCompanyId(@Param("headsForPre") List<String> headsForPre, @Param("pre") String pre, @Param("companyId") Integer companyId);
+    List<CustomFieldForHead> selectFieldCodeByNameListAndFuncCodeAndCompanyId(@Param("headsForPre") List<String> headsForPre, @Param("pre") String pre, @Param("companyId") Integer companyId);
+
+    List<CustomFieldForHead> searchCustomFieldForHeadListByFieldIdList(@Param("integers") List<Integer> integers);
 }
 
 
