@@ -24,6 +24,7 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -471,6 +472,22 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             List<Integer> employnumberList = userArchiveDao.selectEmployNumberByCompanyId(userSession.getCompanyId(), userArchive.getEmployeeNumber());
             if (CollectionUtils.isEmpty(employnumberList) || (employnumberList.size() == 1 && employnumberList.get(0).equals(userArchive.getArchiveId()))) {
                 userArchive.setEmployeeNumber(userArchive.getEmployeeNumber());
+    @Override
+    public PageResult<PreEmploymentVo> searchByHead(UserSession userSession, Integer currentPage, Integer pageSize, List<FieldValueForSearch> list) {
+        PageHelper.startPage(currentPage,pageSize);
+        List<PreEmploymentVo> preEmploymentVos=
+                preEmploymentDao.searchByHead(DealHeadParamUtil.getWhereSql(list,"t_pre_employment."),userSession.getCompanyId());
+        return new PageResult<>(preEmploymentVos);
+    }
+
+    private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive)  {
+        String empNumber = employeeNumberRuleService.createEmpNumber ( userSession.getCompanyId () );
+        if(null==userArchive.getEmployeeNumber ()||"".equals (userArchive.getEmployeeNumber ()  )) {
+            userArchive.setEmployeeNumber ( empNumber );
+        }else{
+            List < Integer > employnumberList = userArchiveDao.selectEmployNumberByCompanyId ( userSession.getCompanyId (), userArchive.getEmployeeNumber () );
+            if (CollectionUtils.isEmpty ( employnumberList ) || (employnumberList.size () == 1 && employnumberList.get ( 0 ).equals ( userArchive.getArchiveId () ))) {
+                userArchive.setEmployeeNumber ( userArchive.getEmployeeNumber () );
             } else {
                 ExceptionCast.cast(CommonCode.EMPLOYEENUMBER_IS_EXIST);
             }

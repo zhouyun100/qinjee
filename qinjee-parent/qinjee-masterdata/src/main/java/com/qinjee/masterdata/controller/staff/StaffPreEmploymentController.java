@@ -4,6 +4,7 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.DetailCount;
+import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.model.vo.staff.pre.PreRegistVo;
@@ -229,6 +230,26 @@ public class StaffPreEmploymentController extends BaseController {
         if (b) {
             DetailCount detailCount=staffPreEmploymentService.getReadyCount ( getUserSession ());
             return new ResponseResult<>(detailCount,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 预入职表头查询
+     */
+    @RequestMapping(value = "/searchByHead", method = RequestMethod.POST)
+    @ApiOperation(value = "预入职表头查询", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
+//
+//    })
+    public ResponseResult<PageResult<PreEmploymentVo>> searchByHead(Integer currentPage, Integer pageSize, List<FieldValueForSearch> list){
+        Boolean b = checkParam(getUserSession (),currentPage,pageSize,list);
+        if(b){
+            PageResult<PreEmploymentVo> pageResult =
+                    staffPreEmploymentService.searchByHead(getUserSession (),currentPage, pageSize,list);
+            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }

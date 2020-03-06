@@ -1708,38 +1708,6 @@
         </if>
         limit 1
     </select>
-    <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-        select *
-        from t_user_archive
-        where is_delete=0
-        and company_id=#{companyId}
-        and (id_number=#{idnumber}or employee_number=#{idnumber})
-    </select>
-    <select id="selectNoConArcByIdList" resultType="com.qinjee.masterdata.model.vo.staff.export.NoConArc" resultMap="noconarc">
-        SELECT
-        arc.archive_id,
-        arc.user_name,
-        arc.employee_number,
-        org.org_name as business_unit_name,
-        orga.org_name as org_name ,
-        post.post_name as post_name ,
-        arc.hire_date as hire_date,
-        arc.probation_period as probation_period,
-        arch.user_name as supervisor_user_name,
-        userCategory.dict_value as user_category
-        FROM
-        t_user_archive arc
-        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-        left join t_organization org on org.org_id=arc.business_unit_id
-        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-        where arc.archive_id in
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        and arc.is_delete=0
-    </select>
     <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         SELECT
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
@@ -1788,7 +1756,41 @@
         left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
         where arc.is_delete=0 and orga.company_id=#{companyId}
         and arc.archive_status='SERVICE'
-        ${whereSql}
+        <if test="whereSql!=null">
+            ${whereSql}
+        </if>
+    </select>
+    <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+        select *
+        from t_user_archive
+        where is_delete=0
+        and company_id=#{companyId}
+        and (id_number=#{idnumber}or employee_number=#{idnumber})
+    </select>
+    <select id="selectNoConArcByIdList" resultType="com.qinjee.masterdata.model.vo.staff.export.NoConArc" resultMap="noconarc">
+        SELECT
+        arc.archive_id,
+        arc.user_name,
+        arc.employee_number,
+        org.org_name as business_unit_name,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        arc.hire_date as hire_date,
+        arc.probation_period as probation_period,
+        arch.user_name as supervisor_user_name,
+        userCategory.dict_value as user_category
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+        where arc.archive_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and arc.is_delete=0
     </select>
 </mapper>
 

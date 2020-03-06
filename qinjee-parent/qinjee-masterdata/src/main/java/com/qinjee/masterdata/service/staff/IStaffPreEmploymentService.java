@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.staff.DetailCount;
+import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
 import com.qinjee.masterdata.model.vo.staff.pre.PreRegistVo;
@@ -68,6 +69,8 @@ public interface IStaffPreEmploymentService {
     void confirmEmployment(List<Integer> list,UserSession userSession) throws Exception;
 
     DetailCount getReadyCount(UserSession userSession);
+
+    PageResult<PreEmploymentVo> searchByHead(UserSession userSession, Integer currentPage, Integer pageSize, List<FieldValueForSearch> list);
 
     List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds) throws IllegalAccessException;
 }

@@ -419,7 +419,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             for (CustomGroupVO groupVO : customGroupList) {
 
                 List<CustomFieldVO> fieldList = customFieldList.stream().filter(customFieldVO -> {
-                    if (customFieldVO.getGroupId().equals(groupVO.getGroupId())) {
+                    if (customFieldVO.getGroupId()!=null &&customFieldVO.getGroupId().equals(groupVO.getGroupId())) {
                         return true;
                     } else {
                         return false;

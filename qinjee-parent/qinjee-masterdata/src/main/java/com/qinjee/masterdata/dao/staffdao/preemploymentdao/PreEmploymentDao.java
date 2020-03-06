@@ -76,4 +76,6 @@ public interface PreEmploymentDao {
     PreEmployment selectemploymentRegisterByPreId(@Param("preId") Integer preId, @Param("companyId") Integer companyId);
 
     Integer selectReadyCount(@Param("archiveId") String archiveId, @Param("companyId") Integer companyId);
+
+    List<PreEmploymentVo> searchByHead(@Param("whereSql") String whereSql, @Param("companyId") Integer companyId);
 }
