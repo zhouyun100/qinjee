@@ -6,6 +6,8 @@ import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,13 @@ import java.util.Map;
  */
 public interface IStaffCommonService {
 
+    /**
+     * <String,String>  key是fieldCode拼接textType，value是值
+     * @param id 业务id
+     * @param tableId
+     * @return
+     */
+     List<Map<String, String>> getCustomDataByTableIdAndEmploymentId(Integer id, Integer tableId) throws IllegalAccessException;
     /**
      * 新增自定义表
      * @param customArchiveTable

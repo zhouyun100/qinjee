@@ -77,6 +77,30 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
 
+    public List<Map<String, String>> getCustomDataByTableIdAndEmploymentId(Integer employmentId, Integer tableId) throws IllegalAccessException {
+        //存放结果
+        List<Map<String, String>> resMapList = new ArrayList<>();
+        List<Map<Integer, String>> customDataList = selectValue(tableId, employmentId);
+        //根据表id查到  <fieldId,fieldName>
+        List<CustomArchiveField> fieldList = customTableFieldDao.selectFieldByTableId(tableId);
+        //遍历自定义表的大数据字段集合
+        for (Map<Integer, String> customDataMap : customDataList) {
+
+            Map<String, String> resMap = new HashMap<>();
+            customDataMap.forEach((key, value) -> {
+                //比较
+                for (CustomArchiveField customArchiveField : fieldList) {
+                    if (customArchiveField.getFieldId().equals(key)) {
+                        //拼接fieldCode+textType
+                        resMap.put(customArchiveField.getFieldCode()+"@@"+customArchiveField.getTextType(), value);
+                    }
+                }
+            });
+            resMapList.add(resMap);
+        }
+        return resMapList;
+    }
+
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable, UserSession userSession) {
         customArchiveTable.setCompanyId ( userSession.getCompanyId () );

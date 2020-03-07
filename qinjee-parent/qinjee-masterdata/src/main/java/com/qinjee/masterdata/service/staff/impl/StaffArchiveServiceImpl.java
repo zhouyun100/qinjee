@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
@@ -14,16 +15,20 @@ import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
+import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -83,6 +88,52 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private IEmployeeNumberRuleService employeeNumberRuleService;
     @Autowired
     private SysDictDao sysDictDao;
+    @Autowired
+    private IStaffCommonService staffCommonService;
+
+    @Override
+    public List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) {
+        ArrayList<ArchiveRegistVo> archiveRegistList = new ArrayList<>();
+        for (Integer archiveId : archiveIds) {
+            //组装成一个大的对象用来封装所有页面需要的信息
+            ArchiveRegistVo archiveRegistVo = new ArchiveRegistVo();
+            //查询预入职档案基本信息
+            UserArchiveVo userArchiveVo =userArchiveDao.selectByPrimaryKey(archiveId);
+            archiveRegistVo.setUserArchiveVo(userArchiveVo);
+            //--------------
+            //获取自定义相关数据  （教育经历、工作经历、家庭成员）
+            ArrayList<String> tableNames = Lists.newArrayList("教育经历", "工作经历", "家庭成员","职称信息");
+            tableNames.stream().forEach(tableName -> {
+                //1.获取表id
+                Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, userSession.getCompanyId(), "ARC");
+                //2.根据表id拿到 自定义集合  List<Map<String,String>>，key为fieldName，value为字段值
+                try {
+                    List<Map<String, String>> customDataList = staffCommonService.getCustomDataByTableIdAndEmploymentId(archiveId, tableId);
+                    //3.将resMapList填充到preRegistVo中对应得属性中
+                    if ("教育经历".equals(tableName)) {
+                        //转化为对象vo
+                        List<EducationExperienceVo> educationExperienceList = new TransCustomFieldMapHelper<EducationExperienceVo>().transToObeject(customDataList, EducationExperienceVo.class,sysDictDao);
+                        archiveRegistVo.setEducationExperienceList(educationExperienceList);
+                    }
+                    if ("工作经历".equals(tableName)) {
+                        List<WorkExperienceVo> workExperienceList = new TransCustomFieldMapHelper<WorkExperienceVo>().transToObeject(customDataList, WorkExperienceVo.class,sysDictDao);
+                        archiveRegistVo.setWorkExperienceList(workExperienceList);
+                    }
+                    if ("家庭成员".equals(tableName)) {
+                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new TransCustomFieldMapHelper<FamilyMemberAndSocialRelationsVo>().transToObeject(customDataList, FamilyMemberAndSocialRelationsVo.class,sysDictDao);
+                        archiveRegistVo.setFamilyMemberAndSocialRelationsList(FamilyMemberAndSocialRelationsList);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ExceptionCast.cast(CommonCode.SERVER_ERROR);
+                }
+            });
+            archiveRegistList.add(archiveRegistVo);
+        }
+        return archiveRegistList;
+    }
+
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -714,6 +765,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public void deleteCareerTrack(Integer id) {
        archiveCareerTrackdao.deleteCareerTrack(id);
     }
+
 
 
     public List < TableHead > getDefaultArcHead() {
