@@ -41,8 +41,8 @@ public class ArchiveAuthServiceImpl implements ArchiveAuthService {
 
 
     @Override
-    public List<RoleGroupVO> searchRoleTree(Integer companyId) {
-        List<RoleGroupVO> roleGroupList = roleAuthService.searchRoleTree(companyId);
+    public List<RoleGroupVO> searchRoleTree(Integer companyId,Integer archiveId) {
+        List<RoleGroupVO> roleGroupList = roleAuthService.searchRoleTree(companyId,archiveId);
         return roleGroupList;
     }
 

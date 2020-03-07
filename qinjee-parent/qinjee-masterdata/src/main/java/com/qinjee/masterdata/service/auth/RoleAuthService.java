@@ -24,11 +24,21 @@ import java.util.List;
 public interface RoleAuthService {
 
     /**
-     * 根据企业ID查询角色树
+     * 根据企业ID和档案ID查询角色树
      * @param companyId
+     * @param archiveId
      * @return
      */
-    List<RoleGroupVO> searchRoleTree(Integer companyId);
+    List<RoleGroupVO> searchRoleTree(Integer companyId,Integer archiveId);
+
+    /**
+     * 根据企业ID、档案ID、角色ID查询角色树
+     * @param companyId
+     * @param archiveId
+     * @param roleId
+     * @return
+     */
+    List<RoleGroupVO> searchRoleTreeByRoleId(Integer companyId,Integer archiveId,Integer roleId);
 
     /**
      * 根据角色ID查询角色功能权限树

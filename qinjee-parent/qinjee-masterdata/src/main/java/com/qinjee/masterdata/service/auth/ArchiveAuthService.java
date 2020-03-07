@@ -26,11 +26,12 @@ import java.util.List;
 public interface ArchiveAuthService {
 
     /**
-     * 根据企业ID查询角色树
+     * 根据企业ID和档案ID查询角色树
      * @param companyId
+     * @param archiveId
      * @return
      */
-    List<RoleGroupVO> searchRoleTree(Integer companyId);
+    List<RoleGroupVO> searchRoleTree(Integer companyId,Integer archiveId);
 
 
     /**

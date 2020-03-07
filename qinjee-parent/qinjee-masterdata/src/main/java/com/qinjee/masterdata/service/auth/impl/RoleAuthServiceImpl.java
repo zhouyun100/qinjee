@@ -41,12 +41,37 @@ public class RoleAuthServiceImpl implements RoleAuthService {
     private CompanyRegistDao companyRegistDao;
 
     @Override
-    public List<RoleGroupVO> searchRoleTree(Integer companyId) {
-        if(companyId == null){
+    public List<RoleGroupVO> searchRoleTree(Integer companyId,Integer archiveId) {
+
+        List<RoleGroupVO> roleGroupList = roleAuthDao.searchRoleTree(companyId,archiveId);
+
+        /**
+         * 如果角色列表为空则直接返回null
+         */
+        if(CollectionUtils.isEmpty(roleGroupList)){
             return null;
         }
 
-        List<RoleGroupVO> roleGroupList = roleAuthDao.searchRoleTree(companyId);
+        /**
+         * 提取当前角色树的一级节点
+         */
+        List<RoleGroupVO> firstRoleList = roleGroupList.stream().filter(roleGroupVO -> {
+            if(roleGroupVO.getParentRoleGroupId() == null || roleGroupVO.getParentRoleGroupId() == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        handlerRoleToTree(roleGroupList,firstRoleList);
+
+        return firstRoleList;
+    }
+
+    @Override
+    public List<RoleGroupVO> searchRoleTreeByRoleId(Integer companyId, Integer archiveId, Integer roleId) {
+
+        List<RoleGroupVO> roleGroupList = roleAuthDao.searchRoleTreeByRoleId(companyId,archiveId,roleId);
 
         /**
          * 如果角色列表为空则直接返回null
@@ -385,6 +410,7 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Override
     public void handlerRoleToTree(List<RoleGroupVO> allRoleGroupList, List<RoleGroupVO> firstLevelRoleList) {
+        List<RoleGroupVO> removeRoleGroupList = new ArrayList<>();
         for (RoleGroupVO roleGroupVO : firstLevelRoleList) {
             if(roleGroupVO.getRoleType().equals("ROLE_GROUP")){
                 List<RoleGroupVO> childList = allRoleGroupList.stream().filter(role -> {
@@ -398,9 +424,14 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     roleGroupVO.setChildRoleGroupList(childList);
                 }else{
                     roleGroupVO.setChildRoleGroupList(new ArrayList<>());
+                    //如果角色组下的角色为空，则将角色组添加至待删除的角色组列表中
+                    removeRoleGroupList.add(roleGroupVO);
                 }
             }
         }
+
+        //删除空的角色组
+        firstLevelRoleList.removeAll(removeRoleGroupList);
     }
 
     @Transactional(rollbackFor = Exception.class)
