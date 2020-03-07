@@ -1708,7 +1708,6 @@
         </if>
         limit 1
     </select>
-    <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
 
     <update id="batchUpdateBusunessUnitId">
         update t_user_archive set business_unit_id =#{targetBusunessUnitId}
@@ -1802,7 +1801,7 @@
         t_user_archive arc
         LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
         left join t_organization org on org.org_id=arc.business_unit_id
-        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+        LEFT JOIN t_post post ON pt.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
         left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
         where arc.archive_id in

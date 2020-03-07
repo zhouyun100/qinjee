@@ -94,7 +94,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
      * @return
      */
     @Override
-    public List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds) {
+    public List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds,UserSession userSession) {
         ArrayList<PreRegistVo> preRegistList = new ArrayList<>();
         for (Integer employmentId : employmentIds) {
             //组装成一个大的对象用来封装所有页面需要的信息
@@ -102,16 +102,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             //查询预入职档案基本信息
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById(employmentId);
             preRegistVo.setPreEmploymentVo(preEmploymentVo);
-            preRegistList.add(preRegistVo);
             //--------------
             //获取自定义相关数据  （教育经历、工作经历、家庭成员）
             ArrayList<String> tableNames = Lists.newArrayList("教育经历", "工作经历", "家庭成员");
             tableNames.stream().forEach(tableName -> {
                 //1.获取表id
-                Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, 1, "PRE");
+                Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, userSession.getCompanyId(), "PRE");
                 //2.根据表id拿到 自定义集合  List<Map<String,String>>，key为fieldName，value为字段值
                 try {
-                    List<Map<String, String>> customDataList = getCustomDataByTableIdAndEmploymentId(employmentId, tableId);
+                    List<Map<String, String>> customDataList =staffCommonService.getCustomDataByTableIdAndEmploymentId(employmentId, tableId);
                     //3.将resMapList填充到preRegistVo中对应得属性中
                     if ("教育经历".equals(tableName)) {
                         //转化为对象vo
@@ -128,36 +127,12 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    ExceptionCast.cast(CommonCode.SERVER_ERROR);
                 }
             });
-
-
+            preRegistList.add(preRegistVo);
         }
         return preRegistList;
-    }
-
-    private List<Map<String, String>> getCustomDataByTableIdAndEmploymentId(Integer employmentId, Integer tableId) throws IllegalAccessException {
-        //存放结果
-        List<Map<String, String>> resMapList = new ArrayList<>();
-        List<Map<Integer, String>> customDataList = staffCommonService.selectValue(tableId, employmentId);
-        //根据表id查到  <fieldId,fieldName>
-        List<CustomArchiveField> fieldList = customTableFieldDao.selectFieldByTableId(tableId);
-        //遍历自定义表的大数据字段集合
-        for (Map<Integer, String> customDataMap : customDataList) {
-
-            Map<String, String> resMap = new HashMap<>();
-            customDataMap.forEach((key, value) -> {
-                //比较
-                for (CustomArchiveField customArchiveField : fieldList) {
-                    if (customArchiveField.getFieldId().equals(key)) {
-                        //拼接fieldCode+textType
-                        resMap.put(customArchiveField.getFieldCode()+"@@"+customArchiveField.getTextType(), value);
-                    }
-                }
-            });
-            resMapList.add(resMap);
-        }
-        return resMapList;
     }
 
 
