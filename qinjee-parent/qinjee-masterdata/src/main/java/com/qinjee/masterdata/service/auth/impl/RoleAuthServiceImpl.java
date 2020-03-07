@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.auth.impl;
 
 import com.qinjee.masterdata.dao.auth.RoleAuthDao;
+import com.qinjee.masterdata.dao.userinfo.CompanyRegistDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.auth.*;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
@@ -35,6 +36,9 @@ public class RoleAuthServiceImpl implements RoleAuthService {
 
     @Autowired
     private RoleAuthDao roleAuthDao;
+
+    @Autowired
+    private CompanyRegistDao companyRegistDao;
 
     @Override
     public List<RoleGroupVO> searchRoleTree(Integer companyId) {
@@ -159,18 +163,30 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         return resultNumber;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int addRole(Integer roleGroupId, String roleName, Integer companyId, Integer operatorId) {
         if(StringUtils.isEmpty(roleName) || null == companyId || null == operatorId){
             return 0;
         }
-        int resultNumber;
+
+        //创建角色
         Role role = new Role();
         role.setRoleGroupId(roleGroupId);
         role.setRoleName(roleName);
         role.setCompanyId(companyId);
         role.setOperatorId(operatorId);
-        resultNumber = roleAuthDao.addRole(role);
+        int resultNumber = roleAuthDao.addRole(role);
+
+        if(role.getRoleId() != null){
+            //添加档案与角色关系
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(role.getRoleId());
+            userRole.setArchiveId(operatorId);
+            userRole.setOperatorId(operatorId);
+            resultNumber += companyRegistDao.addUserRole(userRole);
+        }
+
         return resultNumber;
     }
 

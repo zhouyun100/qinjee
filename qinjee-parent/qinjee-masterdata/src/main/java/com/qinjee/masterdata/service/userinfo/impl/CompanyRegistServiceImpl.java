@@ -61,11 +61,22 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
 
         UserInfoVO userInfoVO = null;
 
+        UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(companyRegistParamVO.getPhone());
+        if(userInfo == null){
+            //添加登录用户信息
+            userInfo = new UserInfo();
+            userInfo.setPhone(companyRegistParamVO.getPhone());
+            userInfo.setPassword(MD5Utils.getMd5(companyRegistParamVO.getPassword()));
+            companyRegistDao.addUserInfo(userInfo);
+        }
+        Integer userId = userInfo.getUserId();
+
         //添加企业信息
         CompanyInfo companyInfo = new CompanyInfo();
         companyInfo.setCompanyName(companyRegistParamVO.getCompanyName());
         companyInfo.setCompanyType(companyRegistParamVO.getCompanyType());
         companyInfo.setUserNumber(companyRegistParamVO.getUserCount());
+        companyInfo.setRegistUserId(userId);
 
         //增加一年
         Calendar cal = Calendar.getInstance();
@@ -91,22 +102,6 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
             companyRegistDao.addOrganization(organization);
             Integer orgId = organization.getOrgId();
 
-            //添加系统管理员角色（内置）
-            Role role = new Role();
-            role.setCompanyId(companyId);
-            companyRegistDao.addRole(role);
-            Integer roleId = role.getRoleId();
-
-            UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(companyRegistParamVO.getPhone());
-            if(userInfo == null){
-                //添加登录用户信息
-                userInfo = new UserInfo();
-                userInfo.setPhone(companyRegistParamVO.getPhone());
-                userInfo.setPassword(MD5Utils.getMd5(companyRegistParamVO.getPassword()));
-                companyRegistDao.addUserInfo(userInfo);
-            }
-            Integer userId = userInfo.getUserId();
-
             if(userId != null){
                 //添加档案
                 UserArchive userArchive = new UserArchive();
@@ -125,11 +120,19 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 userCompany.setIsEnable(new Short("1"));
                 companyRegistDao.addUserCompany(userCompany);
 
+                //添加系统管理员角色（内置）
+                Role role = new Role();
+                role.setCompanyId(companyId);
+                role.setOperatorId(archiveId);
+                companyRegistDao.addRole(role);
+                Integer roleId = role.getRoleId();
+
                 if(roleId != null && archiveId != null){
                     //添加档案与角色关系
                     UserRole userRole = new UserRole();
                     userRole.setRoleId(roleId);
                     userRole.setArchiveId(archiveId);
+                    userRole.setOperatorId(archiveId);
                     companyRegistDao.addUserRole(userRole);
                 }
 
