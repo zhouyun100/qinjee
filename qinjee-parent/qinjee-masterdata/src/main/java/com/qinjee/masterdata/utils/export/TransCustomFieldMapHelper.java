@@ -49,7 +49,7 @@ public class TransCustomFieldMapHelper<T> {
      * @param sysDicts
      * @throws Exception
      */
-    public void transToDict(T ob, List<SysDict> sysDicts) throws Exception {
+    public void transToDict(T ob, List<SysDict> sysDicts)  {
         Field[] fields = ob.getClass().getDeclaredFields();
         //找出所有带有字典转换注解的属性
         //待转换 属性集合
@@ -75,7 +75,7 @@ public class TransCustomFieldMapHelper<T> {
      * @param sysDicts
      * @throws Exception
      */
-    public void transBatchToDict(List<T> obList, List<SysDict> sysDicts) throws Exception {
+    public void transBatchToDict(List<T> obList, List<SysDict> sysDicts)  {
         obList.stream().forEach(ob->{
             Field[] fields = ob.getClass().getDeclaredFields();
             //找出所有带有字典转换注解的属性
