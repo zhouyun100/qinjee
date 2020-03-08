@@ -82,8 +82,9 @@ public class SysDictController extends BaseController {
         return responseResult;
     }
 
-    @RequestMapping(value = "/selectMoreDict", method = RequestMethod.POST)
-    public ResponseResult<Map<String, List<SysDict>>> searchSysDictListByDictType(@RequestBody List<String> dictCodeList) {
+    @ApiOperation(value = "多个字典类型查询字典列表", notes = "多个字典类型查询字典列表")
+    @RequestMapping(value = "/searchSysDictListByDictTypeList", method = RequestMethod.POST)
+    public ResponseResult<Map<String, List<SysDict>>> searchSysDictListByDictTypeList(@RequestBody List<String> dictCodeList) {
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(dictCodeList)) {
             Map<String, List<SysDict>> map = sysDictService.selectMoreDict(dictCodeList);
             return new ResponseResult<>(map, CommonCode.SUCCESS);
