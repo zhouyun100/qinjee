@@ -36,4 +36,6 @@ public interface BlacklistDao {
     void insertBatch(@Param("blacklistList") List< Blacklist> blacklistList);
 
     List<Blacklist> selectByIdNumberAndPhone(@Param("idNumber") String idNumber, @Param("phone") String phone, @Param("companyId") Integer companyId);
+
+    List<Blacklist> selectByPageAndHead(@Param("companyId") Integer companyId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 }

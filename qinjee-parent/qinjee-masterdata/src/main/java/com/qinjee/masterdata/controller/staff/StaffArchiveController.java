@@ -92,14 +92,12 @@ public class StaffArchiveController extends BaseController {
     /**
      *展示部门下已经删除的档案
      */
-    @RequestMapping(value = "/selectArchiveDelete", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchiveDelete", method = RequestMethod.POST)
     @ApiOperation(value = "展示部门下已经删除的档案", notes = "hkt")
-    public ResponseResult<PageResult<UserArchiveVo>> selectArchiveDelete(@RequestParam List<Integer> orgId,
-                                                                         @RequestParam Integer pageSize,
-                                                                         @RequestParam Integer currentPage) {
-        Boolean b = checkParam(orgId,pageSize,currentPage);
+    public ResponseResult<PageResult<UserArchiveVo>> selectArchiveDelete(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam(requestUserarchiveVo);
         if(b){
-                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveDelete ( orgId,pageSize,currentPage );
+                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveDelete (requestUserarchiveVo);
                     return new ResponseResult <> ( userArchiveVoPageResult, CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
@@ -225,8 +223,7 @@ public class StaffArchiveController extends BaseController {
         if(b){
             UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
             PageResult < UserArchiveVo > userArchiveVoPageResult;
-            userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
-                       requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
+            userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), requestUserarchiveVo.getQuerySchemaId() ) );
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);

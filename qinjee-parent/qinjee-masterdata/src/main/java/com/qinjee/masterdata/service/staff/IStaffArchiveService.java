@@ -103,7 +103,7 @@ public interface IStaffArchiveService {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, List<Integer> orgId, Integer pageSize, Integer currentPage);
+    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, RequestUserarchiveVo requestUserarchiveVo);
     /**
      * 通过id找到人员姓名与工号
      */
@@ -160,7 +160,7 @@ public interface IStaffArchiveService {
      QuerySchemeList selectQuerySchemeMessage(Integer id);
 
 
-    PageResult< UserArchiveVo> selectArchiveDelete(List<Integer> orgId, Integer pageSize, Integer currentPage);
+    PageResult< UserArchiveVo> selectArchiveDelete(RequestUserarchiveVo requestUserarchiveVo);
 
     List<UserArchiveVo> selectByOrgList(List<Integer> list,UserSession userSession);
 

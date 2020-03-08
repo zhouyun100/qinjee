@@ -13,6 +13,7 @@ import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -62,16 +63,15 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     /**
      * 展示未签合同的人员信息
-     *
-     * @param orgId
-     * @param pageSize
      * @return
      */
     @Override
-    public PageResult < UserArchiveVo > selectNoLaborContract(List < Integer > orgId, Integer currentPage, Integer pageSize,Integer companyId) {
-        PageHelper.startPage ( currentPage, pageSize );
+    public PageResult < UserArchiveVo > selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo,Integer companyId) {
+        PageHelper.startPage ( requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         //根据合同id找到没有合同的档案
-        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( orgId,companyId );
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList());
+        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( requestUserarchiveVo.getOrgId(),companyId ,whereSql,orderSql);
         return new PageResult <> ( arcList );
     }
 
@@ -83,7 +83,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     public List < Integer > selectNoLaborContractAll(List < Integer > orgId,Integer companyId) {
-        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId,companyId );
+        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId,companyId,null,null );
         List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {
             integers.add ( userArchiveVo.getArchiveId () );
@@ -116,19 +116,22 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
 
     @Override
-    public PageResult < ContractWithArchiveVo > selectLaborContractserUser(List < Integer > orgIdList, Integer currentPage,
-                                                                   Integer pageSize, List < String > status,UserSession userSession) {
-        PageHelper.startPage (currentPage,pageSize );
-        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( orgIdList, status ,userSession.getCompanyId());
+    public PageResult < ContractWithArchiveVo > selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
+        PageHelper.startPage (requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList());
+        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( requestUserarchiveVo.getOrgId(), requestUserarchiveVo.getStatus() ,userSession.getCompanyId(),
+                whereSql,orderSql);
         return new PageResult <> ( list );
     }
 
-    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId) {
+    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId,String
+                                                                     whereSql,String orderSql) {
         String contain=null;
         if(status.contains("即将到期")){
           contain="contain";
         }
-        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,contain,companyId );
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,contain,companyId,whereSql,orderSql );
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
               if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ()) ){
                   contractWithArchiveVo.setIsEnable ( ( short ) 0 );
@@ -146,7 +149,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @param status
      */
     public List < ContractWithArchiveVo > selectLaborContractserUserAll(List < Integer > orgIdList, List < String > status,Integer companyId) {
-        return getContractWithArchiveVos ( orgIdList, status,companyId );
+        return getContractWithArchiveVos ( orgIdList, status,companyId,null,null);
     }
 
     /**

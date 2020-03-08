@@ -523,6 +523,7 @@
     GROUP BY o2.orgId
   </select>
   <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
+    select * from (
     select
     org.org_name as orgName,
     orga.org_name as businessUnitName,
@@ -545,7 +546,7 @@
     left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
     left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
     left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
-    where  contract.archive_id in
+    where contract.archive_id in
     (select archive_id from t_user_archive where org_id in
     <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
       #{item}
@@ -556,6 +557,16 @@
       <foreach collection="status" item="item" open="(" separator="," close=")">
         #{item}
       </foreach>
+    </if>
+    )t
+    where 1=1
+    <if test="whereSql !=null">
+      ${whereSql}
+    </if>
+    group by t.archive_id
+    <if test="orderSql !=null">
+      order by
+      ${orderSql}
     </if>
   </select> <select id="selectAboutToExpireContracts" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
     select

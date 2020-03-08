@@ -360,8 +360,7 @@
     <include refid="Base_Column_List" />
     from t_blacklist
     where is_delete=0
-    and
-    company_id=#{companyId}
+    and company_id=#{companyId}
   </select>
   <select id="selectByPhone" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
     select
@@ -410,6 +409,17 @@
          and phone=#{phone}
          and company_id=#{companyId}
        </if>
-
+  </select>
+  <select id="selectByPageAndHead" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
+    select *
+    from t_blacklist
+    where company_id=#{companyId}
+    <if test="whereSql !=null">
+      ${whereSql}
+    </if>
+    <if test="orderSql !=null">
+      order by
+      ${orderSql}
+    </if>
   </select>
 </mapper>

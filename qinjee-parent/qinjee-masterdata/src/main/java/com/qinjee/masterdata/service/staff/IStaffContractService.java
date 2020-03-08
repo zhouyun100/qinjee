@@ -17,14 +17,11 @@ import java.util.List;
 public interface IStaffContractService {
 
     /**展示未签合同的人员
-
-     * @param orgId
-     * @param currentPage
-     * @param pageSize
+     * @param requestUserarchiveVo
      * @param
      * @return
      */
-    PageResult< UserArchiveVo > selectNoLaborContract(List<Integer> orgId, Integer currentPage, Integer pageSize,Integer CompanyId);
+    PageResult< UserArchiveVo > selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo,Integer CompanyId);
 
     /**
      * 删除合同
@@ -95,14 +92,9 @@ public interface IStaffContractService {
 
     /**
      * 展示已签合同人员
-     * @param orgIdList
-     * @param currentPage
-     * @param pageSize
      * @return
      */
-    PageResult<ContractWithArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
-                                                       Integer pageSize,
-                                                       List<String> status,UserSession userSession) throws Exception;
+    PageResult<ContractWithArchiveVo> selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) throws Exception;
 
     /**
      * 终止合同

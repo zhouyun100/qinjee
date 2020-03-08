@@ -3,10 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.vo.staff.DetailCount;
-import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
-import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
-import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
@@ -163,14 +160,12 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<PageResult<PreEmploymentVo>> selectPreEmployment(
-                                                                         Integer currentPage,
-                                                                         Integer pageSize){
-        Boolean b = checkParam(getUserSession (),currentPage,pageSize);
+    public ResponseResult<PageResult<PreEmploymentVo>> selectPreEmployment(@RequestBody RequestUserarchiveVo requestUserarchiveVo){
+        Boolean b = checkParam(getUserSession (),requestUserarchiveVo);
         if(b){
 
                 PageResult<PreEmploymentVo> pageResult =
-                        staffPreEmploymentService.selectPreEmployment(getUserSession (),currentPage, pageSize);
+                        staffPreEmploymentService.selectPreEmployment(getUserSession (),requestUserarchiveVo);
                     return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

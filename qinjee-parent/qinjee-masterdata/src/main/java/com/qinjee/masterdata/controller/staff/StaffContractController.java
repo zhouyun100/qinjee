@@ -38,19 +38,18 @@ public class StaffContractController extends BaseController {
     /**
      * 展示未签合同人员分页
      */
-    @RequestMapping(value = "/selectNoLaborContract", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectNoLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "展示未签合同人员分页", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 //    })
-    public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(@RequestParam List<Integer> orgId, Integer currentPage, Integer pageSize
-    ) {
-        Boolean b = checkParam(orgId, currentPage, pageSize,getUserSession ());
+    public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam(requestUserarchiveVo,getUserSession ());
         if (b) {
             PageResult < UserArchiveVo > pageResult=
-                staffContractService.selectNoLaborContract ( orgId, currentPage, pageSize,userSession.getCompanyId() );
+                staffContractService.selectNoLaborContract (requestUserarchiveVo,userSession.getCompanyId() );
                 UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
                 userArchiveVoAndHeader.setPageResult (pageResult);
 //                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList(userSession));
@@ -69,7 +68,7 @@ public class StaffContractController extends BaseController {
     /**
      * 展示已签合同的人员信息分页
      */
-    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectLaborContractserUser", method = RequestMethod.POST)
     @ApiOperation(value = "展示已签合同的人员信息", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
@@ -79,13 +78,11 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "list", value = "合同状态", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<PageResult<ContractWithArchiveVo>> selectLaborContractserUser(@RequestParam List<Integer> orgIdList, Integer currentPage,
-                                                                              Integer pageSize,
-                                                                              @RequestParam List<String> status) throws Exception {
-        Boolean b = checkParam(orgIdList, currentPage, pageSize,status,getUserSession ());
+    public ResponseResult<PageResult<ContractWithArchiveVo>> selectLaborContractserUser(@RequestBody RequestUserarchiveVo requestUserarchiveVo) throws Exception {
+        Boolean b = checkParam(requestUserarchiveVo,getUserSession ());
         if (b) {
                 PageResult<ContractWithArchiveVo> pageResult =
-                        staffContractService.selectLaborContractserUser(orgIdList, currentPage, pageSize,status,getUserSession());
+                        staffContractService.selectLaborContractserUser(requestUserarchiveVo,getUserSession());
              return new ResponseResult<> ( pageResult,CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

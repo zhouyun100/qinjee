@@ -12,4 +12,6 @@ public class RequestUserarchiveVo implements Serializable {
   private Integer pageSize;
   private Integer currentPage;
   private Integer querySchemaId;
+  private List<FieldValueForSearch> list;
+  private List<String> status;
 }

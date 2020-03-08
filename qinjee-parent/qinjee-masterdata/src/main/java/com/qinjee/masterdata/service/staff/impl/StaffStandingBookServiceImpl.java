@@ -16,6 +16,7 @@ import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.SqlUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -95,9 +96,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     }
 
     @Override
-    public List<Blacklist> selectBalckList(UserSession userSession) {
-        return blacklistDao.selectByPage(userSession.getCompanyId());
-
+    public List<Blacklist> selectBalckList(UserSession userSession,List<FieldValueForSearch> list) {
+        String whereSql = DealHeadParamUtil.getWhereSql(list, null);
+        String orderSql = DealHeadParamUtil.getOrderSql(list, null);
+        return blacklistDao.selectByPageAndHead(userSession.getCompanyId(),whereSql,orderSql);
     }
 
 

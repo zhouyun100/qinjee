@@ -2,11 +2,7 @@ package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.StandingBook;
-import com.qinjee.masterdata.model.vo.staff.StandingBookReturnVo;
-import com.qinjee.masterdata.model.vo.staff.BlackListVo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfo;
-import com.qinjee.masterdata.model.vo.staff.StandingBookInfoVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -42,10 +38,10 @@ public interface IStaffStandingBookService {
     void updateBalckList(Blacklist blacklist);
 
     /**
-     * 分页展示黑名单
+     * 展示黑名单
      * @return
      */
-    List<Blacklist> selectBalckList(UserSession userSession);
+    List<Blacklist> selectBalckList(UserSession userSession,List<FieldValueForSearch> list);
 
     /**
      * 删除台账

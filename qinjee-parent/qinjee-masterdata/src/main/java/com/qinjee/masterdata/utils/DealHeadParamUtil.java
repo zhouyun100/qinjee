@@ -35,12 +35,15 @@ public class DealHeadParamUtil {
             String string = stringBuffer.toString();
             int and = string.lastIndexOf("and");
             String substring = string.substring(0, and );
-            return substring+getOrdersql(tableSelectParam);
+            return substring;
         }
         return null;
     }
+    public static String getOrderSql(List<FieldValueForSearch> tableSelectParam,String nickName){
+        return getOrdersql(tableSelectParam,nickName);
+    }
 
-    private static String getIntSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
+    private static void getIntSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue = fieldValueForSearch.getFieldValue();
                if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
@@ -49,34 +52,30 @@ public class DealHeadParamUtil {
                 if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
                     stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(fieldValue.get(1)).append("and");
                 }
-                return stringBuffer.toString();
+        }else{
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
         }
-        return null;
     }
-    private static String getCodeSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
+    private static void getCodeSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-                List fieldValue = (List) fieldValueForSearch.getFieldValue();
+                List fieldValue =  fieldValueForSearch.getFieldValue();
                 stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("in (");
                 for (Object o : fieldValue) {
-                        if(o instanceof  Integer){
-                            stringBuffer.append((Integer) o);
-                        }else {
-                            stringBuffer.append(String.valueOf(o));
-                        }
+                            stringBuffer.append(o);
                     }
                 stringBuffer.append(") and");
-                return stringBuffer.toString();
-                }
-           return null;
+                }else{
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
+        }
     }
-    private static String getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
+    private static void getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
                stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" like ").append( "'%").append(fieldValueForSearch.getFieldValue().get(0)).append( "%'").append(" and");
-                return stringBuffer.toString();
+        }else{
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
         }
-        return null;
     }
-    private static String getDateSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
+    private static void getDateSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue = fieldValueForSearch.getFieldValue();
                 if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
@@ -95,18 +94,19 @@ public class DealHeadParamUtil {
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }
                 }
-                return stringBuffer.toString();
+        }else{
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
         }
-        return null;
     }
-    private static String getOrdersql(List<FieldValueForSearch> tableSelectParam){
+    private static String getOrdersql(List<FieldValueForSearch> tableSelectParam,String nickName){
         StringBuffer stringBuffer=new StringBuffer();
         for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
             if(StringUtils.isNotBlank(fieldValueForSearch.getOrderBy())){
-                stringBuffer.append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy()));
+                stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy())).append(",");
             }
         }
-        return stringBuffer.toString();
+        int i = stringBuffer.toString().lastIndexOf(",");
+        return stringBuffer.substring(i);
     }
     private static String getOrder(String order){
         if("升序".equals(order)){

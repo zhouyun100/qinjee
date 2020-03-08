@@ -1102,6 +1102,21 @@
         LEFT JOIN t_position_level level ON level.position_level_id= t_pre_employment.position_level_id AND level.is_delete=0
         where t_pre_employment.company_id = #{companyId}
         and t_pre_employment.is_delete = 0
+        <if test="orgId !=null">
+            and t_pre_employment.org_id in
+            <foreach collection="orgId" item="item" open="(" separator="," close=")">
+                #{orgId}
+            </foreach>
+        </if>
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        group by arc.archive_id
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
+
 
     </select>
     <select id="selectPreEmploymentVoById" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo"

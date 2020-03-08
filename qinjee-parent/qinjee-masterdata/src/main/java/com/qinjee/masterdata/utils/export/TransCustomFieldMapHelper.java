@@ -94,7 +94,6 @@ public class TransCustomFieldMapHelper<T> {
                     ExceptionCast.cast(CommonCode.SERVER_ERROR);
                 }
             });
-
         });
     }
 }

@@ -72,7 +72,7 @@ public interface UserArchiveDao {
     Date selectDateByStatus(@Param("string") String string);
 
     List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") List<Integer> orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId
-    , @Param("message") String message);
+    , @Param("message") String message, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
@@ -90,13 +90,14 @@ public interface UserArchiveDao {
 
     List<UserArchiveVo> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
 
-    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") List<Integer> orgId, @Param("companyId") Integer companyId);
+    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") List<Integer> orgId, @Param("companyId") Integer companyId,
+                                           @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     Map< String, Object> selectTransMessage(@Param("key") Integer key);
 
     List<UserArchiveVo> selectByIdNumber(@Param("s") String s, @Param("companyId") Integer companyId);
 
-    List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
+    List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     List<Integer> selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 
