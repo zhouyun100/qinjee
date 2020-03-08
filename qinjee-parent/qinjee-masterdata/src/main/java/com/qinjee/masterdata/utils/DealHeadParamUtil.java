@@ -100,15 +100,17 @@ public class DealHeadParamUtil {
     }
     private static String getOrdersql(List<FieldValueForSearch> tableSelectParam,String nickName){
         StringBuffer stringBuffer=new StringBuffer();
-        for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
-            if(StringUtils.isNotBlank(fieldValueForSearch.getOrderBy())){
-                stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy())).append(",");
+        if(CollectionUtils.isNotEmpty(tableSelectParam)) {
+            for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
+                if (StringUtils.isNotBlank(fieldValueForSearch.getOrderBy())) {
+                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy())).append(",");
+                }
             }
         }
         String string = stringBuffer.toString();
         if(StringUtils.isNotBlank(string)){
             int i = string.lastIndexOf(",");
-            return string.substring(i);
+            return string.substring(0,i);
         }else {
             return null;
         }

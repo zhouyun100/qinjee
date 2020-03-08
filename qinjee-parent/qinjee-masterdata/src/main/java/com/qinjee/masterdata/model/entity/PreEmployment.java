@@ -2,6 +2,7 @@ package com.qinjee.masterdata.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.TransDictAnno;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,6 +37,7 @@ public class PreEmployment implements Serializable {
         /**
          * 性别
          */
+        @TransDictAnno
         private String gender;
 
         /**
@@ -46,6 +48,7 @@ public class PreEmployment implements Serializable {
         /**
          * 证件类型
          */
+        @TransDictAnno
         private String idType;
 
         /**
@@ -67,11 +70,13 @@ public class PreEmployment implements Serializable {
         /**
          * 婚姻状况
          */
+        @TransDictAnno
         private String maritalStatus;
 
         /**
          * 最高学历
          */
+        @TransDictAnno
         private String highestDegree;
 
         /**
@@ -128,6 +133,7 @@ public class PreEmployment implements Serializable {
         /**
          * 政治面貌
          */
+        @TransDictAnno
         private String politicalStatus;
 
         /**

@@ -7,13 +7,16 @@ import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDa
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
+import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import org.slf4j.Logger;
@@ -60,6 +63,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private IEmployeeNumberRuleService employeeNumberRuleService;
     @Autowired
     private OrganizationDao organizationDao;
+    @Autowired
+    private SysDictDao sysDictDao;
 
     /**
      * 展示未签合同的人员信息
@@ -67,11 +72,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
     @Override
     public PageResult < UserArchiveVo > selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo,Integer companyId) {
+        List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         PageHelper.startPage ( requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         //根据合同id找到没有合同的档案
         String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc.");
         String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"arc.");
         List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( requestUserarchiveVo.getOrgId(),companyId ,whereSql,orderSql);
+        new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(arcList,sysDicts);
         return new PageResult <> ( arcList );
     }
 

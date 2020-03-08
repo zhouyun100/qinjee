@@ -149,6 +149,7 @@ public class UserArchiveVo implements Serializable {
     /**
      * 职业资格
      */
+    @TransDictAnno
     @ApiModelProperty("职业资格")
     @ExcelColumn(order =15, title = "职业资格")
     private String professionalCertification;
@@ -156,6 +157,7 @@ public class UserArchiveVo implements Serializable {
     /**
      * 职称
      */
+    @TransDictAnno
     @ApiModelProperty("职称")
     @ExcelColumn(order =16, title = "职称")
     private String professionalTitle;
@@ -164,6 +166,7 @@ public class UserArchiveVo implements Serializable {
     /**
      * 职称等级
      */
+    @TransDictAnno
     @ApiModelProperty("职称等级")
     @ExcelColumn(order =17, title = "职称等级")
     private String professionalLevel;
@@ -222,7 +225,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("人员分类")
     @ExcelColumn(order =24, title = "人员分类")
-
+    @TransDictAnno
     private String userCategory;
 
 

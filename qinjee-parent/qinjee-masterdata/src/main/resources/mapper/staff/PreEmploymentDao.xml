@@ -42,7 +42,6 @@
         <result column="is_delete" property="isDelete" jdbcType="TINYINT"/>
         <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER"/>
         <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER"/>
-
         <result column="template_id" property="templateId" jdbcType="INTEGER"/>
     </resultMap>
     <resultMap id="t_pre_employmentMap" type="com.qinjee.masterdata.model.vo.staff.export.ExportPreVo">
@@ -1083,21 +1082,17 @@
     </select>
     <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
         select
-        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, dict3.dict_value as gender, t_pre_employment.email, t_pre_employment.id_type,
+        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone,  t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
         t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
-        dict1.dict_value as marry_status_name,post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
+        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,
+        post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
         grade.position_grade_name as position_grade_name,level.position_level_name as position_level_name
         from t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
         left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1  and post.is_delete=0
-        left join t_sys_dict dict on dict.dict_type = 'CARD_TYPE' and dict.dict_code = t_pre_employment.id_type  and dict.is_delete=0
-        left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status   and dict1.is_delete=0
-        left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree  and dict2.is_delete=0
-        left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender   and dict3.is_delete=0
         LEFT JOIN t_position_grade grade ON grade.position_grade_id= t_pre_employment.position_grade_id AND  grade.is_delete=0
         LEFT JOIN t_position_level level ON level.position_level_id= t_pre_employment.position_level_id AND level.is_delete=0
         where t_pre_employment.company_id = #{companyId}
@@ -1111,7 +1106,7 @@
         <if test="whereSql !=null">
             ${whereSql}
         </if>
-        group by arc.archive_id
+
         <if test="orderSql !=null">
             order by
             ${orderSql}
@@ -1129,22 +1124,14 @@
                t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status,
                 t_pre_employment.birthplace, t_pre_employment.application_position, t_pre_employment.probation_period, t_pre_employment.hire_date,
                 t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-                t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value AS id_type_name,
-                dict2.dict_value AS highest_degree_name, dict1.dict_value AS marry_status_name,post.post_code,org.org_code,t_pre_employment.position_level_id,
+                t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,
+              post.post_code,org.org_code,t_pre_employment.position_level_id,
                 t_pre_employment.position_grade_id, t_pre_employment.template_id, grade.position_grade_name AS position_grade_name,level.position_level_name AS position_level_name
              FROM t_pre_employment
              LEFT JOIN t_organization org
              ON org.org_id=t_pre_employment.org_id AND org.is_enable=1
              LEFT JOIN t_post post
              ON post.post_id = t_pre_employment.post_id AND post.is_enable=1 AND post.is_delete=0
-             LEFT JOIN t_sys_dict dict
-             ON dict.dict_type = 'CARD_TYPE' AND dict.dict_code = t_pre_employment.id_type AND dict.is_delete=0
-             LEFT JOIN t_sys_dict dict1
-             ON dict1.dict_type = 'MARITAL_STATUS' AND dict1.dict_code = t_pre_employment.marital_status AND dict1.is_delete=0
-             LEFT JOIN t_sys_dict dict2
-             ON dict2.dict_type = 'DEGREE' AND dict2.dict_code = t_pre_employment.highest_degree  AND dict2.is_delete=0
-             LEFT JOIN t_sys_dict dict3
-             ON dict3.dict_type = 'SEX_TYPE' AND dict3.dict_code = t_pre_employment.gender AND dict3.is_delete=0
              LEFT JOIN t_position_grade grade
              ON grade.position_grade_id= t_pre_employment.position_grade_id AND  grade.is_delete=0
              LEFT JOIN t_position_level level
@@ -1214,21 +1201,17 @@
     </select>
     <select id="searchByHead" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
          select
-        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
+        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email,
         t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
         t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,dict.dict_value as id_type_name,dict2.dict_value as highest_degree_name,
-        dict1.dict_value as marry_status_name,post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
+        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,t_pre_employment.id_type,
+        post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
         grade.position_grade_name as position_grade_name,level.position_level_name as position_level_name
         from t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
         left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1  and post.is_delete=0
-        left join t_sys_dict dict on dict.dict_type = 'CARD_TYPE' and dict.dict_code = t_pre_employment.id_type  and dict.is_delete=0
-        left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status  and dict1.is_delete=0
-        left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree  and dict2.is_delete=0
-        left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender and dict3.is_delete=0
         left join t_position_grade grade on grade.position_grade_id= t_pre_employment.position_grade_id  and grade.is_delete=0
         left join t_position_level level on level.position_level_id= t_pre_employment.position_level_id and level.is_delete=0
         where t_pre_employment.is_delete=0

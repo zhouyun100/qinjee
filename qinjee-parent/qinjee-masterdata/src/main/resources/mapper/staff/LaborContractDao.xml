@@ -523,25 +523,43 @@
     GROUP BY o2.orgId
   </select>
   <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
-    select * from (
     select
-    org.org_name as orgName,
-    orga.org_name as businessUnitName,
-    arch.employee_number as employeeNumber,
-    arch.id_number as idNumber,
-    arch.user_name as userName,
-    contract.archive_id as archiveId,
-    contract.contract_id as contractId,
-    contract.contract_number as contractNumber,
-    contract.contract_begin_date as contractBeginDate,
-    contract.contract_sign_date as contractSignDate,
-    contract.contract_end_date as contractEndDate,
-    contract.contract_period_type as contractPeriodType,
-    contract.contract_period_month as contractPeriodMonth,
-    contract.sign_number as signNumber,
-    contract.contract_subject as contractSubject,
-    contract.contract_state as contractState,
-    contract.contract_remark as contractRemark
+    t.org_name as orgName,
+    t.bussiness_unit_name as businessUnitName,
+    t.employee_number as employeeNumber,
+    t.id_number as idNumber,
+    t.user_name as userName,
+    t.archive_id as archiveId,
+    t.contract_id as contractId,
+    t.contract_number as contractNumber,
+    t.contract_begin_date as contractBeginDate,
+    t.contract_sign_date as contractSignDate,
+    t.contract_end_date as contractEndDate,
+    t.contract_period_type as contractPeriodType,
+    t.contract_period_month as contractPeriodMonth,
+    t.sign_number as signNumber,
+    t.contract_subject as contractSubject,
+    t.contract_state as contractState,
+    t.contract_remark as contractRemark
+     from (
+    select
+    org.org_name,
+    orga.org_name as bussiness_unit_name ,
+    arch.employee_number,
+    arch.id_number ,
+    arch.user_name ,
+    contract.archive_id ,
+    contract.contract_id,
+    contract.contract_number ,
+    contract.contract_begin_date ,
+    contract.contract_sign_date ,
+    contract.contract_end_date ,
+    contract.contract_period_type ,
+    contract.contract_period_month ,
+    contract.sign_number ,
+    contract.contract_subject ,
+    contract.contract_state ,
+    contract.contract_remark
     from t_labor_contract contract
     left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
     left join t_organization org on arch.org_id=org.org_id and org.is_enable=1

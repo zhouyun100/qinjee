@@ -10,6 +10,7 @@ import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookDao;
 import com.qinjee.masterdata.dao.staffdao.staffstandingbookdao.StandingBookFilterDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
@@ -18,6 +19,7 @@ import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.staff.IStaffStandingBookService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.SqlUtil;
+import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -68,6 +70,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
     private CompanyInfoDao companyInfoDao;
     @Autowired
     private CustomTableFieldService customTableFieldService;
+    @Autowired
+    private SysDictDao sysDictDao;
 
     @Override
     public void insertBlackList(List<BlackListVo> blackListVos, UserSession userSession) throws IllegalAccessException {
@@ -201,8 +205,10 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
             for (UserArchiveVo userArchiveVo : list) {
                 integers.add(userArchiveVo.getArchiveId());
             }
+            List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
             PageHelper.startPage(standingBookReturnVo.getCurrentPage(), standingBookReturnVo.getPageSize());
             List<UserArchiveVo> list3 = userArchiveDao.selectPartTimeArchive(integers, userSession.getCompanyId());
+            new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(list3,sysDicts);
             return  new PageResult<>(list3);
         }
         return null;
