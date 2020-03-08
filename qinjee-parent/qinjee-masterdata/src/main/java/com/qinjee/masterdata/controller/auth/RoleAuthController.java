@@ -570,6 +570,35 @@ public class RoleAuthController extends BaseController{
         return responseResult;
     }
 
+    @ApiOperation(value="角色授权角色", notes="角色授权角色")
+    @RequestMapping(value = "/roleAuthByRoleId",method = RequestMethod.POST)
+    public ResponseResult roleAuthByRoleId(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\nroleIdList：角色子集ID集合")RequestRoleAuthVO requestRoleAuthVO) {
+        if(null == requestRoleAuthVO.getRoleId()){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            roleAuthService.roleAuthByRoleId(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getRoleIdList(), userSession.getArchiveId());
+            logger.info("roleAuthByRoleId success！roleId={}, menuIdList={}, operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
+            responseResult = ResponseResult.SUCCESS();
+
+
+        }catch (Exception e){
+            logger.info("roleAuthByRoleId exception！roleId={}, menuIdList={}, exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色授权角色异常！");
+        }
+        return responseResult;
+    }
+
 
     @ApiOperation(value="查询当前登录企业档案自定义表列表", notes="查询当前登录企业档案自定义表列表")
     @RequestMapping(value = "/searchCustomArchiveTableList",method = RequestMethod.POST)

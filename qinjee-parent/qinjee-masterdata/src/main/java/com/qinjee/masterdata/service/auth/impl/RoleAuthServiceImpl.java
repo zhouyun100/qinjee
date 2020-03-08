@@ -387,6 +387,34 @@ public class RoleAuthServiceImpl implements RoleAuthService {
         return resultNumber;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int roleAuthByRoleId(Integer roleId, List<Integer> roleIdList, Integer operatorId) {
+        int resultNumber = 0;
+        List<Integer> tempRoleIdList = new ArrayList<>();
+        List<Integer> tempChildRoleIdList = new ArrayList<>();
+
+        List<Integer> childRoleIdList = roleAuthDao.searchChildRoleIdListByRoleId(roleId);
+
+        if(CollectionUtils.isNotEmpty(roleIdList)){
+            if(CollectionUtils.isNotEmpty(childRoleIdList)){
+                for(Integer tempRoleId : roleIdList){
+                    for(Integer tempChildRoleId : childRoleIdList){
+                        if(tempRoleId.equals(tempChildRoleId)){
+                            tempRoleIdList.add(tempRoleId);
+                            tempChildRoleIdList.add(tempChildRoleId);
+                        }
+                    }
+                }
+                childRoleIdList.removeAll(tempChildRoleIdList);
+                resultNumber += roleAuthDao.deleteRoleRoleRelation(roleId,childRoleIdList,operatorId);
+            }
+            roleIdList.removeAll(tempRoleIdList);
+            resultNumber += roleAuthDao.addRoleRoleRelation(roleId,roleIdList,operatorId);
+        }
+        return resultNumber;
+    }
+
     @Override
     public List<CustomArchiveTableFieldVO> searchCustomArchiveTableList(Integer companyId) {
         List<CustomArchiveTableFieldVO> customArchiveTableList = roleAuthDao.searchCustomArchiveTableListByCompanyId(companyId);

@@ -243,6 +243,31 @@
         and t_role_org_auth.is_delete = 0
     </select>
 
+    <!--根据角色ID查询授权的子集角色ID集合 -->
+    <select id="searchChildRoleIdListByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select child_role_id from t_role_role_relation where parent_role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+    </select>
+
+    <!-- 新增角色授权角色 -->
+    <insert id="addRoleRoleRelation">
+        <foreach collection="childRoleIdList" item="childRoleId" separator=";">
+            insert into t_role_role_relation (parent_role_id, child_role_id, operator_id)
+            values (#{parentRoleId,jdbcType=INTEGER}, #{childRoleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!-- 根据角色ID删除子集角色授权 -->
+    <update id="deleteRoleRoleRelation" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth">
+        update t_role_role_relation set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where parent_role_id = #{parentRoleId,jdbcType=INTEGER}
+        and child_role_id IN
+        <foreach item="childRoleId" collection="childRoleIdList"
+                 open="(" separator="," close=")">
+            #{childRoleId}
+        </foreach>
+        and is_delete = 0
+    </update>
+
     <!-- 新增角色机构权限 -->
     <insert id="addRoleOrgAuth" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth" useGeneratedKeys="true">
         insert into t_role_org_auth (role_id, org_id, operator_id)

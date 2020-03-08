@@ -52,4 +52,10 @@ public class RequestRoleAuthVO implements Serializable {
      */
     @ApiModelProperty(name = "orgIdList", value = "机构ID")
     private List<Integer> orgIdList;
+
+    /**
+     * 角色ID
+     */
+    @ApiModelProperty(name = "roleIdList", value = "角色ID")
+    private List<Integer> roleIdList;
 }

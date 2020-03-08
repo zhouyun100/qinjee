@@ -144,6 +144,33 @@ public interface RoleAuthDao {
      */
     List<OrganizationVO> searchRoleOrgListByRoleId(Integer roleId);
 
+
+    /**
+     * 根据角色ID查询授权的子集角色ID集合
+     * @param roleId
+     * @return
+     */
+    List<Integer> searchChildRoleIdListByRoleId(Integer roleId);
+
+    /**
+     * 新增角色授权角色
+     * @param parentRoleId
+     * @param childRoleIdList
+     * @param operatorId
+     * @return
+     */
+    int addRoleRoleRelation(Integer parentRoleId,List<Integer> childRoleIdList,Integer operatorId);
+
+    /**
+     * 根据角色ID删除子集角色授权
+     * @param parentRoleId
+     * @param childRoleIdList
+     * @param operatorId
+     * @return
+     */
+    int deleteRoleRoleRelation(Integer parentRoleId,List<Integer> childRoleIdList,Integer operatorId);
+
+
     /**
      * 新增角色机构权限
      * @param roleOrgAuth

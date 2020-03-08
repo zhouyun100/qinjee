@@ -149,6 +149,15 @@ public interface RoleAuthService {
     int updateRoleOrgAuth(Integer roleId, List<Integer> orgIdList, Integer operatorId);
 
     /**
+     * 角色授权角色
+     * @param roleId
+     * @param roleIdList
+     * @param operatorId
+     * @return
+     */
+    int roleAuthByRoleId(Integer roleId, List<Integer> roleIdList, Integer operatorId);
+
+    /**
      * 根据角色ID查询角色自定义表列表
      * @param companyId
      * @return
