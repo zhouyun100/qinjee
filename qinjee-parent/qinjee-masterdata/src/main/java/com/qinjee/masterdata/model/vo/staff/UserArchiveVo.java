@@ -188,6 +188,12 @@ public class UserArchiveVo implements Serializable {
     @ApiModelProperty("部门名称")
     @ExcelColumn(order =20, title = "部门")
     private String orgName;
+    /**
+     * 部门全称
+     */
+    @ApiModelProperty("部门全称")
+    @ExcelColumn(order =20, title = "部门")
+    private String orgFullName;
 
 
     /**
@@ -216,6 +222,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("人员分类")
     @ExcelColumn(order =24, title = "人员分类")
+
     private String userCategory;
 
 

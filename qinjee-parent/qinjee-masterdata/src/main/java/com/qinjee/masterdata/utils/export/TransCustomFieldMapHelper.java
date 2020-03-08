@@ -1,15 +1,17 @@
 package com.qinjee.masterdata.utils.export;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.CustomFieldMapAnno;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.TransDictAnno;
+import com.qinjee.model.response.CommonCode;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TransCustomFieldMapHelper<T> {
     public List<T> transToObeject(List<Map<String, String>> customFieldMapList, Class<T> tClass, List<SysDict> sysDicts) throws Exception {
@@ -39,5 +41,60 @@ public class TransCustomFieldMapHelper<T> {
             resultList.add(ob);
         }
         return resultList;
+    }
+
+    /**
+     * 单个bean 属性字典转换
+     * @param ob
+     * @param sysDicts
+     * @throws Exception
+     */
+    public void transToDict(T ob, List<SysDict> sysDicts) throws Exception {
+        Field[] fields = ob.getClass().getDeclaredFields();
+        //找出所有带有字典转换注解的属性
+        //待转换 属性集合
+        List<Field> toTransFieldList = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(TransDictAnno.class)).collect(Collectors.toList());
+        //进行转换
+        toTransFieldList.stream().forEach(field -> {
+            field.setAccessible(true);
+            try {
+                Object fieldValue = field.get(ob);;
+                List<SysDict> dicts = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).collect(Collectors.toList());
+                field.set(ob, dicts.get(0).getDictValue());
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                //TODO 新增字典转换失败code
+                ExceptionCast.cast(CommonCode.SERVER_ERROR);
+            }
+        });
+    }
+
+    /**
+     * 批量bean属性字典转换
+     * @param obList
+     * @param sysDicts
+     * @throws Exception
+     */
+    public void transBatchToDict(List<T> obList, List<SysDict> sysDicts) throws Exception {
+        obList.stream().forEach(ob->{
+            Field[] fields = ob.getClass().getDeclaredFields();
+            //找出所有带有字典转换注解的属性
+            //待转换 属性集合
+            List<Field> toTransFieldList = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(TransDictAnno.class)).collect(Collectors.toList());
+            //进行转换
+            toTransFieldList.stream().forEach(field -> {
+                field.setAccessible(true);
+                try {
+                    Object fieldValue = field.get(ob);;
+                    List<SysDict> dicts = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).collect(Collectors.toList());
+                    field.set(ob, dicts.get(0).getDictValue());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    //TODO 新增字典转换失败注解
+                    ExceptionCast.cast(CommonCode.SERVER_ERROR);
+                }
+            });
+
+        });
     }
 }

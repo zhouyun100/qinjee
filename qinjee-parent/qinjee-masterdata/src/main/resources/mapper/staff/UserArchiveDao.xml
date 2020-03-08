@@ -12,6 +12,7 @@
     <result column="post_id" jdbcType="INTEGER" property="postId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName" />
     <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
     <result column="post_name" jdbcType="VARCHAR" property="postName" />
     <result column="id_type" jdbcType="VARCHAR" property="idType" />
@@ -92,16 +93,15 @@
     where archive_id = #{archiveId,jdbcType=INTEGER}
 </select>
     <select id="selectFullById" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
-    SELECT t_org.org_name org_name ,t_unit.org_name business_unit_name , tp.post_name , user_category, headimgurl,
+    SELECT t_org.org_full_name , t_org.org_name org_name ,t_unit.org_name business_unit_name , tp.post_name , user_category, headimgurl,
         user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
         marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
         probation_period, converse_date, first_degree, highest_degree, phone, email, address,
         professional_certification, professional_title, professional_level
     FROM t_user_archive arc
     LEFT JOIN t_organization t_org ON arc.org_id = t_org.org_id AND t_org.is_enable =1
-    LEFT JOIN t_organization t_unit ON arc.business_unit_id = t_org.org_id AND t_unit.is_enable =1
+    LEFT JOIN t_organization t_unit ON arc.business_unit_id = t_unit.org_id AND t_unit.is_enable =1
     LEFT JOIN t_post tp ON tp.post_id =arc.post_id AND tp.is_delete =0
-
     where arc.archive_id = #{archiveId} and arc.is_delete =0
   </select>
 

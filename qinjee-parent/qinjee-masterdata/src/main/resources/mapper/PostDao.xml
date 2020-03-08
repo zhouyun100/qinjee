@@ -371,7 +371,7 @@
         <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"></result>
         <result column="user_name" jdbcType="VARCHAR" property="userName"></result>
         <result column="post_id" jdbcType="INTEGER" property="postId"></result>
-<!--        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>-->
+        <!--        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>-->
         <result column="employment_begin_date" jdbcType="TIMESTAMP" property="employmentBeginDate"></result>
         <result column="employment_end_date" jdbcType="TIMESTAMP" property="employmentEndDate"></result>
         <result column="employment_type" jdbcType="VARCHAR" property="employmentType"></result>
@@ -460,7 +460,7 @@
         </if>
     </select>
 
-    <select id="listDirectPostPage" resultMap="BaseResultMap">
+    <select id="listDirectPostPage" resultMap="BaseResultMap" parameterType="com.qinjee.masterdata.model.vo.organization.page.PostPageVo">
         SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code
         parent_post_code,ptp.post_name parent_post_name
         FROM t_post tp
@@ -537,11 +537,12 @@
             and tp.is_enable = 1
     </select>
     <select id="listPostsByOrgId" resultType="com.qinjee.masterdata.model.entity.Post" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+        select
+        <include refid="Base_Column_List"/>
         from t_post
         where company_id=#{companyId}
         <if test="orgId !=0">
-        and org_id=#{orgId}
+            and org_id=#{orgId}
         </if>
         and is_delete=0 and is_enable=1
     </select>
@@ -559,23 +560,42 @@
     </select>
     <select id="getPostIds" resultType="integer">
         select post_id from (
-              select t1.post_id,
-              if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
-              from (
-                   select post_id ,parent_post_id from t_post WHERE is_delete =0
-                   <if test="isEnable != null ">
-                     and is_enable = 1
-                    </if>
-                  ) t1,
-                  (select @pids := #{postId} ) t2
-             ) t3 where ischild != 0 OR t3.post_id = #{postId}
+        select t1.post_id,
+        if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
+        from (
+        select post_id ,parent_post_id from t_post WHERE is_delete =0
+        <if test="isEnable != null ">
+            and is_enable = 1
+        </if>
+        ) t1,
+        (select @pids := #{postId} ) t2
+        ) t3 where ischild != 0 OR t3.post_id = #{postId}
     </select>
 
     <select id="listPostsByPositionLevelId" resultMap="BaseResultMap">
-        select post_id  from t_post_level_relation where 1=1 and is_delete=0 and  position_level_id  in
-         <foreach collection="positionLevelIds" item="positionLevelId" close=")" open="(" separator=",">
-             #{positionLevelId}
-         </foreach>
+        select post_id from t_post_level_relation where 1=1 and is_delete=0 and position_level_id in
+        <foreach collection="positionLevelIds" item="positionLevelId" close=")" open="(" separator=",">
+            #{positionLevelId}
+        </foreach>
+    </select>
+    <insert id="batchInsertPostLevelRelation">
+        insert into t_post_level_relation(post_id,position_level_id,operator_id)
+        <foreach collection="positionLevelIds" item="positionLevelId" open="VALUES" close=";" separator=",">
+            (#{postId},#{positionLevelId},#{operatorId})
+        </foreach>
+    </insert>
 
+    <update id="batchDeletePostLevelRelation">
+        update  t_post_level_relation set is_delete =1 and  operator_id =#{operatorId}
+        where post_id = #{postId}
+    </update>
+
+    <select id="listPositionLevelId" resultType="integer">
+        select position_level_id from t_post_level_relation where  is_delete = 0 and post_id = #{postId}
+    </select>
+    <select id="listPositionLevel" resultType="com.qinjee.masterdata.model.entity.PositionLevel">
+        select t_post_level.position_level_id positionLevelId ,t_level.position_level_name positionLevelName from t_post_level_relation t_post_level
+         left  join t_position_level t_level on t_level.position_level_id =t_post_level.position_level_id  and t_level.is_delete=0
+         where  t_post_level.is_delete = 0 and t_post_level.post_id = #{postId}
     </select>
 </mapper>

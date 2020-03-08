@@ -100,10 +100,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             //组装成一个大的对象用来封装所有页面需要的信息
             PreRegistVo preRegistVo = new PreRegistVo();
             //查询预入职档案基本信息
+            //TODO 缺少个人证件照，目前预入职没有证件照
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById(employmentId);
             //字典转换中文
             preEmploymentVo.setGender( sysDictDao.selectByCode(preEmploymentVo.getGender()));
-
 
             preRegistVo.setPreEmploymentVo(preEmploymentVo);
             //--------------

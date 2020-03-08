@@ -174,5 +174,5 @@ public interface IStaffArchiveService {
     PageResult<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage,UserSession userSession);
     void deleteCareerTrack(Integer id);
 
-    List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession);
+    List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) throws Exception;
 }

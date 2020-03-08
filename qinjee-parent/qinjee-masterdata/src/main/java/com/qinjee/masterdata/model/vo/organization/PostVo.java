@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 岗位表
@@ -62,8 +63,8 @@ public class PostVo  implements Serializable {
     /**
      * 职级
      */
-//    @ApiModelProperty("职级")
-//    private List<Integer> positionLevels;
+    @ApiModelProperty("职级id列表")
+    private List<Integer> positionLevelIds;
 
     /**
      * 职等

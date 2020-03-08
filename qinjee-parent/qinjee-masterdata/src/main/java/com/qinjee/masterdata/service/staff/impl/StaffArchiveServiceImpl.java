@@ -88,19 +88,27 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     private IStaffCommonService staffCommonService;
 
     @Override
-    public List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) {
+    public List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) throws Exception {
         ArrayList<ArchiveRegistVo> archiveRegistList = new ArrayList<>();
+        //TODO 缓存字典
+        List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         for (Integer archiveId : archiveIds) {
             //组装成一个大的对象用来封装所有页面需要的信息
             ArchiveRegistVo archiveRegistVo = new ArchiveRegistVo();
-            //查询预入职档案基本信息
+            //1、查询预入职档案基本信息
             UserArchiveVo userArchiveVo =userArchiveDao.selectFullById(archiveId);
+            userArchiveVo.setBusinessUnitName(userArchiveVo.getOrgFullName().replace("/","|"));
+            //转换字典
+            new TransCustomFieldMapHelper<UserArchiveVo>().transToDict(userArchiveVo, sysDicts);
             archiveRegistVo.setUserArchiveVo(userArchiveVo);
+
+            //2、查询人事变动信息
+            List<ArchiveCareerTrackVo> archiveCareerTrackVoList = archiveCareerTrackdao.selectCareerTrack(archiveId);
+            archiveRegistVo.setArchiveCareerTrackVoList(archiveCareerTrackVoList);
             //--------------
-            //获取自定义相关数据  （教育经历、工作经历、家庭成员）
+            //3、查询自定义相关数据  （教育经历、工作经历、家庭成员）
             ArrayList<String> tableNames = Lists.newArrayList("教育经历", "工作经历", "家庭成员","职称信息");
-            //TODO 缓存
-            List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
+
             tableNames.stream().forEach(tableName -> {
                 //1.获取表id
                 Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, userSession.getCompanyId(), "ARC");

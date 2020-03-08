@@ -15,7 +15,6 @@ import java.io.Serializable;
  */
 @ApiModel(description = "岗位分页实体Vo类")
 @Data
-@NoArgsConstructor
 public class PostPageVo implements Serializable {
   private Integer currentPage;
   private Integer pageSize;

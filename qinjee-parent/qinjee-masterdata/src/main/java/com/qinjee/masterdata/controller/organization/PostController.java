@@ -101,7 +101,7 @@ public class PostController extends BaseController {
 
 
     @PostMapping("/getDirectPostPageList")
-    @ApiOperation(value = "ok，分页查询下级直属机构(id可以是机构orgId、parentPostId)", notes = "ok")
+    @ApiOperation(value = "ok，分页查询下级直属岗位(id可以是机构orgId、parentPostId)", notes = "ok")
     public ResponseResult<PageResult<Post>> getDirectPostPageList(@RequestBody PostPageVo postPageVo) {
         if (checkParam(postPageVo, getUserSession())) {
             Short isEnable = postPageVo.getIsEnable();
@@ -113,7 +113,7 @@ public class PostController extends BaseController {
             long start = System.currentTimeMillis();
             postPageVo.setIsEnable(isEnable);
             PageResult<Post> pageResult = postService.listDirectPostPage(postPageVo);
-            logger.info("分页查询下级直属机构耗时:" + (System.currentTimeMillis() - start));
+            logger.info("分页查询下级直属岗位耗时:" + (System.currentTimeMillis() - start));
             return new ResponseResult<>(pageResult);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -134,7 +134,7 @@ public class PostController extends BaseController {
 
     @ApiOperation(value = "ok，编辑岗位", notes = "ok")
     @PostMapping("/editPost")
-    public ResponseResult editPost(PostVo postVo) {
+    public ResponseResult editPost(@RequestBody  PostVo postVo) {
         if (checkParam(postVo, getUserSession())) {
             long start = System.currentTimeMillis();
             postService.editPost(postVo, getUserSession());

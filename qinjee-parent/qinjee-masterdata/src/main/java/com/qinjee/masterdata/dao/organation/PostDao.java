@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.dao.organation;
 
+import com.qinjee.masterdata.model.entity.PositionLevel;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
@@ -108,7 +109,7 @@ public interface PostDao {
 
     List<Post> listPostsByCompanyIdAndEnable(Integer companyId, Short isEnable);
 
-    List<Post> listDirectPostPage(PostPageVo postPageVo);
+    List<Post> listDirectPostPage(@Param("postPageVo")PostPageVo postPageVo);
 
 
     List<Post> listPostsByPisitionId(@Param("positionIds") List<Integer> positionIds);
@@ -119,5 +120,13 @@ public interface PostDao {
     List<Integer> getPostIds(Integer postId, Short isEnable);
 
     List<Post> listPostsByPositionLevelId( @Param("positionLevelIds") List<Integer> positionLevelIds);
+
+    void batchInsertPostLevelRelation(@Param("positionLevelIds")List<Integer> positionLevelIds, @Param("operatorId")Integer operatorId, @Param("postId")Integer postId);
+
+    int batchDeletePostLevelRelation(Integer operatorId, Integer postId);
+
+    List<Integer> listPositionLevelId(Integer postId);
+
+    List<PositionLevel> listPositionLevel(Integer postId);
 }
 

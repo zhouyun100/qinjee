@@ -50,7 +50,7 @@ public class StaffArchiveController extends BaseController {
      */
     @PostMapping(value = "/getArchiveRegisterInfo")
     @ApiOperation(value = "员工登记表打印的数据查询接口", notes = "phs")
-    public ResponseResult<List<com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> archiveIds )  {
+    public ResponseResult<List<com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> archiveIds ) throws Exception {
         Boolean b = checkParam(archiveIds,getUserSession());
         if(b){
             List<ArchiveRegistVo> preRegistList= staffArchiveService.getArchiveRegisterInfo(archiveIds,getUserSession());

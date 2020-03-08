@@ -29,7 +29,6 @@ public interface PostService {
    */
   PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo);
 
-  public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId) ;
 
   /**
    * 新增岗位
@@ -37,6 +36,7 @@ public interface PostService {
    * @param postVo
    * @return
    */
+  @Transactional
   void addPost(PostVo postVo, UserSession userSession);
 
   /**
@@ -46,6 +46,7 @@ public interface PostService {
    * @param userSession
    * @return
    */
+  @Transactional
   void editPost(PostVo postVo, UserSession userSession);
 
   /**

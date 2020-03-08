@@ -1,5 +1,6 @@
 package com.qinjee.masterdata.model.vo.staff.archiveInfo;
 
+import com.qinjee.masterdata.model.vo.staff.ArchiveCareerTrackVo;
 import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import lombok.Data;
@@ -43,7 +44,7 @@ public class ArchiveRegistVo implements Serializable {
     /**
      * 人事变动
      */
-    private List<ChangeOfPersonnelVo> changeOfPersonnelList;
+    private List<ArchiveCareerTrackVo> archiveCareerTrackVoList;
 
 
 }
