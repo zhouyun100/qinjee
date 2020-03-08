@@ -1213,22 +1213,16 @@
         grade.position_grade_name as positionGradeName,level.position_level_name as positionLevelName
         from t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
-        left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1
-        left join t_sys_dict dict on dict.dict_type = 'CARD_TYPE' and dict.dict_code = t_pre_employment.id_type
-        left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status
-        left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree
-        left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender
-        left join t_position_grade grade on grade.position_grade_id= t_pre_employment.position_grade_id
-        left join t_position_level level on level.position_level_id= t_pre_employment.position_level_id
+        left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1  and post.is_delete=0
+        left join t_sys_dict dict on dict.dict_type = 'CARD_TYPE' and dict.dict_code = t_pre_employment.id_type  and dict.is_delete=0
+        left join t_sys_dict dict1 on dict1.dict_type = 'MARITAL_STATUS' and dict1.dict_code = t_pre_employment.marital_status  and dict1.is_delete=0
+        left join t_sys_dict dict2 on dict2.dict_type = 'DEGREE' and dict2.dict_code = t_pre_employment.highest_degree  and dict2.is_delete=0
+        left join t_sys_dict dict3 on dict3.dict_type = 'SEX_TYPE' and dict3.dict_code = t_pre_employment.gender and dict3.is_delete=0
+        left join t_position_grade grade on grade.position_grade_id= t_pre_employment.position_grade_id  and grade.is_delete=0
+        left join t_position_level level on level.position_level_id= t_pre_employment.position_level_id and level.is_delete=0
         where t_pre_employment.is_delete=0
         and t_pre_employment.company_id=#{companyId}
-        and post.is_delete=0
-        and dict.is_delete=0
-        and dict1.is_deiete=0
-        and dict2.is_delete=0
-        and dict3.is_delete=0
-        and grade.is_delete=0
-        and level.is_delete=0
+
         <if test="whereSql !=null">
             ${whereSql}
         </if>
