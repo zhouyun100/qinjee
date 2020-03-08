@@ -105,8 +105,13 @@ public class DealHeadParamUtil {
                 stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy())).append(",");
             }
         }
-        int i = stringBuffer.toString().lastIndexOf(",");
-        return stringBuffer.substring(i);
+        String string = stringBuffer.toString();
+        if(StringUtils.isNotBlank(string)){
+            int i = string.lastIndexOf(",");
+            return string.substring(i);
+        }else {
+            return null;
+        }
     }
     private static String getOrder(String order){
         if("升序".equals(order)){

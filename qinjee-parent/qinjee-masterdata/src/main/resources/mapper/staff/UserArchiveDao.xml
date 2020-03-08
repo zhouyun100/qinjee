@@ -1290,23 +1290,20 @@
     left join  t_organization org on org.org_id=oa.org_id and org.is_enable=1
     where oa.archive_id = #{archiveId}
     and (oa.is_trusteeship = 0
-    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
-    )
-    and oa.is_delete = 0
+    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time)and oa.is_delete = 0
     UNION
     select org.org_id from t_role_org_auth roa
     left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
     left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
     where roa.is_delete = 0 and org.company_id=#{companyId}	and org.org_id is not NULL
-      and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )
-      and ur.is_delete = 0
+      and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )and ur.is_delete = 0
     )
-    <if test="message !=null">
-        or (arc.org_id is null and arc.is_delete=0)
-    </if>
     and arc.company_id=#{companyId}
       <if test="whereSql !=null">
           ${whereSql}
+      </if>
+      <if test="message !=null">
+          and (arc.org_id is null or arc.is_delete=0)
       </if>
       group by arc.archive_id
       <if test="orderSql !=null">

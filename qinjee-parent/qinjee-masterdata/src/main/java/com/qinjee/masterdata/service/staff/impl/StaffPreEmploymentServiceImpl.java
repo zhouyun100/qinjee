@@ -354,8 +354,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     public PageResult<PreEmploymentVo> selectPreEmployment(UserSession userSession,RequestUserarchiveVo requestUserarchiveVo) {
         //通过部门找到预入职Vo
         PageHelper.startPage(requestUserarchiveVo.getCurrentPage(), requestUserarchiveVo.getPageSize());
-        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t_pre_employment");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t_pre_employment");
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t_pre_employment.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t_pre_employment.");
         List<PreEmploymentVo> preEmploymentList = preEmploymentDao.selectPreEmploymentVo(userSession.getCompanyId(),
                 requestUserarchiveVo.getOrgId(),whereSql,orderSql);
         List<Integer> integers = new ArrayList<>();
