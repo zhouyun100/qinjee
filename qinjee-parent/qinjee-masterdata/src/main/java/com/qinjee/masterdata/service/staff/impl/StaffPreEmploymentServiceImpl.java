@@ -101,10 +101,16 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             PreRegistVo preRegistVo = new PreRegistVo();
             //查询预入职档案基本信息
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById(employmentId);
+            //字典转换中文
+            preEmploymentVo.setGender( sysDictDao.selectByCode(preEmploymentVo.getGender()));
+
+
             preRegistVo.setPreEmploymentVo(preEmploymentVo);
             //--------------
             //获取自定义相关数据  （教育经历、工作经历、家庭成员）
             ArrayList<String> tableNames = Lists.newArrayList("教育经历", "工作经历", "家庭成员");
+            //TODO 缓存
+            List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
             tableNames.stream().forEach(tableName -> {
                 //1.获取表id
                 Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, userSession.getCompanyId(), "PRE");
@@ -114,15 +120,15 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     //3.将resMapList填充到preRegistVo中对应得属性中
                     if ("教育经历".equals(tableName)) {
                         //转化为对象vo
-                        List<EducationExperienceVo> educationExperienceList = new TransCustomFieldMapHelper<EducationExperienceVo>().transToObeject(customDataList, EducationExperienceVo.class,sysDictDao);
+                        List<EducationExperienceVo> educationExperienceList = new TransCustomFieldMapHelper<EducationExperienceVo>().transToObeject(customDataList, EducationExperienceVo.class,sysDicts);
                         preRegistVo.setEducationExperienceList(educationExperienceList);
                     }
                     if ("工作经历".equals(tableName)) {
-                        List<WorkExperienceVo> workExperienceList = new TransCustomFieldMapHelper<WorkExperienceVo>().transToObeject(customDataList, WorkExperienceVo.class,sysDictDao);
+                        List<WorkExperienceVo> workExperienceList = new TransCustomFieldMapHelper<WorkExperienceVo>().transToObeject(customDataList, WorkExperienceVo.class,sysDicts);
                         preRegistVo.setWorkExperienceList(workExperienceList);
                     }
                     if ("家庭成员".equals(tableName)) {
-                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new TransCustomFieldMapHelper<FamilyMemberAndSocialRelationsVo>().transToObeject(customDataList, FamilyMemberAndSocialRelationsVo.class,sysDictDao);
+                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new TransCustomFieldMapHelper<FamilyMemberAndSocialRelationsVo>().transToObeject(customDataList, FamilyMemberAndSocialRelationsVo.class,sysDicts);
                         preRegistVo.setFamilyMemberAndSocialRelationsList(FamilyMemberAndSocialRelationsList);
                     }
                 } catch (Exception e) {

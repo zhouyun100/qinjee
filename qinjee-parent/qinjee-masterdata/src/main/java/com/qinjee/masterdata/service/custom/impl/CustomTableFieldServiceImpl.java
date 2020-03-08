@@ -601,7 +601,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             fieldVO.setChDefaultValue ( post.getPostName () );
                         }
                     } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
-                        UserArchiveVo archiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getDefaultValue()));
+                        UserArchiveVo archiveVo = userArchiveDao.selectBasicById(Integer.parseInt(fieldVO.getDefaultValue()));
                         if(archiveVo!=null) {
                             fieldVO.setChDefaultValue ( archiveVo.getUserName () );
                         }

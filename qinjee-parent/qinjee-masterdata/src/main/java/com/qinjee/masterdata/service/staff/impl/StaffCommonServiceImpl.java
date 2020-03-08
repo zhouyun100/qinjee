@@ -576,7 +576,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List < Map < String, String > > mapList = customTableFieldDao.selectCodAndIdByTableId ( tableId );
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "ARC" )) {
             Map < Integer, String > map = new HashMap <> ();
-            UserArchiveVo userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
+            UserArchiveVo userArchive = userArchiveDao.selectBasicById( businessId );
             if(userArchive!=null) {
                 for (Field declaredField : userArchive.getClass().getDeclaredFields()) {
                     declaredField.setAccessible(true);

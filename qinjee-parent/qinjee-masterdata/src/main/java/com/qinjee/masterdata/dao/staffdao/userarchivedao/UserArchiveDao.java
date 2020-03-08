@@ -25,7 +25,8 @@ public interface UserArchiveDao {
 
     int insertSelective(UserArchive record);
 
-    UserArchiveVo selectByPrimaryKey(Integer archiveId);
+    UserArchiveVo selectBasicById(Integer archiveId);
+    UserArchiveVo selectFullById(Integer archiveId);
 
     int updateByPrimaryKeySelective(UserArchive record);
 

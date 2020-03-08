@@ -2,6 +2,7 @@ package com.qinjee.masterdata.model.vo.staff;
 
 import com.github.liaochong.myexcel.core.annotation.ExcelColumn;
 import com.github.liaochong.myexcel.core.annotation.ExcelTable;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.TransDictAnno;
 import com.qinjee.utils.QueryColumn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
+    @TransDictAnno
     @ExcelColumn(order = 1, title = "性别")
     private String gender;
 
@@ -48,6 +50,7 @@ public class UserArchiveVo implements Serializable {
 
     @ApiModelProperty("证件类型")
     @ExcelColumn(order = 2, title = "证件类型")
+    @TransDictAnno
     private String idType;
 
     /**
@@ -84,6 +87,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("民族")
     @ExcelColumn(order =7, title = "民族")
+    @TransDictAnno
     private String nationality;
 
 
@@ -92,6 +96,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("最高学历")
     @ExcelColumn(order =8, title = "最高学历")
+    @TransDictAnno
     private String highestDegree;
 
     /**
@@ -99,6 +104,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("第一学历")
     @ExcelColumn(order =9, title = "第一学历")
+    @TransDictAnno
     private String firstDegree;
 
     /**
@@ -122,6 +128,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("婚姻状况")
     @ExcelColumn(order =12, title = "婚姻状况")
+    @TransDictAnno
     private String maritalStatus;
 
     /**
@@ -129,6 +136,7 @@ public class UserArchiveVo implements Serializable {
      */
     @ApiModelProperty("政治面貌")
     @ExcelColumn(order =13, title = "政治面貌")
+    @TransDictAnno
     private String politicalStatus;
 
 

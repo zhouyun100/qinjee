@@ -6,7 +6,6 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.dao.staffdao.contractdao.ContractParamDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.*;
 import com.qinjee.masterdata.dao.sys.SysDictDao;
@@ -16,7 +15,6 @@ import com.qinjee.masterdata.model.vo.custom.CustomTableVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.*;
-import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportArcVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
@@ -39,12 +37,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -98,11 +94,13 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             //组装成一个大的对象用来封装所有页面需要的信息
             ArchiveRegistVo archiveRegistVo = new ArchiveRegistVo();
             //查询预入职档案基本信息
-            UserArchiveVo userArchiveVo =userArchiveDao.selectByPrimaryKey(archiveId);
+            UserArchiveVo userArchiveVo =userArchiveDao.selectFullById(archiveId);
             archiveRegistVo.setUserArchiveVo(userArchiveVo);
             //--------------
             //获取自定义相关数据  （教育经历、工作经历、家庭成员）
             ArrayList<String> tableNames = Lists.newArrayList("教育经历", "工作经历", "家庭成员","职称信息");
+            //TODO 缓存
+            List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
             tableNames.stream().forEach(tableName -> {
                 //1.获取表id
                 Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, userSession.getCompanyId(), "ARC");
@@ -112,16 +110,20 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                     //3.将resMapList填充到preRegistVo中对应得属性中
                     if ("教育经历".equals(tableName)) {
                         //转化为对象vo
-                        List<EducationExperienceVo> educationExperienceList = new TransCustomFieldMapHelper<EducationExperienceVo>().transToObeject(customDataList, EducationExperienceVo.class,sysDictDao);
+                        List<EducationExperienceVo> educationExperienceList = new TransCustomFieldMapHelper<EducationExperienceVo>().transToObeject(customDataList, EducationExperienceVo.class,sysDicts);
                         archiveRegistVo.setEducationExperienceList(educationExperienceList);
                     }
                     if ("工作经历".equals(tableName)) {
-                        List<WorkExperienceVo> workExperienceList = new TransCustomFieldMapHelper<WorkExperienceVo>().transToObeject(customDataList, WorkExperienceVo.class,sysDictDao);
+                        List<WorkExperienceVo> workExperienceList = new TransCustomFieldMapHelper<WorkExperienceVo>().transToObeject(customDataList, WorkExperienceVo.class,sysDicts);
                         archiveRegistVo.setWorkExperienceList(workExperienceList);
                     }
                     if ("家庭成员".equals(tableName)) {
-                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new TransCustomFieldMapHelper<FamilyMemberAndSocialRelationsVo>().transToObeject(customDataList, FamilyMemberAndSocialRelationsVo.class,sysDictDao);
+                        List<FamilyMemberAndSocialRelationsVo> FamilyMemberAndSocialRelationsList = new TransCustomFieldMapHelper<FamilyMemberAndSocialRelationsVo>().transToObeject(customDataList, FamilyMemberAndSocialRelationsVo.class,sysDicts);
                         archiveRegistVo.setFamilyMemberAndSocialRelationsList(FamilyMemberAndSocialRelationsList);
+                    }
+                    if ("职称信息".equals(tableName)) {
+                        List<TitleInformationVo> titleInformationList = new TransCustomFieldMapHelper<TitleInformationVo>().transToObeject(customDataList, TitleInformationVo.class,sysDicts);
+                        archiveRegistVo.setTitleInformationList(titleInformationList);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -145,7 +147,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Transactional(rollbackFor = Exception.class)
     public void resumeDeleteArchiveById(List < Integer > archiveid) {
         for (Integer integer : archiveid) {
-            UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(integer);
+            UserArchiveVo userArchiveVo = userArchiveDao.selectBasicById(integer);
             Integer isExistId=userArchiveDao.selectIsExist(userArchiveVo.getIdNumber(),userArchiveVo.getUserId());
             if(isExistId==null|| isExistId==0){
                 userArchiveDao.resumeDeleteArchiveById(integer);
@@ -168,7 +170,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PageResult < UserArchiveVo > selectArchive(UserSession userSession) {
-        UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( userSession.getArchiveId () );
+        UserArchiveVo userArchiveVo = userArchiveDao.selectBasicById( userSession.getArchiveId () );
         List < UserArchiveVo > userArchiveVos = new ArrayList <> ();
         userArchiveVos.add ( userArchiveVo );
         return new PageResult <> ( userArchiveVos );
@@ -420,7 +422,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public PageResult < UserArchiveVo > selectArchiveSingle(Integer id, UserSession userSession) {
-        UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey ( id );
+        UserArchiveVo userArchiveVo = userArchiveDao.selectBasicById( id );
         List < UserArchiveVo > userArchiveVos = new ArrayList <> ();
         userArchiveVos.add ( userArchiveVo );
         return new PageResult <> ( userArchiveVos );
@@ -653,7 +655,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public UserArchiveVo selectById(Integer id) {
-        return userArchiveDao.selectByPrimaryKey ( id );
+        return userArchiveDao.selectBasicById( id );
     }
 
     @Override
