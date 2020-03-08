@@ -70,7 +70,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         PageHelper.startPage ( requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         //根据合同id找到没有合同的档案
         String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList());
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"arc");
         List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( requestUserarchiveVo.getOrgId(),companyId ,whereSql,orderSql);
         return new PageResult <> ( arcList );
     }
@@ -119,7 +119,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public PageResult < ContractWithArchiveVo > selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
         PageHelper.startPage (requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList());
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"t");
         List < ContractWithArchiveVo > list = getContractWithArchiveVos ( requestUserarchiveVo.getOrgId(), requestUserarchiveVo.getStatus() ,userSession.getCompanyId(),
                 whereSql,orderSql);
         return new PageResult <> ( list );
