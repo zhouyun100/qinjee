@@ -291,7 +291,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     }
                 }
                 if("supervisor_id".equals(fieldVO.getFieldCode())){
-                    UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
+                    UserArchiveVo userArchiveVo = userArchiveDao.selectBasicById(Integer.parseInt(fieldVO.getFieldValue()));
                     if(userArchiveVo!=null){
                         fieldVO.setFieldValue(userArchiveVo.getUserName());
                     }else{

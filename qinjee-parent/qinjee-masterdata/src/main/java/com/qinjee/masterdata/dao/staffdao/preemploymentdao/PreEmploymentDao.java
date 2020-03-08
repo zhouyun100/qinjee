@@ -27,7 +27,7 @@ public interface PreEmploymentDao {
      * @return
      */
     Integer updateBatch(List<PreEmployment> list);
-    Integer selectMaxId();
+
 
     /**
      * 根据id得到电话号码

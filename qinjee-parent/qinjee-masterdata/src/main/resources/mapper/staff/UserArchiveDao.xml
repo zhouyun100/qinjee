@@ -48,7 +48,7 @@
       <result column="position_grade_id" jdbcType="INTEGER" property="positionGradeId" />
     <result column="position_level_id" jdbcType="INTEGER" property="positionLevelId" />
     <result column="position_grade_name" jdbcType="VARCHAR" property="positionGradeName" />
-    <result column="position_level_name" jdbcType="VARCHAR" property="positionGradeName" />
+    <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName" />
   </resultMap>
   <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
     <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
@@ -85,12 +85,27 @@
     professional_certification, professional_title, professional_level, attrition_date,
     attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete,position_grade_id,position_level_id
   </sql>
-  <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
+  <select id="selectBasicById" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
     select
     <include refid="Base_Column_List" />
     from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
+</select>
+    <select id="selectFullById" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
+    SELECT t_org.org_name org_name ,t_unit.org_name business_unit_name , tp.post_name , user_category, headimgurl,
+        user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
+        marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
+        probation_period, converse_date, first_degree, highest_degree, phone, email, address,
+        professional_certification, professional_title, professional_level
+    FROM t_user_archive arc
+    LEFT JOIN t_organization t_org ON arc.org_id = t_org.org_id AND t_org.is_enable =1
+    LEFT JOIN t_organization t_unit ON arc.business_unit_id = t_org.org_id AND t_unit.is_enable =1
+    LEFT JOIN t_post tp ON tp.post_id =arc.post_id AND tp.is_delete =0
+
+    where arc.archive_id = #{archiveId} and arc.is_delete =0
   </select>
+
+
     <select id="selectByPrimaryKeyAndIsDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         select
         <include refid="Base_Column_List" />
@@ -975,7 +990,7 @@
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
     arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
@@ -1061,14 +1076,13 @@
       maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
       arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
       professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
       orga.org_name as org_name ,
       post.post_name as post_name ,
       org.org_name as business_unit_name,
       arch.user_name as supervisor_user_name,
-      arc.grade.position_grade_name as positionGradeName,
-      arc.level.position_level_name as positionLevelName
+      grade.position_grade_name as position_grade_name,
+      level.position_level_name as position_level_name
       FROM
       t_user_archive arc
       LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
@@ -1076,8 +1090,8 @@
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-      left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-      left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+      left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+      left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
       left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
@@ -1224,14 +1238,13 @@
       maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
       arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
       professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
+      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,arc.position_grade_id,arc.position_level_id,
       orga.org_name as org_name ,
       post.post_name as post_name ,
       org.org_name as business_unit_name,
       arch.user_name as supervisor_user_name,
-      arc.grade.position_grade_name as positionGradeName,
-      arc.level.position_level_name as positionLevelName
+      grade.position_grade_name as position_grade_name,
+      level.position_level_name as position_level_name
       FROM
       t_user_archive arc
       LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
@@ -1239,8 +1252,8 @@
       LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
       left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-      left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-      left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+      left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+      left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
       left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
@@ -1361,14 +1374,14 @@
         maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
         arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        arc.headimgurl,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
         arch.user_name as supervisor_user_name,
-        arc.grade.position_grade_name as positionGradeName,
-        arc.level.position_level_name as positionLevelName
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
         FROM
         t_user_archive arc
         LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
@@ -1376,8 +1389,8 @@
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-        left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-        left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
         left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
@@ -1430,36 +1443,19 @@
     where arc.archive_id = #{key}
   </select>
   <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
- SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-    maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-   arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-    professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-    orga.org_name as org_name ,
-    post.post_name as post_name ,
-    org.org_name as business_unit_name,
-    arch.user_name as supervisor_user_name
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-    left join t_organization org on org.org_id=arc.business_unit_id
-    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
     SELECT
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
         arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
         maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
         arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,arc.headimgurl,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
         arch.user_name as supervisor_user_name,
-        grade.position_grade_name as positionGradeName,
-        level.position_level_name as positionLevelName
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
         FROM
         t_user_archive arc
         LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
@@ -1467,8 +1463,8 @@
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-        left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-        left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
         left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
@@ -1493,7 +1489,7 @@
         left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
         where arc.is_delete=0 and orga.company_id=#{companyId}
        and arc.id_number=#{s}
-    and arc.archive_status='SERVICE'
+       and arc.archive_status='SERVICE'
      group by arc.archive_id
   </select>
   <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
@@ -1545,41 +1541,23 @@
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      arc.probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    arc.probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,arc.position_grade_id,arc.position_level_id,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
-    arch.user_name as supervisor_user_name
+    arch.user_name as supervisor_user_name,
+      grade.position_grade_name as position_grade_name,
+      level.position_level_name as position_level_name
     FROM
     t_user_archive arc
     LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
     left join t_organization org on org.org_id=arc.business_unit_id
     LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
     left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-      SELECT
-      arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-      arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-      maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-      professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
-      orga.org_name as org_name ,
-      post.post_name as post_name ,
-      org.org_name as business_unit_name,
-      arch.user_name as supervisor_user_name,
-      arc.grade.position_grade_name as positionGradeName,
-      arc.level.position_level_name as positionLevelName
-      FROM
-      t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-      left join t_organization org on org.org_id=arc.business_unit_id
-      LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-      left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-
-      left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-      left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+      left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+      left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
       left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
@@ -1636,13 +1614,13 @@
         arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
         arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
+        arc.position_grade_id,arc.position_level_id,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
         arch.user_name as supervisor_user_name,
-        arc.grade.position_grade_name as positionGradeName,
-        arc.level.position_level_name as positionLevelName
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
         FROM
         t_user_archive arc
         LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
@@ -1650,8 +1628,8 @@
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
 
-        left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-        left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
         left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 
@@ -1734,22 +1712,21 @@
         arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
         professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
         arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,position_grade_id,position_level_id,
+        arc.position_grade_id,arc.position_level_id,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
         arch.user_name as supervisor_user_name,
-        arc.grade.position_grade_name as positionGradeName,
-        arc.level.position_level_name as positionLevelName
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
         FROM
         t_user_archive arc
         LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
         left join t_organization org on org.org_id=arc.business_unit_id
         LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-
-        left join t_position_level_relation level on arc.position_level_id=level.position_level_id and level.is_delete=0
-        left join t_position_grade_relation grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
 
         left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
 

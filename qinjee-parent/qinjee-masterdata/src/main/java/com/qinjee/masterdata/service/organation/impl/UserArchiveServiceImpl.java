@@ -153,7 +153,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         userInfoVO.setEmail(userArchiveVo.getEmail());
 
         userInfoDao.editUserInfo(userInfoVO);
-        UserArchiveVo userArchiveVo1 = userArchiveDao.selectByPrimaryKey(userArchiveVo.getArchiveId());
+        UserArchiveVo userArchiveVo1 = userArchiveDao.selectBasicById(userArchiveVo.getArchiveId());
 
         UserArchive userArchive = new UserArchive();
         BeanUtils.copyProperties(userArchiveVo, userArchiveVo1);
