@@ -58,9 +58,9 @@ public class TransCustomFieldMapHelper<T> {
         toTransFieldList.stream().forEach(field -> {
             field.setAccessible(true);
             try {
-                Object fieldValue = field.get(ob);;
-                List<SysDict> dicts = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).collect(Collectors.toList());
-                field.set(ob, dicts.get(0).getDictValue());
+                Object fieldValue = field.get(ob);
+                Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
+                field.set(ob, dictValue.get());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 //TODO 新增字典转换失败code
@@ -85,9 +85,9 @@ public class TransCustomFieldMapHelper<T> {
             toTransFieldList.stream().forEach(field -> {
                 field.setAccessible(true);
                 try {
-                    Object fieldValue = field.get(ob);;
-                    List<SysDict> dicts = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).collect(Collectors.toList());
-                    field.set(ob, dicts.get(0).getDictValue());
+                    Object fieldValue = field.get(ob);
+                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
+                    field.set(ob, dictValue.get());
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                     //TODO 新增字典转换失败注解
