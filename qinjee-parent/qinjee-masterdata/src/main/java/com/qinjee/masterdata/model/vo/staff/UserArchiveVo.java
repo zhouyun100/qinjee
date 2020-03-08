@@ -368,11 +368,11 @@ public class UserArchiveVo implements Serializable {
     /**
      * 职级名称
      */
-    private Integer positionLevelName;
+    private String positionLevelName;
     /**
      * 职等名称
      */
-    private Integer positionGradeName;
+    private String positionGradeName;
 
     private static final long serialVersionUID = 1L;
 
