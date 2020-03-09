@@ -51,8 +51,8 @@ public class PositionServiceImpl implements PositionService {
         if (pageVo != null && (pageVo.getPageSize() != null && pageVo.getCurrentPage() != null)) {
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
         }
-        String whereSql = DealHeadParamUtil.getWhereSql(pageVo.getTableHeadParamList(), "tp.");
-        String orderSql = DealHeadParamUtil.getOrderSql(pageVo.getTableHeadParamList(), "tp.");
+        String whereSql = DealHeadParamUtil.getWhereSql(pageVo.getTableHeadParamList(), "tp2.");
+        String orderSql = DealHeadParamUtil.getOrderSql(pageVo.getTableHeadParamList(), "tp2.");
         List<Position> positionList = positionDao.getPositionPage(pageVo,whereSql,orderSql);
         PageResult<Position> pageResult = new PageResult<>(positionList);
         return new ResponseResult<>(pageResult);

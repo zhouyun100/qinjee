@@ -146,8 +146,8 @@
     </select>
 
     <select id="getPositionPage" resultMap="BaseResultMap">
-        select tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
-        tp.is_delete,tpg.position_group_name
+        select position_id, position_name, position_group_id,position_group_name from (
+        select tp.sort_id,tp.position_id, tp.position_name, tp.position_group_id,tpg.position_group_name
         from t_position tp LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
         where tpg.is_delete=0
         AND tp.is_delete = 0
@@ -156,10 +156,12 @@
                 and tp.position_group_id = #{pageVo.positionGroupId}
             </if>
         </if>
+        ) tp2
         <if test="whereSql !=null">
+            where 1 = 1
             ${whereSql}
         </if>
-        order by tp.sort_id ASC
+        order by tp2.sort_id ASC
         <if test="orderSql !=null">
             ,
             ${orderSql}

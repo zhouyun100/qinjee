@@ -473,6 +473,24 @@
     and is_enable=1
   </select>
     <select id="listOrganizationsByCondition" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        org_id,
+        org_code,
+        org_name,
+        org_type,
+        org_parent_id,
+        org_full_name,
+        org_manager_id,
+        orgManagerName,
+        employee_number,
+        company_id,
+        sort_id,
+        operator_id,
+        create_time,
+        is_enable,
+        parent_org_name,
+        parent_org_code
+         from (
         SELECT
         t_org.org_id,
         t_org.org_code,
@@ -498,10 +516,13 @@
         <foreach collection="orgIds" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
+
+        ) lastTable
         <if test="whereSql !=null">
+            where 1=1
             ${whereSql}
         </if>
-        order by t_parent.org_code asc, t_org.sort_id asc
+        order by lastTable.parent_org_code asc, lastTable.sort_id asc
         <if test="orderSql !=null">
             ,
             ${orderSql}
@@ -686,6 +707,11 @@
     </select>
 
     <select id="listAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
+        select org_id,org_code,org_name,org_type,org_full_name,parent_org_code,
+        parent_org_name,
+        org_manager_id,
+        employee_number,
+        orgManagerName from (
         SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name
         parent_org_name,
         v.org_manager_id,
@@ -732,6 +758,15 @@
             <foreach collection="orgIdList" item="item" open="(" close=")" separator=",">
                 #{item}
             </foreach>
+        </if>
+        ) lastTable
+        <if test="whereSql !=null">
+            where 1=1
+            ${whereSql}
+        </if>
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
         </if>
     </select>
 

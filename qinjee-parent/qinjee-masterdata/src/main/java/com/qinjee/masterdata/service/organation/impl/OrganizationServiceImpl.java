@@ -341,13 +341,17 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     @Override
     public List<OrganizationVO> exportOrganization(OrganizationExportBO orgExportBO, Integer archiveId) {
         List<OrganizationVO> orgList = null;
+
         if (CollectionUtils.isEmpty(orgExportBO.getOrgIds())) {
             //查出包含封存的机构id
             List<Integer> orgIdList = organizationDao.getOrgIds(orgExportBO.getOrgId(), archiveId, Short.parseShort("1"), new Date());
-
-            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, new Date());
+            String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "lastTable.");
+            String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "lastTable.");
+            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, new Date(),whereSql,orderSql);
         } else {
-            orgList = organizationDao.listOrganizationsByIds(orgExportBO.getOrgIds());
+            String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "t_org.");
+            String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "t_org.");
+            orgList = organizationDao.listOrganizationsByCondition(orgExportBO.getOrgIds(),whereSql,orderSql);
         }
         if (CollectionUtils.isEmpty(orgList)) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
@@ -378,8 +382,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             if (organizationPageBO.getCurrentPage() != null && organizationPageBO.getPageSize() != null) {
                 PageHelper.startPage(organizationPageBO.getCurrentPage(), organizationPageBO.getPageSize());
             }
-            String whereSql = DealHeadParamUtil.getWhereSql(organizationPageBO.getTableHeadParamList(), "t_org.");
-            String orderSql = DealHeadParamUtil.getOrderSql(organizationPageBO.getTableHeadParamList(), "t_org.");
+            String whereSql = DealHeadParamUtil.getWhereSql(organizationPageBO.getTableHeadParamList(), "lastTable.");
+            String orderSql = DealHeadParamUtil.getOrderSql(organizationPageBO.getTableHeadParamList(), "lastTable.");
             List<OrganizationVO> organizationVOList = organizationDao.listOrganizationsByCondition(orgIdList, whereSql, orderSql);
             PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
             pageResult = new PageResult<>(pageInfo.getList());
