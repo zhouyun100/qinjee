@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.model.vo.auth;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
 import com.qinjee.model.request.PageVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 周赟
@@ -30,6 +32,10 @@ import java.util.Date;
 @NoArgsConstructor
 @JsonInclude
 public class RequestArchivePageVO extends PageVo implements Serializable {
+    /**
+     * 表头查询参数
+     */
+    private List<FieldValueForSearch> tableHeadParamList;
 
     /**
      * 机构ID
