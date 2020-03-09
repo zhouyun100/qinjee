@@ -1,11 +1,13 @@
 package com.qinjee.masterdata.model.vo.organization.bo;
 
+import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author 彭洪思
@@ -27,6 +29,7 @@ public class PostPageBO implements Serializable {
 
   @ApiModelProperty("是否删除 0未删除、1已删除")
   private Short isDelete;
+  private List<FieldValueForSearch> tableHeadParamList;
 
   @ApiModelProperty("是否含有封存 0不含有、1含有")
   private Short isEnable;

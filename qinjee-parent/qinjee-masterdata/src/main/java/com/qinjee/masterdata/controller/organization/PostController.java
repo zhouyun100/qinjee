@@ -6,15 +6,18 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
+import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -170,7 +172,7 @@ public class PostController extends BaseController {
 
     @PostMapping("/sortPorts")
     @ApiOperation(value = "ok，岗位排序,只能同一级别下排序（需要将该级下所有岗位id按顺序传参）", notes = "未验证")
-    public ResponseResult sortPorts(@RequestBody LinkedList<Integer> postIds) {
+    public ResponseResult sortPorts(@RequestBody List<Integer> postIds) {
         if (checkParam(postIds, getUserSession())) {
             long start = System.currentTimeMillis();
             postService.sortPorts(postIds, getUserSession());
@@ -193,18 +195,14 @@ public class PostController extends BaseController {
     }
 
 
-    @ApiOperation(value = "ok，复制岗位,将岗位复制到机构下  参数demo {\"orgId\":1,\"postIds\":[41,11]}", notes = "未验证")
+    @ApiOperation(value = "ok，复制岗位,将岗位复制到机构下  ", notes = "phs")
     @PostMapping("/copyPost")
-    public ResponseResult copyPost(@RequestBody Map<String, Object> paramMap) {
-        if (checkParam(paramMap, getUserSession())) {
+    public ResponseResult copyPost(@RequestBody PostCopyBO postCopyBO) {
+        if (checkParam(postCopyBO, getUserSession())) {
             long start = System.currentTimeMillis();
-            List<Integer> postIds = (List<Integer>) paramMap.get("postIds");
-            Integer orgId = (Integer) paramMap.get("orgId");
-            if (checkParam(postIds, orgId)) {
-                postService.copyPost(postIds, getUserSession(), orgId);
+                postService.copyPost(postCopyBO, getUserSession());
                 logger.info("复制岗位耗时:" + (System.currentTimeMillis() - start));
                 return ResponseResult.SUCCESS();
-            }
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 
@@ -212,7 +210,7 @@ public class PostController extends BaseController {
 
     // String filePath,  List<Integer> orgIds
     @PostMapping("/exportPost")
-    @ApiOperation(value = "ok，导出岗位  参数demo {\"orgId\":28,\"postIds\":[1,47]}")
+    @ApiOperation(value = "ok，导出岗位 ")
     public ResponseResult exportPost(@RequestBody PostExportBO postExportBO, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult();
         long start = System.currentTimeMillis();

@@ -15,9 +15,11 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -61,7 +63,6 @@ public class PositionController extends BaseController {
             return positionPage;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
     }
 
     @ApiOperation(value = "ok，新增职位", notes = "ok")
@@ -120,8 +121,8 @@ public class PositionController extends BaseController {
 
 
     @PostMapping("/sortPosition")
-    @ApiOperation(value = "ok，职位排序，只能同一级别下机构排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
-    public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> positionIds) {
+    @ApiOperation(value = "ok，职位排序，只能同一级别下排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
+    public ResponseResult sortOrganizationInOrg(@RequestBody List<Integer> positionIds) {
         //参数校验
         if (checkParam(positionIds)) {
             long start = System.currentTimeMillis();

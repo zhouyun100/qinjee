@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
@@ -75,11 +76,11 @@ public interface PostService {
   /**
    * 复制岗位
    *
-   * @param postIds
+   * @param postCopyBO
    * @param userSession
    * @return
    */
-  void copyPost(List<Integer> postIds, UserSession userSession, Integer orgId);
+  void copyPost(PostCopyBO postCopyBO, UserSession userSession);
 
 
   /**

@@ -96,7 +96,7 @@ public interface PostDao {
     List<Post> listPostsByOrgIds(@Param("orgidList") List<Integer> orgidList,@Param("whereSql")String whereSql,@Param("orderSql")String orderSql);
 
 
-    List<Post> listPostsByCondition(@Param("postPageVo") PostPageBO postPageBO, @Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList);
+    List<Post> listPostsByCondition(@Param("postPageBO") PostPageBO postPageBO, @Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList,@Param("whereSql")String whereSql,@Param("orderSql")String orderBy);
 
     Integer sortPorts(@Param("postIds") List<Integer> postIds);
 
@@ -109,7 +109,7 @@ public interface PostDao {
 
     List<Post> listPostsByCompanyIdAndEnable(Integer companyId, Short isEnable);
 
-    List<Post> listDirectPostPage(@Param("postPageVo") PostPageBO postPageBO);
+    List<Post> listDirectPostPage(@Param("postPageBO") PostPageBO postPageBO,String whereSql,String orderSql);
 
 
     List<Post> listPostsByPisitionId(@Param("positionIds") List<Integer> positionIds);

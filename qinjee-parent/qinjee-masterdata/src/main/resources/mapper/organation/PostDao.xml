@@ -375,8 +375,14 @@
         <if test="postPageBO.isEnable != null">
             and tp.is_enable = 1
         </if>
-
-        ORDER BY tp.sort_id asc
+        <if test="whereSql != null">
+            ${whereSql}
+        </if>
+        order by tp.sort_id asc
+        <if test="orderSql != null">
+            ,
+            ${orderSql}
+        </if>
     </select>
 
 
@@ -474,7 +480,8 @@
         </if>
     </select>
 
-    <select id="listDirectPostPage" resultMap="BaseResultMap" parameterType="com.qinjee.masterdata.model.vo.organization.bo.PostPageBO">
+    <select id="listDirectPostPage" resultMap="BaseResultMap"
+            parameterType="com.qinjee.masterdata.model.vo.organization.bo.PostPageBO">
         SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code
         parent_post_code,ptp.post_name parent_post_name
         FROM t_post tp
@@ -486,7 +493,7 @@
                 <if test="postPageBO.isEnable !=null">
                     and tp.is_enable = 1
                 </if>
-                <if test="postPageBO.parentPostId ==null or postPageBO.parentPostId ==0">
+                <if test="postPageBO.parentPostId == null or postPageBO.parentPostId ==0">
                     and tp.org_id =#{postPageBO.orgId} and tp.parent_post_id =0
                 </if>
                 <if test="postPageBO.parentPostId !=null and postPageBO.parentPostId !=0">
@@ -494,7 +501,14 @@
                 </if>
             </if>
         </where>
+        <if test="whereSql != null">
+            ${whereSql}
+        </if>
         order by tp.sort_id asc
+        <if test="orderSql != null">
+            ,
+            ${orderSql}
+        </if>
     </select>
 
     <select id="getPostsByPostCode" resultMap="BaseResultMap">
