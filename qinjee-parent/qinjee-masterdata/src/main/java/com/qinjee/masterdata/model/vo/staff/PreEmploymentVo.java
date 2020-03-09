@@ -83,7 +83,6 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 最高学历
      */
-    @TransDictAnno
     private String highestDegree;
 
     /**
@@ -158,6 +157,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 试用期限(月)
      */
+    @TransDictAnno
     private Integer probationPeriod;
 
     /**

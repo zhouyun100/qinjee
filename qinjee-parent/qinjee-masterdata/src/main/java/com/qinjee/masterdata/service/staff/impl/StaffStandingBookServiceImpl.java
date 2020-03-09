@@ -101,8 +101,8 @@ public class StaffStandingBookServiceImpl implements IStaffStandingBookService {
 
     @Override
     public List<Blacklist> selectBalckList(UserSession userSession,List<FieldValueForSearch> list) {
-        String whereSql = DealHeadParamUtil.getWhereSql(list, null);
-        String orderSql = DealHeadParamUtil.getOrderSql(list, null);
+        String whereSql = DealHeadParamUtil.getWhereSql(list, "");
+        String orderSql = DealHeadParamUtil.getOrderSql(list, "");
         return blacklistDao.selectByPageAndHead(userSession.getCompanyId(),whereSql,orderSql);
     }
 

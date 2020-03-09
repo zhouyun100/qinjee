@@ -87,7 +87,7 @@ public class StaffStandingBookController extends BaseController {
     /**
      * 展示黑名单表
      */
-    @RequestMapping(value = "/selectBalckList", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "展示黑名单表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),

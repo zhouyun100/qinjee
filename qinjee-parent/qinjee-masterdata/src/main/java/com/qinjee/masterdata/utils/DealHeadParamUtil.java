@@ -47,32 +47,32 @@ public class DealHeadParamUtil {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue = fieldValueForSearch.getFieldValue();
                if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
-                   stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(fieldValue.get(0)).append("and");
+                   stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(fieldValue.get(0)).append(" and ");
                }
                 if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
-                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(fieldValue.get(1)).append("and");
+                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(fieldValue.get(1)).append(" and ");
                 }
         }else{
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
         }
     }
     private static void getCodeSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue =  fieldValueForSearch.getFieldValue();
-                stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("in (");
+                stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" in (");
                 for (Object o : fieldValue) {
                             stringBuffer.append(o);
                     }
-                stringBuffer.append(") and");
+                stringBuffer.append(") and ");
                 }else{
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
         }
     }
     private static void getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" like ").append( "'%").append(fieldValueForSearch.getFieldValue().get(0)).append( "%'").append(" and");
+               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" like ").append( "'%").append(fieldValueForSearch.getFieldValue().get(0)).append( "%'").append(" and " );
         }else{
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
         }
     }
     private static void getDateSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
@@ -81,7 +81,7 @@ public class DealHeadParamUtil {
                 if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
                     String date1 = isDate(String.valueOf(fieldValue.get(0)));
                     if(date1!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(date1).append("and");
+                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(date1).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }
@@ -89,13 +89,13 @@ public class DealHeadParamUtil {
                 if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
                     String date2 = isDate(String.valueOf(fieldValue.get(1)));
                     if(date2!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(date2).append("and");
+                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(date2).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }
                 }
         }else{
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("is null and");
+            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
         }
     }
     private static String getOrdersql(List<FieldValueForSearch> tableSelectParam,String nickName){
@@ -117,9 +117,9 @@ public class DealHeadParamUtil {
     }
     private static String getOrder(String order){
         if("升序".equals(order)){
-            return "asc";
+            return " asc";
         }else if("降序".equals(order)){
-            return  "desc";
+            return  " desc";
         }
         return null;
     }

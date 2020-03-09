@@ -96,12 +96,14 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     @Override
     public List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds,UserSession userSession) {
         ArrayList<PreRegistVo> preRegistList = new ArrayList<>();
+        List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         for (Integer employmentId : employmentIds) {
             //组装成一个大的对象用来封装所有页面需要的信息
             PreRegistVo preRegistVo = new PreRegistVo();
             //查询预入职档案基本信息
             //TODO 缺少个人证件照，目前预入职没有证件照
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById(employmentId);
+            new TransCustomFieldMapHelper<PreEmploymentVo>().transToDict(preEmploymentVo,sysDicts);
             //字典转换中文
             preEmploymentVo.setGender( sysDictDao.selectByCode(preEmploymentVo.getGender()));
 
@@ -109,8 +111,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             //--------------
             //获取自定义相关数据  （教育经历、工作经历、家庭成员）
             ArrayList<String> tableNames = Lists.newArrayList("教育经历", "工作经历", "家庭成员");
-            //TODO 缓存
-            List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
             tableNames.stream().forEach(tableName -> {
                 //1.获取表id
                 Integer tableId = customTableFieldDao.selectTableIdByTableNameAndCompanyId(tableName, userSession.getCompanyId(), "PRE");
