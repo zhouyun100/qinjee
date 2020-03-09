@@ -86,11 +86,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
     /**
      * 展示全量未签合同人员
      *
-     * @param orgId
+     * @param exportArcParamVo
      * @return
      */
-    public List < Integer > selectNoLaborContractAll(List < Integer > orgId,Integer companyId) {
-        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId,companyId,null,null );
+    public List < Integer > selectNoLaborContractAll(ExportArcParamVo exportArcParamVo,Integer companyId) {
+        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "arc.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "arc.");
+        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( exportArcParamVo.getOrgIdList(),companyId,whereSql,orderSql );
         List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {
             integers.add ( userArchiveVo.getArchiveId () );
@@ -151,12 +153,12 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     /**
      * 展示全量已签合同人员id
-     *
-     * @param orgIdList
-     * @param status
+     * @param exportReadyConVo
      */
-    public List < ContractWithArchiveVo > selectLaborContractserUserAll(List < Integer > orgIdList, List < String > status,Integer companyId) {
-        return getContractWithArchiveVos ( orgIdList, status,companyId,null,null);
+    public List < ContractWithArchiveVo > selectLaborContractserUserAll(ExportReadyConVo exportReadyConVo,Integer companyId) {
+        String whereSql = DealHeadParamUtil.getWhereSql(exportReadyConVo.getSearchList(),"t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportReadyConVo.getSearchList(), "t.");
+        return getContractWithArchiveVos ( exportReadyConVo.getOrgIdList(), exportReadyConVo.getStatus(),companyId,whereSql,orderSql);
     }
 
     /**

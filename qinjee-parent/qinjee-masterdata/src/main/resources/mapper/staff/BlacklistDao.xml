@@ -396,6 +396,13 @@
                 #{item}
               </foreach>
               AND bla.is_delete = 0
+              <if test="wheresql !=null">
+                ${wheresql}
+              </if>
+              <if test="orderSql !=null">
+              order by
+                ${orderSql}
+              </if>
     </select>
   <select id="selectByIdNumberAndPhone" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>

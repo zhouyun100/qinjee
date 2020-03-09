@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.vo.staff.archiveInfo.ArchiveRegistVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
+import org.apache.commons.math3.analysis.function.Exp;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -162,7 +163,7 @@ public interface IStaffArchiveService {
 
     PageResult< UserArchiveVo> selectArchiveDelete(RequestUserarchiveVo requestUserarchiveVo);
 
-    List<UserArchiveVo> selectByOrgList(List<Integer> list,UserSession userSession);
+    List<UserArchiveVo> selectByOrgList(ExportArcParamVo exportArcParamVo, UserSession userSession);
 
     UserArchiveVo selectById(Integer id);
 

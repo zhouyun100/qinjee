@@ -652,12 +652,12 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     @Override
-    public List < UserArchiveVo > selectByOrgList(List < Integer > list, UserSession userSession) {
+    public List < UserArchiveVo > selectByOrgList(ExportArcParamVo exportArcParamVo, UserSession userSession) {
         String message=null;
-        if(CollectionUtils.isEmpty(list)){
+        if(CollectionUtils.isEmpty(exportArcParamVo.getList())){
             message="contain";
         }else {
-            List<OrganizationVO> list1 = organizationDao.selectByOrgId(list);
+            List<OrganizationVO> list1 = organizationDao.selectByOrgId(exportArcParamVo.getList());
             for (OrganizationVO organizationVO : list1) {
                 if (null == organizationVO.getOrgParentId()) {
                     message = "contain";
@@ -665,7 +665,9 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 }
             }
         }
-        return userArchiveDao.selectByOrgAndAuth ( list, userSession.getArchiveId (), userSession.getCompanyId (),message,null,null );
+        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "arc.");
+        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "arc.");
+        return userArchiveDao.selectByOrgAndAuth ( exportArcParamVo.getList(), userSession.getArchiveId (), userSession.getCompanyId (),message,whereSql,orderSql );
     }
 
     @Override

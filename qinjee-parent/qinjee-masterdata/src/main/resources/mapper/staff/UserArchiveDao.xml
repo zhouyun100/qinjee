@@ -1354,15 +1354,17 @@
       and  arc.archive_id not in(
       select tlc.archive_id from t_labor_contract tlc
       )
+      <if test="orgId !=null">
       and arc.org_id in
       <foreach collection="orgId" item='item' open="(" close=")" separator=",">
         #{item}
       </foreach>
+      AND NOT EXISTS (SELECT 1 FROM t_labor_contract  WHERE archive_id IN
+          <foreach collection="orgId" item='item' open="(" close=")" separator=",">
+              #{item}
+          </foreach>)
+        </if>
         and arc.archive_status='SERVICE'
-        AND NOT EXISTS (SELECT 1 FROM t_labor_contract  WHERE archive_id IN
-        <foreach collection="orgId" item='item' open="(" close=")" separator=",">
-        #{item}
-       </foreach>)
         <if test="whereSql !=null">
             ${whereSql}
         </if>

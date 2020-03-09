@@ -29,6 +29,7 @@ import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
@@ -577,11 +578,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Transactional(rollbackFor = Exception.class)
     public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
         Map < Integer, Map < String, Object > > map;
-        if (CollectionUtils.isEmpty ( exportRequest.getList () )) {
-            List < Integer > list = preEmploymentDao.selectIdByComId ( userSession.getCompanyId () );
-            map = preEmploymentDao.selectExportPreList ( list, userSession.getCompanyId () );
-        } else {
+        if (!CollectionUtils.isEmpty ( exportRequest.getList () )) {
             map = preEmploymentDao.selectExportPreList ( exportRequest.getList (), userSession.getCompanyId () );
+        } else {
+            String whereSql = DealHeadParamUtil.getWhereSql(exportRequest.getSearchList(), "");
+            String orderSql = DealHeadParamUtil.getOrderSql(exportRequest.getSearchList(), "");
+            List < Integer > list = preEmploymentDao.selectIdByComId ( userSession.getCompanyId (),whereSql,orderSql );
+            map = preEmploymentDao.selectExportPreList ( list, userSession.getCompanyId () );
         }
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
@@ -602,7 +605,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportBlackFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
-        Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId () );
+        String whereSql=DealHeadParamUtil.getWhereSql(exportRequest.getSearchList(),"bla.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportRequest.getSearchList(), "bla.");
+        Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId (),whereSql,orderSql );
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
         exportFile.setMap ( map );

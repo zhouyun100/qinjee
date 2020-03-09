@@ -7,6 +7,7 @@ import com.qinjee.masterdata.model.vo.staff.archiveInfo.CustomFieldMapAnno;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.TransDictAnno;
 import com.qinjee.model.response.CommonCode;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -59,8 +60,12 @@ public class TransCustomFieldMapHelper<T> {
             field.setAccessible(true);
             try {
                 Object fieldValue = field.get(ob);
-                Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
-                field.set(ob, dictValue.get());
+                if(fieldValue!=null) {
+                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
+                    if(dictValue.isPresent()) {
+                        field.set(ob, dictValue.get());
+                    }
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 //TODO 新增字典转换失败code
@@ -86,8 +91,12 @@ public class TransCustomFieldMapHelper<T> {
                 field.setAccessible(true);
                 try {
                     Object fieldValue = field.get(ob);
-                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
-                    field.set(ob, dictValue.get());
+                    if(fieldValue!=null) {
+                        Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
+                        if(dictValue.isPresent()) {
+                            field.set(ob, dictValue.get());
+                        }
+                    }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                     //TODO 新增字典转换失败注解

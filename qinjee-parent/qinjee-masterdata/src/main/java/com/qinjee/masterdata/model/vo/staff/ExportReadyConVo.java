@@ -11,4 +11,5 @@ public class ExportReadyConVo implements Serializable {
    private List<ContractWithArchiveVo> list;
    private List<Integer> orgIdList;
    private List<String> status;
+   private List<FieldValueForSearch> searchList;
 }

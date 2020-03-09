@@ -54,7 +54,7 @@ public interface PreEmploymentDao {
 
     List<Integer> selectIdByNumber(@Param("phoneNumber") String phoneNumber, @Param("companyId") Integer companyId);
 
-    List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
+    List<Integer> selectIdByComId(@Param("companyId") Integer companyId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     List<PreEmployment> selectByPrimaryKeyList(@Param("list") List<Integer> list);
     @MapKey("employment_id")

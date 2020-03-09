@@ -1053,6 +1053,13 @@
     where
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete = 0
+    <if test="whereSql !=null">
+        ${wheresql}
+    </if>
+    <if test="orderSql !=null">
+    order by
+        ${orderSql}
+    </if>
     </select>
     <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.entity.PreEmployment"
             resultMap="BaseResultMap">

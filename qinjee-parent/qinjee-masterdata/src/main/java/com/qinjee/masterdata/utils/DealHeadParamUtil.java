@@ -16,18 +16,18 @@ public class DealHeadParamUtil {
         if(CollectionUtils.isNotEmpty(tableSelectParam)){
             stringBuffer.append("and ");
             for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
-                if("int".equals(fieldValueForSearch.getFieldType())){
+                if("int".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
                     //进行数字类型的处理
                      getIntSql(fieldValueForSearch,stringBuffer,nickName);
 
-                }else if("code".equals(fieldValueForSearch.getFieldType())){
+                }else if("code".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
                     //进行代码类型的处理
                    getCodeSql(fieldValueForSearch,stringBuffer,nickName);
 
-                }else if("string".equals(fieldValueForSearch.getFieldType())){
+                }else if("string".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
                     //进行字符串类型的处理
                    getStringSql(fieldValueForSearch,stringBuffer,nickName);
-                }else if("date".equals(fieldValueForSearch.getFieldType())){
+                }else if("date".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
                     //进行日期类型的处理
                      getDateSql(fieldValueForSearch,stringBuffer,nickName);
                 }
@@ -47,10 +47,10 @@ public class DealHeadParamUtil {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue = fieldValueForSearch.getFieldValue();
                if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
-                   stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(fieldValue.get(0)).append(" and ");
+                   stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").append(fieldValue.get(0)).append(" and ");
                }
                 if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
-                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(fieldValue.get(1)).append(" and ");
+                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").append(fieldValue.get(1)).append(" and ");
                 }
         }else{
             stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
@@ -60,10 +60,14 @@ public class DealHeadParamUtil {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue =  fieldValueForSearch.getFieldValue();
                 stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" in (");
+                StringBuffer stringBuffer1=new StringBuffer();
                 for (Object o : fieldValue) {
-                            stringBuffer.append(o);
-                    }
-                stringBuffer.append(") and ");
+                stringBuffer1.append(" '").append(o).append( " '").append(",");
+                }
+            String string = stringBuffer1.toString();
+            int and = string.lastIndexOf(",");
+            String substring = string.substring(0, and );
+            stringBuffer.append(substring).append(") and ");
                 }else{
             stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
         }
@@ -81,7 +85,7 @@ public class DealHeadParamUtil {
                 if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
                     String date1 = isDate(String.valueOf(fieldValue.get(0)));
                     if(date1!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ >= ]]>").append(date1).append(" and ");
+                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").append(date1).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }
@@ -89,7 +93,7 @@ public class DealHeadParamUtil {
                 if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
                     String date2 = isDate(String.valueOf(fieldValue.get(1)));
                     if(date2!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append("<![CDATA[ <= ]]>").append(date2).append(" and ");
+                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").append(date2).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }

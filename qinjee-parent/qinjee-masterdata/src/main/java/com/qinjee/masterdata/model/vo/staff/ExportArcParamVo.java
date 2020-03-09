@@ -11,4 +11,5 @@ public class ExportArcParamVo implements Serializable {
     private Integer querySchemaId;
     List<Integer> list;
     List<Integer> orgIdList;
+    List<FieldValueForSearch> searchList;
 }
