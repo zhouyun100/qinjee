@@ -1059,8 +1059,15 @@
       </foreach>
     </if>
     <if test="isContains">
-        or (tua.org_id is null and tua.is_delete=0)
+        and (tua.org_id is null or tua.is_delete=0)
     </if>
+      <if test="whereSql !=null">
+          ${whereSql}
+      </if>
+      <if test="orderSql !=null">
+          order by
+          ${orderSql}
+      </if>
   </select>
 <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id

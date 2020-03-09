@@ -14,7 +14,10 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationExportBO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationMergeBO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationPageBO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationTransferBO;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.auth.ApiAuthService;
@@ -23,6 +26,7 @@ import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserRoleService;
 import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -87,12 +91,14 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
     //=====================================================================
     @Override
-    public PageResult<OrganizationVO> getDirectOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession) {
+    public PageResult<OrganizationVO> getDirectOrganizationPageList(OrganizationPageBO organizationPageBO, UserSession userSession) {
         Integer archiveId = userSession.getArchiveId();
-        if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
-            PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
+        if (organizationPageBO.getCurrentPage() != null && organizationPageBO.getPageSize() != null) {
+            PageHelper.startPage(organizationPageBO.getCurrentPage(), organizationPageBO.getPageSize());
         }
-        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageVo, archiveId, new Date());
+        String whereSql = DealHeadParamUtil.getWhereSql(organizationPageBO.getTableHeadParamList(), "org.");
+        String orderSql = DealHeadParamUtil.getOrderSql(organizationPageBO.getTableHeadParamList(), "org.");
+        List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageBO, archiveId, new Date(), whereSql, orderSql);
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
         PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -330,17 +336,18 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     /**
      * 导出机构
      *
-     * @param orgIds
      * @return
      */
     @Override
-    public List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, Integer archiveId) {
+    public List<OrganizationVO> exportOrganization(OrganizationExportBO orgExportBO, Integer archiveId) {
         List<OrganizationVO> orgList = null;
-        if (CollectionUtils.isEmpty(orgIds)) {
-            List<Integer> orgIdList = organizationDao.getOrgIds(orgId, archiveId, Short.parseShort("1"), new Date());
-            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, Short.parseShort("0"), new Date());
+        if (CollectionUtils.isEmpty(orgExportBO.getOrgIds())) {
+            //查出包含封存的机构id
+            List<Integer> orgIdList = organizationDao.getOrgIds(orgExportBO.getOrgId(), archiveId, Short.parseShort("1"), new Date());
+
+            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, new Date());
         } else {
-            orgList = organizationDao.listOrganizationsByIds2(orgIds);
+            orgList = organizationDao.listOrganizationsByIds(orgExportBO.getOrgIds());
         }
         if (CollectionUtils.isEmpty(orgList)) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
@@ -354,24 +361,26 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     /**
      * 分页查询用户下所有机构包含子孙
      *
-     * @param organizationPageVo
+     * @param organizationPageBO
      * @param userSession
      * @return
      */
     @Override
-    public PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession) {
+    public PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageBO organizationPageBO, UserSession userSession) {
         List<Integer> orgidList = new ArrayList<>();
         PageResult<OrganizationVO> pageResult = null;
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;
-        Short isEnable = organizationPageVo.getIsEnable();
+        Short isEnable = organizationPageBO.getIsEnable();
         //如果当前机构为空的话 返回空集合
-        orgIdList = organizationDao.getOrgIds(organizationPageVo.getOrgParentId(), userSession.getArchiveId(), isEnable, new Date());
+        orgIdList = organizationDao.getOrgIds(organizationPageBO.getOrgParentId(), userSession.getArchiveId(), isEnable, new Date());
         if (!CollectionUtils.isEmpty(orgIdList)) {
-            if (organizationPageVo.getCurrentPage() != null && organizationPageVo.getPageSize() != null) {
-                PageHelper.startPage(organizationPageVo.getCurrentPage(), organizationPageVo.getPageSize());
+            if (organizationPageBO.getCurrentPage() != null && organizationPageBO.getPageSize() != null) {
+                PageHelper.startPage(organizationPageBO.getCurrentPage(), organizationPageBO.getPageSize());
             }
-            List<OrganizationVO> organizationVOList = organizationDao.listOrganizationsByIds2(orgIdList);
+            String whereSql = DealHeadParamUtil.getWhereSql(organizationPageBO.getTableHeadParamList(), "t_org.");
+            String orderSql = DealHeadParamUtil.getOrderSql(organizationPageBO.getTableHeadParamList(), "t_org.");
+            List<OrganizationVO> organizationVOList = organizationDao.listOrganizationsByCondition(orgIdList, whereSql, orderSql);
             PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
             pageResult = new PageResult<>(pageInfo.getList());
             pageResult.setTotal(pageInfo.getTotal());
@@ -379,6 +388,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
         return pageResult;
     }
+
 
     /**
      * 入库
@@ -665,7 +675,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
-        List<UserArchiveVo> userArchiveVos = userArchiveDao.getUserArchiveList(idList, false);
+        List<UserArchiveVo> userArchiveVos = userArchiveDao.getUserArchiveList(idList, false,null,null);
         if (!CollectionUtils.isEmpty(userArchiveVos)) {
             isExsit = true;
             ExceptionCast.cast(CommonCode.EXIST_USER);
@@ -673,7 +683,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //如果所有机构下都不存在相关人员资料
         if (!isExsit) {
             //判断是否存在岗位
-            List<Post> posts = postDao.listPostsByOrgIds(idList);
+            List<Post> posts = postDao.listPostsByOrgIds(idList,null,null);
             if (!CollectionUtils.isEmpty(posts) && !cascadeDeletePost) {
                 ExceptionCast.cast(CommonCode.ORG_HAVE_POST);
             } else {
@@ -709,7 +719,12 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     //=====================================================================
 
     @Override
-    public void mergeOrganization(String newOrgName, Integer parentOrgId, List<Integer> orgIds, UserSession userSession) {
+    public void mergeOrganization(OrganizationMergeBO orgMergeBO, UserSession userSession) {
+
+        List<Integer> orgIds=orgMergeBO.getOrgIds();
+        Integer parentOrgId=orgMergeBO.getParentOrgId();
+        String newOrgName=orgMergeBO.getNewOrgName();
+
         //查询机构列表
         List<OrganizationVO> organizationVOList = organizationDao.listOrgnizationByIds(orgIds);
         //判断是否是同一个父级下的
@@ -750,16 +765,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         }
     }
 
-    //=====================================================================
-    @Override
-    public List<UserArchiveVo> getUserArchiveListByUserName(String userName, UserSession userSession) {
-        //调用人员的接口
-        List<UserArchiveVo> userArchives = userArchiveDao.selectUserArchiveByName(userName, userSession.getCompanyId());
-        if (org.apache.commons.collections4.CollectionUtils.isEmpty(userArchives)) {
-
-        }
-        return userArchives;
-    }
 
     //=====================================================================
 
@@ -788,9 +793,12 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     //=====================================================================
     @Override
     @OrganizationTransferAnno
-    public void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession) {
+    public void transferOrganization(OrganizationTransferBO orgTransferBO, UserSession userSession) {
         List<OrganizationVO> ready2TransferOrgs = null;
-        if (!CollectionUtils.isEmpty(orgIds)) {
+        Integer targetOrgId = orgTransferBO.getTargetOrgId();
+        List<Integer> orgIds=orgTransferBO.getOrgIds();
+
+        if (!CollectionUtils.isEmpty(orgTransferBO.getOrgIds())) {
             ready2TransferOrgs = organizationDao.listOrgnizationByIds(orgIds);
         } else {
             //待划转机构不存在

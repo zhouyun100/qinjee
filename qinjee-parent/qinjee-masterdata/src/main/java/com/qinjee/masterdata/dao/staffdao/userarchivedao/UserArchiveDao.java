@@ -43,7 +43,7 @@ public interface UserArchiveDao {
      *
      * @return
      */
-    List<UserArchiveVo> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList, boolean isContains);
+    List<UserArchiveVo> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList, boolean isContains,String whereSql,String orderSql);
 
     Map<String,String> selectNameAndNumber(@Param("id") Integer id);
 

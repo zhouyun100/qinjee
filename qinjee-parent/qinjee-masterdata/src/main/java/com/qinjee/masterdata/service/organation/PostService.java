@@ -2,7 +2,8 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
+import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -24,10 +25,10 @@ public interface PostService {
    * 分页查询岗位列表
    *
    * @param userSession
-   * @param postPageVo
+   * @param postPageBO
    * @return
    */
-  PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo);
+  PageResult<Post> getPostConditionPage(UserSession userSession, PostPageBO postPageBO);
 
 
   /**
@@ -80,14 +81,6 @@ public interface PostService {
    */
   void copyPost(List<Integer> postIds, UserSession userSession, Integer orgId);
 
-  /**
-   * 获取公司所有的岗位
-   *
-   * @param userSession
-   * @param orgId
-   * @return
-   */
-  List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable);
 
   /**
    * 查看岗位历任
@@ -95,7 +88,7 @@ public interface PostService {
    */
   List<UserArchivePostRelation> getPostSuccessive(Integer postId);
 
-    List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession);
+    List<Post> exportPost(PostExportBO postExportBO, UserSession userSession);
 
   ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception;
 
@@ -106,10 +99,10 @@ public interface PostService {
 
   /**
    * 分页查询岗位直属下级
-   * @param postPageVo
+   * @param postPageBO
    * @return
    */
-  PageResult<Post> listDirectPostPage(PostPageVo postPageVo);
+  PageResult<Post> listDirectPostPage(PostPageBO postPageBO);
 
   void cancelImport(String redisKey, String errorInfoKey);
 

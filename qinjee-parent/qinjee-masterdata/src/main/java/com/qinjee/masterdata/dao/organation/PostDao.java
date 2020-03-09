@@ -3,7 +3,7 @@ package com.qinjee.masterdata.dao.organation;
 import com.qinjee.masterdata.model.entity.PositionLevel;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
-import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -56,12 +56,12 @@ public interface PostDao {
     /**
      * 分页查询岗位列表
      *
-     * @param postPageVo
+     * @param postPageBO
      * @param sortFieldStr
      * @param archiveId
      * @return
      */
-    List<Post> listPosts(@Param("postPageVo") PostPageVo postPageVo, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId, @Param("now") Date now);
+    List<Post> listPosts(@Param("postPageVo") PostPageBO postPageBO, @Param("sortFieldStr") String sortFieldStr, @Param("archiveId") Integer archiveId, @Param("now") Date now);
 
     List<Post> listPostsByOrgId(@Param("orgId") Integer orgId, @Param("companyId") Integer companyId);
 
@@ -80,7 +80,7 @@ public interface PostDao {
      * @param postIds
      * @return
      */
-    List<Post> listPostsByPostIds(@Param("postIds") List<Integer> postIds);
+    List<Post> listPostsByPostIds(@Param("postIds") List<Integer> postIds,@Param("whereSql")String whereSql,@Param("orderSql")String orderSql);
 
     /**
      * 根据机构id查询机构下的岗位
@@ -93,10 +93,10 @@ public interface PostDao {
 
     List<Post> listPostByParentPostId(@Param("parentPostId") Integer parentPostId);
 
-    List<Post> listPostsByOrgIds(@Param("orgidList") List<Integer> orgidList);
+    List<Post> listPostsByOrgIds(@Param("orgidList") List<Integer> orgidList,@Param("whereSql")String whereSql,@Param("orderSql")String orderSql);
 
 
-    List<Post> listPostsByCondition(@Param("postPageVo") PostPageVo postPageVo, @Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList);
+    List<Post> listPostsByCondition(@Param("postPageVo") PostPageBO postPageBO, @Param("orgIdList") List<Integer> orgIdList, @Param("postIdList") List<Integer> postIdList);
 
     Integer sortPorts(@Param("postIds") List<Integer> postIds);
 
@@ -109,7 +109,7 @@ public interface PostDao {
 
     List<Post> listPostsByCompanyIdAndEnable(Integer companyId, Short isEnable);
 
-    List<Post> listDirectPostPage(@Param("postPageVo")PostPageVo postPageVo);
+    List<Post> listDirectPostPage(@Param("postPageVo") PostPageBO postPageBO);
 
 
     List<Post> listPostsByPisitionId(@Param("positionIds") List<Integer> positionIds);

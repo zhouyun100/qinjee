@@ -47,7 +47,6 @@
   </insert>
 
 
-
     <insert id="insertSelective" keyColumn="org_id" keyProperty="orgId"
             parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO" useGeneratedKeys="true">
         insert into t_organization
@@ -244,7 +243,7 @@
         v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,v.org_parent_id,v.org_manager_id,v.sort_id,v.is_enable
         ORDER BY v.sort_id ASC
     </select>
- <select id="listAllOrgIdsByArchiveId" resultMap="BaseResultMap">
+    <select id="listAllOrgIdsByArchiveId" resultMap="BaseResultMap">
         select
         v.org_id,v.org_parent_id
         from (
@@ -280,28 +279,30 @@
 
     <select id="getOrgIds" resultType="integer">
         select org_id from (
-              select t1.org_id,
-              if(find_in_set(org_parent_id, @pids) > 0, @pids := concat(@pids, ',', org_id), 0) as ischild
-              from (
-                   select t_org.org_id,t_org.org_parent_id from t_organization  t_org ,t_role_org_auth t_roa ,t_user_role t_ur
-											where t_ur.archive_id = #{archiveId}
-                                                and (t_ur.is_trusteeship = 0
-                                                    or (t_ur.is_trusteeship = 1
-                                                    and #{now} >= t_ur.trusteeship_begin_time
-                                                    and t_ur.trusteeship_end_time >= #{now}
-                                                    ))
-												and t_roa.role_id = t_ur.role_id
-												and t_org.org_id = t_roa.org_id
-												and t_ur.is_delete = 0
-												and t_roa.is_delete = 0   <if test="isEnable != null "> and t_org.is_enable =1 </if>
-										union
-									select t_org.org_id,t_org.org_parent_id from t_organization t_org,t_user_org_auth t_uoa
-										where t_uoa.archive_id = #{archiveId}
-											and t_org.org_id = t_uoa.org_id
-											and t_uoa.is_delete = 0  <if test="isEnable != null "> and t_org.is_enable =1 </if>
-                  ) t1,
-                  (select @pids := #{orgId} ) t2
-             ) t3 where ischild != 0 OR t3.org_id = #{orgId}
+        select t1.org_id,
+        if(find_in_set(org_parent_id, @pids) > 0, @pids := concat(@pids, ',', org_id), 0) as ischild
+        from (
+        select t_org.org_id,t_org.org_parent_id from t_organization t_org ,t_role_org_auth t_roa ,t_user_role t_ur
+        where t_ur.archive_id = #{archiveId}
+        and (t_ur.is_trusteeship = 0
+        or (t_ur.is_trusteeship = 1
+        and #{now} >= t_ur.trusteeship_begin_time
+        and t_ur.trusteeship_end_time >= #{now}
+        ))
+        and t_roa.role_id = t_ur.role_id
+        and t_org.org_id = t_roa.org_id
+        and t_ur.is_delete = 0
+        and t_roa.is_delete = 0
+        <if test="isEnable != null ">and t_org.is_enable =1</if>
+        union
+        select t_org.org_id,t_org.org_parent_id from t_organization t_org,t_user_org_auth t_uoa
+        where t_uoa.archive_id = #{archiveId}
+        and t_org.org_id = t_uoa.org_id
+        and t_uoa.is_delete = 0
+        <if test="isEnable != null ">and t_org.is_enable =1</if>
+        ) t1,
+        (select @pids := #{orgId} ) t2
+        ) t3 where ischild != 0 OR t3.org_id = #{orgId}
     </select>
 
 
@@ -325,7 +326,7 @@
         auth.is_delete = 0
         AND arc.is_delete = 0
         AND arc.archive_id = #{archiveId}
-        <if test="organizationPageVo.isEnable != null ">
+        <if test="organizationPageBO.isEnable != null ">
             and o.is_enable = 1
         </if>
         UNION
@@ -344,22 +345,29 @@
         AND role.is_delete = 0
         AND arch.is_delete = 0
         AND arch.archive_id = #{archiveId}
-        <if test="organizationPageVo.isEnable != null ">
+        <if test="organizationPageBO.isEnable != null ">
             and o2.is_enable = 1
         </if>
         )org
         LEFT JOIN t_organization parent_org
         ON org.org_parent_id = parent_org.org_id
-        <if test="organizationPageVo != null">
+        <if test="organizationPageBO != null">
             where 1=1
-            <if test="organizationPageVo.orgId != null">
-                and org.org_id = #{organizationPageVo.orgId}
+            <if test="organizationPageBO.orgId != null">
+                and org.org_id = #{organizationPageBO.orgId}
             </if>
-            <if test="organizationPageVo.orgParentId != null">
-                and org.org_parent_id = #{organizationPageVo.orgParentId}
+            <if test="organizationPageBO.orgParentId != null">
+                and org.org_parent_id = #{organizationPageBO.orgParentId}
             </if>
         </if>
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
         order by org.sort_id asc
+        <if test="orderSql !=null">
+            ,
+            ${orderSql}
+        </if>
     </select>
 
 
@@ -464,7 +472,42 @@
     and company_id=#{companyId}
     and is_enable=1
   </select>
-    <select id="listOrganizationsByIds2" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="listOrganizationsByCondition" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        t_org.org_id,
+        t_org.org_code,
+        t_org.org_name,
+        t_org.org_type,
+        t_org.org_parent_id,
+        t_org.org_full_name,
+        t_org.org_manager_id,
+        tua.user_name orgManagerName,
+        tua.employee_number employee_number,
+        t_org.company_id,
+        t_org.sort_id,
+        t_org.operator_id,
+        t_org.create_time,
+        t_org.is_enable,
+        t_parent.org_name AS parent_org_name,
+        t_parent.org_code AS parent_org_code
+        FROM t_organization t_org
+        LEFT JOIN t_organization t_parent
+        ON t_org.org_parent_id = t_parent.org_id
+        LEFT JOIN t_user_archive tua ON tua.archive_id= t_org.org_manager_id
+        WHERE t_org.org_id IN
+        <foreach collection="orgIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        order by t_parent.org_code asc, t_org.sort_id asc
+        <if test="orderSql !=null">
+            ,
+            ${orderSql}
+        </if>
+    </select>
+    <select id="listOrganizationsByIds" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
         t_org.org_id,
         t_org.org_code,
@@ -632,7 +675,7 @@
         ON tua.archive_id =v.org_manager_id
         LEFT JOIN t_post tp ON tp.post_id =tua.post_id
         LEFT JOIN t_position tps ON tps.position_id=tp.position_id
-        LEFT JOIN t_user_info	tui ON tui.user_id = tua.user_id
+        LEFT JOIN t_user_info tui ON tui.user_id = tua.user_id
         <if test="orgIdList != null">
             where
             v.org_id in
@@ -778,8 +821,9 @@
         and company_id = #{companyId}
         and is_enable=1
     </select>
-    <select id="selectByOrgId"  resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+    <select id="selectByOrgId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
         from t_organization
         where is_enable=1
         and org_id in

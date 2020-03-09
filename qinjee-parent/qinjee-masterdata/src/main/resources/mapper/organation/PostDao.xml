@@ -222,12 +222,12 @@
         LEFT JOIN t_organization parent_org ON parent_org.org_id =t1.org_parent_id
         LEFT JOIN t_post ptp ON ptp.parent_post_id=tp.post_id
         where 1=1
-        <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
-            and tp.is_enable = #{postPageVo.isEnable}
+        <if test="postPageBO != null and (postPageBO.isEnable != null and postPageBO.isEnable == 1)">
+            and tp.is_enable = #{postPageBO.isEnable}
         </if>
-        <if test="postPageVo != null">
-            <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-                <foreach collection="postPageVo.querFieldVos" item="querField">
+        <if test="postPageBO != null">
+            <if test="postPageBO.querFieldVos != null and postPageBO.querFieldVos.size > 0">
+                <foreach collection="postPageBO.querFieldVos" item="querField">
                     <if test="querField.fieldName != null and querField.fieldName != ''">
                         ${querField.condition}
                     </if>
@@ -283,7 +283,14 @@
             #{id}
         </foreach>
         and tp.is_delete = 0 and tp.is_enable = 1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
         order by tp.sort_id
+        <if test="orderSql !=null">
+            ,
+            ${orderSql}
+        </if>
     </select>
     <select id="listPostMapByOrgId" resultType="java.util.Map">
       select
@@ -321,6 +328,13 @@
             #{id}
         </foreach>
         and tp.is_delete = 0 and tp.is_enable = 1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
 
     </select>
     <select id="listPostsByCondition" resultMap="BaseResultMap">
@@ -355,10 +369,10 @@
             <foreach collection="postIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
-            and tp.org_id =#{postPageVo.orgId}
+            and tp.org_id =#{postPageBO.orgId}
         </if>
         and tp.is_delete = 0
-        <if test="postPageVo.isEnable != null">
+        <if test="postPageBO.isEnable != null">
             and tp.is_enable = 1
         </if>
 
@@ -460,7 +474,7 @@
         </if>
     </select>
 
-    <select id="listDirectPostPage" resultMap="BaseResultMap" parameterType="com.qinjee.masterdata.model.vo.organization.page.PostPageVo">
+    <select id="listDirectPostPage" resultMap="BaseResultMap" parameterType="com.qinjee.masterdata.model.vo.organization.bo.PostPageBO">
         SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code
         parent_post_code,ptp.post_name parent_post_name
         FROM t_post tp
@@ -468,15 +482,15 @@
         LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
         <where>
             1=1
-            <if test="postPageVo !=null">
-                <if test="postPageVo.isEnable !=null">
+            <if test="postPageBO !=null">
+                <if test="postPageBO.isEnable !=null">
                     and tp.is_enable = 1
                 </if>
-                <if test="postPageVo.parentPostId ==null or postPageVo.parentPostId ==0">
-                    and tp.org_id =#{postPageVo.orgId} and tp.parent_post_id =0
+                <if test="postPageBO.parentPostId ==null or postPageBO.parentPostId ==0">
+                    and tp.org_id =#{postPageBO.orgId} and tp.parent_post_id =0
                 </if>
-                <if test="postPageVo.parentPostId !=null and postPageVo.parentPostId !=0">
-                    and tp.parent_post_id =#{postPageVo.parentPostId}
+                <if test="postPageBO.parentPostId !=null and postPageBO.parentPostId !=0">
+                    and tp.parent_post_id =#{postPageBO.parentPostId}
                 </if>
             </if>
         </where>

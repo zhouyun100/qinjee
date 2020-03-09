@@ -156,7 +156,14 @@
                 and tp.position_group_id = #{pageVo.positionGroupId}
             </if>
         </if>
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
         order by tp.sort_id ASC
+        <if test="orderSql !=null">
+            ,
+            ${orderSql}
+        </if>
     </select>
 
     <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">

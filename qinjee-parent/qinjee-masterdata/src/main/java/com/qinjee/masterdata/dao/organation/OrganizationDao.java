@@ -1,9 +1,8 @@
 package com.qinjee.masterdata.dao.organation;
 
 
-import com.qinjee.masterdata.model.entity.Organization;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationPageBO;
 import com.qinjee.masterdata.model.vo.staff.BusinessOrgPostPos;
 import com.qinjee.masterdata.model.vo.staff.OrganzitionVo;
 import org.apache.ibatis.annotations.Param;
@@ -66,16 +65,16 @@ public interface OrganizationDao {
     /**
      * 根据查询条件查询机构
      *
-     * @param organizationPageVo
+     * @param organizationPageBO
      * @param archiveId
      * @return
      */
-    List<OrganizationVO> listDirectOrganizationByCondition(@Param("organizationPageVo") OrganizationPageVo organizationPageVo,
+    List<OrganizationVO> listDirectOrganizationByCondition(@Param("organizationPageVo") OrganizationPageBO organizationPageBO,
                                                            @Param("archiveId") Integer archiveId,
-                                                           @Param("now") Date now);
+                                                           @Param("now") Date now, @Param("whereSql")String whereSql, @Param("orderSql")String orderSql);
 
 
-    /**
+    /*****************************
      * 根据code码封存或解封机构
      *
      * @param orgIds
@@ -118,7 +117,8 @@ public interface OrganizationDao {
     String selectOrgName(@Param("id") Integer id, @Param("companyId") Integer companyId);
 
 
-    List<OrganizationVO> listOrganizationsByIds2(@Param("orgIds") List<Integer> orgIds);
+    List<OrganizationVO> listOrganizationsByCondition(@Param("orgIds") List<Integer> orgIds, String whereSql, String orderSql);
+    List<OrganizationVO> listOrganizationsByIds(@Param("orgIds") List<Integer> orgIds);
 
 
     BusinessOrgPostPos selectManyId(@Param("unitName") String businessUnitName, @Param("orgName") String orgName,
@@ -133,7 +133,7 @@ public interface OrganizationDao {
 
     List<OrganizationVO> getOrganizationGraphics(Integer archiveId, List<Integer> orgIdList, Short isEnable, Date now);
 
-    List<OrganizationVO> listAllOrganizationByArchiveIdAndOrgId(List<Integer> orgIdList, Integer archiveId, short parseShort, Date now);
+    List<OrganizationVO> listAllOrganizationByArchiveIdAndOrgId(List<Integer> orgIdList, Integer archiveId,  Date now);
     List<OrganizationVO> listOrganizationByCompanyId(Integer companyId);
 
     void updateByOrgCode(OrganizationVO vo);

@@ -2,11 +2,9 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
-import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
-import com.qinjee.masterdata.service.organation.PositionGroupService;
+import com.qinjee.masterdata.model.vo.organization.bo.PositionPageBO;
 import com.qinjee.masterdata.service.organation.PositionService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -24,8 +22,8 @@ import java.util.List;
 
 /**
  * @author 彭洪思
- * @version 1.0.0
- * @Description TODO
+ * @version 1.0.1
+ * @Description
  * @createTime 2020年02月28日 10:23:00
  */
 @Api(tags = "【机构管理】职位接口")
@@ -55,25 +53,12 @@ public class PositionController extends BaseController {
 
     @ApiOperation(value = "ok，分页查询职位信息", notes = "彭洪思")
     @PostMapping("/getPositionPage")
-    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-        if (checkParam(positionPageVo, getUserSession())) {
+    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageBO positionPageBO) {
+        if (checkParam(positionPageBO, getUserSession())) {
             long start = System.currentTimeMillis();
-            ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(positionPageVo);
+            ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(positionPageBO);
             logger.info("分页查询职位信息耗时:" + (System.currentTimeMillis() - start));
             return positionPage;
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
-    }
-
-    @ApiOperation(value = "ok，查询所有职位", notes = "彭洪思")
-    @GetMapping("/getAllPositions")
-    public ResponseResult<List<Position>> getAllPositions() {
-        if (checkParam(getUserSession())) {
-            long start = System.currentTimeMillis();
-            ResponseResult<List<Position>> allPositions = positionService.getAllPositions(getUserSession());
-            logger.info("查询所有职位耗时:" + (System.currentTimeMillis() - start));
-            return allPositions;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
 

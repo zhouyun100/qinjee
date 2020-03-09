@@ -17,7 +17,7 @@ import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.UserArchivePageBO;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.auth.ArchiveAuthService;
@@ -25,6 +25,7 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -86,7 +87,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
 
 
     @Override
-    public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageVo pageQueryVo, UserSession userSession) {
+    public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(UserArchivePageBO pageQueryVo, UserSession userSession) {
+
 
         //判断是否是顶级机构，如果是 则将没有机构id的用户也查出来
         OrganizationVO org = organizationDao.getOrganizationById(pageQueryVo.getOrgId());
@@ -101,7 +103,9 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        List<UserArchiveVo> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList,isContains);
+        String whereSql = DealHeadParamUtil.getWhereSql(pageQueryVo.getTableHeadParamList(), "tua.");
+        String orderSql = DealHeadParamUtil.getOrderSql(pageQueryVo.getTableHeadParamList(), "tua.");
+        List<UserArchiveVo> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList,isContains,whereSql,orderSql);
         PageInfo<UserArchiveVo> pageInfo = new PageInfo<>(userArchiveList);
         PageResult<UserArchiveVo> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -437,7 +441,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         List<OrganizationVO> organizationVOListMem = organizationDao.listAllOrganizationByArchiveId(userSession.getArchiveId(), null, new Date());
         //根据有权的机构id查询岗位
         List<Integer> orgIds = organizationVOListMem.stream().map(OrganizationVO::getOrgId).collect(Collectors.toList());
-        List<Post> postsMem = postDao.listPostsByOrgIds(orgIds);
+        List<Post> postsMem = postDao.listPostsByOrgIds(orgIds,null,null);
 
         List<Blacklist> blacklistsMem = blacklistDao.selectByPage(userSession.getCompanyId());
 

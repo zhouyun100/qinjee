@@ -6,8 +6,9 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
-import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
 import com.qinjee.masterdata.service.organation.PostService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -57,13 +58,13 @@ public class PostController extends BaseController {
 
     @PostMapping("/getPostList")
     @ApiOperation(value = "ok，分页查询岗位列表,orgId（必填）、postId（选填）", notes = "ok")
-    public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageVo postPageVo) {
-        if (checkParam(postPageVo, getUserSession())) {
-            if (postPageVo.getIsEnable() != 0) {
-                postPageVo.setIsEnable(null);
+    public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageBO postPageBO) {
+        if (checkParam(postPageBO, getUserSession())) {
+            if (postPageBO.getIsEnable() != 0) {
+                postPageBO.setIsEnable(null);
             }
             long start = System.currentTimeMillis();
-            PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageVo);
+            PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageBO);
             logger.info("分页查询岗位列表耗时:" + (System.currentTimeMillis() - start));
             return new ResponseResult<>(pageResult);
         }
@@ -83,36 +84,22 @@ public class PostController extends BaseController {
     }
 
 
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "isEnable", value = "是否包含封存：0 封存、1 解封（默认）", paramType = "query", dataType = "short")
-    })
-    @GetMapping("/getAllPost")
-    @ApiOperation(value = "ok，根据机构id获取机构下（包含子机构）所有的岗位", notes = "ok")
-    public ResponseResult<List<Post>> getAllPost(@RequestParam("orgId") @ApiParam(name = "orgId", value = "机构id", example = "1", required = true) Integer orgId,
-                                                 @RequestParam("isEnable") @ApiParam(name = "isEnable", value = "是否包含封存的岗位", example = "1", required = true) Short isEnable) {
-        if (checkParam(orgId, isEnable, getUserSession())) {
-            long start = System.currentTimeMillis();
-            List<Post> posts = postService.getAllPostByOrgId(getUserSession(), orgId, isEnable);
-            logger.info("根据机构id获取机构下（包含子机构）所有的岗位耗时:" + (System.currentTimeMillis() - start));
-            return new ResponseResult<>(posts);
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
+
 
 
     @PostMapping("/getDirectPostPageList")
     @ApiOperation(value = "ok，分页查询下级直属岗位(id可以是机构orgId、parentPostId)", notes = "ok")
-    public ResponseResult<PageResult<Post>> getDirectPostPageList(@RequestBody PostPageVo postPageVo) {
-        if (checkParam(postPageVo, getUserSession())) {
-            Short isEnable = postPageVo.getIsEnable();
+    public ResponseResult<PageResult<Post>> getDirectPostPageList(@RequestBody PostPageBO postPageBO) {
+        if (checkParam(postPageBO, getUserSession())) {
+            Short isEnable = postPageBO.getIsEnable();
             if (isEnable == null || isEnable == 0) {
                 isEnable = 1;
             } else {
                 isEnable = null;
             }
             long start = System.currentTimeMillis();
-            postPageVo.setIsEnable(isEnable);
-            PageResult<Post> pageResult = postService.listDirectPostPage(postPageVo);
+            postPageBO.setIsEnable(isEnable);
+            PageResult<Post> pageResult = postService.listDirectPostPage(postPageBO);
             logger.info("分页查询下级直属岗位耗时:" + (System.currentTimeMillis() - start));
             return new ResponseResult<>(pageResult);
         }
@@ -226,30 +213,27 @@ public class PostController extends BaseController {
     // String filePath,  List<Integer> orgIds
     @PostMapping("/exportPost")
     @ApiOperation(value = "ok，导出岗位  参数demo {\"orgId\":28,\"postIds\":[1,47]}")
-    public ResponseResult exportPost(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
+    public ResponseResult exportPost(@RequestBody PostExportBO postExportBO, HttpServletResponse response) throws Exception {
         ResponseResult responseResult = new ResponseResult();
         long start = System.currentTimeMillis();
-        List<Integer> postIds = null;
-        Integer orgId = null;
-        if (paramMap.get("postIds") != null && paramMap.get("postIds") instanceof List) {
-            postIds = (List<Integer>) paramMap.get("postIds");
-        }
-        if (paramMap.get("orgId") != null && paramMap.get("orgId") instanceof Integer) {
-            orgId = (Integer) paramMap.get("orgId");
-        }
-        List<Post> postList = postService.exportPost(orgId, postIds, getUserSession());
-        if (!CollectionUtils.isEmpty(postList)) {
-            //response.setHeader("fileName", URLEncoder.encode("岗位信息.xls", "UTF-8"));
-            Workbook workbook = DefaultExcelBuilder.of(Post.class).build(postList);
-            AttachmentExportUtil.export(workbook, "岗位信息", response);
-            //只能返回null
-            logger.info("导出岗位耗时：" + (System.currentTimeMillis() - start) + "ms");
-            return null;
-        } else {
-            responseResult.setMessage("岗位为空");
-        }
+        Boolean b = checkParam(postExportBO, getUserSession());
+        if(b){
 
-        return responseResult;
+            List<Post> postList = postService.exportPost(postExportBO, getUserSession());
+            if (!CollectionUtils.isEmpty(postList)) {
+                //response.setHeader("fileName", URLEncoder.encode("岗位信息.xls", "UTF-8"));
+                Workbook workbook = DefaultExcelBuilder.of(Post.class).build(postList);
+                AttachmentExportUtil.export(workbook, "岗位信息", response);
+                //只能返回null
+                logger.info("导出岗位耗时：" + (System.currentTimeMillis() - start) + "ms");
+                return null;
+            } else {
+                responseResult.setMessage("岗位为空");
+            }
+            return responseResult;
+        }else{
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
     }
 
     @PostMapping("/uploadAndCheck")
