@@ -117,9 +117,9 @@ public class DealHeadParamUtil {
     }
     private static String getOrder(String order){
         if("升序".equals(order)){
-            return " asc";
+            return " asc ";
         }else if("降序".equals(order)){
-            return  " desc";
+            return  " desc ";
         }
         return null;
     }
