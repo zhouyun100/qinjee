@@ -13,6 +13,7 @@ package com.qinjee.masterdata.dao.userinfo;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public interface CompanyRegistDao {
 
     List<CustomArchiveGroup> searchCustomArchiveGroup(Integer tableId);
 
-    List<CustomArchiveField> searchCustomArchiveField(Integer tableId,Integer groupId);
+    List<CustomArchiveField> searchCustomArchiveField(@Param("tableId") Integer tableId, @Param("groupId") Integer groupId);
 
     int addCustomTable(CustomArchiveTable customArchiveTable);
 
@@ -67,7 +68,7 @@ public interface CompanyRegistDao {
 
     int addCustomField(CustomArchiveField customField);
 
-    int addRoleCustomFieldAuth(Integer roleId, Integer fieldId);
+    int addRoleCustomFieldAuth(@Param("roleId") Integer roleId, @Param("fieldId") Integer fieldId);
 
     int addTemplateEntryRegistration(TemplateEntryRegistration templateEntryRegistration);
 

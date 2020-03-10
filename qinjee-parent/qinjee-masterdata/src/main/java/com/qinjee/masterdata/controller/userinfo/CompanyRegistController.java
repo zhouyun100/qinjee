@@ -91,7 +91,7 @@ public class CompanyRegistController extends BaseController{
             }
 
             String redisPhoneLoginCode = redisClusterService.get("REGIST_" + phoneCodeParamVO.getPhone());
-            if(redisPhoneLoginCode.isEmpty() || !redisPhoneLoginCode.equals(phoneCodeParamVO.getCode())){
+            if(StringUtils.isBlank(redisPhoneLoginCode) || !redisPhoneLoginCode.equals(phoneCodeParamVO.getCode())){
                 responseResult = ResponseResult.FAIL();
                 responseResult.setMessage("手机号验证码无效!");
                 return responseResult;
@@ -105,6 +105,8 @@ public class CompanyRegistController extends BaseController{
             }
 
             logger.info("checkPhoneCode success！phone={};", phoneCodeParamVO.getPhone());
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setMessage("手机号验证完毕!");
 
         }catch(Exception e) {
             logger.info("checkPhoneCode exception! phone={};code={};exception={}", phoneCodeParamVO.getPhone(),phoneCodeParamVO.getCode(),e.toString());

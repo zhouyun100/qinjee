@@ -3,6 +3,7 @@ package com.qinjee.masterdata.dao.userinfo;
 import com.qinjee.masterdata.model.entity.CompanyInfo;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -18,10 +19,10 @@ import java.util.List;
 public interface UserInfoDao {
     int editUserInfo(UserInfoVO userInfo);
 
-    UserInfo getUserByPhoneAndCompanyId(String phone, Integer companyId);
+    UserInfo getUserByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
     UserInfo getUserByPhone(String phone);
 
-    int clearUserCompany(Integer userId, Integer companyId, Date date);
+    int clearUserCompany(@Param("userId") Integer userId, @Param("companyId") Integer companyId, @Param("date") Date date);
 
     void update(UserInfo userInfoDo);
 
@@ -38,7 +39,7 @@ public interface UserInfoDao {
      * @param companyId
      * @return
      */
-    int setUserCompanyDefaultLogin(Integer userId, Integer companyId);
+    int setUserCompanyDefaultLogin(@Param("userId") Integer userId, @Param("companyId") Integer companyId);
 
     /**
      * 设置用户该企业外为非默认登录
@@ -46,5 +47,5 @@ public interface UserInfoDao {
      * @param companyId
      * @return
      */
-    int setUserCompanyNoneDefaultLogin(Integer userId, Integer companyId);
+    int setUserCompanyNoneDefaultLogin(@Param("userId") Integer userId, @Param("companyId") Integer companyId);
 }
