@@ -49,7 +49,7 @@ public class DealHeadParamUtil {
                if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").append(fieldValue.get(0)).append(" and ");
                }
-                if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
+                if(fieldValue.size()>1 && fieldValue.get(1)!=null && !fieldValue.get(1).equals(0)){
                     stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").append(fieldValue.get(1)).append(" and ");
                 }
         }else{
@@ -83,17 +83,19 @@ public class DealHeadParamUtil {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue = fieldValueForSearch.getFieldValue();
                 if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
-                    String date1 = isDate(String.valueOf(fieldValue.get(0)));
+                    String date1 = String.valueOf(fieldValue.get(0));
                     if(date1!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").append(date1).append(" and ");
+                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").
+                                append(" ' ").append(date1).append(" ' " ).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }
                 }
-                if(fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
-                    String date2 = isDate(String.valueOf(fieldValue.get(1)));
+                if(fieldValue.size()>1&&fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
+                    String date2 = String.valueOf(fieldValue.get(1));
                     if(date2!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").append(date2).append(" and ");
+                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").
+                                append(" ' ").append(date2).append(" ' " ).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
                     }
