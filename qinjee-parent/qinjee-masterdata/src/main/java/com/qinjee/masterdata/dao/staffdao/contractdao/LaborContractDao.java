@@ -65,5 +65,5 @@ public interface LaborContractDao {
      * @param archiveIds
      * @return
      */
-    List<RelieveContractInfoVo> listRelieveContract(List<Integer> archiveIds);
+    List<RelieveContractInfoVo> listRelieveContract(@Param("archiveIds") List<Integer> archiveIds);
 }

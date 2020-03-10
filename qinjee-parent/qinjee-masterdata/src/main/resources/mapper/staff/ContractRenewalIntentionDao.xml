@@ -357,7 +357,13 @@
   </select>
 
   <select id="listContractRenewalInfo" resultType="com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo">
-
-
+        SELECT user_name userName ,gender,id_number idNumber,contract.contract_end_date contractEndDate FROM t_user_archive arc
+        LEFT JOIN t_labor_contract contract
+        ON contract.archive_id=arc.archive_id AND contract.contract_state IN ('新签','续签','更改')
+        WHERE  arc.archive_id in
+        <foreach collection="archiveIds" item="id" separator="," close=")" open="(">
+          #{id}
+        </foreach>
+        ORDER BY contract.create_time DESC LIMIT 1
   </select>
 </mapper>

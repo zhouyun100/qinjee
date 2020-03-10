@@ -206,7 +206,7 @@ public interface IStaffContractService {
      * @param archiveIds
      * @return
      */
-    List<RenewalContractInfoVo> listRenewalContract(List<Integer> archiveIds);
+    List<RenewalContractInfoVo> listContractRenewalInfo(List<Integer> archiveIds);
 
  /**
   * phs

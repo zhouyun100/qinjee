@@ -2,10 +2,7 @@ package com.qinjee.masterdata.controller.staff;
 
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.entity.CustomField;
 import com.qinjee.masterdata.model.entity.QueryScheme;
-import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.ArchiveRegistVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.DimissionCertificateVo;
@@ -22,7 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -62,12 +58,12 @@ public class StaffArchiveController extends BaseController {
     /**
      * 员工登记表打印的数据查询接口
      */
-    @PostMapping(value = "/getDimissionCertificate")
+    @PostMapping(value = "/listDimissionCertificate")
     @ApiOperation(value = "员工离职证明的数据查询接口", notes = "phs")
-    public ResponseResult<List<DimissionCertificateVo>> getDimissionCertificate(@RequestBody List<Integer> archiveIds )  {
+    public ResponseResult<List<DimissionCertificateVo>> listDimissionCertificate(@RequestBody List<Integer> archiveIds )  {
         Boolean b = checkParam(archiveIds,getUserSession());
         if(b){
-            List<DimissionCertificateVo> dimissionCertificateList= staffArchiveService.getDimissionCertificate(archiveIds,getUserSession());
+            List<DimissionCertificateVo> dimissionCertificateList= staffArchiveService.listDimissionCertificate(archiveIds,getUserSession());
             return new ResponseResult(dimissionCertificateList);
         }
         return  failResponseResult("参数错误");

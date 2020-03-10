@@ -57,7 +57,7 @@ public class PositionLevelController extends BaseController {
     }
     @GetMapping("/list")
     @ApiOperation(value = "分页查询职级列表", notes = "彭洪思")
-    public ResponseResult<PageResult<PositionLevelVo>> list(PageVo pageVo) {
+    public ResponseResult<PageResult<PositionLevelVo>> list( PageVo pageVo) {
         if (!checkParam(getUserSession(), pageVo)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
@@ -76,26 +76,26 @@ public class PositionLevelController extends BaseController {
 
     @PostMapping("/add")
     @ApiOperation(value = "新增职级", notes = "彭洪思")
-    public ResponseResult add(PositionLevel positionLevel) {
+    public ResponseResult add(@RequestBody PositionLevel positionLevel) {
         if (!checkParam(getUserSession(), positionLevel)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
         int i = positionLevelService.addPositionLevel(positionLevel, getUserSession());
         if (i > 0) {
-            return new ResponseResult();
+            return new ResponseResult(i);
         }
         return new ResponseResult(CommonCode.SERVER_ERROR);
     }
 
     @PostMapping("/edit")
     @ApiOperation(value = "编辑职级", notes = "彭洪思")
-    public ResponseResult edit(PositionLevel positionLevel) {
+    public ResponseResult edit(@RequestBody PositionLevel positionLevel) {
         if (!checkParam(getUserSession(), positionLevel)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
         int i = positionLevelService.editPositionLevel(getUserSession(), positionLevel);
         if (i > 0) {
-            return new ResponseResult();
+            return new ResponseResult(i);
         }
         return new ResponseResult(CommonCode.SERVER_ERROR);
     }
@@ -108,7 +108,7 @@ public class PositionLevelController extends BaseController {
         }
         int i = positionLevelService.batchDeletePositionLevel(positionLevelIds, getUserSession());
         if (i > 0) {
-            return new ResponseResult();
+            return new ResponseResult(i);
         }
         return new ResponseResult(CommonCode.SERVER_ERROR);
     }
@@ -120,7 +120,7 @@ public class PositionLevelController extends BaseController {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
         int i = positionLevelService.sortPositionLevel(positionLevelIds, getUserSession());
-        return new ResponseResult();
+        return new ResponseResult(i);
     }
 
 }

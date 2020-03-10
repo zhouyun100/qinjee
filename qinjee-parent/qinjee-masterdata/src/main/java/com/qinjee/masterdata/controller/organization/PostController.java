@@ -205,7 +205,6 @@ public class PostController extends BaseController {
                 return ResponseResult.SUCCESS();
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
     }
 
     // String filePath,  List<Integer> orgIds

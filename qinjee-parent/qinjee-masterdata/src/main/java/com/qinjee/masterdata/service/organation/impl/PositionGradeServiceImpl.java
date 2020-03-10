@@ -59,7 +59,7 @@ public class PositionGradeServiceImpl implements PositionGradeService {
         List<PositionLevelVo> positionLevels = positionLevelDao.listByPositionGradeIds(positionGradeIds);
         if (CollectionUtils.isNotEmpty(positionLevels))
             ExceptionCast.cast(CommonCode.GRADE_USE_IN_LEVEL);
-        return positionLevelDao.batchDelete(positionGradeIds);
+        return positionGradeDao.batchDelete(positionGradeIds);
     }
 
     @Override
