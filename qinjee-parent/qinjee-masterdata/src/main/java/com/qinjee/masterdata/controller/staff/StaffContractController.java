@@ -6,7 +6,8 @@ import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.vo.staff.*;
-import com.qinjee.masterdata.service.staff.IStaffArchiveService;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RelieveContractInfoVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,17 +45,17 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "id", value = "机构ID", paramType = "query", required = true),
 //    })
-    public ResponseResult< UserArchiveVoAndHeader > selectLaborContract(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
-        Boolean b = checkParam(requestUserarchiveVo,getUserSession ());
+    public ResponseResult<UserArchiveVoAndHeader> selectLaborContract(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam(requestUserarchiveVo, getUserSession());
         if (b) {
-            PageResult < UserArchiveVo > pageResult=
-                staffContractService.selectNoLaborContract (requestUserarchiveVo,userSession.getCompanyId() );
-                UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
-                userArchiveVoAndHeader.setPageResult (pageResult);
+            PageResult<UserArchiveVo> pageResult =
+                    staffContractService.selectNoLaborContract(requestUserarchiveVo, userSession.getCompanyId());
+            UserArchiveVoAndHeader userArchiveVoAndHeader = new UserArchiveVoAndHeader();
+            userArchiveVoAndHeader.setPageResult(pageResult);
 //                userArchiveVoAndHeader.setHeads (staffArchiveService.getHeadList(userSession));
-                return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
+            return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     /**合同状态  新签、变更   续签、解除、终止
@@ -79,13 +79,13 @@ public class StaffContractController extends BaseController {
 //
 //    })
     public ResponseResult<PageResult<ContractWithArchiveVo>> selectLaborContractserUser(@RequestBody RequestUserarchiveVo requestUserarchiveVo) throws Exception {
-        Boolean b = checkParam(requestUserarchiveVo,getUserSession ());
+        Boolean b = checkParam(requestUserarchiveVo, getUserSession());
         if (b) {
-                PageResult<ContractWithArchiveVo> pageResult =
-                        staffContractService.selectLaborContractserUser(requestUserarchiveVo,getUserSession());
-             return new ResponseResult<> ( pageResult,CommonCode.SUCCESS );
+            PageResult<ContractWithArchiveVo> pageResult =
+                    staffContractService.selectLaborContractserUser(requestUserarchiveVo, getUserSession());
+            return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -98,12 +98,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
 //    })
     public ResponseResult insertLaborContract(@RequestBody @Valid ContractVo contractVo) throws ParseException {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.insertLaborContract(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.insertLaborContract(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
 
     }
 
@@ -112,29 +112,30 @@ public class StaffContractController extends BaseController {
      */
     @RequestMapping(value = "/selectContractByArchiveId", method = RequestMethod.GET)
     @ApiOperation(value = "根据人员ID查询合同", notes = "hkt")
-    public ResponseResult selectContractByArchiveId( Integer archiveId) {
+    public ResponseResult selectContractByArchiveId(Integer archiveId) {
         Boolean b = checkParam(archiveId);
-        if(b){
-                List< LaborContract> list=staffContractService.selectContractByArchiveId(archiveId);
-                    return new ResponseResult<> ( list,CommonCode.SUCCESS );
+        if (b) {
+            List<LaborContract> list = staffContractService.selectContractByArchiveId(archiveId);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     @RequestMapping(value = "/selectAboutToExpireContracts", method = RequestMethod.GET)
     @ApiOperation(value = "根据部门id展示合同即将到期的人员信息", notes = "phs")
-    public ResponseResult<PageResult<ContractWithArchiveVo>> selectAboutToExpireContracts( Integer orgId, Integer currentPage,
-                                                                                           Integer pageSize) throws Exception {
+    public ResponseResult<PageResult<ContractWithArchiveVo>> selectAboutToExpireContracts(Integer orgId, Integer currentPage,
+                                                                                          Integer pageSize) throws Exception {
         Boolean b = checkParam(orgId, currentPage, pageSize, getUserSession());
         if (b) {
             PageResult<ContractWithArchiveVo> pageResult =
-                    staffContractService.selectAboutToExpireContracts(orgId, getUserSession().getArchiveId(),getUserSession().getCompanyId(),currentPage, pageSize);
+                    staffContractService.selectAboutToExpireContracts(orgId, getUserSession().getArchiveId(), getUserSession().getCompanyId(), currentPage, pageSize);
             return new ResponseResult<>(pageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-    /**id
+    /**
+     * id
      * 批量新签合同（合同编号不支持输入，需系统自动生成，对应的是提交，就是合同已经生效，此时字段是否已签改为是否已签）
      * 这里需要进行人员信息的查询，然后将属性取出来塞进合同集合中。
      */
@@ -160,12 +161,12 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/SaveLaborContract", method = RequestMethod.POST)
     @ApiOperation(value = "保存合同", notes = "hkt")
     public ResponseResult saveLaborContract(@RequestBody @Valid ContractVo contractVo) throws Exception {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.saveLaborContract(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.saveLaborContract(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
 
     }
 
@@ -177,11 +178,11 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "LaborContractid", value = "合同id", paramType = "query", required = true)
     public ResponseResult deleteLaborContract(Integer laborContractid) {
         Boolean b = checkParam(laborContractid);
-        if(b){
-                staffContractService.deleteLaborContract(laborContractid);
-                return ResponseResult.SUCCESS();
+        if (b) {
+            staffContractService.deleteLaborContract(laborContractid);
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -197,12 +198,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult updatelaborContract(@RequestBody @Valid ContractVo contractVo) throws ParseException {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.updatelaborContract(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.updatelaborContract(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -218,12 +219,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult insertReNewLaborContract(@RequestBody @Valid ContractVo contractVo) {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.insertReNewLaborContract(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.insertReNewLaborContract(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -237,12 +238,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult insertReNewLaborContractBatch(@RequestBody @Valid ContractVo contractVo) throws Exception {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.insertReNewLaborContractBatch(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.insertReNewLaborContractBatch(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -252,12 +253,13 @@ public class StaffContractController extends BaseController {
     @ApiOperation(value = "获得签订次数", notes = "hkt")
     public ResponseResult getSignNumber(Integer archiveId) {
         Boolean b = checkParam(archiveId);
-        if(b){
-                Integer signNumber = staffContractService.getSignNumber ( archiveId );
-                return new ResponseResult<> ( signNumber,CommonCode.SUCCESS );
+        if (b) {
+            Integer signNumber = staffContractService.getSignNumber(archiveId);
+            return new ResponseResult<>(signNumber, CommonCode.SUCCESS);
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
+
     /**
      * 终止合同信息
      */
@@ -268,12 +270,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult endlaborContract(@RequestBody @Valid LaborContractChangeVo laborContractChangeVo, Integer id) throws ParseException {
-        Boolean b = checkParam(laborContractChangeVo,id,getUserSession());
-        if(b){
-                staffContractService.endlaborContract(laborContractChangeVo, id,getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(laborContractChangeVo, id, getUserSession());
+        if (b) {
+            staffContractService.endlaborContract(laborContractChangeVo, id, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -286,12 +288,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult endlaborContract(@RequestBody @Valid ContractVo contractVo) throws ParseException {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.endlaborContractBatch(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.endlaborContractBatch(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -304,12 +306,12 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult looselaborContract(@RequestBody @Valid ContractVo contractVo) throws ParseException {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.looselaborContract(contractVo.getLaborContractChangeVo (),contractVo.getList ().get ( 0 ), getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.looselaborContract(contractVo.getLaborContractChangeVo(), contractVo.getList().get(0), getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -322,13 +324,13 @@ public class StaffContractController extends BaseController {
 //            @ApiImplicitParam(name = "laborContractChangeVo", value = "合同变更Vo类", paramType = "form", required = true)
 //    })
     public ResponseResult looselaborContractBatch(@RequestBody @Valid ContractVo contractVo) throws ParseException {
-        Boolean b = checkParam(contractVo,getUserSession());
-        if(b){
-                staffContractService.looselaborContractBatch(contractVo, getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(contractVo, getUserSession());
+        if (b) {
+            staffContractService.looselaborContractBatch(contractVo, getUserSession());
+            return ResponseResult.SUCCESS();
 
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -340,11 +342,11 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "id", value = "合同id", paramType = "query", required = true)
     public ResponseResult<List<LaborContractChange>> selectLaborContractchange(Integer id) {
         Boolean b = checkParam(id);
-        if(b){
-                List<LaborContractChange> list = staffContractService.selectLaborContractchange(id);
-                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+        if (b) {
+            List<LaborContractChange> list = staffContractService.selectLaborContractchange(id);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
     /**
@@ -355,12 +357,12 @@ public class StaffContractController extends BaseController {
     @ApiOperation(value = "发送续签意向表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "query", required = true)
     public ResponseResult insertLaborContractIntention(@RequestParam List<Integer> list) {
-        Boolean b = checkParam(list,getUserSession());
-        if(b){
-                staffContractService.insertLaborContractIntention(list,getUserSession());
-                return ResponseResult.SUCCESS();
+        Boolean b = checkParam(list, getUserSession());
+        if (b) {
+            staffContractService.insertLaborContractIntention(list, getUserSession());
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -371,25 +373,27 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "续签反馈表", paramType = "form", required = true)
     public ResponseResult insertResponseLaborContract(@RequestBody @Valid ContractRenewalIntention contractRenewalIntention) {
         Boolean b = checkParam(contractRenewalIntention);
-        if(b){
-                staffContractService.updateContractRenewalIntention(contractRenewalIntention);
-                return ResponseResult.SUCCESS();
+        if (b) {
+            staffContractService.updateContractRenewalIntention(contractRenewalIntention);
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
 
     }
+
     @RequestMapping(value = "/insertMessqge", method = RequestMethod.POST)
     @ApiOperation(value = "添加续签信息", notes = "hkt")
     //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "续签反馈表", paramType = "form", required = true)
     public ResponseResult insertMessqge(@RequestBody @Valid InsertRenewContractMessage insertRenewContractMessage) {
         Boolean b = checkParam(insertRenewContractMessage);
-        if(b){
+        if (b) {
             staffContractService.insertMessqge(insertRenewContractMessage);
             return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
 
     }
+
     /**
      * 展示我的续签意向
      */
@@ -398,12 +402,35 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
     public ResponseResult<List<ContractRenewalIntention>> selectContractRenewalIntention(Integer id) {
         Boolean b = checkParam(id);
-        if(b){
-                List<ContractRenewalIntention> list = staffContractService.selectContractRenewalIntention(id);
-                    return new ResponseResult<>(list,CommonCode.SUCCESS);
+        if (b) {
+            List<ContractRenewalIntention> list = staffContractService.selectContractRenewalIntention(id);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
+    @PostMapping("/selectContractRenewalInfoVo")
+    @ApiOperation(value = "批量查询 劳动合同到期续签通知书", notes = "phs")
+    public ResponseResult<List<RenewalContractInfoVo>> selectContractRenewalInfoVo(List<Integer> archiveIds) {
+        Boolean b = checkParam(archiveIds);
+        if (b) {
+            //TODO 根据当前有效合同为依据（有效合同只存在一份）
+            List<RenewalContractInfoVo> list = staffContractService.listRenewalContract(archiveIds);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+    @PostMapping("/selectRelieveContract")
+    @ApiOperation(value = "批量查询 解除（终止劳动合同证明书）", notes = "phs")
+    public ResponseResult<List<RelieveContractInfoVo>> selectRelieveContract(List<Integer> archiveIds) {
+        Boolean b = checkParam(archiveIds);
+        if (b) {
+            List<RelieveContractInfoVo> list = staffContractService.listRelieveContract(archiveIds);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
     /**
      * 劳动合同到期续签通知书
      */
@@ -412,27 +439,29 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
     public ResponseResult<List<RenewIntionAboutUser>> getRenewalContract() {
         Boolean b = checkParam(getUserSession());
-        if(b){
+        if (b) {
             List<RenewIntionAboutUser> list = staffContractService.getRenewalContract(getUserSession().getArchiveId());
-            return new ResponseResult<>(list,CommonCode.SUCCESS);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
     /**
      * 展示部门下的续签意向表
      */
     @RequestMapping(value = "/selectContractRenewalIntentionByOrg", method = RequestMethod.GET)
     @ApiOperation(value = "展示部门下的续签意向表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
-    public ResponseResult<PageResult<ContractRenewalIntention>> selectContractRenewalIntention(@RequestParam List<Integer> orgId,Integer currentPage,Integer pageSIze) {
+    public ResponseResult<PageResult<ContractRenewalIntention>> selectContractRenewalIntention(@RequestParam List<Integer> orgId, Integer currentPage, Integer pageSIze) {
 
-        Boolean b = checkParam(orgId,pageSIze,currentPage);
-        if(b){
-                PageResult < ContractRenewalIntention > contractRenewalIntentionPageResult = staffContractService.selectContractRenewalIntentionByOrg ( orgId, pageSIze, currentPage );
-                    return new ResponseResult<>(contractRenewalIntentionPageResult,CommonCode.SUCCESS);
+        Boolean b = checkParam(orgId, pageSIze, currentPage);
+        if (b) {
+            PageResult<ContractRenewalIntention> contractRenewalIntentionPageResult = staffContractService.selectContractRenewalIntentionByOrg(orgId, pageSIze, currentPage);
+            return new ResponseResult<>(contractRenewalIntentionPageResult, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
     /**
      * 同意续签
      */
@@ -441,11 +470,11 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
     public ResponseResult agreeRenew(Integer xuqianId) {
         Boolean b = checkParam(xuqianId);
-        if(b){
-                staffContractService.agreeRenew(xuqianId);
-                return ResponseResult.SUCCESS();
+        if (b) {
+            staffContractService.agreeRenew(xuqianId);
+            return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -456,11 +485,11 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "ContractRenewalIntention", value = "ContractRenewalIntention类", paramType = "form", required = true)
     public ResponseResult rejectRenew(Integer xuqianId) {
         Boolean b = checkParam(xuqianId);
-        if(b) {
+        if (b) {
             staffContractService.rejectRenew(xuqianId);
             return ResponseResult.SUCCESS();
         }
-        return  failResponseResult("参数错误");
+        return failResponseResult("参数错误");
     }
 
     /**
@@ -469,20 +498,21 @@ public class StaffContractController extends BaseController {
     @RequestMapping(value = "/createContractForm", method = RequestMethod.GET)
     @ApiOperation(value = "生成合同报表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "机构id", paramType = "form", required = true)
-    public ResponseResult<PageResult<ContractFormVo>> createContractForm(@RequestParam List<Integer> list,Integer pageSize,Integer currentPage) {
-        Boolean b = checkParam(list,pageSize,currentPage,getUserSession ());
-        if(b){
-                PageResult < ContractFormVo > userArchiveVoPageResult = staffContractService.createContractForm ( list,pageSize,currentPage,getUserSession () );
-                    return new ResponseResult<>(userArchiveVoPageResult,CommonCode.SUCCESS);
+    public ResponseResult<PageResult<ContractFormVo>> createContractForm(@RequestParam List<Integer> list, Integer pageSize, Integer currentPage) {
+        Boolean b = checkParam(list, pageSize, currentPage, getUserSession());
+        if (b) {
+            PageResult<ContractFormVo> userArchiveVoPageResult = staffContractService.createContractForm(list, pageSize, currentPage, getUserSession());
+            return new ResponseResult<>(userArchiveVoPageResult, CommonCode.SUCCESS);
 
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
     private Boolean checkParam(Object... params) {
         for (Object param : params) {
-            if(param instanceof UserSession){
-                if(null == param|| "".equals(param)){
-                    ExceptionCast.cast ( CommonCode.INVALID_SESSION );
+            if (param instanceof UserSession) {
+                if (null == param || "".equals(param)) {
+                    ExceptionCast.cast(CommonCode.INVALID_SESSION);
                     return false;
                 }
             }
@@ -492,6 +522,7 @@ public class StaffContractController extends BaseController {
         }
         return true;
     }
+
     private ResponseResult failResponseResult(String message) {
         ResponseResult fail = ResponseResult.FAIL();
         fail.setMessage(message);

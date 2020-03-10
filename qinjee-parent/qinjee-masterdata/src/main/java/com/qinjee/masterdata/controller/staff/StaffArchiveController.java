@@ -8,6 +8,7 @@ import com.qinjee.masterdata.model.entity.UserArchive;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.ArchiveRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.DimissionCertificateVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
@@ -50,11 +51,24 @@ public class StaffArchiveController extends BaseController {
      */
     @PostMapping(value = "/getArchiveRegisterInfo")
     @ApiOperation(value = "员工登记表打印的数据查询接口", notes = "phs")
-    public ResponseResult<List<com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> archiveIds ) throws Exception {
+    public ResponseResult<List<PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> archiveIds ) throws Exception {
         Boolean b = checkParam(archiveIds,getUserSession());
         if(b){
             List<ArchiveRegistVo> preRegistList= staffArchiveService.getArchiveRegisterInfo(archiveIds,getUserSession());
             return new ResponseResult(preRegistList);
+        }
+        return  failResponseResult("参数错误");
+    }
+    /**
+     * 员工登记表打印的数据查询接口
+     */
+    @PostMapping(value = "/getDimissionCertificate")
+    @ApiOperation(value = "员工离职证明的数据查询接口", notes = "phs")
+    public ResponseResult<List<DimissionCertificateVo>> getDimissionCertificate(@RequestBody List<Integer> archiveIds )  {
+        Boolean b = checkParam(archiveIds,getUserSession());
+        if(b){
+            List<DimissionCertificateVo> dimissionCertificateList= staffArchiveService.getDimissionCertificate(archiveIds,getUserSession());
+            return new ResponseResult(dimissionCertificateList);
         }
         return  failResponseResult("参数错误");
     }

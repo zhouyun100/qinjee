@@ -13,6 +13,8 @@ import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RelieveContractInfoVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
@@ -343,6 +345,17 @@ public class StaffContractServiceImpl implements IStaffContractService {
         contractRenewalIntention.setRenewalOpinion(insertRenewContractMessage.getMessage());
         contractRenewalIntention.setUpdateTime(new Date());
         contractRenewalIntentionDao.updateByPrimaryKeySelective(contractRenewalIntention);
+    }
+
+    @Override
+    public List<RenewalContractInfoVo> listRenewalContract(List<Integer> archiveIds) {
+        //TODO 未完成
+        return contractRenewalIntentionDao.listContractRenewalInfo(archiveIds);
+    }
+
+    @Override
+    public List<RelieveContractInfoVo> listRelieveContract(List<Integer> archiveIds) {
+        return laborContractDao.listRelieveContract(archiveIds);
     }
 
     @Override

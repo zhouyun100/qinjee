@@ -355,4 +355,9 @@
     left join t_user_archive arc on arc.archive_id = intention.archive_id and arc.is_delete=0
     where intention.archive_id=#{archiveId}
   </select>
+
+  <select id="listContractRenewalInfo" resultType="com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo">
+
+
+  </select>
 </mapper>

@@ -4,6 +4,7 @@ import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.ArchiveRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.DimissionCertificateVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -176,4 +177,6 @@ public interface IStaffArchiveService {
     void deleteCareerTrack(Integer id);
 
     List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) throws Exception;
+
+    List<DimissionCertificateVo> getDimissionCertificate(List<Integer> archiveIds, UserSession userSession);
 }
