@@ -56,6 +56,7 @@ public class UserInfoController extends BaseController {
         }
 
         try {
+            userSession = getUserSession();
             UserInfoVO userInfo = userLoginService.searchUserInfoByUserIdAndCompanyId(userSession.getUserId(),companyId);
             if (null == userInfo) {
                 responseResult = ResponseResult.FAIL();
@@ -86,6 +87,7 @@ public class UserInfoController extends BaseController {
     public ResponseResult<CompanyInfo> selectCompanyList() {
 
         try {
+            userSession = getUserSession();
             List<CompanyInfo> companyInfoList = userInfoService.selectCompanyListByUserId(userSession.getUserId());
             if (CollectionUtils.isEmpty(companyInfoList)) {
                 responseResult = ResponseResult.FAIL();

@@ -12,6 +12,7 @@ package com.qinjee.masterdata.controller.userinfo;
 
 import com.alibaba.fastjson.JSON;
 import com.qinjee.consts.ResponseConsts;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
@@ -23,6 +24,7 @@ import com.qinjee.masterdata.model.vo.userinfo.WechatLoginResultVO;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.VerifyCodeUtils;
@@ -156,9 +158,11 @@ public class UserLoginController extends BaseController{
         WechatLoginResultVO wechatLoginResultVO = userLoginService.searchWechatUserInfoByWeChatCode(code);
         if(wechatLoginResultVO.getLoginInfo() != null){
             setSessionAndCookie(response,wechatLoginResultVO.getLoginInfo());
+            responseResult = ResponseResult.SUCCESS();
             logger.info("WeChat scan code login success！userId={}", wechatLoginResultVO.getLoginInfo().getUserId());
+        }else{
+            responseResult = new ResponseResult(CommonCode.WECHAT_NO_BIND);
         }
-        responseResult = ResponseResult.SUCCESS();
         responseResult.setResult(wechatLoginResultVO);
 
         return responseResult;
@@ -347,10 +351,16 @@ public class UserLoginController extends BaseController{
     public ResponseResult<UserSession> updatePasswordByCurrentAccount(String oldPassword, String newPassword) {
         try{
             userSession = getUserSession();
-            userLoginService.updateUserPasswordByUserIdAndPassword(userSession.getUserId(), oldPassword, newPassword);
+            int resultCount = userLoginService.updateUserPasswordByUserIdAndPassword(userSession.getUserId(), oldPassword, newPassword);
 
-            logger.info("updatePasswordByCurrentAccount success！userId={},newPassword={}", userSession.getUserId(), newPassword);
-            responseResult = ResponseResult.SUCCESS();
+            if(resultCount > 0){
+                logger.info("updatePasswordByCurrentAccount success！userId={},newPassword={}", userSession.getUserId(), newPassword);
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("原密码不正确！");
+            }
+
         }catch (Exception e){
             logger.info("updatePasswordByCurrentAccount exception! userId={},oldPassword={},exception={}", userSession.getUserId(), oldPassword, e.toString());
             e.printStackTrace();

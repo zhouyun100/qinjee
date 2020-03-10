@@ -92,8 +92,8 @@ public class UserLoginServiceImpl implements UserLoginService {
     public int updateUserPasswordByUserIdAndPassword(Integer userId, String oldPassword, String newPassword) {
         RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setUserId(userId);
-        userLoginVO.setPassword(oldPassword);
-        userLoginVO.setNewPassword(newPassword);
+        userLoginVO.setPassword(MD5Utils.getMd5(oldPassword));
+        userLoginVO.setNewPassword(MD5Utils.getMd5(newPassword));
         return userLoginDao.updateUserPasswordByUserIdAndPassword(userLoginVO);
     }
 
@@ -101,7 +101,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     public int updateUserPasswordByUserId(Integer userId, String newPassword) {
         RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setUserId(userId);
-        userLoginVO.setNewPassword(newPassword);
+        userLoginVO.setNewPassword(MD5Utils.getMd5(newPassword));
         return userLoginDao.updateUserPasswordByUserId(userLoginVO);
     }
 
@@ -190,8 +190,6 @@ public class UserLoginServiceImpl implements UserLoginService {
                 UserInfoVO userInfoVO = userLoginDao.searchUserInfoByOpenId(weChatToken.getOpenid());
                 if(userInfoVO != null){
                     wechatLoginResultVO.setLoginInfo(userInfoVO);
-                }else{
-                    ExceptionCast.cast(CommonCode.WECHAT_NO_BIND);
                 }
             }
         }else{
