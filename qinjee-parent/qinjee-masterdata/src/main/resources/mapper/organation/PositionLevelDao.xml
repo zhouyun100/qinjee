@@ -35,7 +35,7 @@
      SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
         FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
         ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
-        where t_level.company_id=#{companyId} and t_level.is_delete =0
+        where t_level.company_id=#{companyId} and t_level.is_delete =0 order by t_level.sort_id
 
     </select>
     <select id="getLastSortId" resultType="int">
@@ -93,6 +93,7 @@
         <foreach collection="positionGradeIds" item="positionGradeId" separator="," open="(" close=")">
             #{positionGradeId}
         </foreach>
+        order by t_level.sort_id
 
     </select>
 
@@ -100,7 +101,7 @@
         SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
         FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
         ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
-        where t_level.position_grade_id =#{positionGradeId}
+        where t_level.position_grade_id =#{positionGradeId} order by t_level.sort_id
     </select>
     <select id="get" resultMap="PositionLevelVoMap">
        SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name

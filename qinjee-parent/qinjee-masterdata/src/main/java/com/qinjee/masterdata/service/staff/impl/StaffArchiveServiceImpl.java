@@ -151,7 +151,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
      * @return
      */
     @Override
-    public List<DimissionCertificateVo> getDimissionCertificate(List<Integer> archiveIds, UserSession userSession) {
+    public List<DimissionCertificateVo> listDimissionCertificate(List<Integer> archiveIds, UserSession userSession) {
         List<DimissionCertificateVo> dimissionCertificateList = new ArrayList<>();
         archiveIds.stream().forEach(id -> {
             UserArchiveVo userArchiveVo = userArchiveDao.selectFullById(id);

@@ -348,13 +348,14 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public List<RenewalContractInfoVo> listRenewalContract(List<Integer> archiveIds) {
+    public List<RenewalContractInfoVo> listContractRenewalInfo(List<Integer> archiveIds) {
         //TODO 未完成
         return contractRenewalIntentionDao.listContractRenewalInfo(archiveIds);
     }
 
     @Override
     public List<RelieveContractInfoVo> listRelieveContract(List<Integer> archiveIds) {
+        //TODO 未完成
         return laborContractDao.listRelieveContract(archiveIds);
     }
 

@@ -60,7 +60,7 @@ public class PositionGradeController extends BaseController {
 
     @PostMapping("/add")
     @ApiOperation(value = "新增职等", notes = "彭洪思")
-    public ResponseResult add(PositionGrade positionGrade) {
+    public ResponseResult add(@RequestBody PositionGrade positionGrade) {
         if (!checkParam(getUserSession(), positionGrade)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
@@ -75,7 +75,7 @@ public class PositionGradeController extends BaseController {
 
     @PostMapping("/edit")
     @ApiOperation(value = "编辑职等", notes = "彭洪思")
-    public ResponseResult edit(PositionGrade positionGrade) {
+    public ResponseResult edit(@RequestBody PositionGrade positionGrade) {
         if (!checkParam(getUserSession(), positionGrade)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }

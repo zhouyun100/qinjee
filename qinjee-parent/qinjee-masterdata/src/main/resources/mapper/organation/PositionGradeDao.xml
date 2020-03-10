@@ -20,7 +20,7 @@
         select
         <include refid="Base_Column_List"></include>
         from t_position_grade
-        where company_id=#{companyId} and is_delete =0
+        where company_id=#{companyId} and is_delete =0 order by sort_id
     </select>
     <select id="getLastSortId" resultType="int">
     SELECT sort_id FROM t_position_grade WHERE company_id=#{companyId} and  is_delete =0 ORDER BY sort_id DESC LIMIT 1

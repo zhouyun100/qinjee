@@ -35,6 +35,29 @@ public class StaffContractController extends BaseController {
     private IStaffContractService staffContractService;
     private static final Logger logger = LoggerFactory.getLogger(StaffContractController.class);
 
+    @PostMapping("/listRenewalContractInfo")
+    @ApiOperation(value = "批量查询续签通知书", notes = "phs")
+    public ResponseResult<List<RenewalContractInfoVo>> listRenewalContractInfo(@RequestBody List<Integer> archiveIds) {
+        Boolean b = checkParam(archiveIds);
+        if (b) {
+            //TODO 根据当前有效合同为依据（有效合同只存在一份）
+            List<RenewalContractInfoVo> list = staffContractService.listContractRenewalInfo(archiveIds);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+    @PostMapping("/listRelieveContractInfo")
+    @ApiOperation(value = "批量查询 解除（终止劳动合同证明书）", notes = "phs")
+    public ResponseResult<List<RelieveContractInfoVo>> listRelieveContractInfo(@RequestBody  List<Integer> archiveIds) {
+        Boolean b = checkParam(archiveIds);
+        if (b) {
+            List<RelieveContractInfoVo> list = staffContractService.listRelieveContract(archiveIds);
+            return new ResponseResult<>(list, CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+    }
+
+
     /**
      * 展示未签合同人员分页
      */
@@ -409,27 +432,6 @@ public class StaffContractController extends BaseController {
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
 
-    @PostMapping("/selectContractRenewalInfoVo")
-    @ApiOperation(value = "批量查询 劳动合同到期续签通知书", notes = "phs")
-    public ResponseResult<List<RenewalContractInfoVo>> selectContractRenewalInfoVo(List<Integer> archiveIds) {
-        Boolean b = checkParam(archiveIds);
-        if (b) {
-            //TODO 根据当前有效合同为依据（有效合同只存在一份）
-            List<RenewalContractInfoVo> list = staffContractService.listRenewalContract(archiveIds);
-            return new ResponseResult<>(list, CommonCode.SUCCESS);
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
-    @PostMapping("/selectRelieveContract")
-    @ApiOperation(value = "批量查询 解除（终止劳动合同证明书）", notes = "phs")
-    public ResponseResult<List<RelieveContractInfoVo>> selectRelieveContract(List<Integer> archiveIds) {
-        Boolean b = checkParam(archiveIds);
-        if (b) {
-            List<RelieveContractInfoVo> list = staffContractService.listRelieveContract(archiveIds);
-            return new ResponseResult<>(list, CommonCode.SUCCESS);
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-    }
 
     /**
      * 劳动合同到期续签通知书

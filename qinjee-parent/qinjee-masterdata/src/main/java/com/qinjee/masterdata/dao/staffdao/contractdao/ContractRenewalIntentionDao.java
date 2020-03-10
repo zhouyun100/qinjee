@@ -35,6 +35,6 @@ public interface ContractRenewalIntentionDao {
 
     List<RenewIntionAboutUser> getRenewalContract(@Param("archiveId") Integer archiveId);
 
-    List<RenewalContractInfoVo> listContractRenewalInfo(List<Integer> archiveIds);
+    List<RenewalContractInfoVo> listContractRenewalInfo(@Param("archiveIds") List<Integer> archiveIds);
 
 }

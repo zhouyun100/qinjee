@@ -398,7 +398,28 @@
 
     <select id="listRelieveContract"
             resultType="com.qinjee.masterdata.model.vo.staff.archiveInfo.RelieveContractInfoVo">
-
+             SELECT user_name userName ,
+             gender,id_number idNumber,
+             arc.hire_date hireDate ,
+              t_post.post_name postName,
+             contract.contract_begin_date contractBeginDate,
+             contract.contract_end_date contractEndDate,
+             contract_change.change_reason changeReason,
+             contract_change.change_date changeDate
+             FROM t_user_archive arc
+             LEFT JOIN t_post
+             ON t_post.post_id =arc.post_id AND t_post.is_delete =0
+             LEFT JOIN t_labor_contract contract
+             ON contract.archive_id=arc.archive_id
+             LEFT JOIN t_labor_contract_change  contract_change
+             ON contract_change.contract_id = contract.contract_id AND contract_change.change_type ='解除更改'
+             WHERE arc.archive_id IN
+             <foreach collection="archiveIds" item="id" open="(" close=")" separator=",">
+                 #{id}
+             </foreach>
+             AND arc.is_delete =0
+             ORDER BY contract.create_time DESC
+             LIMIT 1;
     </select>
 
     <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract"

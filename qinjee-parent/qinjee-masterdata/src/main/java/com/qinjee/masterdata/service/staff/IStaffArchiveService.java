@@ -178,5 +178,5 @@ public interface IStaffArchiveService {
 
     List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) throws Exception;
 
-    List<DimissionCertificateVo> getDimissionCertificate(List<Integer> archiveIds, UserSession userSession);
+    List<DimissionCertificateVo> listDimissionCertificate(List<Integer> archiveIds, UserSession userSession);
 }
