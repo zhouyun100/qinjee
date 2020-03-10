@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +66,5 @@ public interface LaborContractDao {
      * @param archiveIds
      * @return
      */
-    List<RelieveContractInfoVo> listRelieveContract(@Param("archiveIds") List<Integer> archiveIds);
+    List<RelieveContractInfoVo> listRelieveContract(@Param("archiveIds") List<Integer> archiveIds, Date now);
 }

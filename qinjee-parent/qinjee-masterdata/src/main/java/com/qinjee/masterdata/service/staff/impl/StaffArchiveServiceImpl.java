@@ -155,14 +155,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<DimissionCertificateVo> dimissionCertificateList = new ArrayList<>();
         archiveIds.stream().forEach(id -> {
             UserArchiveVo userArchiveVo = userArchiveDao.selectFullById(id);
-            DimissionCertificateVo dimissionCertificateVo = DimissionCertificateVo.builder()
-                    .gender(userArchiveVo.getGender())
-                    .hireDate(userArchiveVo.getHireDate())
-                    .idNumber(userArchiveVo.getIdNumber())
-                    .postName(userArchiveVo.getPostName())
-                    .userName(userArchiveVo.getUserName())
-                    .attritionDate(userArchiveVo.getAttritionDate()).build();
-            dimissionCertificateList.add(dimissionCertificateVo);
+            if(Objects.nonNull(userArchiveVo)){
+                DimissionCertificateVo dimissionCertificateVo = DimissionCertificateVo.builder()
+                        .gender(userArchiveVo.getGender())
+                        .hireDate(userArchiveVo.getHireDate())
+                        .idNumber(userArchiveVo.getIdNumber())
+                        .postName(userArchiveVo.getPostName())
+                        .userName(userArchiveVo.getUserName())
+                        .attritionDate(userArchiveVo.getAttritionDate()).build();
+                dimissionCertificateList.add(dimissionCertificateVo);
+            }
         });
         return dimissionCertificateList;
     }
