@@ -657,24 +657,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     public void exportNoConArc(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException {
         List<String> strings1 = HeadMapUtil.getHeadsForNoConArc();
         LinkedList<String> strings2 = new LinkedList<>(strings1);
-        List<NoConArc> list1=userArchiveDao.selectNoConArcByIdList(list);
-        List<Map<String,String>> maps=new ArrayList<>();
-        String format=null;
+        List<NoConArc> list1 = userArchiveDao.selectNoConArcByIdList(list);
+        List<Map<String, String>> maps = new ArrayList<>();
+        String format = null;
         for (NoConArc noConArc : list1) {
             Map<String, String> map = new LinkedHashMap<>();
             for (String string : strings2) {
                 Class aClass = noConArc.getClass();
                 for (Field declaredField : aClass.getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    if (declaredField.getName().equals(HeadFieldUtil.getFieldMap().get(string))){
-                        String s = declaredField.getType ().toString ();
-                        if(s.contains("Date")){
-                            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-                            if(declaredField.get(noConArc)!=null) {
-                                format= simpleDateFormat.format(declaredField.get(noConArc));
+                    if (declaredField.getName().equals(HeadFieldUtil.getFieldMap().get(string))) {
+                        String s = declaredField.getType().toString();
+                        if (s.contains("Date")) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            if (declaredField.get(noConArc) != null) {
+                                format = simpleDateFormat.format(declaredField.get(noConArc));
                             }
-                            map.put(string,format);
-                        }else {
+                            map.put(string, format);
+                        } else {
                             map.put(string, String.valueOf(declaredField.get(noConArc)));
                         }
                     }
@@ -682,8 +682,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             }
             maps.add(map);
         }
-        ExcelUtil.download ( response,"NOCONARC", strings1,maps,
-                getTypeMap ( strings1 ) );
+        ExcelUtil.download(response, "NOCONARC", strings1, maps,
+                getTypeMap(strings1));
     }
 
     @Override
