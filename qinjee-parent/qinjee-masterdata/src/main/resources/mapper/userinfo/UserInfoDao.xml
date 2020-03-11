@@ -75,11 +75,16 @@
 
     <!-- 根据userID查询企业列表 -->
     <select id="selectCompanyListByUserId" resultMap="UserCompanyMap">
-        select ci.company_id,ci.company_name,ci.company_type,ci.user_number,uc.is_enable
-        from t_user_company uc,t_company_info ci
-        where uc.user_id = #{userId}
-        and uc.company_id = ci.company_id
-        and uc.is_delete = 0
+        select t_company_info.company_id,t_company_info.company_name,t_company_info.company_type,t_company_info.user_number,t_user_company.is_enable
+        from t_user_info,t_user_company,t_company_info,t_user_archive
+        where t_user_info.user_id = #{userId,jdbcType=INTEGER}
+        and t_user_info.user_id = t_user_company.user_id
+        and t_user_company.company_id = t_company_info.company_id
+        and t_user_info.user_id = t_user_archive.user_id
+        and t_user_company.company_id = t_user_archive.company_id
+        and t_company_info.is_enable = 1
+        and t_user_company.is_delete = 0
+        and t_user_archive.is_delete = 0
     </select>
 
     <update id="setUserCompanyDefaultLogin">
