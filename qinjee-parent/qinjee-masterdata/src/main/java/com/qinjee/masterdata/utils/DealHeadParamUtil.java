@@ -16,7 +16,7 @@ public class DealHeadParamUtil {
         if(CollectionUtils.isNotEmpty(tableSelectParam)){
             stringBuffer.append("and ");
             for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
-                if("int".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
+                if("number".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
                     //进行数字类型的处理
                      getIntSql(fieldValueForSearch,stringBuffer,nickName);
 
@@ -24,7 +24,7 @@ public class DealHeadParamUtil {
                     //进行代码类型的处理
                    getCodeSql(fieldValueForSearch,stringBuffer,nickName);
 
-                }else if("string".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
+                }else if("text".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
                     //进行字符串类型的处理
                    getStringSql(fieldValueForSearch,stringBuffer,nickName);
                 }else if("date".equalsIgnoreCase(fieldValueForSearch.getFieldType())){
