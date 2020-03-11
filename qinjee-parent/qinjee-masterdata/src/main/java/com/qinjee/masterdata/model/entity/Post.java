@@ -87,15 +87,24 @@ public class Post  implements Serializable {
 
 
     /**
+     * 职级
+     */
+    @ApiModelProperty("职级id列表")
+    private List<Integer> positionLevelIds;
+
+    /**
+     * 职级名称
+     */
+    @ApiModelProperty("职级名称，逗号拼接")
+    @ExcelColumn(order = 7, title = "职级")
+    private String positionLevelName;
+
+    /**
      * 父级岗位Id
      */
     @ApiModelProperty("父级岗位Id")
     @QueryColumn("tparentorg.org_id")
     private Integer parentPostId;
-
-
-
-
 
 
     /**
@@ -169,17 +178,6 @@ public class Post  implements Serializable {
 
 
 
-    /**
-     * 职级
-     */
-    @ApiModelProperty("职级id列表")
-    private List<Integer> positionLevelIds;
-
-    /**
-     * 职级名称
-     */
-    @ApiModelProperty("职级名称，逗号拼接")
-    private String positionLevelName;
 
     private List<Post> childList;
 

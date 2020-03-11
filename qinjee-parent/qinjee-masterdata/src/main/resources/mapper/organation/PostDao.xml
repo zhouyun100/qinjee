@@ -131,7 +131,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Post">
+    <update id="updateByPrimaryKeySelective"  parameterType="com.qinjee.masterdata.model.entity.Post">
         update t_post
         <set>
             <if test="postName != null">
@@ -614,7 +614,7 @@
     </insert>
 
     <update id="batchDeletePostLevelRelation">
-        update  t_post_level_relation set is_delete =1 and  operator_id =#{operatorId}
+        delete from  t_post_level_relation
         where post_id = #{postId}
     </update>
 

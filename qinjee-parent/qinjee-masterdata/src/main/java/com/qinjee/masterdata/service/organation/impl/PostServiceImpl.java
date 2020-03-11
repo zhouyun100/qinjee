@@ -9,6 +9,7 @@ import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
 import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
  * @createTime 2019年09月23日 11:07:00
  */
 @Service
-public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> implements PostService {
+public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> implements PostService {
 
     private static Logger logger = LogManager.getLogger(PostServiceImpl.class);
 
@@ -66,6 +67,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
     private UserArchiveDao userArchiveDao;
     @Autowired
     private PositionDao positionDao;
+    @Autowired
+    private PositionLevelDao positionLevelDao;
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageBO postPageBO) {
@@ -90,7 +93,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
         if (postPageBO.getCurrentPage() != null && postPageBO.getPageSize() != null) {
             PageHelper.startPage(postPageBO.getCurrentPage(), postPageBO.getPageSize());
         }
-        List<Post> postList = postDao.listPostsByCondition(postPageBO, orgIdList, postIdList,whereSql,orderSql);
+        List<Post> postList = postDao.listPostsByCondition(postPageBO, orgIdList, postIdList, whereSql, orderSql);
         //设置岗位职级列表
         handleLevelForPostList(postList);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
@@ -251,21 +254,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
                 post.setIsDelete((short) 1);
                 postDao.updateByPrimaryKeySelective(post);
 
-              /*  List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
-                //删除岗位职级关系信息
-                if(!CollectionUtils.isEmpty(postLevelRelationList)){
-                    for (PostLevelRelation postLevelRelation : postLevelRelationList) {
-                        deletePostLevelRelation(userSession,postLevelRelation);
-                    }
-                }*/
-
-               /* List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
-                //删除岗位职等关系信息
-                if(!CollectionUtils.isEmpty(postGradeRelationList)){
-                    for (PostGradeRelation postGradeRelation : postGradeRelationList) {
-                        deletePostGradeRelation(userSession,postGradeRelation);
-                    }
-                }*/
             }
         }
     }
@@ -354,9 +342,13 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
         if (CollectionUtils.isEmpty(postExportBO.getPostIds())) {
             List<Integer> orgIdList = getOrgIdList(userSession, postExportBO.getOrgId(), null);
             List<Post> posts = postDao.listPostsByOrgIds(orgIdList, whereSql, orderSql);
+            //设置职级
+            handleLevelForPostList(posts);
             return posts;
         } else {
-            return postDao.listPostsByPostIds(postExportBO.getPostIds(), whereSql, orderSql);
+            List<Post> posts = postDao.listPostsByPostIds(postExportBO.getPostIds(), whereSql, orderSql);
+            handleLevelForPostList(posts);
+            return posts;
         }
     }
 
@@ -364,7 +356,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
     @Transactional
     public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception {
         return doUploadAndCheck(multfile, Post.class, userSession);
-
     }
 
     @Override
@@ -404,10 +395,16 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
                 Post ifExistVo = postDao.getPostsByPostCode(vo.getPostCode(), userSession.getCompanyId());
                 Post parentPost = postDao.getPostsByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
                 OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
-                Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(), userSession.getCompanyId());
-                vo.setOrgId(orgVo.getOrgId());
-                vo.setPositionId(position.getPositionId());
 
+                //设置所属机构id
+                vo.setOrgId(orgVo.getOrgId());
+                //设置职位id
+                if (StringUtils.isNotEmpty(vo.getPositionName())) {
+                    Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(), userSession.getCompanyId());
+                    vo.setPositionId(position.getPositionId());
+                }
+
+                //设置上级岗位id
                 if (Objects.nonNull(parentPost)) {
                     vo.setParentPostId(parentPost.getPostId());
                 } else {
@@ -416,6 +413,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
                 //已存在 则更新
                 if (Objects.nonNull(ifExistVo)) {
                     postDao.updateByPrimaryKeySelective(vo);
+                    vo.setPostId(ifExistVo.getPostId());
+
                 } else {
                     vo.setOperatorId(userSession.getArchiveId());
                     vo.setCompanyId(userSession.getCompanyId());
@@ -423,6 +422,20 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
                     sortId += 1000;
                     int i = postDao.insertSelective(vo);
                 }
+                //维护职级
+                int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), vo.getPostId());
+                if (StringUtils.isNotEmpty(vo.getPositionLevelName())) {
+                    String[] plNames = vo.getPositionLevelName().split(",");
+                    if (plNames.length > 0) {
+                        List<PositionLevelVo> positionLevelList = positionLevelDao.getByPositionLevelNames(Arrays.asList(plNames), userSession.getCompanyId());
+                        if (!CollectionUtils.isEmpty(positionLevelList)) {
+                            //取出id
+                            List<Integer> plIds = positionLevelList.stream().map(pl -> pl.getPositionLevelId()).collect(Collectors.toList());
+                            postDao.batchInsertPostLevelRelation(plIds, userSession.getArchiveId(), vo.getPostId());
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -530,34 +543,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
 
 
     /**
-     * 删除修改不含有的岗位职等关系信息
-     * @param postVo
-     * @param userSession
-     * @param post
-     */
-    /*private void deletePostGrade(PostVo postVo, UserSession userSession, Post post) {
-        List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
-        if(!CollectionUtils.isEmpty(postGradeRelationList)){
-            List<Integer> positionGrades = postVo.getPositionGrades();
-            for (PostGradeRelation postGradeRelation : postGradeRelationList) {
-                if(!CollectionUtils.isEmpty(positionGrades)){
-                    if(!positionGrades.contains(postGradeRelation.getPositionGradeId())){
-                        //删除原来有的岗位职等关系表信息
-                        deletePostGradeRelation(userSession, postGradeRelation);
-                    }else {
-                        //含有原来的职等
-                        positionGrades.remove(postGradeRelation.getPositionGradeId());
-                    }
-                }else {
-                    //删除原来有的岗位职等关系表信息
-                    deletePostGradeRelation(userSession, postGradeRelation);
-                }
-            }
-        }
-    }
-*/
-
-    /**
      * 删除岗位职等关系表信息
      *
      * @param userSession
@@ -569,33 +554,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
         postGradeRelationDao.updateByPrimaryKeySelective(postGradeRelation);
     }
 
-    /**
-     * 删除修改不含有的岗位职级关系信息
-     * @param postVo
-     * @param userSession
-     * @param post
-     */
-   /* private void deletePostLevel(PostVo postVo, UserSession userSession, Post post) {
-        List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
-        if(!CollectionUtils.isEmpty(postLevelRelationList)){
-            List<Integer> positionLevels = postVo.getPositionLevels();
-            for (PostLevelRelation postLevelRelation : postLevelRelationList) {
-               if(!CollectionUtils.isEmpty(positionLevels)){
-                   if(!positionLevels.contains(postLevelRelation.getPositionLevelId())){
-                       //删除原来有的
-                       deletePostLevelRelation(userSession, postLevelRelation);
-                   }else {
-                       //含有原来的
-                       positionLevels.remove(postLevelRelation.getPositionLevelId());
-                   }
-               }else {
-                   //删除岗位职级关系表信息
-                   deletePostLevelRelation(userSession, postLevelRelation);
-               }
-            }
-        }
-    }
-*/
 
     /**
      * 删除岗位职级关系信息
@@ -608,36 +566,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
         postLevelRelation.setOperatorId(userSession.getArchiveId());
         postLevelRelationDao.updateByPrimaryKeySelective(postLevelRelation);
     }
-
-
-
-   /* private void addPostLevelAndGradeRelation(PostVo postVo, UserSession userSession, Post post) {
-        List<Integer> positionLevels = postVo.getPositionLevels();
-        if(!CollectionUtils.isEmpty(positionLevels)){
-            for (Integer positionLevel : positionLevels) {
-                PostLevelRelation postLevelRelation = new PostLevelRelation();
-                postLevelRelation.setIsDelete((short) 0);
-                postLevelRelation.setOperatorId(userSession.getArchiveId());
-                postLevelRelation.setPostId(post.getPostId());
-                postLevelRelation.setPositionLevelId(positionLevel);
-                postLevelRelationDao.insertSelective(postLevelRelation);
-            }
-        }
-*/
-
-     /*   //新增岗位职等关系表信息
-        List<Integer> positionGrades = postVo.getPositionGrades();
-        if(!CollectionUtils.isEmpty(positionGrades)){
-            for (Integer positionGrade : positionGrades) {
-                PostGradeRelation postGradeRelation = new PostGradeRelation();
-                postGradeRelation.setIsDelete((short) 0);
-                postGradeRelation.setOperatorId(userSession.getArchiveId());
-                postGradeRelation.setPositionGradeId(positionGrade);
-                postGradeRelation.setPostId(post.getPostId());
-                postGradeRelationDao.insertSelective(postGradeRelation);
-            }
-        }
-    }*/
 
 
     private String culPostCode(String orgCode) {
@@ -677,7 +605,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
         for (Post post : dataList) {
             excelPostNameMap.put(post.getPostCode(), post.getPostName());
         }
-
+        List<PositionLevelVo> positionLevelsMem = positionLevelDao.list(userSession.getCompanyId());
         for (Post post : dataList) {
             // Post checkVo = new Post();
             // BeanUtils.copyProperties(post, checkVo);
@@ -699,9 +627,21 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> imple
                 post.setCheckResult(false);
                 resultMsg.append("所属部门名称不能为空 | ");
             }
-            if (StringUtils.isBlank(post.getPositionName())) {
-                post.setCheckResult(false);
-                resultMsg.append("职位名称不能为空 | ");
+
+            if (StringUtils.isNotBlank(post.getPositionLevelName())) {
+                String[] plNames = post.getPositionLevelName().split(",");
+                StringBuilder sb = new StringBuilder();
+                Arrays.stream(plNames).forEach(plName -> {
+                    boolean bool = positionLevelsMem.stream().anyMatch(pl -> plName.equals(pl.getPositionLevelName()));
+                    if (!bool) {
+                        sb.append(plName).append(",");
+                    }
+                });
+                if (sb.length() > 0) {
+                    String mes = sb.substring(0, sb.length() - 1);
+                    post.setCheckResult(false);
+                    resultMsg.append("职级[" + mes + "] 不存在| ");
+                }
             }
 
             // 校验部门编码是否存在，部门编码与部门名称是否对应

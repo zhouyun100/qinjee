@@ -170,7 +170,7 @@
 
     <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">
     SELECT tp.position_id FROM t_position tp
-    LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id
+    LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id AND tpg.is_delete =0
     WHERE tpg.company_id=#{companyId} AND tp.position_name=#{positionName} and  tp.is_delete =0
   </select>
     <select id="getSinglePositionList" resultMap="BaseResultMap">
