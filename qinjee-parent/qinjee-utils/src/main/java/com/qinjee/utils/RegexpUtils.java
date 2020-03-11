@@ -17,7 +17,7 @@ public class RegexpUtils {
     /**
      * 验证手机号
      */
-    public static final String PHONE_REGEX = "((^((0\\d{2,3})-)(\\d{7,8})(-(\\d{3,}))?$)|(^((13[0-9])|(15[^4,\\D])|(18[0-9])|(14[5,7])|(17[0,1,3,5-8]))\\d{8}$))";
+    public static final String PHONE_REGEX = "((^((0\\d{2,3})-)(\\d{7,8})(-(\\d{3,}))?$)|(^((13[0-9])|(15[^4,\\D])|(18[0-9])|(19[0-9])|(14[5,7])|(17[0,1,3,5-8]))\\d{8}$))";
 
     /**
      * 验证邮箱地址
@@ -170,10 +170,10 @@ public class RegexpUtils {
     }
 
     public static void main(String [] args) {
-        String str = "2019-02-28";
+//        String str = "18612406236";
 //        String[] strArr = str.split("\\.");
 
-        System.out.println(str+"是否合法：" + checkDateTime(str));
+//        System.out.println(str+"是否合法：" + checkPhone(str));
 //        System.out.println("转化后结果为：" + strArr[0].length());
 //        System.out.println("转化后结果为：" + strArr[1].length());
     }
