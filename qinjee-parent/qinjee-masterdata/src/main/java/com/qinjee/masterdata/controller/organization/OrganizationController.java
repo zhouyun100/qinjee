@@ -281,11 +281,11 @@ public class OrganizationController extends BaseController {
 
     @PostMapping("/uploadAndCheck")
     @ApiOperation(value = "ok,导入机构excel并校验", notes = "ok")
-    public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
+    public ResponseResult uploadAndCheck(MultipartFile multfile) throws Exception {
         //参数判空校验
         if (checkParam(multfile, getUserSession())) {
             long start = System.currentTimeMillis();
-            ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession(), response);
+            ResponseResult responseResult = organizationService.uploadAndCheck(multfile, getUserSession());
             logger.info("导入机构excel并校验耗时：" + (System.currentTimeMillis() - start) + "ms");
             return responseResult;
         }

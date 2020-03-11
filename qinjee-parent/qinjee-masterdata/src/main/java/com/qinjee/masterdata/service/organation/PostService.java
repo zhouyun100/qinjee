@@ -91,7 +91,7 @@ public interface PostService {
 
     List<Post> exportPost(PostExportBO postExportBO, UserSession userSession);
 
-  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession,HttpServletResponse response) throws Exception;
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception;
 
   @Transactional
   void importToDatabase(String redisKey, UserSession userSession);

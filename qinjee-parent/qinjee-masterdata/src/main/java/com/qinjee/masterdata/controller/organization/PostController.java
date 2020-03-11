@@ -235,11 +235,11 @@ public class PostController extends BaseController {
 
     @PostMapping("/uploadAndCheck")
     @ApiOperation(value = "ok，导入岗位excel并校验，校验成功后存入redis并返回key，校验错误则返回错误信息列表", notes = "ok")
-    public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
+    public ResponseResult uploadAndCheck(MultipartFile multfile) throws Exception {
         if (checkParam(multfile, getUserSession())) {
             logger.info("导入岗位excel并校验");
             long start = System.currentTimeMillis();
-            ResponseResult responseResult = postService.uploadAndCheck(multfile, getUserSession(), response);
+            ResponseResult responseResult = postService.uploadAndCheck(multfile, getUserSession());
             logger.info("导入岗位excel并校验耗时：" + (System.currentTimeMillis() - start) + "ms");
             return responseResult;
         }

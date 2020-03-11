@@ -410,8 +410,8 @@
         LEFT JOIN t_post
         ON t_post.post_id =arc.post_id AND t_post.is_delete =0
         LEFT JOIN t_labor_contract contract
-        ON contract.archive_id=arc.archive_id AND ( #{now} > contract.contract_begin_date AND contract.contract_end_date
-        > #{now} )
+        ON contract.archive_id=arc.archive_id AND ( #{now} >= contract.contract_begin_date AND contract.contract_end_date
+        >= #{now} )
         LEFT JOIN t_labor_contract_change contract_change
         ON contract_change.contract_id = contract.contract_id AND contract_change.change_type ='解除更改'
         WHERE arc.archive_id IN

@@ -43,7 +43,7 @@ public interface UserArchiveService {
     void editUserArchive(UserArchiveVo userArchiveVo, UserSession userSession);
 
     @Transactional
-    ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
+    ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception;
     @Transactional
     void importToDatabase(String orgExcelRedisKey, UserSession userSession);
 }

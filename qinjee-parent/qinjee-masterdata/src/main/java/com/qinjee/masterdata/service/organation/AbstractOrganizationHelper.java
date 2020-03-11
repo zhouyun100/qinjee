@@ -4,15 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.github.liaochong.myexcel.core.SaxExcelReader;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.MyCollectionUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @program: eTalent
@@ -33,7 +31,7 @@ import java.util.*;
  * @create: 2020-01-08 14:52
  **/
 @Component
-public abstract class AbstractOrganizationHelper<T> {
+public abstract class AbstractOrganizationHelper<T,R> {
     private static Logger logger = LogManager.getLogger(AbstractOrganizationHelper.class);
 
     @Autowired
@@ -47,7 +45,7 @@ public abstract class AbstractOrganizationHelper<T> {
     private OrganizationDao organizationDao;
 
 
-    protected ResponseResult doUploadAndCheck(MultipartFile multfile, Class clazz, UserSession userSession, HttpServletResponse response) throws Exception {
+    protected ResponseResult doUploadAndCheck(MultipartFile multfile, Class clazz, UserSession userSession) throws Exception {
         ResponseResult responseResult = new ResponseResult();
         HashMap<Object, Object> resultMap = new HashMap<>();
         //excel文件基本校验
@@ -61,7 +59,7 @@ public abstract class AbstractOrganizationHelper<T> {
         //将记录行号后的集合存入redis
         putIntoRedis(key, dataList, resultMap);
         //将上一步处理后的信息进行规则校
-        List<T> checkList = checkExcel(dataList, userSession);
+        List<R> checkList = checkExcel(dataList, userSession);
         //处理校验结果
         String errorKey = "errorInfoKey" + multfile.getOriginalFilename().hashCode() + "-" + RandomStringUtils.random( 6, true, true);
         handleErrorInfo(errorKey, checkList, resultMap, responseResult);
@@ -97,6 +95,7 @@ public abstract class AbstractOrganizationHelper<T> {
         try {
             excelDataList = SaxExcelReader.of(clazz).sheet(0).rowFilter(row -> row.getRowNum() > 0).read(tempFile);
         } catch (Exception e) {
+            e.printStackTrace();
             ExceptionCast.cast(CommonCode.FILE_IMPORT_FAILED);
         }
         tempFile.delete();
@@ -107,7 +106,7 @@ public abstract class AbstractOrganizationHelper<T> {
         return excelDataList;
     }
 
-    protected abstract List<T> checkExcel(List<T> userArchiveList, UserSession userSession);
+    protected abstract List<R> checkExcel(List<T> dataList, UserSession userSession);
 
 
     private void putIntoRedis(String key, List<T> dataList, HashMap<Object, Object> resultMap) {
@@ -136,14 +135,14 @@ public abstract class AbstractOrganizationHelper<T> {
         return dataList;
     }
 
-    private void handleErrorInfo(String key, List<T> checkList, HashMap<Object, Object> resultMap, ResponseResult responseResult) throws Exception {
+    private void handleErrorInfo(String key, List<R> checkList, HashMap<Object, Object> resultMap, ResponseResult responseResult) throws Exception {
 
         //如果不为空则校验成功,将错误信息、原表数据存储到redis后抛出异常
         if (!CollectionUtils.isEmpty(checkList)) {
             StringBuilder errorSb = new StringBuilder();
             errorSb.append("行号    |        错误信息\r\n");
             errorSb.append("--------------------------------\r\n");
-            for (T error : checkList) {
+            for (R error : checkList) {
                 Method getLineNumber = error.getClass().getMethod("getLineNumber");
                 Method getResultMsg = error.getClass().getMethod("getResultMsg");
                 Integer lineNum = (Integer) getLineNumber.invoke(error);

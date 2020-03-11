@@ -169,7 +169,7 @@ public interface OrganizationService  {
   @Transactional
   void importToDatabase(String orgExcelRedisKey, UserSession userSession);
 
-  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception;
 
 
   void cancelImport(String redisKey, String errorInfoKey);

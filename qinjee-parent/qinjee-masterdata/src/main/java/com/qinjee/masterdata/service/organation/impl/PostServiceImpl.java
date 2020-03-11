@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @createTime 2019年09月23日 11:07:00
  */
 @Service
-public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements PostService {
+public class PostServiceImpl extends AbstractOrganizationHelper<Post,Post> implements PostService {
 
     private static Logger logger = LogManager.getLogger(PostServiceImpl.class);
 
@@ -362,8 +362,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
     @Override
     @Transactional
-    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        return doUploadAndCheck(multfile, Post.class, userSession, response);
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception {
+        return doUploadAndCheck(multfile, Post.class, userSession);
 
     }
 

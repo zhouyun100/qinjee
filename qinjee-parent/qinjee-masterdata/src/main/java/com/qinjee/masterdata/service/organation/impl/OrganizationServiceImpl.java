@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO> implements OrganizationService {
+public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO,OrganizationVO> implements OrganizationService {
     private static Logger logger = LogManager.getLogger(OrganizationServiceImpl.class);
 
     @Autowired
@@ -479,13 +479,12 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      *
      * @param multfile
      * @param userSession
-     * @param response
      * @return
      * @throws Exception
      */
     @Override
-    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        return doUploadAndCheck(multfile, OrganizationVO.class, userSession, response);
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception {
+        return doUploadAndCheck(multfile, OrganizationVO.class, userSession);
 
     }
 

@@ -31,4 +31,7 @@ public interface PositionLevelDao {
     List<PositionLevelVo> listByPositionGradeId(@Param("positionGradeId") Integer positionGradeId);
 
     PositionLevelVo get(@Param("id") Integer id);
+
+    PositionLevelVo getByPositionLevelName(String positionLevelName, Integer companyId);
+
 }

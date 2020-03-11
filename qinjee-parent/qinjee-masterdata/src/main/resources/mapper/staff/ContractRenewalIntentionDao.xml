@@ -360,7 +360,7 @@
         SELECT user_name userName ,gender,id_number idNumber,contract.contract_end_date contractEndDate FROM t_user_archive arc
         LEFT JOIN t_labor_contract contract
         ON contract.archive_id=arc.archive_id AND contract.contract_state IN ('新签','续签','更改')
-        AND ( #{now} > contract.contract_begin_date AND contract.contract_end_date > #{now} )
+        AND ( #{now} >= contract.contract_begin_date AND contract.contract_end_date >= #{now} )
         WHERE  arc.archive_id in
         <foreach collection="archiveIds" item="id" separator="," close=")" open="(">
           #{id}

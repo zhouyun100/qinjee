@@ -988,9 +988,9 @@
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-    arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    arc.probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
