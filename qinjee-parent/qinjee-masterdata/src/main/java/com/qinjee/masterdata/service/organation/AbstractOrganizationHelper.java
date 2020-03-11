@@ -98,7 +98,10 @@ public abstract class AbstractOrganizationHelper<T,R> {
             e.printStackTrace();
             ExceptionCast.cast(CommonCode.FILE_IMPORT_FAILED);
         }
-        tempFile.delete();
+        boolean bool = tempFile.delete();
+        if(!bool){
+            ExceptionCast.cast(CommonCode.FAIL_TO_DELETE);
+        }
         if (CollectionUtils.isEmpty(excelDataList)) {
             //excel为空
             ExceptionCast.cast(CommonCode.FILE_EMPTY);

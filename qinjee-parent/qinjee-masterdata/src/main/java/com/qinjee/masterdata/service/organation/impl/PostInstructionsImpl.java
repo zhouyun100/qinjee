@@ -48,7 +48,6 @@ public class PostInstructionsImpl implements PostInstructionsService {
     @Override
     public ResponseResult<PostInstructions> showPostInstructions(Integer postId) {
         PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
-        String s = new String(postInstructions.getInstructionContent());
         return new ResponseResult<>(postInstructions);
     }
 
