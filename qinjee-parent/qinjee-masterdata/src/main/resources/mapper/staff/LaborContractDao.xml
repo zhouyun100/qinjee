@@ -615,7 +615,7 @@
         <if test="whereSql !=null">
             ${whereSql}
         </if>
-        group by t.archive_id
+        group by t.contract_id
         <if test="orderSql !=null">
             order by
             ${orderSql}

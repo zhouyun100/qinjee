@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
@@ -20,7 +21,9 @@ import com.qinjee.masterdata.service.staff.IStaffContractService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,13 +35,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
  */
 @Service
 public class StaffContractServiceImpl implements IStaffContractService {
-    private static final Logger logger = LoggerFactory.getLogger(StaffContractServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger ( StaffContractServiceImpl.class );
     private static final String NEWMARK = "新签";
     private static final String NOTMARK = "未签";
     private static final String RENEWMARK = "续签";
@@ -70,19 +74,18 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     /**
      * 展示未签合同的人员信息
-     *
      * @return
      */
     @Override
-    public PageResult<UserArchiveVo> selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo, Integer companyId) {
+    public PageResult < UserArchiveVo > selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo,Integer companyId) {
         List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
-        PageHelper.startPage(requestUserarchiveVo.getCurrentPage(), requestUserarchiveVo.getPageSize());
+        PageHelper.startPage ( requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         //根据合同id找到没有合同的档案
         String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc.");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "arc.");
-        List<UserArchiveVo> arcList = userArchiveDao.selectArcByNotCon(requestUserarchiveVo.getOrgId(), companyId, whereSql, orderSql);
-        new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(arcList, sysDicts);
-        return new PageResult<>(arcList);
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"arc.");
+        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( requestUserarchiveVo.getOrgId(),companyId ,whereSql,orderSql);
+        new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(arcList,sysDicts);
+        return new PageResult <> ( arcList );
     }
 
 
@@ -92,30 +95,30 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @param exportArcParamVo
      * @return
      */
-    public List<Integer> selectNoLaborContractAll(ExportArcParamVo exportArcParamVo, Integer companyId) {
+    public List < Integer > selectNoLaborContractAll(ExportArcParamVo exportArcParamVo,Integer companyId) {
         String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "arc.");
         String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "arc.");
-        List<UserArchiveVo> userArchiveVos = userArchiveDao.selectArcByNotCon(exportArcParamVo.getOrgIdList(), companyId, whereSql, orderSql);
-        List<Integer> integers = new ArrayList<>();
+        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( exportArcParamVo.getOrgIdList(),companyId,whereSql,orderSql );
+        List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {
-            integers.add(userArchiveVo.getArchiveId());
+            integers.add ( userArchiveVo.getArchiveId () );
         }
         return integers;
     }
 
     @Override
-    public List<LaborContract> selectContractByArchiveId(Integer archiveId) {
-        return laborContractDao.selectContractByArchiveId(archiveId);
+    public List < LaborContract > selectContractByArchiveId(Integer archiveId) {
+        return laborContractDao.selectContractByArchiveId ( archiveId );
     }
 
     @Override
-    public PageResult<ContractFormVo> createContractForm(List<Integer> list, Integer pageSize, Integer currentPage, UserSession userSession) {
+    public PageResult < ContractFormVo > createContractForm(List < Integer > list, Integer pageSize, Integer currentPage, UserSession userSession) {
 
-        PageHelper.startPage(currentPage, pageSize);
-        List<ContractFormVo> contractFormList = laborContractDao.selectContractForm(list, userSession.getCompanyId());
-        PageInfo<ContractFormVo> pageInfo = new PageInfo<>(contractFormList);
-        PageResult<ContractFormVo> pageResult = new PageResult<>(pageInfo.getList());
-        pageResult.setTotal(pageInfo.getTotal());
+        PageHelper.startPage ( currentPage, pageSize );
+        List < ContractFormVo > contractFormList = laborContractDao.selectContractForm ( list, userSession.getCompanyId () );
+        PageInfo < ContractFormVo > pageInfo = new PageInfo <> ( contractFormList );
+        PageResult < ContractFormVo > pageResult = new PageResult <> ( pageInfo.getList () );
+        pageResult.setTotal ( pageInfo.getTotal () );
         return pageResult;
     }
 
@@ -128,41 +131,43 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
 
     @Override
-    public PageResult<ContractWithArchiveVo> selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo, UserSession userSession) {
-        PageHelper.startPage(requestUserarchiveVo.getCurrentPage(), requestUserarchiveVo.getPageSize());
+    public PageResult < ContractWithArchiveVo > selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
+        PageHelper.startPage (requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t.");
-        List<ContractWithArchiveVo> list = getContractWithArchiveVos(requestUserarchiveVo.getOrgId(), requestUserarchiveVo.getStatus(), userSession.getCompanyId(),
-                whereSql, orderSql);
-        return new PageResult<>(list);
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"t.");
+        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( requestUserarchiveVo.getOrgId(), requestUserarchiveVo.getStatus() ,userSession.getCompanyId(),
+                whereSql,orderSql);
+        return new PageResult <> ( list );
     }
 
-    private List<ContractWithArchiveVo> getContractWithArchiveVos(List<Integer> orgIdList, List<String> status, Integer companyId, String
-            whereSql, String orderSql) {
-        String contain = null;
-        if (status.contains("即将到期")) {
-            contain = "contain";
+    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId,String
+                                                                     whereSql,String orderSql) {
+        String contain=null;
+        if(status.contains("即将到期")){
+          contain="contain";
         }
-        List<ContractWithArchiveVo> list = laborContractDao.selectHasPowerContract(orgIdList, status, contain, companyId, whereSql, orderSql);
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,contain,companyId,whereSql,orderSql );
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
-            if (ENDEMARK.equals(contractWithArchiveVo.getContractState()) || LOOSEMARK.equals(contractWithArchiveVo.getContractState())) {
-                contractWithArchiveVo.setIsEnable((short) 0);
-            } else {
-                contractWithArchiveVo.setIsEnable((short) 1);
+              if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ())
+              ||contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate().after(new Date()) ||
+                      contractWithArchiveVo.getContractEndDate().before(new Date())
+              ){
+                  contractWithArchiveVo.setIsEnable ( ( short ) 0 );
+              }else {
+                  contractWithArchiveVo.setIsEnable ( ( short ) 1 );
+              }
             }
-        }
         return list;
     }
 
     /**
      * 展示全量已签合同人员id
-     *
      * @param exportReadyConVo
      */
-    public List<ContractWithArchiveVo> selectLaborContractserUserAll(ExportReadyConVo exportReadyConVo, Integer companyId) {
-        String whereSql = DealHeadParamUtil.getWhereSql(exportReadyConVo.getSearchList(), "t.");
+    public List < ContractWithArchiveVo > selectLaborContractserUserAll(ExportReadyConVo exportReadyConVo,Integer companyId) {
+        String whereSql = DealHeadParamUtil.getWhereSql(exportReadyConVo.getSearchList(),"t.");
         String orderSql = DealHeadParamUtil.getOrderSql(exportReadyConVo.getSearchList(), "t.");
-        return getContractWithArchiveVos(exportReadyConVo.getOrgIdList(), exportReadyConVo.getStatus(), companyId, whereSql, orderSql);
+        return getContractWithArchiveVos ( exportReadyConVo.getOrgIdList(), exportReadyConVo.getStatus(),companyId,whereSql,orderSql);
     }
 
     /**
@@ -171,31 +176,31 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteLaborContract(Integer laborContractId) {
-        laborContractDao.deleteByPrimaryKey(laborContractId);
+        laborContractDao.deleteByPrimaryKey ( laborContractId );
     }
 
     @Override
     public void insertLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
         //将合同vo设置进去
-        mark(contractVo.getLaborContractVo(), contractVo.getList().get(0), userSession.getArchiveId(), NEWMARK
-                , contractVo.getLaborContractVo().getContractNumber());
+        mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NEWMARK
+        ,contractVo.getLaborContractVo().getContractNumber());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
-        //批量新签合同
+            //批量新签合同
         for (int i = 0; i < contractVo.getList().size(); i++) {
             String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
-            mark(contractVo.getLaborContractVo(), contractVo.getList().get(i), userSession.getArchiveId(), NEWMARK,
-                    empNumber);
+            mark ( contractVo.getLaborContractVo (), contractVo.getList().get(i), userSession.getArchiveId (), NEWMARK ,
+                   empNumber);
         }
     }
 
     @Override
     public void saveLaborContract(ContractVo contractVo, UserSession userSession) throws Exception {
         String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
-        mark(contractVo.getLaborContractVo(), contractVo.getList().get(0), userSession.getArchiveId(), NOTMARK,
+        mark ( contractVo.getLaborContractVo (), contractVo.getList ().get ( 0 ), userSession.getArchiveId (), NOTMARK ,
                 empNumber);
     }
 
@@ -204,29 +209,42 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void updatelaborContract(ContractVo contractVo, UserSession userSession) throws ParseException {
         //更新合同表
-        LaborContract laborContract = new LaborContract();
-        BeanUtils.copyProperties(contractVo.getLaborContractVo(), laborContract);
-        laborContract.setArchiveId(contractVo.getList().get(0));
-        laborContract.setContractState(CHANGEMARK);
-        laborContract.setOperatorId(userSession.getArchiveId());
-        laborContract.setCreateTime(new Date());
-        laborContract.setUpdateTime(new Date());
-        laborContractDao.updateByPrimaryKeySelective(laborContract);
+        LaborContract laborContract = new LaborContract ();
+        BeanUtils.copyProperties ( contractVo.getLaborContractVo (), laborContract );
+        laborContract.setArchiveId ( contractVo.getList ().get ( 0 ) );
+        laborContract.setContractState ( CHANGEMARK );
+        laborContract.setOperatorId ( userSession.getArchiveId () );
+        laborContract.setCreateTime ( new Date () );
+        laborContract.setUpdateTime ( new Date () );
+        laborContractDao.updateByPrimaryKeySelective ( laborContract );
         //新增变更记录
-        change(contractVo.getLaborContractChangeVo(), COMMONCHANGE, contractVo.getList().get(0), userSession.getArchiveId());
+        change ( contractVo.getLaborContractChangeVo (), COMMONCHANGE, contractVo.getList ().get ( 0 ), userSession.getArchiveId () );
     }
 
 
     @Override
-    public List<LaborContractChange> selectLaborContractchange(Integer id) {
-        return laborContractChangeDao.selectLaborContractchange(id);
+    public List < LaborContractChange > selectLaborContractchange(Integer id) {
+        return laborContractChangeDao.selectLaborContractchange ( id );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContract(ContractVo contractVo, UserSession userSession) {
-        //新增续签
-        insertContinue(contractVo, userSession, contractVo.getList().get(0), contractVo.getLaborContractVo().getContractNumber());
+        List<LaborContract> laborContracts = laborContractDao.selectContractByArchiveId(contractVo.getList().get(0));
+        List<LaborContract> collect = laborContracts.stream().filter(a ->a.getContractBeginDate()!=null && a.getContractBeginDate().before(new Date()) &&
+                a.getContractEndDate()!=null && a.getContractEndDate().after(new Date())).collect(Collectors.toList());
+        //获得开始与终止日期
+        //判定当前合同起止时间是否合法
+        if(CollectionUtils.isNotEmpty(collect)) {
+            if (!contractVo.getLaborContractVo().getContractBeginDate().before(contractVo.getLaborContractVo().getContractEndDate())
+                    || !contractVo.getLaborContractVo().getContractBeginDate().after(collect.get(0).getContractEndDate())) {
+                ExceptionCast.cast(CommonCode.DATE_IS_WRONG);
+            }
+            //新增续签
+            insertContinue(contractVo, userSession, contractVo.getList().get(0), contractVo.getLaborContractVo().getContractNumber());
+        }else{
+            ExceptionCast.cast(CommonCode.NO_POWER_CONTRACT);
+        }
         //增加更改记录（经过确认续签不用更改记录）
 //         change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, contractVo.getList ().get ( 0 ), userSession.getArchiveId());
     }
@@ -234,8 +252,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     public Integer getSignNumber(Integer archiveId) {
         //先通过人员找到合同，通过是续签合同的次数上加一
-        Integer signNumber = laborContractDao.selectByarcIdAndStatus(archiveId, RENEWMARK);
-        if (signNumber != null && signNumber > 1) {
+        Integer signNumber= laborContractDao.selectByarcIdAndStatus ( archiveId, RENEWMARK );
+        if(signNumber != null && signNumber>1){
             return signNumber;
         }
         return 1;
@@ -246,8 +264,19 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
         for (int i = 0; i < contractVo.getList().size(); i++) {
+            //找到当前续签合同的上一份有效合同
+            List<LaborContract> laborContracts = laborContractDao.selectContractByArchiveId(contractVo.getList().get(i));
+            List<LaborContract> collect = laborContracts.stream().filter(a -> a.getContractBeginDate().before(new Date()) && a.getContractEndDate().after(new Date())).collect(Collectors.toList());
+            //获得开始与终止日期
+            //判定当前合同起止时间是否合法
+            if(!contractVo.getLaborContractVo().getContractBeginDate().before(contractVo.getLaborContractVo().getContractEndDate())
+            || !contractVo.getLaborContractVo().getContractBeginDate().after(collect.get(0).getContractEndDate())){
+                ExceptionCast.cast(CommonCode.DATE_IS_WRONG);
+            }
+           //新增续签
             //新增续签
             String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
+            insertContinue ( contractVo, userSession, contractVo.getList().get(i),empNumber );
             insertContinue(contractVo, userSession, contractVo.getList().get(i), empNumber);
             //增加更改记录
 //            change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, integer, userSession.getArchiveId());
@@ -263,87 +292,86 @@ public class StaffContractServiceImpl implements IStaffContractService {
         laborContract.setOperatorId(userSession.getArchiveId());
         laborContract.setContractState(RENEWMARK);
         //新增续签次数
-        laborContract.setSignNumber(getSignNumber(id) + 1);
-        laborContractDao.insertSelective(laborContract);
+        laborContract.setSignNumber ( getSignNumber ( id  ) +1);
+        laborContractDao.insertSelective ( laborContract );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void endlaborContract(LaborContractChangeVo laborContractChangeVo, Integer id, UserSession userSession) throws ParseException {
         //将合同状态设置为终止
-        LaborContract laborContract = laborContractDao.selectByPrimaryKey(id);
-        laborContract.setContractState(ENDEMARK);
-        laborContractDao.updateByPrimaryKeySelective(laborContract);
+        LaborContract laborContract = laborContractDao.selectByPrimaryKey ( id );
+        laborContract.setContractState ( ENDEMARK );
+        laborContractDao.updateByPrimaryKeySelective ( laborContract );
         //新增变更表
-        change(laborContractChangeVo, ENDCHANGE, id, userSession.getArchiveId());
+        change ( laborContractChangeVo, ENDCHANGE, id, userSession.getArchiveId () );
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void endlaborContractBatch(ContractVo contractVo, UserSession userSession) {
+    public void endlaborContractBatch(ContractVo contractVo, UserSession userSession)  {
         //将合同状态设置为终止
-        for (Integer integer : contractVo.getList()) {
-            LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
-            laborContract.setContractState(ENDEMARK);
-            laborContractDao.updateByPrimaryKeySelective(laborContract);
+        for (Integer integer : contractVo.getList ()) {
+            LaborContract laborContract = laborContractDao.selectByPrimaryKey ( integer );
+            laborContract.setContractState ( ENDEMARK );
+            laborContractDao.updateByPrimaryKeySelective ( laborContract );
             //新增变更表
-            change(contractVo.getLaborContractChangeVo(), ENDCHANGE, integer, userSession.getArchiveId());
+            change ( contractVo.getLaborContractChangeVo (), ENDCHANGE, integer, userSession.getArchiveId () );
         }
     }
 
     @Override
     public void looselaborContract(LaborContractChangeVo laborContractChangeVo,
                                    Integer id, UserSession userSession) throws ParseException {
-        LaborContract laborContract = laborContractDao.selectByPrimaryKey(id);
+        LaborContract laborContract = laborContractDao.selectByPrimaryKey ( id );
         //将合同状态设置为解除
-        laborContract.setContractState(LOOSEMARK);
-        laborContractDao.updateByPrimaryKeySelective(laborContract);
+        laborContract.setContractState ( LOOSEMARK );
+        laborContractDao.updateByPrimaryKeySelective ( laborContract );
         //新增变更表
-        change(laborContractChangeVo, LOOSECHANGE, id, userSession.getArchiveId());
+        change ( laborContractChangeVo, LOOSECHANGE, id, userSession.getArchiveId () );
     }
 
     @Override
     public void looselaborContractBatch(ContractVo contractVo, UserSession userSession) throws ParseException {
-        for (Integer integer : contractVo.getList()) {
-            LaborContract laborContract = laborContractDao.selectByPrimaryKey(integer);
-            laborContract.setContractState(LOOSEMARK);
-            laborContractDao.updateByPrimaryKeySelective(laborContract);
+        for (Integer integer : contractVo.getList ()) {
+            LaborContract laborContract = laborContractDao.selectByPrimaryKey ( integer );
+            laborContract.setContractState ( LOOSEMARK );
+            laborContractDao.updateByPrimaryKeySelective ( laborContract );
             //新增变更表
-            change(contractVo.getLaborContractChangeVo(), LOOSECHANGE, integer, userSession.getArchiveId());
+            change ( contractVo.getLaborContractChangeVo (), LOOSECHANGE, integer, userSession.getArchiveId () );
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertLaborContractIntention(List<Integer> list, UserSession userSession) {
-        List<ContractRenewalIntention> contractRenewalIntentions = new ArrayList<>();
+    public void insertLaborContractIntention(List < Integer > list, UserSession userSession) {
+        List < ContractRenewalIntention > contractRenewalIntentions = new ArrayList <> ();
         //根据档案id找到合同表中的合同信息
-        List<LaborContract> laborContractList = laborContractDao.selectContractByarcIdList(list);
+        List < LaborContract > laborContractList = laborContractDao.selectContractByarcIdList ( list );
         for (LaborContract laborContract : laborContractList) {
-            ContractRenewalIntention cri = new ContractRenewalIntention();
-            BeanUtils.copyProperties(laborContract, cri);
-            cri.setCompanyId(userSession.getCompanyId());
-            cri.setOperatorId(userSession.getArchiveId());
-            cri.setIntentionStatus(NOTCONFIRM);
-            contractRenewalIntentions.add(cri);
+            ContractRenewalIntention cri = new ContractRenewalIntention ();
+            BeanUtils.copyProperties ( laborContract, cri );
+            cri.setCompanyId ( userSession.getCompanyId () );
+            cri.setOperatorId ( userSession.getArchiveId () );
+            cri.setIntentionStatus ( NOTCONFIRM );
+            contractRenewalIntentions.add ( cri );
         }
-        contractRenewalIntentionDao.insertBatch(contractRenewalIntentions);
+        contractRenewalIntentionDao.insertBatch ( contractRenewalIntentions );
     }
 
     @Override
-    public List<ContractRenewalIntention> selectContractRenewalIntention(Integer id) {
-        return contractRenewalIntentionDao.selectByArchiveId(id);
+    public List < ContractRenewalIntention > selectContractRenewalIntention(Integer id) {
+        return contractRenewalIntentionDao.selectByArchiveId ( id );
 
     }
-
     @Override
     public List<RenewIntionAboutUser> getRenewalContract(Integer archiveId) {
-        return contractRenewalIntentionDao.getRenewalContract(archiveId);
+        return contractRenewalIntentionDao.getRenewalContract ( archiveId);
     }
 
     @Override
     public void insertMessqge(InsertRenewContractMessage insertRenewContractMessage) {
-        ContractRenewalIntention contractRenewalIntention = new ContractRenewalIntention();
+        ContractRenewalIntention contractRenewalIntention=new ContractRenewalIntention();
         contractRenewalIntention.setRenewalIntentionId(insertRenewContractMessage.getId());
         contractRenewalIntention.setRenewalOpinion(insertRenewContractMessage.getMessage());
         contractRenewalIntention.setUpdateTime(new Date());
@@ -372,70 +400,71 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void agreeRenew(Integer xuqianId) {
         //查询续签意向表
         ContractRenewalIntention contractRenewalIntention =
-                contractRenewalIntentionDao.selectByPrimaryKey(xuqianId);
+                contractRenewalIntentionDao.selectByPrimaryKey ( xuqianId );
         //更改续签意向表
-        contractRenewalIntention.setRenewalOpinion(RENEWAGREE);
-        contractRenewalIntention.setIntentionStatus(CONFIRM);
-        contractRenewalIntention.setIsAgree((short) 1);
+        contractRenewalIntention.setRenewalOpinion ( RENEWAGREE );
+        contractRenewalIntention.setIntentionStatus ( CONFIRM );
+        contractRenewalIntention.setIsAgree ( ( short ) 1 );
         //TODO 还剩续签意见还未设置
-        contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
+        contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
     }
 
     @Override
     public void rejectRenew(Integer xuqianId) {
         //查询续签意向表
         ContractRenewalIntention contractRenewalIntention =
-                contractRenewalIntentionDao.selectByPrimaryKey(xuqianId);
+                contractRenewalIntentionDao.selectByPrimaryKey ( xuqianId );
         //更改续签意向表
-        contractRenewalIntention.setRenewalOpinion(RENEWREJECT);
-        contractRenewalIntention.setIntentionStatus(CONFIRM);
-        contractRenewalIntention.setIsAgree((short) 0);
-        contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
+        contractRenewalIntention.setRenewalOpinion ( RENEWREJECT );
+        contractRenewalIntention.setIntentionStatus ( CONFIRM );
+        contractRenewalIntention.setIsAgree ( ( short ) 0 );
+        contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
         //前端跳转至解除合同页面
     }
 
     @Override
     public void updateContractRenewalIntention(ContractRenewalIntention contractRenewalIntention) {
-        contractRenewalIntentionDao.updateByPrimaryKey(contractRenewalIntention);
+        contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
     }
 
     @Override
-    public PageResult<ContractRenewalIntention> selectContractRenewalIntentionByOrg(List<Integer> orgId, Integer pageSize, Integer currentPage) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<ContractRenewalIntention> list = contractRenewalIntentionDao.selectByorgId(orgId);
-        return new PageResult<>(list);
+    public PageResult < ContractRenewalIntention > selectContractRenewalIntentionByOrg(List < Integer > orgId, Integer pageSize, Integer currentPage) {
+        PageHelper.startPage ( currentPage, pageSize );
+        List < ContractRenewalIntention > list = contractRenewalIntentionDao.selectByorgId ( orgId );
+        return new PageResult <> ( list );
     }
 
     @Override
-    public PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId, Integer companyId, Integer currentPage, Integer pageSize) {
+    public PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId,Integer companyId,Integer currentPage, Integer pageSize) {
         List<Integer> orgIds = organizationDao.getOrgIds(orgId, archiveId, Short.valueOf("0"), new Date());
-        PageHelper.startPage(currentPage, pageSize);
-        List<ContractWithArchiveVo> list = laborContractDao.selectAboutToExpireContracts(orgIds, companyId);
-        return new PageResult<>(list);
+        PageHelper.startPage ( currentPage, pageSize );
+        List < ContractWithArchiveVo > list =  laborContractDao.selectAboutToExpireContracts(orgIds,companyId);
+        return new PageResult <> ( list );
     }
 
 
-    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state, String contractNumber) {
+
+    private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state,String contractNumber)  {
         //新增合同
-        LaborContract laborContract = new LaborContract();
+        LaborContract laborContract = new LaborContract ();
         //设置其余字段
-        BeanUtils.copyProperties(laborContractVo, laborContract);
+        BeanUtils.copyProperties ( laborContractVo, laborContract );
         laborContract.setContractNumber(contractNumber);
-        laborContract.setContractSignDate(laborContractVo.getContractSignDate());
-        laborContract.setArchiveId(id);
-        laborContract.setOperatorId(archiveId);
-        laborContract.setContractState(state);
-        laborContractDao.insertSelective(laborContract);
+        laborContract.setContractSignDate (  laborContractVo.getContractSignDate () );
+        laborContract.setArchiveId ( id );
+        laborContract.setOperatorId ( archiveId );
+        laborContract.setContractState ( state );
+        laborContractDao.insertSelective ( laborContract );
     }
 
-    private void change(LaborContractChangeVo laborContractChangeVo, String type, Integer id, Integer achiveId) {
-        LaborContractChange laborContractChange = new LaborContractChange();
-        BeanUtils.copyProperties(laborContractChangeVo, laborContractChange);
-        laborContractChange.setChangeDate(laborContractChangeVo.getChangeDate());
-        laborContractChange.setChangeType(type);
-        laborContractChange.setContractId(id);
-        laborContractChange.setOperatorId(achiveId);
-        laborContractChangeDao.insertSelective(laborContractChange);
+    private void change(LaborContractChangeVo laborContractChangeVo, String type, Integer id, Integer achiveId)  {
+        LaborContractChange laborContractChange = new LaborContractChange ();
+        BeanUtils.copyProperties ( laborContractChangeVo, laborContractChange );
+        laborContractChange.setChangeDate (laborContractChangeVo.getChangeDate () );
+        laborContractChange.setChangeType ( type );
+        laborContractChange.setContractId ( id );
+        laborContractChange.setOperatorId ( achiveId );
+        laborContractChangeDao.insertSelective ( laborContractChange );
     }
 
 
