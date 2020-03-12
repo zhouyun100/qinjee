@@ -37,7 +37,7 @@ public class PreEmployment implements Serializable {
         /**
          * 性别
          */
-        @TransDictAnno(dictType = "SEX_TYPE")
+        @TransDictAnno
         private String gender;
 
         /**
@@ -48,7 +48,7 @@ public class PreEmployment implements Serializable {
         /**
          * 证件类型
          */
-        @TransDictAnno(dictType = "CARD_TYPE")
+        @TransDictAnno
         private String idType;
 
         /**
@@ -70,13 +70,13 @@ public class PreEmployment implements Serializable {
         /**
          * 婚姻状况
          */
-        @TransDictAnno(dictType = "MARITAL_STATUS")
+        @TransDictAnno
         private String maritalStatus;
 
         /**
          * 最高学历
          */
-        @TransDictAnno(dictType = "DEGREE")
+        @TransDictAnno
         private String highestDegree;
 
         /**
@@ -133,7 +133,7 @@ public class PreEmployment implements Serializable {
         /**
          * 政治面貌
          */
-        @TransDictAnno(dictType = "POLITICAL_AFFILIATION")
+        @TransDictAnno
         private String politicalStatus;
 
         /**

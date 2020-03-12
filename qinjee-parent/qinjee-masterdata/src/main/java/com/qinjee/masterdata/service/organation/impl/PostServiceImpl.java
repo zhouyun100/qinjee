@@ -234,7 +234,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
          * 方案二
          * 每次编辑岗位时，逻辑删除所有旧职级，再重新新增
          */
-        postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), post.getPostId());
+        int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), post.getPostId());
         postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
     }
 

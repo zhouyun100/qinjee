@@ -61,9 +61,7 @@ public class TransCustomFieldMapHelper<T> {
             try {
                 Object fieldValue = field.get(ob);
                 if(fieldValue!=null) {
-                    TransDictAnno anno = field.getAnnotation(TransDictAnno.class);
-                    String dictType = anno.dictType();
-                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)&&dictType.equals(dict.getDictType())).map(dict -> dict.getDictValue()).findFirst();
+                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
                     if(dictValue.isPresent()) {
                         field.set(ob, dictValue.get());
                     }

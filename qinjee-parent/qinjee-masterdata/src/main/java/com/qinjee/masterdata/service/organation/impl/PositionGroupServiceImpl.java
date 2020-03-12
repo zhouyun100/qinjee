@@ -156,7 +156,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
     public ResponseResult downloadAllPositionGroupToExcel(String filePath, UserSession userSession) {
         PositionGroup positionGroup = new PositionGroup();
         positionGroup.setCompanyId(userSession.getCompanyId());
-        positionGroupDao.getPositionGroupByPosG(positionGroup);
+        List<PositionGroup> positionGroupByPosG = positionGroupDao.getPositionGroupByPosG(positionGroup);
 
         //todo ExcelExportUtil.exportToFile(filePath, positionGroupByPosG);
         return new ResponseResult(CommonCode.SUCCESS);

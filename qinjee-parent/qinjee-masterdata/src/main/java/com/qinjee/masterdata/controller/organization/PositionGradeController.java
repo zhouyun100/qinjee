@@ -108,7 +108,7 @@ public class PositionGradeController extends BaseController {
         if (!checkParam(getUserSession(), positionGradeIds)) {
             return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
         }
-        positionGradeService.sortPositionGrade(getUserSession(), positionGradeIds);
+        int i = positionGradeService.sortPositionGrade(getUserSession(), positionGradeIds);
         return new ResponseResult();
     }
 
