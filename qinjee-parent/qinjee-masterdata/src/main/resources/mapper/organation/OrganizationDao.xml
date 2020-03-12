@@ -20,6 +20,25 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="is_enable" jdbcType="SMALLINT" property="isEnable"/>
     </resultMap>
+    <resultMap id="orgMap" type="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
+        <id column="orgId" jdbcType="INTEGER" property="orgId"/>
+        <result column="orgCode" jdbcType="VARCHAR" property="orgCode"/>
+        <result column="orgName" jdbcType="VARCHAR" property="orgName"/>
+        <result column="orgType" jdbcType="VARCHAR" property="orgType"/>
+        <result column="orgParentId" jdbcType="INTEGER" property="orgParentId"/>
+        <result column="parentOrgName" jdbcType="VARCHAR" property="orgParentName"/>
+        <result column="parentOrgCode" jdbcType="VARCHAR" property="orgParentCode"/>
+        <result column="employeeNumber" jdbcType="INTEGER" property="managerEmployeeNumber"/>
+        <result column="orgFullName" jdbcType="VARCHAR" property="orgFullName"/>
+        <result column="orgManagerName" jdbcType="VARCHAR" property="orgManagerName"/>
+        <result column="positionName" jdbcType="VARCHAR" property="orgManagerPositionName"/>
+        <result column="orgManagerId" jdbcType="INTEGER" property="orgManagerId"/>
+        <result column="companyId" jdbcType="INTEGER" property="companyId"/>
+        <result column="sortId" jdbcType="INTEGER" property="sortId"/>
+        <result column="operatorId" jdbcType="INTEGER" property="operatorId"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="isEnable" jdbcType="SMALLINT" property="isEnable"/>
+    </resultMap>
     <sql id="Base_Column_List">
     org_id, org_code, org_name, org_type, org_parent_id, org_full_name, org_manager_id,
     company_id, sort_id, operator_id, create_time, is_enable
@@ -306,18 +325,28 @@
     </select>
 
 
-    <select id="listDirectOrganizationByCondition" resultMap="BaseResultMap">
-        SELECT org.org_id,org.is_enable,org.org_code,org.org_manager_id,
-        org.org_name,org.org_type,org.org_full_name,
-        org.org_parent_id,
-        org.user_name orgManagerName,
-        parent_org.org_name parent_org_name,
-        parent_org.org_code parent_org_code
-        FROM (SELECT
-        o.org_id, o.sort_id,
-        o.is_enable,o.org_code,o.org_manager_id,
-        o.org_name,o.org_type,o.org_full_name,
-        o.org_parent_id,arc.user_name
+    <select id="listDirectOrganizationByCondition" resultMap="orgMap">
+        select
+        orgId,isEnable,orgCode,orgManagerId,
+        orgName,orgType,orgFullName,
+        orgParentId,
+        orgManagerName,
+        parentOrgName,
+        parentOrgCode
+        from
+        (
+        SELECT org.sortId, org.orgId,org.isEnable ,org.orgCode ,org.orgManagerId ,
+        org.orgName ,org.orgType ,org.orgFullName ,
+        org.orgParentId,
+        org.orgManagerName,
+        parent_org.org_name parentOrgName,
+        parent_org.org_code parentOrgCode
+        FROM
+         (SELECT
+        o.org_id orgId, o.sort_id sortId,
+        o.is_enable isEnable,o.org_code orgCode,o.org_manager_id orgManagerId,
+        o.org_name orgName,o.org_type orgType,o.org_full_name orgFullName,
+        o.org_parent_id orgParentId,arc.user_name orgManagerName
         FROM
         t_organization o
         LEFT JOIN t_user_org_auth auth ON o.org_id = auth.org_id
@@ -331,10 +360,10 @@
         </if>
         UNION
         SELECT
-        o2.org_id, o2.sort_id,
-        o2.is_enable,o2.org_code,o2.org_manager_id,
-        o2.org_name,o2.org_type,o2.org_full_name,
-        o2.org_parent_id,arch.user_name
+        o2.org_id orgId, o2.sort_id sortId,
+        o2.is_enable isEnable,o2.org_code orgCode,o2.org_manager_id orgManagerId,
+        o2.org_name orgName,o2.org_type orgType,o2.org_full_name orgFullName,
+        o2.org_parent_id orgParentId,arch.user_name orgManagerName
         FROM
         t_organization o2
         LEFT JOIN t_role_org_auth roleauth ON roleauth.org_id = o2.org_id
@@ -350,20 +379,24 @@
         </if>
         )org
         LEFT JOIN t_organization parent_org
-        ON org.org_parent_id = parent_org.org_id
+        ON org.orgParentId = parent_org.org_id
+
         <if test="organizationPageBO != null">
             where 1=1
             <if test="organizationPageBO.orgId != null">
-                and org.org_id = #{organizationPageBO.orgId}
+                and org.orgId = #{organizationPageBO.orgId}
             </if>
             <if test="organizationPageBO.orgParentId != null">
-                and org.org_parent_id = #{organizationPageBO.orgParentId}
+                and org.orgParentId = #{organizationPageBO.orgParentId}
             </if>
         </if>
+
+        ) lastTable
+        where 1=1
         <if test="whereSql !=null">
             ${whereSql}
         </if>
-        order by org.sort_id asc
+        order by lastTable.sortId asc
         <if test="orderSql !=null">
             ,
             ${orderSql}
@@ -472,42 +505,35 @@
     and company_id=#{companyId}
     and is_enable=1
   </select>
-    <select id="listOrganizationsByCondition" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        select
-        org_id,
-        org_code,
-        org_name,
-        org_type,
-        org_parent_id,
-        org_full_name,
-        org_manager_id,
-        orgManagerName,
-        employee_number,
-        company_id,
-        sort_id,
-        operator_id,
-        create_time,
-        is_enable,
-        parent_org_name,
-        parent_org_code
-         from (
+    <select id="listOrganizationsByCondition" parameterType="java.lang.Integer" resultMap="orgMap">
+        select orgId,
+        orgCode,
+        orgName,
+        orgType,
+        orgFullName,
+        parentOrgCode ,
+        parentOrgName,
+        orgManagerId,
+        employeeNumber,
+        orgManagerName
+        from (
         SELECT
-        t_org.org_id,
-        t_org.org_code,
-        t_org.org_name,
-        t_org.org_type,
-        t_org.org_parent_id,
-        t_org.org_full_name,
-        t_org.org_manager_id,
-        tua.user_name orgManagerName,
-        tua.employee_number employee_number,
+        t_org.org_id orgId,
+        t_org.org_code orgCode,
+        t_org.org_name orgName,
+        t_org.org_type orgType,
+        t_org.org_parent_id orgParentId,
+        t_org.org_full_name orgFullName,
+        t_org.org_manager_id orgManagerId,
+        tua.user_name orgManagerName ,
+        tua.employee_number employeeNumber,
         t_org.company_id,
         t_org.sort_id,
         t_org.operator_id,
         t_org.create_time,
         t_org.is_enable,
-        t_parent.org_name AS parent_org_name,
-        t_parent.org_code AS parent_org_code
+        t_parent.org_name AS parentOrgName,
+        t_parent.org_code AS parentOrgCode
         FROM t_organization t_org
         LEFT JOIN t_organization t_parent
         ON t_org.org_parent_id = t_parent.org_id
@@ -522,7 +548,7 @@
             where 1=1
             ${whereSql}
         </if>
-        order by lastTable.parent_org_code asc, lastTable.sort_id asc
+        order by lastTable.parentOrgCode asc, lastTable.sort_id asc
         <if test="orderSql !=null">
             ,
             ${orderSql}
@@ -706,11 +732,12 @@
         </if>
     </select>
 
-    <select id="listAllOrganizationByArchiveIdAndOrgId" resultMap="BaseResultMap">
-        select org_id,org_code,org_name,org_type,org_full_name,parent_org_code,
-        parent_org_name,
-        org_manager_id,
-        employee_number,
+    <select id="listAllOrganizationByArchiveIdAndOrgId" resultMap="orgMap">
+        select org_id orgId,org_code orgCode,org_name orgName,org_type orgType,org_full_name orgFullName,parent_org_code
+        parentOrgCode ,
+        parent_org_name parentOrgName,
+        org_manager_id orgManagerId,
+        employee_number employeeNumber,
         orgManagerName from (
         SELECT v.org_id,v.org_code,v.org_name,v.org_type,v.org_full_name,o.org_code parent_org_code,o.org_name
         parent_org_name,

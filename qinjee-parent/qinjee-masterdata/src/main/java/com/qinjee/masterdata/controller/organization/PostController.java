@@ -62,7 +62,7 @@ public class PostController extends BaseController {
     @ApiOperation(value = "ok，分页查询岗位列表,orgId（必填）、postId（选填）", notes = "ok")
     public ResponseResult<PageResult<Post>> getPostList(@RequestBody PostPageBO postPageBO) {
         if (checkParam(postPageBO, getUserSession())) {
-            if (postPageBO.getIsEnable() != 0) {
+            if (null!=postPageBO.getIsEnable()&&postPageBO.getIsEnable() != 0) {
                 postPageBO.setIsEnable(null);
             }
             long start = System.currentTimeMillis();

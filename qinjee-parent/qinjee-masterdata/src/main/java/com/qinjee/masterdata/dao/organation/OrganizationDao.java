@@ -69,7 +69,7 @@ public interface OrganizationDao {
      * @param archiveId
      * @return
      */
-    List<OrganizationVO> listDirectOrganizationByCondition(@Param("organizationPageVo") OrganizationPageBO organizationPageBO,
+    List<OrganizationVO> listDirectOrganizationByCondition(@Param("organizationPageBO") OrganizationPageBO organizationPageBO,
                                                            @Param("archiveId") Integer archiveId,
                                                            @Param("now") Date now, @Param("whereSql")String whereSql, @Param("orderSql")String orderSql);
 

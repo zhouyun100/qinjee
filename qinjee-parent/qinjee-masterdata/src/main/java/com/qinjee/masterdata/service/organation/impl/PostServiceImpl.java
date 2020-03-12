@@ -75,8 +75,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         //TODO id重复无影响
         List<Integer> orgIdList = null;
         List<Integer> postIdList = null;
-        String whereSql = DealHeadParamUtil.getWhereSql(postPageBO.getTableHeadParamList(), "tp.");
-        String orderSql = DealHeadParamUtil.getOrderSql(postPageBO.getTableHeadParamList(), "tp.");
+        String whereSql = DealHeadParamUtil.getWhereSql(postPageBO.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(postPageBO.getTableHeadParamList(), "lastTable.");
 
         //如果postId>0,则根据postId+orgId查询岗位
         if (null != postPageBO.getPostId() && postPageBO.getPostId() != 0) {
@@ -133,7 +133,10 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         post.setIsEnable((short) 1);
         postDao.insertSelective(post);
         //新增岗位职级关系表信息
-        postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
+        if(!CollectionUtils.isEmpty(postVo.getPositionLevelIds())){
+            postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
+        }
+
     }
 
     private Integer generatePostSortId(Integer orgId, Integer parentPostId) {
@@ -494,8 +497,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         if (postPageBO.getCurrentPage() != null && postPageBO.getPageSize() != null) {
             PageHelper.startPage(postPageBO.getCurrentPage(), postPageBO.getPageSize());
         }
-        String whereSql = DealHeadParamUtil.getWhereSql(postPageBO.getTableHeadParamList(), "tp.");
-        String orderSql = DealHeadParamUtil.getOrderSql(postPageBO.getTableHeadParamList(), "tp.");
+        String whereSql = DealHeadParamUtil.getWhereSql(postPageBO.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(postPageBO.getTableHeadParamList(), "lastTable.");
         List<Post> postList = postDao.listDirectPostPage(postPageBO, whereSql, orderSql);
         handleLevelForPostList(postList);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
