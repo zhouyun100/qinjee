@@ -714,7 +714,7 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             String[] codeList = {"user_name", "employee_number", "business_unit_id", "org_id", "hireDate",
                     "probation_due_date", "supervisor_id", "phone"};
             List<String> strings = Arrays.asList(codeList);
-            customFieldVOS = customTableFieldDao.selectFieldIdListByCodeList(strings, userSession.getCompanyId(), "ARC");
+            customFieldVOS = customTableFieldDao.selectFieldIdListByCodeListAndIsDefine (strings, userSession.getCompanyId(), "ARC",1);
         }
         for (CustomFieldForHead customFieldVO : customFieldVOS) {
             if ("code".equals(customFieldVO.getTextType())) {

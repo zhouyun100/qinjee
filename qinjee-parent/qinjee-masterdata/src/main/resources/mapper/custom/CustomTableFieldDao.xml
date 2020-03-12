@@ -596,13 +596,17 @@
         and table_id in
         (select table_id from t_custom_archive_table where company_id=#{companyId} and func_code="ARC")
     </select>
-    <select id="selectFieldIdListByCodeList"  resultMap="HeadField">
+    <select id="selectFieldIdListByCodeListAndIsDefine"  resultMap="HeadField">
         select *
         from t_custom_archive_field
         where is_delete=0
+        and field_code in
+        <foreach collection="strings" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and table_id in
         (select table_id from t_custom_archive_table where is_delete=0
-        and func_code=#{arc} and company_id=#{companyId} and func_code=#{arc})
+        and func_code=#{arc} and company_id=#{companyId} and is_system_define=#{isDefine})
     </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
        select field_id fieldId,field_code fieldCode,field_name fieldName,field_type fieldType,text_type textType
@@ -615,8 +619,7 @@
           *
           from t_custom_archive_field
         WHERE field_id in
-        <foreach item="fieldId" collection="list"
-                 open="(" separator="," close=")">
+        <foreach  collection="integers" item="fieldId" open="(" separator="," close=")">
             #{fieldId}
         </foreach>
         and is_delete = 0
