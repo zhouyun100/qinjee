@@ -71,7 +71,9 @@ public enum CommonCode implements ResultCode{
     LEVEL_USE_IN_POST(false,10547, "职级被岗位引用，不允许删除"),
     PARAM_IS_WRONG(false,10548, "参数格式错误"),
     DATE_IS_WRONG(false,10549, "合同时间设置错误"),
-    NO_POWER_CONTRACT(false,10549, "不存在有效合同");
+
+    NO_POWER_CONTRACT(false,10549, "不存在有效合同"),
+    FAIL_TO_DELETE(false,10550, "删除文件失败");
 
 
     /**
