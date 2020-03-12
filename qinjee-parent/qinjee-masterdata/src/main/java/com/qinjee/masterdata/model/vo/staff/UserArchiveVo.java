@@ -40,7 +40,7 @@ public class UserArchiveVo implements Serializable {
      */
     @QueryColumn("tua.gender")
     @ApiModelProperty("性别")
-    @TransDictAnno
+    @TransDictAnno(dictType = "SEX_TYPE")
     @ExcelColumn(order = 1, title = "性别")
     private String gender;
 
@@ -50,7 +50,7 @@ public class UserArchiveVo implements Serializable {
 
     @ApiModelProperty("证件类型")
     @ExcelColumn(order = 2, title = "证件类型")
-    @TransDictAnno
+    @TransDictAnno(dictType = "CARD_TYPE")
     private String idType;
 
     /**
@@ -82,7 +82,7 @@ public class UserArchiveVo implements Serializable {
      * 民族
      */
     @ApiModelProperty("民族")
-    @TransDictAnno
+    @TransDictAnno(dictType = "NATIONALITY")
     private String nationality;
 
 
@@ -90,14 +90,14 @@ public class UserArchiveVo implements Serializable {
      * 最高学历
      */
     @ApiModelProperty("最高学历")
-    @TransDictAnno
+    @TransDictAnno(dictType = "DEGREE")
     private String highestDegree;
 
     /**
      * 第一学历
      */
     @ApiModelProperty("第一学历")
-    @TransDictAnno
+    @TransDictAnno(dictType = "DEGREE")
     private String firstDegree;
 
     /**
@@ -118,14 +118,14 @@ public class UserArchiveVo implements Serializable {
      * 婚姻状况
      */
     @ApiModelProperty("婚姻状况")
-    @TransDictAnno
+    @TransDictAnno(dictType = "MARITAL_STATUS")
     private String maritalStatus;
 
     /**
      * 政治面貌
      */
     @ApiModelProperty("政治面貌")
-    @TransDictAnno
+    @TransDictAnno(dictType = "POLITICAL_AFFILIATION")
     private String politicalStatus;
 
 
@@ -137,14 +137,14 @@ public class UserArchiveVo implements Serializable {
     /**
      * 职业资格
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "PROFESSIONAL_CERTIFICATION")
     @ApiModelProperty("职业资格")
     private String professionalCertification;
 
     /**
      * 职称
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "PROFESSIONAL_TITLE")
     @ApiModelProperty("职称")
     private String professionalTitle;
 
@@ -152,7 +152,7 @@ public class UserArchiveVo implements Serializable {
     /**
      * 职称等级
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "PROFESSIONAL_LEVEL")
     @ApiModelProperty("职称等级")
     private String professionalLevel;
 
@@ -202,7 +202,7 @@ public class UserArchiveVo implements Serializable {
      * 人员分类   多级代码：在职（正式、试用、实习）、不在职（离职、退休）
      */
     @ApiModelProperty("人员分类")
-    @TransDictAnno
+    @TransDictAnno(dictType = "USER_CATEGORY")
     private String userCategory;
 
 
@@ -236,6 +236,7 @@ public class UserArchiveVo implements Serializable {
 
 
     @ApiModelProperty("试用期限(月)")
+    @TransDictAnno(dictType = "PROBATION_PERIOD")
     private Integer probationPeriod;
 
     /**

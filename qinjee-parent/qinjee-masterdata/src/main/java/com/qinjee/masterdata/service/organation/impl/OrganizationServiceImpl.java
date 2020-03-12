@@ -371,7 +371,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      */
     @Override
     public PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageBO organizationPageBO, UserSession userSession) {
-        List<Integer> orgidList = new ArrayList<>();
         PageResult<OrganizationVO> pageResult = null;
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;
@@ -758,7 +757,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
             //TODO 将老机构下的人员迁移至新机构
             //只改变档案的机构id即可，新机构的单位id和老机构一样
-            int i = userArchiveDao.moveToNewOrg(orgIds, newOrgVO.getOrgId());
+            userArchiveDao.moveToNewOrg(orgIds, newOrgVO.getOrgId());
 
 
             //给合并后的新机构授权

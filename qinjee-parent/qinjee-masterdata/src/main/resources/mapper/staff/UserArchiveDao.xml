@@ -96,7 +96,7 @@
     SELECT t_org.org_full_name , t_org.org_name org_name ,t_unit.org_name business_unit_name , tp.post_name , user_category, headimgurl,
         user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
         marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
-        probation_period, converse_date, first_degree, highest_degree, phone, email, address,attrition_date
+        probation_period, converse_date, first_degree, highest_degree, phone, email, address,attrition_date,
         professional_certification, professional_title, professional_level
     FROM t_user_archive arc
     LEFT JOIN t_organization t_org ON arc.org_id = t_org.org_id AND t_org.is_enable =1
