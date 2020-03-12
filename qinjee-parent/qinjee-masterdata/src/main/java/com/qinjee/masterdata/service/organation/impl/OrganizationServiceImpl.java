@@ -96,8 +96,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (organizationPageBO.getCurrentPage() != null && organizationPageBO.getPageSize() != null) {
             PageHelper.startPage(organizationPageBO.getCurrentPage(), organizationPageBO.getPageSize());
         }
-        String whereSql = DealHeadParamUtil.getWhereSql(organizationPageBO.getTableHeadParamList(), "org.");
-        String orderSql = DealHeadParamUtil.getOrderSql(organizationPageBO.getTableHeadParamList(), "org.");
+        String whereSql = DealHeadParamUtil.getWhereSql(organizationPageBO.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(organizationPageBO.getTableHeadParamList(), "lastTable.");
         List<OrganizationVO> organizationVOList = organizationDao.listDirectOrganizationByCondition(organizationPageBO, archiveId, new Date(), whereSql, orderSql);
         PageInfo<OrganizationVO> pageInfo = new PageInfo<>(organizationVOList);
         PageResult<OrganizationVO> pageResult = new PageResult<>(pageInfo.getList());

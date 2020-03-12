@@ -107,8 +107,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
         if (pageQueryVo.getCurrentPage() != null && pageQueryVo.getPageSize() != null) {
             PageHelper.startPage(pageQueryVo.getCurrentPage(), pageQueryVo.getPageSize());
         }
-        String whereSql = DealHeadParamUtil.getWhereSql(pageQueryVo.getTableHeadParamList(), "tua.");
-        String orderSql = DealHeadParamUtil.getOrderSql(pageQueryVo.getTableHeadParamList(), "tua.");
+        String whereSql = DealHeadParamUtil.getWhereSql(pageQueryVo.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(pageQueryVo.getTableHeadParamList(), "lastTable.");
         List<UserArchiveVo> userArchiveList = userArchiveDao.getUserArchiveList(orgIdList, isContains, whereSql, orderSql);
         PageInfo<UserArchiveVo> pageInfo = new PageInfo<>(userArchiveList);
         PageResult<UserArchiveVo> pageResult = new PageResult<>(pageInfo.getList());
