@@ -421,6 +421,7 @@
        </if>
   </select>
   <select id="selectByPageAndHead" resultType="com.qinjee.masterdata.model.entity.Blacklist" resultMap="BaseResultMap">
+
     select *
     from t_blacklist
     where company_id=#{companyId}

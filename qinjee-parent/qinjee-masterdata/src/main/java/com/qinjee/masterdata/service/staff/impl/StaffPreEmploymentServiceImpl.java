@@ -355,8 +355,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         //通过部门找到预入职Vo
         List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         PageHelper.startPage(requestUserarchiveVo.getCurrentPage(), requestUserarchiveVo.getPageSize());
-        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t_pre_employment.");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t_pre_employment.");
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t.");
         List<PreEmploymentVo> preEmploymentList = preEmploymentDao.selectPreEmploymentVo(userSession.getCompanyId(),
                 requestUserarchiveVo.getOrgId(),whereSql,orderSql);
         new TransCustomFieldMapHelper<PreEmploymentVo>().transBatchToDict(preEmploymentList,sysDicts);

@@ -1088,20 +1088,30 @@
         AND pre.is_delete=0 and pre.company_id=#{companyId}
     </select>
     <select id="selectPreEmploymentVo" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
+        select * from (
         select
-        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone,  t_pre_employment.gender, t_pre_employment.email, t_pre_employment.id_type,
-        t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
-        t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
-        t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
-        t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,
-        post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
+        t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender,
+        t_pre_employment.email, t_pre_employment.id_type,
+        t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date,
+        t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
+        t_pre_employment.graduated_speciality, t_pre_employment.last_work_company, t_pre_employment.is_give_birth,
+        t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
+        t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date,
+        t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
+        t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id,
+        t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
+        t_pre_employment.description, t_pre_employment.data_source,
+        t_pre_employment.company_id,org.org_name,post.post_name,
+        post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id,
+        t_pre_employment.template_id,
         grade.position_grade_name as position_grade_name,level.position_level_name as position_level_name
         from t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
-        left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1  and post.is_delete=0
-        LEFT JOIN t_position_grade grade ON grade.position_grade_id= t_pre_employment.position_grade_id AND  grade.is_delete=0
-        LEFT JOIN t_position_level level ON level.position_level_id= t_pre_employment.position_level_id AND level.is_delete=0
+        left join t_post post on post.post_id = t_pre_employment.post_id and post.is_enable=1 and post.is_delete=0
+        LEFT JOIN t_position_grade grade ON grade.position_grade_id= t_pre_employment.position_grade_id AND
+        grade.is_delete=0
+        LEFT JOIN t_position_level level ON level.position_level_id= t_pre_employment.position_level_id AND
+        level.is_delete=0
         where t_pre_employment.company_id = #{companyId}
         and t_pre_employment.is_delete = 0
         <if test="orgId !=null">
@@ -1110,10 +1120,12 @@
                 #{orgId}
             </foreach>
         </if>
+        )
+        where 1=1
         <if test="whereSql !=null">
             ${whereSql}
         </if>
-
+        group t.employment_id
         <if test="orderSql !=null">
             order by
             ${orderSql}

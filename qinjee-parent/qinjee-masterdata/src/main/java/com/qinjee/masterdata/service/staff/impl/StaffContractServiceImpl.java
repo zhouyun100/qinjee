@@ -81,8 +81,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
         List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         PageHelper.startPage ( requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         //根据合同id找到没有合同的档案
-        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc.");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"arc.");
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"t.");
         List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( requestUserarchiveVo.getOrgId(),companyId ,whereSql,orderSql);
         new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(arcList,sysDicts);
         return new PageResult <> ( arcList );

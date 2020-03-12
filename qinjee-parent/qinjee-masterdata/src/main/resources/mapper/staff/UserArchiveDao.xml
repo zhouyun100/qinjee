@@ -1213,6 +1213,7 @@
     and arc.is_delete=0
   </select>
   <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+ select * from(
       SELECT
       arc.archive_id, arc.user_id, arc.employee_number, arc.company_id,  arc.user_category, arc.business_unit_id, arc.org_id, arc.post_id,
       arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality , arc.birthplace, arc.political_status ,
@@ -1256,14 +1257,16 @@
       and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )and ur.is_delete = 0
     )
     and arc.company_id=#{companyId}
-      <if test="whereSql !=null">
-          ${whereSql}
-      </if>
       <if test="message !=null">
           and (arc.org_id is null or arc.is_delete=0)
       </if>
-      group by arc.archive_id
-      <if test="orderSql !=null">
+      )t
+      where 1=1
+      <if test="whereSql !=null">
+          ${whereSql}
+      </if>
+      group by t.archive_id
+      <if test="orderSql !=null">t
           order by
           ${orderSql}
       </if>
@@ -1329,6 +1332,7 @@
     </foreach>
   </select>
     <select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+      select * from (
         SELECT
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id,  arc.user_category, arc.business_unit_id, arc.org_id, arc.post_id,
         arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality , arc.birthplace, arc.political_status ,
@@ -1365,10 +1369,12 @@
           </foreach>)
         </if>
         and arc.archive_status='SERVICE'
+        )t
+        where 1=1
         <if test="whereSql !=null">
             ${whereSql}
         </if>
-        group by arc.archive_id
+        group by t.archive_id
         <if test="orderSql !=null">
             order by
             ${orderSql}

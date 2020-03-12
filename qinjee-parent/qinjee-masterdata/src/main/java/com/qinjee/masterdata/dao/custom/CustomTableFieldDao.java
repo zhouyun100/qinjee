@@ -314,7 +314,7 @@ public interface CustomTableFieldDao {
 
     Integer selectFieldIdByFieldIdAndFunccode(@Param("key") Integer key, @Param("companyId") Integer companyId);
 
-    List<CustomFieldForHead> selectFieldIdListByCodeListAndIsDefine(@Param("strings") List<String> strings, @Param("companyId") Integer companyId, @Param("arc") String arc, @Param("IsDefine") Integer IsDefine);
+    List<CustomFieldForHead> selectFieldIdListByCodeListAndIsDefine(@Param("strings") List<String> strings, @Param("companyId") Integer companyId, @Param("arc") String arc, @Param("isDefine") Integer isDefine);
 
     List<CustomFieldForHead> selectFieldCodeByNameListAndFuncCodeAndCompanyId(@Param("headsForPre") List<String> headsForPre, @Param("pre") String pre, @Param("companyId") Integer companyId);
 

@@ -297,8 +297,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         PageHelper.startPage(requestUserarchiveVo.getCurrentPage(), requestUserarchiveVo.getPageSize());
-        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc.");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "arc.");
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t..");
         List<UserArchiveVo> list2 = userArchiveDao.selectByOrgAndAuth(requestUserarchiveVo.getOrgId(), userSession.getArchiveId(), userSession.getCompanyId(), message, whereSql, orderSql);
         new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(list2, sysDicts);
         return new PageResult<>(list2);
@@ -702,11 +702,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
 
     @Override
     public List<CustomFieldForHead> selectFieldListByqueryId(Integer queryschemaId, UserSession userSession) {
-        List<CustomFieldForHead> customFieldVOS = null;
+        List<CustomFieldForHead> customFieldForHeads = null;
         if (queryschemaId != null && !queryschemaId.equals(0)) {
             List<Integer> integers = querySchemeFieldDao.selectFieldIdWithSort(queryschemaId);
             if (!CollectionUtils.isEmpty(integers)) {
-                customFieldVOS = customTableFieldDao.searchCustomFieldForHeadListByFieldIdList(integers);
+                customFieldForHeads = customTableFieldDao.searchCustomFieldForHeadListByFieldIdList(integers);
             } else {
                 ExceptionCast.cast(CommonCode.PLAN_IS_MISTAKE);
             }
@@ -714,14 +714,47 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             String[] codeList = {"user_name", "employee_number", "business_unit_id", "org_id", "hireDate",
                     "probation_due_date", "supervisor_id", "phone"};
             List<String> strings = Arrays.asList(codeList);
-            customFieldVOS = customTableFieldDao.selectFieldIdListByCodeListAndIsDefine (strings, userSession.getCompanyId(), "ARC",1);
+            customFieldForHeads = customTableFieldDao.selectFieldIdListByCodeListAndIsDefine (strings, userSession.getCompanyId(), "ARC",1);
         }
-        for (CustomFieldForHead customFieldVO : customFieldVOS) {
+        for (CustomFieldForHead customFieldVO : customFieldForHeads) {
+            String key = customFieldVO.getKey();
+            if (StringUtils.isNotBlank(key)) {
+                transCustomTableHead(customFieldVO, key);
+            }
             if ("code".equals(customFieldVO.getTextType())) {
                 customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
             }
         }
-        return customFieldVOS;
+        return customFieldForHeads;
+    }
+
+    private void transCustomTableHead(CustomFieldForHead customFieldVO, String key) {
+        if("post_id".equalsIgnoreCase(key)){
+            customFieldVO.setKey("post_name");
+            setOthersField(customFieldVO);
+        }
+        if("business_unit_id".equalsIgnoreCase(key)){
+            customFieldVO.setKey("business_unit_id");
+            setOthersField(customFieldVO);
+        }
+        if("supervisor_id".equalsIgnoreCase(key)){
+            customFieldVO.setKey("supervisor_user_name");
+            setOthersField(customFieldVO);
+        }
+        if("position_level_id".equalsIgnoreCase(key)){
+            customFieldVO.setKey("position_level_name");
+            setOthersField(customFieldVO);
+        }
+        if("position_grade_id".equalsIgnoreCase(key)){
+            customFieldVO.setKey("position_grade_name");
+            setOthersField(customFieldVO);
+        }
+    }
+
+    private void setOthersField(CustomFieldForHead customFieldVO) {
+        customFieldVO.setInputType("text");
+        customFieldVO.setType("input");
+        customFieldVO.setTextType("text");
     }
 
     @Override
@@ -729,6 +762,10 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         List<String> headsForPre = HeadMapUtil.getHeadsForPre();
         List<CustomFieldForHead> customFieldVOS = customTableFieldDao.selectFieldCodeByNameListAndFuncCodeAndCompanyId(headsForPre, "PRE", userSession.getCompanyId());
         for (CustomFieldForHead customFieldVO : customFieldVOS) {
+            String key = customFieldVO.getKey();
+            if (StringUtils.isNotBlank(key)) {
+                transCustomTableHead(customFieldVO, key);
+            }
             if ("code".equals(customFieldVO.getTextType())) {
                 customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
             }
