@@ -451,14 +451,14 @@ public class StaffContractController extends BaseController {
     /**
      * 展示部门下的续签意向表
      */
-    @RequestMapping(value = "/selectContractRenewalIntentionByOrg", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectContractRenewalIntentionByOrg", method = RequestMethod.POST)
     @ApiOperation(value = "展示部门下的续签意向表", notes = "hkt")
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
-    public ResponseResult<PageResult<ContractRenewalIntention>> selectContractRenewalIntention(@RequestParam List<Integer> orgId, Integer currentPage, Integer pageSIze) {
+    public ResponseResult<PageResult<ContractRenewalIntention>> selectContractRenewalIntention(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
 
-        Boolean b = checkParam(orgId, pageSIze, currentPage);
+        Boolean b = checkParam(requestUserarchiveVo);
         if (b) {
-            PageResult<ContractRenewalIntention> contractRenewalIntentionPageResult = staffContractService.selectContractRenewalIntentionByOrg(orgId, pageSIze, currentPage);
+            PageResult<ContractRenewalIntention> contractRenewalIntentionPageResult = staffContractService.selectContractRenewalIntentionByOrg(requestUserarchiveVo);
             return new ResponseResult<>(contractRenewalIntentionPageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

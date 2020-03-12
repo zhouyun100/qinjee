@@ -94,14 +94,12 @@ public class StaffStandingBookController extends BaseController {
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
 //    })
     public ResponseResult<List<Blacklist>> selectBalckList(@RequestBody List<FieldValueForSearch> list) {
-        Boolean b = checkParam(getUserSession ());
-        if (b) {
+
                 List < Blacklist > blacklistList = staffStandingBookService.selectBalckList ( getUserSession (),list );
                     return new ResponseResult<>(blacklistList, CommonCode.SUCCESS);
-
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-    }
+
+
 
 
     /**

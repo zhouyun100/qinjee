@@ -3,7 +3,7 @@ package com.qinjee.masterdata.service.file;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
-import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
+import com.qinjee.masterdata.model.vo.staff.RequestUserarchiveVo;
 import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -41,7 +41,7 @@ public interface IFileOperateService {
     /**
      * 展示附件列表
      */
-    PageResult <AttchmentRecordVo> selectAttach(List<Integer> orgIdList, UserSession userSession, Integer pageSize, Integer currentPage,List< FieldValueForSearch > forSearchList);
+    PageResult <AttchmentRecordVo> selectAttach( UserSession userSession, RequestUserarchiveVo requestUserarchiveVo);
 
     String checkFielName(List<String> fileName, UserSession userSession);
 

@@ -308,6 +308,7 @@
     where arc.archive_id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectByorgId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention"  >
+    select * from (
     select arc.user_name as userName,
     arc.employee_number as employeeNumber ,
     org.org_name as orgName,
@@ -329,18 +330,25 @@
     arc.archive_id as archiveId
     from t_contract_renewal_intention intention
     left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
-    left join t_organization org on arc.org_id= org.org_id and  org.is_enable=1
+    left join t_organization org on arc.org_id= org.org_id and org.is_enable=1
     left join t_organization orga on orga.org_id = arc.business_unit_id and orga.is_enable=1
     left join t_post post on post.post_id=arc.post_id and post.is_enable=1 and post.is_delete=0
     left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
     where arc.archive_id in
     (select arc.archive_id from t_user_archive arc
-     left join t_organization org on org.org_id=arc.org_id
-     and org.is_enable=1 and arc.is_delete=0
-     where org.org_id in
-     <foreach collection="list" item="item" open="(" separator="," close=")">
-       #{item}
+    left join t_organization org on org.org_id=arc.org_id
+    and org.is_enable=1 and arc.is_delete=0
+    where org.org_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">#{item}
     </foreach>)
+    )t
+    <if test="whereSql !=null">
+      ${whereSql}
+    </if>
+    group by t.renewalIntentionId
+    <if test="orderSql !=null">
+      ${orderSql}
+    </if>
 
   </select>
   <select id="selectCountRenew" resultType="java.lang.Integer">

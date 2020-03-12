@@ -339,11 +339,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public PageResult<AttchmentRecordVo> selectAttach(List<Integer> orgIdList, UserSession userSession,Integer pageSize,Integer currentPage,List< FieldValueForSearch > forSearchList) {
-        PageHelper.startPage ( currentPage,pageSize );
-        String orderSql = DealHeadParamUtil.getOrderSql ( forSearchList, "t." );
-        String whereSql = DealHeadParamUtil.getWhereSql ( forSearchList, "t." );
-        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectAttach ( orgIdList, userSession.getCompanyId (),whereSql,orderSql );
+    public PageResult<AttchmentRecordVo> selectAttach( UserSession userSession, RequestUserarchiveVo requestUserarchiveVo) {
+        PageHelper.startPage ( requestUserarchiveVo.getCurrentPage (),requestUserarchiveVo.getPageSize () );
+        String orderSql = DealHeadParamUtil.getOrderSql ( requestUserarchiveVo.getList (), "t." );
+        String whereSql = DealHeadParamUtil.getWhereSql ( requestUserarchiveVo.getList (), "t." );
+        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectAttach ( requestUserarchiveVo.getOrgId (), userSession.getCompanyId (),whereSql,orderSql );
         return new PageResult <> ( attchmentRecordVos );
     }
     @Override

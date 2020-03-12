@@ -3,10 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
-import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
-import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
-import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -116,10 +113,10 @@ public class FileController extends BaseController {
      */
     @RequestMapping(value = "/showFile", method = RequestMethod.POST)
     @ApiOperation(value = "展示文件", notes = "hkt")
-    public ResponseResult<PageResult<AttchmentRecordVo>> showFile( Integer currengPage, @RequestParam(value = "list") List< FieldValueForSearch> list,@RequestParam(value = "orgIdList") List<Integer> orgIdList, Integer pageSize) {
-        Boolean b = checkParam(orgIdList, getUserSession(), pageSize, currengPage);
+    public ResponseResult<PageResult<AttchmentRecordVo>> showFile(@RequestBody RequestUserarchiveVo requestUserarchiveVo){
+        Boolean b = checkParam( getUserSession(),requestUserarchiveVo);
         if (b) {
-            PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach(orgIdList, getUserSession(), pageSize, currengPage,list);
+            PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach( getUserSession(),requestUserarchiveVo);
             return new ResponseResult<>(attchmentRecordVoPageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
