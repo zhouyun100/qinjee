@@ -5,6 +5,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
 import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
+import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
 import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
@@ -13,7 +14,6 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,12 +114,12 @@ public class FileController extends BaseController {
     /**
      * 展示文件
      */
-    @RequestMapping(value = "/showFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/showFile", method = RequestMethod.POST)
     @ApiOperation(value = "展示文件", notes = "hkt")
-    public ResponseResult<PageResult<AttchmentRecordVo>> showFile(@RequestParam List<Integer> orgIdList, Integer pageSize, Integer currengPage) {
+    public ResponseResult<PageResult<AttchmentRecordVo>> showFile( Integer currengPage, @RequestParam(value = "list") List< FieldValueForSearch> list,@RequestParam(value = "orgIdList") List<Integer> orgIdList, Integer pageSize) {
         Boolean b = checkParam(orgIdList, getUserSession(), pageSize, currengPage);
         if (b) {
-            PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach(orgIdList, getUserSession(), pageSize, currengPage);
+            PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach(orgIdList, getUserSession(), pageSize, currengPage,list);
             return new ResponseResult<>(attchmentRecordVoPageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

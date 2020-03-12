@@ -47,19 +47,27 @@ public class DealHeadParamUtil {
         if (fieldValueForSearch.getFieldValue() != null) {
                 List fieldValue = fieldValueForSearch.getFieldValue();
                if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
-                   stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").append(fieldValue.get(0)).append(" and ");
+                   stringBuffer.append(nickName).append(FieldToProperty.propertyTofield (fieldValueForSearch.getFieldName())).append(" >= ").append(fieldValue.get(0)).append(" and ");
                }
                 if(fieldValue.size()>1 && fieldValue.get(1)!=null && !fieldValue.get(1).equals(0)){
-                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").append(fieldValue.get(1)).append(" and ");
+                    stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" <= ").append(fieldValue.get(1)).append(" and ");
                 }
         }else{
             stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
         }
     }
+
+    private static void transOrgId(FieldValueForSearch fieldValueForSearch) {
+        if("orgName".equals ( fieldValueForSearch.getFieldName () )){
+            fieldValueForSearch.setFieldName ( "orgId" );
+        }
+    }
+
     private static void getCodeSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
+                transOrgId ( fieldValueForSearch );
                 List fieldValue =  fieldValueForSearch.getFieldValue();
-                stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" in (");
+                stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" in (");
                 StringBuffer stringBuffer1=new StringBuffer();
                 for (Object o : fieldValue) {
                 stringBuffer1.append(" '").append(o).append( " '").append(",");
@@ -74,9 +82,9 @@ public class DealHeadParamUtil {
     }
     private static void getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
-               stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" like ").append( "'%").append(fieldValueForSearch.getFieldValue().get(0)).append( "%'").append(" and " );
+               stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" like ").append( "'%").append(fieldValueForSearch.getFieldValue().get(0)).append( "%'").append(" and " );
         }else{
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
+            stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" is null and ");
         }
     }
     private static void getDateSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {
@@ -85,7 +93,7 @@ public class DealHeadParamUtil {
                 if(fieldValue.get(0)!=null && !fieldValue.get(0).equals(0)){
                     String date1 = String.valueOf(fieldValue.get(0));
                     if(date1!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" >= ").
+                        stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" >= ").
                                 append(" ' ").append(date1).append(" ' " ).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
@@ -94,7 +102,7 @@ public class DealHeadParamUtil {
                 if(fieldValue.size()>1&&fieldValue.get(1)!=null && !fieldValue.get(1).equals(1)){
                     String date2 = String.valueOf(fieldValue.get(1));
                     if(date2!=null) {
-                        stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" <= ").
+                        stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" <= ").
                                 append(" ' ").append(date2).append(" ' " ).append(" and ");
                     }else{
                         ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
@@ -109,7 +117,7 @@ public class DealHeadParamUtil {
         if(CollectionUtils.isNotEmpty(tableSelectParam)) {
             for (FieldValueForSearch fieldValueForSearch : tableSelectParam) {
                 if (StringUtils.isNotBlank(fieldValueForSearch.getOrderBy())) {
-                    stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(getOrder(fieldValueForSearch.getOrderBy())).append(",");
+                    stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(getOrder(fieldValueForSearch.getOrderBy())).append(",");
                 }
             }
         }

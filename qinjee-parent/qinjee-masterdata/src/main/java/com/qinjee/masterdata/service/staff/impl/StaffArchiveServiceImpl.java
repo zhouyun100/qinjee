@@ -717,10 +717,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             customFieldForHeads = customTableFieldDao.selectFieldIdListByCodeListAndIsDefine (strings, userSession.getCompanyId(), "ARC",1);
         }
         for (CustomFieldForHead customFieldVO : customFieldForHeads) {
-            String key = customFieldVO.getKey();
+            String key =customFieldVO.getKey();
             if (StringUtils.isNotBlank(key)) {
                 transCustomTableHead(customFieldVO, key);
             }
+            customFieldVO.setKey (  FieldToProperty.fieldToProperty ( customFieldVO.getKey () ));
             if ("code".equals(customFieldVO.getTextType())) {
                 customFieldVO.setDictList(sysDictDao.selectMoreDict(customFieldVO.getCode()));
             }
@@ -729,12 +730,16 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     }
 
     private void transCustomTableHead(CustomFieldForHead customFieldVO, String key) {
+        if("org_id".equalsIgnoreCase(key)){
+            customFieldVO.setKey("org_name");
+            customFieldVO.setTextType ( "code" );
+        }
         if("post_id".equalsIgnoreCase(key)){
             customFieldVO.setKey("post_name");
             setOthersField(customFieldVO);
         }
         if("business_unit_id".equalsIgnoreCase(key)){
-            customFieldVO.setKey("business_unit_id");
+            customFieldVO.setKey("business_unit_name");
             setOthersField(customFieldVO);
         }
         if("supervisor_id".equalsIgnoreCase(key)){

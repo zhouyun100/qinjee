@@ -1120,12 +1120,12 @@
                 #{orgId}
             </foreach>
         </if>
-        )
+        )t
         where 1=1
         <if test="whereSql !=null">
             ${whereSql}
         </if>
-        group t.employment_id
+        group by t.employment_id
         <if test="orderSql !=null">
             order by
             ${orderSql}

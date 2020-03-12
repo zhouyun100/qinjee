@@ -25,7 +25,7 @@ public interface AttachmentRecordDao {
 
     void deleteByIdList(@Param("list") List<Integer> list);
 
-    List< AttchmentRecordVo > selectAttach(@Param("orgIdList") List<Integer> orgIdList, @Param("companyId") Integer companyId);
+    List< AttchmentRecordVo > selectAttach(@Param("orgIdList") List<Integer> orgIdList, @Param("companyId") Integer companyId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     Integer selectGroupId(@Param("groupName") String groupName);
 

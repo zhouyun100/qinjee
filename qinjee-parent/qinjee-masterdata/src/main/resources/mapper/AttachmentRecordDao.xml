@@ -265,6 +265,7 @@
         </foreach>
     </update>
     <select id="selectAttach" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
+        select * from (
         SELECT
         record.attachment_id as attatchmentId,
         arc.user_name as userName,
@@ -292,8 +293,14 @@
         </if>
         )
         AND record.company_id = #{companyId}
-        AND record.is_delete = 0
+        AND record.is_delete = 0)t
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
         group by fileName
+        <if test="orderSql !=null">
+            ${orderSql}
+        </if>
     </select>
     <select id="selectGroupId" resultType="java.lang.Integer">
     select group_id from

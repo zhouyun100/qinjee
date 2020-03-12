@@ -10,12 +10,10 @@ import com.qinjee.masterdata.dao.AttachmentRecordDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
 import com.qinjee.masterdata.model.entity.UserArchive;
-import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
-import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
-import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
-import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.file.IFileOperateService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -34,7 +32,10 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
@@ -338,9 +339,11 @@ public class FileOperateServiceImpl implements IFileOperateService {
     }
 
     @Override
-    public PageResult<AttchmentRecordVo> selectAttach(List<Integer> orgIdList, UserSession userSession,Integer pageSize,Integer currentPage) {
+    public PageResult<AttchmentRecordVo> selectAttach(List<Integer> orgIdList, UserSession userSession,Integer pageSize,Integer currentPage,List< FieldValueForSearch > forSearchList) {
         PageHelper.startPage ( currentPage,pageSize );
-        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectAttach ( orgIdList, userSession.getCompanyId () );
+        String orderSql = DealHeadParamUtil.getOrderSql ( forSearchList, "t." );
+        String whereSql = DealHeadParamUtil.getWhereSql ( forSearchList, "t." );
+        List < AttchmentRecordVo > attchmentRecordVos = attachmentRecordDao.selectAttach ( orgIdList, userSession.getCompanyId (),whereSql,orderSql );
         return new PageResult <> ( attchmentRecordVos );
     }
     @Override
