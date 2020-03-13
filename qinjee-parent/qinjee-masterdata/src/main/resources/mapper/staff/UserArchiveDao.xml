@@ -1064,6 +1064,7 @@
         tua.hire_date ,
         tua.phone, tua.email,
         torg.org_name business_unit_name,
+        torg.org_id,
         dept.org_name , tp.post_name post_name,
         tua2.user_name supervisor_user_name
         FROM t_user_archive tua

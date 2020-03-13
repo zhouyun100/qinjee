@@ -40,7 +40,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 性别
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "SEX_TYPE")
     private String gender;
 
     /**
@@ -51,7 +51,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 证件类型
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "CARD_TYPE")
     private String idType;
     /**
      * 证件类型名称
@@ -77,7 +77,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 婚姻状况
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "MARITAL_STATUS")
     private String maritalStatus;
 
     /**
@@ -118,7 +118,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 血型
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "BLOOD_TYPE")
     private String bloodType;
 
     /**
@@ -129,7 +129,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 民族
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "NATIONALITY")
     private String nationality;
 
     /**
@@ -141,7 +141,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 政治面貌
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "POLITICAL_AFFILIATION")
     private String politicalStatus;
 
     /**
@@ -157,7 +157,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 试用期限(月)
      */
-    @TransDictAnno
+    @TransDictAnno(dictType = "PROBATION_PERIOD")
     private Integer probationPeriod;
 
     /**

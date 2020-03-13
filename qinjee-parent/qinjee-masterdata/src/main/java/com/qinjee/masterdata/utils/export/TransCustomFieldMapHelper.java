@@ -60,8 +60,11 @@ public class TransCustomFieldMapHelper<T> {
             field.setAccessible(true);
             try {
                 Object fieldValue = field.get(ob);
+
                 if(fieldValue!=null) {
-                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
+                    TransDictAnno anno = field.getAnnotation(TransDictAnno.class);
+                    String dictType = anno.dictType();
+                    Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)&&dict.getDictType().equals(dictType)).map(dict -> dict.getDictValue()).findFirst();
                     if(dictValue.isPresent()) {
                         field.set(ob, dictValue.get());
                     }
@@ -92,10 +95,14 @@ public class TransCustomFieldMapHelper<T> {
                 try {
                     Object fieldValue = field.get(ob);
                     if(fieldValue!=null) {
-                        Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)).map(dict -> dict.getDictValue()).findFirst();
-                        if(dictValue.isPresent()) {
+                        TransDictAnno anno = field.getAnnotation(TransDictAnno.class);
+                        String dictType = anno.dictType();
+                        List<SysDict> collect = sysDicts.stream().filter(dict -> (dict.getDictType().equals(dictType)&&dict.getDictCode().equals(fieldValue) )).collect(Collectors.toList());
+                        System.out.println("我爱你中国"+collect);
+                        /* if(dictValue.isPresent()) {
                             field.set(ob, dictValue.get());
-                        }
+                        }*/
+                       String d="";
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
