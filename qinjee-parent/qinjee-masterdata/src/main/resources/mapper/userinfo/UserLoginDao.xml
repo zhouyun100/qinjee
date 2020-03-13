@@ -74,7 +74,7 @@
 
   <select id="searchUserInfoByUserIdAndCompanyId" parameterType="com.qinjee.masterdata.model.vo.auth.RequestLoginVO" resultMap="UserInfoResultMap">
     select
-    t_user_info.user_id,t_user_info.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
+    t_user_info.user_id,t_user_archive.user_name,t_user_info.phone,t_user_info.email,t_company_info.company_id,t_company_info.company_name,t_user_archive.archive_id
     from t_user_info,t_user_company,t_company_info,t_user_archive
     where t_user_info.user_id = #{userId,jdbcType=INTEGER}
     and t_user_info.user_id = t_user_company.user_id
