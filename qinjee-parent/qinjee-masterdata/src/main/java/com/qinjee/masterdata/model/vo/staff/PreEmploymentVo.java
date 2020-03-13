@@ -265,4 +265,8 @@ public class PreEmploymentVo implements Serializable {
      * 模板id
      */
     private Integer templateId;
+    /**
+     * 现住址
+     */
+    private String address;
 }

@@ -361,7 +361,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                 requestUserarchiveVo.getOrgId(),whereSql,orderSql);
         new TransCustomFieldMapHelper<PreEmploymentVo>().transBatchToDict(preEmploymentList,sysDicts);
         List<Integer> integers = new ArrayList<>();
-
         for (PreEmploymentVo preEmploymentVo : preEmploymentList) {
             integers.add(preEmploymentVo.getEmploymentId());
         }

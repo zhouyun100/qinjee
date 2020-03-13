@@ -66,7 +66,10 @@ public class PreEmployment implements Serializable {
          */
 
         private Date firstWorkDate;
-
+        /**
+         * 现住址
+         */
+        private String address;
         /**
          * 婚姻状况
          */

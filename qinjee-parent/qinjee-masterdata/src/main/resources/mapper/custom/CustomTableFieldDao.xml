@@ -520,7 +520,7 @@
         and is_delete=0
         and table_id in
         (select table_id from t_custom_archive_table where is_delete=0
-        and func_code=#{funcCode} and company_id=#{companyId})
+        and func_code=#{funcCode} and company_id=#{companyId} and is_system_define=1)
     </select>
     <select id="selectFieldByCodeAndFuncCodeAndComapnyId" resultMap="FieldResultMap"
             resultType="com.qinjee.masterdata.model.vo.custom.CustomFieldVO">
@@ -594,7 +594,7 @@
         and field_name in
         (select field_name from t_custom_archive_field where field_id=#{key} and is_delete=0)
         and table_id in
-        (select table_id from t_custom_archive_table where company_id=#{companyId} and func_code="ARC")
+        (select table_id from t_custom_archive_table where company_id=#{companyId} and func_code="ARC" and is_system_define=1)
     </select>
     <select id="selectFieldIdListByCodeListAndIsDefine"  resultMap="HeadField">
         select *

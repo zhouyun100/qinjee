@@ -39,6 +39,7 @@
         <result column="operator_id" property="operatorId" jdbcType="INTEGER"/>
         <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
         <result column="is_delete" property="isDelete" jdbcType="TINYINT"/>
         <result column="position_level_id" property="positionLevelId" jdbcType="INTEGER"/>
         <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER"/>
@@ -116,7 +117,7 @@
         <result column="position_grade_id" property="positionGradeId" jdbcType="INTEGER"/>
         <result column="position_grade_name" property="positionGradeName" jdbcType="VARCHAR"/>
         <result column="template_id" property="templateId" jdbcType="INTEGER"/>
-
+        <result column="address" property="address" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- 表所有字段 -->
@@ -127,7 +128,7 @@
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
         t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id, t_pre_employment.operator_id, t_pre_employment.create_time, t_pre_employment.update_time,
-        t_pre_employment.is_delete, t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id
+        t_pre_employment.is_delete, t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id , t_pre_employment.address
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -153,7 +154,9 @@
             <if test="phone != null">
                 phone,
             </if>
-
+            <if test="address != null">
+                address,
+            </if>
             <if test="gender != null">
                 gender,
             </if>
@@ -277,7 +280,9 @@
             <if test="phone != null">
                 #{phone},
             </if>
-
+            <if test="address != null">
+                #{address},
+            </if>
             <if test="gender != null">
                 #{gender},
             </if>
@@ -405,7 +410,9 @@
                 <if test="item.phone != null">
                     phone,
                 </if>
-
+                <if test="item.address != null">
+                    address,
+                </if>
                 <if test="item.gender != null">
                     gender,
                 </if>
@@ -529,7 +536,9 @@
                 <if test="item.phone != null">
                     #{item.phone},
                 </if>
-
+                <if test="item.address != null">
+                    #{item.address},
+                </if>
                 <if test="item.gender != null">
                     #{item.gender},
                 </if>
@@ -646,122 +655,6 @@
         </foreach>
 
     </insert>
-    <!-- 根据条件查询数据 -->
-    <!--  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="map">-->
-    <!--    SELECT-->
-    <!--    <include refid="Base_Column_List" />-->
-    <!--    FROM t_pre_employment t_pre_employment WHERE 1 = 1-->
-    <!--    <if test="user_name != null and user_name != ''">-->
-    <!--      AND t_pre_employment.user_name LIKE CONCAT('%',#{user_name},'%')-->
-    <!--    </if>-->
-    <!--    <if test="phone != null and phone != ''">-->
-    <!--      AND t_pre_employment.phone LIKE CONCAT('%',#{phone},'%')-->
-    <!--    </if>-->
-    <!--    <if test="gender != null and gender != ''">-->
-    <!--      AND t_pre_employment.gender LIKE CONCAT('%',#{gender},'%')-->
-    <!--    </if>-->
-    <!--    <if test="email != null and email != ''">-->
-    <!--      AND t_pre_employment.email LIKE CONCAT('%',#{email},'%')-->
-    <!--    </if>-->
-    <!--    <if test="id_type != null and id_type != ''">-->
-    <!--      AND t_pre_employment.id_type LIKE CONCAT('%',#{id_type},'%')-->
-    <!--    </if>-->
-    <!--    <if test="id_number != null and id_number != ''">-->
-    <!--      AND t_pre_employment.id_number LIKE CONCAT('%',#{id_number},'%')-->
-    <!--    </if>-->
-    <!--    <if test="age != null">-->
-    <!--      AND t_pre_employment.age = #{age}-->
-    <!--    </if>-->
-    <!--    <if test="first_work_date != null">-->
-    <!--      AND t_pre_employment.first_work_date = #{first_work_date}-->
-    <!--    </if>-->
-    <!--    <if test="marital_status != null and marital_status != ''">-->
-    <!--      AND t_pre_employment.marital_status LIKE CONCAT('%',#{marital_status},'%')-->
-    <!--    </if>-->
-    <!--    <if test="highest_degree != null and highest_degree != ''">-->
-    <!--      AND t_pre_employment.highest_degree LIKE CONCAT('%',#{highest_degree},'%')-->
-    <!--    </if>-->
-    <!--    <if test="graduated_school != null and graduated_school != ''">-->
-    <!--      AND t_pre_employment.graduated_school LIKE CONCAT('%',#{graduated_school},'%')-->
-    <!--    </if>-->
-    <!--    <if test="graduated_speciality != null and graduated_speciality != ''">-->
-    <!--      AND t_pre_employment.graduated_speciality LIKE CONCAT('%',#{graduated_speciality},'%')-->
-    <!--    </if>-->
-    <!--    <if test="last_work_company != null and last_work_company != ''">-->
-    <!--      AND t_pre_employment.last_work_company LIKE CONCAT('%',#{last_work_company},'%')-->
-    <!--    </if>-->
-    <!--    <if test="is_give_birth != null">-->
-    <!--      AND t_pre_employment.is_give_birth = #{is_give_birth}-->
-    <!--    </if>-->
-    <!--    <if test="resident_character != null and resident_character != ''">-->
-    <!--      AND t_pre_employment.resident_character LIKE CONCAT('%',#{resident_character},'%')-->
-    <!--    </if>-->
-    <!--    <if test="height != null">-->
-    <!--      AND t_pre_employment.height = #{height}-->
-    <!--    </if>-->
-    <!--    <if test="blood_type != null and blood_type != ''">-->
-    <!--      AND t_pre_employment.blood_type LIKE CONCAT('%',#{blood_type},'%')-->
-    <!--    </if>-->
-    <!--    <if test="english_name != null and english_name != ''">-->
-    <!--      AND t_pre_employment.english_name LIKE CONCAT('%',#{english_name},'%')-->
-    <!--    </if>-->
-    <!--    <if test="nationality != null">-->
-    <!--      AND t_pre_employment.nationality = #{nationality}-->
-    <!--    </if>-->
-    <!--    <if test="birth_date != null">-->
-    <!--      AND t_pre_employment.birth_date = #{birth_date}-->
-    <!--    </if>-->
-    <!--    <if test="political_status != null">-->
-    <!--      AND t_pre_employment.political_status = #{political_status}-->
-    <!--    </if>-->
-    <!--    <if test="birthplace != null and birthplace != ''">-->
-    <!--      AND t_pre_employment.birthplace LIKE CONCAT('%',#{birthplace},'%')-->
-    <!--    </if>-->
-    <!--    <if test="application_position != null and application_position != ''">-->
-    <!--      AND t_pre_employment.application_position LIKE CONCAT('%',#{application_position},'%')-->
-    <!--    </if>-->
-    <!--    <if test="probation_period != null">-->
-    <!--      AND t_pre_employment.probation_period = #{probation_period}-->
-    <!--    </if>-->
-    <!--    <if test="hire_date != null">-->
-    <!--      AND t_pre_employment.hire_date = #{hire_date}-->
-    <!--    </if>-->
-    <!--    <if test="org_id != null">-->
-    <!--      AND t_pre_employment.org_id = #{org_id}-->
-    <!--    </if>-->
-    <!--    <if test="post_id != null">-->
-    <!--      AND t_pre_employment.post_id = #{post_id}-->
-    <!--    </if>-->
-    <!--    <if test="employment_state != null and employment_state != ''">-->
-    <!--      AND t_pre_employment.employment_state LIKE CONCAT('%',#{employment_state},'%')-->
-    <!--    </if>-->
-    <!--    <if test="employment_register != null and employment_register != ''">-->
-    <!--      AND t_pre_employment.employment_register LIKE CONCAT('%',#{employment_register},'%')-->
-    <!--    </if>-->
-    <!--    <if test="description != null and description != ''">-->
-    <!--      AND t_pre_employment.description LIKE CONCAT('%',#{description},'%')-->
-    <!--    </if>-->
-    <!--    <if test="data_source != null and data_source != ''">-->
-    <!--      AND t_pre_employment.data_source LIKE CONCAT('%',#{data_source},'%')-->
-    <!--    </if>-->
-    <!--    <if test="company_id != null">-->
-    <!--      AND t_pre_employment.company_id = #{company_id}-->
-    <!--    </if>-->
-    <!--    <if test="operator_id != null">-->
-    <!--      AND t_pre_employment.operator_id = #{operator_id}-->
-    <!--    </if>-->
-    <!--    <if test="create_time != null">-->
-    <!--      AND t_pre_employment.create_time = #{create_time}-->
-    <!--    </if>-->
-    <!--    <if test="update_time != null">-->
-    <!--      AND t_pre_employment.update_time = #{update_time}-->
-    <!--    </if>-->
-    <!--    <if test="is_delete != null">-->
-    <!--      AND t_pre_employment.is_delete = #{is_delete}-->
-    <!--    </if>-->
-    <!--  </select>-->
-    <!--   批量插入数据 -->
-
     <!-- 修改数据 -->
     <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.PreEmployment">
         UPDATE t_pre_employment
@@ -771,6 +664,9 @@
             </if>
             <if test="phone != null">
                 phone = #{phone},
+            </if>
+            <if test="address != null">
+                address=#{address},
             </if>
             <if test="gender != null">
                 gender = #{gender},
@@ -888,6 +784,9 @@
                 </if>
                 <if test="item.phone != null">
                     phone = #{item.phone},
+                </if>
+                <if test="item.address != null">
+                   address= #{item.address},
                 </if>
                 <if test="item.gender != null">
                     gender = #{item.gender},
@@ -1100,7 +999,7 @@
         t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id,
         t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-        t_pre_employment.description, t_pre_employment.data_source,
+        t_pre_employment.description, t_pre_employment.data_source,t_pre_employment.address,
         t_pre_employment.company_id,org.org_name,post.post_name,
         post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id,
         t_pre_employment.template_id,
@@ -1138,24 +1037,24 @@
          SELECT t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender,
             t_pre_employment.email, t_pre_employment.id_type, t_pre_employment.id_number, t_pre_employment.age,
             t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree,
-             t_pre_employment.graduated_school, t_pre_employment.graduated_speciality, t_pre_employment.last_work_company,
-              t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
-               t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status,
-                t_pre_employment.birthplace, t_pre_employment.application_position, t_pre_employment.probation_period, t_pre_employment.hire_date,
-                t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
-                t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,
-              post.post_code,org.org_code,t_pre_employment.position_level_id,
-                t_pre_employment.position_grade_id, t_pre_employment.template_id, grade.position_grade_name AS position_grade_name,level.position_level_name AS position_level_name
-             FROM t_pre_employment
-             LEFT JOIN t_organization org
-             ON org.org_id=t_pre_employment.org_id AND org.is_enable=1
-             LEFT JOIN t_post post
-             ON post.post_id = t_pre_employment.post_id AND post.is_enable=1 AND post.is_delete=0
-             LEFT JOIN t_position_grade grade
-             ON grade.position_grade_id= t_pre_employment.position_grade_id AND  grade.is_delete=0
-             LEFT JOIN t_position_level level
-             ON level.position_level_id= t_pre_employment.position_level_id AND level.is_delete=0
-             WHERE t_pre_employment.employment_id=#{businessId} AND t_pre_employment.is_delete=0
+            t_pre_employment.graduated_school, t_pre_employment.graduated_speciality, t_pre_employment.last_work_company,
+            t_pre_employment.is_give_birth, t_pre_employment.resident_character, t_pre_employment.height, t_pre_employment.blood_type,
+            t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status,
+            t_pre_employment.birthplace, t_pre_employment.application_position, t_pre_employment.probation_period, t_pre_employment.hire_date,
+            t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
+            t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,
+            t_pre_employment.address, post.post_code,org.org_code,t_pre_employment.position_level_id,
+            t_pre_employment.position_grade_id, t_pre_employment.template_id, grade.position_grade_name AS position_grade_name,level.position_level_name AS position_level_name
+            FROM t_pre_employment
+            LEFT JOIN t_organization org
+            ON org.org_id=t_pre_employment.org_id AND org.is_enable=1
+            LEFT JOIN t_post post
+            ON post.post_id = t_pre_employment.post_id AND post.is_enable=1 AND post.is_delete=0
+            LEFT JOIN t_position_grade grade
+            ON grade.position_grade_id= t_pre_employment.position_grade_id AND  grade.is_delete=0
+            LEFT JOIN t_position_level level
+            ON level.position_level_id= t_pre_employment.position_level_id AND level.is_delete=0
+            WHERE t_pre_employment.employment_id=#{businessId} AND t_pre_employment.is_delete=0
     </select>
     <select id="selectPreByIdtypeAndIdnumber" resultType="java.lang.Integer">
         select employment_id from t_pre_employment
@@ -1226,7 +1125,7 @@
         t_pre_employment.english_name, t_pre_employment.nationality, t_pre_employment.birth_date, t_pre_employment.political_status, t_pre_employment.birthplace, t_pre_employment.application_position,
         t_pre_employment.probation_period, t_pre_employment.hire_date, t_pre_employment.org_id, t_pre_employment.post_id, t_pre_employment.employment_state, t_pre_employment.employment_register,
         t_pre_employment.description, t_pre_employment.data_source, t_pre_employment.company_id,org.org_name,post.post_name,t_pre_employment.id_type,
-        post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id,
+        post.post_code,org.org_code,t_pre_employment.position_level_id, t_pre_employment.position_grade_id, t_pre_employment.template_id, t_pre_employment.address,
         grade.position_grade_name as position_grade_name,level.position_level_name as position_level_name
         from t_pre_employment
         left join t_organization org on org.org_id=t_pre_employment.org_id and org.is_enable=1
