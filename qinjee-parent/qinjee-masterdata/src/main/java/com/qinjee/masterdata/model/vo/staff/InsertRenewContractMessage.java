@@ -9,4 +9,5 @@ import java.io.Serializable;
 public class InsertRenewContractMessage implements Serializable {
     private String message;
     private Integer id;
+    private Short isAgree;
 }

@@ -369,7 +369,9 @@ public class StaffContractServiceImpl implements IStaffContractService {
     public void insertMessqge(InsertRenewContractMessage insertRenewContractMessage) {
         ContractRenewalIntention contractRenewalIntention=new ContractRenewalIntention();
         contractRenewalIntention.setRenewalIntentionId(insertRenewContractMessage.getId());
+        contractRenewalIntention.setIsAgree ( insertRenewContractMessage.getIsAgree () );
         contractRenewalIntention.setRenewalOpinion(insertRenewContractMessage.getMessage());
+        contractRenewalIntention.setIntentionStatus ( CONFIRM );
         contractRenewalIntention.setUpdateTime(new Date());
         contractRenewalIntentionDao.updateByPrimaryKeySelective(contractRenewalIntention);
     }

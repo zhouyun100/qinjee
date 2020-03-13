@@ -740,7 +740,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         }
         if("business_unit_id".equalsIgnoreCase(key)){
             customFieldVO.setKey("business_unit_name");
-            setOthersField(customFieldVO);
+            customFieldVO.setTextType ( "code" );
+            customFieldVO.setType ( "orgTree" );
         }
         if("supervisor_id".equalsIgnoreCase(key)){
             customFieldVO.setKey("supervisor_user_name");
@@ -873,14 +874,6 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
         return headList;
     }
 
-//    private Integer getQuerySchemaId(Integer archiveId){
-//        Integer querySchemaId=querySchemeDao.selectDefaultQuerySchemaIdByArchiveId(archiveId);
-//        if(null!=querySchemaId && 0!=querySchemaId){
-//            return null;
-//        }else {
-//            return querySchemaId;
-//        }
-//    }
 
     private void checkEmployeeNumber(UserSession userSession, UserArchive userArchive) {
         String empNumber = employeeNumberRuleService.createEmpNumber(userSession.getCompanyId());

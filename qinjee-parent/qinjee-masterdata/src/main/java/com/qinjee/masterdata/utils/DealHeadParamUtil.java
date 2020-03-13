@@ -62,6 +62,9 @@ public class DealHeadParamUtil {
         if("orgName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
             fieldValueForSearch.setFieldName ( "orgId" );
         }
+        if("businessUnitName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
+            fieldValueForSearch.setFieldName ( "orgId" );
+        }
         if("orgParentName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
             fieldValueForSearch.setFieldName ( "orgParentId" );
         }
