@@ -32,6 +32,18 @@ public class OrganizationExportBO implements Serializable {
     @ApiModelProperty("机构id列表")
     private List<Integer> orgIds;
 
+    @ApiModelProperty("1:包含封存，0：不包含")
+    private Short isEnable;
+
+
+    public Short getIsEnable() {
+        return isEnable;
+    }
+
+    public void setIsEnable(Short isEnable) {
+        this.isEnable = isEnable;
+    }
+
     private List<FieldValueForSearch> tableHeadParamList;
 
     private static final long serialVersionUID = 1L;

@@ -343,15 +343,16 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         List<OrganizationVO> orgList = null;
 
         if (CollectionUtils.isEmpty(orgExportBO.getOrgIds())) {
-            //查出包含封存的机构id
-            List<Integer> orgIdList = organizationDao.getOrgIds(orgExportBO.getOrgId(), archiveId, Short.parseShort("1"), new Date());
+
+            List<Integer> orgIdList = organizationDao.getOrgIds(orgExportBO.getOrgId(), archiveId,orgExportBO.getIsEnable(), new Date());
             String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "lastTable.");
             String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "lastTable.");
             orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, new Date(),whereSql,orderSql);
         } else {
-            String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "t_org.");
-            String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "t_org.");
-            orgList = organizationDao.listOrganizationsByCondition(orgExportBO.getOrgIds(),whereSql,orderSql);
+            //如果已经勾选了id，就不需要再进行表头筛选了
+            //String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "lastTable.");
+           // String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "lastTable.");
+            orgList = organizationDao.listOrganizationsByCondition(orgExportBO.getOrgIds(),null,null);
         }
         if (CollectionUtils.isEmpty(orgList)) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
@@ -371,7 +372,6 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      */
     @Override
     public PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageBO organizationPageBO, UserSession userSession) {
-        List<Integer> orgidList = new ArrayList<>();
         PageResult<OrganizationVO> pageResult = null;
         //拿到关联的所有机构id
         List<Integer> orgIdList = null;

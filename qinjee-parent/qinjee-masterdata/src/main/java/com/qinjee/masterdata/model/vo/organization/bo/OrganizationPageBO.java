@@ -20,7 +20,6 @@ public class OrganizationPageBO implements Serializable {
     private Integer pageSize;
     private Short isEnable;//是否含有封存(启用) 0 封存、1 未封存
     private Integer orgParentId;
-    private Integer orgId;
     //TODO 更名为 tableHeadParam
     private List<FieldValueForSearch> tableHeadParamList;
 

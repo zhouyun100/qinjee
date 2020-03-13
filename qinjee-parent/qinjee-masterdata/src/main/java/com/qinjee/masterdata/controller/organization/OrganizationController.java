@@ -133,7 +133,7 @@ public class OrganizationController extends BaseController {
     }
 
     @PostMapping("/getOrganizationPageList")
-    @ApiOperation(value = "ok，分页按条件查询用户下所有的机构(包含子孙)", notes = "phs")
+    @ApiOperation(value = "ok，分页查询机构列表", notes = "phs")
     public ResponseResult<PageResult<OrganizationVO>> getOrganizationPageList(@RequestBody OrganizationPageBO organizationPageBO) {
         Boolean b = checkParam(organizationPageBO, getUserSession());
         if (b) {
@@ -153,7 +153,7 @@ public class OrganizationController extends BaseController {
     }
 
     @PostMapping("/getDirectOrganizationPageList")
-    @ApiOperation(value = "ok，分页查询下级直属机构", notes = "phs")
+    @ApiOperation(value = "ok，分页查询（直属下级）机构列表", notes = "phs")
     public ResponseResult<PageResult<OrganizationVO>> getDirectOrganizationPageList(@RequestBody OrganizationPageBO organizationPageBO) {
         Boolean b = checkParam(organizationPageBO, getUserSession());
         if (b) {
@@ -255,7 +255,12 @@ public class OrganizationController extends BaseController {
     public ResponseResult exportOrganization(@RequestBody OrganizationExportBO orgExportBO, HttpServletResponse response) {
         if (checkParam(orgExportBO, getUserSession())) {
             long start = System.currentTimeMillis();
-
+            Short isEnable = orgExportBO.getIsEnable();
+            if (isEnable == null || isEnable == 0) {
+                orgExportBO.setIsEnable(Short.valueOf("0"));
+            } else {
+                orgExportBO.setIsEnable(null);
+            }
             List<OrganizationVO> organizationVOList = organizationService.exportOrganization(orgExportBO, getUserSession().getArchiveId());
             List<OrganizationVO> dataList = new ArrayList<>();
             // 导出时将"DEPT"转为“部门”
