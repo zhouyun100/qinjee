@@ -1,6 +1,7 @@
 package com.qinjee.masterdata.dao.staffdao.contractdao;
 
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
+import com.qinjee.masterdata.model.vo.staff.RenewIntentionVo;
 import com.qinjee.masterdata.model.vo.staff.RenewIntionAboutUser;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo;
 import org.apache.ibatis.annotations.Param;
@@ -30,7 +31,7 @@ public interface ContractRenewalIntentionDao {
 
     void insertBatch(@Param("contractRenewalIntentions") List<ContractRenewalIntention> contractRenewalIntentions);
 
-    List<ContractRenewalIntention> selectByorgId(@Param("list") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
+    List< RenewIntentionVo > selectByorgId(@Param("list") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     Integer selectCountRenew(@Param("archiveId") Integer archiveId);
 

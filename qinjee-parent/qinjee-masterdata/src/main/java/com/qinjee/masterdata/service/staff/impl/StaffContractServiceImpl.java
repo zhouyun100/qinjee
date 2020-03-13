@@ -142,14 +142,10 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId,String
                                                                      whereSql,String orderSql) {
-        String contain=null;
-        if(status.contains("即将到期")){
-          contain="contain";
-        }
-        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,contain,companyId,whereSql,orderSql );
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,companyId,whereSql,orderSql );
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
               if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ())
-              ||contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate().after(new Date()) ||
+              ||contractWithArchiveVo.getContractEndDate()==null || contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate().after(new Date()) ||
                       contractWithArchiveVo.getContractEndDate().before(new Date())
               ){
                   contractWithArchiveVo.setIsEnable ( ( short ) 0 );
@@ -428,11 +424,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public PageResult < ContractRenewalIntention > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo) {
+    public PageResult < RenewIntentionVo > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo) {
         PageHelper.startPage ( requestUserarchiveVo.getCurrentPage (), requestUserarchiveVo.getPageSize () );
         String whereSql = DealHeadParamUtil.getWhereSql ( requestUserarchiveVo.getList (), "t." );
         String orderSql = DealHeadParamUtil.getOrderSql ( requestUserarchiveVo.getList (), "t." );
-        List < ContractRenewalIntention > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql );
+        List < RenewIntentionVo > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql );
         return new PageResult <> ( list );
     }
 

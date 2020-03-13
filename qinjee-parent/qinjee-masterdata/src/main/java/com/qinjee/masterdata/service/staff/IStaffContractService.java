@@ -192,7 +192,7 @@ public interface IStaffContractService {
 
     PageResult<ContractFormVo> createContractForm(List<Integer> list, Integer currentPage, Integer pageSize, UserSession userSession);
 
-    PageResult<ContractRenewalIntention> selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo);
+    PageResult<RenewIntentionVo> selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo);
 
     PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId, Integer companyId, Integer currentPage, Integer pageSize);
 

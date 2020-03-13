@@ -307,7 +307,7 @@
     left join t_user_archive arch on arch.archive_id = intention.operator_id and arch.is_delete=0
     where arc.archive_id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.entity.ContractRenewalIntention"  >
+  <select id="selectByorgId" resultType="com.qinjee.masterdata.model.vo.staff.RenewIntentionVo">
     select * from (
     select arc.user_name as userName,
     arc.employee_number as employeeNumber ,
