@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.*;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -66,9 +67,13 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
     @Autowired
     private UserArchiveDao userArchiveDao;
     @Autowired
+    private PreEmploymentDao preEmploymentDao;
+    @Autowired
     private PositionDao positionDao;
     @Autowired
     private PositionLevelDao positionLevelDao;
+
+
 
     @Override
     public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageBO postPageBO) {
@@ -247,6 +252,11 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         //TODO 被删除的岗位下不允许有人员档案
         List<UserArchiveVo> userArchiveList = userArchiveDao.listUserArchiveByPostIds(postIds);
         if (!CollectionUtils.isEmpty(userArchiveList)) {
+            ExceptionCast.cast(CommonCode.EXIST_USER);
+        }
+        //TODO 被删除的岗位下不允许有预入职人员档案
+        List<PreEmployment> preEmploymentList=preEmploymentDao.selectByPostIds(postIds);
+        if (!CollectionUtils.isEmpty(preEmploymentList)) {
             ExceptionCast.cast(CommonCode.EXIST_USER);
         }
         if (!CollectionUtils.isEmpty(postIds)) {

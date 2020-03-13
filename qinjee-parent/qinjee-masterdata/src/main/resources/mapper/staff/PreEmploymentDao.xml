@@ -1240,4 +1240,12 @@
             ${whereSql}
         </if>
     </select>
+
+    <select id="selectByPostIds" resultMap="PreVo">
+        SELECT employment_id,post_id FROM t_pre_employment WHERE post_id IN
+        <foreach collection="postIds" item="id" separator="," close=")" open="(">
+            #{id}
+        </foreach>
+        AND is_delete =0
+    </select>
 </mapper>
