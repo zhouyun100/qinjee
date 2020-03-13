@@ -338,30 +338,29 @@
         </if>
 
     </select>
-    <select id="listPostsByCondition" resultType="com.qinjee.masterdata.model.entity.Post">
+    <select id="listPostsByCondition" resultMap="BaseResultMap">
 
         select
-        orgId,
-        postId, postCode,
-        isEnable,
-        parentPostId,
-        postName,
-        positionName,
-        positionId,
-        parentPostName,
-        orgName
-         from (
+        org_id ,
+        post_id ,
+        post_code ,
+        parent_post_id ,
+        post_name ,
+        position_name ,
+        position_id ,
+        post_name parent_post_name,
+        org_name
+        from (
         SELECT
-        tp.org_id orgId,
-        tp.sort_id sortId,
-        tp.post_id postId,tp.post_code postCode,
-        tp.is_enable isEnable,
-        tp.parent_post_id parentPostId,
-        tp.post_name postName,
-        tps.position_name positionName,
-        tps.position_id positionId,
-        ptp.post_name parentPostName,
-        torg.org_name orgName
+        tp.org_id ,
+        tp.post_id ,
+        tp.post_code ,
+        tp.parent_post_id ,
+        tp.post_name ,
+        tps.position_name ,
+        tps.position_id ,
+        ptp.post_name parent_post_name,
+        torg.org_name
         FROM
         t_post tp
         LEFT JOIN t_position tps
@@ -388,14 +387,14 @@
         <if test="postPageBO.isEnable != null">
             and tp.is_enable = 1
         </if>
+        order by tp.sort_id asc
         ) lastTable
         where 1=1
         <if test="whereSql != null">
             ${whereSql}
         </if>
-        order by lastTable.sortId asc
         <if test="orderSql != null">
-            ,
+            order by
             ${orderSql}
         </if>
     </select>

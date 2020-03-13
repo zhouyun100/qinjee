@@ -1044,23 +1044,28 @@
     AND  employee_number = #{employeeNumber,jdbcType=VARCHAR} and company_id = #{companyId}
   </select>
 
-    <select id="getUserArchiveList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+    <select id="getUserArchiveList" resultMap="BaseResultMap">
 
-        SELECT archiveId, userId,
-        userName, gender , age,
-        hireDate,
-        phone, email,
-        businessUnitName,
-        orgName, postName,
-        supervisorUserName
+        SELECT archive_id ,
+        user_id ,
+        user_name ,
+        gender ,
+        age,
+        hire_date ,
+        phone,
+        email,
+        business_unit_name,
+        org_name ,
+        post_name,
+        supervisor_user_name
         FROM (
-        SELECT tua.archive_id archiveId, tua.user_id userId,
-        tua.user_name userName, tua.gender , tua.age,
-        tua.hire_date hireDate,
+        SELECT tua.archive_id , tua.user_id ,
+        tua.user_name , tua.gender , tua.age,
+        tua.hire_date ,
         tua.phone, tua.email,
-        torg.org_name businessUnitName,
-        dept.org_name orgName, tp.post_name postName,
-        tua2.user_name supervisorUserName
+        torg.org_name business_unit_name,
+        dept.org_name , tp.post_name post_name,
+        tua2.user_name supervisor_user_name
         FROM t_user_archive tua
         LEFT JOIN t_post tp ON tua.post_id = tp.post_id
         LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id

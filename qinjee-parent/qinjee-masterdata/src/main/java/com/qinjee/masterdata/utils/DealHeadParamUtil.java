@@ -57,9 +57,13 @@ public class DealHeadParamUtil {
         }
     }
 
+    //硬编码处理，兼容前端传参
     private static void transOrgId(FieldValueForSearch fieldValueForSearch) {
         if("orgName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
             fieldValueForSearch.setFieldName ( "orgId" );
+        }
+        if("orgParentName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
+            fieldValueForSearch.setFieldName ( "orgParentId" );
         }
     }
 
