@@ -62,6 +62,9 @@ public class DealHeadParamUtil {
         if("orgName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
             fieldValueForSearch.setFieldName ( "orgId" );
         }
+        if("deptName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
+            fieldValueForSearch.setFieldName ( "orgId" );
+        }
         if("businessUnitName".equals ( fieldValueForSearch.getFieldName () ) && ("code".equals ( fieldValueForSearch.getFieldType () ))){
             fieldValueForSearch.setFieldName ( "orgId" );
         }
@@ -84,7 +87,7 @@ public class DealHeadParamUtil {
             String substring = string.substring(0, and );
             stringBuffer.append(substring).append(") and ");
                 }else{
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
+            stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" is null and ");
         }
     }
     private static void getStringSql(FieldValueForSearch fieldValueForSearch,StringBuffer stringBuffer,String nickName) {

@@ -62,8 +62,8 @@ public class RoleSearchServiceImpl implements RoleSearchService {
             PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
         }
         archivePageVO.setCurrentDateTime(new Date());
-        String whereSql = DealHeadParamUtil.getWhereSql(archivePageVO.getTableHeadParamList(), "t_user_archive.");
-        String orderSql = DealHeadParamUtil.getOrderSql(archivePageVO.getTableHeadParamList(), "t_user_archive.");
+        String whereSql = DealHeadParamUtil.getWhereSql(archivePageVO.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(archivePageVO.getTableHeadParamList(), "lastTable.");
         List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO,orgIdList,whereSql,orderSql);
         PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoList);
         return pageResult;
