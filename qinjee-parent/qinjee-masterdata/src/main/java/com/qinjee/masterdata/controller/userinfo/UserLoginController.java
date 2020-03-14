@@ -152,7 +152,7 @@ public class UserLoginController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "微信code", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/qrCode",method = RequestMethod.POST)
+    @RequestMapping(value = "/qrCode",method = RequestMethod.GET)
     public ResponseResult<WechatLoginResultVO> qrCode(HttpServletResponse response, String code) {
 
         WechatLoginResultVO wechatLoginResultVO = userLoginService.searchWechatUserInfoByWeChatCode(code);
