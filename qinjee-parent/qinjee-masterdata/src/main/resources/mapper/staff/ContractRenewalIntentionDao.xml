@@ -34,6 +34,7 @@
     <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
     <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth" />
     <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType" />
+    <result column="send_user" jdbcType="VARCHAR" property="sendUser" />
     <result column="is_agree" jdbcType="SMALLINT" property="isAgree" />
     <result column="intention_status" jdbcType="VARCHAR" property="intentionStatus" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
