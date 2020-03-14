@@ -144,7 +144,7 @@ public class StaffContractController extends BaseController {
         return failResponseResult("参数错误");
     }
 
-    @RequestMapping(value = "/selectAboutToExpireContracts", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectAboutToExpireContracts", method = RequestMethod.POST)
     @ApiOperation(value = "根据部门id展示合同即将到期的人员信息", notes = "phs")
     public ResponseResult<PageResult<ContractWithArchiveVo>> selectAboutToExpireContracts(Integer orgId, Integer currentPage,
                                                                                           Integer pageSize) throws Exception {
