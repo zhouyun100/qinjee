@@ -231,16 +231,16 @@ public class StaffPreEmploymentController extends BaseController {
     /**
      * 获得代办提醒任务中预入职信息
      */
-    @RequestMapping(value = "/getReadyPreEmployment", method = RequestMethod.GET)
+    @RequestMapping(value = "/getReadyPreEmployment", method = RequestMethod.POST)
     @ApiOperation(value = "获得代办提醒任务中预入职信息", notes = "hkt")
     //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
 //    })
-    public ResponseResult<PageResult<PreEmploymentVo>> getReadyPreEmployment(Integer pageSzie,Integer currentPage) {
-        Boolean b = checkParam ( getUserSession (),pageSzie,currentPage );
+    public ResponseResult<PageResult<PreEmploymentVo>> getReadyPreEmployment(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam ( getUserSession (),requestUserarchiveVo );
         if (b) {
-            PageResult<PreEmploymentVo> pageResult=staffPreEmploymentService.getReadyPreEmployment ( getUserSession (),pageSzie,currentPage);
+            PageResult<PreEmploymentVo> pageResult=staffPreEmploymentService.getReadyPreEmployment ( getUserSession (),requestUserarchiveVo);
             return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);

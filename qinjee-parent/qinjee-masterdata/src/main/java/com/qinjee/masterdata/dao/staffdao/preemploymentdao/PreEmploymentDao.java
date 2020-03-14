@@ -81,5 +81,5 @@ public interface PreEmploymentDao {
 
     List<PreEmployment> selectByPostIds(@Param("postIds")List<Integer> postIds);
 
-    List<PreEmploymentVo> selectReadyPre(@Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
+    List<PreEmploymentVo> selectReadyPre(@Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId, @Param("wheresql") String wheresql, @Param("orderSql") String orderSql);
 }
