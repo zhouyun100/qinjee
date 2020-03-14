@@ -63,7 +63,7 @@
         select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type,is_system_define,1 as has_role
         from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
         UNION ALL
-        select v.role_group_id,v.role_group_name,v.role_type,v.parent_role_group_id,v.is_system_define,
+        select v.role_group_id,v.role_group_name,v.parent_role_group_id,v.role_type,v.is_system_define,
         case when r.child_role_id is not null then 1 else 0 end has_role
         from (
         select t_role.role_id role_group_id,t_role.role_name role_group_name,
@@ -111,7 +111,8 @@
         where t_role.role_id = #{roleId,jdbcType=INTEGER}
         and t_role_menu_auth.role_id = t_role.role_id
         and t_role.is_delete = 0
-        and t_role_menu_auth.is_delete = 0) t
+        and t_role_menu_auth.is_delete = 0
+        GROUP BY t_role_menu_auth.menu_id) t
         ON v.menu_id = t.menu_id
         ORDER BY v.sort
       </select>
