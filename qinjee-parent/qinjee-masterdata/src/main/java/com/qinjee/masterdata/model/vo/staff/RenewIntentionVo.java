@@ -1,9 +1,7 @@
 package com.qinjee.masterdata.model.vo.staff;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -69,7 +67,10 @@ public class RenewIntentionVo implements Serializable {
      * 是否同意（1表示同意）
      */
     private Short isAgree;
-
+    /**
+     * 操作人id
+     */
+    private Integer operatorId;
     private Date updateTime;
     private Date createTime;
 }
