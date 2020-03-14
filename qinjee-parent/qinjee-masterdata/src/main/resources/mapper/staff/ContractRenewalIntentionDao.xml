@@ -224,17 +224,17 @@
         archive_id = #{archiveId,jdbcType=INTEGER},
       </if>
         <if test="contractNumber != null">
-        contract_number = #{contractNumber,jdbcType=VARCHAR}
+        contract_number = #{contractNumber,jdbcType=VARCHAR},
         </if>
         <if test="intentionStatus != null">
-        intention_status = #{intentionStatus,jdbcType=VARCHAR}
+        intention_status = #{intentionStatus,jdbcType=VARCHAR},
         </if>
         <if test="companyId != null">
-        company_id  =  #{companyId,jdbcType=INTEGER}
+        company_id  =  #{companyId,jdbcType=INTEGER},
         </if>
-      <if test="contractBeginDate != null">
+       <if test="contractBeginDate != null">
         contract_begin_date = #{contractBeginDate,jdbcType=DATE},
-      </if>
+       </if>
       <if test="contractEndDate != null">
         contract_end_date = #{contractEndDate,jdbcType=DATE},
       </if>
@@ -257,7 +257,7 @@
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
       </if>
     </set>
     where renewal_intention_id = #{renewalIntentionId,jdbcType=INTEGER}

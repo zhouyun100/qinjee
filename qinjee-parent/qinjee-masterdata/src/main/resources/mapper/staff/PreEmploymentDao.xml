@@ -953,7 +953,7 @@
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete = 0
     <if test="whereSql !=null">
-        ${wheresql}
+        ${whereSql}
     </if>
     <if test="orderSql !=null">
     order by
