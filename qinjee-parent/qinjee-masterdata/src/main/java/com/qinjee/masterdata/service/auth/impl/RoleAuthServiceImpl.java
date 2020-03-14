@@ -407,10 +407,14 @@ public class RoleAuthServiceImpl implements RoleAuthService {
                     }
                 }
                 childRoleIdList.removeAll(tempChildRoleIdList);
-                resultNumber += roleAuthDao.deleteRoleRoleRelation(roleId,childRoleIdList,operatorId);
+                if(CollectionUtils.isNotEmpty(childRoleIdList)){
+                    resultNumber += roleAuthDao.deleteRoleRoleRelation(roleId,childRoleIdList,operatorId);
+                }
             }
             roleIdList.removeAll(tempRoleIdList);
-            resultNumber += roleAuthDao.addRoleRoleRelation(roleId,roleIdList,operatorId);
+            if(CollectionUtils.isNotEmpty(roleIdList)){
+                resultNumber += roleAuthDao.addRoleRoleRelation(roleId,roleIdList,operatorId);
+            }
         }
         return resultNumber;
     }

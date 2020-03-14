@@ -15,6 +15,7 @@ import com.qinjee.masterdata.model.entity.RoleGroup;
 import com.qinjee.masterdata.model.entity.RoleMenuAuth;
 import com.qinjee.masterdata.model.entity.RoleOrgAuth;
 import com.qinjee.masterdata.model.vo.auth.*;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public interface RoleAuthDao {
      * @param archiveId
      * @return
      */
-    List<RoleGroupVO> searchRoleTree(Integer companyId,Integer archiveId);
+    List<RoleGroupVO> searchRoleTree(@Param("companyId") Integer companyId,@Param("archiveId") Integer archiveId);
 
     /**
      * 根据企业ID、档案ID、角色ID查询角色树
@@ -42,7 +43,7 @@ public interface RoleAuthDao {
      * @param roleId
      * @return
      */
-    List<RoleGroupVO> searchRoleTreeByRoleId(Integer companyId,Integer archiveId,Integer roleId);
+    List<RoleGroupVO> searchRoleTreeByRoleId(@Param("companyId") Integer companyId, @Param("archiveId") Integer archiveId, @Param("roleId") Integer roleId);
 
     /**
      * 根据角色ID查询角色功能权限树
@@ -159,7 +160,7 @@ public interface RoleAuthDao {
      * @param operatorId
      * @return
      */
-    int addRoleRoleRelation(Integer parentRoleId,List<Integer> childRoleIdList,Integer operatorId);
+    int addRoleRoleRelation(@Param("parentRoleId") Integer parentRoleId,@Param("childRoleIdList") List<Integer> childRoleIdList,@Param("operatorId") Integer operatorId);
 
     /**
      * 根据角色ID删除子集角色授权
@@ -168,7 +169,7 @@ public interface RoleAuthDao {
      * @param operatorId
      * @return
      */
-    int deleteRoleRoleRelation(Integer parentRoleId,List<Integer> childRoleIdList,Integer operatorId);
+    int deleteRoleRoleRelation(@Param("parentRoleId")Integer parentRoleId,@Param("childRoleIdList")List<Integer> childRoleIdList,@Param("operatorId")Integer operatorId);
 
 
     /**
@@ -204,7 +205,7 @@ public interface RoleAuthDao {
      * @param roleId
      * @return
      */
-    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleIdAndTableId(Integer roleId, Integer tableId);
+    List<CustomArchiveTableFieldVO> searchCustomArchiveTableFieldListByRoleIdAndTableId(@Param("roleId")Integer roleId, @Param("tableId")Integer tableId);
 
     /**
      * 查询角色自定义人员表字段

@@ -11,6 +11,7 @@
 package com.qinjee.masterdata.service.userinfo.impl;
 
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.userinfo.UserInfoDao;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
@@ -29,6 +30,7 @@ import entity.WeChatUserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -49,6 +51,9 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Autowired
     private RoleAuthService roleAuthService;
+
+    @Autowired
+    private UserInfoDao userInfoDao;
 
     @Override
     public List<UserInfoVO> searchUserInfoByAccountAndPassword(String account, String password) {
@@ -151,6 +156,8 @@ public class UserLoginServiceImpl implements UserLoginService {
         return firstLevelMenuList;
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int getUserIdByPhone(String phone, Integer companyId) {
         int userId = 0;
@@ -159,6 +166,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userInfo.getUserId(),companyId);
             if(userInfoVO == null){
                 userLoginDao.addCompanyUserInfo(companyId,userInfo.getUserId());
+                userInfoDao.setUserCompanyDefaultLogin(userInfo.getUserId(),companyId);
             }
             userId = userInfo.getUserId();
         }else{
