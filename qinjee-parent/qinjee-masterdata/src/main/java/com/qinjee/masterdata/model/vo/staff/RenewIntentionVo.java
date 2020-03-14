@@ -35,6 +35,10 @@ public class RenewIntentionVo implements Serializable {
      * 企业id
      */
     private Integer companyId;
+    /**
+     * 企业id
+     */
+    private String supervisorUserName;
 
 
     /**

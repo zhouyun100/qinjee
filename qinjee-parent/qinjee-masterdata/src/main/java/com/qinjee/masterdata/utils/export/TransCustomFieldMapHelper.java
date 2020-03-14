@@ -97,12 +97,10 @@ public class TransCustomFieldMapHelper<T> {
                     if(fieldValue!=null) {
                         TransDictAnno anno = field.getAnnotation(TransDictAnno.class);
                         String dictType = anno.dictType();
-                        List<SysDict> collect = sysDicts.stream().filter(dict -> (dict.getDictType().equals(dictType)&&dict.getDictCode().equals(fieldValue) )).collect(Collectors.toList());
-                        System.out.println("我爱你中国"+collect);
-                        /* if(dictValue.isPresent()) {
+                        Optional<String> dictValue = sysDicts.stream().filter(dict -> dict.getDictCode().equals(fieldValue)&&dict.getDictType().equals(dictType)).map(dict -> dict.getDictValue()).findFirst();
+                        if(dictValue.isPresent()) {
                             field.set(ob, dictValue.get());
-                        }*/
-                       String d="";
+                        }
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

@@ -47,10 +47,10 @@ public class DealHeadParamUtil {
     private static void getIntSql(FieldValueForSearch fieldValueForSearch, StringBuffer stringBuffer, String nickName) {
         if (fieldValueForSearch.getFieldValue() != null) {
             List fieldValue = fieldValueForSearch.getFieldValue();
-            if (fieldValue.get(0) != null && !fieldValue.get(0).equals(0)) {
+            if (fieldValue.get(0) != null && !fieldValue.get(0).equals("")) {
                 stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" >= ").append(fieldValue.get(0)).append(" and ");
             }
-            if (fieldValue.size() > 1 && fieldValue.get(1) != null && !fieldValue.get(1).equals(0)) {
+            if ( fieldValue.get(1) != null && !fieldValue.get(1).equals("")) {
                 stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" <= ").append(fieldValue.get(1)).append(" and ");
             }
         } else {
@@ -108,17 +108,11 @@ public class DealHeadParamUtil {
             if (StringUtils.isNotBlank(s)) {
                 stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" >= ").
                         append(" ' ").append(s).append(" ' ").append(" and ");
-            } else {
-                ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
             }
 
-            if (fieldValue.size() > 1 && StringUtils.isNotBlank(s1)) {
-                if (s1 != null) {
+            if ( StringUtils.isNotBlank(s1)) {
                     stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" <= ").
                             append(" ' ").append(s1).append(" ' ").append(" and ");
-                } else {
-                    ExceptionCast.cast(CommonCode.PARAM_IS_WRONG);
-                }
             }
         } else {
             stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
