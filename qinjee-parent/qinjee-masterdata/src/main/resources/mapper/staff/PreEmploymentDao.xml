@@ -953,7 +953,7 @@
     company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete = 0
     <if test="whereSql !=null">
-        ${wheresql}
+        ${whereSql}
     </if>
     <if test="orderSql !=null">
     order by
@@ -1148,6 +1148,7 @@
         AND is_delete =0
     </select>
     <select id="selectReadyPre" resultType="com.qinjee.masterdata.model.vo.staff.PreEmploymentVo" resultMap="PreVo">
+        select * from (
         select
         t_pre_employment.employment_id, t_pre_employment.user_name, t_pre_employment.phone, t_pre_employment.gender, t_pre_employment.email,
         t_pre_employment.id_number, t_pre_employment.age, t_pre_employment.first_work_date, t_pre_employment.marital_status, t_pre_employment.highest_degree, t_pre_employment.graduated_school,
@@ -1171,6 +1172,15 @@
         and is_delete=0
         and FIND_IN_SET(#{archiveId},receive_ids)
         )
+        )t
+        where 1=1
+        <if test="wheresql !=null">
+            ${wheresql}
+        </if>
+        group by t.employment_id
+        <if test="orderSql !=null">
+            ${orderSql}
+        </if>
     </select>
 
 </mapper>

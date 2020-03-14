@@ -19,12 +19,11 @@ import com.qinjee.masterdata.model.vo.custom.CheckCustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.EducationExperienceVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.FamilyMemberAndSocialRelationsVo;
-import com.qinjee.masterdata.model.vo.staff.archiveInfo.WorkExperienceVo;
 import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.WorkExperienceVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
-import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
@@ -41,7 +40,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -142,9 +144,11 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     }
 
     @Override
-    public PageResult<PreEmploymentVo> getReadyPreEmployment(UserSession userSession, Integer pageSzie, Integer currentPage) {
-        PageHelper.startPage(currentPage,pageSzie);
-        List<PreEmploymentVo> list=preEmploymentDao.selectReadyPre(userSession.getArchiveId(),userSession.getCompanyId());
+    public PageResult<PreEmploymentVo> getReadyPreEmployment(UserSession userSession, RequestUserarchiveVo requestUserarchiveVo) {
+        PageHelper.startPage(requestUserarchiveVo.getCurrentPage (),requestUserarchiveVo.getPageSize ());
+        String whereSql = DealHeadParamUtil.getWhereSql ( requestUserarchiveVo.getList (), "t." );
+        String orderSql = DealHeadParamUtil.getOrderSql ( requestUserarchiveVo.getList (), "t." );
+        List<PreEmploymentVo> list=preEmploymentDao.selectReadyPre(userSession.getArchiveId(),userSession.getCompanyId(),whereSql,orderSql);
         return new PageResult<>(list);
     }
 

@@ -669,8 +669,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
     public PageResult<UserArchiveVo> selectArchiveDelete(RequestUserarchiveVo requestUserarchiveVo) {
         List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
         PageHelper.startPage(requestUserarchiveVo.getCurrentPage(), requestUserarchiveVo.getPageSize());
-        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "arc.");
-        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "arc.");
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(), "t.");
         List<UserArchiveVo> list = userArchiveDao.selectArchiveDelete(requestUserarchiveVo.getOrgId(), whereSql, orderSql);
         new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(list, sysDicts);
         return new PageResult<>(list);
@@ -690,8 +690,8 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
                 }
             }
         }
-        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "arc.");
-        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "arc.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "t.");
+        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "t.");
         return userArchiveDao.selectByOrgAndAuth(exportArcParamVo.getList(), userSession.getArchiveId(), userSession.getCompanyId(), message, whereSql, orderSql);
     }
 

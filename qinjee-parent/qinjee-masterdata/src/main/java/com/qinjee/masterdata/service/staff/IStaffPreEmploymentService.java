@@ -68,5 +68,5 @@ public interface IStaffPreEmploymentService {
 
     List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds,UserSession userSession) ;
 
-    PageResult<PreEmploymentVo> getReadyPreEmployment(UserSession userSession, Integer pageSzie, Integer currentPage);
+    PageResult<PreEmploymentVo> getReadyPreEmployment(UserSession userSession, RequestUserarchiveVo requestUserarchiveVo);
 }

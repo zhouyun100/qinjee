@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class AttchmentRecordVo implements Serializable {
     private Integer attatchmentId;
     private String userName;
+    private Integer orgId;
     private String employeeNumber;
     private String businessUnitName;
     private String orgName;

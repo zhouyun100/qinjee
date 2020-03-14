@@ -96,8 +96,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
      * @return
      */
     public List < Integer > selectNoLaborContractAll(ExportArcParamVo exportArcParamVo,Integer companyId) {
-        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "arc.");
-        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "arc.");
+        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "t.");
         List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( exportArcParamVo.getOrgIdList(),companyId,whereSql,orderSql );
         List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {

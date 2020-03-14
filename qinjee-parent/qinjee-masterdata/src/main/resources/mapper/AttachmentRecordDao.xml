@@ -23,6 +23,7 @@
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"/>
         <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="org_id" jdbcType="VARCHAR" property="orgId"/>
         <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="creatTime"/>
         <result column="file_type" jdbcType="VARCHAR" property="fileType"/>
@@ -283,6 +284,7 @@
         SELECT
         record.attachment_id ,
         arc.user_name ,
+        arc.org_id,
         arc.employee_number ,
         org.org_name ,
         orga.org_name as business_unit_name ,
