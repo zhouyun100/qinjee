@@ -338,7 +338,7 @@
         </if>
 
     </select>
-    <select id="listPostsByCondition" resultMap="BaseResultMap">
+    <select id="getPostList" resultMap="BaseResultMap">
 
         select
         org_id ,
@@ -348,7 +348,7 @@
         post_name ,
         position_name ,
         position_id ,
-        post_name parent_post_name,
+        parent_post_name,
         org_name
         from (
         SELECT
@@ -466,12 +466,12 @@
   </select>
 
     <select id="listPostsByCompanyIdAndEnable" resultMap="BaseResultMap">
-        select post_id,post_name,parent_post_id,org_id,position_id
+        select sort_id, post_id,post_name,parent_post_id,org_id,position_id
         from t_post where company_id =#{companyId} and is_delete =0
         <if test="isEnable != null ">
             and is_enable = 1
         </if>
-
+        order by sort_id
     </select>
 
     <select id="getPostGraphics" resultMap="BaseResultMap">
@@ -495,42 +495,11 @@
     </select>
 
     <select id="listDirectPostPage" resultType="com.qinjee.masterdata.model.entity.Post"
-            parameterType="com.qinjee.masterdata.model.vo.organization.bo.PostPageBO">
-
-        SELECT postCode,postId,orgId,
-        parentPostId, postName, orgCode,orgName,
-        parentPostCode,parentPostName
-        FROM (
-        SELECT tp.sort_id sortId,tp.post_code postCode,tp.post_id postId,tp.org_id orgId,
-        tp.parent_post_id parentPostId,tp.post_name postName,org.org_code orgCode,org.org_name orgName,
-        ptp.post_code parentPostCode,ptp.post_name parentPostName
+            parameterType="com.qinjee.masterdata.model.vo.organization.bo.PostBO">
+        SELECT tp.post_id postId,tp.org_id orgId,
+        tp.post_name postName
         FROM t_post tp
-        LEFT JOIN t_organization org ON tp.org_id=org.org_id
-        LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
-        <where>
-            1=1
-            <if test="postPageBO !=null">
-                <if test="postPageBO.isEnable !=null">
-                    and tp.is_enable = 1
-                </if>
-                <if test="postPageBO.parentPostId == null or postPageBO.parentPostId ==0">
-                    and tp.org_id =#{postPageBO.orgId} and tp.parent_post_id =0
-                </if>
-                <if test="postPageBO.parentPostId !=null and postPageBO.parentPostId !=0">
-                    and tp.parent_post_id =#{postPageBO.parentPostId}
-                </if>
-            </if>
-        </where>
-        )lastTable
-        where 1=1
-        <if test="whereSql != null">
-            ${whereSql}
-        </if>
-        order by lastTable.sortId asc
-        <if test="orderSql != null">
-            ,
-            ${orderSql}
-        </if>
+        where tp.org_id =#{postBO.orgId} and tp.is_delete=0 order by tp.sort_id
     </select>
 
     <select id="getPostsByPostCode" resultMap="BaseResultMap">
@@ -617,6 +586,16 @@
         <if test="isEnable != null ">
             and is_enable = 1
         </if>
+        ) t1,
+        (select @pids := #{postId} ) t2
+        ) t3 where ischild != 0 OR t3.post_id = #{postId}
+    </select>
+    <select id="getSonPostIdsByCode" resultMap="BaseResultMap">
+        select post_id,post_code from (
+        select t1.post_id,
+        if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
+        from (
+        select post_id ,parent_post_id from t_post WHERE is_delete =0
         ) t1,
         (select @pids := #{postId} ) t2
         ) t3 where ischild != 0 OR t3.post_id = #{postId}

@@ -3,20 +3,21 @@
 <mapper namespace="com.qinjee.masterdata.dao.organation.PositionLevelDao">
     <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.PositionLevel">
         <id column="position_level_id" jdbcType="INTEGER" property="positionLevelId"/>
-        <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
+        <result column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
         <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName"/>
         <result column="position_level_remark" jdbcType="VARCHAR" property="positionLevelRemark"/>
         <result column="sort_id" jdbcType="INTEGER" property="sortId"/>
         <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
-        <result column="company_id" jdbcType="INTEGER" property="companyId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="company_id " jdbcType="INTEGER" property="companyId"/>
         <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
     </resultMap>
 
     <resultMap id="PositionLevelVoMap" type="com.qinjee.masterdata.model.vo.organization.PositionLevelVo">
         <id column="position_level_id" jdbcType="INTEGER" property="positionLevelId"/>
-        <id column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
-        <id column="position_grade_name" jdbcType="INTEGER" property="positionGradeName"/>
+        <result column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
+        <result column="company_id " jdbcType="INTEGER" property="companyId"/>
+        <result column="position_grade_name" jdbcType="INTEGER" property="positionGradeName"/>
         <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName"/>
         <result column="position_level_remark" jdbcType="VARCHAR" property="positionLevelRemark"/>
     </resultMap>
@@ -111,11 +112,12 @@
         position_level_id = #{id} AND t_level.is_delete =0
     </select>
     <select id="getByPositionLevelName" resultMap="PositionLevelVoMap">
-       SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
+       SELECT  t_level.company_id, t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name
         FROM t_position_level t_level LEFT JOIN t_position_grade t_grade
         ON  t_level.position_grade_id = t_grade.position_grade_id  AND t_grade.is_delete =0
         WHERE
         position_level_name = #{positionLevelName} AND t_level.is_delete =0 and t_level.company_id = #{companyId}
+        limit 1
     </select>
     <select id="getByPositionLevelNames" resultMap="PositionLevelVoMap">
        SELECT  t_level.position_level_id, t_level.position_level_name, t_level.position_grade_id,t_level.position_level_remark ,t_grade.position_grade_name

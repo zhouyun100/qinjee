@@ -387,9 +387,7 @@
         ON org_union.org_parent_id = parent_org.org_id
         <if test="organizationPageBO != null">
             where 1=1
-            <if test="organizationPageBO.orgId != null">
-                and org_union.org_id = #{organizationPageBO.orgId}
-            </if>
+
             <if test="organizationPageBO.orgParentId != null">
                 and org_union.org_parent_id = #{organizationPageBO.orgParentId}
             </if>

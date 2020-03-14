@@ -859,7 +859,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                     return true;
                 }
                 return false;
-            }).collect(Collectors.toList());
+            }).sorted(Comparator.comparing(Post::getSortId)).collect(Collectors.toList());
             organizationVO.setPostList(postList);
             if (organizationVO.getChildList() != null && organizationVO.getChildList().size() > 0) {
                 handlerOrganizationPost(posts, organizationVO.getChildList(), userSession, isEnable);

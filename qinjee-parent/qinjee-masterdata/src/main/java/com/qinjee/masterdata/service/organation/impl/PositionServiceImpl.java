@@ -64,7 +64,7 @@ public class PositionServiceImpl implements PositionService {
         List<Position> allPositions = positionDao.getPositionListByCompanyId(userSession.getCompanyId());
         boolean bool = allPositions.stream().anyMatch(a -> positionVo.getPositionName().equals(a.getPositionName()));
         if(bool){
-            return new ResponseResult(CommonCode.POSITION_NAME_REPEAT);
+            return new ResponseResult(CommonCode.NAME_ALREADY_USED);
 
         }
         Position position = new Position();
@@ -141,7 +141,7 @@ public class PositionServiceImpl implements PositionService {
     public void determinePositionNameIsOnly(String positionName, UserSession userSession) {
         Position position = positionDao.getPositionByNameAndCompanyId(positionName, userSession.getCompanyId());
         if (Objects.nonNull(position)){
-            ExceptionCast.cast(CommonCode.POSITION_NAME_REPEAT);
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED);
         }
     }
 

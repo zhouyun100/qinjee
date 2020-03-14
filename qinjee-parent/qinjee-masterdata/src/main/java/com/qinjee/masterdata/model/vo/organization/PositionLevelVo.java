@@ -22,6 +22,7 @@ public class PositionLevelVo implements Serializable {
      * 职等ID
      */
     private Integer positionGradeId;
+    private Integer companyId;
 
     /**
      * 职级名称

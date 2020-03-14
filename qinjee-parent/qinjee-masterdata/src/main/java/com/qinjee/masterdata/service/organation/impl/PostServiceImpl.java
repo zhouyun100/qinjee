@@ -12,6 +12,7 @@ import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
@@ -35,7 +36,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,7 +76,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
 
 
     @Override
-    public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageBO postPageBO) {
+    public PageResult<Post> getPostList(UserSession userSession, PostPageBO postPageBO) {
         //TODO id重复无影响
         List<Integer> orgIdList = null;
         List<Integer> postIdList = null;
@@ -98,7 +98,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         if (postPageBO.getCurrentPage() != null && postPageBO.getPageSize() != null) {
             PageHelper.startPage(postPageBO.getCurrentPage(), postPageBO.getPageSize());
         }
-        List<Post> postList = postDao.listPostsByCondition(postPageBO, orgIdList, postIdList, whereSql, orderSql);
+        List<Post> postList = postDao.getPostList(postPageBO, orgIdList, postIdList, whereSql, orderSql);
         //设置岗位职级列表
         handleLevelForPostList(postList);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
@@ -130,7 +130,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
-        Integer sortId = generatePostSortId(orgId, postVo.getParentPostId());
+        Integer sortId = generatePostSortId(orgId);
         post.setSortId(sortId);
         post.setCompanyId(userSession.getCompanyId());
         post.setOperatorId(userSession.getArchiveId());
@@ -144,19 +144,14 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
 
     }
 
-    private Integer generatePostSortId(Integer orgId, Integer parentPostId) {
+    private Integer generatePostSortId(Integer orgId) {
         Integer sortId = 1000;
-        List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
         List<Post> sonPostsByOrgId = postDao.listPostsByOrgIdAndEnable(orgId, null);
         if (!CollectionUtils.isEmpty(sonPostsByOrgId)) {
             int maxSortId = sonPostsByOrgId.stream().mapToInt(Post::getSortId).max().getAsInt();
             sortId = maxSortId + 1000;
         }
-        //如果有上级岗位则以上级岗位下的子岗位为准
-        if (!CollectionUtils.isEmpty(sonPosts)) {
-            int maxSortId = sonPosts.stream().mapToInt(Post::getSortId).max().getAsInt();
-            sortId = maxSortId + 1000;
-        }
+
         return sortId;
     }
 
@@ -224,11 +219,19 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         if (Objects.nonNull(postByPostCode) && !postVo.getPostId().equals(postByPostCode.getPostId())) {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
+        //上级岗位整合性校验
+        List<Integer> postIds = postDao.getPostIds(postVo.getPostId(), Short.valueOf("1"));
+        boolean bool = postIds.stream().anyMatch(id -> id.equals(postVo.getParentPostId()));
+        if(bool){
+            ExceptionCast.cast(CommonCode.UPDATE_PARENT_POST_ERR);
+        }
+
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
         Post post1 = postDao.getPostById(postVo.getPostId());
-        if (!postVo.getOrgId().equals(post1.getOrgId()) || !postVo.getParentPostId().equals(post1.getParentPostId())) {
-            Integer sortId = generatePostSortId(postVo.getOrgId(), postVo.getParentPostId());
+        //如果机构变了 需要重新生成sortId
+        if (!postVo.getOrgId().equals(post1.getOrgId())) {
+            Integer sortId = generatePostSortId(postVo.getOrgId());
             post.setSortId(sortId);
         }
         postDao.updateByPrimaryKeySelective(post);
@@ -243,7 +246,10 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
          * 每次编辑岗位时，逻辑删除所有旧职级，再重新新增
          */
         int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), post.getPostId());
-        postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
+        if(!CollectionUtils.isEmpty(postVo.getPositionLevelIds())){
+            postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
+        }
+
     }
 
     @Transactional
@@ -291,7 +297,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         List<Post> postList = postDao.listPostsByPostIds(postIds, null, null);
         Set<Integer> parentPostSet = new HashSet<>();
         for (Post post : postList) {
-            parentPostSet.add(post.getParentPostId());
+            parentPostSet.add(post.getOrgId());
         }
         //判断是否在同一级机构下
         if (parentPostSet.size() > 1) {
@@ -311,7 +317,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
                 post.setOrgId(orgId);
                 post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
-                Integer sortId = generatePostSortId(orgId, null);
+                Integer sortId = generatePostSortId(orgId);
                 post.setSortId(sortId);
                 //TODO post.setPostCode();
                 postDao.insertSelective(post);
@@ -502,15 +508,9 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
     }
 
     @Override
-    public PageResult<Post> listDirectPostPage(PostPageBO postPageBO) {
+    public PageResult<Post> listDirectPostPage(PostBO postBO) {
 
-        if (postPageBO.getCurrentPage() != null && postPageBO.getPageSize() != null) {
-            PageHelper.startPage(postPageBO.getCurrentPage(), postPageBO.getPageSize());
-        }
-        String whereSql = DealHeadParamUtil.getWhereSql(postPageBO.getTableHeadParamList(), "lastTable.");
-        String orderSql = DealHeadParamUtil.getOrderSql(postPageBO.getTableHeadParamList(), "lastTable.");
-        List<Post> postList = postDao.listDirectPostPage(postPageBO, whereSql, orderSql);
-        handleLevelForPostList(postList);
+        List<Post> postList = postDao.listDirectPostPage(postBO);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -685,7 +685,10 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
                             if (!postMem.stream().anyMatch(a -> post.getParentPostName().equals(a.getParentPostName()))) {
                                 post.setCheckResult(false);
                                 resultMsg.append("上级岗位名称在数据库中不匹配 | ");
-                            }
+                            }//如果都匹配了，还要进行整合性校验
+                            //不能设置上级岗位为当前岗位或当前岗位的下级岗位，比如B是A的下级岗位，C是B的下级岗位，那么A的上级不能是A自己以及B、C
+                            //遍历出当前岗位 的所有下级岗位包括自己
+                           //TODO List<Post> sonPosts=postDao.getSonPostIdsByCode(post.getPostCode(),userSession.getCompanyId());
                         }
                     } else {
                         post.setCheckResult(false);

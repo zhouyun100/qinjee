@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 彭洪思
@@ -52,6 +53,12 @@ public class PositionLevelServiceImpl implements PositionLevelService {
 
     @Override
     public int addPositionLevel(PositionLevel positionLevel, UserSession userSession) {
+        //查重
+        PositionLevelVo pl = positionLevelDao.getByPositionLevelName(positionLevel.getPositionLevelName(),userSession.getCompanyId());
+        if(Objects.nonNull(pl)){
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED);
+        }
+
         positionLevel.setCompanyId(userSession.getCompanyId());
         positionLevel.setOperatorId(userSession.getArchiveId());
         //设置排序id
@@ -62,6 +69,11 @@ public class PositionLevelServiceImpl implements PositionLevelService {
 
     @Override
     public int editPositionLevel(UserSession userSession, PositionLevel positionLevel) {
+        //查重 排除自己
+        PositionLevelVo pl = positionLevelDao.getByPositionLevelName(positionLevel.getPositionLevelName(),userSession.getCompanyId());
+        if(Objects.nonNull(pl)&&!userSession.getCompanyId().equals(pl.getCompanyId())){
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED);
+        }
         positionLevel.setOperatorId(userSession.getArchiveId());
         return positionLevelDao.update(positionLevel);
     }

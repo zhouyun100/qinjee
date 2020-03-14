@@ -7,6 +7,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
@@ -29,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map;
 
 @Api(tags = "【机构管理】岗位接口")
 @RestController
@@ -66,7 +66,7 @@ public class PostController extends BaseController {
                 postPageBO.setIsEnable(null);
             }
             long start = System.currentTimeMillis();
-            PageResult<Post> pageResult = postService.getPostConditionPage(getUserSession(), postPageBO);
+            PageResult<Post> pageResult = postService.getPostList(getUserSession(), postPageBO);
             logger.info("分页查询岗位列表耗时:" + (System.currentTimeMillis() - start));
             return new ResponseResult<>(pageResult);
         }
@@ -90,19 +90,12 @@ public class PostController extends BaseController {
 
 
     @PostMapping("/getDirectPostPageList")
-    @ApiOperation(value = "ok，分页查询下级直属岗位(id可以是机构orgId、parentPostId)", notes = "ok")
-    public ResponseResult<PageResult<Post>> getDirectPostPageList(@RequestBody PostPageBO postPageBO) {
-        if (checkParam(postPageBO, getUserSession())) {
-            Short isEnable = postPageBO.getIsEnable();
-            if (isEnable == null || isEnable == 0) {
-                isEnable = 1;
-            } else {
-                isEnable = null;
-            }
+    @ApiOperation(value = "ok，查询机构下的直属岗位（包含封存，用于排序）", notes = "ok")
+    public ResponseResult<PageResult<Post>> getDirectPostPageList(@RequestBody PostBO postBO) {
+        if (checkParam(postBO, getUserSession())) {
             long start = System.currentTimeMillis();
-            postPageBO.setIsEnable(isEnable);
-            PageResult<Post> pageResult = postService.listDirectPostPage(postPageBO);
-            logger.info("分页查询下级直属岗位耗时:" + (System.currentTimeMillis() - start));
+            PageResult<Post> pageResult = postService.listDirectPostPage(postBO);
+            logger.info("查询下级直属岗位耗时:" + (System.currentTimeMillis() - start));
             return new ResponseResult<>(pageResult);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
@@ -171,7 +164,7 @@ public class PostController extends BaseController {
 
 
     @PostMapping("/sortPorts")
-    @ApiOperation(value = "ok，岗位排序,只能同一级别下排序（需要将该级下所有岗位id按顺序传参）", notes = "未验证")
+    @ApiOperation(value = "ok，岗位排序,在同机构下 排序，不需要同岗位级别", notes = "未验证")
     public ResponseResult sortPorts(@RequestBody List<Integer> postIds) {
         if (checkParam(postIds, getUserSession())) {
             long start = System.currentTimeMillis();

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.UserArchivePostRelation;
+import com.qinjee.masterdata.model.vo.organization.bo.PostBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
 import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
@@ -29,7 +30,7 @@ public interface PostService {
      * @param postPageBO
      * @return
      */
-    PageResult<Post> getPostConditionPage(UserSession userSession, PostPageBO postPageBO);
+    PageResult<Post> getPostList(UserSession userSession, PostPageBO postPageBO);
 
 
     /**
@@ -102,10 +103,10 @@ public interface PostService {
     /**
      * 分页查询岗位直属下级
      *
-     * @param postPageBO
+     * @param postBO
      * @return
      */
-    PageResult<Post> listDirectPostPage(PostPageBO postPageBO);
+    PageResult<Post> listDirectPostPage(PostBO postBO);
 
     void cancelImport(String redisKey, String errorInfoKey);
 

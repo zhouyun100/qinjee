@@ -5,7 +5,6 @@ import lombok.ToString;
 /**
  * 公共的响应代码枚举类
  * @date 2019/10-16
- * @author 彭洪思
  */
 @ToString
 public enum CommonCode implements ResultCode{
@@ -22,8 +21,8 @@ public enum CommonCode implements ResultCode{
     NET_EXCEPTION(false,10201,"网络异常，服务不可用，请稍后刷新重试！"),
     LOGIN_MULTIPLE_COMPANY(false, 10301, "多租户验证，请选择需要登录的租户平台！"),
     ORGANIZATION_OUT_OF_RANGE(false,10302,"本级机构长度超出范围,添加失败！"),
-    POSITION_GROUP_NAME_REPEAT(false,10303,"职位族名重复,添加失败！"),
-    POSITION_NAME_REPEAT(false,10304,"职位名重复,添加失败！"),
+    NAME_ALREADY_USED(false,10303,"名称已存在,操作失败！"),
+
     EXIST_USER(false,10305, "该机构/岗位下存在人员信息，不允许删除!"),
     FILE_PARSING_EXCEPTION(false,10306, "导入文件解析异常,导入失败!"),
     FILE_FORMAT_ERROR(false,10307, "导入文件格式错误,导入失败!"),
@@ -72,7 +71,9 @@ public enum CommonCode implements ResultCode{
     PARAM_IS_WRONG(false,10548, "参数格式错误"),
     DATE_IS_WRONG(false,10549, "合同时间设置错误"),
     NO_POWER_CONTRACT(false,10549, "不存在有效合同"),
-    FAIL_TO_DELETE(false,10550, "删除文件失败");
+    FAIL_TO_DELETE(false,10550, "删除文件失败"),
+    UPDATE_PARENT_POST_ERR(false,10551, "上级岗位不能设置为当前岗位及当前岗位的下级岗位"),
+    ;
 
 
     /**
