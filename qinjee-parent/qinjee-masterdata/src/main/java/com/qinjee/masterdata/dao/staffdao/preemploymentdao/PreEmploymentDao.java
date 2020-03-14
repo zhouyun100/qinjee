@@ -80,4 +80,6 @@ public interface PreEmploymentDao {
     List<PreEmploymentVo> searchByHead(@Param("whereSql") String whereSql, @Param("companyId") Integer companyId);
 
     List<PreEmployment> selectByPostIds(@Param("postIds")List<Integer> postIds);
+
+    List<PreEmploymentVo> selectReadyPre(@Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 }

@@ -141,6 +141,13 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         return preRegistList;
     }
 
+    @Override
+    public PageResult<PreEmploymentVo> getReadyPreEmployment(UserSession userSession, Integer pageSzie, Integer currentPage) {
+        PageHelper.startPage(currentPage,pageSzie);
+        List<PreEmploymentVo> list=preEmploymentDao.selectReadyPre(userSession.getArchiveId(),userSession.getCompanyId());
+        return new PageResult<>(list);
+    }
+
 
     /**
      * 说明：这一张表对应两个页面，一个为延期入职页面，一个为放弃入职页面，在PreEmploymentChange中进行了整合
@@ -167,6 +174,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     //新增变更表
                     getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 }
+                 preEmployment.setEmploymentRegister("已审核");
                 preEmployment.setEmploymentState(CHANGSTATUS_READY);
                 preEmploymentDao.updateByPrimaryKey(preEmployment);
                 //根据预入职id查找预入职对象
