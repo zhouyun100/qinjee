@@ -319,6 +319,10 @@ public interface CustomTableFieldDao {
     List<CustomFieldForHead> selectFieldCodeByNameListAndFuncCodeAndCompanyId(@Param("headsForPre") List<String> headsForPre, @Param("pre") String pre, @Param("companyId") Integer companyId);
 
     List<CustomFieldForHead> searchCustomFieldForHeadListByFieldIdList(@Param("integers") List<Integer> integers);
+
+    List< Map< String, Integer>> transPositionId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
+
+    List< Map< String, Integer>> transPositionGradeId(String funcCode, Integer companyId, String value);
 }
 
 

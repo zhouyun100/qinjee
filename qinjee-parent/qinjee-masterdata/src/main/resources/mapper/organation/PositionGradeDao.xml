@@ -72,5 +72,11 @@
             </where>
         </foreach>
     </update>
-
+   <select id="getPositonGradeByIdAndCompanyId" resultType="java.lang.String">
+        select position_grade_name
+        from t_position_grade
+        where company_id=#{companyId}
+        and is_delete=0
+        and position_grade_id=#{parseInt}
+   </select>
 </mapper>

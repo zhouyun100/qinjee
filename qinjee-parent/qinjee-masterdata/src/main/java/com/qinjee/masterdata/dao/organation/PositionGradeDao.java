@@ -26,4 +26,6 @@ public interface PositionGradeDao {
 
 
     int sort(Integer operatorId, List<Integer> positionGradeIds);
+
+    String getPositonGradeByIdAndCompanyId(@Param("parseInt") int parseInt, @Param("companyId") Integer companyId);
 }

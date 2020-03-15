@@ -637,6 +637,53 @@
         func_code=#{pre} AND is_delete=0 AND company_id=#{companyId}
         )
     </select>
+    <select id="transPositionId" resultType="java.util.Map">
+          SELECT t.field_id,t.position_level_id FROM(
+                SELECT
+                    field.field_id,
+                    field.table_id,
+                    positionlevel.position_level_id
+                FROM
+                    t_custom_archive_field field,
+                    t_position_level positionlevel
+                WHERE
+                    positionlevel.position_level_name=#{value}
+                and positionlevel.company_id=#{companyId}
+                AND field.field_code = 'position_level_id'
+                AND positionlevel.is_delete = 0
+                AND field.is_delete = 0
+                ) t
+                LEFT JOIN t_custom_archive_table tab ON t.table_id = tab.table_id
+                WHERE
+                    tab.company_id =#{companyId}
+                AND tab.is_delete = 0
+                AND tab.is_enable = 1
+                AND tab.func_code = #{funcCode}
+    </select>
+    <select id="transPositionGradeId">
+       SELECT t.field_id,t.position_grade_id FROM(
+                SELECT
+                    field.field_id,
+                    field.table_id,
+                    positiongrade.position_grade_id
+                FROM
+                    t_custom_archive_field field,
+                    t_position_grade positiongrade
+                WHERE
+                    positiongrade.position_grade_name=#{value}
+                and positiongrade.company_id=#{companyId}
+                AND field.field_code = 'position_grade_id'
+                AND positiongrade.is_delete = 0
+                AND field.is_delete = 0
+                ) t
+                LEFT JOIN t_custom_archive_table tab ON t.table_id = tab.table_id
+                WHERE
+                    tab.company_id =#{companyId}
+                AND tab.is_delete = 0
+                AND tab.is_enable = 1
+                AND tab.func_code = #{funcCode}
+
+    </select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
      <select id="selectCodeId" resultType="java.lang.Integer"></select>

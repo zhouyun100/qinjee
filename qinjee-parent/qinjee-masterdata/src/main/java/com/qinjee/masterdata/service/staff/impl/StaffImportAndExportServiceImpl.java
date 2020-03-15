@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.organation.PositionGradeDao;
+import com.qinjee.masterdata.dao.organation.PositionLevelDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
@@ -72,7 +74,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private static final String POSTNAME = "岗位";
     private static final String ORGCODEPRE = "入职部门编码";
     private static final String ORGNAMEPRE = "入职部门";
-    private static final String SUPVISORUSERNAME = "直接上级";
+    private static final String POSITIONLEVELNAME = "职级";
+    private static final String POSITIONGRADENAME = "职等";
+
 
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
@@ -100,8 +104,12 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private SysDictService sysDictServiceImpl;
     @Autowired
     private PostDao postDao;
-   @Autowired
-   private QuerySchemeFieldDao querySchemeFieldDao;
+    @Autowired
+    private QuerySchemeFieldDao querySchemeFieldDao;
+    @Autowired
+    private PositionLevelDao positionLevelDao;
+    @Autowired
+    private PositionGradeDao positionGradeDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -282,6 +290,22 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     }else{
                        fieldVO.setFieldValue("未知部门");
                    }
+                }
+                if("position_level_id".equals(fieldVO.getFieldCode())){
+                    String s = positionLevelDao.getPositionLevelByIdAndCompanyId(Integer.parseInt (fieldVO.getFieldValue ()),userSession.getCompanyId ());
+                    if(StringUtils.isNotBlank(s)){
+                        fieldVO.setFieldValue(s);
+                    }else{
+                        fieldVO.setFieldValue("未知职级");
+                    }
+                }
+                if("position_grade_id".equals(fieldVO.getFieldCode())){
+                    String s = positionGradeDao.getPositonGradeByIdAndCompanyId(Integer.parseInt(fieldVO.getFieldValue()), userSession.getCompanyId());
+                    if(StringUtils.isNotBlank(s)){
+                        fieldVO.setFieldValue(s);
+                    }else{
+                        fieldVO.setFieldValue("未知职等");
+                    }
                 }
                 if("post_id".equals(fieldVO.getFieldCode())){
                      Post post = postDao.getPostById(Integer.parseInt(fieldVO.getFieldValue()));
@@ -833,6 +857,34 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                if(StringUtils.isNotBlank(postId)) {
                    map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), postId);
                }
+             }
+             else if(POSITIONLEVELNAME.equals ( fieldName )){
+                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                     //将职级名称换成职级id存进数据库
+                     List<Map < String, Integer >> map1=customTableFieldDao.transPositionId ( funcCode, companyId, value );
+                     if (!CollectionUtils.isEmpty ( map1 )) {
+                         String positionlevelId = String.valueOf ( map1.get(0).get ( "position_level_id" ) );
+                         if (StringUtils.isNotBlank ( positionlevelId )) {
+                             map.put ( map1.get(0).get ( "field_id" ), positionlevelId );
+                         }
+                     } else {
+                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "position_level_id", funcCode, companyId ), "-1" );
+                     }
+                 }
+             }
+             else if(POSITIONGRADENAME.equals ( fieldName )){
+                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                     //将职等名称换成职等id存进数据库
+                     List<Map < String, Integer >> map1=customTableFieldDao.transPositionGradeId ( funcCode, companyId, value );
+                     if (!CollectionUtils.isEmpty ( map1 )) {
+                         String positiongradeId = String.valueOf ( map1.get(0).get ( "position_grade_id" ) );
+                         if (StringUtils.isNotBlank ( positiongradeId )) {
+                             map.put ( map1.get(0).get ( "field_id" ), positiongradeId );
+                         }
+                     } else {
+                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "position_grade_id", funcCode, companyId ), "-1" );
+                     }
+                 }
              }
            else  {
                  CustomFieldVO customFieldVO = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);

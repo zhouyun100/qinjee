@@ -130,4 +130,11 @@
         </foreach>
          AND t_level.is_delete =0 and t_level.company_id = #{companyId}
     </select>
+    <select id="getPositionLevelByIdAndCompanyId" resultType="java.lang.String">
+        select position_level_name
+        from t_position_level
+        where company_id=#{companyId}
+        and is_delete=0
+        and position_level_id=#{parseInt}
+    </select>
 </mapper>

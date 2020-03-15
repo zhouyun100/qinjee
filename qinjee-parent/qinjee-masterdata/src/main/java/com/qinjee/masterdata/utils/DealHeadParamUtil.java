@@ -1,8 +1,6 @@
 package com.qinjee.masterdata.utils;
 
-import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.model.vo.staff.FieldValueForSearch;
-import com.qinjee.model.response.CommonCode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -54,7 +52,7 @@ public class DealHeadParamUtil {
                 stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" <= ").append(fieldValue.get(1)).append(" and ");
             }
         } else {
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
+            stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" is null and ");
         }
     }
 
@@ -109,13 +107,12 @@ public class DealHeadParamUtil {
                 stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" >= ").
                         append(" ' ").append(s).append(" ' ").append(" and ");
             }
-
             if ( StringUtils.isNotBlank(s1)) {
                     stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" <= ").
                             append(" ' ").append(s1).append(" ' ").append(" and ");
             }
         } else {
-            stringBuffer.append(nickName).append(fieldValueForSearch.getFieldName()).append(" is null and ");
+            stringBuffer.append(nickName).append(FieldToProperty.propertyTofield(fieldValueForSearch.getFieldName())).append(" is null and ");
         }
     }
 
