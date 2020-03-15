@@ -505,6 +505,13 @@
         and is_enable=1
         and is_delete=0
     </select>
+    <select id="selectTableIdByCompanyId" resultType="java.lang.Integer">
+        select table_id
+        from t_custom_archive_table
+        where company_id=#{companyId}
+        and is_enable=1
+        and is_delete=0
+    </select>
     <select id="selectFieldListByTableId" resultMap="FieldResultMap" >
        select field_id,field_code,field_name,field_type,input_type,text_type,default_value,
         placeholder,max_length,min_length,max_number,min_number,float_length,
@@ -609,15 +616,33 @@
         and func_code=#{arc} and company_id=#{companyId} and is_system_define=#{isDefine})
     </select>
   <select id="selectFieldByTableId" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
-       select field_id fieldId,field_code fieldCode,field_name fieldName,field_type fieldType,text_type textType
+       select is_system_define isSystemDefine,field_id fieldId,field_code fieldCode,field_name fieldName,field_type fieldType,text_type textType
         from t_custom_archive_field
         where is_delete=0
         and table_id =#{tableId}
   </select>
+    <select id="selectFieldByCompanyIds" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField">
+       select t_field.field_id fieldId,t_field.table_id tableId,t_field.field_code fieldCode,t_field.field_name fieldName
+        from t_custom_archive_field t_field
+        left join t_custom_archive_table t_table
+        on t_table.table_id =t_field.table_id and t_table.is_delete = 0
+        left join t_company_info tc
+        on tc.company_id = t_table.company_id and tc.is_enable = 1
+        where t_field.is_delete=0 and tc.company_id in
+        <foreach collection="companyIds" close=")" item="id" open="(" separator=",">
+            #{id}
+        </foreach>
+  </select>
+
+    <update id="updateFieldCodeByTableIdAndFieldName">
+        update t_custom_archive_field set field_code =#{fieldCode},is_system_define =#{isSystemDefine}
+        where table_id =#{tableId} and field_name =#{fieldName}
+
+    </update>
     <select id="searchCustomFieldForHeadListByFieldIdList" resultMap="HeadField">
           select
           *
-          from t_custom_archive_field
+          from t_custom_archive_field_temp
         WHERE field_id in
         <foreach  collection="integers" item="fieldId" open="(" separator="," close=")">
             #{fieldId}

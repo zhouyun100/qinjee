@@ -191,4 +191,8 @@
       is_enable = #{isEnable,jdbcType=SMALLINT}
     where company_id = #{companyId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectCompanyIds" resultType="integer">
+    select company_id from t_company_info where is_enable =1
+  </select>
 </mapper>

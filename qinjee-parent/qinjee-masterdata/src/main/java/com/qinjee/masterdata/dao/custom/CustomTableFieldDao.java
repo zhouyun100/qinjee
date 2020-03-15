@@ -295,6 +295,7 @@ public interface CustomTableFieldDao {
 
 
     List<Integer> selectTableIdByCompanyIdAndFuncCode(@Param("companyId") Integer companyId, @Param("funcCode") String pre);
+    List<Integer> selectTableIdByCompanyId(@Param("companyId") Integer companyId);
 
     List<CustomFieldVO> selectFieldListByTableId(Integer tableId);
 
@@ -323,6 +324,10 @@ public interface CustomTableFieldDao {
     List< Map< String, Integer>> transPositionId(@Param("funcCode") String funcCode, @Param("companyId") Integer companyId, @Param("value") String value);
 
     List< Map< String, Integer>> transPositionGradeId(String funcCode, Integer companyId, String value);
+
+    List<CustomArchiveField> selectFieldByCompanyIds(@Param("companyIds")List<Integer> companyIds);
+
+    void updateFieldCodeByTableIdAndFieldName(@Param("tableId")Integer tableId, String fieldName, String fieldCode,Short isSystemDefine);
 }
 
 
