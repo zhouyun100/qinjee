@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Data
 @JsonInclude
 public class AttchmentRecordVo implements Serializable {
-    private Integer attatchmentId;
+    private Integer attachmentId;
     private String userName;
     private Integer orgId;
     private String employeeNumber;

@@ -18,7 +18,7 @@
         <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
     </resultMap>
     <resultMap id="ReturnMap" type="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
-
+        <result column="attachment_id" jdbcType="INTEGER" property="attachmentId"/>
         <result column="attachment_url" jdbcType="VARCHAR" property="attatchmentUrl"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"/>
@@ -408,7 +408,7 @@
     </select>
     <select id="selectFileFromPackage" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
         SELECT
-        record.attachment_id as attatchmentId,
+        record.attachment_id as attachmentId,
         arc.user_name as  userName,
         arc.employee_number as  employeeNumber,
         org.org_name as orgName,

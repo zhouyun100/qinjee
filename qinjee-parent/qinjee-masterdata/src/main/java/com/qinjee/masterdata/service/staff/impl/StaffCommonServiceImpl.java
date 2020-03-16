@@ -697,8 +697,10 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List<CheckCustomFieldVO> customFieldVOList = customArchiveTableDataVo.getCustomFieldVOList();
         for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
             String fieldValue = checkCustomFieldVO.getFieldValue ();
-            if(org.apache.commons.lang3.StringUtils.isNotBlank ( fieldValue )&& !"null".equals ( fieldValue )) {
-                stringBuilder.append ( "@@" ).append ( checkCustomFieldVO.getFieldId () ).append ( "@@:" ).append ( fieldValue );
+            Integer fieldId = checkCustomFieldVO.getFieldId ();
+            if(org.apache.commons.lang3.StringUtils.isNotBlank ( fieldValue )&& !"null".equals ( fieldValue ) && !"null".equals ( fieldId )
+            ) {
+                stringBuilder.append ( "@@" ).append ( fieldId ).append ( "@@:" ).append ( fieldValue );
             }
         }
         customArchiveTableData.setBigData(stringBuilder.toString());
