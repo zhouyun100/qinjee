@@ -758,7 +758,7 @@
                 LEFT JOIN t_user_role tur ON tur.role_id =troa.role_id AND tur.is_delete =0
                 AND (tur.is_trusteeship = 0 OR (tur.is_trusteeship = 1 AND #{now} >= tur.trusteeship_begin_time
                 AND tur.trusteeship_end_time >= #{now} ))
-                WHERE tur.archive_id = 1
+                WHERE tur.archive_id = #{archiveId}
                 -- AND t_org.is_enable = 1
                 GROUP BY t_org.org_id
                 UNION

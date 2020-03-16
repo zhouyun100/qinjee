@@ -354,6 +354,7 @@
         SELECT
         tp.org_id ,
         tp.post_id ,
+        tp.is_enable,
         tp.post_code ,
         tp.parent_post_id ,
         tp.post_name ,
