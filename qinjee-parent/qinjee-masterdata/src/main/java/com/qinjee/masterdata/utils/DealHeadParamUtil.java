@@ -65,7 +65,8 @@ public class DealHeadParamUtil {
             fieldValueForSearch.setFieldName("orgId");
         }
         if ("businessUnitName".equals(fieldValueForSearch.getFieldName()) && ("code".equals(fieldValueForSearch.getFieldType()))) {
-            fieldValueForSearch.setFieldName("orgId");
+            //TODO 存在歧义 phs
+            fieldValueForSearch.setFieldName("business_unit_id");
         }
         if ("orgParentName".equals(fieldValueForSearch.getFieldName()) && ("code".equals(fieldValueForSearch.getFieldType()))) {
             fieldValueForSearch.setFieldName("orgParentId");

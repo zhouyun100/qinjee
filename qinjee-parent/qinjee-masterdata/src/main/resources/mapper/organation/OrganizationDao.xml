@@ -12,6 +12,7 @@
         <result column="employee_number" jdbcType="INTEGER" property="managerEmployeeNumber"/>
         <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
         <result column="orgManagerName" jdbcType="VARCHAR" property="orgManagerName"/>
+        <result column="org_manager_name" jdbcType="VARCHAR" property="orgManagerName"/>
         <result column="position_name" jdbcType="VARCHAR" property="orgManagerPositionName"/>
         <result column="org_manager_id" jdbcType="INTEGER" property="orgManagerId"/>
         <result column="company_id" jdbcType="INTEGER" property="companyId"/>
@@ -514,7 +515,7 @@
         org_parent_id ,
         org_full_name ,
         org_manager_id ,
-        user_name  ,
+        org_manager_name  ,
         employee_number ,
         company_id,
         sort_id,
@@ -532,7 +533,7 @@
                 t_org.org_parent_id ,
                 t_org.org_full_name ,
                 t_org.org_manager_id ,
-                tua.user_name  ,
+                tua.user_name org_manager_name ,
                 tua.employee_number ,
                 t_org.company_id,
                 t_org.sort_id,

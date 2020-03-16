@@ -71,7 +71,7 @@ public class PositionLevelServiceImpl implements PositionLevelService {
     public int editPositionLevel(UserSession userSession, PositionLevel positionLevel) {
         //查重 排除自己
         PositionLevelVo pl = positionLevelDao.getByPositionLevelName(positionLevel.getPositionLevelName(),userSession.getCompanyId());
-        if(Objects.nonNull(pl)&&!userSession.getCompanyId().equals(pl.getCompanyId())){
+        if(Objects.nonNull(pl)&&!pl.getPositionLevelId().equals(positionLevel.getPositionLevelId())){
             ExceptionCast.cast(CommonCode.NAME_ALREADY_USED);
         }
         positionLevel.setOperatorId(userSession.getArchiveId());

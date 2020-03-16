@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 彭洪思
@@ -39,6 +40,13 @@ public class PositionGradeServiceImpl implements PositionGradeService {
 
     @Override
     public int addPositionGrade(PositionGrade positionGrade, UserSession userSession) {
+
+        //查重
+        PositionGrade  pg = positionGradeDao.getByPositionGradeName(positionGrade.getPositionGradeName(),userSession.getCompanyId());
+        if(Objects.nonNull(pg)){
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED);
+        }
+
         positionGrade.setCompanyId(userSession.getCompanyId());
         positionGrade.setOperatorId(userSession.getArchiveId());
         //设置排序id

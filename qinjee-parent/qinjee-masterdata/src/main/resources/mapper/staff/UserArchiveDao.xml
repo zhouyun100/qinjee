@@ -1059,7 +1059,7 @@
         post_name,
         supervisor_user_name
         FROM (
-        SELECT tua.archive_id , tua.user_id ,
+        SELECT tua.archive_id , tua.business_unit_id ,tua.user_id ,
         tua.user_name , tua.gender , tua.age,
         tua.hire_date ,
         tua.phone, tua.email,
