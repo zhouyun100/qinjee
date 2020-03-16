@@ -1127,6 +1127,8 @@
         left join t_organization org on org.org_id=arc.business_unit_id
         LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
         left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
         where arc.is_delete=0 and orga.company_id=#{companyId}
         <choose>
             <when test='archiveList != null and archiveList.size()>0'>
