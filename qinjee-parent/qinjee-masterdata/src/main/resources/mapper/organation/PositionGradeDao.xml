@@ -80,7 +80,7 @@
         and position_grade_id=#{parseInt}
    </select>
     <select id="getByPositionGradeName" resultMap="BaseResultMap">
-        <include refid="Base_Column_List"></include>
+        select <include refid="Base_Column_List"></include>
         from t_position_grade
         where company_id=#{companyId} and position_grade_name=#{positionGradeName} and is_delete =0
    </select>

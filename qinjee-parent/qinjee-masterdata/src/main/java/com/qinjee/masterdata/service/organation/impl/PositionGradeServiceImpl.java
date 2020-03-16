@@ -57,6 +57,14 @@ public class PositionGradeServiceImpl implements PositionGradeService {
 
     @Override
     public int editPositionGrade(PositionGrade positionGrade, UserSession userSession) {
+        //查重
+        PositionGrade  pg = positionGradeDao.getByPositionGradeName(positionGrade.getPositionGradeName(),userSession.getCompanyId());
+        if(Objects.nonNull(pg)&&!pg.getPositionGradeId().equals(positionGrade.getPositionGradeId())){
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED);
+        }
+
+
+
         positionGrade.setOperatorId(userSession.getArchiveId());
         return positionGradeDao.update(positionGrade);
     }
