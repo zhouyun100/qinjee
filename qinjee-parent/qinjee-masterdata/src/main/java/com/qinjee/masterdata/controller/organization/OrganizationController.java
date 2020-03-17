@@ -365,6 +365,8 @@ public class OrganizationController extends BaseController {
      * @param orgTransferBO
      * @return
      */
+
+    //TODO 划转时机构类型的校验由前端来做，如单位不能划转到部门下面，集团不能划转到单位或部门下
     @PostMapping("/transferOrganization")
     public ResponseResult transferOrganization(@RequestBody OrganizationTransferBO orgTransferBO) {
         //校验参数
@@ -376,6 +378,7 @@ public class OrganizationController extends BaseController {
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
     }
+
 
     //TODO
     @PostMapping("/mergeOrganization")
