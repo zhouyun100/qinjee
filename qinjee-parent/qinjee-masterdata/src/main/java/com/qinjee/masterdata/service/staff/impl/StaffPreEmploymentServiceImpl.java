@@ -107,7 +107,6 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
             PreEmploymentVo preEmploymentVo = preEmploymentDao.selectPreEmploymentVoById(employmentId);
             new TransCustomFieldMapHelper<PreEmploymentVo>().transToDict(preEmploymentVo,sysDicts);
             //字典转换中文
-            preEmploymentVo.setGender( sysDictDao.selectByCode(preEmploymentVo.getGender()));
 
             preRegistVo.setPreEmploymentVo(preEmploymentVo);
             //--------------

@@ -50,7 +50,10 @@ public class PositionGradeServiceImpl implements PositionGradeService {
         positionGrade.setCompanyId(userSession.getCompanyId());
         positionGrade.setOperatorId(userSession.getArchiveId());
         //设置排序id
-        int lastSortId = positionGradeDao.getLastSortId(userSession.getCompanyId());
+        Integer lastSortId = positionGradeDao.getLastSortId(userSession.getCompanyId());
+        if(null==lastSortId)
+            lastSortId=0;
+
         positionGrade.setSortId(++lastSortId);
         return positionGradeDao.insert(positionGrade);
     }

@@ -420,7 +420,6 @@
         </foreach>
         AND arc.is_delete =0
         ORDER BY contract.create_time DESC
-        LIMIT 1;
     </select>
 
     <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract"

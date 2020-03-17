@@ -21,7 +21,7 @@ public interface PositionLevelDao {
      */
     List<PositionLevelVo> list(Integer companyId);
 
-    int getLastSortId(Integer companyId);
+    Integer getLastSortId(Integer companyId);
 
     int update(PositionLevel positionLevel);
 
