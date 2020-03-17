@@ -796,8 +796,10 @@
 
     <select id="listOrganizationByCompanyId" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"></include>
-        from t_organization where company_id =#{companyId}
+         org.org_id, org.org_code,p_org.org_code parent_org_code, org.org_name, org.org_type, org.org_parent_id, org.org_full_name, org.org_manager_id,org.is_enable
+        from t_organization org
+        left join t_organization p_org on p_org.org_id =org.org_parent_id
+        where org.company_id =#{companyId}
     </select>
     <update id="updateByOrgCode" parameterType="com.qinjee.masterdata.model.vo.organization.OrganizationVO">
         update t_organization

@@ -41,13 +41,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
-public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO,OrganizationVO> implements OrganizationService {
+public class OrganizationServiceImpl extends AbstractOrganizationHelper<OrganizationVO, OrganizationVO> implements OrganizationService {
     private static Logger logger = LogManager.getLogger(OrganizationServiceImpl.class);
 
     @Autowired
@@ -120,6 +119,13 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     @Override
     @OrganizationSaveAnno
     public OrganizationVO addOrganization(String orgName, String orgCode, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
+        //同级机构不能重名：
+        List<OrganizationVO> sonOrgs = organizationDao.listSonOrganization(Integer.valueOf(parentOrgId));
+        boolean bool = sonOrgs.stream().anyMatch(a -> orgName.equals(a.getOrgName()));
+        if (bool) {
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED_AT_SAME_LEVEL);
+        }
+
         OrganizationVO orgBean = new OrganizationVO();
         //校验orgCode是否已存在
         OrganizationVO orgByCode = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
@@ -127,7 +133,17 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
         //查询父级机构，用来生成机构全称
-        OrganizationVO parentOrg = organizationDao.getOrganizationById(Integer.parseInt(parentOrgId));
+        OrganizationVO parentOrg = organizationDao.getOrganizationById(Integer.valueOf(parentOrgId));
+
+        if (Objects.nonNull(parentOrg)) {
+            //机构类型的校验  单位的上级机构不能是部门、集团的上级机构不能是单位或部门
+            if (orgType.equals("UNIT") && parentOrg.getOrgType().equals("DEPT")) {
+                ExceptionCast.cast(CommonCode.UNIT_PARENT_NOT_BE_DEPT);
+            } else if (orgType.equals("GROUP") && (parentOrg.getOrgType().equals("DEPT") || parentOrg.getOrgType().equals("UNIT"))) {
+                ExceptionCast.cast(CommonCode.GROUP_PARENT_NOT_BE_UNIT_OR_DEPT);
+            }
+        }
+
         //查询同级机构用来生成机构sortid、orgCode
         List<OrganizationVO> brotherOrgList = organizationDao.listSonOrganization(Integer.parseInt(parentOrgId));
         Integer sortId = generateOrgSortId(brotherOrgList);
@@ -262,9 +278,22 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     @OrganizationEditAnno
     //TODO 目前修改机构编码码 下级机构编码不会联动修改
     public void editOrganization(String orgCode, String orgId, String orgName, String orgType, String parentOrgId, String orgManagerId, UserSession userSession) {
+        //判断重名
+        judgeDuplicateName(orgId, orgName, Integer.valueOf(parentOrgId));
+
         //反查organizationVO
         OrganizationVO organization = organizationDao.getOrganizationById(Integer.parseInt(orgId));
         OrganizationVO parentOrganization = organizationDao.getOrganizationById(Integer.parseInt(parentOrgId));
+
+        if (Objects.nonNull(parentOrganization)) {
+            //机构类型的校验  单位的上级机构不能是部门、集团的上级机构不能是单位或部门
+            if (orgType.equals("UNIT") && parentOrganization.getOrgType().equals("DEPT")) {
+                ExceptionCast.cast(CommonCode.UNIT_PARENT_NOT_BE_DEPT);
+            } else if (orgType.equals("GROUP") && (parentOrganization.getOrgType().equals("DEPT") || parentOrganization.getOrgType().equals("UNIT"))) {
+                ExceptionCast.cast(CommonCode.GROUP_PARENT_NOT_BE_UNIT_OR_DEPT);
+            }
+        }
+
         //判断机构编码是否唯一
         if (!organization.getOrgCode().equals(orgCode)) {
             OrganizationVO orgBean = organizationDao.getOrganizationByOrgCodeAndCompanyId(orgCode, userSession.getCompanyId());
@@ -292,6 +321,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         organizationDao.updateByPrimaryKey(organization);
         //修改子机构名称
         recursiveUpdateOrgFullName(organization);
+    }
+
+    private void judgeDuplicateName(String orgId, String orgName, Integer parentOrgId) {
+        //同级机构不能重名：
+        List<OrganizationVO> sonOrgs = organizationDao.listSonOrganization(parentOrgId);
+        boolean bool = sonOrgs.stream().anyMatch(a -> (orgName.equals(a.getOrgName()) && !String.valueOf(a.getOrgId()).equals(orgId)));
+        if (bool) {
+            ExceptionCast.cast(CommonCode.NAME_ALREADY_USED_AT_SAME_LEVEL);
+        }
     }
 
     //=====================================================================
@@ -344,15 +382,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
         if (CollectionUtils.isEmpty(orgExportBO.getOrgIds())) {
 
-            List<Integer> orgIdList = organizationDao.getOrgIds(orgExportBO.getOrgId(), archiveId,orgExportBO.getIsEnable(), new Date());
+            List<Integer> orgIdList = organizationDao.getOrgIds(orgExportBO.getOrgId(), archiveId, orgExportBO.getIsEnable(), new Date());
             String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "lastTable.");
             String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "lastTable.");
-            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, new Date(),whereSql,orderSql);
+            orgList = organizationDao.listAllOrganizationByArchiveIdAndOrgId(orgIdList, archiveId, new Date(), whereSql, orderSql);
         } else {
             //如果已经勾选了id，就不需要再进行表头筛选了
             //String whereSql = DealHeadParamUtil.getWhereSql(orgExportBO.getTableHeadParamList(), "lastTable.");
-           // String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "lastTable.");
-            orgList = organizationDao.listOrganizationsByCondition(orgExportBO.getOrgIds(),null,null);
+            // String orderSql = DealHeadParamUtil.getOrderSql(orgExportBO.getTableHeadParamList(), "lastTable.");
+            orgList = organizationDao.listOrganizationsByCondition(orgExportBO.getOrgIds(), null, null);
         }
         if (CollectionUtils.isEmpty(orgList)) {
             ExceptionCast.cast(CommonCode.FILE_EXPORT_FAILED);
@@ -566,6 +604,35 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                 organizationVO.setCheckResult(false);
                 resultMsg.append("集团类型机构只能存在一个 | ");
             }
+
+            //TODO 判断同级下机构是否重名 这个逻辑存在一个小问题，影响不大
+            if (StringUtils.isNotBlank(organizationVO.getOrgName()) && StringUtils.isNotBlank(organizationVO.getOrgCode())) {
+                List<OrganizationVO> filterList = dataList.stream().filter(a -> a.getOrgParentCode().equals(organizationVO.getOrgParentCode()) && organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(filterList) && filterList.size() > 1) {
+                    organizationVO.setCheckResult(false);
+                    resultMsg.append("机构名称在同级下重名 | ");
+                }
+            }
+            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
+                String parentOrgType = organizationVOListMem.stream().filter(a -> organizationVO.getOrgParentCode().equals(a.getOrgParentCode())).map(a -> a.getOrgType()).findFirst().get();
+                if ("集团".equals(organizationVO.getOrgType())) {
+                    if ("UNIT".equals(parentOrgType) || "DEPT".equals(parentOrgType)) {
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("集团的上级机构不能是单位或部门 | ");
+                    }
+                } else if ("单位".equals(organizationVO.getOrgType())) {
+                    if ("DEPT".equals(parentOrgType)) {
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("单位的上级机构不能是部门 | ");
+                    }
+                }
+
+            }
+
+
+            //判断机构类型 1、单位的上级机构不能是部门 2、集团的上级机构不能是单位、部门
+
+
             if (StringUtils.isNotBlank(organizationVO.getManagerEmployeeNumber())) {
                 boolean bool = userArchiveVosMem.stream().anyMatch(a -> organizationVO.getManagerEmployeeNumber().equals(a.getEmployeeNumber()));
                 if (!bool) {
@@ -678,7 +745,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
         //TODO 人事异动表、工资、考勤暂时不考虑
         boolean isExsit = false;
-        List<UserArchiveVo> userArchiveVos = userArchiveDao.getUserArchiveList(idList, false,null,null);
+        List<UserArchiveVo> userArchiveVos = userArchiveDao.getUserArchiveList(idList, false, null, null);
         if (!CollectionUtils.isEmpty(userArchiveVos)) {
             isExsit = true;
             ExceptionCast.cast(CommonCode.EXIST_USER);
@@ -686,7 +753,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         //如果所有机构下都不存在相关人员资料
         if (!isExsit) {
             //判断是否存在岗位
-            List<Post> posts = postDao.listPostsByOrgIds(idList,null,null);
+            List<Post> posts = postDao.listPostsByOrgIds(idList, null, null);
             if (!CollectionUtils.isEmpty(posts) && !cascadeDeletePost) {
                 ExceptionCast.cast(CommonCode.ORG_HAVE_POST);
             } else {
@@ -724,14 +791,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     @Override
     public void mergeOrganization(OrganizationMergeBO orgMergeBO, UserSession userSession) {
 
-        List<Integer> orgIds=orgMergeBO.getOrgIds();
-        Integer parentOrgId=orgMergeBO.getParentOrgId();
-        String newOrgName=orgMergeBO.getNewOrgName();
-
+        List<Integer> orgIds = orgMergeBO.getOrgIds();
+        Integer parentOrgId = orgMergeBO.getParentOrgId();
+        String newOrgName = orgMergeBO.getNewOrgName();
         //查询机构列表
         List<OrganizationVO> organizationVOList = organizationDao.listOrgnizationByIds(orgIds);
-        //判断是否是同一个父级下的
+
         if (!CollectionUtils.isEmpty(organizationVOList)) {
+
+            //判断是否是同一个父级下的
             Set<Integer> orgParentIds = organizationVOList.stream().map(organization -> organization.getOrgParentId()).collect(Collectors.toSet());
             if (orgParentIds.size() != 1) {
                 ExceptionCast.cast(CommonCode.NOT_SAME_LEVEL_EXCEPTION);
@@ -741,8 +809,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             //查询父级机构，用来生成机构全称
             OrganizationVO parentOrg = organizationDao.getOrganizationById(parentOrgId);
             //查询同级机构用来生成机构sortid、orgCode
-            List<OrganizationVO> brotherOrgList = organizationDao.listSonOrganization(parentOrgId);
-            Integer sortId = generateOrgSortId(brotherOrgList);
+            List<OrganizationVO> sonOrgs = organizationDao.listSonOrganization(parentOrgId);
+            //不能重名
+            boolean bool = sonOrgs.stream().anyMatch(a -> newOrgName.equals(a.getOrgName()));
+            if (bool) {
+                ExceptionCast.cast(CommonCode.NAME_ALREADY_USED_AT_SAME_LEVEL);
+            }
+
+
+            Integer sortId = generateOrgSortId(sonOrgs);
             String orgCode = generateOrgCode(parentOrgId);
             newOrgVO.setOrgCode(orgCode);
             newOrgVO.setSortId(sortId);
@@ -752,6 +827,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             newOrgVO.setCompanyId(userSession.getCompanyId());
             newOrgVO.setOrgParentId(parentOrgId);
             newOrgVO.setIsEnable(Short.parseShort("1"));
+            //TODO 新机构的类型如何设置
             newOrgVO.setOrgType(organizationVOList.get(0).getOrgType());
             newOrgVO.setOrgFullName(parentOrg.getOrgFullName() + "/" + newOrgVO.getOrgName());
             organizationDao.insert(newOrgVO);
@@ -799,10 +875,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     public void transferOrganization(OrganizationTransferBO orgTransferBO, UserSession userSession) {
         List<OrganizationVO> ready2TransferOrgs = null;
         Integer targetOrgId = orgTransferBO.getTargetOrgId();
-        List<Integer> orgIds=orgTransferBO.getOrgIds();
+        List<Integer> orgIds = orgTransferBO.getOrgIds();
 
         if (!CollectionUtils.isEmpty(orgTransferBO.getOrgIds())) {
             ready2TransferOrgs = organizationDao.listOrgnizationByIds(orgIds);
+            //判断重名
+            for (OrganizationVO org : ready2TransferOrgs) {
+                judgeDuplicateName(String.valueOf(org.getOrgId()), org.getOrgName(), orgTransferBO.getTargetOrgId());
+            }
+
         } else {
             //待划转机构不存在
             ExceptionCast.cast(CommonCode.ORIGIN_NOT_EXIST);

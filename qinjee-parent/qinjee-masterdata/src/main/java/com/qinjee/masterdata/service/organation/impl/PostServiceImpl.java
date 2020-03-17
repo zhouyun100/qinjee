@@ -468,8 +468,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
                     }
 
                 }
-
-
             }
         }
     }

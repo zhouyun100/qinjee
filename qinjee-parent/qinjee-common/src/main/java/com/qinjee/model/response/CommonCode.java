@@ -73,6 +73,9 @@ public enum CommonCode implements ResultCode{
     NO_POWER_CONTRACT(false,10549, "不存在有效合同"),
     FAIL_TO_DELETE(false,10550, "删除文件失败"),
     UPDATE_PARENT_POST_ERR(false,10551, "上级岗位不能设置为当前岗位及当前岗位的下级岗位"),
+    UNIT_PARENT_NOT_BE_DEPT(false,10552, "单位的上级机构不能是部门"),
+    GROUP_PARENT_NOT_BE_UNIT_OR_DEPT(false,10553, "集团的上级机构不能是单位或部门"),
+    NAME_ALREADY_USED_AT_SAME_LEVEL(false,10554, "名称在同级下已存在"),
     ;
 
 
