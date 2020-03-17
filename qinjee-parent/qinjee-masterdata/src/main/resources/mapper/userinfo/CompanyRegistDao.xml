@@ -89,7 +89,7 @@
 
   <!-- 新增企业机构信息 -->
   <insert id="addOrganization" keyColumn="org_id" keyProperty="orgId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.Organization">
-      INSERT INTO t_organization (org_code, org_name, org_type, org_parent_id, company_id, operator_id) VALUES ('1', #{orgName}, 'GROUP', 0,  #{companyId}, 1);
+      INSERT INTO t_organization (org_code, org_name, org_type, org_parent_id, org_full_name, company_id, operator_id) VALUES ('1', #{orgName}, 'GROUP', 0, #{orgName},  #{companyId}, 1);
   </insert>
 
   <!-- 新增角色信息 -->
