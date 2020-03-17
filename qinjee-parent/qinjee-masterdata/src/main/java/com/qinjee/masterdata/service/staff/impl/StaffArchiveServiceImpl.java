@@ -97,7 +97,11 @@ public class StaffArchiveServiceImpl implements IStaffArchiveService {
             ArchiveRegistVo archiveRegistVo = new ArchiveRegistVo();
             //1、查询预入职档案基本信息
             UserArchiveVo userArchiveVo = userArchiveDao.selectFullById(archiveId);
-            userArchiveVo.setBusinessUnitName(userArchiveVo.getOrgFullName().replace("/", "|"));
+            if(null!=userArchiveVo.getOrgFullName()) {
+                String OrgFullName = userArchiveVo.getOrgFullName().replace("/", "|");
+                userArchiveVo.setBusinessUnitName(OrgFullName);
+            }
+
             //转换字典
             new TransCustomFieldMapHelper<UserArchiveVo>().transToDict(userArchiveVo, sysDicts);
             archiveRegistVo.setUserArchiveVo(userArchiveVo);

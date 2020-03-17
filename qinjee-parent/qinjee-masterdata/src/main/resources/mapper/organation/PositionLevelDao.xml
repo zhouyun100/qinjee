@@ -39,7 +39,7 @@
         where t_level.company_id=#{companyId} and t_level.is_delete =0 order by t_level.sort_id
 
     </select>
-    <select id="getLastSortId" resultType="int">
+    <select id="getLastSortId" resultType="integer">
     SELECT sort_id FROM t_position_level WHERE company_id=#{companyId} and  is_delete =0 ORDER BY sort_id DESC LIMIT 1
   </select>
 

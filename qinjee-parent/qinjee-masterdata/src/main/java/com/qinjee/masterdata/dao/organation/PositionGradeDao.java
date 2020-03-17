@@ -17,7 +17,7 @@ public interface PositionGradeDao {
     int update(PositionGrade record);
 
 
-    int getLastSortId(Integer companyId);
+    Integer getLastSortId(Integer companyId);
     /**
      * 查询所有职等
      * @return

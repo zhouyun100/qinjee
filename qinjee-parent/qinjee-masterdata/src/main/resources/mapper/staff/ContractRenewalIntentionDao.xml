@@ -403,6 +403,6 @@
         <foreach collection="archiveIds" item="id" separator="," close=")" open="(">
           #{id}
         </foreach>
-        ORDER BY contract.create_time DESC LIMIT 1
+        ORDER BY contract.create_time DESC
   </select>
 </mapper>

@@ -62,7 +62,10 @@ public class PositionLevelServiceImpl implements PositionLevelService {
         positionLevel.setCompanyId(userSession.getCompanyId());
         positionLevel.setOperatorId(userSession.getArchiveId());
         //设置排序id
-        int lastSortId = positionLevelDao.getLastSortId(userSession.getCompanyId());
+        Integer lastSortId = positionLevelDao.getLastSortId(userSession.getCompanyId());
+        if(null==lastSortId)
+            lastSortId=0;
+
         positionLevel.setSortId(++lastSortId);
         return positionLevelDao.insert(positionLevel);
     }
