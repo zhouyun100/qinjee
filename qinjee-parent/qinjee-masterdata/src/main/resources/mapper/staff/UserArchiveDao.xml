@@ -1306,7 +1306,7 @@
         )
         and arc.company_id=#{companyId}
         <if test="message !=null">
-            and (arc.org_id is null or arc.is_delete=0)
+            or (arc.org_id is null and arc.is_delete=0)
         </if>
         )t
         where 1=1

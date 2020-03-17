@@ -9,6 +9,7 @@ import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
+import com.qinjee.masterdata.dao.staffdao.entryregistration.EntryRegistrationDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -86,6 +87,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private SysDictDao sysDictDao;
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
+    @Autowired
+    private EntryRegistrationDao entryRegistrationDao;
 
 
     /**
@@ -331,6 +334,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         preEmployment.setEmploymentState("未入职");
         preEmployment.setEmploymentRegister("未发送");
         preEmployment.setDataSource("手工录入");
+        preEmployment.setTemplateId ( entryRegistrationDao.selectTempalteIdByCompanyId ( userSession.getCompanyId () ) );
         preEmployment.setCompanyId(userSession.getCompanyId());
         preEmployment.setOperatorId(userSession.getArchiveId());
         preEmployment.setCompanyId(userSession.getCompanyId());

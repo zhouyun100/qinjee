@@ -19,25 +19,45 @@
         <result column="contract_remark" jdbcType="VARCHAR" property="contractRemark"/>
         <result column="sign_number" jdbcType="INTEGER" property="signNumber"/>
         <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="update_time" jdbcType="DATE" property="updateTime"/>
     </resultMap>
     <resultMap id="ExportCon" type="com.qinjee.masterdata.model.vo.staff.export.ContractVo">
         <id column="contract_id" jdbcType="INTEGER" property="id"/>
         <id column="archive_id" jdbcType="INTEGER" property="archive_id"/>
         <result column="id_number" jdbcType="VARCHAR" property="id_number"/>
         <result column="employment_number" jdbcType="VARCHAR" property="employee_number"/>
-        <result column="contract_period_type" jdbcType="VARCHAR" property="contract_number"/>
-        <result column="contract_sign_date" jdbcType="TIMESTAMP" property="contract_period_type"/>
-        <result column="contract_number" jdbcType="VARCHAR" property="contract_sign_date"/>
-        <result column="contract_begin_date" jdbcType="TIMESTAMP" property="contract_begin_date"/>
-        <result column="contract_end_date" jdbcType="TIMESTAMP" property="contract_end_date"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contract_number"/>
+        <result column="contract_period_type" jdbcType="VARCHAR" property="contract_period_type"/>
+        <result column="contract_sign_date" jdbcType="DATE" property="contract_sign_date"/>
+        <result column="contract_begin_date" jdbcType="DATE" property="contract_begin_date"/>
+        <result column="contract_end_date" jdbcType="DATE" property="contract_end_date"/>
         <result column="contract_number" jdbcType="VARCHAR" property="contract_number"/>
         <result column="contract_period_month" jdbcType="INTEGER" property="contract_period_month"/>
         <result column="contract_number" jdbcType="VARCHAR" property="contract_number"/>
         <result column="contract_subject" jdbcType="VARCHAR" property="contract_subject"/>
         <result column="sign_number" jdbcType="INTEGER" property="sign_number"/>
         <result column="contract_remark" jdbcType="VARCHAR" property="contract_remark"/>
+    </resultMap>
+    <resultMap id="ExportConWithArc" type="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
+        <id column="contract_id" jdbcType="INTEGER" property="contractId"/>
+        <id column="archive_id" jdbcType="INTEGER" property="archiveId"/>
+        <result column="id_number" jdbcType="VARCHAR" property="idNumber"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName"/>
+        <result column="employment_number" jdbcType="VARCHAR" property="employeeNumber"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType"/>
+        <result column="contract_sign_date" jdbcType="DATE" property="contractSignDate"/>
+        <result column="contract_begin_date" jdbcType="DATE" property="contractBeginDate"/>
+        <result column="contract_end_date" jdbcType="DATE" property="contractEndDate"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_subject" jdbcType="VARCHAR" property="contractSubject"/>
+        <result column="contract_state" jdbcType="VARCHAR" property="contractState"/>
+        <result column="sign_number" jdbcType="INTEGER" property="signNumber"/>
+        <result column="contract_remark" jdbcType="VARCHAR" property="contractRemark"/>
     </resultMap>
     <sql id="Base_Column_List">
     contract_id, archive_id,
@@ -555,25 +575,9 @@
         GROUP BY o.orgId,o.archive_id) o2
         GROUP BY o2.orgId
     </select>
-    <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
+    <select id="selectHasPowerContract" resultMap="ExportConWithArc" >
         select
-        t.org_name as orgName,
-        t.bussiness_unit_name as businessUnitName,
-        t.employee_number as employeeNumber,
-        t.id_number as idNumber,
-        t.user_name as userName,
-        t.archive_id as archiveId,
-        t.contract_id as contractId,
-        t.contract_number as contractNumber,
-        t.contract_begin_date as contractBeginDate,
-        t.contract_sign_date as contractSignDate,
-        t.contract_end_date as contractEndDate,
-        t.contract_period_type as contractPeriodType,
-        t.contract_period_month as contractPeriodMonth,
-        t.sign_number as signNumber,
-        t.contract_subject as contractSubject,
-        t.contract_state as contractState,
-        t.contract_remark as contractRemark
+         *
         from (
         select
         org.org_name,
@@ -612,6 +616,14 @@
                 #{item}
             </foreach>
         </if>
+        <if test="mark !=0">
+            and (SELECT remember_days
+            FROM t_contract_param
+            WHERE company_id = #{companyId}
+            LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE())
+            >= 0 and contract.contract_state != '解除' and contract.contract_state !='终止'
+        </if>
+
         )t
         where 1=1
         <if test="whereSql !=null">
@@ -655,6 +667,6 @@
         FROM t_contract_param
         WHERE company_id = #{companyId}
         LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE())
-        >= 0 and contract.contract_state != '解除'
+        >= 0 and contract.contract_state != '解除' and contract.contract_state !='终止'
     </select>
 </mapper>

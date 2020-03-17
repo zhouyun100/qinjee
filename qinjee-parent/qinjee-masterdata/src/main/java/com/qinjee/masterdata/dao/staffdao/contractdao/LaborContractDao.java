@@ -47,8 +47,8 @@ public interface LaborContractDao {
 
     List<ContractFormVo> selectContractForm(@Param("list") List<Integer> list, @Param("companyId") Integer companyId);
 
-    List<ContractWithArchiveVo> selectHasPowerContract(@Param("orgIdList") List<Integer> orgIdList, @Param("status") List<String> status,  @Param("companyId") Integer companyId,
-                                                       @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
+    List<ContractWithArchiveVo> selectHasPowerContract(@Param("orgIdList") List<Integer> orgIdList, @Param("status") List<String> status, @Param("companyId") Integer companyId,
+                                                       @Param("whereSql") String whereSql, @Param("orderSql") String orderSql, @Param("mark") Short mark);
 
 
     /**

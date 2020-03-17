@@ -957,6 +957,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     private List < Map < String, String > > getDatesForConWithArc(List < ContractWithArchiveVo > list, List < String > head) throws IllegalAccessException {
         List < Map < String, String > > mapList = new ArrayList <> ();
+        String format=null;
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
             Map < String, String > map = new LinkedHashMap <> ();
             Class aClass = contractWithArchiveVo.getClass ();
@@ -966,7 +967,15 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     declaredField.setAccessible ( true );
                     String s1 = transValue ( s );
                     if (FieldToProperty.fieldToProperty ( s1 ).equals ( declaredField.getName () )) {
-                        map.put ( s, String.valueOf ( declaredField.get ( contractWithArchiveVo ) ) );
+                        if (declaredField.getType ().toString ().contains("Date")) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            if (declaredField.get(contractWithArchiveVo) != null) {
+                                format = simpleDateFormat.format(declaredField.get(contractWithArchiveVo));
+                            }
+                            map.put(s1, format);
+                        } else {
+                            map.put(s1, String.valueOf(declaredField.get(contractWithArchiveVo)));
+                        }
                     }
                 }
             }

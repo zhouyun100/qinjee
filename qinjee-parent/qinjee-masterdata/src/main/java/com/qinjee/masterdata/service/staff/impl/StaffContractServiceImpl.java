@@ -142,7 +142,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId,String
                                                                      whereSql,String orderSql) {
-        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,companyId,whereSql,orderSql );
+        short mark=0;
+        if(CollectionUtils.isNotEmpty ( status )&& status.contains ( "即将到期" )){
+            mark=1;
+            status.clear ();
+        }
+
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,companyId,whereSql,orderSql,mark );
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
               if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ())
               ||contractWithArchiveVo.getContractEndDate()==null || contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate().after(new Date()) ||
