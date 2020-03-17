@@ -355,6 +355,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
             BeanUtils.copyProperties ( laborContract, cri );
             cri.setCompanyId ( userSession.getCompanyId () );
             cri.setOperatorId ( userSession.getArchiveId () );
+            cri.setCreateTime(new Date());
             cri.setIntentionStatus ( NOTCONFIRM );
             contractRenewalIntentions.add ( cri );
         }
@@ -409,6 +410,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         contractRenewalIntention.setRenewalOpinion ( RENEWAGREE );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
         contractRenewalIntention.setIsAgree ( ( short ) 1 );
+        contractRenewalIntention.setUpdateTime(new Date());
         //TODO 还剩续签意见还未设置
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
     }
@@ -422,6 +424,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         contractRenewalIntention.setRenewalOpinion ( RENEWREJECT );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
         contractRenewalIntention.setIsAgree ( ( short ) 0 );
+        contractRenewalIntention.setUpdateTime(new Date());
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
         //前端跳转至解除合同页面
     }

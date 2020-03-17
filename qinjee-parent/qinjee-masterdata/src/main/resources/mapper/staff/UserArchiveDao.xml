@@ -217,6 +217,9 @@
             <if test="servingAge != null">
                 serving_age,
             </if>
+            <if test="servingDate != null">
+                serving_date,
+            </if>
             <if test="workingPeriod != null">
                 working_period,
             </if>
@@ -340,6 +343,9 @@
             <if test="servingAge != null">
                 #{servingAge,jdbcType=INTEGER},
             </if>
+            <if test="servingDate != null">
+                #{servingDate},
+            </if>
             <if test="workingPeriod != null">
                 #{workingPeriod,jdbcType=INTEGER},
             </if>
@@ -460,6 +466,9 @@
                 </if>
                 <if test="item.servingAge != null">
                     serving_age,
+                </if>
+                <if test="item.servingDate != null">
+                    serving_date,
                 </if>
                 <if test="item.workingPeriod != null">
                     working_period,
@@ -588,6 +597,9 @@
                 </if>
                 <if test="item.servingAge != null">
                     #{item.servingAge,jdbcType=INTEGER},
+                </if>
+                <if test="item.servingDate != null">
+                    #{item.servingDate},
                 </if>
                 <if test="item.workingPeriod != null">
                     #{item.workingPeriod,jdbcType=INTEGER},

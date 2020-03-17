@@ -122,7 +122,6 @@ public class CompanyRegistController extends BaseController{
     public ResponseResult registCompany(@RequestBody CompanyRegistParamVO companyRegistParamVO) {
 
         try {
-
             companyRegistService.registCompany(companyRegistParamVO);
             responseResult = ResponseResult.SUCCESS();
         }catch(Exception e) {
