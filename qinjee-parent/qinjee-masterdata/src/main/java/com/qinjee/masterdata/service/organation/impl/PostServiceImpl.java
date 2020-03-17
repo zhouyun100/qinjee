@@ -433,6 +433,19 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
                 if (Objects.nonNull(ifExistVo)) {
                     postDao.updateByPrimaryKeySelective(vo);
                     vo.setPostId(ifExistVo.getPostId());
+                    //维护职级
+                    int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), ifExistVo.getPostId());
+                    if (StringUtils.isNotEmpty(vo.getPositionLevelName())) {
+                        String[] plNames = vo.getPositionLevelName().split(",");
+                        if (plNames.length > 0) {
+                            List<PositionLevelVo> positionLevelList = positionLevelDao.getByPositionLevelNames(Arrays.asList(plNames), userSession.getCompanyId());
+                            if (!CollectionUtils.isEmpty(positionLevelList)) {
+                                //取出id
+                                List<Integer> plIds = positionLevelList.stream().map(pl -> pl.getPositionLevelId()).collect(Collectors.toList());
+                                postDao.batchInsertPostLevelRelation(plIds, userSession.getArchiveId(), ifExistVo.getPostId());
+                            }
+                        }
+                    }
 
                 } else {
                     vo.setOperatorId(userSession.getArchiveId());
@@ -440,20 +453,22 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
                     vo.setSortId(sortId);
                     sortId += 1000;
                     int i = postDao.insertSelective(vo);
-                }
-                //维护职级
-                int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), vo.getPostId());
-                if (StringUtils.isNotEmpty(vo.getPositionLevelName())) {
-                    String[] plNames = vo.getPositionLevelName().split(",");
-                    if (plNames.length > 0) {
-                        List<PositionLevelVo> positionLevelList = positionLevelDao.getByPositionLevelNames(Arrays.asList(plNames), userSession.getCompanyId());
-                        if (!CollectionUtils.isEmpty(positionLevelList)) {
-                            //取出id
-                            List<Integer> plIds = positionLevelList.stream().map(pl -> pl.getPositionLevelId()).collect(Collectors.toList());
-                            postDao.batchInsertPostLevelRelation(plIds, userSession.getArchiveId(), vo.getPostId());
+                    //维护职级
+                    postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), vo.getPostId());
+                    if (StringUtils.isNotEmpty(vo.getPositionLevelName())) {
+                        String[] plNames = vo.getPositionLevelName().split(",");
+                        if (plNames.length > 0) {
+                            List<PositionLevelVo> positionLevelList = positionLevelDao.getByPositionLevelNames(Arrays.asList(plNames), userSession.getCompanyId());
+                            if (!CollectionUtils.isEmpty(positionLevelList)) {
+                                //取出id
+                                List<Integer> plIds = positionLevelList.stream().map(pl -> pl.getPositionLevelId()).collect(Collectors.toList());
+                                postDao.batchInsertPostLevelRelation(plIds, userSession.getArchiveId(), vo.getPostId());
+                            }
                         }
                     }
+
                 }
+
 
             }
         }
