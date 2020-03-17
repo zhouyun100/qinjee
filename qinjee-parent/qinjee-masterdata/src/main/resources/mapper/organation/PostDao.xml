@@ -348,6 +348,7 @@
         post_name ,
         position_name ,
         position_id ,
+        is_enable,
         parent_post_name,
         org_name
         from (
