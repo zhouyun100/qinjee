@@ -606,11 +606,25 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }
 
             //TODO 判断同级下机构是否重名 这个逻辑存在一个小问题，影响不大
-            if (StringUtils.isNotBlank(organizationVO.getOrgName()) && StringUtils.isNotBlank(organizationVO.getOrgCode())) {
-                List<OrganizationVO> filterList = dataList.stream().filter(a -> a.getOrgParentCode().equals(organizationVO.getOrgParentCode()) && organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
+            if (StringUtils.isNotBlank(organizationVO.getOrgName()) && StringUtils.isNotBlank(organizationVO.getOrgCode())&&StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
+                List<OrganizationVO> filterList = dataList.stream().filter(a -> null!=a.getOrgParentCode()&&a.getOrgParentCode().equals(organizationVO.getOrgParentCode())
+                        && organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(filterList) && filterList.size() > 1) {
                     organizationVO.setCheckResult(false);
-                    resultMsg.append("机构名称在同级下重名 | ");
+                    resultMsg.append("机构名称在excel同级下重名 | ");
+                }//如果excel中不重名那么到数据库中再查一次
+                else{
+                    //根据父级机构编码机构和机构名称查询(数据库中已有数据理论上不会重名)
+                   List<OrganizationVO> filterList2 = organizationVOListMem.stream().filter(a ->null!=a.getOrgParentCode()&& a.getOrgParentCode().equals(organizationVO.getOrgParentCode())
+                           &&organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
+                    if(filterList2.size()>1){
+                        System.out.println("数据库中存在同级下的同名机构脏数据");
+                    }
+                    //如果filterList2不为空，并且机构编码不等 ，则判断重名
+                    if(CollectionUtils.isNotEmpty(filterList2)&&!filterList2.get(0).getOrgCode().equals(organizationVO.getOrgCode())){
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("excel中机构名称与数据库中机构名称在同级下重名 | ");
+                    }
                 }
             }
             if (StringUtils.isNotBlank(organizationVO.getOrgType()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
