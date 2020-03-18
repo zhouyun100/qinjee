@@ -92,6 +92,6 @@
     </update>
 
     <update id="setUserCompanyNoneDefaultLogin">
-        update t_user_company set is_enable = 0 where user_id = #{userId} and company_id != #{companyId} and is_delete = 0
+        update t_user_company set is_enable = 0 where user_id = #{userId} and company_id != #{companyId} and is_enable = 1 and is_delete = 0
     </update>
 </mapper>
