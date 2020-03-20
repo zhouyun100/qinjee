@@ -356,6 +356,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
             cri.setCompanyId ( userSession.getCompanyId () );
             cri.setOperatorId ( userSession.getArchiveId () );
             cri.setCreateTime(new Date());
+            cri.setCreateTime ( new Date (  ) );
             cri.setIntentionStatus ( NOTCONFIRM );
             contractRenewalIntentions.add ( cri );
         }
@@ -423,8 +424,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //更改续签意向表
         contractRenewalIntention.setRenewalOpinion ( RENEWREJECT );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
+        contractRenewalIntention.setUpdateTime ( new Date (  ) );
         contractRenewalIntention.setIsAgree ( ( short ) 0 );
-        contractRenewalIntention.setUpdateTime(new Date());
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
         //前端跳转至解除合同页面
     }

@@ -14,8 +14,8 @@
     <result column="is_agree" jdbcType="SMALLINT" property="isAgree" />
     <result column="renewal_opinion" jdbcType="VARCHAR" property="renewalOpinion" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="DATE" property="createTime" />
+    <result column="update_time" jdbcType="DATE" property="updateTime" />
   </resultMap>
   <resultMap id="renewAboutUser" type="com.qinjee.masterdata.model.vo.staff.RenewIntionAboutUser" extends="BaseResultMap">
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
@@ -38,11 +38,11 @@
     <result column="is_agree" jdbcType="SMALLINT" property="isAgree" />
     <result column="intention_status" jdbcType="VARCHAR" property="intentionStatus" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="contract_begin_date" jdbcType="TIMESTAMP" property="contractBeginDate" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="contract_end_date" jdbcType="TIMESTAMP" property="contractEndDate" />
-    <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
+    <result column="contract_begin_date" jdbcType="DATE" property="contractBeginDate" />
+    <result column="update_time" jdbcType="DATE" property="updateTime" />
+    <result column="create_time" jdbcType="DATE" property="createTime" />
+    <result column="contract_end_date" jdbcType="DATE" property="contractEndDate" />
+    <result column="send_time" jdbcType="DATE" property="sendTime" />
     <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
     <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
 
@@ -354,6 +354,7 @@
     intention.create_time ,
     arch.user_name as supervisor_user_name ,
     arc.archive_id,
+    intention.operator_id,
     archc.user_name as send_user
     from t_contract_renewal_intention intention
     left join t_user_archive arc on arc.archive_id=intention.archive_id and arc.is_delete=0
@@ -362,14 +363,30 @@
     left join t_post post on post.post_id=arc.post_id and post.is_enable=1 and post.is_delete=0
     left join t_user_archive arch on arch.archive_id = arc.supervisor_id and arch.is_delete=0
     left join t_user_archive archc on archc.archive_id = intention.operator_id and archc.is_delete=0
-
     where arc.archive_id in
     (select arc.archive_id from t_user_archive arc
     left join t_organization org on org.org_id=arc.org_id
     and org.is_enable=1 and arc.is_delete=0
     where org.org_id in
     <foreach collection="list" item="item" open="(" separator="," close=")">#{item}
-    </foreach>)
+    </foreach>
+    and org.org_id in(
+    select org.org_id from t_user_org_auth oa
+    left join t_organization org on org.org_id=oa.org_id and org.is_enable=1
+    where oa.archive_id = #{archiveId}
+    and (oa.is_trusteeship = 0
+    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time )
+    and oa.is_delete = 0
+    UNION
+    select org.org_id from t_role_org_auth roa
+    left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
+    left join t_organization org on org.org_id=roa.org_id and org.is_enable=1
+    where roa.is_delete = 0 and org.company_id=#{companyId} and org.org_id is not NULL
+    and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() >
+    ur.trusteeship_end_time) )
+    and ur.is_delete = 0
+    )
+    )
     )t
     where 1=1
     <if test="whereSql !=null">
