@@ -436,11 +436,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public PageResult < RenewIntentionVo > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo) {
+    public PageResult < RenewIntentionVo > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
         PageHelper.startPage ( requestUserarchiveVo.getCurrentPage (), requestUserarchiveVo.getPageSize () );
         String whereSql = DealHeadParamUtil.getWhereSql ( requestUserarchiveVo.getList (), "t." );
         String orderSql = DealHeadParamUtil.getOrderSql ( requestUserarchiveVo.getList (), "t." );
-        List < RenewIntentionVo > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql );
+        List < RenewIntentionVo > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql,userSession.getArchiveId (),userSession.getCompanyId () );
         return new PageResult <> ( list );
     }
 
