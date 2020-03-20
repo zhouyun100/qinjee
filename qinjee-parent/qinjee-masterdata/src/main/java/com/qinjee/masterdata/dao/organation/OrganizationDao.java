@@ -137,6 +137,7 @@ public interface OrganizationDao {
     List<OrganizationVO> listOrganizationByCompanyId(Integer companyId);
 
     void updateByOrgCode(OrganizationVO vo);
+    void batchUpdateByOrgCode(@Param("forUpdateVoList") List<OrganizationVO> forUpdateVoList);
 
     void batchDeleteOrganization(@Param("idList") List<Integer> idList);
 
@@ -153,4 +154,6 @@ public interface OrganizationDao {
     int ensureRight(Integer orgId, Integer archiveId, Date now);
 
     List<OrganizationVO> selectByOrgId(@Param("orgId") List<Integer> orgId);
+
+    void batchInsert(@Param("forInsertVoList") List<OrganizationVO> forInsertVoList);
 }
