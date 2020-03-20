@@ -464,6 +464,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             vo.setOrgManagerId(orgManagerId);
             vo.setOperatorId(userSession.getArchiveId());
             vo.setCompanyId(userSession.getCompanyId());
+            vo.setOrgFullName(vo.getOrgName());
             //先设置默认值
 
             //根据机构编码判断是否存在
@@ -497,28 +498,55 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
 
     private void updateOrgParentInfo(UserSession userSession, List<OrganizationVO> list) {
         //2.更新机构全程、父机构id,维护机构与角色、sort_id
-        Map<String, Integer> orgIdMapMem2 = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgId));
-        Map<String, String> orgFullNameMapMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgName));
-        Map<String, String> orgTypeMapMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgType));
-        //organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().filter(a -> null != a.getOrgParentCode()).collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgParentCode));
+        Map<String, OrganizationVO> orgMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub,(listSubOld, listSubNew) -> listSubNew));
+        Map<String, Integer> parentOrgCodeIdMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub.getOrgParentId(),(listSubOld, listSubNew) -> listSubNew));
+        Map<String, String> parentOrgCodeNameMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().filter(a->null!=a.getOrgFullName()).collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub.getOrgFullName(),(listSubOld, listSubNew) -> listSubNew));
+        Map<String, String> orgCodeTypeMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgType));
         for (OrganizationVO vo : list) {
-            //父级编码改变时才插入  TODO 父级机构编码不改变时
-            setParentOrgInfo(userSession, orgIdMapMem2, orgFullNameMapMem, orgTypeMapMem, vo);
-        }
-    }
-
-
-    private void setParentOrgInfo(UserSession userSession, Map<String, Integer> orgIdMapMem2, Map<String, String> orgFullNameMapMem, Map<String, String> orgTypeMapMem, OrganizationVO vo) {
-        Integer parentOrgId = orgIdMapMem2.get(vo.getOrgParentCode());
-        if (Objects.nonNull(parentOrgId)) {
-            vo.setOrgParentId(parentOrgId);
-            vo.setOrgFullName(orgFullNameMapMem.get(vo.getOrgParentCode()) + "/" + vo.getOrgName());
-            if ("GROUP".equalsIgnoreCase(orgTypeMapMem.get(vo.getOrgParentCode()))) {
-                vo.setOrgFullName(vo.getOrgName());
+            if(StringUtils.isBlank(vo.getOrgParentCode())){
+                continue;
             }
-            organizationDao.updateByOrgCode(vo);
-            apiAuthService.addOrg(orgIdMapMem2.get(vo.getOrgCode()), vo.getOrgParentId(), userSession.getArchiveId());
+            Integer parentId = parentOrgCodeIdMap.get(vo.getOrgCode());
+            String toParentCode = orgMap.get(vo.getOrgCode()).getOrgParentCode();
+
+            //TODO 这个判断条件的我调了四小时 菜透了
+            if((null!=toParentCode&&!toParentCode.equals(vo.getOrgParentCode()))||(null==parentId||parentId==0)){
+                System.out.println("夫机构id："+parentId);
+                Integer toParentId = orgMap.get(vo.getOrgParentCode()).getOrgId();
+                vo.setOrgParentId(toParentId);
+                if(null!=parentOrgCodeNameMap.get(vo.getOrgParentCode())){
+                    vo.setOrgFullName(parentOrgCodeNameMap.get(vo.getOrgParentCode()) + "/" + vo.getOrgName());
+                }else{
+                    vo.setOrgFullName(parentOrgCodeNameMap.get( vo.getOrgName()));
+                }
+                if ("GROUP".equalsIgnoreCase(orgCodeTypeMap.get(vo.getOrgParentCode()))) {
+                    vo.setOrgFullName(vo.getOrgName());
+                }
+                organizationDao.updateByOrgCode(vo);
+                apiAuthService.addOrg(orgMap.get(vo.getOrgCode()).getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
+            }
+
+
+
+           /* //如果父级机构id为空的话就去更新
+            OrganizationVO currentOrg = orgCodeIdMap.get(vo.getOrgCode());
+            if(currentOrg.getOrgParentId()==0||null==currentOrg.getOrgParentId()){
+                OrganizationVO parentOrg=parentOrgCodeIdMap.get(vo.getOrgParentCode());
+                if(Objects.isNull(parentOrg)){
+                   continue;
+                }
+                vo.setOrgParentId(parentOrg.getOrgId());
+                vo.setOrgFullName(parentOrg.getOrgFullName() + "/" + vo.getOrgName());
+                if ("GROUP".equalsIgnoreCase(orgCodeTypeMap.get(vo.getOrgParentCode()))) {
+                    vo.setOrgFullName(vo.getOrgName());
+                }
+                organizationDao.updateByOrgCode(vo);
+                apiAuthService.addOrg(currentOrg.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
+
+            }*/
+
         }
+        System.out.println(list);
     }
 
 
