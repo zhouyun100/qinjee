@@ -627,21 +627,28 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                     }
                 }
             }
-            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
-                String parentOrgType = organizationVOListMem.stream().filter(a -> organizationVO.getOrgParentCode().equals(a.getOrgParentCode())).map(a -> a.getOrgType()).findFirst().get();
-                if ("集团".equals(organizationVO.getOrgType())) {
-                    if ("UNIT".equals(parentOrgType) || "DEPT".equals(parentOrgType)) {
-                        organizationVO.setCheckResult(false);
-                        resultMsg.append("集团的上级机构不能是单位或部门 | ");
+            //TODO 判断导入的机构类型
+           /* if (StringUtils.isNotBlank(organizationVO.getOrgType()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
+                Optional<String> parentOrgType = organizationVOListMem.stream().filter(a -> organizationVO.getOrgParentCode().equals(a.getOrgParentCode())).map(a -> a.getOrgType()).findFirst();
+                if(parentOrgType.isPresent()){
+                    if ("集团".equals(organizationVO.getOrgType())) {
+                        if ("UNIT".equals(parentOrgType) || "DEPT".equals(parentOrgType)) {
+                            organizationVO.setCheckResult(false);
+                            resultMsg.append("集团的上级机构不能是单位或部门 | ");
+                        }
+                    } else if ("单位".equals(organizationVO.getOrgType())) {
+                        if ("DEPT".equals(parentOrgType)) {
+                            organizationVO.setCheckResult(false);
+                            resultMsg.append("单位的上级机构不能是部门 | ");
+                        }
                     }
-                } else if ("单位".equals(organizationVO.getOrgType())) {
-                    if ("DEPT".equals(parentOrgType)) {
-                        organizationVO.setCheckResult(false);
-                        resultMsg.append("单位的上级机构不能是部门 | ");
-                    }
+                }else{
+                    organizationVO.setCheckResult(false);
+                    resultMsg.append("部门不存在 | ");
                 }
 
-            }
+
+            }*/
 
 
             //判断机构类型 1、单位的上级机构不能是部门 2、集团的上级机构不能是单位、部门
