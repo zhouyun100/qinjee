@@ -20,8 +20,8 @@ spring:
 
 zuul:
   host:
-    connect-timeout-millis: 10000
-    socket-timeout-millis: 10000
+    connect-timeout-millis: 12000
+    socket-timeout-millis: 12000
   #  sensitiveHeaders的默认值初始值是"Cookie", "Set-Cookie", "Authorization"这三项，不设置为空会导致无法设置cookie
   sensitive-headers:
   prefix: /api
@@ -67,9 +67,9 @@ server:
 
 ribbon:
   # ribbon read超时时间
-  ReadTimeout: 10000
+  ReadTimeout: 13000
   # ribbon请求连接的超时时间，默认值1000
-  ConnectTimeout: 10000
+  ConnectTimeout: 13000
 #  SocketTimeout: 10000
 #  OkToRetryOnAllOperations: false #对所有操作请求都进行重试,默认false
 #  MaxAutoRetries: 0     #对当前实例的重试次数，默认0
