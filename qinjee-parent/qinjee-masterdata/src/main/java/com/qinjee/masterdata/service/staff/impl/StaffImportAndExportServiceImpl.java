@@ -111,6 +111,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Autowired
     private PositionGradeDao positionGradeDao;
 
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CheckImportVo importFileAndCheckFile(MultipartFile multipartFile, String funcCode, UserSession userSession,Integer systemDefine) throws Exception {
@@ -765,10 +766,21 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private List < Map < Integer, String > > getMaps(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
         List < Map < Integer, String > > list = new ArrayList <> ();
+        //将查询结果置于缓存中
+        String importDataCache = redisClusterService.get ( "IMPORT_DATA_CACHE" );
+        List < Map < String, Integer > > maps=null;
+        if(StringUtils.isEmpty ( importDataCache )){
+            List < String > strings = Arrays.asList ( "business_unit_id", "org_id", "supervisor_id", "post_id", "position_level_id", "position_grade_id" );
+            maps=customTableFieldDao.selectFieldIdByCodeListAndFuncCodeAndComapnyId(strings,funcCode,userSession.getCompanyId ());
+            redisClusterService.setex ("IMPORT_DATA_CACHE",2*60*60,JSON.toJSONString ( maps )  );
+        }else{
+            maps=JSONArray.parseObject ( importDataCache, List.class );
+        }
+
         for (Map < String, String > map : mapList) {
             Map < Integer, String > stringMap = new HashMap <> ();
             for (Map.Entry < String, String > entry : map.entrySet ()) {
-                Map < Integer, String > map1 = transField ( funcCode, userSession.getCompanyId (), entry.getValue (), entry.getKey () );
+                Map < Integer, String > map1 = transField ( funcCode, userSession.getCompanyId (), entry.getValue (), entry.getKey (),maps );
                 for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
                     stringMap.put ( integerStringEntry.getKey (), integerStringEntry.getValue () );
                 }
@@ -781,7 +793,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     /**
      * 根据fieldName与funcode找到对应的fieldId
      */
-    private Map < Integer, String > transField(String funcCode, Integer companyId, String value, String fieldName) {
+    private Map < Integer, String > transField(String funcCode, Integer companyId, String value, String fieldName,List<Map<String,Integer>> maps) {
         Map < Integer, String > map = new HashMap<>();
         String businessUnitId=null;
         String orgId=null;
@@ -797,15 +809,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put (map1.get(0).get ( "field_id" ), businessUnitId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-1" );
-
+                        map.put (getFieldId ( maps,"business_unit_id" ),"-1");
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-2" );
+                    map.put (getFieldId ( maps,"business_unit_id" ), "-2" );
                 }
             }else if(BUSINESSUNITNAME.equals(fieldName)){
                  if(StringUtils.isNotBlank(businessUnitId)){
-                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), businessUnitId );
+                     map.put (getFieldId ( maps,"business_unit_id" ), businessUnitId );
                  }
              } else if (ORGCODE.equals ( fieldName ) || ORGCODEPRE.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
@@ -816,14 +827,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), orgId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-1" );
+                        map.put (getFieldId ( maps,"org_id" ), "-1" );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-2" );
+                    map.put ( getFieldId ( maps,"org_id" ), "-2" );
                 }
             }else if(ORGNAME.equals ( fieldName ) || ORGNAMEPRE.equals ( fieldName )){
                  if(StringUtils.isNotBlank(orgId)){
-                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), orgId );
+                     map.put ( getFieldId ( maps,"org_id" ), orgId );
                  }
             }
              else if (SUPORCODE.equals ( fieldName ) ) {
@@ -835,7 +846,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), superId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-1" );
+                        map.put ( getFieldId ( maps,"org_id" ), "-1" );
                     }
                 }
             }
@@ -848,14 +859,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), postName );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-1" );
+                        map.put (  getFieldId ( maps,"post_id" ), "-1" );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-2" );
+                    map.put ( getFieldId ( maps,"post_id" ), "-2" );
                 }
              }else if(POSTNAME.equals ( fieldName )){
                if(StringUtils.isNotBlank(postId)) {
-                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), postId);
+                   map.put(getFieldId ( maps,"post_id" ), postId);
                }
              }
              else if(POSITIONLEVELNAME.equals ( fieldName )){
@@ -868,7 +879,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                              map.put ( map1.get(0).get ( "field_id" ), positionlevelId );
                          }
                      } else {
-                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "position_level_id", funcCode, companyId ), "-1" );
+                         map.put ( getFieldId ( maps,"position_level_id" ), "-1" );
                      }
                  }
              }
@@ -882,7 +893,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                              map.put ( map1.get(0).get ( "field_id" ), positiongradeId );
                          }
                      } else {
-                         map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "position_grade_id", funcCode, companyId ), "-1" );
+                         map.put (getFieldId ( maps, "position_grade_id" ), "-1" );
                      }
                  }
              }
@@ -900,6 +911,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
         }
         return map;
+    }
+
+    private Integer getFieldId(List < Map < String, Integer > > maps,String code) {
+        if(!CollectionUtils.isEmpty ( maps )) {
+            for (Map < String, Integer > stringIntegerMap : maps) {
+               if(code.equals (stringIntegerMap.get ("field_code"))){
+                  return stringIntegerMap.get ( "field_id" );
+               }
+            }
+        }
+       return null;
     }
 
 

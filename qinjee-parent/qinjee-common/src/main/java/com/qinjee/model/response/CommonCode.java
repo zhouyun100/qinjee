@@ -22,7 +22,6 @@ public enum CommonCode implements ResultCode{
     LOGIN_MULTIPLE_COMPANY(false, 10301, "多租户验证，请选择需要登录的租户平台！"),
     ORGANIZATION_OUT_OF_RANGE(false,10302,"本级机构长度超出范围,添加失败！"),
     NAME_ALREADY_USED(false,10303,"名称已存在,操作失败！"),
-
     EXIST_USER(false,10305, "该机构/岗位下存在人员信息，不允许删除!"),
     FILE_PARSING_EXCEPTION(false,10306, "导入文件解析异常,导入失败!"),
     FILE_FORMAT_ERROR(false,10307, "导入文件格式错误,导入失败!"),
@@ -78,6 +77,7 @@ public enum CommonCode implements ResultCode{
     NAME_ALREADY_USED_AT_SAME_LEVEL(false,10554, "名称在同级下已存在"),
     TOPORG_CAN_NOT_DEL(false,10555, "顶级机构不能删除"),
     CREATER_CAN_NOT_DEL(false,10556, "企业注册人不能删除"),
+    ORG_OR_POST_IS_NULL(false,10554, "确认入职时部门岗位不能为空，请先完善信息"),
     ;
 
 

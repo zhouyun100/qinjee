@@ -180,7 +180,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     //新增变更表
                     getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 }
-                 preEmployment.setEmploymentRegister("已审核");
+                if(( preEmployment.getPostId ()==null )||  preEmployment.getOrgId () ==null || preEmployment.getPostId ()==0 || preEmployment.getOrgId ()==0){
+                    ExceptionCast.cast ( CommonCode.ORG_OR_POST_IS_NULL);
+                }
+                preEmployment.setEmploymentRegister("已审核");
                 preEmployment.setEmploymentState(CHANGSTATUS_READY);
                 preEmploymentDao.updateByPrimaryKey(preEmployment);
                 //根据预入职id查找预入职对象
