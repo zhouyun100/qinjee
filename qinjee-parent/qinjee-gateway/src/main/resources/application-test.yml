@@ -94,9 +94,9 @@ hystrix:
       # 此属性允许maximumSize的配置生效。 那么该值可以等于或高于coreSize。 设置coreSize <maximumSize会创建一个线程池，该线程池可以支持maximumSize并发，但在相对不活动期间将向系统返回线程。 （以keepAliveTimeInMinutes为准）
       allowMaximumSizeToDivergeFromCoreSize: true
       # 请求等待队列
-      maxQueueSize: 50
+      maxQueueSize: 500
       # 队列大小拒绝阀值 在还未超过请求等待队列时也会拒绝的大小
-      queueSizeRejectionThreshold: 20
+      queueSizeRejectionThreshold: 400
   command:
     default:
       #    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
