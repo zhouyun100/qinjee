@@ -15,6 +15,7 @@
 package com.qinjee.api.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;

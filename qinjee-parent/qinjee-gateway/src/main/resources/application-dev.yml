@@ -65,18 +65,18 @@ server:
     accesslog:
       enabled: false
 
-masterdata-dev-zhouyun:
-  ribbon:
-    ReadTimeout: 10000 # ribbon read超时时间
-    SocketTimeout: 10000 #ribbon请求连接的超时时间，默认值1000
-    OkToRetryOnAllOperations: false #对所有操作请求都进行重试,默认false
-    MaxAutoRetries: 0     #对当前实例的重试次数，默认0
-    MaxAutoRetriesNextServer: 0 #对切换实例的重试次数，默认1
-    http:
-      client:
-        enabled: false # 关闭 httpclient 支持
-    okhttp:
-      enabled: true # 开启 okhttp 支持
+#masterdata-dev-zhouyun:
+ribbon:
+  ReadTimeout: 10000 # ribbon read超时时间
+  SocketTimeout: 10000 #ribbon请求连接的超时时间，默认值1000
+  OkToRetryOnAllOperations: false #对所有操作请求都进行重试,默认false
+  MaxAutoRetries: 0     #对当前实例的重试次数，默认0
+  MaxAutoRetriesNextServer: 0 #对切换实例的重试次数，默认1
+  http:
+    client:
+      enabled: false # 关闭 httpclient 支持
+  okhttp:
+    enabled: true # 开启 okhttp 支持
 
 hystrix:
   threadpool:
@@ -92,7 +92,7 @@ hystrix:
       # 队列大小拒绝阀值 在还未超过请求等待队列时也会拒绝的大小
       queueSizeRejectionThreshold: 10
   command:
-    masterdata-dev-zhouyun:
+    default:
 #    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
       fallback:
         enabled: true
