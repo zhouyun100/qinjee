@@ -112,7 +112,7 @@ hystrix:
           #SEMAPHORE - 它在调用线程上执行，并发请求受到信号量计数的限制
           #对比：https://www.cnblogs.com/java-synchronized/p/7927726.html
           thread:
-            timeoutInMilliseconds: 10000 #断路器超时时间，默认1000ms
+            timeoutInMilliseconds: 60000 #断路器超时时间，默认1000ms
 feign:
   hystrix:
     enabled: true
