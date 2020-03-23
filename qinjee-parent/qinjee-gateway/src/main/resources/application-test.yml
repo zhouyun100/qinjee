@@ -20,8 +20,8 @@ spring:
 
 zuul:
   host:
-    connect-timeout-millis: 10000
-    socket-timeout-millis: 10000
+    connect-timeout-millis: 60000
+    socket-timeout-millis: 60000
   #  sensitiveHeaders的默认值初始值是"Cookie", "Set-Cookie", "Authorization"这三项，不设置为空会导致无法设置cookie
   sensitive-headers:
   prefix: /api
