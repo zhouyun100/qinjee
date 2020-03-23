@@ -156,4 +156,6 @@ public interface OrganizationDao {
     List<OrganizationVO> selectByOrgId(@Param("orgId") List<Integer> orgId);
 
     void batchInsert(@Param("forInsertVoList") List<OrganizationVO> forInsertVoList);
+
+    OrganizationVO getTopOrganization(Integer companyId);
 }

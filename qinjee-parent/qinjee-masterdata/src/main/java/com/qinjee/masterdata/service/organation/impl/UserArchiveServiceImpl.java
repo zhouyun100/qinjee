@@ -129,6 +129,12 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer currentArchiveId, Integer companyId) {
         //TODO 删人员在后续会通过走流程控制，目前只要有删除用户权限即可进行删除操作，可以先忽略这种情况
+        //查询出超级超级管理员(企业创建人)，不能删除
+        UserArchiveVo ua= userArchiveDao.getCompanyCreator(companyId);
+        Set<Integer> userIds = idsMap.keySet();
+        if(userIds.contains(ua.getUserId())){
+            ExceptionCast.cast(CommonCode.CREATER_CAN_NOT_DEL);
+        }
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
             //TODO 权限判断 未完整

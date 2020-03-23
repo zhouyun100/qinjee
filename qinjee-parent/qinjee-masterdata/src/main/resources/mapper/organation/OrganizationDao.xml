@@ -309,14 +309,16 @@
         t_role_org_auth t_roa ON t_org.org_id = t_roa.org_id AND t_roa.is_delete=0
         LEFT JOIN
         t_user_role t_ur ON t_ur.role_id = t_roa.role_id AND t_ur.is_delete =0
-        WHERE t_ur.archive_id = #{archiveId} AND (t_ur.is_trusteeship = 0 OR (t_ur.is_trusteeship = 1 AND  #{now} >= t_ur.trusteeship_begin_time AND
-        t_ur.trusteeship_end_time >=  #{now} ))
+        WHERE t_ur.archive_id = #{archiveId} AND (t_ur.is_trusteeship = 0 OR (t_ur.is_trusteeship = 1 AND #{now} >=
+        t_ur.trusteeship_begin_time AND
+        t_ur.trusteeship_end_time >= #{now} ))
         <if test="isEnable != null ">and t_org.is_enable =1</if>
         GROUP BY t_org.org_id
         UNION SELECT
         t_org.org_id,t_org.org_parent_id
         FROM t_organization t_org,t_user_org_auth t_uoa
-        WHERE t_uoa.archive_id = #{archiveId} AND t_org.org_id = t_uoa.org_id AND t_uoa.is_delete = 0 AND t_org.is_enable =1 ) t1,(SELECT @pids:=#{orgId} )t2 ) t3
+        WHERE t_uoa.archive_id = #{archiveId} AND t_org.org_id = t_uoa.org_id AND t_uoa.is_delete = 0 AND
+        t_org.is_enable =1 ) t1,(SELECT @pids:=#{orgId} )t2 ) t3
         WHERE ischild != 0 OR t3.org_id = #{orgId};
 
     </select>
@@ -934,16 +936,19 @@
 
     <insert id="batchInsert" parameterType="arraylist">
         insert into t_organization (org_code, org_name, org_type,
-      org_parent_id, org_full_name, org_manager_id,
-      company_id, sort_id, operator_id)
-    values
-     <foreach collection="forInsertVoList" item="item" separator=",">
-         (#{item.orgCode,jdbcType=VARCHAR}, #{item.orgName,jdbcType=VARCHAR}, #{item.orgType,jdbcType=VARCHAR},
-         #{item.orgParentId,jdbcType=INTEGER}, #{item.orgFullName,jdbcType=VARCHAR}, #{item.orgManagerId,jdbcType=INTEGER},
-         #{item.companyId,jdbcType=INTEGER}, #{item.sortId,jdbcType=INTEGER}, #{item.operatorId,jdbcType=INTEGER}
-         )
-     </foreach>
-
-
+        org_parent_id, org_full_name, org_manager_id,
+        company_id, sort_id, operator_id)
+        values
+        <foreach collection="forInsertVoList" item="item" separator=",">
+            (#{item.orgCode,jdbcType=VARCHAR}, #{item.orgName,jdbcType=VARCHAR}, #{item.orgType,jdbcType=VARCHAR},
+            #{item.orgParentId,jdbcType=INTEGER}, #{item.orgFullName,jdbcType=VARCHAR},
+            #{item.orgManagerId,jdbcType=INTEGER},
+            #{item.companyId,jdbcType=INTEGER}, #{item.sortId,jdbcType=INTEGER}, #{item.operatorId,jdbcType=INTEGER}
+            )
+        </foreach>
     </insert>
+    <select id="getTopOrganization" parameterType="integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include>
+        from t_organization where company_id =#{companyId} and org_parent_id =0 limit 1
+    </select>
 </mapper>

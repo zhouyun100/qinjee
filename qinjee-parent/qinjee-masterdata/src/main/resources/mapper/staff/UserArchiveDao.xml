@@ -1690,6 +1690,19 @@
 
     </update>
 
+    <select id="getCompanyCreator" parameterType="integer" resultMap="BaseResultMap">
+        SELECT
+         tua.archive_id,tua.user_id,tua.user_name
+        FROM
+        t_user_archive tua
+        LEFT JOIN t_user_role tur
+         ON tur.archive_id = tua.archive_id
+        LEFT JOIN t_role tr
+         ON tur.role_id = tr.role_id
+         AND tur.is_delete = 0
+        WHERE tr.is_system_define = 1 AND tua.company_id =#{companyId} AND tua.is_delete = 0 LIMIT 1
+    </select>
+
     <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         SELECT
         arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,

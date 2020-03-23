@@ -470,6 +470,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             //根据机构编码判断是否存在
             Integer orgId = orgMapMem.get(vo.getOrgCode());
 
+            vo.setSortId(1000);//先设默认
+
             //已存在 则更新
             if (Objects.nonNull(orgId) && 0 != orgId) {
                 if (StringUtils.isBlank(vo.getOrgParentCode())) {
@@ -481,7 +483,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                 vo.setOrgParentId(0);
                 forInsertVoList.add(vo);
             }
-            //TODO sort id后面再说
+
         }
         //进行批量更新和插入
         if (CollectionUtils.isNotEmpty(forUpdateVoList)) {
@@ -502,6 +504,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         Map<String, Integer> parentOrgCodeIdMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub.getOrgParentId(),(listSubOld, listSubNew) -> listSubNew));
         Map<String, String> parentOrgCodeNameMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().filter(a->null!=a.getOrgFullName()).collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub.getOrgFullName(),(listSubOld, listSubNew) -> listSubNew));
         Map<String, String> orgCodeTypeMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgType));
+        int i=0;
         for (OrganizationVO vo : list) {
             if(StringUtils.isBlank(vo.getOrgParentCode())){
                 continue;
@@ -509,11 +512,13 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             Integer parentId = parentOrgCodeIdMap.get(vo.getOrgCode());
             String toParentCode = orgMap.get(vo.getOrgCode()).getOrgParentCode();
 
+
             //TODO 这个判断条件的我调了四小时 菜透了
-            if((null!=toParentCode&&!toParentCode.equals(vo.getOrgParentCode()))||(null==parentId||parentId==0)){
+           // if((null!=toParentCode&&!toParentCode.equals(vo.getOrgParentCode()))||(null==parentId||parentId==0)){
                 System.out.println("夫机构id："+parentId);
                 Integer toParentId = orgMap.get(vo.getOrgParentCode()).getOrgId();
                 vo.setOrgParentId(toParentId);
+                //TODO 全局名称有问题
                 if(null!=parentOrgCodeNameMap.get(vo.getOrgParentCode())){
                     vo.setOrgFullName(parentOrgCodeNameMap.get(vo.getOrgParentCode()) + "/" + vo.getOrgName());
                 }else{
@@ -523,8 +528,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
                     vo.setOrgFullName(vo.getOrgName());
                 }
                 organizationDao.updateByOrgCode(vo);
+                i++;
                 apiAuthService.addOrg(orgMap.get(vo.getOrgCode()).getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
-            }
+           // }
 
 
 
@@ -546,6 +552,8 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }*/
 
         }
+        System.out.println("==============:"+i);
+
         System.out.println(list);
     }
 
@@ -791,6 +799,12 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             return;
         }
 
+        //不能删除集团 TODO
+        OrganizationVO topOrg= organizationDao.getTopOrganization(userSession.getCompanyId());
+        if(orgIds.contains(topOrg.getOrgId())){
+            ExceptionCast.cast(CommonCode.TOPORG_CAN_NOT_DEL);
+        }
+
         //organizationDao.listAllOrgIdsByArchiveId()
 
         for (int i = orgIds.size() - 1; i >= 0; i--) {
@@ -802,6 +816,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (CollectionUtils.isEmpty(idList)) {
             return;
         }
+
+
+
         /*          //去重
         idList = MyCollectionUtil.removeDuplicate(idList);*/
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录

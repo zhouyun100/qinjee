@@ -76,6 +76,8 @@ public enum CommonCode implements ResultCode{
     UNIT_PARENT_NOT_BE_DEPT(false,10552, "单位的上级机构不能是部门"),
     GROUP_PARENT_NOT_BE_UNIT_OR_DEPT(false,10553, "集团的上级机构不能是单位或部门"),
     NAME_ALREADY_USED_AT_SAME_LEVEL(false,10554, "名称在同级下已存在"),
+    TOPORG_CAN_NOT_DEL(false,10555, "顶级机构不能删除"),
+    CREATER_CAN_NOT_DEL(false,10556, "企业注册人不能删除"),
     ;
 
 
