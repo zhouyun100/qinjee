@@ -31,7 +31,8 @@ public interface ContractRenewalIntentionDao {
 
     void insertBatch(@Param("contractRenewalIntentions") List<ContractRenewalIntention> contractRenewalIntentions);
 
-    List< RenewIntentionVo > selectByorgId(@Param("list") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
+    List< RenewIntentionVo > selectByorgId(@Param("list") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql,
+                                           @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId);
 
     Integer selectCountRenew(@Param("archiveId") Integer archiveId);
 

@@ -22,7 +22,6 @@ public enum CommonCode implements ResultCode{
     LOGIN_MULTIPLE_COMPANY(false, 10301, "多租户验证，请选择需要登录的租户平台！"),
     ORGANIZATION_OUT_OF_RANGE(false,10302,"本级机构长度超出范围,添加失败！"),
     NAME_ALREADY_USED(false,10303,"名称已存在,操作失败！"),
-
     EXIST_USER(false,10305, "该机构/岗位下存在人员信息，不允许删除!"),
     FILE_PARSING_EXCEPTION(false,10306, "导入文件解析异常,导入失败!"),
     FILE_FORMAT_ERROR(false,10307, "导入文件格式错误,导入失败!"),
@@ -37,7 +36,7 @@ public enum CommonCode implements ResultCode{
     NOT_SAME_LEVEL_EXCEPTION(false,10318,"不支持非同级下操作！"),
     CODE_USED(false,10319,"编码已被别处使用！"),
     POST_NOT_EXSIT_EXCEPTION(false,10320,"不存在相关岗位！"),
-    TRANSFER_REPET_OPERATION(false,10321,"已在目标对象中存在，请勿重复划转！"),
+    TRANSFER_REPET_OPERATION(false,10321,"已在目标机构中存在，请勿重复划转！"),
     SET_DEADLINE_EXCEPTION(false,10316, "一种类型只能设置一种临近天数!"),
     SEND_MAIL_FAIL(false,10317, "发送邮件失败!"),
     File_NUMBER_WRONG(false,10318, "文件存储超过数量上限!"),
@@ -76,6 +75,9 @@ public enum CommonCode implements ResultCode{
     UNIT_PARENT_NOT_BE_DEPT(false,10552, "单位的上级机构不能是部门"),
     GROUP_PARENT_NOT_BE_UNIT_OR_DEPT(false,10553, "集团的上级机构不能是单位或部门"),
     NAME_ALREADY_USED_AT_SAME_LEVEL(false,10554, "名称在同级下已存在"),
+    TOPORG_CAN_NOT_DEL(false,10555, "顶级机构不能删除"),
+    CREATER_CAN_NOT_DEL(false,10556, "企业注册人不能删除"),
+    ORG_OR_POST_IS_NULL(false,10554, "确认入职时部门岗位不能为空，请先完善信息"),
     ;
 
 

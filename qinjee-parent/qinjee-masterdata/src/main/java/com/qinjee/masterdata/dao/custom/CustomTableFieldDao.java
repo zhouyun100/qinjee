@@ -328,6 +328,8 @@ public interface CustomTableFieldDao {
     List<CustomArchiveField> selectFieldByCompanyIds(@Param("companyIds")List<Integer> companyIds);
 
     void updateFieldCodeByTableIdAndFieldName(@Param("tableId")Integer tableId, String fieldName, String fieldCode,Short isSystemDefine);
+    @MapKey ( "field_code" )
+    List<Map< String, Integer>> selectFieldIdByCodeListAndFuncCodeAndComapnyId(@Param("strings") List< String> strings, @Param("funcCode") String funcCode, @Param("companyId") Integer companyId);
 }
 
 

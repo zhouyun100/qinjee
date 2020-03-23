@@ -61,4 +61,6 @@ public interface EntryRegistrationDao {
     TemplateEntryRegistration getTemplateEntryRegistrationByTemplateId(Integer templateId);
 
     String searchLogurlByComanyIdAnadTemplateId(@Param("templateId") Integer templateId, @Param("companyId") Integer companyId);
+
+    Integer selectTempalteIdByCompanyId(@Param("companyId") Integer companyId);
 }

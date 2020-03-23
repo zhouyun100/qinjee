@@ -48,6 +48,14 @@ public interface ApiAuthService {
     int addOrg(Integer orgId, Integer parentOrgId, Integer operatorId);
 
     /**
+     * 导入机构时授权操作
+     * @param orgIds 新增的机构ID
+     * @param operatorId 操作人档案ID
+     * @return
+     */
+    int importOrg(List <Integer> orgIds, Integer operatorId);
+
+    /**
      * 删除机构
      * @param orgIdList 需要删除的机构ID
      * @param operatorId 操作人档案ID

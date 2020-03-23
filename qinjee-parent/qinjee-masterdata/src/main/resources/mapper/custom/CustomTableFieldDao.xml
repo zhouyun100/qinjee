@@ -385,11 +385,12 @@
     </select>
 
     <select id="transOrgId" resultType="java.util.Map">
-        select t.field_id,t.org_id from(
+        select t.field_id,t.org_id,t.field_code from(
         SELECT
             field.field_id,
             field.table_id,
-            org.org_id
+            org.org_id,
+            field.field_code
         FROM
             t_custom_archive_field field,
             t_organization org
@@ -685,7 +686,7 @@
                 AND tab.is_enable = 1
                 AND tab.func_code = #{funcCode}
     </select>
-    <select id="transPositionGradeId">
+    <select id="transPositionGradeId" resultType="java.util.Map">
        SELECT t.field_id,t.position_grade_id FROM(
                 SELECT
                     field.field_id,
@@ -708,6 +709,17 @@
                 AND tab.is_enable = 1
                 AND tab.func_code = #{funcCode}
 
+    </select>
+    <select id="selectFieldIdByCodeListAndFuncCodeAndComapnyId" resultType="java.util.Map">
+     select field_code,field_id from t_custom_archive_field
+        where is_delete=0
+        and  field_code in
+        <foreach collection="strings" open="(" separator="," close=")" item="item">
+            #{item}
+        </foreach>
+        and table_id in
+        (select table_id from t_custom_archive_table where is_delete=0
+        and func_code=#{funcCode} and company_id=#{companyId} and is_system_define=1)
     </select>
   <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>
   <select id="selectFieldNameByTableName" resultType="com.qinjee.masterdata.model.entity.CustomArchiveField"></select>

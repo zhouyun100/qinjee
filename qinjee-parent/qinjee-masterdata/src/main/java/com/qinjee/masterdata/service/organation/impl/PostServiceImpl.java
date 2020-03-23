@@ -100,21 +100,12 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
         }
         List<Post> postList = postDao.getPostList(postPageBO, orgIdList, postIdList, whereSql, orderSql);
         //设置岗位职级列表
-        handleLevelForPostList(postList);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
         return pageResult;
     }
 
-    private void handleLevelForPostList(List<Post> postList) {
-        for (Post post : postList) {
-            List<PositionLevel> positionLevels = postDao.listPositionLevel(post.getPostId());
-            String positionLevelName = positionLevels.stream().map(a -> a.getPositionLevelName()).collect(Collectors.joining(","));
-            post.setPositionLevelName(positionLevelName);
-            post.setPositionLevelIds(positionLevels.stream().map(a -> a.getPositionLevelId()).collect(Collectors.toList()));
-        }
-    }
 
 
     @Transactional
@@ -362,11 +353,11 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> impl
             List<Integer> orgIdList = getOrgIdList(userSession, postExportBO.getOrgId(), null);
             List<Post> posts = postDao.listPostsByOrgIds(orgIdList, whereSql, orderSql);
             //设置职级
-            handleLevelForPostList(posts);
+            //handleLevelForPostList(posts);
             return posts;
         } else {
             List<Post> posts = postDao.listPostsByPostIds(postExportBO.getPostIds(), whereSql, orderSql);
-            handleLevelForPostList(posts);
+            //handleLevelForPostList(posts);
             return posts;
         }
     }

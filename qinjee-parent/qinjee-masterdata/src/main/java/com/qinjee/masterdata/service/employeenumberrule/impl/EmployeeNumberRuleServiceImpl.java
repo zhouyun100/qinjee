@@ -178,7 +178,7 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             }
             return year + month + day;
         }
-        return null;
+        return "";
     }
 
 
@@ -198,6 +198,6 @@ public class EmployeeNumberRuleServiceImpl implements IEmployeeNumberRuleService
             }
             return t + number;
         }
-        return null;
+        return "";
     }
 }

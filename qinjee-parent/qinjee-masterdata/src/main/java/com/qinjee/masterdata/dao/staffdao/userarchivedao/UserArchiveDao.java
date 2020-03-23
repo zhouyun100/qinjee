@@ -129,4 +129,6 @@ public interface UserArchiveDao {
     int batchUpdateBusunessUnitId(List<Integer> orgIds,Integer targetBusunessUnitId);
 
     int moveToNewOrg(List<Integer> orgIds, Integer newOrgId);
+
+    UserArchiveVo getCompanyCreator(Integer companyId);
 }

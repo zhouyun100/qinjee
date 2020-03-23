@@ -456,9 +456,9 @@ public class StaffContractController extends BaseController {
 //    @ApiImplicitParam(name = "id", value = "档案id", paramType = "form", required = true)
     public ResponseResult<PageResult<RenewIntentionVo>> selectContractRenewalIntention(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
 
-        Boolean b = checkParam(requestUserarchiveVo);
+        Boolean b = checkParam(requestUserarchiveVo,getUserSession ());
         if (b) {
-            PageResult<RenewIntentionVo> contractRenewalIntentionPageResult = staffContractService.selectContractRenewalIntentionByOrg(requestUserarchiveVo);
+            PageResult<RenewIntentionVo> contractRenewalIntentionPageResult = staffContractService.selectContractRenewalIntentionByOrg(requestUserarchiveVo,getUserSession ());
             return new ResponseResult<>(contractRenewalIntentionPageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

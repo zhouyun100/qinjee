@@ -9,6 +9,7 @@ import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
+import com.qinjee.masterdata.dao.staffdao.entryregistration.EntryRegistrationDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentChangeDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
@@ -86,6 +87,8 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
     private SysDictDao sysDictDao;
     @Autowired
     private ContractRenewalIntentionDao contractRenewalIntentionDao;
+    @Autowired
+    private EntryRegistrationDao entryRegistrationDao;
 
 
     /**
@@ -177,7 +180,10 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
                     //新增变更表
                     getPreEmploymentChange(userSession.getArchiveId(), preEmploymentId, statusChangeVo);
                 }
-                 preEmployment.setEmploymentRegister("已审核");
+                if(( preEmployment.getPostId ()==null )||  preEmployment.getOrgId () ==null || preEmployment.getPostId ()==0 || preEmployment.getOrgId ()==0){
+                    ExceptionCast.cast ( CommonCode.ORG_OR_POST_IS_NULL);
+                }
+                preEmployment.setEmploymentRegister("已审核");
                 preEmployment.setEmploymentState(CHANGSTATUS_READY);
                 preEmploymentDao.updateByPrimaryKey(preEmployment);
                 //根据预入职id查找预入职对象
@@ -331,6 +337,7 @@ public class StaffPreEmploymentServiceImpl implements IStaffPreEmploymentService
         preEmployment.setEmploymentState("未入职");
         preEmployment.setEmploymentRegister("未发送");
         preEmployment.setDataSource("手工录入");
+        preEmployment.setTemplateId ( entryRegistrationDao.selectTempalteIdByCompanyId ( userSession.getCompanyId () ) );
         preEmployment.setCompanyId(userSession.getCompanyId());
         preEmployment.setOperatorId(userSession.getArchiveId());
         preEmployment.setCompanyId(userSession.getCompanyId());

@@ -11,6 +11,7 @@ import com.qinjee.masterdata.aop.OrganizationTransferAnno;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Post;
 import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
@@ -38,7 +39,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -64,6 +64,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     private UserArchiveDao userArchiveDao;
     @Autowired
     private ApiAuthService apiAuthService;
+
+    @Autowired
+    private SysDictDao sysDictDao;
 
     @Autowired
     private SysDictService sysDictService;
@@ -443,72 +446,115 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         String data = redisService.get(orgExcelRedisKey.trim());
         //将其转为对象集合
         List<OrganizationVO> list = JSONArray.parseArray(data, OrganizationVO.class);
+        Map<String, Integer> orgMapMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgId));
+        Map<String, String> sysDictMap = sysDictDao.searchSomeSysDictList().stream().filter(a -> "ORG_TYPE".equals(a.getDictType())).collect(Collectors.toMap(SysDict::getDictValue, SysDict::getDictCode));
+        //Map<String, Integer> userArchiveMem = userArchiveDao.getByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(UserArchiveVo::getEmployeeNumber, UserArchiveVo::getArchiveId));
+        Map<String, Integer> userArchiveMem = userArchiveDao.getByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(UserArchiveVo::getEmployeeNumber, listSub -> listSub.getArchiveId(),
+                (listSubOld, listSubNew) -> listSubNew));
 
-        LinkedMultiValueMap<String, OrganizationVO> multiValuedMap = new LinkedMultiValueMap<String, OrganizationVO>();
-        for (OrganizationVO organizationVO : list) {
-            //如果夫机构编码为空，则为顶级机构，一共只有一个顶级哦
-            if (null == organizationVO.getOrgParentCode() || "".equals(organizationVO.getOrgParentCode())) {
-                multiValuedMap.add("topOrg", organizationVO);
-            } else {
-                multiValuedMap.add(organizationVO.getOrgParentCode(), organizationVO);
-            }
-        }
-        for (Map.Entry<String, List<OrganizationVO>> entry : multiValuedMap.entrySet()) {
-            List<OrganizationVO> orgList = entry.getValue();
-            orgList.sort(new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    OrganizationVO org1 = (OrganizationVO) o1;
-                    OrganizationVO org2 = (OrganizationVO) o2;
-                    return org1.getOrgCode().compareTo(org2.getOrgCode());
-                    //return Long.compare(Long.parseLong(org1.getOrgCode()), Long.parseLong(org2.getOrgCode()));
-                }
-            });
-            int sortId = 1000;
-            for (OrganizationVO vo : orgList) {
-                OrganizationVO ifExistVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
-                OrganizationVO parentOrg = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgParentCode(), userSession.getCompanyId());
-                Integer orgManagerId = userArchiveDao.selectArchiveIdByNumber(vo.getManagerEmployeeNumber(), userSession.getCompanyId());
+        List<OrganizationVO> forUpdateVoList = new ArrayList<>();
+        List<OrganizationVO> forInsertVoList = new ArrayList<>();
 
-                //导入时将“部门”转为"DEPT"
-                List<SysDict> orgTypeDic = sysDictService.searchSysDictListByDictType("ORG_TYPE");
-                for (SysDict dict : orgTypeDic) {
-                    if (null != dict.getDictValue() && dict.getDictValue().equalsIgnoreCase(vo.getOrgType())) {
-                        vo.setOrgType(dict.getDictCode());
-                    }
-                }
+        //取法确保上级机构在子机构插入之前已经在数据库存在。那么直接插入，然后再批量更新父级机构行不行
+        for (OrganizationVO vo : list) {
+            //导入时将“部门”转为"DEPT"
+            vo.setOrgType(sysDictMap.get(vo.getOrgType()));
+            //构建vo
+            Integer orgManagerId = userArchiveMem.get(vo.getManagerEmployeeNumber());
+            vo.setOrgManagerId(orgManagerId);
+            vo.setOperatorId(userSession.getArchiveId());
+            vo.setCompanyId(userSession.getCompanyId());
+            vo.setOrgFullName(vo.getOrgName());
+            //先设置默认值
 
-                //构建vo
-                vo.setOrgManagerId(orgManagerId);
-                vo.setOperatorId(userSession.getArchiveId());
-                vo.setCompanyId(userSession.getCompanyId());
-                vo.setSortId(sortId);
-                sortId += 1000;
-                //TODO 根据部门负责人编号  查询档案id
-                vo.setOrgManagerId(userSession.getArchiveId());
-                //查询父机构的全称  设置全称
-                if (Objects.isNull(parentOrg)) {
+            //根据机构编码判断是否存在
+            Integer orgId = orgMapMem.get(vo.getOrgCode());
+
+            vo.setSortId(1000);//先设默认
+
+            //已存在 则更新
+            if (Objects.nonNull(orgId) && 0 != orgId) {
+                if (StringUtils.isBlank(vo.getOrgParentCode())) {
                     vo.setOrgParentId(0);
-                    vo.setOrgFullName(vo.getOrgName());
-                } else {
-                    vo.setOrgParentId(parentOrg.getOrgId());
-                    vo.setOrgFullName(parentOrg.getOrgFullName() + "/" + vo.getOrgName());
-                    if (parentOrg.getOrgType().equalsIgnoreCase("GROUP")) {
-                        vo.setOrgFullName(vo.getOrgName());
-                    }
                 }
-
-                //已存在 则更新
-                if (Objects.nonNull(ifExistVo)) {
-                    //根据机构编码与企业id进行更新
-                    organizationDao.updateByOrgCode(vo);
-                } else {
-                    organizationDao.insertSelective(vo);
-                    //维护机构与角色
-                    apiAuthService.addOrg(vo.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
-                }
+                //根据机构编码与企业id进行更新
+                forUpdateVoList.add(vo);
+            } else {
+                vo.setOrgParentId(0);
+                forInsertVoList.add(vo);
             }
+
         }
+        //进行批量更新和插入
+        if (CollectionUtils.isNotEmpty(forUpdateVoList)) {
+            organizationDao.batchUpdateByOrgCode(forUpdateVoList);
+        }
+        if (CollectionUtils.isNotEmpty(forInsertVoList)) {
+            //TODO 默认大于10000条报错
+            organizationDao.batchInsert(forInsertVoList);
+        }
+
+        updateOrgParentInfo(userSession, list);
+
+    }
+
+    private void updateOrgParentInfo(UserSession userSession, List<OrganizationVO> list) {
+        //2.更新机构全程、父机构id,维护机构与角色、sort_id
+        Map<String, OrganizationVO> orgMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub,(listSubOld, listSubNew) -> listSubNew));
+        Map<String, Integer> parentOrgCodeIdMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub.getOrgParentId(),(listSubOld, listSubNew) -> listSubNew));
+        Map<String, String> parentOrgCodeNameMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().filter(a->null!=a.getOrgFullName()).collect(Collectors.toMap(OrganizationVO::getOrgCode, listSub -> listSub.getOrgFullName(),(listSubOld, listSubNew) -> listSubNew));
+        Map<String, String> orgCodeTypeMap = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId()).stream().collect(Collectors.toMap(OrganizationVO::getOrgCode, OrganizationVO::getOrgType));
+        int i=0;
+        for (OrganizationVO vo : list) {
+            if(StringUtils.isBlank(vo.getOrgParentCode())){
+                continue;
+            }
+            Integer parentId = parentOrgCodeIdMap.get(vo.getOrgCode());
+            String toParentCode = orgMap.get(vo.getOrgCode()).getOrgParentCode();
+
+
+            //TODO 这个判断条件的我调了四小时 菜透了
+           // if((null!=toParentCode&&!toParentCode.equals(vo.getOrgParentCode()))||(null==parentId||parentId==0)){
+                System.out.println("夫机构id："+parentId);
+                Integer toParentId = orgMap.get(vo.getOrgParentCode()).getOrgId();
+                vo.setOrgParentId(toParentId);
+                //TODO 全局名称有问题
+                if(null!=parentOrgCodeNameMap.get(vo.getOrgParentCode())){
+                    vo.setOrgFullName(parentOrgCodeNameMap.get(vo.getOrgParentCode()) + "/" + vo.getOrgName());
+                }else{
+                    vo.setOrgFullName(parentOrgCodeNameMap.get( vo.getOrgName()));
+                }
+                if ("GROUP".equalsIgnoreCase(orgCodeTypeMap.get(vo.getOrgParentCode()))) {
+                    vo.setOrgFullName(vo.getOrgName());
+                }
+                organizationDao.updateByOrgCode(vo);
+                i++;
+                apiAuthService.addOrg(orgMap.get(vo.getOrgCode()).getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
+           // }
+
+
+
+           /* //如果父级机构id为空的话就去更新
+            OrganizationVO currentOrg = orgCodeIdMap.get(vo.getOrgCode());
+            if(currentOrg.getOrgParentId()==0||null==currentOrg.getOrgParentId()){
+                OrganizationVO parentOrg=parentOrgCodeIdMap.get(vo.getOrgParentCode());
+                if(Objects.isNull(parentOrg)){
+                   continue;
+                }
+                vo.setOrgParentId(parentOrg.getOrgId());
+                vo.setOrgFullName(parentOrg.getOrgFullName() + "/" + vo.getOrgName());
+                if ("GROUP".equalsIgnoreCase(orgCodeTypeMap.get(vo.getOrgParentCode()))) {
+                    vo.setOrgFullName(vo.getOrgName());
+                }
+                organizationDao.updateByOrgCode(vo);
+                apiAuthService.addOrg(currentOrg.getOrgId(), vo.getOrgParentId(), userSession.getArchiveId());
+
+            }*/
+
+        }
+        System.out.println("==============:"+i);
+
+        System.out.println(list);
     }
 
 
@@ -606,28 +652,49 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             }
 
             //TODO 判断同级下机构是否重名 这个逻辑存在一个小问题，影响不大
-            if (StringUtils.isNotBlank(organizationVO.getOrgName()) && StringUtils.isNotBlank(organizationVO.getOrgCode())) {
-                List<OrganizationVO> filterList = dataList.stream().filter(a -> a.getOrgParentCode().equals(organizationVO.getOrgParentCode()) && organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
+            if (StringUtils.isNotBlank(organizationVO.getOrgName()) && StringUtils.isNotBlank(organizationVO.getOrgCode()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
+                List<OrganizationVO> filterList = dataList.stream().filter(a -> null != a.getOrgParentCode() && a.getOrgParentCode().equals(organizationVO.getOrgParentCode())
+                        && organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(filterList) && filterList.size() > 1) {
                     organizationVO.setCheckResult(false);
-                    resultMsg.append("机构名称在同级下重名 | ");
+                    resultMsg.append("机构名称在excel同级下重名 | ");
+                }//如果excel中不重名那么到数据库中再查一次
+                else {
+                    //根据父级机构编码机构和机构名称查询(数据库中已有数据理论上不会重名)
+                    List<OrganizationVO> filterList2 = organizationVOListMem.stream().filter(a -> null != a.getOrgParentCode() && a.getOrgParentCode().equals(organizationVO.getOrgParentCode())
+                            && organizationVO.getOrgName().equals(a.getOrgName())).collect(Collectors.toList());
+                    if (filterList2.size() > 1) {
+                        System.out.println("数据库中存在同级下的同名机构脏数据");
+                    }
+                    //如果filterList2不为空，并且机构编码不等 ，则判断重名
+                    if (CollectionUtils.isNotEmpty(filterList2) && !filterList2.get(0).getOrgCode().equals(organizationVO.getOrgCode())) {
+                        organizationVO.setCheckResult(false);
+                        resultMsg.append("excel中机构名称与数据库中机构名称在同级下重名 | ");
+                    }
                 }
             }
-            if (StringUtils.isNotBlank(organizationVO.getOrgType()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
-                String parentOrgType = organizationVOListMem.stream().filter(a -> organizationVO.getOrgParentCode().equals(a.getOrgParentCode())).map(a -> a.getOrgType()).findFirst().get();
-                if ("集团".equals(organizationVO.getOrgType())) {
-                    if ("UNIT".equals(parentOrgType) || "DEPT".equals(parentOrgType)) {
-                        organizationVO.setCheckResult(false);
-                        resultMsg.append("集团的上级机构不能是单位或部门 | ");
+            //TODO 判断导入的机构类型
+           /* if (StringUtils.isNotBlank(organizationVO.getOrgType()) && StringUtils.isNotBlank(organizationVO.getOrgParentCode())) {
+                Optional<String> parentOrgType = organizationVOListMem.stream().filter(a -> organizationVO.getOrgParentCode().equals(a.getOrgParentCode())).map(a -> a.getOrgType()).findFirst();
+                if(parentOrgType.isPresent()){
+                    if ("集团".equals(organizationVO.getOrgType())) {
+                        if ("UNIT".equals(parentOrgType) || "DEPT".equals(parentOrgType)) {
+                            organizationVO.setCheckResult(false);
+                            resultMsg.append("集团的上级机构不能是单位或部门 | ");
+                        }
+                    } else if ("单位".equals(organizationVO.getOrgType())) {
+                        if ("DEPT".equals(parentOrgType)) {
+                            organizationVO.setCheckResult(false);
+                            resultMsg.append("单位的上级机构不能是部门 | ");
+                        }
                     }
-                } else if ("单位".equals(organizationVO.getOrgType())) {
-                    if ("DEPT".equals(parentOrgType)) {
-                        organizationVO.setCheckResult(false);
-                        resultMsg.append("单位的上级机构不能是部门 | ");
-                    }
+                }else{
+                    organizationVO.setCheckResult(false);
+                    resultMsg.append("部门不存在 | ");
                 }
 
-            }
+
+            }*/
 
 
             //判断机构类型 1、单位的上级机构不能是部门 2、集团的上级机构不能是单位、部门
@@ -731,6 +798,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (CollectionUtils.isEmpty(orgIds)) {
             return;
         }
+
+        //不能删除集团 TODO
+        OrganizationVO topOrg= organizationDao.getTopOrganization(userSession.getCompanyId());
+        if(orgIds.contains(topOrg.getOrgId())){
+            ExceptionCast.cast(CommonCode.TOPORG_CAN_NOT_DEL);
+        }
+
+        //organizationDao.listAllOrgIdsByArchiveId()
+
         for (int i = orgIds.size() - 1; i >= 0; i--) {
             boolean b = ensureRight(orgIds.get(i), userSession.getArchiveId(), new Date());
             if (b) {
@@ -740,6 +816,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
         if (CollectionUtils.isEmpty(idList)) {
             return;
         }
+
+
+
         /*          //去重
         idList = MyCollectionUtil.removeDuplicate(idList);*/
         //再遍历机构id列表，通过每一个机构id来查询人员档案表等表是否存在相关记录
@@ -827,7 +906,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             newOrgVO.setCompanyId(userSession.getCompanyId());
             newOrgVO.setOrgParentId(parentOrgId);
             newOrgVO.setIsEnable(Short.parseShort("1"));
-            //TODO 新机构的类型如何设置
+            //由于在前端做了 不同机构类型 不能合并的校验，所以新机构的类型取其中一个即可 phs
             newOrgVO.setOrgType(organizationVOList.get(0).getOrgType());
             newOrgVO.setOrgFullName(parentOrg.getOrgFullName() + "/" + newOrgVO.getOrgName());
             organizationDao.insert(newOrgVO);
@@ -870,23 +949,48 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     }
 
     //=====================================================================
+    //TODO 前端控制，机构不能划转到自己及自己的子机构下面 phs
     @Override
     @OrganizationTransferAnno
     public void transferOrganization(OrganizationTransferBO orgTransferBO, UserSession userSession) {
-        List<OrganizationVO> ready2TransferOrgs = null;
-        Integer targetOrgId = orgTransferBO.getTargetOrgId();
-        List<Integer> orgIds = orgTransferBO.getOrgIds();
-
-        if (!CollectionUtils.isEmpty(orgTransferBO.getOrgIds())) {
-            ready2TransferOrgs = organizationDao.listOrgnizationByIds(orgIds);
-            //判断重名
-            for (OrganizationVO org : ready2TransferOrgs) {
-                judgeDuplicateName(String.valueOf(org.getOrgId()), org.getOrgName(), orgTransferBO.getTargetOrgId());
-            }
-
-        } else {
+        //外部接口做空值判断
+        if (CollectionUtils.isEmpty(orgTransferBO.getOrgIds())) {
             //待划转机构不存在
             ExceptionCast.cast(CommonCode.ORIGIN_NOT_EXIST);
+        }
+        if (Objects.isNull(orgTransferBO.getTargetOrgId())) {
+            ExceptionCast.cast(CommonCode.TARGET_NOT_EXIST);
+        }
+        //内部接口进行业务处理
+        doTransfer(orgTransferBO, userSession);
+
+    }
+
+    private void doTransfer(OrganizationTransferBO orgTransferBO, UserSession userSession) {
+        Integer targetOrgId = orgTransferBO.getTargetOrgId();
+        List<Integer> orgIds = orgTransferBO.getOrgIds();
+        //首先 权限判断
+        for (Integer orgId : orgIds) {
+            boolean bool = ensureRight(orgId, userSession.getArchiveId(), new Date());
+            if (!bool) {
+                //无权
+                ExceptionCast.cast(CommonCode.UNAUTHORISE);
+            }
+        }
+        //查询出待划转机构，用于判断重名、判断是否同级、判断带划转机构是否已存在于目标机构下等
+        List<OrganizationVO> ready2TransferOrgs = organizationDao.listOrgnizationByIds(orgIds);
+        //理论上，既然前端传了id过来，那么ready2TransferOrgs就不应为空，为空则表示后端sql查询有误
+        if (CollectionUtils.isEmpty(ready2TransferOrgs)) {
+            ExceptionCast.cast(CommonCode.SERVER_ERROR);
+        }
+        //判断重名 TODO 考虑性能 phs
+        for (OrganizationVO org : ready2TransferOrgs) {
+            judgeDuplicateName(String.valueOf(org.getOrgId()), org.getOrgName(), orgTransferBO.getTargetOrgId());
+        }
+        //如果查到不同的父级id，说明不再同层级下
+        Set<Integer> OrgParentIds = ready2TransferOrgs.stream().map(org -> org.getOrgParentId()).collect(Collectors.toSet());
+        if (OrgParentIds.size() != 1) {
+            ExceptionCast.cast(CommonCode.NOT_SAME_LEVEL_EXCEPTION);
         }
         //如果待划转机构已经在目标机构下，不允许重复划转
         boolean bool = ready2TransferOrgs.stream().anyMatch(org -> null != org.getOrgParentId() && org.getOrgParentId().equals(targetOrgId));
@@ -894,29 +998,23 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             //请勿重复操作
             ExceptionCast.cast(CommonCode.TRANSFER_REPET_OPERATION);
         }
-        //判断是否是同一个父级下的，不是同一个父级下的待划转机构不允许划转
-        if (!CollectionUtils.isEmpty(ready2TransferOrgs)) {
-            //如果查到不同的父级id，说明不再同层级下
-            Set<Integer> OrgParentIds = ready2TransferOrgs.stream().map(org -> org.getOrgParentId()).collect(Collectors.toSet());
-            if (OrgParentIds.size() != 1) {
-                ExceptionCast.cast(CommonCode.NOT_SAME_LEVEL_EXCEPTION);
-            }
-            OrganizationVO targetOrg = organizationDao.getOrganizationById(targetOrgId);
-            if (Objects.isNull(targetOrg)) {
-                ExceptionCast.cast(CommonCode.TARGET_NOT_EXIST);
-            }
-            //注释1：如果带划转机构的单位id(取其中一个就可以了，为了提升性能)和目标机构单位id不一致  则修改划转机构下人员档案的单位id
-            Integer sourceBusunessUnitId = getBusunessUnitIdByOrgId(orgIds.get(0));
-            Integer targetBusunessUnitId = getBusunessUnitIdByOrgId(targetOrgId);
-            //Integer不能使用==来判断
-            if (!sourceBusunessUnitId.equals(targetBusunessUnitId)) {
-                userArchiveDao.batchUpdateBusunessUnitId(orgIds, targetBusunessUnitId);
-            }
-            //!!!  划重点，doTransfer必须要在注释1代码执行之后
-            doTransfer(ready2TransferOrgs, targetOrg);
+        //查询出目标机构
+        OrganizationVO targetOrg = organizationDao.getOrganizationById(targetOrgId);
+        if (Objects.isNull(targetOrg)) {//理论上，既然前端传了id过来，那么targetOrg就不应为空，为空则表示后端sql查询有误
+            ExceptionCast.cast(CommonCode.SERVER_ERROR);
         }
+        //注释1：如果带划转机构的单位id(取其中一个就可以了，为了提升性能)和目标机构单位id不一致  则修改划转机构下人员档案的单位id
+        //TODO 此处可能有判断不到位的漏洞 phs
+        Integer sourceBusunessUnitId = getBusunessUnitIdByOrgId(orgIds.get(0));
+        Integer targetBusunessUnitId = getBusunessUnitIdByOrgId(targetOrgId);
+        //Integer不能使用==来判断
+        if (!sourceBusunessUnitId.equals(targetBusunessUnitId)) {
+            userArchiveDao.batchUpdateBusunessUnitId(orgIds, targetBusunessUnitId);
+        }
+        //!!!TODO  划重点，exceTransfer必须要在注释1代码执行之后  别问为什么 phs
+        exceTransfer(ready2TransferOrgs, targetOrg);//递归执行真正的划转操作
         //没必要再分配权限了，因为划转的机构，机构id不变
-        //TODO apiAuthService.transferOrg(orgIds, targetOrgId, userSession.getArchiveId());
+        //apiAuthService.transferOrg(orgIds, targetOrgId, userSession.getArchiveId());
     }
 
     //=====================================================================
@@ -994,15 +1092,9 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
      *
      * @param targetOrg
      */
-    private void doTransfer(List<OrganizationVO> originOrgList, OrganizationVO targetOrg) {
-        String orgType = "DEPT";
-        if (targetOrg.getOrgType().equalsIgnoreCase("GROUP")) {
-            orgType = "UNIT";
-        } else if (targetOrg.getOrgType().equalsIgnoreCase("UNIT")) {
-            orgType = "DEPT";
-        } else {
-            orgType = "DEPT";
-        }
+    private void exceTransfer(List<OrganizationVO> originOrgList, OrganizationVO targetOrg) {
+        //由于前端已经做了类型校验 TODO 后端考虑是否有必要咱i校验一次，这里暂时不校验了 phs
+
         List<OrganizationVO> listSonOrganization = organizationDao.listSonOrganization(targetOrg.getOrgId());
         Integer sortId = generateOrgSortId(listSonOrganization);
         String orgCode = generateOrgCode(targetOrg.getOrgId());
@@ -1011,14 +1103,15 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
             originOrg.setSortId(sortId);
             originOrg.setOrgCode(orgCode);
             orgCode = culOrgCode(orgCode);
-            originOrg.setOrgType(orgType);
+            originOrg.setOrgType(originOrg.getOrgType());//TODO 划转后机构类型不必改变，前端已做好控制，不控制好 将会产生类似 部门下存在单位、集团等脏数据，考虑后端也做一次校验
             originOrg.setOrgParentId(targetOrg.getOrgId());
             originOrg.setOrgFullName(targetOrg.getOrgFullName() + "/" + originOrg.getOrgName());
             organizationDao.updateOrganization(originOrg);
+            //TODO 如果originOrg是targetOrg的子机构，将会死循环
             List<OrganizationVO> secondOriginOrgList = organizationDao.listSonOrganization(originOrg.getOrgId());
             //递归
             if (!CollectionUtils.isEmpty(secondOriginOrgList)) {
-                doTransfer(secondOriginOrgList, originOrg);
+                exceTransfer(secondOriginOrgList, originOrg);
             }
         }
     }
@@ -1086,7 +1179,7 @@ public class OrganizationServiceImpl extends AbstractOrganizationHelper<Organiza
     }
 
     /**
-     * 判断是否有操作权限
+     * 判断是否有操作权限，删除和封存 需要用到
      *
      * @return
      */

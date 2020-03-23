@@ -28,6 +28,7 @@ import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleServi
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
+import com.qinjee.masterdata.service.userinfo.UserInfoService;
 import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -82,7 +83,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     private ArchiveAuthService archiveAuthService;
     @Autowired
     private PositionLevelDao positionLevelDao;
-
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
@@ -127,6 +129,12 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
     @Override
     public void deleteUserArchive(Map<Integer, Integer> idsMap, Integer currentArchiveId, Integer companyId) {
         //TODO 删人员在后续会通过走流程控制，目前只要有删除用户权限即可进行删除操作，可以先忽略这种情况
+        //查询出超级超级管理员(企业创建人)，不能删除
+        UserArchiveVo ua= userArchiveDao.getCompanyCreator(companyId);
+        Set<Integer> userIds = idsMap.keySet();
+        if(userIds.contains(ua.getUserId())){
+            ExceptionCast.cast(CommonCode.CREATER_CAN_NOT_DEL);
+        }
         //entry中key为userId，value为archiveId
         for (Map.Entry<Integer, Integer> entry : idsMap.entrySet()) {
             //TODO 权限判断 未完整
@@ -184,10 +192,8 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
      * 3.新增档案（用户在一家企业下只有一份档案）
      */
     public ResponseResult<Integer> addUserArchive(UserArchiveVo userArchiveVo, UserSession userSession) {
-
         //黑名单校验
         List<Blacklist> blacklistsMem = blacklistDao.selectByPage(userSession.getCompanyId());
-
         if (CollectionUtils.isNotEmpty(blacklistsMem)) {
             //”XX曾于XX年月日被XX公司因XX原因被列入黑名单，不允许入职/投递简历，请联系该公司处理!"
             //查询公司名称
@@ -218,11 +224,13 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
             String p = StringUtils.substring(userArchiveVo.getPhone(), userArchiveVo.getPhone().length() - 6, userArchiveVo.getPhone().length());
             userInfo.setPassword(MD5Utils.getMd5(p));
             userLoginDao.addUserInfo(userInfo);
+
         } else {
             UserInfo user = userInfoDao.getUserByPhoneAndCompanyId(userArchiveVo.getPhone(), userSession.getCompanyId());
             if (Objects.nonNull(user)) {
                 ExceptionCast.cast(CommonCode.PHONE_ALREADY_EXIST);
             }
+            userInfoService.changeCompany(userInfo.getUserId(),userSession.getCompanyId());
         }
 
         //维护员工企业关系表
@@ -275,6 +283,7 @@ public class UserArchiveServiceImpl extends AbstractOrganizationHelper<UserArchi
                         userCompany.setCompanyId(userSession.getCompanyId());
                         userCompany.setIsEnable((short) 1);
                         userCompanyDao.insertSelective(userCompany);
+                        userInfoService.changeCompany(user.getUserId(),userSession.getCompanyId());
                     } else {
                         //不存在账号，新注册一个账号并绑定当前企业
                         user = new UserInfo();

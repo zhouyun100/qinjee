@@ -217,6 +217,9 @@
             <if test="servingAge != null">
                 serving_age,
             </if>
+            <if test="servingDate != null">
+                serving_date,
+            </if>
             <if test="workingPeriod != null">
                 working_period,
             </if>
@@ -340,6 +343,9 @@
             <if test="servingAge != null">
                 #{servingAge,jdbcType=INTEGER},
             </if>
+            <if test="servingDate != null">
+                #{servingDate},
+            </if>
             <if test="workingPeriod != null">
                 #{workingPeriod,jdbcType=INTEGER},
             </if>
@@ -460,6 +466,9 @@
                 </if>
                 <if test="item.servingAge != null">
                     serving_age,
+                </if>
+                <if test="item.servingDate != null">
+                    serving_date,
                 </if>
                 <if test="item.workingPeriod != null">
                     working_period,
@@ -588,6 +597,9 @@
                 </if>
                 <if test="item.servingAge != null">
                     #{item.servingAge,jdbcType=INTEGER},
+                </if>
+                <if test="item.servingDate != null">
+                    #{item.servingDate},
                 </if>
                 <if test="item.workingPeriod != null">
                     #{item.workingPeriod,jdbcType=INTEGER},
@@ -1306,7 +1318,7 @@
         )
         and arc.company_id=#{companyId}
         <if test="message !=null">
-            and (arc.org_id is null or arc.is_delete=0)
+            or (arc.org_id is null and arc.is_delete=0 and arc.company_id=#{companyId})
         </if>
         )t
         where 1=1
@@ -1677,6 +1689,19 @@
         </foreach>
 
     </update>
+
+    <select id="getCompanyCreator" parameterType="integer" resultMap="BaseResultMap">
+        SELECT
+         tua.archive_id,tua.user_id,tua.user_name
+        FROM
+        t_user_archive tua
+        LEFT JOIN t_user_role tur
+         ON tur.archive_id = tua.archive_id
+        LEFT JOIN t_role tr
+         ON tur.role_id = tr.role_id
+         AND tur.is_delete = 0
+        WHERE tr.is_system_define = 1 AND tua.company_id =#{companyId} AND tua.is_delete = 0 LIMIT 1
+    </select>
 
     <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         SELECT

@@ -142,7 +142,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId,String
                                                                      whereSql,String orderSql) {
-        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,companyId,whereSql,orderSql );
+        short mark=0;
+        if(CollectionUtils.isNotEmpty ( status )&& status.contains ( "即将到期" )){
+            mark=1;
+            status.clear ();
+        }
+
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,companyId,whereSql,orderSql,mark );
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
               if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ())
               ||contractWithArchiveVo.getContractEndDate()==null || contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate().after(new Date()) ||
@@ -349,6 +355,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
             BeanUtils.copyProperties ( laborContract, cri );
             cri.setCompanyId ( userSession.getCompanyId () );
             cri.setOperatorId ( userSession.getArchiveId () );
+            cri.setCreateTime(new Date());
+            cri.setCreateTime ( new Date (  ) );
             cri.setIntentionStatus ( NOTCONFIRM );
             contractRenewalIntentions.add ( cri );
         }
@@ -403,6 +411,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         contractRenewalIntention.setRenewalOpinion ( RENEWAGREE );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
         contractRenewalIntention.setIsAgree ( ( short ) 1 );
+        contractRenewalIntention.setUpdateTime(new Date());
         //TODO 还剩续签意见还未设置
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
     }
@@ -415,6 +424,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //更改续签意向表
         contractRenewalIntention.setRenewalOpinion ( RENEWREJECT );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
+        contractRenewalIntention.setUpdateTime ( new Date (  ) );
         contractRenewalIntention.setIsAgree ( ( short ) 0 );
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
         //前端跳转至解除合同页面
@@ -426,11 +436,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public PageResult < RenewIntentionVo > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo) {
+    public PageResult < RenewIntentionVo > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
         PageHelper.startPage ( requestUserarchiveVo.getCurrentPage (), requestUserarchiveVo.getPageSize () );
         String whereSql = DealHeadParamUtil.getWhereSql ( requestUserarchiveVo.getList (), "t." );
         String orderSql = DealHeadParamUtil.getOrderSql ( requestUserarchiveVo.getList (), "t." );
-        List < RenewIntentionVo > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql );
+        List < RenewIntentionVo > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql,userSession.getArchiveId (),userSession.getCompanyId () );
         return new PageResult <> ( list );
     }
 

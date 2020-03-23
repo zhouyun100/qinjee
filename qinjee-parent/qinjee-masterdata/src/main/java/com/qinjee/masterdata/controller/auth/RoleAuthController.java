@@ -538,9 +538,9 @@ public class RoleAuthController extends BaseController{
     @ApiOperation(value="修改角色机构权限", notes="修改角色机构权限")
     @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.POST)
     public ResponseResult updateRoleOrgAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\norgIdList：机构ID集合")RequestRoleAuthVO requestRoleAuthVO) {
-        if(null == requestRoleAuthVO.getRoleId() || CollectionUtils.isEmpty(requestRoleAuthVO.getOrgIdList())){
+        if(null == requestRoleAuthVO.getRoleId()){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("角色ID或机构ID不能为空!");
+            responseResult.setMessage("角色ID不能为空!");
             return responseResult;
         }
         try{

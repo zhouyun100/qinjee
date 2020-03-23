@@ -96,6 +96,7 @@ public class ApiAuthServiceImpl implements ApiAuthService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int addOrg(Integer orgId, Integer parentOrgId, Integer operatorId) {
+        System.out.println("orgId:"+orgId+",parentOrgId:"+parentOrgId+",operatorId:"+operatorId);
         int resultNum = 0;
         List<Role> roleList = apiAuthDao.searchAutoAuthChildOrgRoleList(parentOrgId);
 
@@ -116,6 +117,15 @@ public class ApiAuthServiceImpl implements ApiAuthService {
         }
         return resultNum;
     }
+
+    @Override
+    public int importOrg(List <Integer> orgIds,  Integer operatorId) {
+
+       // apiAuthDao.
+        return 0;
+    }
+
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
