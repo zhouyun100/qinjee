@@ -57,7 +57,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://qinjee:qinjee2019@193.112.188.180:8888/eureka/
-
+#
 server:
   port: 8010
   tomcat:
