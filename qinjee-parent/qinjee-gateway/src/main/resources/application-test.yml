@@ -20,8 +20,8 @@ spring:
 
 zuul:
   host:
-    connect-timeout-millis: 60000
-    socket-timeout-millis: 60000
+    connect-timeout-millis: 10000
+    socket-timeout-millis: 10000
   #  sensitiveHeaders的默认值初始值是"Cookie", "Set-Cookie", "Authorization"这三项，不设置为空会导致无法设置cookie
   sensitive-headers:
   prefix: /api
@@ -82,24 +82,10 @@ ribbon:
 
 
 #
-
-
 hystrix:
-  threadpool:
-    default:
-      # 核心线程池大小  默认10
-      coreSize: 100
-      # 最大最大线程池大小
-      maximumSize: 200
-      # 此属性允许maximumSize的配置生效。 那么该值可以等于或高于coreSize。 设置coreSize <maximumSize会创建一个线程池，该线程池可以支持maximumSize并发，但在相对不活动期间将向系统返回线程。 （以keepAliveTimeInMinutes为准）
-      allowMaximumSizeToDivergeFromCoreSize: true
-      # 请求等待队列
-      maxQueueSize: 500
-      # 队列大小拒绝阀值 在还未超过请求等待队列时也会拒绝的大小
-      queueSizeRejectionThreshold: 400
   command:
     default:
-      #    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
+#    UserLoginController#sendCodeByMobile(String):  #default全局有效 默认值为 commonKey commonKey生成方法在 Feign.configKey(target.type(), method) 中
       fallback:
         enabled: true
       execution:
@@ -112,7 +98,10 @@ hystrix:
           #SEMAPHORE - 它在调用线程上执行，并发请求受到信号量计数的限制
           #对比：https://www.cnblogs.com/java-synchronized/p/7927726.html
           thread:
-            timeoutInMilliseconds: 60000 #断路器超时时间，默认1000ms
+            #断路器超时时间，默认1000ms
+            timeoutInMilliseconds: 60000
+
+
 feign:
   hystrix:
     enabled: true
