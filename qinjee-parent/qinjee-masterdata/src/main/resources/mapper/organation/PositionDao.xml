@@ -146,8 +146,8 @@
     </select>
 
     <select id="getPositionPage" resultMap="BaseResultMap">
-        select tp.position_id, tp.position_name, tp.position_group_id, tp.operator_id, tp.create_time,
-        tp.is_delete,tpg.position_group_name
+        select position_id, position_name, position_group_id,position_group_name from (
+        select tp.sort_id,tp.position_id, tp.position_name, tp.position_group_id,tpg.position_group_name
         from t_position tp LEFT JOIN t_position_group tpg ON tp.position_group_id =tpg.position_group_id
         where tpg.is_delete=0
         AND tp.is_delete = 0
@@ -156,12 +156,21 @@
                 and tp.position_group_id = #{pageVo.positionGroupId}
             </if>
         </if>
-        order by tp.sort_id ASC
+        ) tp2
+        <if test="whereSql !=null">
+            where 1 = 1
+            ${whereSql}
+        </if>
+        order by tp2.sort_id ASC
+        <if test="orderSql !=null">
+            ,
+            ${orderSql}
+        </if>
     </select>
 
     <select id="getPositionByNameAndCompanyId" resultMap="BaseResultMap">
     SELECT tp.position_id FROM t_position tp
-    LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id
+    LEFT JOIN t_position_group tpg ON tpg.position_group_id =tp.position_group_id AND tpg.is_delete =0
     WHERE tpg.company_id=#{companyId} AND tp.position_name=#{positionName} and  tp.is_delete =0
   </select>
     <select id="getSinglePositionList" resultMap="BaseResultMap">
@@ -191,7 +200,8 @@
     <select id="getPositionListByCompanyId" resultMap="BaseResultMap">
         select
         tp.position_id,tp.position_name
-        from t_position  tp left join t_position_group tpg on tpg.position_group_id =tp.position_group_id
+        from t_position  tp left join t_position_group tpg
+        on tpg.position_group_id =tp.position_group_id AND tpg.is_delete=0
         where tpg.company_id =#{companyId} and tp.is_delete =0
     </select>
 

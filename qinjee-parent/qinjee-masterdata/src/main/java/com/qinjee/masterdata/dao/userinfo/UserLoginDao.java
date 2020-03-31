@@ -14,6 +14,7 @@ import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatBindParamVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -54,11 +55,25 @@ public interface UserLoginDao {
     UserInfoVO searchUserInfoByUserIdAndCompanyId(RequestLoginVO userLoginVO);
 
     /**
-     * 根据用户ID修改用户信息
+     * 根据用户ID和密码设置新密码
      * @param userLoginVO
      * @return
      */
     int updateUserPasswordByUserIdAndPassword(RequestLoginVO userLoginVO);
+
+    /**
+     * 根据用户ID设置新密码
+     * @param userLoginVO
+     * @return
+     */
+    int updateUserPasswordByUserId(RequestLoginVO userLoginVO);
+
+    /**
+     * 微信绑定
+     * @param wechatBindParamVO
+     * @return
+     */
+    int updateUserWechatBindByPhone(WechatBindParamVO wechatBindParamVO);
 
     /**
      * 根据档案ID和企业ID查询功能菜单列表

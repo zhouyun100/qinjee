@@ -13,6 +13,8 @@ package com.qinjee.masterdata.service.userinfo;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatBindParamVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatLoginResultVO;
 
 import java.util.List;
 
@@ -54,13 +56,21 @@ public interface UserLoginService {
     UserInfoVO searchUserInfoByUserIdAndCompanyId(Integer userId, Integer companyId);
 
     /**
-     * 根据用户ID修改用户密码
+     * 根据用户ID和密码设置新密码
      *
      * @param userId 用户ID
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      */
     int updateUserPasswordByUserIdAndPassword(Integer userId, String oldPassword, String newPassword);
+
+    /**
+     * 根据用户ID设置新密码
+     * @param userId
+     * @param newPassword
+     * @return
+     */
+    int updateUserPasswordByUserId(Integer userId, String newPassword);
 
     /**
      * 根据档案ID和企业ID查询功能菜单树
@@ -83,7 +93,7 @@ public interface UserLoginService {
      * @param code
      * @return
      */
-    UserInfoVO searchUserInfoByWeChatCode(String code);
+    WechatLoginResultVO searchWechatUserInfoByWeChatCode(String code);
 
     /**
      * 根据手机号查询登录用户详情
@@ -91,4 +101,11 @@ public interface UserLoginService {
      * @return
      */
     UserInfo searchUserInfoDetailByPhone(String phone);
+
+    /**
+     * 微信绑定
+     * @param wechatBindParamVO
+     * @return
+     */
+    int updateUserWechatBindByPhone(WechatBindParamVO wechatBindParamVO);
 }

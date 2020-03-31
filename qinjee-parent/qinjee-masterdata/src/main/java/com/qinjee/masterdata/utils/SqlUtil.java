@@ -41,6 +41,7 @@ public class SqlUtil {
             if (customTableVO.getIsSystemDefine ()==0) {
                 Integer tableId = customTableVO.getTableId ();
                 String d = " LEFT JOIN t_custom_archive_table_data " + "t" + tableId + " ON t0.archive_id = t" + tableId + ".business_id and t" + tableId + ".table_id=" + tableId;
+
                 stringBuffer1.append ( d );
             }
         }

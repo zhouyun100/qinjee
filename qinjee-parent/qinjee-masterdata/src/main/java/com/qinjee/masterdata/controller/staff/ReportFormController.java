@@ -8,6 +8,7 @@ import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.controller.organization.OrganizationController;
 import com.qinjee.masterdata.model.vo.staff.RegulationCountVo;
 import com.qinjee.masterdata.model.vo.staff.RegulationDetailVo;
+import com.qinjee.masterdata.model.vo.staff.ReportRegulationCountBO;
 import com.qinjee.masterdata.service.staff.ReportFormService;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
@@ -120,27 +121,11 @@ public class ReportFormController extends BaseController {
 
     @PostMapping(value = "/selectOrgRegulationCount")
     @ApiOperation(value = "测试 显示增减员统计表 {\"orgIds\":[28,671,672,673,674,675,679,678,680,681,676],\"startDate\":\"2019-12-01\",\"endDate\":\"2019-12-07\",\"layer\":2}", notes = "彭洪思")
-    public ResponseResult selectOrgRegulationCount( @RequestBody Map<String,Object> paramMap){
+    public ResponseResult selectOrgRegulationCount( @RequestBody ReportRegulationCountBO paramBO){
         //参数校验 List<Integer> orgIds, Date startDate, Date endDate,Integer layer
-        if (checkParam(paramMap)) {
+        if (checkParam(paramBO)) {
             try {
-                List<Integer> orgIds = null;
-                Integer layer = null;
-                Date startDate = null;
-                Date endDate = null;
-                if (paramMap.get("orgIds") != null && paramMap.get("orgIds") instanceof List) {
-                    orgIds = (List<Integer>) paramMap.get("orgIds");
-                }
-                if (paramMap.get("startDate") != null  ) {
-                    startDate=  DateUtil.date(String.valueOf(paramMap.get("startDate")));
-                }
-                if (paramMap.get("endDate") != null ) {
-                    endDate=  DateUtil.date(String.valueOf(paramMap.get("endDate")));
-                }
-                if (paramMap.get("layer") != null ) {
-                    layer = (Integer) paramMap.get("layer");
-                }
-                List<RegulationCountVo> regulationCountList=reportFormService.selectOrgRegulationCount(orgIds,startDate,endDate,layer,getUserSession());
+                List<RegulationCountVo> regulationCountList=reportFormService.selectOrgRegulationCount(paramBO,getUserSession());
                 return new ResponseResult(regulationCountList, CommonCode.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();

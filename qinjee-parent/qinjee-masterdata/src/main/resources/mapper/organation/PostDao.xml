@@ -10,6 +10,7 @@
         <result column="org_code" jdbcType="VARCHAR" property="orgCode"/>
         <result column="parent_post_name" jdbcType="VARCHAR" property="parentPostName"/>
         <result column="position_name" jdbcType="VARCHAR" property="positionName"/>
+        <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName"/>
         <result column="position_id" jdbcType="INTEGER" property="positionId"/>
         <result column="parent_post_code" jdbcType="VARCHAR" property="parentPostCode"/>
         <result column="org_id" jdbcType="INTEGER" property="orgId"/>
@@ -26,7 +27,7 @@
     post_id, post_name, post_code, parent_post_id, org_id, company_id, position_id, sort_id,
     is_enable, operator_id, create_time, update_time, is_delete
   </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="getPostById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_post
@@ -131,7 +132,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.Post">
+    <update id="updateByPrimaryKeySelective"  parameterType="com.qinjee.masterdata.model.entity.Post">
         update t_post
         <set>
             <if test="postName != null">
@@ -189,7 +190,7 @@
       is_delete = #{isDelete,jdbcType=SMALLINT}
     where post_id = #{postId,jdbcType=INTEGER}
   </update>
-    <select id="getPostList" resultType="com.qinjee.masterdata.model.entity.Post">
+    <select id="listPosts" resultType="com.qinjee.masterdata.model.entity.Post">
         SELECT t1.org_id orgId,t1.org_name orgName, parent_org.org_id parentOrgId,parent_org.org_name parentOrgName,
         tp.post_id postId, tp.is_enable isEnable, tp.post_code postCode, tp.post_name postName, ptp.post_name
         parentPostName,
@@ -222,12 +223,12 @@
         LEFT JOIN t_organization parent_org ON parent_org.org_id =t1.org_parent_id
         LEFT JOIN t_post ptp ON ptp.parent_post_id=tp.post_id
         where 1=1
-        <if test="postPageVo != null and (postPageVo.isEnable != null and postPageVo.isEnable == 1)">
-            and tp.is_enable = #{postPageVo.isEnable}
+        <if test="postPageBO != null and (postPageBO.isEnable != null and postPageBO.isEnable == 1)">
+            and tp.is_enable = #{postPageBO.isEnable}
         </if>
-        <if test="postPageVo != null">
-            <if test="postPageVo.querFieldVos != null and postPageVo.querFieldVos.size > 0">
-                <foreach collection="postPageVo.querFieldVos" item="querField">
+        <if test="postPageBO != null">
+            <if test="postPageBO.querFieldVos != null and postPageBO.querFieldVos.size > 0">
+                <foreach collection="postPageBO.querFieldVos" item="querField">
                     <if test="querField.fieldName != null and querField.fieldName != ''">
                         ${querField.condition}
                     </if>
@@ -242,7 +243,7 @@
             ORDER BY ${sortFieldStr}
         </if>
     </select>
-    <select id="getPostListByOrgId" resultMap="BaseResultMap">
+    <select id="listPostsByOrgIdAndEnable" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_post
@@ -261,12 +262,14 @@
         from t_post
         where post_code = #{postCode} and post_name = #{postName}
     </select>
-    <select id="getPostListByPostIds" resultMap="BaseResultMap">
+    <select id="listPostsByPostIds" resultMap="BaseResultMap">
         SELECT
+        GROUP_CONCAT(pl.position_level_name) position_level_name,
         tp.org_id org_id,
         org.org_code,
         org.org_name org_name,
         tp.post_code post_code,
+        tp.parent_post_id,
         tp.post_name post_name,
         tp.post_id post_id ,
         tps.position_name position_name,
@@ -274,6 +277,8 @@
         ptp.post_name parent_post_name
         FROM
         t_post tp
+        LEFT JOIN t_post_level_relation post_level ON tp.post_id = post_level.post_id AND post_level.is_delete =0
+        LEFT JOIN t_position_level pl ON post_level.position_level_id = pl.position_level_id AND pl.is_delete =0
         LEFT JOIN t_organization org ON tp.org_id =org.org_id
         LEFT JOIN t_position tps
         ON tps.position_id = tp.position_id
@@ -283,9 +288,17 @@
             #{id}
         </foreach>
         and tp.is_delete = 0 and tp.is_enable = 1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        GROUP BY tp.post_id
         order by tp.sort_id
+        <if test="orderSql !=null">
+            ,
+            ${orderSql}
+        </if>
     </select>
-    <select id="getPostByOrgId" resultType="java.util.Map">
+    <select id="listPostMapByOrgId" resultType="java.util.Map">
       select
       post_id,post_name
       from t_post
@@ -299,8 +312,9 @@
         from t_post where parent_post_id = #{parentPostId} ORDER BY sort_id DESC
     </select>
 
-    <select id="listPostByOrgIds" resultMap="BaseResultMap">
+    <select id="listPostsByOrgIds" resultMap="BaseResultMap">
         SELECT
+        GROUP_CONCAT(pl.position_level_name) position_level_name,
         tp.org_id org_id,
         org.org_code,
         org.org_name org_name,
@@ -312,6 +326,8 @@
         ptp.post_name parent_post_name
         FROM
         t_post tp
+        LEFT JOIN t_post_level_relation post_level ON tp.post_id = post_level.post_id AND post_level.is_delete =0
+        LEFT JOIN t_position_level pl ON post_level.position_level_id = pl.position_level_id AND pl.is_delete =0
         LEFT JOIN t_organization org ON tp.org_id =org.org_id
         LEFT JOIN t_position tps
         ON tps.position_id = tp.position_id
@@ -321,21 +337,47 @@
             #{id}
         </foreach>
         and tp.is_delete = 0 and tp.is_enable = 1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        GROUP BY tp.post_id
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
 
     </select>
-    <select id="getPostConditionPages" resultMap="BaseResultMap">
+    <select id="getPostList" resultMap="BaseResultMap">
+
+        select
+        position_level_name,
+        org_id ,
+        post_id ,
+        post_code ,
+        parent_post_id ,
+        post_name ,
+        position_name ,
+        position_id ,
+        is_enable,
+        parent_post_name,
+        org_name
+        from (
         SELECT
-        tp.org_id,
-        tp.post_id,tp.post_code,
+        GROUP_CONCAT(pl.position_level_name) position_level_name,
+        tp.org_id ,
+        tp.post_id ,
         tp.is_enable,
-        tp.parent_post_id,
-        tp.post_name,
-        tps.position_name position_name,
-        tps.position_id position_id,
+        tp.post_code ,
+        tp.parent_post_id ,
+        tp.post_name ,
+        tps.position_name ,
+        tps.position_id ,
         ptp.post_name parent_post_name,
         torg.org_name
         FROM
         t_post tp
+        LEFT JOIN t_post_level_relation post_level ON tp.post_id = post_level.post_id AND post_level.is_delete =0
+        LEFT JOIN t_position_level pl ON post_level.position_level_id = pl.position_level_id AND pl.is_delete =0
         LEFT JOIN t_position tps
         ON tps.position_id = tp.position_id
         LEFT JOIN t_post ptp
@@ -343,7 +385,6 @@
         LEFT JOIN t_organization torg
         ON torg.org_id=tp.org_id
         where 1=1
-
         <if test="orgIdList != null and orgIdList.size > 0 ">
             and tp.org_id in
             <foreach collection="orgIdList" item="item" separator="," open="(" close=")">
@@ -355,14 +396,23 @@
             <foreach collection="postIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
-            and tp.org_id =#{postPageVo.orgId}
+            and tp.org_id =#{postPageBO.orgId}
         </if>
         and tp.is_delete = 0
-        <if test="postPageVo.isEnable != null">
+        <if test="postPageBO.isEnable != null">
             and tp.is_enable = 1
         </if>
-
-        ORDER BY tp.sort_id asc
+        GROUP BY tp.post_id
+        order by tp.sort_id asc
+        ) lastTable
+        where 1=1
+        <if test="whereSql != null">
+            ${whereSql}
+        </if>
+        <if test="orderSql != null">
+            order by
+            ${orderSql}
+        </if>
     </select>
 
 
@@ -371,7 +421,7 @@
         <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"></result>
         <result column="user_name" jdbcType="VARCHAR" property="userName"></result>
         <result column="post_id" jdbcType="INTEGER" property="postId"></result>
-<!--        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>-->
+        <!--        <result column="post_name" jdbcType="VARCHAR" property="postName"></result>-->
         <result column="employment_begin_date" jdbcType="TIMESTAMP" property="employmentBeginDate"></result>
         <result column="employment_end_date" jdbcType="TIMESTAMP" property="employmentEndDate"></result>
         <result column="employment_type" jdbcType="VARCHAR" property="employmentType"></result>
@@ -409,7 +459,7 @@
             </where>
         </foreach>
     </update>
-    <select id="selectPostIdAndOrgId" resultType="java.util.Map">
+    <select id="getPostIdAndOrgId" resultType="java.util.Map">
     select org.org_id,post.post_id
     from t_organization org ,t_post post
     where org.org_code=#{org_code}
@@ -417,7 +467,7 @@
     and org.is_enable=1
     and post.is_delete=0
   </select>
-    <select id="selectPostIdAndOrgIdAndsupiorId" resultType="java.util.Map">
+    <select id="getPostIdAndOrgIdAndSupiorId" resultType="java.util.Map">
     select org.org_id,post.post_id,arc.archive_id
     from t_organization org ,t_post post,t_user_archive arch
     left join t_user_archive arc on arch.supervisor_id=arc.archive_id
@@ -431,13 +481,13 @@
 
   </select>
 
-    <select id="listPostByCompanyId" resultMap="BaseResultMap">
-        select post_id,post_name,parent_post_id,org_id,position_id
+    <select id="listPostsByCompanyIdAndEnable" resultMap="BaseResultMap">
+        select sort_id, post_id,post_name,parent_post_id,org_id,position_id
         from t_post where company_id =#{companyId} and is_delete =0
         <if test="isEnable != null ">
             and is_enable = 1
         </if>
-
+        order by sort_id
     </select>
 
     <select id="getPostGraphics" resultMap="BaseResultMap">
@@ -460,30 +510,15 @@
         </if>
     </select>
 
-    <select id="listDirectPostPage" resultMap="BaseResultMap">
-        SELECT tp.post_code,tp.post_id,tp.org_id,tp.parent_post_id,tp.post_name,org.org_code,org.org_name,ptp.post_code
-        parent_post_code,ptp.post_name parent_post_name
+    <select id="listDirectPostPage" resultType="com.qinjee.masterdata.model.entity.Post"
+            parameterType="com.qinjee.masterdata.model.vo.organization.bo.PostBO">
+        SELECT tp.post_id postId,tp.org_id orgId,
+        tp.post_name postName
         FROM t_post tp
-        LEFT JOIN t_organization org ON tp.org_id=org.org_id
-        LEFT JOIN t_post ptp ON ptp.post_id=tp.parent_post_id
-        <where>
-            1=1
-            <if test="postPageVo !=null">
-                <if test="postPageVo.isEnable !=null">
-                    and tp.is_enable = 1
-                </if>
-                <if test="postPageVo.parentPostId ==null or postPageVo.parentPostId ==0">
-                    and tp.org_id =#{postPageVo.orgId} and tp.parent_post_id =0
-                </if>
-                <if test="postPageVo.parentPostId !=null and postPageVo.parentPostId !=0">
-                    and tp.parent_post_id =#{postPageVo.parentPostId}
-                </if>
-            </if>
-        </where>
-        order by tp.sort_id asc
+        where tp.org_id =#{postBO.orgId} and tp.is_delete=0 order by tp.sort_id
     </select>
 
-    <select id="getPostByPostCode" resultMap="BaseResultMap">
+    <select id="getPostsByPostCode" resultMap="BaseResultMap">
          SELECT post_code,post_id,post_name
          from t_post
          where post_code =#{postCode}
@@ -492,7 +527,7 @@
     </select>
 
 
-    <update id="batchDelete">
+    <update id="batchDeletePosts">
         update t_post set is_delete = 1
         where org_id in
         <foreach collection="idList" item="item" close=")" open="(" separator=",">
@@ -500,7 +535,7 @@
         </foreach>
     </update>
 
-    <select id="listPostByPisitionId" resultMap="BaseResultMap">
+    <select id="listPostsByPisitionId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
         from t_post where
@@ -512,7 +547,7 @@
 
     </select>
 
-    <select id="getPostById" resultMap="BaseResultMap">
+    <select id="getPostByPostId" resultMap="BaseResultMap">
         SELECT
         tp.org_id,
         tp.post_id,tp.post_code,
@@ -536,16 +571,17 @@
             and tp.is_delete = 0
             and tp.is_enable = 1
     </select>
-    <select id="selectPostByOrgId" resultType="com.qinjee.masterdata.model.entity.Post" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
+    <select id="listPostsByOrgId" resultType="com.qinjee.masterdata.model.entity.Post" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
         from t_post
         where company_id=#{companyId}
         <if test="orgId !=0">
-        and org_id=#{orgId}
+            and org_id=#{orgId}
         </if>
         and is_delete=0 and is_enable=1
     </select>
-    <select id="getPostListByCompanyId" resultMap="BaseResultMap">
+    <select id="listPostsByCompanyId" resultMap="BaseResultMap">
         select
         tp.org_id,
         tp.post_id,tp.post_code,
@@ -559,15 +595,52 @@
     </select>
     <select id="getPostIds" resultType="integer">
         select post_id from (
-              select t1.post_id,
-              if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
-              from (
-                   select post_id ,parent_post_id from t_post WHERE is_delete =0
-                   <if test="isEnable != null ">
-                     and is_enable = 1
-                    </if>
-                  ) t1,
-                  (select @pids := #{postId} ) t2
-             ) t3 where ischild != 0 OR t3.post_id = #{postId}
+        select t1.post_id,
+        if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
+        from (
+        select post_id ,parent_post_id from t_post WHERE is_delete =0
+        <if test="isEnable != null ">
+            and is_enable = 1
+        </if>
+        ) t1,
+        (select @pids := #{postId} ) t2
+        ) t3 where ischild != 0 OR t3.post_id = #{postId}
+    </select>
+    <select id="getSonPostIdsByCode" resultMap="BaseResultMap">
+        select post_id,post_code from (
+        select t1.post_id,
+        if(find_in_set(parent_post_id, @pids) > 0, @pids := concat(@pids, ',', post_id), 0) as ischild
+        from (
+        select post_id ,parent_post_id from t_post WHERE is_delete =0
+        ) t1,
+        (select @pids := #{postId} ) t2
+        ) t3 where ischild != 0 OR t3.post_id = #{postId}
+    </select>
+
+    <select id="listPostsByPositionLevelId" resultMap="BaseResultMap">
+        select post_id from t_post_level_relation where 1=1 and is_delete=0 and position_level_id in
+        <foreach collection="positionLevelIds" item="positionLevelId" close=")" open="(" separator=",">
+            #{positionLevelId}
+        </foreach>
+    </select>
+    <insert id="batchInsertPostLevelRelation">
+        insert into t_post_level_relation(post_id,position_level_id,operator_id)
+        <foreach collection="positionLevelIds" item="positionLevelId" open="VALUES" close=";" separator=",">
+            (#{postId},#{positionLevelId},#{operatorId})
+        </foreach>
+    </insert>
+
+    <update id="batchDeletePostLevelRelation">
+        delete from  t_post_level_relation
+        where post_id = #{postId}
+    </update>
+
+    <select id="listPositionLevelId" resultType="integer">
+        select position_level_id from t_post_level_relation where  is_delete = 0 and post_id = #{postId}
+    </select>
+    <select id="listPositionLevel" resultType="com.qinjee.masterdata.model.entity.PositionLevel">
+        select t_post_level.position_level_id positionLevelId ,t_level.position_level_name positionLevelName from t_post_level_relation t_post_level
+         left  join t_position_level t_level on t_level.position_level_id =t_post_level.position_level_id  and t_level.is_delete=0
+         where  t_post_level.is_delete = 0 and t_post_level.post_id = #{postId}
     </select>
 </mapper>

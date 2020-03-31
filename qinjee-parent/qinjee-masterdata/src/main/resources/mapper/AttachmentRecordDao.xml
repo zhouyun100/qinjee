@@ -17,6 +17,20 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="is_delete" jdbcType="SMALLINT" property="isDelete"/>
     </resultMap>
+    <resultMap id="ReturnMap" type="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
+        <result column="attachment_id" jdbcType="INTEGER" property="attachmentId"/>
+        <result column="attachment_url" jdbcType="VARCHAR" property="attatchmentUrl"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"/>
+        <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="org_id" jdbcType="VARCHAR" property="orgId"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="creatTime"/>
+        <result column="file_type" jdbcType="VARCHAR" property="fileType"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+
+
+    </resultMap>
     <sql id="Base_Column_List">
     attachment_id, attachment_name, attachment_url,attachment_type,business_module, attachment_size, business_type, business_id,group_id,
     company_id, operator_id, create_time, update_time, is_delete
@@ -264,17 +278,20 @@
             #{item}
         </foreach>
     </update>
-    <select id="selectAttach" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
+    <select id="selectAttach" resultMap="ReturnMap">
+        select *
+         from (
         SELECT
-        record.attachment_id as attatchmentId,
-        arc.user_name as userName,
-        arc.employee_number as employeeNumber,
-        org.org_name as orgName,
-        orga.org_name as businessUnitName,
-        record.create_time as creatTime,
-        record.attachment_url as attatchmentUrl,
-        substring_index(record.attachment_url,'.',-1 ) as fileType,
-        attachment_name as fileName
+        record.attachment_id ,
+        arc.user_name ,
+        arc.org_id,
+        arc.employee_number ,
+        org.org_name ,
+        orga.org_name as business_unit_name ,
+        record.create_time,
+        record.attachment_url ,
+        substring_index(record.attachment_url,'.',-1 ) as file_type,
+        record.attachment_name as file_name
         FROM
         t_user_archive arc
         left join t_attachment_record record on record.business_id=arc.archive_id and arc.is_delete=0
@@ -292,8 +309,15 @@
         </if>
         )
         AND record.company_id = #{companyId}
-        AND record.is_delete = 0
-        group by fileName
+        AND record.is_delete = 0)t
+        where 1=1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        group by t.file_name
+        <if test="orderSql !=null">
+            ${orderSql}
+        </if>
     </select>
     <select id="selectGroupId" resultType="java.lang.Integer">
     select group_id from
@@ -365,7 +389,7 @@
     </update>
     <select id="selectByBusinessIdAndGroupNameAndBusinessType"
             resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
-         SELECT
+        SELECT
         record.attachment_id as attatchmentId,
         pre.user_name as  userName,
         org.org_name as orgName,
@@ -384,7 +408,7 @@
     </select>
     <select id="selectFileFromPackage" resultType="com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo">
         SELECT
-        record.attachment_id as attatchmentId,
+        record.attachment_id as attachmentId,
         arc.user_name as  userName,
         arc.employee_number as  employeeNumber,
         org.org_name as orgName,

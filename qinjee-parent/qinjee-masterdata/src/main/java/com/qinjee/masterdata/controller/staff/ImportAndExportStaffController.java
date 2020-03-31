@@ -1,11 +1,8 @@
 package com.qinjee.masterdata.controller.staff;
 
-import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.model.vo.staff.export.ExportStanding;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
@@ -14,7 +11,6 @@ import com.qinjee.masterdata.service.staff.impl.StaffContractServiceImpl;
 import com.qinjee.masterdata.service.staff.impl.StaffStandingBookServiceImpl;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
-import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -226,7 +221,7 @@ public class ImportAndExportStaffController extends BaseController {
                 if(!CollectionUtils.isEmpty ( exportArcParamVo.getList () )){
                     staffImportAndExportService.exportArcFile(exportArcParamVo.getList (),response,getUserSession (),exportArcParamVo.getQuerySchemaId ());
                 }else{
-                    List < UserArchiveVo > list1 = staffArchiveService.selectByOrgList ( exportArcParamVo.getOrgIdList (), getUserSession () );
+                    List < UserArchiveVo > list1 = staffArchiveService.selectByOrgList ( exportArcParamVo, getUserSession () );
                     List < Integer > integers = new ArrayList <> ();
                     for (UserArchiveVo userArchiveVo : list1) {
                         integers.add ( userArchiveVo.getArchiveId () );
@@ -314,8 +309,7 @@ public class ImportAndExportStaffController extends BaseController {
                 if(CollectionUtils.isEmpty ( list)){
                     Boolean aBoolean = checkParam ( exportReadyConVo.getOrgIdList (), exportReadyConVo.getStatus ());
                     if(aBoolean) {
-                        list= staffContractService.selectLaborContractserUserAll ( exportReadyConVo.getOrgIdList (),
-                                exportReadyConVo.getStatus (),userSession.getCompanyId() );
+                        list= staffContractService.selectLaborContractserUserAll ( exportReadyConVo,userSession.getCompanyId() );
                     }else{
                         return  failResponseResult("参数错误");
                     }
@@ -342,26 +336,13 @@ public class ImportAndExportStaffController extends BaseController {
         Boolean b = checkParam(response,getUserSession (),exportArcParamVo);
         if(b){
                 List < Integer > list = exportArcParamVo.getList ();
-//                Integer querySchemaId=0;
-//                List < QueryScheme > list2 = querySchemeDao.selectQueryByArchiveId ( getUserSession ().getArchiveId () );
-//                for (QueryScheme queryScheme : list2) {
-//                    if(1==queryScheme.getIsDefault ()){
-//                       querySchemaId=queryScheme.getQuerySchemeId ();
-//                       break;
-//                    }
-//                }
-                List < Integer > orgIdList = exportArcParamVo.getOrgIdList ();
                 if(!CollectionUtils.isEmpty ( list )){
                     staffImportAndExportService.exportNoConArc( list,response,getUserSession ());
                 }else{
-                    Boolean aBoolean = checkParam ( orgIdList );
-                    if(aBoolean) {
-                        List < Integer > list1 = staffContractService.selectNoLaborContractAll ( orgIdList,userSession.getCompanyId() );
+                        List < Integer > list1 = staffContractService.selectNoLaborContractAll ( exportArcParamVo,userSession.getCompanyId() );
                         staffImportAndExportService.exportNoConArc ( list1, response, getUserSession ());
                         return null;
-                    }else {
-                        return  failResponseResult("参数错误");
-                    }
+
                 }
         }
         return  failResponseResult("参数错误");

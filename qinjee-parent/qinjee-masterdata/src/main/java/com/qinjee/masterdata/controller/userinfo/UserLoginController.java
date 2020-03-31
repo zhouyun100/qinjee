@@ -12,16 +12,24 @@ package com.qinjee.masterdata.controller.userinfo;
 
 import com.alibaba.fastjson.JSON;
 import com.qinjee.consts.ResponseConsts;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
+import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.model.vo.userinfo.PhoneCodeParamVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatBindParamVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatLoginResultVO;
 import com.qinjee.masterdata.service.sms.SmsRecordService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.ResponseResult;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.VerifyCodeUtils;
+import com.qinjee.utils.WeChatUtils;
+import entity.WeChatToken;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -29,8 +37,10 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -142,16 +152,98 @@ public class UserLoginController extends BaseController{
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "微信code", required = true, dataType = "String")
     })
-    @RequestMapping(value = "/searchUserInfoByWeChatCode",method = RequestMethod.POST)
-    public ResponseResult<UserSession> searchUserInfoByWeChatCode(HttpServletResponse response, String code) {
+    @RequestMapping(value = "/qrCode",method = RequestMethod.GET)
+    public ResponseResult<WechatLoginResultVO> qrCode(HttpServletResponse response, String code) {
 
-        UserInfoVO userInfoVO = userLoginService.searchUserInfoByWeChatCode(code);
+        WechatLoginResultVO wechatLoginResultVO = userLoginService.searchWechatUserInfoByWeChatCode(code);
+        if(wechatLoginResultVO.getLoginInfo() != null){
+            setSessionAndCookie(response,wechatLoginResultVO.getLoginInfo());
+            responseResult = ResponseResult.SUCCESS();
+            logger.info("WeChat scan code login success！userId={}", wechatLoginResultVO.getLoginInfo().getUserId());
+        }else{
+            responseResult = new ResponseResult(CommonCode.WECHAT_NO_BIND);
+        }
+        responseResult.setResult(wechatLoginResultVO);
 
-        setSessionAndCookie(response,userInfoVO);
-        responseResult = ResponseResult.SUCCESS();
-        responseResult.setResult(userInfoVO);
+        return responseResult;
+    }
 
-        logger.info("WeChat scan code login success！userId={}", userInfoVO.getUserId());
+    @ApiOperation(value="发送微信绑定手机号验证码", notes="根据手机号发送短信验证码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String")
+    })
+    @RequestMapping(value = "/sendWechatBindCodeByPhone",method = RequestMethod.GET)
+    public ResponseResult sendWechatBindCodeByPhone(String phone) {
+
+        if(StringUtils.isEmpty(phone) || !RegexpUtils.checkPhone(phone)){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号错误，请重新输入!");
+            return responseResult;
+        }
+
+        try{
+
+            smsRecordService.sendSmsWechatBindCode(phone);
+            logger.info("sendWechatBindCodeByPhone success！phone={}", phone);
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setMessage("手机号短信验证码发送完毕!");
+
+        }catch (Exception e){
+            logger.info("sendWechatBindCodeByPhone exception! phone={},exception={}", phone, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号短信验证码发送异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="微信手机号绑定", notes="校验手机号验证码是否正确以及手机号是否符合注册企业要求")
+    @RequestMapping(value = "/wechatAndPhoneBind",method = RequestMethod.POST)
+    public ResponseResult wechatAndPhoneBind(HttpServletResponse response,@RequestBody WechatBindParamVO wechatBindParamVO) {
+
+        try {
+
+            if(StringUtils.isBlank(wechatBindParamVO.getPhone()) || StringUtils.isBlank(wechatBindParamVO.getCode()) || !RegexpUtils.checkPhone(wechatBindParamVO.getPhone())){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号或验证码错误，请重新输入!");
+                return responseResult;
+            }
+
+            String redisPhoneLoginCode = redisClusterService.get("WECHAT_BIND_" + wechatBindParamVO.getPhone());
+            if(redisPhoneLoginCode.isEmpty() || !redisPhoneLoginCode.equals(wechatBindParamVO.getCode())){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号验证码无效!");
+                return responseResult;
+            }
+
+            UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(wechatBindParamVO.getPhone());
+            if(userInfo == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号未注册，无账号信息!");
+                return responseResult;
+            }
+
+            int resultCount = userLoginService.updateUserWechatBindByPhone(wechatBindParamVO);
+            if(resultCount > 0){
+                List<UserInfoVO> userInfoList = userLoginService.searchUserInfoByPhone(wechatBindParamVO.getPhone());
+                if (CollectionUtils.isEmpty(userInfoList)) {
+                    responseResult = ResponseResult.FAIL();
+                    responseResult.setMessage("无租户信息!");
+                    return responseResult;
+                }
+                setResponseResult(response,userInfoList);
+                logger.info("wechatAndPhoneBind success！phone={};", wechatBindParamVO.getPhone());
+            }else{
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("微信绑定失败！");
+            }
+
+        }catch(Exception e) {
+            logger.info("wechatAndPhoneBind exception! phone={};code={};exception={}", wechatBindParamVO.getPhone(),wechatBindParamVO.getCode(),e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("微信绑定异常！");
+        }
         return responseResult;
     }
 
@@ -259,10 +351,16 @@ public class UserLoginController extends BaseController{
     public ResponseResult<UserSession> updatePasswordByCurrentAccount(String oldPassword, String newPassword) {
         try{
             userSession = getUserSession();
-            userLoginService.updateUserPasswordByUserIdAndPassword(userSession.getUserId(), oldPassword, newPassword);
+            int resultCount = userLoginService.updateUserPasswordByUserIdAndPassword(userSession.getUserId(), oldPassword, newPassword);
 
-            logger.info("updatePasswordByCurrentAccount success！userId={},newPassword={}", userSession.getUserId(), newPassword);
-            responseResult = ResponseResult.SUCCESS();
+            if(resultCount > 0){
+                logger.info("updatePasswordByCurrentAccount success！userId={},newPassword={}", userSession.getUserId(), newPassword);
+                responseResult = ResponseResult.SUCCESS();
+            }else{
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("原密码不正确！");
+            }
+
         }catch (Exception e){
             logger.info("updatePasswordByCurrentAccount exception! userId={},oldPassword={},exception={}", userSession.getUserId(), oldPassword, e.toString());
             e.printStackTrace();
@@ -333,6 +431,92 @@ public class UserLoginController extends BaseController{
         return responseResult;
     }
 
+    @ApiOperation(value="【忘记密码】发送手机号验证码", notes="根据手机号发送短信验证码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String")
+    })
+    @RequestMapping(value = "/sendForgetPwdCodeByPhone",method = RequestMethod.GET)
+    public ResponseResult sendForgetPwdCodeByPhone(String phone) {
+
+        if(StringUtils.isEmpty(phone) || !RegexpUtils.checkPhone(phone)){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号错误，请重新输入!");
+            return responseResult;
+        }
+
+        try{
+
+            smsRecordService.sendSmsForgetPasswordCode(phone);
+            logger.info("sendForgetPwdCodeByPhone success！phone={}", phone);
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setMessage("手机号短信验证码发送完毕!");
+
+        }catch (Exception e){
+            logger.info("sendForgetPwdCodeByPhone exception! phone={},exception={}", phone, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号短信验证码发送异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="【忘记密码】校验手机号验证码", notes="校验手机号验证码是否正确以及手机号是否存在已注册信息")
+    @RequestMapping(value = "/checkForgetPwdByPhoneCode",method = RequestMethod.POST)
+    public ResponseResult<UserInfo> checkForgetPwdByPhoneCode(@RequestBody PhoneCodeParamVO phoneCodeParamVO) {
+
+        try {
+
+            if(StringUtils.isBlank(phoneCodeParamVO.getPhone()) || StringUtils.isBlank(phoneCodeParamVO.getCode()) || !RegexpUtils.checkPhone(phoneCodeParamVO.getPhone())){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号或验证码错误，请重新输入!");
+                return responseResult;
+            }
+
+            String redisPhoneLoginCode = redisClusterService.get("FORGET_PASSWORD_" + phoneCodeParamVO.getPhone());
+            if(redisPhoneLoginCode.isEmpty() || !redisPhoneLoginCode.equals(phoneCodeParamVO.getCode())){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机号验证码无效!");
+                return responseResult;
+            }
+
+            UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(phoneCodeParamVO.getPhone());
+            if(userInfo == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("手机无账号信息!");
+                return responseResult;
+            }
+
+            responseResult = ResponseResult.SUCCESS();
+            responseResult.setResult(userInfo);
+            logger.info("checkForgetPwdByPhoneCode success！phone={};", phoneCodeParamVO.getPhone());
+
+        }catch(Exception e) {
+            logger.info("checkForgetPwdByPhoneCode exception! phone={};code={};exception={}", phoneCodeParamVO.getPhone(),phoneCodeParamVO.getCode(),e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("手机号验证码校验异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="【忘记密码】设置新密码", notes="修改密码")
+    @RequestMapping(value = "/forgetPwdToSetNewPwd",method = RequestMethod.POST)
+    public ResponseResult forgetPwdToSetNewPwd(@RequestBody RequestLoginVO requestLoginVO) {
+        try{
+            userSession = getUserSession();
+            userLoginService.updateUserPasswordByUserId(requestLoginVO.getUserId(), requestLoginVO.getNewPassword());
+
+            logger.info("forgetPwdToSetNewPwd success！userId={},newPassword={}", requestLoginVO.getUserId(), requestLoginVO.getNewPassword());
+            responseResult = ResponseResult.SUCCESS();
+        }catch (Exception e){
+            logger.info("forgetPwdToSetNewPwd exception! userId={},exception={}", userSession.getUserId(), e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("修改密码操作异常！");
+        }
+        return responseResult;
+    }
+
     @ApiOperation(value="生成图形验证码", notes="生成图形验证码")
     @RequestMapping(value = "/createCode",method = RequestMethod.POST)
     public void createCode(HttpServletRequest request, HttpServletResponse response) {
@@ -377,17 +561,4 @@ public class UserLoginController extends BaseController{
         return responseResult;
     }
 
-
-    private void setSessionAndCookie(HttpServletResponse response,UserInfoVO userInfo){
-        StringBuffer loginKey = new StringBuffer();
-        loginKey.append(ResponseConsts.SESSION_KEY).append("_").append(userInfo.getUserId());
-
-        //设置redis登录缓存时间，120分钟过期，与前端保持一致
-        redisClusterService.setex(loginKey.toString(), ResponseConsts.SESSION_INVALID_SECOND, JSON.toJSONString(userInfo));
-        Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey.toString());
-        cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECOND);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-    }
 }

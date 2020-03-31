@@ -21,6 +21,11 @@ public class PositionGrade implements Serializable {
      */
     @ApiModelProperty("职等ID")
     private Integer positionGradeId;
+    /**
+     * 企业ID
+     */
+    @ApiModelProperty("企业ID")
+    private Integer companyId;
 
     /**
      * 职等名称

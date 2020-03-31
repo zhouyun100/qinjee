@@ -56,7 +56,7 @@ public class ArchiveAuthController extends BaseController {
             return responseResult;
         }
         try{
-            List<RoleGroupVO> roleGroupList = archiveAuthService.searchRoleTree(userSession.getCompanyId());
+            List<RoleGroupVO> roleGroupList = archiveAuthService.searchRoleTree(userSession.getCompanyId(),userSession.getArchiveId());
             responseResult = ResponseResult.SUCCESS();
             responseResult.setResult(roleGroupList);
         }catch (Exception e){

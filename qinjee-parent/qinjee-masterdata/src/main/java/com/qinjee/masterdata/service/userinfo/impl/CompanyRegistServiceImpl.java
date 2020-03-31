@@ -12,9 +12,12 @@ package com.qinjee.masterdata.service.userinfo.impl;
 
 import com.qinjee.masterdata.dao.userinfo.CompanyRegistDao;
 import com.qinjee.masterdata.model.entity.*;
+import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableFieldVO;
 import com.qinjee.masterdata.model.vo.custom.TemplateCustomTableVO;
+import com.qinjee.masterdata.model.vo.userinfo.CompanyRegistParamVO;
 import com.qinjee.masterdata.service.userinfo.CompanyRegistService;
+import com.qinjee.masterdata.service.userinfo.UserInfoService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.utils.MD5Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,17 +47,44 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
     @Autowired
     private UserLoginService userLoginService;
 
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Override
+    public Integer searchRegistCompanyCountByPhone(String phone) {
+        return companyRegistDao.searchRegistCompanyCountByPhone(phone);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void registCompany(String companyName, Integer userNumber, Date validEndDate, String phone, String userName) {
+    public UserInfoVO registCompany(CompanyRegistParamVO companyRegistParamVO) {
 
-        logger.info("REGIST START!");
+        UserInfoVO userInfoVO = null;
+
+        UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(companyRegistParamVO.getPhone());
+        if(userInfo == null){
+            //添加登录用户信息
+            userInfo = new UserInfo();
+            userInfo.setPhone(companyRegistParamVO.getPhone());
+            userInfo.setPassword(MD5Utils.getMd5(companyRegistParamVO.getPassword()));
+            companyRegistDao.addUserInfo(userInfo);
+        }
+        Integer userId = userInfo.getUserId();
 
         //添加企业信息
         CompanyInfo companyInfo = new CompanyInfo();
-        companyInfo.setCompanyName(companyName);
-        companyInfo.setUserNumber(userNumber);
+        companyInfo.setCompanyName(companyRegistParamVO.getCompanyName());
+        companyInfo.setCompanyType(companyRegistParamVO.getCompanyType());
+        companyInfo.setUserNumber(companyRegistParamVO.getUserCount());
+        companyInfo.setRegistUserId(userId);
+
+        //增加一年
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.YEAR, 1);
+        Date validEndDate = cal.getTime();
         companyInfo.setValidEndDate(validEndDate);
+
         companyRegistDao.addCompany(companyInfo);
         Integer companyId = companyInfo.getCompanyId();
 
@@ -66,36 +97,19 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
 
             //添加企业顶级机构，以企业命名
             Organization organization = new Organization();
-            organization.setOrgName(companyName);
+            organization.setOrgName(companyRegistParamVO.getCompanyName());
             organization.setCompanyId(companyId);
             companyRegistDao.addOrganization(organization);
             Integer orgId = organization.getOrgId();
-
-            //添加系统管理员角色（内置）
-            Role role = new Role();
-            role.setCompanyId(companyId);
-            companyRegistDao.addRole(role);
-            Integer roleId = role.getRoleId();
-
-            UserInfo userInfo = userLoginService.searchUserInfoDetailByPhone(phone);
-            if(userInfo == null){
-                //添加登录用户信息
-                userInfo = new UserInfo();
-                userInfo.setPhone(phone);
-                int phoneLength = phone.length();
-                userInfo.setPassword(MD5Utils.getMd5(phone.substring(phoneLength-6,phoneLength)));
-                companyRegistDao.addUserInfo(userInfo);
-            }
-            Integer userId = userInfo.getUserId();
 
             if(userId != null){
                 //添加档案
                 UserArchive userArchive = new UserArchive();
                 userArchive.setUserId(userId);
-                userArchive.setUserName(userName);
+                userArchive.setUserName(companyRegistParamVO.getUserName());
                 userArchive.setCompanyId(companyId);
                 userArchive.setOrgId(orgId);
-                userArchive.setPhone(phone);
+                userArchive.setPhone(companyRegistParamVO.getPhone());
                 companyRegistDao.addUserArchive(userArchive);
                 Integer archiveId = userArchive.getArchiveId();
 
@@ -106,11 +120,19 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
                 userCompany.setIsEnable(new Short("1"));
                 companyRegistDao.addUserCompany(userCompany);
 
+                //添加系统管理员角色（内置）
+                Role role = new Role();
+                role.setCompanyId(companyId);
+                role.setOperatorId(archiveId);
+                companyRegistDao.addRole(role);
+                Integer roleId = role.getRoleId();
+
                 if(roleId != null && archiveId != null){
                     //添加档案与角色关系
                     UserRole userRole = new UserRole();
                     userRole.setRoleId(roleId);
                     userRole.setArchiveId(archiveId);
+                    userRole.setOperatorId(archiveId);
                     companyRegistDao.addUserRole(userRole);
                 }
 
@@ -191,8 +213,10 @@ public class CompanyRegistServiceImpl implements CompanyRegistService {
 
                 }
             }
+            userInfoService.changeCompany(userId,companyId);
+            userInfoVO = userLoginService.searchUserInfoByUserIdAndCompanyId(userId,companyId);
         }
-        logger.info("REGIST FINISHED!");
+        return userInfoVO;
     }
 
     /**

@@ -1,13 +1,15 @@
 package com.qinjee.masterdata.aop;
 
 import com.qinjee.masterdata.model.entity.Organization;
-import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.entity.OrganizationHistory;
+import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationTransferBO;
 import com.qinjee.masterdata.service.organation.OrganizationHistoryService;
 import com.qinjee.masterdata.service.organation.OrganizationService;
-import com.qinjee.model.response.ResponseResult;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,8 +75,9 @@ public class OrganizationHistoryAspect {
     public void beforeTransferOrganization(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         if (args.length > 0 ) {
-            List<Integer> orgIds = (List<Integer>) args[0];
-            for (Integer orgId:orgIds){
+            Object ob=args[0];
+            OrganizationTransferBO orgTransferBO=(OrganizationTransferBO)ob;
+            for (Integer orgId:orgTransferBO.getOrgIds()){
                 addOrganizationHistory(orgId);
             }
         }

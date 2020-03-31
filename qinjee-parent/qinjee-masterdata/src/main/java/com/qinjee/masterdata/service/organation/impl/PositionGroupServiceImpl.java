@@ -63,7 +63,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         if (!CollectionUtils.isEmpty(positionGroups)) {
             if (isRepeatPosutionGroupName(positionGroupName, positionGroups)) {
                 //有重名页面提示
-                return new ResponseResult(CommonCode.POSITION_GROUP_NAME_REPEAT);
+                return new ResponseResult(CommonCode.NAME_ALREADY_USED);
             }
             PositionGroup positionGroup_1 = positionGroups.get(positionGroups.size() - 1);
             sortId = positionGroup_1.getSortId() + 1000;
@@ -107,7 +107,7 @@ public class PositionGroupServiceImpl implements PositionGroupService {
         if (!CollectionUtils.isEmpty(positionGroups)) {
             boolean repeatPosutionGroupName = isRepeatPosutionGroupName(positionGroupVo.getPositionGroupName(), positionGroups);
             if (repeatPosutionGroupName) {
-                return new ResponseResult(CommonCode.POSITION_GROUP_NAME_REPEAT);
+                return new ResponseResult(CommonCode.NAME_ALREADY_USED);
             }
         }
         PositionGroup oldPositionGroup = positionGroupDao.selectByPrimaryKey(positionGroupVo.getPositionGroupId());

@@ -2,6 +2,7 @@ package com.qinjee.masterdata.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.TransDictAnno;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,6 +37,7 @@ public class PreEmployment implements Serializable {
         /**
          * 性别
          */
+        @TransDictAnno(dictType = "SEX_TYPE")
         private String gender;
 
         /**
@@ -46,6 +48,7 @@ public class PreEmployment implements Serializable {
         /**
          * 证件类型
          */
+        @TransDictAnno(dictType = "CARD_TYPE")
         private String idType;
 
         /**
@@ -63,15 +66,20 @@ public class PreEmployment implements Serializable {
          */
 
         private Date firstWorkDate;
-
+        /**
+         * 现住址
+         */
+        private String address;
         /**
          * 婚姻状况
          */
+        @TransDictAnno(dictType = "MARITAL_STATUS")
         private String maritalStatus;
 
         /**
          * 最高学历
          */
+        @TransDictAnno(dictType = "DEGREE")
         private String highestDegree;
 
         /**
@@ -128,6 +136,7 @@ public class PreEmployment implements Serializable {
         /**
          * 政治面貌
          */
+        @TransDictAnno(dictType = "POLITICAL_AFFILIATION")
         private String politicalStatus;
 
         /**
@@ -202,6 +211,18 @@ public class PreEmployment implements Serializable {
          */
 
         private Date updateTime;
+        /**
+         * 职级id
+         */
+        private Integer positionLevelId;
+        /**
+         * 职等id
+         */
+        private Integer positionGradeId;
+        /**
+         * 模板id
+         */
+        private Integer templateId;
 
         /**
          * 是否删除

@@ -5,14 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.CompanyCodeDao;
-import com.qinjee.masterdata.dao.CompanyInfoDao;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveGroupDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
-import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.model.entity.*;
@@ -36,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -79,6 +76,30 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     private PostDao postDao;
     @Autowired
     private IEmployeeNumberRuleService employeeNumberRuleService;
+
+    public List<Map<String, String>> getCustomDataByTableIdAndEmploymentId(Integer employmentId, Integer tableId) throws IllegalAccessException {
+        //存放结果
+        List<Map<String, String>> resMapList = new ArrayList<>();
+        List<Map<Integer, String>> customDataList = selectValue(tableId, employmentId);
+        //根据表id查到  <fieldId,fieldName>
+        List<CustomArchiveField> fieldList = customTableFieldDao.selectFieldByTableId(tableId);
+        //遍历自定义表的大数据字段集合
+        for (Map<Integer, String> customDataMap : customDataList) {
+
+            Map<String, String> resMap = new HashMap<>();
+            customDataMap.forEach((key, value) -> {
+                //比较
+                for (CustomArchiveField customArchiveField : fieldList) {
+                    if (customArchiveField.getFieldId().equals(key)) {
+                        //拼接fieldCode+textType
+                        resMap.put(customArchiveField.getFieldCode()+"@@"+customArchiveField.getTextType(), value);
+                    }
+                }
+            });
+            resMapList.add(resMap);
+        }
+        return resMapList;
+    }
 
     @Override
     public void insertCustomArichiveTable(CustomArchiveTable customArchiveTable, UserSession userSession) {
@@ -140,6 +161,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     public void insertCustomArchiveField(CustomArchiveField customArchiveField, UserSession userSession) {
         customArchiveField.setCreatorId ( userSession.getArchiveId () );
         customArchiveField.setIsDelete ( ( short ) 0 );
+        //这个dao层方法需要重新编写
         customTableFieldDao.insertSelective ( customArchiveField );
     }
 
@@ -217,9 +239,9 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
     @Override
     public String getPostByOrgId(Integer orgId, UserSession userSession) {
         if (orgId == null || orgId == 0) {
-            JSON.toJSONString ( postDao.getPostByOrgId ( userSession.getCompanyId () ) );
+            JSON.toJSONString ( postDao.listPostsByCompanyId( userSession.getCompanyId () ) );
         } else {
-            return JSON.toJSONString ( postDao.getPostByOrgId ( orgId ) );
+            return JSON.toJSONString ( postDao.listPostsByOrgId( orgId ,userSession.getCompanyId ()) );
         }
         return null;
     }
@@ -554,7 +576,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         List < Map < String, String > > mapList = customTableFieldDao.selectCodAndIdByTableId ( tableId );
         if (String.valueOf ( stringStringMap.get ( "is_system_define" ) ).equals ( "1" ) && stringStringMap.get ( "func_code" ).equals ( "ARC" )) {
             Map < Integer, String > map = new HashMap <> ();
-            UserArchiveVo userArchive = userArchiveDao.selectByPrimaryKey ( businessId );
+            UserArchiveVo userArchive = userArchiveDao.selectBasicById( businessId );
             if(userArchive!=null) {
                 for (Field declaredField : userArchive.getClass().getDeclaredFields()) {
                     declaredField.setAccessible(true);
@@ -633,7 +655,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public Post getPostById(Integer postId,UserSession userSession) {
-        return postDao.selectByPrimaryKey ( postId );
+        return postDao.getPostById( postId );
     }
 
     @Override
@@ -643,7 +665,7 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
 
     @Override
     public List < Post > getPostListByOrgId(Integer orgId,Integer companyId) {
-       return postDao.selectPostByOrgId(orgId,companyId);
+       return postDao.listPostsByOrgId(orgId,companyId);
     }
 
     @Override
@@ -674,7 +696,12 @@ public class StaffCommonServiceImpl implements IStaffCommonService {
         BeanUtils.copyProperties(customArchiveTableDataVo, customArchiveTableData);
         List<CheckCustomFieldVO> customFieldVOList = customArchiveTableDataVo.getCustomFieldVOList();
         for (CheckCustomFieldVO checkCustomFieldVO : customFieldVOList) {
-            stringBuilder.append("@@").append(checkCustomFieldVO.getFieldId()).append("@@:").append(checkCustomFieldVO.getFieldValue());
+            String fieldValue = checkCustomFieldVO.getFieldValue ();
+            Integer fieldId = checkCustomFieldVO.getFieldId ();
+            if(org.apache.commons.lang3.StringUtils.isNotBlank ( fieldValue )&& !"null".equals ( fieldValue ) && !"null".equals ( fieldId )
+            ) {
+                stringBuilder.append ( "@@" ).append ( fieldId ).append ( "@@:" ).append ( fieldValue );
+            }
         }
         customArchiveTableData.setBigData(stringBuilder.toString());
         return customArchiveTableData;

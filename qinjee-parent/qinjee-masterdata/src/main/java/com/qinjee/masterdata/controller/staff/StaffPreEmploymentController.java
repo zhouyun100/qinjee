@@ -3,8 +3,8 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
-import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.service.staff.IStaffPreEmploymentService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -33,6 +33,25 @@ public class StaffPreEmploymentController extends BaseController {
     private static final String CHANGSTATUS_READY = "已入职";
     @Autowired
     private IStaffPreEmploymentService staffPreEmploymentService;
+
+
+    /**
+     * 员工登记表打印的数据查询接口
+     */
+    @PostMapping(value = "/getEmploymentRegisterInfo")
+    @ApiOperation(value = "预入职登记表打印的数据查询接口", notes = "phs")
+    public ResponseResult<List<PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> employmentIds )  {
+        Boolean b = checkParam(employmentIds,getUserSession());
+        if(b){
+           List<PreRegistVo> preRegistList= staffPreEmploymentService.getEmploymentRegisterInfo(employmentIds,getUserSession());
+           return new ResponseResult(preRegistList);
+        }
+        return  failResponseResult("参数错误");
+    }
+
+
+
+
     /**
      * 新增预入职
      * 预入职表与档案表用物理表进行对应，此时需要物理表的存在，新增两个自定义表，新增n个自定义字段，物理字段名与物理属性名分别是物理表与属性的对应
@@ -141,14 +160,12 @@ public class StaffPreEmploymentController extends BaseController {
 //            @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
 //
 //    })
-    public ResponseResult<PageResult<PreEmploymentVo>> selectPreEmployment(
-                                                                         Integer currentPage,
-                                                                         Integer pageSize){
-        Boolean b = checkParam(getUserSession (),currentPage,pageSize);
+    public ResponseResult<PageResult<PreEmploymentVo>> selectPreEmployment(@RequestBody RequestUserarchiveVo requestUserarchiveVo){
+        Boolean b = checkParam(getUserSession (),requestUserarchiveVo);
         if(b){
 
                 PageResult<PreEmploymentVo> pageResult =
-                        staffPreEmploymentService.selectPreEmployment(getUserSession (),currentPage, pageSize);
+                        staffPreEmploymentService.selectPreEmployment(getUserSession (),requestUserarchiveVo);
                     return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
@@ -193,6 +210,61 @@ public class StaffPreEmploymentController extends BaseController {
                 return ResponseResult.SUCCESS ();
         }
         return failResponseResult ( "参数错误" );
+    }
+    /**
+     * 待办提醒任务
+     */
+    @RequestMapping(value = "/getReadyCount", method = RequestMethod.GET)
+    @ApiOperation(value = "待办提醒任务", notes = "hkt")
+    //    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
+//    })
+    public ResponseResult<DetailCount> getReadyCount() {
+        Boolean b = checkParam ( getUserSession () );
+        if (b) {
+            DetailCount detailCount=staffPreEmploymentService.getReadyCount ( getUserSession ());
+            return new ResponseResult<>(detailCount,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 获得代办提醒任务中预入职信息
+     */
+    @RequestMapping(value = "/getReadyPreEmployment", method = RequestMethod.POST)
+    @ApiOperation(value = "获得代办提醒任务中预入职信息", notes = "hkt")
+    //    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "PreEmploymentId", value = "预入职表id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "StatusChangeVo", value = "预入职变更表vo类", paramType = "form", required = true),
+//    })
+    public ResponseResult<PageResult<PreEmploymentVo>> getReadyPreEmployment(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam ( getUserSession (),requestUserarchiveVo );
+        if (b) {
+            PageResult<PreEmploymentVo> pageResult=staffPreEmploymentService.getReadyPreEmployment ( getUserSession (),requestUserarchiveVo);
+            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+
+    /**
+     * 预入职表头查询
+     */
+    @RequestMapping(value = "/searchByHead", method = RequestMethod.POST)
+    @ApiOperation(value = "预入职表头查询", notes = "hkt")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "id", value = "机构id", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
+//            @ApiImplicitParam(name = "PageSize", value = "页大小", paramType = "query", required = true),
+//
+//    })
+    public ResponseResult<PageResult<PreEmploymentVo>> searchByHead(Integer currentPage, Integer pageSize, List<FieldValueForSearch> list){
+        Boolean b = checkParam(getUserSession (),currentPage,pageSize,list);
+        if(b){
+            PageResult<PreEmploymentVo> pageResult =
+                    staffPreEmploymentService.searchByHead(getUserSession (),currentPage, pageSize,list);
+            return new ResponseResult<>(pageResult,CommonCode.SUCCESS);
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
 
     private Boolean checkParam(Object... params) {

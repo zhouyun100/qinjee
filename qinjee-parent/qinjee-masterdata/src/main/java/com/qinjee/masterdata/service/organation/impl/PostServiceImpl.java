@@ -1,29 +1,30 @@
 package com.qinjee.masterdata.service.organation.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.github.liaochong.myexcel.core.DefaultExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.*;
+import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchivePostRelationDao;
 import com.qinjee.masterdata.model.entity.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
+import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.model.vo.organization.PostVo;
-import com.qinjee.masterdata.model.vo.organization.page.PostPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PostBO;
+import com.qinjee.masterdata.model.vo.organization.bo.PostCopyBO;
+import com.qinjee.masterdata.model.vo.organization.bo.PostExportBO;
+import com.qinjee.masterdata.model.vo.organization.bo.PostPageBO;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.organation.AbstractOrganizationHelper;
 import com.qinjee.masterdata.service.organation.PostService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import com.qinjee.utils.MyCollectionUtil;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,10 +36,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +46,7 @@ import java.util.stream.Collectors;
  * @createTime 2019年09月23日 11:07:00
  */
 @Service
-public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements PostService {
+public class PostServiceImpl extends AbstractOrganizationHelper<Post, Post> implements PostService {
 
     private static Logger logger = LogManager.getLogger(PostServiceImpl.class);
 
@@ -70,70 +67,53 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     @Autowired
     private UserArchiveDao userArchiveDao;
     @Autowired
+    private PreEmploymentDao preEmploymentDao;
+    @Autowired
     private PositionDao positionDao;
+    @Autowired
+    private PositionLevelDao positionLevelDao;
+
+
 
     @Override
-    public PageResult<Post> getPostConditionPage(UserSession userSession, PostPageVo postPageVo) {
-
+    public PageResult<Post> getPostList(UserSession userSession, PostPageBO postPageBO) {
         //TODO id重复无影响
         List<Integer> orgIdList = null;
         List<Integer> postIdList = null;
+        String whereSql = DealHeadParamUtil.getWhereSql(postPageBO.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(postPageBO.getTableHeadParamList(), "lastTable.");
+
         //如果postId>0,则根据postId+orgId查询岗位
-        if (null != postPageVo.getPostId() && postPageVo.getPostId() != 0) {
+        if (null != postPageBO.getPostId() && postPageBO.getPostId() != 0) {
             //找出岗位id及子岗位id集合
-            postIdList = postDao.getPostIds(postPageVo.getPostId(),postPageVo.getIsEnable());
-            if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
-                PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
-            }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList);
-            PageInfo<Post> pageInfo = new PageInfo<>(postList);
-            PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
-            pageResult.setTotal(pageInfo.getTotal());
-            return pageResult;
+            postIdList = postDao.getPostIds(postPageBO.getPostId(), postPageBO.getIsEnable());
+
         } else {//否则只根据机构id查询 机构及子机构下所有岗位
             //如果机构id>0，则进行筛选子机构id，否则默认为全部就行了
-            if (null != postPageVo.getOrgId() && postPageVo.getOrgId() > 0) {
-                orgIdList = getOrgIdList(userSession, postPageVo.getOrgId(), postPageVo.getIsEnable());
+            if (null != postPageBO.getOrgId() && postPageBO.getOrgId() > 0) {
+                orgIdList = getOrgIdList(userSession, postPageBO.getOrgId(), postPageBO.getIsEnable());
             }
-            if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
-                PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
-            }
-            List<Post> postList = postDao.getPostConditionPages(postPageVo, orgIdList, postIdList);
-            PageInfo<Post> pageInfo = new PageInfo<>(postList);
-            PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
-            pageResult.setTotal(pageInfo.getTotal());
-            return pageResult;
         }
+
+        if (postPageBO.getCurrentPage() != null && postPageBO.getPageSize() != null) {
+            PageHelper.startPage(postPageBO.getCurrentPage(), postPageBO.getPageSize());
+        }
+        List<Post> postList = postDao.getPostList(postPageBO, orgIdList, postIdList, whereSql, orderSql);
+        //设置岗位职级列表
+        PageInfo<Post> pageInfo = new PageInfo<>(postList);
+        PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+        return pageResult;
     }
 
-  /*  private List<Integer> getPostIdList(Integer postId, Integer companyId, Short isEnable) {
-        List<Integer> idsList = new ArrayList<>();
-        List<Post> postList = postDao.listPostByCompanyId(companyId, isEnable);
-        MultiValuedMap<Integer, Integer> multiValuedMap = new HashSetValuedHashMap<>();
-        for (Post post : postList) {
-            multiValuedMap.put(post.getParentPostId(), post.getPostId());
-        }
-        //根据机构id递归，取出该机构下的所有子机构
-        collectIds(multiValuedMap, postId, idsList);
-        return idsList;
-    }*/
 
-    @Override
-    public ResponseResult<PageResult<UserArchivePostRelation>> getUserArchivePostRelationList(Integer pageSize, Integer currentPage, Integer postId) {
-        if (pageSize != null && currentPage != null) {
-            PageHelper.startPage(currentPage, pageSize);
-        }
-        List<UserArchivePostRelation> userArchivePostRelationList = userArchivePostRelationDao.getUserArchivePostRelationList(postId);
-        PageResult<UserArchivePostRelation> pageResult = new PageResult<>(userArchivePostRelationList);
-        return new ResponseResult<>(pageResult);
-    }
 
     @Transactional
     @Override
     public void addPost(PostVo postVo, UserSession userSession) {
 
         //校验orgCode是否已存在
-        Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
+        Post postByPostCode = postDao.getPostsByPostCode(postVo.getPostCode(), userSession.getCompanyId());
         if (Objects.nonNull(postByPostCode)) {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
@@ -141,31 +121,28 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         Post post = new Post();
         BeanUtils.copyProperties(postVo, post);
         Integer orgId = postVo.getOrgId();
-        Integer sortId = generatePostSortId(orgId, postVo.getParentPostId());
+        Integer sortId = generatePostSortId(orgId);
         post.setSortId(sortId);
         post.setCompanyId(userSession.getCompanyId());
         post.setOperatorId(userSession.getArchiveId());
         post.setIsDelete((short) 0);
         post.setIsEnable((short) 1);
         postDao.insertSelective(post);
-        //根据职级职等插入岗位职等,岗位职级信息
         //新增岗位职级关系表信息
-        // addPostLevelAndGradeRelation(postVo, userSession, post);
+        if(!CollectionUtils.isEmpty(postVo.getPositionLevelIds())){
+            postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
+        }
+
     }
 
-    private Integer generatePostSortId(Integer orgId, Integer parentPostId) {
+    private Integer generatePostSortId(Integer orgId) {
         Integer sortId = 1000;
-        List<Post> sonPosts = postDao.listPostByParentPostId(parentPostId);
-        List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+        List<Post> sonPostsByOrgId = postDao.listPostsByOrgIdAndEnable(orgId, null);
         if (!CollectionUtils.isEmpty(sonPostsByOrgId)) {
             int maxSortId = sonPostsByOrgId.stream().mapToInt(Post::getSortId).max().getAsInt();
             sortId = maxSortId + 1000;
         }
-        //如果有上级岗位则以上级岗位下的子岗位为准
-        if (!CollectionUtils.isEmpty(sonPosts)) {
-            int maxSortId = sonPosts.stream().mapToInt(Post::getSortId).max().getAsInt();
-            sortId = maxSortId + 1000;
-        }
+
         return sortId;
     }
 
@@ -173,7 +150,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     public String generatePostCode(Integer orgId, Integer parentPostId) {
         logger.info("根据机构id生成岗位编码：orgId=" + orgId);
         //TODO 不需要根据父岗位编码
-        List<Post> sonPostsByOrgId = postDao.getPostListByOrgId(orgId, null);
+        List<Post> sonPostsByOrgId = postDao.listPostsByOrgIdAndEnable(orgId, null);
         if (CollectionUtils.isEmpty(sonPostsByOrgId)) {
             OrganizationVO superOrg = organizationDao.getOrganizationById(orgId);
             return superOrg.getOrgCode() + "01";
@@ -214,8 +191,12 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
     @Override
     public Post getPostById(String postId) {
-        return postDao.getPostById(postId);
-
+        Post post = postDao.getPostByPostId(postId);
+        List<PositionLevel> positionLevels = postDao.listPositionLevel(post.getPostId());
+        String positionLevelName = positionLevels.stream().map(a -> a.getPositionLevelName()).collect(Collectors.joining(","));
+        post.setPositionLevelName(positionLevelName);
+        post.setPositionLevelIds(positionLevels.stream().map(a -> a.getPositionLevelId()).collect(Collectors.toList()));
+        return post;
     }
 
 
@@ -225,18 +206,41 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
         //判断机构编码是否唯一
         Post post = new Post();
-        Post postByPostCode = postDao.getPostByPostCode(postVo.getPostCode(), userSession.getCompanyId());
+        Post postByPostCode = postDao.getPostsByPostCode(postVo.getPostCode(), userSession.getCompanyId());
         if (Objects.nonNull(postByPostCode) && !postVo.getPostId().equals(postByPostCode.getPostId())) {
             ExceptionCast.cast(CommonCode.CODE_USED);
         }
+        //上级岗位整合性校验
+        List<Integer> postIds = postDao.getPostIds(postVo.getPostId(), Short.valueOf("1"));
+        boolean bool = postIds.stream().anyMatch(id -> id.equals(postVo.getParentPostId()));
+        if(bool){
+            ExceptionCast.cast(CommonCode.UPDATE_PARENT_POST_ERR);
+        }
+
         BeanUtils.copyProperties(postVo, post);
         post.setOperatorId(userSession.getArchiveId());
-        Post post1 = postDao.selectByPrimaryKey(postVo.getPostId());
-        if (!postVo.getOrgId().equals(post1.getOrgId()) || !postVo.getParentPostId().equals(post1.getParentPostId())) {
-            Integer sortId = generatePostSortId(postVo.getOrgId(), postVo.getParentPostId());
+        Post post1 = postDao.getPostById(postVo.getPostId());
+        //如果机构变了 需要重新生成sortId
+        if (!postVo.getOrgId().equals(post1.getOrgId())) {
+            Integer sortId = generatePostSortId(postVo.getOrgId());
             post.setSortId(sortId);
         }
         postDao.updateByPrimaryKeySelective(post);
+        //维护岗位职级
+        /** 方案一
+         * 1.如果编辑后的职级id数比原有的多，则需要新增多出来的，其余的做update
+         * 2.如果编辑后的职级id数比原有的少，少几条就删几条，其余的做update
+         * 3.如果编辑后的职级id数比原有的相等，则只要做删除
+         */
+        /**
+         * 方案二
+         * 每次编辑岗位时，逻辑删除所有旧职级，再重新新增
+         */
+        int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), post.getPostId());
+        if(!CollectionUtils.isEmpty(postVo.getPositionLevelIds())){
+            postDao.batchInsertPostLevelRelation(postVo.getPositionLevelIds(), userSession.getArchiveId(), post.getPostId());
+        }
+
     }
 
     @Transactional
@@ -247,6 +251,11 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         if (!CollectionUtils.isEmpty(userArchiveList)) {
             ExceptionCast.cast(CommonCode.EXIST_USER);
         }
+        //TODO 被删除的岗位下不允许有预入职人员档案
+        List<PreEmployment> preEmploymentList=preEmploymentDao.selectByPostIds(postIds);
+        if (!CollectionUtils.isEmpty(preEmploymentList)) {
+            ExceptionCast.cast(CommonCode.EXIST_USER);
+        }
         if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
                 Post post = new Post();
@@ -255,21 +264,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
                 post.setIsDelete((short) 1);
                 postDao.updateByPrimaryKeySelective(post);
 
-              /*  List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
-                //删除岗位职级关系信息
-                if(!CollectionUtils.isEmpty(postLevelRelationList)){
-                    for (PostLevelRelation postLevelRelation : postLevelRelationList) {
-                        deletePostLevelRelation(userSession,postLevelRelation);
-                    }
-                }*/
-
-               /* List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
-                //删除岗位职等关系信息
-                if(!CollectionUtils.isEmpty(postGradeRelationList)){
-                    for (PostGradeRelation postGradeRelation : postGradeRelationList) {
-                        deletePostGradeRelation(userSession,postGradeRelation);
-                    }
-                }*/
             }
         }
     }
@@ -291,31 +285,36 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     @Transactional
     @Override
     public void sortPorts(List<Integer> postIds, UserSession userSession) {
-        List<Post> postList = postDao.getPostListByPostIds(postIds);
+        List<Post> postList = postDao.listPostsByPostIds(postIds, null, null);
         Set<Integer> parentPostSet = new HashSet<>();
         for (Post post : postList) {
-            parentPostSet.add(post.getParentPostId());
+            parentPostSet.add(post.getOrgId());
         }
         //判断是否在同一级机构下
         if (parentPostSet.size() > 1) {
-            ExceptionCast.cast(CommonCode.NOT_SAVE_LEVEL_EXCEPTION);
+            ExceptionCast.cast(CommonCode.NOT_SAME_LEVEL_EXCEPTION);
         }
         postDao.sortPorts(postIds);
     }
 
     @Transactional
     @Override
-    public void copyPost(List<Integer> postIds, UserSession userSession, Integer orgId) {
+    public void copyPost(PostCopyBO postCopyBO, UserSession userSession) {
+        List<Integer> postIds = postCopyBO.getPostIds();
+        Integer orgId = postCopyBO.getOrgId();
         if (!CollectionUtils.isEmpty(postIds)) {
             for (Integer postId : postIds) {
-                Post post = postDao.selectByPrimaryKey(postId);
+                Post post = postDao.getPostById(postId);
                 post.setOrgId(orgId);
                 post.setParentPostId(0);
                 post.setOperatorId(userSession.getArchiveId());
-                Integer sortId = generatePostSortId(orgId, null);
+                Integer sortId = generatePostSortId(orgId);
                 post.setSortId(sortId);
                 //TODO post.setPostCode();
                 postDao.insertSelective(post);
+                //维护岗位职级
+                List<Integer> positionLevelIds = postDao.listPositionLevelId(postId);
+                postDao.batchInsertPostLevelRelation(positionLevelIds, userSession.getArchiveId(), post.getPostId());
                 //岗位说明书
                 PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
                 if (Objects.nonNull(postInstructions)) {
@@ -327,13 +326,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         }
     }
 
-    @Override
-    public List<Post> getAllPostByOrgId(UserSession userSession, Integer orgId, Short isEnable) {
-        //递归拿到机构及所有子机构id
-        List<Integer> orgIdList = getOrgIdList(userSession, orgId, isEnable);
-        List<Post> postList = postDao.listPostByOrgIds(orgIdList);
-        return postList;
-    }
 
     /**
      * 搜集机构下所有子机构的id
@@ -343,9 +335,8 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
      * @return
      */
     private List<Integer> getOrgIdList(UserSession userSession, Integer orgId, Short isEnable) {
-        return organizationDao.getOrgIds(orgId,userSession.getArchiveId(),isEnable,new Date());
+        return organizationDao.getOrgIds(orgId, userSession.getArchiveId(), isEnable, new Date());
     }
-
 
 
     @Override
@@ -355,20 +346,26 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     }
 
     @Override
-    public List<Post> exportPost(Integer orgId, List<Integer> postIds, UserSession userSession) {
-        if (CollectionUtils.isEmpty(postIds)) {
-            List<Integer> orgIdList = getOrgIdList(userSession, orgId, null);
-            return postDao.listPostByOrgIds(orgIdList);
+    public List<Post> exportPost(PostExportBO postExportBO, UserSession userSession) {
+        String whereSql = DealHeadParamUtil.getWhereSql(postExportBO.getTableHeadParamList(), "tp.");
+        String orderSql = DealHeadParamUtil.getOrderSql(postExportBO.getTableHeadParamList(), "tp.");
+        if (CollectionUtils.isEmpty(postExportBO.getPostIds())) {
+            List<Integer> orgIdList = getOrgIdList(userSession, postExportBO.getOrgId(), null);
+            List<Post> posts = postDao.listPostsByOrgIds(orgIdList, whereSql, orderSql);
+            //设置职级
+            //handleLevelForPostList(posts);
+            return posts;
         } else {
-            return postDao.getPostListByPostIds(postIds);
+            List<Post> posts = postDao.listPostsByPostIds(postExportBO.getPostIds(), whereSql, orderSql);
+            //handleLevelForPostList(posts);
+            return posts;
         }
     }
 
     @Override
     @Transactional
-    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception {
-        return doUploadAndCheck(multfile, Post.class, userSession, response);
-
+    public ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception {
+        return doUploadAndCheck(multfile, Post.class, userSession);
     }
 
     @Override
@@ -405,13 +402,19 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             //TODO 45
             int sortId = 1000;
             for (Post vo : orgLost) {
-                Post ifExistVo = postDao.getPostByPostCode(vo.getPostCode(), userSession.getCompanyId());
-                Post parentPost = postDao.getPostByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
+                Post ifExistVo = postDao.getPostsByPostCode(vo.getPostCode(), userSession.getCompanyId());
+                Post parentPost = postDao.getPostsByPostCode(vo.getParentPostCode(), userSession.getCompanyId());
                 OrganizationVO orgVo = organizationDao.getOrganizationByOrgCodeAndCompanyId(vo.getOrgCode(), userSession.getCompanyId());
-                Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(), userSession.getCompanyId());
-                vo.setOrgId(orgVo.getOrgId());
-                vo.setPositionId(position.getPositionId());
 
+                //设置所属机构id
+                vo.setOrgId(orgVo.getOrgId());
+                //设置职位id
+                if (StringUtils.isNotEmpty(vo.getPositionName())) {
+                    Position position = positionDao.getPositionByNameAndCompanyId(vo.getPositionName(), userSession.getCompanyId());
+                    vo.setPositionId(position.getPositionId());
+                }
+
+                //设置上级岗位id
                 if (Objects.nonNull(parentPost)) {
                     vo.setParentPostId(parentPost.getPostId());
                 } else {
@@ -420,12 +423,41 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
                 //已存在 则更新
                 if (Objects.nonNull(ifExistVo)) {
                     postDao.updateByPrimaryKeySelective(vo);
+                    vo.setPostId(ifExistVo.getPostId());
+                    //维护职级
+                    int i = postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), ifExistVo.getPostId());
+                    if (StringUtils.isNotEmpty(vo.getPositionLevelName())) {
+                        String[] plNames = vo.getPositionLevelName().split(",");
+                        if (plNames.length > 0) {
+                            List<PositionLevelVo> positionLevelList = positionLevelDao.getByPositionLevelNames(Arrays.asList(plNames), userSession.getCompanyId());
+                            if (!CollectionUtils.isEmpty(positionLevelList)) {
+                                //取出id
+                                List<Integer> plIds = positionLevelList.stream().map(pl -> pl.getPositionLevelId()).collect(Collectors.toList());
+                                postDao.batchInsertPostLevelRelation(plIds, userSession.getArchiveId(), ifExistVo.getPostId());
+                            }
+                        }
+                    }
+
                 } else {
                     vo.setOperatorId(userSession.getArchiveId());
                     vo.setCompanyId(userSession.getCompanyId());
                     vo.setSortId(sortId);
                     sortId += 1000;
                     int i = postDao.insertSelective(vo);
+                    //维护职级
+                    postDao.batchDeletePostLevelRelation(userSession.getArchiveId(), vo.getPostId());
+                    if (StringUtils.isNotEmpty(vo.getPositionLevelName())) {
+                        String[] plNames = vo.getPositionLevelName().split(",");
+                        if (plNames.length > 0) {
+                            List<PositionLevelVo> positionLevelList = positionLevelDao.getByPositionLevelNames(Arrays.asList(plNames), userSession.getCompanyId());
+                            if (!CollectionUtils.isEmpty(positionLevelList)) {
+                                //取出id
+                                List<Integer> plIds = positionLevelList.stream().map(pl -> pl.getPositionLevelId()).collect(Collectors.toList());
+                                postDao.batchInsertPostLevelRelation(plIds, userSession.getArchiveId(), vo.getPostId());
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -433,15 +465,15 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
     @Override
     public List<Post> getPostGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer postId, Short isEnable) {
-        List<Integer> orgidList = new ArrayList<>();
         //拿到关联的所有机构id
         List<Integer> postIdList = null;
         if (layer < 1) {
-            layer = 2;
+            layer = 2;//TODO 暂时没用到
         }
-        postIdList = postDao.getPostIds(postId,isEnable);
+        postIdList = postDao.getPostIds(postId, isEnable);
         //查询所有相关的岗位
         List<Post> allPost = postDao.getPostGraphics(postIdList, isEnable);
+
         if (CollectionUtils.isEmpty(allPost)) {
             //不存在相关岗位异常
             ExceptionCast.cast(CommonCode.POST_NOT_EXSIT_EXCEPTION);
@@ -461,13 +493,13 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         //allPost最后只会有一个元素
         handlerPostToGraphics(allPost, topPostList, isContainsCompiler, isContainsActualMembers);
         //TODO 拿出根节点，设置上两级父级岗位
-        Post parentPost = postDao.selectByPrimaryKey(allPost.get(0).getParentPostId());
+        Post parentPost = postDao.getPostById(allPost.get(0).getParentPostId());
 
         if (Objects.nonNull(parentPost)) {
             parentPost.setChildList(allPost);
             List<Post> pList = new ArrayList<>();
             pList.add(parentPost);
-            Post parentPost2 = postDao.selectByPrimaryKey(parentPost.getParentPostId());
+            Post parentPost2 = postDao.getPostById(parentPost.getParentPostId());
             if (Objects.nonNull(parentPost2)) {
                 parentPost2.setChildList(pList);
                 List<Post> pList2 = new ArrayList<>();
@@ -480,12 +512,9 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
     }
 
     @Override
-    public PageResult<Post> listDirectPostPage(PostPageVo postPageVo) {
+    public PageResult<Post> listDirectPostPage(PostBO postBO) {
 
-        if (postPageVo.getCurrentPage() != null && postPageVo.getPageSize() != null) {
-            PageHelper.startPage(postPageVo.getCurrentPage(), postPageVo.getPageSize());
-        }
-        List<Post> postList = postDao.listDirectPostPage(postPageVo);
+        List<Post> postList = postDao.listDirectPostPage(postBO);
         PageInfo<Post> pageInfo = new PageInfo<>(postList);
         PageResult<Post> pageResult = new PageResult<>(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
@@ -531,34 +560,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
 
 
     /**
-     * 删除修改不含有的岗位职等关系信息
-     * @param postVo
-     * @param userSession
-     * @param post
-     */
-    /*private void deletePostGrade(PostVo postVo, UserSession userSession, Post post) {
-        List<PostGradeRelation> postGradeRelationList = postGradeRelationDao.getPostGradeRelationByPostId(post.getPostId());
-        if(!CollectionUtils.isEmpty(postGradeRelationList)){
-            List<Integer> positionGrades = postVo.getPositionGrades();
-            for (PostGradeRelation postGradeRelation : postGradeRelationList) {
-                if(!CollectionUtils.isEmpty(positionGrades)){
-                    if(!positionGrades.contains(postGradeRelation.getPositionGradeId())){
-                        //删除原来有的岗位职等关系表信息
-                        deletePostGradeRelation(userSession, postGradeRelation);
-                    }else {
-                        //含有原来的职等
-                        positionGrades.remove(postGradeRelation.getPositionGradeId());
-                    }
-                }else {
-                    //删除原来有的岗位职等关系表信息
-                    deletePostGradeRelation(userSession, postGradeRelation);
-                }
-            }
-        }
-    }
-*/
-
-    /**
      * 删除岗位职等关系表信息
      *
      * @param userSession
@@ -570,33 +571,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         postGradeRelationDao.updateByPrimaryKeySelective(postGradeRelation);
     }
 
-    /**
-     * 删除修改不含有的岗位职级关系信息
-     * @param postVo
-     * @param userSession
-     * @param post
-     */
-   /* private void deletePostLevel(PostVo postVo, UserSession userSession, Post post) {
-        List<PostLevelRelation> postLevelRelationList = postLevelRelationDao.getPostLevelRelationByPostId(post.getPostId());
-        if(!CollectionUtils.isEmpty(postLevelRelationList)){
-            List<Integer> positionLevels = postVo.getPositionLevels();
-            for (PostLevelRelation postLevelRelation : postLevelRelationList) {
-               if(!CollectionUtils.isEmpty(positionLevels)){
-                   if(!positionLevels.contains(postLevelRelation.getPositionLevelId())){
-                       //删除原来有的
-                       deletePostLevelRelation(userSession, postLevelRelation);
-                   }else {
-                       //含有原来的
-                       positionLevels.remove(postLevelRelation.getPositionLevelId());
-                   }
-               }else {
-                   //删除岗位职级关系表信息
-                   deletePostLevelRelation(userSession, postLevelRelation);
-               }
-            }
-        }
-    }
-*/
 
     /**
      * 删除岗位职级关系信息
@@ -609,36 +583,6 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         postLevelRelation.setOperatorId(userSession.getArchiveId());
         postLevelRelationDao.updateByPrimaryKeySelective(postLevelRelation);
     }
-
-
-
-   /* private void addPostLevelAndGradeRelation(PostVo postVo, UserSession userSession, Post post) {
-        List<Integer> positionLevels = postVo.getPositionLevels();
-        if(!CollectionUtils.isEmpty(positionLevels)){
-            for (Integer positionLevel : positionLevels) {
-                PostLevelRelation postLevelRelation = new PostLevelRelation();
-                postLevelRelation.setIsDelete((short) 0);
-                postLevelRelation.setOperatorId(userSession.getArchiveId());
-                postLevelRelation.setPostId(post.getPostId());
-                postLevelRelation.setPositionLevelId(positionLevel);
-                postLevelRelationDao.insertSelective(postLevelRelation);
-            }
-        }
-*/
-
-     /*   //新增岗位职等关系表信息
-        List<Integer> positionGrades = postVo.getPositionGrades();
-        if(!CollectionUtils.isEmpty(positionGrades)){
-            for (Integer positionGrade : positionGrades) {
-                PostGradeRelation postGradeRelation = new PostGradeRelation();
-                postGradeRelation.setIsDelete((short) 0);
-                postGradeRelation.setOperatorId(userSession.getArchiveId());
-                postGradeRelation.setPositionGradeId(positionGrade);
-                postGradeRelation.setPostId(post.getPostId());
-                postGradeRelationDao.insertSelective(postGradeRelation);
-            }
-        }
-    }*/
 
 
     private String culPostCode(String orgCode) {
@@ -669,7 +613,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
             }
         });
         List<OrganizationVO> organizationVOListMem = organizationDao.listOrganizationByCompanyId(userSession.getCompanyId());
-        List<Post> postMem = postDao.getPostListByCompanyId(userSession.getCompanyId());
+        List<Post> postMem = postDao.listPostsByCompanyId(userSession.getCompanyId());
         List<Position> positionListMem = positionDao.getPositionListByCompanyId(userSession.getCompanyId());
 
         List<Post> checkVos = new ArrayList<>(dataList.size());
@@ -678,7 +622,7 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
         for (Post post : dataList) {
             excelPostNameMap.put(post.getPostCode(), post.getPostName());
         }
-
+        List<PositionLevelVo> positionLevelsMem = positionLevelDao.list(userSession.getCompanyId());
         for (Post post : dataList) {
             // Post checkVo = new Post();
             // BeanUtils.copyProperties(post, checkVo);
@@ -700,9 +644,21 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
                 post.setCheckResult(false);
                 resultMsg.append("所属部门名称不能为空 | ");
             }
-            if (StringUtils.isBlank(post.getPositionName())) {
-                post.setCheckResult(false);
-                resultMsg.append("职位名称不能为空 | ");
+
+            if (StringUtils.isNotBlank(post.getPositionLevelName())) {
+                String[] plNames = post.getPositionLevelName().split(",");
+                StringBuilder sb = new StringBuilder();
+                Arrays.stream(plNames).forEach(plName -> {
+                    boolean bool = positionLevelsMem.stream().anyMatch(pl -> plName.equals(pl.getPositionLevelName()));
+                    if (!bool) {
+                        sb.append(plName).append(",");
+                    }
+                });
+                if (sb.length() > 0) {
+                    String mes = sb.substring(0, sb.length() - 1);
+                    post.setCheckResult(false);
+                    resultMsg.append("职级[" + mes + "] 不存在| ");
+                }
             }
 
             // 校验部门编码是否存在，部门编码与部门名称是否对应
@@ -733,7 +689,10 @@ public class PostServiceImpl extends AbstractOrganizationHelper<Post> implements
                             if (!postMem.stream().anyMatch(a -> post.getParentPostName().equals(a.getParentPostName()))) {
                                 post.setCheckResult(false);
                                 resultMsg.append("上级岗位名称在数据库中不匹配 | ");
-                            }
+                            }//如果都匹配了，还要进行整合性校验
+                            //不能设置上级岗位为当前岗位或当前岗位的下级岗位，比如B是A的下级岗位，C是B的下级岗位，那么A的上级不能是A自己以及B、C
+                            //遍历出当前岗位 的所有下级岗位包括自己
+                           //TODO List<Post> sonPosts=postDao.getSonPostIdsByCode(post.getPostCode(),userSession.getCompanyId());
                         }
                     } else {
                         post.setCheckResult(false);

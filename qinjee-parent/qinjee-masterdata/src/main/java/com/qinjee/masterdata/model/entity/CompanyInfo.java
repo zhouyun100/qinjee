@@ -24,6 +24,16 @@ public class CompanyInfo implements Serializable {
     private String companyName;
 
     /**
+     * 企业类型
+     */
+    private String companyType;
+
+    /**
+     * 企业注册人
+     */
+    private Integer registUserId;
+
+    /**
      * 营业执照ID
      */
     private String businessLicenseId;

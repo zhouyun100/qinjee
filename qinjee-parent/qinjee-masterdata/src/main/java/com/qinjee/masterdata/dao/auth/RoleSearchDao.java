@@ -44,7 +44,7 @@ public interface RoleSearchDao {
      * @param orgIdList
      * @return
      */
-    List<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO, List<Integer> orgIdList);
+    List<ArchiveInfoVO> searchArchiveListByUserName(RequestArchivePageVO archivePageVO, List<Integer> orgIdList,String whereSql,String orderSql);
 
     /**
      * 根据档案ID查询角色和角色组列表

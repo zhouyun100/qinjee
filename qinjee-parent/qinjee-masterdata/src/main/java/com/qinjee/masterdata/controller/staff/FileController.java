@@ -3,9 +3,7 @@ package com.qinjee.masterdata.controller.staff;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.AttachmentRecord;
-import com.qinjee.masterdata.model.vo.staff.AttchmentRecordVo;
-import com.qinjee.masterdata.model.vo.staff.DeleteFileVo;
-import com.qinjee.masterdata.model.vo.staff.ShowAttatchementVo;
+import com.qinjee.masterdata.model.vo.staff.*;
 import com.qinjee.masterdata.service.file.IFileOperateService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -13,7 +11,6 @@ import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,12 +111,12 @@ public class FileController extends BaseController {
     /**
      * 展示文件
      */
-    @RequestMapping(value = "/showFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/showFile", method = RequestMethod.POST)
     @ApiOperation(value = "展示文件", notes = "hkt")
-    public ResponseResult<PageResult<AttchmentRecordVo>> showFile(@RequestParam List<Integer> orgIdList, Integer pageSize, Integer currengPage) {
-        Boolean b = checkParam(orgIdList, getUserSession(), pageSize, currengPage);
+    public ResponseResult<PageResult<AttchmentRecordVo>> showFile(@RequestBody RequestUserarchiveVo requestUserarchiveVo){
+        Boolean b = checkParam( getUserSession(),requestUserarchiveVo);
         if (b) {
-            PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach(orgIdList, getUserSession(), pageSize, currengPage);
+            PageResult<AttchmentRecordVo> attchmentRecordVoPageResult = fileOperateService.selectAttach( getUserSession(),requestUserarchiveVo);
             return new ResponseResult<>(attchmentRecordVoPageResult, CommonCode.SUCCESS);
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);

@@ -17,9 +17,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,8 +30,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author 彭洪思
@@ -53,7 +48,6 @@ public class PostInstructionsImpl implements PostInstructionsService {
     @Override
     public ResponseResult<PostInstructions> showPostInstructions(Integer postId) {
         PostInstructions postInstructions = postInstructionsDao.getPostInstructionsByPostId(postId);
-        String s = new String(postInstructions.getInstructionContent());
         return new ResponseResult<>(postInstructions);
     }
 
@@ -68,7 +62,7 @@ public class PostInstructionsImpl implements PostInstructionsService {
             byte[] instructionContent = postInstructions.getInstructionContent();
             String htmlContent = new String(instructionContent, "utf-8");
             Integer postId = postInstructions.getPostId();
-            Post post = postDao.selectByPrimaryKey(postId);
+            Post post = postDao.getPostById(postId);
             //HTML内容必须被<html><body></body></html>包装
             String html = getHtmlText(htmlContent);
             String name = URLEncoder.encode(post.getPostCode() + "#" + post.getPostName(), "UTF-8") + ".doc";

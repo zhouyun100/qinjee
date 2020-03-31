@@ -27,7 +27,7 @@ public interface PreEmploymentDao {
      * @return
      */
     Integer updateBatch(List<PreEmployment> list);
-    Integer selectMaxId();
+
 
     /**
      * 根据id得到电话号码
@@ -54,7 +54,7 @@ public interface PreEmploymentDao {
 
     List<Integer> selectIdByNumber(@Param("phoneNumber") String phoneNumber, @Param("companyId") Integer companyId);
 
-    List<Integer> selectIdByComId(@Param("companyId") Integer companyId);
+    List<Integer> selectIdByComId(@Param("companyId") Integer companyId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     List<PreEmployment> selectByPrimaryKeyList(@Param("list") List<Integer> list);
     @MapKey("employment_id")
@@ -62,7 +62,7 @@ public interface PreEmploymentDao {
 
     int insertBatch(@Param ( "list" ) List<PreEmployment> list);
 
-    List< PreEmploymentVo> selectPreEmploymentVo(Integer companyId);
+    List< PreEmploymentVo> selectPreEmploymentVo(@Param("companyId") Integer companyId, @Param("orgId") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
     @MapKey ( "employment_id" )
     Map< Integer,Map< String, String>> selectNameAndOrg(@Param("list") List< Integer> list);
 
@@ -72,4 +72,14 @@ public interface PreEmploymentDao {
     PreEmployment selectByEmployNumber(@Param("s") String s);
 
     List<Integer> selectPreByPhone(@Param("s3") String s3, @Param("s4") String s4);
+
+    PreEmployment selectemploymentRegisterByPreId(@Param("preId") Integer preId, @Param("companyId") Integer companyId);
+
+    Integer selectReadyCount(@Param("archiveId") String archiveId, @Param("companyId") Integer companyId);
+
+    List<PreEmploymentVo> searchByHead(@Param("whereSql") String whereSql, @Param("companyId") Integer companyId);
+
+    List<PreEmployment> selectByPostIds(@Param("postIds")List<Integer> postIds);
+
+    List<PreEmploymentVo> selectReadyPre(@Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId, @Param("wheresql") String wheresql, @Param("orderSql") String orderSql);
 }

@@ -70,36 +70,57 @@
 
     <!-- 根据工号或姓名模糊查询员工列表 -->
     <select id="searchArchiveListByUserName" resultMap="ArchiveInfoMap">
-        SELECT t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,t_user_archive.org_id,t_sys_dict.dict_value gender,
-        a.org_name business_unit_name,b.org_name dept_name,b.org_full_name dept_full_name,t_post.post_name
-        FROM t_user_archive
-        LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
-        LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
-        LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
-        LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE' AND t_user_archive.gender = t_sys_dict.dict_code
-        <if test="archivePageVO.roleId != null">
-            ,t_user_role
+        -- 嵌套一层外查询 用于表头查询
+        select
+        archive_id,
+        user_name,
+        employee_number,
+        org_id,
+        gender,
+        business_unit_name,
+        dept_name,
+        dept_full_name,
+        post_name
+         from (
+            SELECT t_user_archive.archive_id,t_user_archive.user_name,t_user_archive.employee_number,t_user_archive.org_id,t_sys_dict.dict_value gender,
+            a.org_name business_unit_name,b.org_name dept_name,b.org_full_name dept_full_name,t_post.post_name
+            FROM t_user_archive
+            LEFT JOIN t_post ON t_user_archive.post_id = t_post.post_id
+            LEFT JOIN t_organization a ON t_user_archive.business_unit_id = a.org_id
+            LEFT JOIN t_organization b ON t_user_archive.org_id = b.org_id
+            LEFT JOIN t_sys_dict ON t_sys_dict.dict_type = 'SEX_TYPE' AND t_user_archive.gender = t_sys_dict.dict_code
+            <if test="archivePageVO.roleId != null">
+                ,t_user_role
+            </if>
+            WHERE t_user_archive.company_id = #{archivePageVO.companyId,jdbcType=INTEGER}
+            <if test="orgIdList != null">
+                AND t_user_archive.org_id in
+                <foreach collection="orgIdList" item="orgId" open="(" separator="," close=")">
+                    #{orgId,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="archivePageVO.roleId != null">
+                and t_user_role.role_id = #{archivePageVO.roleId,jdbcType=INTEGER}
+                and t_user_role.archive_id = t_user_archive.archive_id
+                and t_user_role.is_trusteeship = 0
+                and t_user_role.is_delete = 0
+            </if>
+            <if test="archivePageVO.userName != null and archivePageVO.userName != ''">
+                <bind name="pattern" value="'%' + archivePageVO.userName + '%'" />
+                AND (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
+            </if>
+            AND t_user_archive.archive_status = 'SERVICE'
+            AND t_user_archive.is_delete = 0
+        ) lastTable
+        <if test="whereSql !=null">
+            where 1=1
+            ${whereSql}
         </if>
-        WHERE t_user_archive.company_id = #{archivePageVO.companyId,jdbcType=INTEGER}
-        <if test="orgIdList != null">
-            AND t_user_archive.org_id in
-            <foreach collection="orgIdList" item="orgId" open="(" separator="," close=")">
-                #{orgId,jdbcType=INTEGER}
-            </foreach>
-        </if>
-        <if test="archivePageVO.roleId != null">
-            and t_user_role.role_id = #{archivePageVO.roleId,jdbcType=INTEGER}
-            and t_user_role.archive_id = t_user_archive.archive_id
-            and t_user_role.is_trusteeship = 0
-            and t_user_role.is_delete = 0
-        </if>
-        <if test="archivePageVO.userName != null and archivePageVO.userName != ''">
-            <bind name="pattern" value="'%' + archivePageVO.userName + '%'" />
-            AND (t_user_archive.employee_number LIKE #{pattern} or t_user_archive.user_name LIKE #{pattern})
-        </if>
-        AND t_user_archive.archive_status = 'SERVICE'
-        AND t_user_archive.is_delete = 0
         GROUP BY archive_id,user_name,employee_number,gender,business_unit_name,dept_name,post_name
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
     </select>
 
     <!-- 根据档案ID查询角色列表 -->

@@ -11,7 +11,6 @@
 package com.qinjee.masterdata.service.custom.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.graphbuilder.struc.LinkedList;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
@@ -25,7 +24,6 @@ import com.qinjee.masterdata.model.vo.custom.*;
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
 import com.qinjee.masterdata.model.vo.staff.InsideCheckAndImport;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
-import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
 import com.qinjee.masterdata.service.sys.SysDictService;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
@@ -39,9 +37,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -423,7 +419,7 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
             for (CustomGroupVO groupVO : customGroupList) {
 
                 List<CustomFieldVO> fieldList = customFieldList.stream().filter(customFieldVO -> {
-                    if (customFieldVO.getGroupId().equals(groupVO.getGroupId())) {
+                    if (customFieldVO.getGroupId()!=null &&customFieldVO.getGroupId().equals(groupVO.getGroupId())) {
                         return true;
                     } else {
                         return false;
@@ -600,12 +596,12 @@ public class CustomTableFieldServiceImpl implements CustomTableFieldService {
                             fieldVO.setChDefaultValue ( org.getOrgName () );
                         }
                     } else if ("post_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&&!"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
-                        Post post = postDao.getPostById(fieldVO.getDefaultValue());
+                        Post post = postDao.getPostByPostId(fieldVO.getDefaultValue());
                         if(post!=null) {
                             fieldVO.setChDefaultValue ( post.getPostName () );
                         }
                     } else if ("supervisor_id".equals(fieldVO.getFieldCode())&&Objects.nonNull(fieldVO.getDefaultValue())&& !"null".equalsIgnoreCase ( fieldVO.getDefaultValue() )) {
-                        UserArchiveVo archiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getDefaultValue()));
+                        UserArchiveVo archiveVo = userArchiveDao.selectBasicById(Integer.parseInt(fieldVO.getDefaultValue()));
                         if(archiveVo!=null) {
                             fieldVO.setChDefaultValue ( archiveVo.getUserName () );
                         }

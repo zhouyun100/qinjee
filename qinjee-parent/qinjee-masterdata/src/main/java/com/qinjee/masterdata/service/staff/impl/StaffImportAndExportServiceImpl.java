@@ -5,15 +5,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.custom.CustomTableFieldDao;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
+import com.qinjee.masterdata.dao.organation.PositionGradeDao;
+import com.qinjee.masterdata.dao.organation.PositionLevelDao;
 import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.dao.staffdao.commondao.CustomArchiveTableDataDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.BlacklistDao;
 import com.qinjee.masterdata.dao.staffdao.preemploymentdao.PreEmploymentDao;
-import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.QuerySchemeFieldDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
-import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.Blacklist;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.Post;
@@ -27,12 +27,11 @@ import com.qinjee.masterdata.model.vo.staff.export.BlackListVo;
 import com.qinjee.masterdata.model.vo.staff.export.ContractVo;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.masterdata.service.custom.CustomTableFieldService;
-import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
-import com.qinjee.masterdata.service.organation.OrganizationService;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.IStaffCommonService;
 import com.qinjee.masterdata.service.staff.IStaffImportAndExportService;
 import com.qinjee.masterdata.service.sys.SysDictService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.masterdata.utils.FieldToProperty;
 import com.qinjee.masterdata.utils.export.HeadFieldUtil;
 import com.qinjee.masterdata.utils.export.HeadMapUtil;
@@ -75,7 +74,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private static final String POSTNAME = "岗位";
     private static final String ORGCODEPRE = "入职部门编码";
     private static final String ORGNAMEPRE = "入职部门";
-    private static final String SUPVISORUSERNAME = "直接上级";
+    private static final String POSITIONLEVELNAME = "职级";
+    private static final String POSITIONGRADENAME = "职等";
+
 
     @Autowired
     private CustomTableFieldDao customTableFieldDao;
@@ -103,8 +104,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private SysDictService sysDictServiceImpl;
     @Autowired
     private PostDao postDao;
-   @Autowired
-   private QuerySchemeFieldDao querySchemeFieldDao;
+    @Autowired
+    private QuerySchemeFieldDao querySchemeFieldDao;
+    @Autowired
+    private PositionLevelDao positionLevelDao;
+    @Autowired
+    private PositionGradeDao positionGradeDao;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -286,8 +292,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                        fieldVO.setFieldValue("未知部门");
                    }
                 }
+                if("position_level_id".equals(fieldVO.getFieldCode())){
+                    String s = positionLevelDao.getPositionLevelByIdAndCompanyId(Integer.parseInt (fieldVO.getFieldValue ()),userSession.getCompanyId ());
+                    if(StringUtils.isNotBlank(s)){
+                        fieldVO.setFieldValue(s);
+                    }else{
+                        fieldVO.setFieldValue("未知职级");
+                    }
+                }
+                if("position_grade_id".equals(fieldVO.getFieldCode())){
+                    String s = positionGradeDao.getPositonGradeByIdAndCompanyId(Integer.parseInt(fieldVO.getFieldValue()), userSession.getCompanyId());
+                    if(StringUtils.isNotBlank(s)){
+                        fieldVO.setFieldValue(s);
+                    }else{
+                        fieldVO.setFieldValue("未知职等");
+                    }
+                }
                 if("post_id".equals(fieldVO.getFieldCode())){
-                     Post post = postDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
+                     Post post = postDao.getPostById(Integer.parseInt(fieldVO.getFieldValue()));
                     if(post!=null){
                         fieldVO.setFieldValue(post.getPostName());
                     }else{
@@ -295,7 +317,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     }
                 }
                 if("supervisor_id".equals(fieldVO.getFieldCode())){
-                    UserArchiveVo userArchiveVo = userArchiveDao.selectByPrimaryKey(Integer.parseInt(fieldVO.getFieldValue()));
+                    UserArchiveVo userArchiveVo = userArchiveDao.selectBasicById(Integer.parseInt(fieldVO.getFieldValue()));
                     if(userArchiveVo!=null){
                         fieldVO.setFieldValue(userArchiveVo.getUserName());
                     }else{
@@ -581,11 +603,13 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Transactional(rollbackFor = Exception.class)
     public void exportPreFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
         Map < Integer, Map < String, Object > > map;
-        if (CollectionUtils.isEmpty ( exportRequest.getList () )) {
-            List < Integer > list = preEmploymentDao.selectIdByComId ( userSession.getCompanyId () );
-            map = preEmploymentDao.selectExportPreList ( list, userSession.getCompanyId () );
-        } else {
+        if (!CollectionUtils.isEmpty ( exportRequest.getList () )) {
             map = preEmploymentDao.selectExportPreList ( exportRequest.getList (), userSession.getCompanyId () );
+        } else {
+            String whereSql = DealHeadParamUtil.getWhereSql(exportRequest.getSearchList(), "");
+            String orderSql = DealHeadParamUtil.getOrderSql(exportRequest.getSearchList(), "");
+            List < Integer > list = preEmploymentDao.selectIdByComId ( userSession.getCompanyId (),whereSql,orderSql );
+            map = preEmploymentDao.selectExportPreList ( list, userSession.getCompanyId () );
         }
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
@@ -606,7 +630,9 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void exportBlackFile(ExportRequest exportRequest, HttpServletResponse response, UserSession userSession) throws IOException {
-        Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId () );
+        String whereSql=DealHeadParamUtil.getWhereSql(exportRequest.getSearchList(),"bla.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportRequest.getSearchList(), "bla.");
+        Map < Integer, Map < String, Object > > map = blacklistDao.selectExportBlackList ( exportRequest.getList (), userSession.getCompanyId (),whereSql,orderSql );
         ExportFile exportFile = new ExportFile ();
         exportFile.setTittle ( exportRequest.getTitle () );
         exportFile.setMap ( map );
@@ -656,24 +682,24 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     public void exportNoConArc(List<Integer> list, HttpServletResponse response, UserSession userSession) throws IOException, IllegalAccessException {
         List<String> strings1 = HeadMapUtil.getHeadsForNoConArc();
         LinkedList<String> strings2 = new LinkedList<>(strings1);
-        List<NoConArc> list1=userArchiveDao.selectNoConArcByIdList(list);
-        List<Map<String,String>> maps=new ArrayList<>();
-        String format=null;
+        List<NoConArc> list1 = userArchiveDao.selectNoConArcByIdList(list);
+        List<Map<String, String>> maps = new ArrayList<>();
+        String format = null;
         for (NoConArc noConArc : list1) {
             Map<String, String> map = new LinkedHashMap<>();
             for (String string : strings2) {
                 Class aClass = noConArc.getClass();
                 for (Field declaredField : aClass.getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    if (declaredField.getName().equals(HeadFieldUtil.getFieldMap().get(string))){
-                        String s = declaredField.getType ().toString ();
-                        if(s.contains("Date")){
-                            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-                            if(declaredField.get(noConArc)!=null) {
-                                format= simpleDateFormat.format(declaredField.get(noConArc));
+                    if (declaredField.getName().equals(HeadFieldUtil.getFieldMap().get(string))) {
+                        String s = declaredField.getType().toString();
+                        if (s.contains("Date")) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            if (declaredField.get(noConArc) != null) {
+                                format = simpleDateFormat.format(declaredField.get(noConArc));
                             }
-                            map.put(string,format);
-                        }else {
+                            map.put(string, format);
+                        } else {
                             map.put(string, String.valueOf(declaredField.get(noConArc)));
                         }
                     }
@@ -681,8 +707,8 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             }
             maps.add(map);
         }
-        ExcelUtil.download ( response,"NOCONARC", strings1,maps,
-                getTypeMap ( strings1 ) );
+        ExcelUtil.download(response, "NOCONARC", strings1, maps,
+                getTypeMap(strings1));
     }
 
     @Override
@@ -740,10 +766,21 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     private List < Map < Integer, String > > getMaps(MultipartFile multipartFile, String funcCode, UserSession userSession) throws Exception {
         List < Map < String, String > > mapList = ExcelUtil.readExcel ( multipartFile );
         List < Map < Integer, String > > list = new ArrayList <> ();
+        //将查询结果置于缓存中
+        String importDataCache = redisClusterService.get ( "IMPORT_DATA_CACHE" );
+        List < Map < String, Integer > > maps=null;
+        if(StringUtils.isEmpty ( importDataCache )){
+            List < String > strings = Arrays.asList ( "business_unit_id", "org_id", "supervisor_id", "post_id", "position_level_id", "position_grade_id" );
+            maps=customTableFieldDao.selectFieldIdByCodeListAndFuncCodeAndComapnyId(strings,funcCode,userSession.getCompanyId ());
+            redisClusterService.setex ("IMPORT_DATA_CACHE",2*60*60,JSON.toJSONString ( maps )  );
+        }else{
+            maps=JSONArray.parseObject ( importDataCache, List.class );
+        }
+
         for (Map < String, String > map : mapList) {
             Map < Integer, String > stringMap = new HashMap <> ();
             for (Map.Entry < String, String > entry : map.entrySet ()) {
-                Map < Integer, String > map1 = transField ( funcCode, userSession.getCompanyId (), entry.getValue (), entry.getKey () );
+                Map < Integer, String > map1 = transField ( funcCode, userSession.getCompanyId (), entry.getValue (), entry.getKey (),maps );
                 for (Map.Entry < Integer, String > integerStringEntry : map1.entrySet ()) {
                     stringMap.put ( integerStringEntry.getKey (), integerStringEntry.getValue () );
                 }
@@ -756,7 +793,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
     /**
      * 根据fieldName与funcode找到对应的fieldId
      */
-    private Map < Integer, String > transField(String funcCode, Integer companyId, String value, String fieldName) {
+    private Map < Integer, String > transField(String funcCode, Integer companyId, String value, String fieldName,List<Map<String,Integer>> maps) {
         Map < Integer, String > map = new HashMap<>();
         String businessUnitId=null;
         String orgId=null;
@@ -772,15 +809,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put (map1.get(0).get ( "field_id" ), businessUnitId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-1" );
-
+                        map.put (getFieldId ( maps,"business_unit_id" ),"-1");
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), "-2" );
+                    map.put (getFieldId ( maps,"business_unit_id" ), "-2" );
                 }
             }else if(BUSINESSUNITNAME.equals(fieldName)){
                  if(StringUtils.isNotBlank(businessUnitId)){
-                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "business_unit_id", funcCode, companyId ), businessUnitId );
+                     map.put (getFieldId ( maps,"business_unit_id" ), businessUnitId );
                  }
              } else if (ORGCODE.equals ( fieldName ) || ORGCODEPRE.equals ( fieldName )) {
                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
@@ -791,14 +827,14 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), orgId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-1" );
+                        map.put (getFieldId ( maps,"org_id" ), "-1" );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), "-2" );
+                    map.put ( getFieldId ( maps,"org_id" ), "-2" );
                 }
             }else if(ORGNAME.equals ( fieldName ) || ORGNAMEPRE.equals ( fieldName )){
                  if(StringUtils.isNotBlank(orgId)){
-                     map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "org_id", funcCode, companyId ), orgId );
+                     map.put ( getFieldId ( maps,"org_id" ), orgId );
                  }
             }
              else if (SUPORCODE.equals ( fieldName ) ) {
@@ -810,7 +846,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), superId );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "supervisor_id", funcCode, companyId ), "-1" );
+                        map.put ( getFieldId ( maps,"org_id" ), "-1" );
                     }
                 }
             }
@@ -823,15 +859,43 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                             map.put ( map1.get(0).get ( "field_id" ), postName );
                         }
                     } else {
-                        map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-1" );
+                        map.put (  getFieldId ( maps,"post_id" ), "-1" );
                     }
                 } else {
-                    map.put ( customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId ( "post_id", funcCode, companyId ), "-2" );
+                    map.put ( getFieldId ( maps,"post_id" ), "-2" );
                 }
              }else if(POSTNAME.equals ( fieldName )){
                if(StringUtils.isNotBlank(postId)) {
-                   map.put(customTableFieldDao.selectFieldIdByCodeAndFuncCodeAndComapnyId("post_id", funcCode, companyId), postId);
+                   map.put(getFieldId ( maps,"post_id" ), postId);
                }
+             }
+             else if(POSITIONLEVELNAME.equals ( fieldName )){
+                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                     //将职级名称换成职级id存进数据库
+                     List<Map < String, Integer >> map1=customTableFieldDao.transPositionId ( funcCode, companyId, value );
+                     if (!CollectionUtils.isEmpty ( map1 )) {
+                         String positionlevelId = String.valueOf ( map1.get(0).get ( "position_level_id" ) );
+                         if (StringUtils.isNotBlank ( positionlevelId )) {
+                             map.put ( map1.get(0).get ( "field_id" ), positionlevelId );
+                         }
+                     } else {
+                         map.put ( getFieldId ( maps,"position_level_id" ), "-1" );
+                     }
+                 }
+             }
+             else if(POSITIONGRADENAME.equals ( fieldName )){
+                 if (null != value && !"null".equals ( value ) && !"".equals ( value )) {
+                     //将职等名称换成职等id存进数据库
+                     List<Map < String, Integer >> map1=customTableFieldDao.transPositionGradeId ( funcCode, companyId, value );
+                     if (!CollectionUtils.isEmpty ( map1 )) {
+                         String positiongradeId = String.valueOf ( map1.get(0).get ( "position_grade_id" ) );
+                         if (StringUtils.isNotBlank ( positiongradeId )) {
+                             map.put ( map1.get(0).get ( "field_id" ), positiongradeId );
+                         }
+                     } else {
+                         map.put (getFieldId ( maps, "position_grade_id" ), "-1" );
+                     }
+                 }
              }
            else  {
                  CustomFieldVO customFieldVO = customTableFieldDao.selectFieldIdByFieldNameAndCompanyIdAndFuncCode(fieldName, companyId, funcCode);
@@ -847,6 +911,17 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
             ExceptionCast.cast ( CommonCode.TARGET_NOT_EXIST );
         }
         return map;
+    }
+
+    private Integer getFieldId(List < Map < String, Integer > > maps,String code) {
+        if(!CollectionUtils.isEmpty ( maps )) {
+            for (Map < String, Integer > stringIntegerMap : maps) {
+               if(code.equals (stringIntegerMap.get ("field_code"))){
+                  return stringIntegerMap.get ( "field_id" );
+               }
+            }
+        }
+       return null;
     }
 
 
@@ -904,6 +979,7 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
 
     private List < Map < String, String > > getDatesForConWithArc(List < ContractWithArchiveVo > list, List < String > head) throws IllegalAccessException {
         List < Map < String, String > > mapList = new ArrayList <> ();
+        String format=null;
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
             Map < String, String > map = new LinkedHashMap <> ();
             Class aClass = contractWithArchiveVo.getClass ();
@@ -913,7 +989,15 @@ public class StaffImportAndExportServiceImpl implements IStaffImportAndExportSer
                     declaredField.setAccessible ( true );
                     String s1 = transValue ( s );
                     if (FieldToProperty.fieldToProperty ( s1 ).equals ( declaredField.getName () )) {
-                        map.put ( s, String.valueOf ( declaredField.get ( contractWithArchiveVo ) ) );
+                        if (declaredField.getType ().toString ().contains("Date")) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            if (declaredField.get(contractWithArchiveVo) != null) {
+                                format = simpleDateFormat.format(declaredField.get(contractWithArchiveVo));
+                            }
+                            map.put(s1, format);
+                        } else {
+                            map.put(s1, String.valueOf(declaredField.get(contractWithArchiveVo)));
+                        }
                     }
                 }
             }

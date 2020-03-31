@@ -8,6 +8,7 @@
         <result column="parent_role_group_id" jdbcType="INTEGER" property="parentRoleGroupId" />
         <result column="role_type" jdbcType="VARCHAR" property="roleType" />
         <result column="is_system_define" jdbcType="INTEGER" property="isSystemDefine" />
+        <result column="has_role" jdbcType="INTEGER" property="hasRole" />
     </resultMap>
 
     <resultMap id="MenuResultMap" type="com.qinjee.masterdata.model.vo.auth.MenuVO">
@@ -43,13 +44,41 @@
         <result column="read_write_code" jdbcType="VARCHAR" property="readWriteCode" />
     </resultMap>
 
-    <!--根据企业ID查询角色列表 -->
-    <select id="searchRoleTree" parameterType="java.lang.Integer" resultMap="RoleGroupResultMap">
-        select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type,is_system_define
+    <!--根据企业ID和档案ID查询角色列表 -->
+    <select id="searchRoleTree" resultMap="RoleGroupResultMap">
+        select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type,is_system_define,1 as has_role
         from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
         UNION ALL
-        select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'ROLE' as role_type,is_system_define
-        from t_role where t_role.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
+        select t_role.role_id role_group_id,t_role.role_name role_group_name,t_role.role_group_id parent_role_group_id,'ROLE' as role_type,t_role.is_system_define,1 as has_role
+        from t_role,t_user_role
+        where t_role.company_id = #{companyId,jdbcType=INTEGER}
+        and t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
+        and t_role.role_id = t_user_role.role_id
+        and t_role.is_delete = 0
+        and t_user_role.is_delete = 0
+    </select>
+
+    <!--根据企业ID和档案ID查询角色列表 -->
+    <select id="searchRoleTreeByRoleId" resultMap="RoleGroupResultMap">
+        select t_role_group.role_group_id,t_role_group.role_group_name,t_role_group.parent_role_group_id,'ROLE_GROUP' as role_type,is_system_define,1 as has_role
+        from t_role_group where t_role_group.company_id = #{companyId,jdbcType=INTEGER} and is_delete = 0
+        UNION ALL
+        select v.role_group_id,v.role_group_name,v.parent_role_group_id,v.role_type,v.is_system_define,
+        case when r.child_role_id is not null then 1 else 0 end has_role
+        from (
+        select t_role.role_id role_group_id,t_role.role_name role_group_name,
+        t_role.role_group_id parent_role_group_id,'ROLE' as role_type,t_role.is_system_define
+        from t_role,t_user_role
+        where t_role.company_id = #{companyId,jdbcType=INTEGER}
+        and t_user_role.archive_id = #{archiveId,jdbcType=INTEGER}
+        and t_role.role_id = t_user_role.role_id
+        and t_role.is_delete = 0
+        and t_user_role.is_delete = 0) v
+        left join t_role_role_relation r
+        on r.parent_role_id = #{roleId,jdbcType=INTEGER}
+        and r.is_delete = 0
+        and r.child_role_id = v.role_group_id
+        where v.role_group_id != #{roleId,jdbcType=INTEGER}
     </select>
 
     <!--根据角色ID和企业ID查询角色菜单树 -->
@@ -82,7 +111,8 @@
         where t_role.role_id = #{roleId,jdbcType=INTEGER}
         and t_role_menu_auth.role_id = t_role.role_id
         and t_role.is_delete = 0
-        and t_role_menu_auth.is_delete = 0) t
+        and t_role_menu_auth.is_delete = 0
+        GROUP BY t_role_menu_auth.menu_id) t
         ON v.menu_id = t.menu_id
         ORDER BY v.sort
       </select>
@@ -213,6 +243,31 @@
         and t_role.is_delete = 0
         and t_role_org_auth.is_delete = 0
     </select>
+
+    <!--根据角色ID查询授权的子集角色ID集合 -->
+    <select id="searchChildRoleIdListByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select child_role_id from t_role_role_relation where parent_role_id = #{roleId,jdbcType=INTEGER} and is_delete = 0
+    </select>
+
+    <!-- 新增角色授权角色 -->
+    <insert id="addRoleRoleRelation">
+        <foreach collection="childRoleIdList" item="childRoleId" separator=";">
+            insert into t_role_role_relation (parent_role_id, child_role_id, operator_id)
+            values (#{parentRoleId,jdbcType=INTEGER}, #{childRoleId,jdbcType=INTEGER},#{operatorId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!-- 根据角色ID删除子集角色授权 -->
+    <update id="deleteRoleRoleRelation" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth">
+        update t_role_role_relation set is_delete = 1,operator_id = #{operatorId,jdbcType=INTEGER}
+        where parent_role_id = #{parentRoleId,jdbcType=INTEGER}
+        and child_role_id IN
+        <foreach item="childRoleId" collection="childRoleIdList"
+                 open="(" separator="," close=")">
+            #{childRoleId}
+        </foreach>
+        and is_delete = 0
+    </update>
 
     <!-- 新增角色机构权限 -->
     <insert id="addRoleOrgAuth" keyColumn="auth_id" keyProperty="authId" parameterType="com.qinjee.masterdata.model.entity.RoleOrgAuth" useGeneratedKeys="true">

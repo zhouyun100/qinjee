@@ -4,6 +4,8 @@ import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RelieveContractInfoVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -16,18 +18,18 @@ import java.util.List;
 
 public interface IStaffContractService {
 
-    /**展示未签合同的人员
-
-     * @param orgId
-     * @param currentPage
-     * @param pageSize
+    /**
+     * 展示未签合同的人员
+     *
+     * @param requestUserarchiveVo
      * @param
      * @return
      */
-    PageResult< UserArchiveVo > selectNoLaborContract(List<Integer> orgId, Integer currentPage, Integer pageSize,Integer CompanyId);
+    PageResult<UserArchiveVo> selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo, Integer CompanyId);
 
     /**
      * 删除合同
+     *
      * @param laborContractid
      * @return
      */
@@ -35,27 +37,33 @@ public interface IStaffContractService {
 
     /**
      * 新增单签合同
+     *
      * @param contractVo
      * @param userSession
      * @return
      */
     void insertLaborContract(ContractVo contractVo, UserSession userSession) throws ParseException;
 
-    /**批量新签合同
+    /**
+     * 批量新签合同
+     *
      * @param contractVo
      * @param userSession
      * @return
      */
-   void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception;
+    void insertLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception;
 
-    /**更新合同，同时新增更新  记录
+    /**
+     * 更新合同，同时新增更新  记录
+     *
      * @param userSession
      * @return
      */
-    void updatelaborContract(ContractVo contractVo,   UserSession userSession) throws ParseException;
+    void updatelaborContract(ContractVo contractVo, UserSession userSession) throws ParseException;
 
     /**
-     *查询一个合同的变更历史
+     * 查询一个合同的变更历史
+     *
      * @param id
      * @param
      * @param
@@ -64,14 +72,18 @@ public interface IStaffContractService {
     List<LaborContractChange> selectLaborContractchange(Integer id);
 
 
-    /**新增续签合同
+    /**
+     * 新增续签合同
+     *
      * @param contractVo
      * @param userSession
      * @return
      */
     void insertReNewLaborContract(ContractVo contractVo, UserSession userSession);
+
     /**
      * 新增续签意向表
+     *
      * @param contractRenewalIntention
      * @return
      */
@@ -79,6 +91,7 @@ public interface IStaffContractService {
 
     /**
      * 保存合同
+     *
      * @param contractVo
      * @param userSession
      * @return
@@ -87,6 +100,7 @@ public interface IStaffContractService {
 
     /**
      * 批量续签合同
+     *
      * @param userSession
      * @return
      */
@@ -95,17 +109,14 @@ public interface IStaffContractService {
 
     /**
      * 展示已签合同人员
-     * @param orgIdList
-     * @param currentPage
-     * @param pageSize
+     *
      * @return
      */
-    PageResult<ContractWithArchiveVo> selectLaborContractserUser(List<Integer> orgIdList, Integer currentPage,
-                                                       Integer pageSize,
-                                                       List<String> status,UserSession userSession) throws Exception;
+    PageResult<ContractWithArchiveVo> selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo, UserSession userSession) throws Exception;
 
     /**
      * 终止合同
+     *
      * @param laborContractChangeVo
      * @param id
      * @param userSession
@@ -115,6 +126,7 @@ public interface IStaffContractService {
 
     /**
      * 批量终止合同
+     *
      * @param contractVo
      * @param userSession
      * @return
@@ -123,6 +135,7 @@ public interface IStaffContractService {
 
     /**
      * 解除合同
+     *
      * @param laborContractChangeVo
      * @param id
      * @param userSession
@@ -132,6 +145,7 @@ public interface IStaffContractService {
 
     /**
      * 批量解除合同
+     *
      * @param contractVo
      * @param userSession
      * @return
@@ -141,6 +155,7 @@ public interface IStaffContractService {
 
     /**
      * 发送续签意向
+     *
      * @param list
      * @return
      */
@@ -148,6 +163,7 @@ public interface IStaffContractService {
 
     /**
      * 展示我的续签意向表
+     *
      * @param id
      * @return
      */
@@ -155,6 +171,7 @@ public interface IStaffContractService {
 
     /**
      * 同意续签
+     *
      * @param xuqianId
      * @return
      */
@@ -162,19 +179,39 @@ public interface IStaffContractService {
 
     /**
      * 不同意续签
+     *
      * @param xuqianId
      * @return
      */
-    void rejectRenew( Integer xuqianId);
+    void rejectRenew(Integer xuqianId);
 
 
     Integer getSignNumber(Integer archiveId);
 
-    List< LaborContract > selectContractByArchiveId(Integer archiveId);
+    List<LaborContract> selectContractByArchiveId(Integer archiveId);
 
-    PageResult< ContractFormVo > createContractForm(List< Integer> list,Integer currentPage,Integer pageSize,UserSession userSession);
+    PageResult<ContractFormVo> createContractForm(List<Integer> list, Integer currentPage, Integer pageSize, UserSession userSession);
 
-   PageResult<ContractRenewalIntention> selectContractRenewalIntentionByOrg(List<Integer> orgId,Integer pageSIze,Integer currentPage);
+    PageResult<RenewIntentionVo> selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession);
 
-    PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId,Integer companyId,Integer currentPage, Integer pageSize);
+    PageResult<ContractWithArchiveVo> selectAboutToExpireContracts(Integer orgId, Integer archiveId, Integer companyId, Integer currentPage, Integer pageSize);
+
+    List<RenewIntionAboutUser> getRenewalContract(Integer archiveId);
+
+    void insertMessqge(InsertRenewContractMessage insertRenewContractMessage);
+
+    /**
+     * 查询多个员工的续签通知信息
+     *phs
+     * @param archiveIds
+     * @return
+     */
+    List<RenewalContractInfoVo> listContractRenewalInfo(List<Integer> archiveIds);
+
+ /**
+  * phs
+  * @param archiveIds
+  * @return
+  */
+ List<RelieveContractInfoVo> listRelieveContract(List<Integer> archiveIds);
 }

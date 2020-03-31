@@ -9,5 +9,6 @@ import java.util.List;
 @JsonInclude
 public class ExportRequest {
     private  List <Integer> list;
+    private  List<FieldValueForSearch> searchList;
     private String title;
 }

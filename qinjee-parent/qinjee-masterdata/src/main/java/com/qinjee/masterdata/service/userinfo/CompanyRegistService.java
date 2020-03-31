@@ -10,6 +10,9 @@
  */
 package com.qinjee.masterdata.service.userinfo;
 
+import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.model.vo.userinfo.CompanyRegistParamVO;
+
 import java.util.Date;
 
 /**
@@ -19,12 +22,15 @@ import java.util.Date;
 public interface CompanyRegistService {
 
     /**
-     * 注册企业
-     * @param companyName
-     * @param userNumber
-     * @param validEndDate
+     * 根据手机号查询注册的企业数量
      * @param phone
-     * @param userName
+     * @return
      */
-    void registCompany(String companyName, Integer userNumber, Date validEndDate, String phone, String userName);
+    Integer searchRegistCompanyCountByPhone(String phone);
+
+    /**
+     * 注册企业
+     * @param companyRegistParamVO
+     */
+    UserInfoVO registCompany(CompanyRegistParamVO companyRegistParamVO);
 }

@@ -152,4 +152,10 @@
         and template_id=#{templateId}
         and is_enable=1
     </select>
+    <select id="selectTempalteIdByCompanyId" resultType="java.lang.Integer">
+        select template_id
+        from t_template_entry_registration
+        where company_id=#{companyId}
+        and is_enable=1 limit 1
+    </select>
 </mapper>

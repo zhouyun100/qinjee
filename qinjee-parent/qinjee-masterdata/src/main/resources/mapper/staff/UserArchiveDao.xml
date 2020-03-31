@@ -1,76 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
-    <id column="archive_id" jdbcType="INTEGER" property="archiveId" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber" />
-    <result column="company_id" jdbcType="INTEGER" property="companyId" />
-    <result column="user_category" jdbcType="VARCHAR" property="userCategory" />
-    <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
-    <result column="org_id" jdbcType="INTEGER" property="orgId" />
-    <result column="post_id" jdbcType="INTEGER" property="postId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
-    <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName" />
-    <result column="post_name" jdbcType="VARCHAR" property="postName" />
-    <result column="id_type" jdbcType="VARCHAR" property="idType" />
-    <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
-    <result column="gender" jdbcType="VARCHAR" property="gender" />
-    <result column="birth_date" jdbcType="DATE" property="birthDate" />
-    <result column="age" jdbcType="SMALLINT" property="age" />
-    <result column="nationality" jdbcType="INTEGER" property="nationality" />
-    <result column="birthplace" jdbcType="VARCHAR" property="birthplace" />
-    <result column="political_status" jdbcType="INTEGER" property="politicalStatus" />
-    <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
-    <result column="first_work_date" jdbcType="DATE" property="firstWorkDate" />
-    <result column="hire_date" jdbcType="DATE"  property="hireDate" />
-    <result column="serving_date" jdbcType="DATE"  property="servingDate" />
-    <result column="serving_age" jdbcType="INTEGER" property="servingAge" />
-    <result column="working_period" jdbcType="INTEGER" property="workingPeriod" />
-    <result column="probation_due_date" jdbcType="DATE" property="probationDueDate" />
-    <result column="probation_period" jdbcType="INTEGER" property="probationPeriod" />
-    <result column="converse_date" jdbcType="DATE" property="converseDate" />
-    <result column="first_degree" jdbcType="VARCHAR" property="firstDegree" />
-    <result column="highest_degree" jdbcType="VARCHAR" property="highestDegree" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="professional_certification" jdbcType="VARCHAR" property="professionalCertification" />
-    <result column="professional_title" jdbcType="VARCHAR" property="professionalTitle" />
-    <result column="professional_level" jdbcType="VARCHAR" property="professionalLevel" />
-    <result column="attrition_date" jdbcType="DATE" property="attritionDate" />
-    <result column="attrition_type" jdbcType="VARCHAR" property="attritionType" />
-    <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId" />
-    <result column="archive_status" jdbcType="INTEGER" property="archiveStatus" />
-    <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName" />
-    <result column="headimgurl" jdbcType="VARCHAR" property="headImgUrl" />
-  </resultMap>
-  <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
-    <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
-    <result column="employee_number" jdbcType="VARCHAR" property="employee_number" />
-    <result column="org_name" jdbcType="VARCHAR" property="org_name" />
-    <result column="hire_date" jdbcType="TIMESTAMP" property="hire_date" />
-    <result column="post_name" jdbcType="VARCHAR" property="post_name" />
-    <result column="user_name" jdbcType="VARCHAR" property="user_name" />
-    <result column="business_unit_name" jdbcType="VARCHAR" property="business_unit_name" />
-    <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisor_user_name" />
-    <result column="employment_type" jdbcType="VARCHAR" property="employment_type" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+        <id column="archive_id" jdbcType="INTEGER" property="archiveId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="employee_number" jdbcType="VARCHAR" property="employeeNumber"/>
+        <result column="company_id" jdbcType="INTEGER" property="companyId"/>
+        <result column="user_category" jdbcType="VARCHAR" property="userCategory"/>
+        <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId"/>
+        <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="post_id" jdbcType="INTEGER" property="postId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+        <result column="org_full_name" jdbcType="VARCHAR" property="orgFullName"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName"/>
+        <result column="post_name" jdbcType="VARCHAR" property="postName"/>
+        <result column="id_type" jdbcType="VARCHAR" property="idType"/>
+        <result column="id_number" jdbcType="VARCHAR" property="idNumber"/>
+        <result column="gender" jdbcType="VARCHAR" property="gender"/>
+        <result column="birth_date" jdbcType="DATE" property="birthDate"/>
+        <result column="age" jdbcType="SMALLINT" property="age"/>
+        <result column="nationality" jdbcType="INTEGER" property="nationality"/>
+        <result column="birthplace" jdbcType="VARCHAR" property="birthplace"/>
+        <result column="political_status" jdbcType="INTEGER" property="politicalStatus"/>
+        <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus"/>
+        <result column="first_work_date" jdbcType="DATE" property="firstWorkDate"/>
+        <result column="hire_date" jdbcType="DATE" property="hireDate"/>
+        <result column="serving_date" jdbcType="DATE" property="servingDate"/>
+        <result column="serving_age" jdbcType="INTEGER" property="servingAge"/>
+        <result column="working_period" jdbcType="INTEGER" property="workingPeriod"/>
+        <result column="probation_due_date" jdbcType="DATE" property="probationDueDate"/>
+        <result column="probation_period" jdbcType="INTEGER" property="probationPeriod"/>
+        <result column="converse_date" jdbcType="DATE" property="converseDate"/>
+        <result column="first_degree" jdbcType="VARCHAR" property="firstDegree"/>
+        <result column="highest_degree" jdbcType="VARCHAR" property="highestDegree"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="professional_certification" jdbcType="VARCHAR" property="professionalCertification"/>
+        <result column="professional_title" jdbcType="VARCHAR" property="professionalTitle"/>
+        <result column="professional_level" jdbcType="VARCHAR" property="professionalLevel"/>
+        <result column="attrition_date" jdbcType="DATE" property="attritionDate"/>
+        <result column="attrition_type" jdbcType="VARCHAR" property="attritionType"/>
+        <result column="supervisor_id" jdbcType="INTEGER" property="supervisorId"/>
+        <result column="archive_status" jdbcType="INTEGER" property="archiveStatus"/>
+        <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisorUserName"/>
+        <result column="headimgurl" jdbcType="VARCHAR" property="headImgUrl"/>
+        <result column="position_grade_id" jdbcType="INTEGER" property="positionGradeId"/>
+        <result column="position_level_id" jdbcType="INTEGER" property="positionLevelId"/>
+        <result column="position_grade_name" jdbcType="VARCHAR" property="positionGradeName"/>
+        <result column="position_level_name" jdbcType="VARCHAR" property="positionLevelName"/>
+    </resultMap>
+
+
+    <resultMap id="downloadVo" type="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo">
+        <id column="archive_id" jdbcType="INTEGER" property="archive_id"/>
+        <result column="employee_number" jdbcType="VARCHAR" property="employee_number"/>
+        <result column="org_name" jdbcType="VARCHAR" property="org_name"/>
+        <result column="hire_date" jdbcType="TIMESTAMP" property="hire_date"/>
+        <result column="post_name" jdbcType="VARCHAR" property="post_name"/>
+        <result column="user_name" jdbcType="VARCHAR" property="user_name"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="business_unit_name"/>
+        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="supervisor_user_name" jdbcType="VARCHAR" property="supervisor_user_name"/>
+        <result column="employment_type" jdbcType="VARCHAR" property="employment_type"/>
+    </resultMap>
     <resultMap id="noconarc" type="com.qinjee.masterdata.model.vo.staff.export.NoConArc">
-        <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
-        <result column="employee_number" jdbcType="VARCHAR" property="employee_number" />
-        <result column="org_name" jdbcType="VARCHAR" property="org_name" />
-        <result column="hire_date" jdbcType="TIMESTAMP" property="hire_date" />
-        <result column="post_name" jdbcType="VARCHAR" property="post_name" />
-        <result column="user_name" jdbcType="VARCHAR" property="user_name" />
-        <result column="business_unit_name" jdbcType="VARCHAR" property="business_unit_name" />
-        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date" />
-        <result column="probation_period" jdbcType="INTEGER" property="probation_period" />
-        <result column="user_category" jdbcType="VARCHAR" property="user_category" />
-        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date" />
+        <id column="archive_id" jdbcType="INTEGER" property="archive_id"/>
+        <result column="employee_number" jdbcType="VARCHAR" property="employee_number"/>
+        <result column="org_name" jdbcType="VARCHAR" property="org_name"/>
+        <result column="hire_date" jdbcType="TIMESTAMP" property="hire_date"/>
+        <result column="post_name" jdbcType="VARCHAR" property="post_name"/>
+        <result column="user_name" jdbcType="VARCHAR" property="user_name"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="business_unit_name"/>
+        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date"/>
+        <result column="probation_period" jdbcType="INTEGER" property="probation_period"/>
+        <result column="user_category" jdbcType="VARCHAR" property="user_category"/>
+        <result column="probation_due_date" jdbcType="TIMESTAMP" property="probation_due_date"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -79,17 +86,33 @@
     marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
     probation_period, converse_date, first_degree, highest_degree, phone, email, address,
     professional_certification, professional_title, professional_level, attrition_date,
-    attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete
+    attrition_type, supervisor_id, operator_id, create_time, update_time,is_delete,position_grade_id,position_level_id
   </sql>
-  <select id="selectByPrimaryKey" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
-    select
-    <include refid="Base_Column_List" />
-    from t_user_archive
-    where archive_id = #{archiveId,jdbcType=INTEGER}
+    <select id="selectBasicById" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_archive
+        where archive_id = #{archiveId,jdbcType=INTEGER}
+    </select>
+    <select id="selectFullById" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+    SELECT t_org.org_full_name , t_org.org_name org_name ,t_unit.org_name business_unit_name , tp.post_name , user_category, headimgurl,
+        user_name, id_type, id_number, gender, birth_date, age, nationality, birthplace, political_status,
+        marital_status, first_work_date, hire_date,serving_date ,serving_age, working_period, probation_due_date,
+        probation_period, converse_date, first_degree, highest_degree, phone, email, address,attrition_date,
+        professional_certification, professional_title, professional_level
+    FROM t_user_archive arc
+    LEFT JOIN t_organization t_org ON arc.org_id = t_org.org_id AND t_org.is_enable =1
+    LEFT JOIN t_organization t_unit ON arc.business_unit_id = t_unit.org_id AND t_unit.is_enable =1
+    LEFT JOIN t_post tp ON tp.post_id =arc.post_id AND tp.is_delete =0
+    where arc.archive_id = #{archiveId} and arc.is_delete =0
   </select>
+
+
     <select id="selectByPrimaryKeyAndIsDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_user_archive
         where archive_id = #{integer,jdbcType=INTEGER} and is_delete=1
     </select>
@@ -97,7 +120,8 @@
     delete from t_user_archive
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="archive_id" keyProperty="archiveId"
+            parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
     insert into t_user_archive (user_id, employee_number, company_id,
       user_category, business_unit_id, user_name,
       id_type, id_number, gender,
@@ -193,6 +217,9 @@
             <if test="servingAge != null">
                 serving_age,
             </if>
+            <if test="servingDate != null">
+                serving_date,
+            </if>
             <if test="workingPeriod != null">
                 working_period,
             </if>
@@ -242,7 +269,13 @@
                 archive_status,
             </if>
             <if test="headImgUrl!=null">
-                headimgurl
+                headimgurl,
+            </if>
+            <if test="positionGradeId != null">
+                position_grade_id,
+            </if>
+            <if test="positionLevelId != null">
+                position_level_id
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -261,357 +294,385 @@
             <if test="businessUnitId != null">
                 #{businessUnitId,jdbcType=INTEGER},
             </if>
-          <if test="supervisorId != null">
-            #{supervisorId,jdbcType=INTEGER},
-          </if>
-          <if test="orgId != null">
-            #{orgId,jdbcType=INTEGER},
-          </if>
-          <if test="postId != null">
-            #{postId,jdbcType=INTEGER},
-          </if>
+            <if test="supervisorId != null">
+                #{supervisorId,jdbcType=INTEGER},
+            </if>
+            <if test="orgId != null">
+                #{orgId,jdbcType=INTEGER},
+            </if>
+            <if test="postId != null">
+                #{postId,jdbcType=INTEGER},
+            </if>
 
-          <if test="userName != null">
-            #{userName,jdbcType=VARCHAR},
-          </if>
-          <if test="idType != null">
-            #{idType,jdbcType=VARCHAR},
-          </if>
-          <if test="idNumber != null">
-            #{idNumber,jdbcType=VARCHAR},
-          </if>
-          <if test="gender != null">
-            #{gender,jdbcType=VARCHAR},
-          </if>
-          <if test="birthDate != null">
-            #{birthDate,jdbcType=DATE},
-          </if>
-          <if test="age != null">
-            #{age,jdbcType=SMALLINT},
-          </if>
-          <if test="nationality != null">
-            #{nationality,jdbcType=INTEGER},
-          </if>
-          <if test="birthplace != null">
-            #{birthplace,jdbcType=VARCHAR},
-          </if>
-          <if test="politicalStatus != null">
-            #{politicalStatus,jdbcType=INTEGER},
-          </if>
-          <if test="maritalStatus != null">
-            #{maritalStatus,jdbcType=VARCHAR},
-          </if>
-          <if test="firstWorkDate != null">
-            #{firstWorkDate,jdbcType=DATE},
-          </if>
-          <if test="hireDate != null">
-            #{hireDate,jdbcType=DATE},
-          </if>
-          <if test="servingAge != null">
-            #{servingAge,jdbcType=INTEGER},
-          </if>
-          <if test="workingPeriod != null">
-            #{workingPeriod,jdbcType=INTEGER},
-          </if>
-          <if test="probationDueDate != null">
-            #{probationDueDate,jdbcType=DATE},
-          </if>
-          <if test="probationPeriod != null">
-            #{probationPeriod,jdbcType=INTEGER},
-          </if>
-          <if test="converseDate != null">
-            #{converseDate,jdbcType=DATE},
-          </if>
-          <if test="firstDegree != null">
-            #{firstDegree,jdbcType=VARCHAR},
-          </if>
-          <if test="highestDegree != null">
-            #{highestDegree,jdbcType=VARCHAR},
-          </if>
-          <if test="phone != null">
-            #{phone,jdbcType=VARCHAR},
-          </if>
-          <if test="email != null">
-            #{email,jdbcType=VARCHAR},
-          </if>
-          <if test="address != null">
-            #{address,jdbcType=VARCHAR},
-          </if>
-          <if test="professionalCertification != null">
-            #{professionalCertification,jdbcType=VARCHAR},
-          </if>
-          <if test="professionalTitle != null">
-            #{professionalTitle,jdbcType=VARCHAR},
-          </if>
-          <if test="professionalLevel != null">
-            #{professionalLevel,jdbcType=VARCHAR},
-          </if>
-          <if test="attritionDate != null">
-            #{attritionDate,jdbcType=DATE},
-          </if>
-          <if test="attritionType != null">
-            #{attritionType,jdbcType=VARCHAR},
-          </if>
-          <if test="operatorId != null">
-            #{operatorId,jdbcType=INTEGER},
-          </if>
-          <if test="archiveStatus != null">
-            #{archiveStatus,jdbcType=VARCHAR},
-          </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="idType != null">
+                #{idType,jdbcType=VARCHAR},
+            </if>
+            <if test="idNumber != null">
+                #{idNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="birthDate != null">
+                #{birthDate,jdbcType=DATE},
+            </if>
+            <if test="age != null">
+                #{age,jdbcType=SMALLINT},
+            </if>
+            <if test="nationality != null">
+                #{nationality,jdbcType=INTEGER},
+            </if>
+            <if test="birthplace != null">
+                #{birthplace,jdbcType=VARCHAR},
+            </if>
+            <if test="politicalStatus != null">
+                #{politicalStatus,jdbcType=INTEGER},
+            </if>
+            <if test="maritalStatus != null">
+                #{maritalStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="firstWorkDate != null">
+                #{firstWorkDate,jdbcType=DATE},
+            </if>
+            <if test="hireDate != null">
+                #{hireDate,jdbcType=DATE},
+            </if>
+            <if test="servingAge != null">
+                #{servingAge,jdbcType=INTEGER},
+            </if>
+            <if test="servingDate != null">
+                #{servingDate},
+            </if>
+            <if test="workingPeriod != null">
+                #{workingPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="probationDueDate != null">
+                #{probationDueDate,jdbcType=DATE},
+            </if>
+            <if test="probationPeriod != null">
+                #{probationPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="converseDate != null">
+                #{converseDate,jdbcType=DATE},
+            </if>
+            <if test="firstDegree != null">
+                #{firstDegree,jdbcType=VARCHAR},
+            </if>
+            <if test="highestDegree != null">
+                #{highestDegree,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="professionalCertification != null">
+                #{professionalCertification,jdbcType=VARCHAR},
+            </if>
+            <if test="professionalTitle != null">
+                #{professionalTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="professionalLevel != null">
+                #{professionalLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="attritionDate != null">
+                #{attritionDate,jdbcType=DATE},
+            </if>
+            <if test="attritionType != null">
+                #{attritionType,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="archiveStatus != null">
+                #{archiveStatus,jdbcType=VARCHAR},
+            </if>
             <if test="headImgUrl!=null">
-                #{headImgUrl}
+                #{headImgUrl},
+            </if>
+            <if test="positionGradeId != null">
+                #{positionGradeId},
+            </if>
+            <if test="positionLevelId != null">
+                #{positionLevelId}
             </if>
         </trim>
-  </insert>
-  <insert id="insertBatch" keyColumn="archive_id" keyProperty="archiveId" parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
-    <foreach collection="userArchives" item="item" separator=";">
-      insert into t_user_archive
-      <trim prefix="(" suffix=")" suffixOverrides=";">
-        <if test="item.employeeNumber != null">
-          employee_number,
-        </if>
-          <if test="item.probationDueDate != null">
-              probation_due_date,
-          </if>
-        <if test="item.userId != null">
-          user_id,
-        </if>
-        <if test="item.companyId != null">
-          company_id,
-        </if>
-        <if test="item.userCategory != null">
-          user_category,
-        </if>
-        <if test="item.businessUnitId != null">
-          business_unit_id,
-        </if>
-        <if test="item.userName != null">
-          user_name,
-        </if>
-        <if test="item.idType != null">
-          id_type,
-        </if>
-        <if test="item.idNumber != null">
-          id_number,
-        </if>
-        <if test="item.gender != null">
-          gender,
-        </if>
-        <if test="item.birthDate != null">
-          birth_date,
-        </if>
-        <if test="item.age != null">
-          age,
-        </if>
-        <if test="item.nationality != null">
-          nationality,
-        </if>
-        <if test="item.birthplace != null">
-          birthplace,
-        </if>
-        <if test="item.politicalStatus != null">
-          political_status,
-        </if>
-        <if test="item.maritalStatus != null">
-          marital_status,
-        </if>
-        <if test="item.firstWorkDate != null">
-          first_work_date,
-        </if>
-        <if test="item.hireDate != null">
-          hire_date,
-        </if>
-        <if test="item.servingAge != null">
-          serving_age,
-        </if>
-        <if test="item.workingPeriod != null">
-          working_period,
-        </if>
-        <if test="item.probationDueDate != null">
-          probation_due_date,
-        </if>
-        <if test="item.probationPeriod != null">
-          probation_period,
-        </if>
-        <if test="item.converseDate != null">
-          converse_date,
-        </if>
-        <if test="item.firstDegree != null">
-          first_degree,
-        </if>
-        <if test="item.highestDegree != null">
-          highest_degree,
-        </if>
-        <if test="item.phone != null">
-          phone,
-        </if>
-        <if test="item.email != null">
-          email,
-        </if>
-        <if test="item.address != null">
-          address,
-        </if>
-        <if test="item.professionalCertification != null">
-          professional_certification,
-        </if>
-        <if test="item.professionalTitle != null">
-          professional_title,
-        </if>
-        <if test="item.professionalLevel != null">
-          professional_level,
-        </if>
-        <if test="item.attritionDate != null">
-          attrition_date,
-        </if>
-        <if test="item.attritionType != null">
-          attrition_type,
-        </if>
-        <if test="item.operatorId != null">
-          operator_id,
-        </if>
-      <if test="item.archiveStatus != null">
-          archive_status,
-      </if>
-      <if test="item.orgId != null">
-          org_id,
-      </if>
-      <if test="item.supervisorId != null">
-          supervisor_id,
-      </if>
-      <if test="item.servingDate != null">
-          serving_date,
-      </if>
-      <if test="item.postId != null">
-          post_id,
-      </if>
-      <if test="item.headImgUrl!=null">
-          headimgurl
-      </if>
-      </trim>
-      <trim prefix="values (" suffix=")" suffixOverrides=",">
-        <if test="item.employeeNumber != null">
-          #{item.employeeNumber,jdbcType=VARCHAR},
-        </if>
-          <if test="item.probationDueDate != null">
-              #{item.probationDueDate},
-          </if>
-        <if test="item.userId != null">
-          #{item.userId,jdbcType=INTEGER},
-        </if>
-        <if test="item.companyId != null">
-          #{item.companyId,jdbcType=INTEGER},
-        </if>
-        <if test="item.userCategory != null">
-          #{item.userCategory,jdbcType=VARCHAR},
-        </if>
-        <if test="item.businessUnitId != null">
-          #{item.businessUnitId,jdbcType=INTEGER},
-        </if>
-        <if test="item.userName != null">
-          #{item.userName,jdbcType=VARCHAR},
-        </if>
-        <if test="item.idType != null">
-          #{item.idType,jdbcType=VARCHAR},
-        </if>
-        <if test="item.idNumber != null">
-          #{item.idNumber,jdbcType=VARCHAR},
-        </if>
-        <if test="item.gender != null">
-          #{item.gender,jdbcType=VARCHAR},
-        </if>
-        <if test="item.birthDate != null">
-          #{item.birthDate,jdbcType=DATE},
-        </if>
-        <if test="item.age != null">
-          #{item.age,jdbcType=SMALLINT},
-        </if>
-        <if test="item.nationality != null">
-          #{item.nationality,jdbcType=INTEGER},
-        </if>
-        <if test="item.birthplace != null">
-          #{item.birthplace,jdbcType=VARCHAR},
-        </if>
-        <if test="item.politicalStatus != null">
-          #{item.politicalStatus,jdbcType=INTEGER},
-        </if>
-        <if test="item.maritalStatus != null">
-          #{item.maritalStatus,jdbcType=VARCHAR},
-        </if>
-        <if test="item.firstWorkDate != null">
-          #{item.firstWorkDate,jdbcType=DATE},
-        </if>
-        <if test="item.hireDate != null">
-          #{item.hireDate,jdbcType=DATE},
-        </if>
-        <if test="item.servingAge != null">
-          #{item.servingAge,jdbcType=INTEGER},
-        </if>
-        <if test="item.workingPeriod != null">
-          #{item.workingPeriod,jdbcType=INTEGER},
-        </if>
-        <if test="item.probationDueDate != null">
-          #{item.probationDueDate,jdbcType=DATE},
-        </if>
-        <if test="item.probationPeriod != null">
-          #{item.probationPeriod,jdbcType=INTEGER},
-        </if>
-        <if test="item.converseDate != null">
-          #{item.converseDate,jdbcType=DATE},
-        </if>
-        <if test="item.firstDegree != null">
-          #{item.firstDegree,jdbcType=VARCHAR},
-        </if>
-        <if test="item.highestDegree != null">
-          #{item.highestDegree,jdbcType=VARCHAR},
-        </if>
-        <if test="item.phone != null">
-          #{item.phone,jdbcType=VARCHAR},
-        </if>
-        <if test="item.email != null">
-          #{item.email,jdbcType=VARCHAR},
-        </if>
-        <if test="item.address != null">
-          #{item.address,jdbcType=VARCHAR},
-        </if>
-        <if test="item.professionalCertification != null">
-          #{item.professionalCertification,jdbcType=VARCHAR},
-        </if>
-        <if test="item.professionalTitle != null">
-          #{item.professionalTitle,jdbcType=VARCHAR},
-        </if>
-        <if test="item.professionalLevel != null">
-          #{item.professionalLevel,jdbcType=VARCHAR},
-        </if>
-        <if test="item.attritionDate != null">
-          #{item.attritionDate,jdbcType=DATE},
-        </if>
-        <if test="item.attritionType != null">
-          #{item.attritionType,jdbcType=VARCHAR},
-        </if>
-        <if test="item.operatorId != null">
-          #{item.operatorId,jdbcType=INTEGER},
-        </if>
-          <if test="item.archiveStatus != null">
-              #{item.archiveStatus,jdbcType=VARCHAR},
-          </if>
-          <if test="item.orgId != null">
-              #{item.orgId},
-          </if>
-          <if test="item.supervisorId != null">
-              #{item.supervisorId},
-          </if>
-          <if test="item.servingDate != null">
-              #{item.servingDate},
-          </if>
-          <if test="item.postId != null">
-              #{item.postId},
-          </if>
-          <if test="item.headImgUrl!=null">
-              #{item.headImgUrl}
-          </if>
-      </trim>
-    </foreach>
-  </insert>
+    </insert>
+    <insert id="insertBatch" keyColumn="archive_id" keyProperty="archiveId"
+            parameterType="com.qinjee.masterdata.model.entity.UserArchive" useGeneratedKeys="true">
+        <foreach collection="userArchives" item="item" separator=";">
+            insert into t_user_archive
+            <trim prefix="(" suffix=")" suffixOverrides=";">
+                <if test="item.employeeNumber != null">
+                    employee_number,
+                </if>
+                <if test="item.probationDueDate != null">
+                    probation_due_date,
+                </if>
+                <if test="item.userId != null">
+                    user_id,
+                </if>
+                <if test="item.companyId != null">
+                    company_id,
+                </if>
+                <if test="item.userCategory != null">
+                    user_category,
+                </if>
+                <if test="item.businessUnitId != null">
+                    business_unit_id,
+                </if>
+                <if test="item.userName != null">
+                    user_name,
+                </if>
+                <if test="item.idType != null">
+                    id_type,
+                </if>
+                <if test="item.idNumber != null">
+                    id_number,
+                </if>
+                <if test="item.gender != null">
+                    gender,
+                </if>
+                <if test="item.birthDate != null">
+                    birth_date,
+                </if>
+                <if test="item.age != null">
+                    age,
+                </if>
+                <if test="item.nationality != null">
+                    nationality,
+                </if>
+                <if test="item.birthplace != null">
+                    birthplace,
+                </if>
+                <if test="item.politicalStatus != null">
+                    political_status,
+                </if>
+                <if test="item.maritalStatus != null">
+                    marital_status,
+                </if>
+                <if test="item.firstWorkDate != null">
+                    first_work_date,
+                </if>
+                <if test="item.hireDate != null">
+                    hire_date,
+                </if>
+                <if test="item.servingAge != null">
+                    serving_age,
+                </if>
+                <if test="item.servingDate != null">
+                    serving_date,
+                </if>
+                <if test="item.workingPeriod != null">
+                    working_period,
+                </if>
+                <if test="item.probationDueDate != null">
+                    probation_due_date,
+                </if>
+                <if test="item.probationPeriod != null">
+                    probation_period,
+                </if>
+                <if test="item.converseDate != null">
+                    converse_date,
+                </if>
+                <if test="item.firstDegree != null">
+                    first_degree,
+                </if>
+                <if test="item.highestDegree != null">
+                    highest_degree,
+                </if>
+                <if test="item.phone != null">
+                    phone,
+                </if>
+                <if test="item.email != null">
+                    email,
+                </if>
+                <if test="item.address != null">
+                    address,
+                </if>
+                <if test="item.professionalCertification != null">
+                    professional_certification,
+                </if>
+                <if test="item.professionalTitle != null">
+                    professional_title,
+                </if>
+                <if test="item.professionalLevel != null">
+                    professional_level,
+                </if>
+                <if test="item.attritionDate != null">
+                    attrition_date,
+                </if>
+                <if test="item.attritionType != null">
+                    attrition_type,
+                </if>
+                <if test="item.operatorId != null">
+                    operator_id,
+                </if>
+                <if test="item.archiveStatus != null">
+                    archive_status,
+                </if>
+                <if test="item.orgId != null">
+                    org_id,
+                </if>
+                <if test="item.supervisorId != null">
+                    supervisor_id,
+                </if>
+                <if test="item.servingDate != null">
+                    serving_date,
+                </if>
+                <if test="item.postId != null">
+                    post_id,
+                </if>
+                <if test="item.headImgUrl!=null">
+                    headimgurl,
+                </if>
+                <if test="item.positionGradeId != null">
+                    position_grade_id,
+                </if>
+                <if test="item.positionLevelId != null">
+                    position_level_id
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.employeeNumber != null">
+                    #{item.employeeNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="item.probationDueDate != null">
+                    #{item.probationDueDate},
+                </if>
+                <if test="item.userId != null">
+                    #{item.userId,jdbcType=INTEGER},
+                </if>
+                <if test="item.companyId != null">
+                    #{item.companyId,jdbcType=INTEGER},
+                </if>
+                <if test="item.userCategory != null">
+                    #{item.userCategory,jdbcType=VARCHAR},
+                </if>
+                <if test="item.businessUnitId != null">
+                    #{item.businessUnitId,jdbcType=INTEGER},
+                </if>
+                <if test="item.userName != null">
+                    #{item.userName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.idType != null">
+                    #{item.idType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.idNumber != null">
+                    #{item.idNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="item.gender != null">
+                    #{item.gender,jdbcType=VARCHAR},
+                </if>
+                <if test="item.birthDate != null">
+                    #{item.birthDate,jdbcType=DATE},
+                </if>
+                <if test="item.age != null">
+                    #{item.age,jdbcType=SMALLINT},
+                </if>
+                <if test="item.nationality != null">
+                    #{item.nationality,jdbcType=INTEGER},
+                </if>
+                <if test="item.birthplace != null">
+                    #{item.birthplace,jdbcType=VARCHAR},
+                </if>
+                <if test="item.politicalStatus != null">
+                    #{item.politicalStatus,jdbcType=INTEGER},
+                </if>
+                <if test="item.maritalStatus != null">
+                    #{item.maritalStatus,jdbcType=VARCHAR},
+                </if>
+                <if test="item.firstWorkDate != null">
+                    #{item.firstWorkDate,jdbcType=DATE},
+                </if>
+                <if test="item.hireDate != null">
+                    #{item.hireDate,jdbcType=DATE},
+                </if>
+                <if test="item.servingAge != null">
+                    #{item.servingAge,jdbcType=INTEGER},
+                </if>
+                <if test="item.servingDate != null">
+                    #{item.servingDate},
+                </if>
+                <if test="item.workingPeriod != null">
+                    #{item.workingPeriod,jdbcType=INTEGER},
+                </if>
+                <if test="item.probationDueDate != null">
+                    #{item.probationDueDate,jdbcType=DATE},
+                </if>
+                <if test="item.probationPeriod != null">
+                    #{item.probationPeriod,jdbcType=INTEGER},
+                </if>
+                <if test="item.converseDate != null">
+                    #{item.converseDate,jdbcType=DATE},
+                </if>
+                <if test="item.firstDegree != null">
+                    #{item.firstDegree,jdbcType=VARCHAR},
+                </if>
+                <if test="item.highestDegree != null">
+                    #{item.highestDegree,jdbcType=VARCHAR},
+                </if>
+                <if test="item.phone != null">
+                    #{item.phone,jdbcType=VARCHAR},
+                </if>
+                <if test="item.email != null">
+                    #{item.email,jdbcType=VARCHAR},
+                </if>
+                <if test="item.address != null">
+                    #{item.address,jdbcType=VARCHAR},
+                </if>
+                <if test="item.professionalCertification != null">
+                    #{item.professionalCertification,jdbcType=VARCHAR},
+                </if>
+                <if test="item.professionalTitle != null">
+                    #{item.professionalTitle,jdbcType=VARCHAR},
+                </if>
+                <if test="item.professionalLevel != null">
+                    #{item.professionalLevel,jdbcType=VARCHAR},
+                </if>
+                <if test="item.attritionDate != null">
+                    #{item.attritionDate,jdbcType=DATE},
+                </if>
+                <if test="item.attritionType != null">
+                    #{item.attritionType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.operatorId != null">
+                    #{item.operatorId,jdbcType=INTEGER},
+                </if>
+                <if test="item.archiveStatus != null">
+                    #{item.archiveStatus,jdbcType=VARCHAR},
+                </if>
+                <if test="item.orgId != null">
+                    #{item.orgId},
+                </if>
+                <if test="item.supervisorId != null">
+                    #{item.supervisorId},
+                </if>
+                <if test="item.servingDate != null">
+                    #{item.servingDate},
+                </if>
+                <if test="item.postId != null">
+                    #{item.postId},
+                </if>
+                <if test="item.headImgUrl!=null">
+                    #{item.headImgUrl},
+                </if>
+                <if test="item.positionGradeId != null">
+                    #{item.positionGradeId},
+                </if>
+                <if test="item.positionLevelId != null">
+                    #{item.positionLevelId}
+                </if>
+            </trim>
+        </foreach>
+    </insert>
     <update id="updateBatch">
         <foreach collection="list1" index="index" item="item" separator=";">
             update t_user_archive
@@ -737,141 +798,153 @@
                     update_time = #{item.updateTime,jdbcType=TIMESTAMP},
                 </if>
                 <if test="item.headImgUrl!=null">
-                    headimgurl=#{headImgUrl}
+                    headimgurl=#{headImgUrl},
+                </if>
+                <if test="item.positionGradeId != null">
+                    position_grade_id= #{item.positionGradeId},
+                </if>
+                <if test="item.positionLevelId != null">
+                    position_level_id= #{item.positionLevelId}
                 </if>
             </set>
             where archive_id = #{item.archiveId,jdbcType=INTEGER}
         </foreach>
     </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
-    update t_user_archive
-    <set>
-      <if test="orgId != null">
-        org_id = #{orgId,jdbcType=INTEGER},
-      </if>
-      <if test="postId != null">
-        post_id = #{postId,jdbcType=INTEGER},
-      </if>
-      <if test="businessUnitId != null">
-        business_unit_id = #{businessUnitId,jdbcType=INTEGER},
-      </if>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="employeeNumber != null">
-        employee_number = #{employeeNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="companyId != null">
-        company_id = #{companyId,jdbcType=INTEGER},
-      </if>
-      <if test="userCategory != null">
-        user_category = #{userCategory,jdbcType=VARCHAR},
-      </if>
-        supervisor_id = #{supervisorId,jdbcType=INTEGER},
-      <if test="userName != null">
-        user_name = #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="idType != null">
-        id_type = #{idType,jdbcType=VARCHAR},
-      </if>
-      <if test="idNumber != null">
-        id_number = #{idNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="gender != null">
-        gender = #{gender,jdbcType=VARCHAR},
-      </if>
-      <if test="birthDate != null">
-        birth_date = #{birthDate,jdbcType=DATE},
-      </if>
-      <if test="age != null">
-        age = #{age,jdbcType=SMALLINT},
-      </if>
-      <if test="nationality != null">
-        nationality = #{nationality,jdbcType=INTEGER},
-      </if>
-      <if test="birthplace != null">
-        birthplace = #{birthplace,jdbcType=VARCHAR},
-      </if>
-      <if test="politicalStatus != null">
-        political_status = #{politicalStatus,jdbcType=INTEGER},
-      </if>
-      <if test="maritalStatus != null">
-        marital_status = #{maritalStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="firstWorkDate != null">
-        first_work_date = #{firstWorkDate,jdbcType=DATE},
-      </if>
-      <if test="hireDate != null">
-        hire_date = #{hireDate,jdbcType=DATE},
-      </if>
-        <if test="servingDate != null">
-            serving_date = #{servingDate,jdbcType=DATE},
-      </if>
-      <if test="servingAge != null">
-        serving_age = #{servingAge,jdbcType=INTEGER},
-      </if>
-      <if test="workingPeriod != null">
-        working_period = #{workingPeriod,jdbcType=INTEGER},
-      </if>
-      <if test="probationDueDate != null">
-        probation_due_date = #{probationDueDate,jdbcType=DATE},
-      </if>
-      <if test="probationPeriod != null">
-        probation_period = #{probationPeriod,jdbcType=INTEGER},
-      </if>
-      <if test="converseDate != null">
-        converse_date = #{converseDate,jdbcType=DATE},
-      </if>
-      <if test="firstDegree != null">
-        first_degree = #{firstDegree,jdbcType=VARCHAR},
-      </if>
-      <if test="highestDegree != null">
-        highest_degree = #{highestDegree,jdbcType=VARCHAR},
-      </if>
-      <if test="phone != null">
-        phone = #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        email = #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="address != null">
-        address = #{address,jdbcType=VARCHAR},
-      </if>
-      <if test="professionalCertification != null">
-        professional_certification = #{professionalCertification,jdbcType=VARCHAR},
-      </if>
-      <if test="professionalTitle != null">
-        professional_title = #{professionalTitle,jdbcType=VARCHAR},
-      </if>
-      <if test="professionalLevel != null">
-        professional_level = #{professionalLevel,jdbcType=VARCHAR},
-      </if>
-      <if test="attritionDate != null">
-        attrition_date = #{attritionDate,jdbcType=DATE},
-      </if>
-      <if test="attritionType != null">
-        attrition_type = #{attritionType,jdbcType=VARCHAR},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDelete != null">
-        is_delete = #{isDelete,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-        <if test="headImgUrl!=null">
-            headimgurl=#{headImgUrl}
-        </if>
-    </set>
-    where archive_id = #{archiveId,jdbcType=INTEGER}
-  </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
+        update t_user_archive
+        <set>
+            <if test="orgId != null">
+                org_id = #{orgId,jdbcType=INTEGER},
+            </if>
+            <if test="postId != null">
+                post_id = #{postId,jdbcType=INTEGER},
+            </if>
+            <if test="businessUnitId != null">
+                business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="employeeNumber != null">
+                employee_number = #{employeeNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="userCategory != null">
+                user_category = #{userCategory,jdbcType=VARCHAR},
+            </if>
+            supervisor_id = #{supervisorId,jdbcType=INTEGER},
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="idType != null">
+                id_type = #{idType,jdbcType=VARCHAR},
+            </if>
+            <if test="idNumber != null">
+                id_number = #{idNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="birthDate != null">
+                birth_date = #{birthDate,jdbcType=DATE},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=SMALLINT},
+            </if>
+            <if test="nationality != null">
+                nationality = #{nationality,jdbcType=INTEGER},
+            </if>
+            <if test="birthplace != null">
+                birthplace = #{birthplace,jdbcType=VARCHAR},
+            </if>
+            <if test="politicalStatus != null">
+                political_status = #{politicalStatus,jdbcType=INTEGER},
+            </if>
+            <if test="maritalStatus != null">
+                marital_status = #{maritalStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="firstWorkDate != null">
+                first_work_date = #{firstWorkDate,jdbcType=DATE},
+            </if>
+            <if test="hireDate != null">
+                hire_date = #{hireDate,jdbcType=DATE},
+            </if>
+            <if test="servingDate != null">
+                serving_date = #{servingDate,jdbcType=DATE},
+            </if>
+            <if test="servingAge != null">
+                serving_age = #{servingAge,jdbcType=INTEGER},
+            </if>
+            <if test="workingPeriod != null">
+                working_period = #{workingPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="probationDueDate != null">
+                probation_due_date = #{probationDueDate,jdbcType=DATE},
+            </if>
+            <if test="probationPeriod != null">
+                probation_period = #{probationPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="converseDate != null">
+                converse_date = #{converseDate,jdbcType=DATE},
+            </if>
+            <if test="firstDegree != null">
+                first_degree = #{firstDegree,jdbcType=VARCHAR},
+            </if>
+            <if test="highestDegree != null">
+                highest_degree = #{highestDegree,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="professionalCertification != null">
+                professional_certification = #{professionalCertification,jdbcType=VARCHAR},
+            </if>
+            <if test="professionalTitle != null">
+                professional_title = #{professionalTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="professionalLevel != null">
+                professional_level = #{professionalLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="attritionDate != null">
+                attrition_date = #{attritionDate,jdbcType=DATE},
+            </if>
+            <if test="attritionType != null">
+                attrition_type = #{attritionType,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="headImgUrl!=null">
+                headimgurl=#{headImgUrl},
+            </if>
+            <if test="positionGradeId != null">
+                position_grade_id= #{positionGradeId},
+            </if>
+            <if test="positionLevelId != null">
+                position_level_id= #{positionLevelId}
+            </if>
+        </set>
+        where archive_id = #{archiveId,jdbcType=INTEGER}
+    </update>
 
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
+    <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.UserArchive">
     update t_user_archive
     set user_id = #{userId,jdbcType=INTEGER},
       employee_number = #{employeeNumber,jdbcType=VARCHAR},
@@ -911,31 +984,31 @@
       is_delete = #{isDelete,jdbcType=TINYINT}
     where archive_id = #{archiveId,jdbcType=INTEGER}
   </update>
-  <update id="deleteArchiveByIdList">
-    update t_user_archive
-    set
-    is_delete=1
-    where  archive_id
-    in
-    <foreach collection="archiveid" item="item" open="(" separator="," close=")">
-    #{item}
-   </foreach>
-  </update>
-  <update id="resumeDeleteArchiveById" >
+    <update id="deleteArchiveByIdList">
+        update t_user_archive
+        set
+        is_delete=1
+        where archive_id
+        in
+        <foreach collection="archiveid" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="resumeDeleteArchiveById">
     update t_user_archive
     set
     is_delete=0
     where  archive_id =#{archiveid}
   </update>
 
-  <select id="listUserArchiveByCompanyId" resultMap="BaseResultMap">
+    <select id="listUserArchiveByCompanyId" resultMap="BaseResultMap">
    SELECT
     arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
     arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
     maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-    arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
+    arc.probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
     professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,
+    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
     orga.org_name as org_name ,
     post.post_name as post_name ,
     org.org_name as business_unit_name,
@@ -970,200 +1043,220 @@
         left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
 
   </select>
-  <select id="selectNameAndNumber" resultType="java.util.Map">
+    <select id="selectNameAndNumber" resultType="java.util.Map">
     select user_name,employee_number
     from   t_user_archive
     where is_delete=0
     AND archive_id=#{id,jdbcType=INTEGER}
   </select>
-  <select id="selectArchiveIdByNumber" resultType="java.lang.Integer">
+    <select id="selectArchiveIdByNumber" resultType="java.lang.Integer">
     select archive_id
     from   t_user_archive
     where is_delete=0
     AND  employee_number = #{employeeNumber,jdbcType=VARCHAR} and company_id = #{companyId}
   </select>
 
-  <select id="getUserArchiveList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap" >
-    SELECT tua.archive_id, tua.user_id, tua.employee_number, tua.company_id, tua.user_category, tua.business_unit_id, tua.org_id,
-    tua.post_id, tua.user_name, tua.id_type, tua.id_number, tua.gender, tua.birth_date, tua.age, tua.nationality, tua.birthplace,
-    tua.political_status, tua.marital_status, tua.first_work_date, tua.hire_date, tua.serving_age, tua.working_period,
-    tua.probation_due_date, tua.probation_period, tua.converse_date, tua.first_degree, tua.highest_degree, tua.phone, tua.email,
-    tua.address, tua.professional_certification, tua.professional_title, tua.professional_level, tua.attrition_date, tua.attrition_type,
-    tua.increase_type, tua.archive_status, tua.supervisor_id,tua.operator_id, tua.create_time, tua.update_time, tua.is_delete, torg.org_name business_unit_name,
-    dept.org_name org_name, tp.post_name post_name, tua2.user_name supervisor_user_name,tua.headimgurl
-    FROM t_user_archive tua
-    LEFT JOIN t_post tp ON tua.post_id = tp.post_id
-    LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id
-    LEFT JOIN t_organization torg ON torg.org_id = tua.business_unit_id
-    LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
-    WHERE tua.is_delete = 0
-    <if test="orgIdList != null and orgIdList.size > 0">
-      and tua.org_id in
-      <foreach collection="orgIdList" item="orgId" separator="," close=")" open="(">
-        #{orgId}
-      </foreach>
-    </if>
-    <if test="isContains">
-        or (tua.org_id is null and tua.is_delete=0)
-    </if>
-  </select>
-<select id="selectByOrgId" resultType="java.lang.Integer">
+    <select id="getUserArchiveList" resultMap="BaseResultMap">
+
+        SELECT archive_id ,
+        user_id ,
+        user_name ,
+        gender ,
+        age,
+        hire_date ,
+        phone,
+        email,
+        business_unit_name,
+        business_unit_id,
+        post_id,
+        org_id,
+        org_name ,
+        post_name,
+        supervisor_user_name
+        FROM (
+        SELECT tua.archive_id , tua.business_unit_id ,tua.user_id ,
+        tua.user_name , tua.gender , tua.age,
+        tua.hire_date ,
+        tua.phone, tua.email,
+        torg.org_name business_unit_name,
+        dept.org_id,
+        tua.post_id,
+        dept.org_name , tp.post_name post_name,
+        tua2.user_name supervisor_user_name
+        FROM t_user_archive tua
+        LEFT JOIN t_post tp ON tua.post_id = tp.post_id
+        LEFT JOIN t_user_archive tua2 ON tua.supervisor_id = tua2.archive_id
+        LEFT JOIN t_organization torg ON torg.org_id = tua.business_unit_id
+        LEFT JOIN t_organization dept ON dept.org_id = tua.org_id
+        WHERE tua.is_delete = 0
+        <if test="orgIdList != null and orgIdList.size > 0">
+            and tua.org_id in
+            <foreach collection="orgIdList" item="orgId" separator="," close=")" open="(">
+                #{orgId}
+            </foreach>
+        </if>
+        <if test="isContains">
+            and (tua.org_id is null or tua.is_delete=0)
+        </if>
+        ) lastTable
+        where 1=1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
+    </select>
+
+
+    <select id="selectByOrgId" resultType="java.lang.Integer">
   select archive_id
   from t_user_archive
   where org_id = #{orgId,jdbcType=INTEGER}
 
 </select>
 
-  <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-      SELECT
-      arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-      arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-      maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-      professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-      orga.org_name as org_name ,
-      post.post_name as post_name ,
-      org.org_name as business_unit_name,
-      arch.user_name as supervisor_user_name
-      FROM
-      t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-      left join t_organization org on org.org_id=arc.business_unit_id
-      LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-      left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+    <select id="selectByPrimaryKeyList" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+        <choose>
+            <when test='archiveList != null and archiveList.size()>0'>
+                and
+                arc.archive_id in
+                <foreach collection="archiveList" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                and 1=0
+            </otherwise>
+        </choose>
 
-      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+    </select>
 
-      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
-
-      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
-
-      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
-
-      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
-
-      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
-
-      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
-
-      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
-
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
-
-      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
-
-      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-      where arc.is_delete=0 and orga.company_id=#{companyId}
-      <choose>
-          <when test='archiveList != null and archiveList.size()>0'>
-              and
-              arc.archive_id in
-              <foreach collection="archiveList" item="item" open="(" separator="," close=")">
-                  #{item}
-              </foreach>
-          </when>
-          <otherwise>
-             and 1=0
-          </otherwise>
-      </choose>
-
-  </select>
-
-  <select id="selectArchiveIdByTel" resultType="java.lang.Integer">
+    <select id="selectArchiveIdByTel" resultType="java.lang.Integer">
     select archive_id
     from t_user_archive
     where #{tel,jdbcType=VARCHAR}
     AND is_delete=0
   </select>
 
-  <select id="selectIdByComId" resultType="java.lang.Integer">
+    <select id="selectIdByComId" resultType="java.lang.Integer">
      select archive_id
     from t_user_archive
     where company_id = #{companyId,jdbcType=INTEGER}
     AND is_delete=0
   </select>
-  <select id="selectStaff" resultType="java.lang.Integer">
-      select arc.archive_id
-      from t_user_archive arc
-      where arc.is_delete=0
-      <if test="archiveType != null and archiveType.size() > 0">
-          and arc.user_category in
-          <foreach collection="archiveType" item="item" open="(" separator="," close=")">
-              #{item}
-          </foreach>
-      </if>
-      <if test="sql != null">
-          and arc.archive_id in( ${sql})
-      </if>
-      and arc.org_id in(
-      select org.org_id from t_user_org_auth oa
-      left join  t_organization org on org.org_id=oa.org_id and org.is_enable=1
-      where oa.archive_id = #{archiveId}
-      and (oa.is_trusteeship = 0
-      or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time )
-      and oa.is_delete = 0
-      UNION
-      select org.org_id from t_role_org_auth roa
-      left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
-      left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
-      where roa.is_delete = 0 and org.company_id=#{companyId}	and org.org_id is not NULL
-      and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )
-      and ur.is_delete = 0
-      )
+    <select id="selectStaff" resultType="java.lang.Integer">
+        select arc.archive_id
+        from t_user_archive arc
+        where arc.is_delete=0
+        <if test="archiveType != null and archiveType.size() > 0">
+            and arc.user_category in
+            <foreach collection="archiveType" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="sql != null">
+            and arc.archive_id in( ${sql})
+        </if>
+        and arc.org_id in(
+        select org.org_id from t_user_org_auth oa
+        left join t_organization org on org.org_id=oa.org_id and org.is_enable=1
+        where oa.archive_id = #{archiveId}
+        and (oa.is_trusteeship = 0
+        or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time )
+        and oa.is_delete = 0
+        UNION
+        select org.org_id from t_role_org_auth roa
+        left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
+        left join t_organization org on org.org_id=roa.org_id and org.is_enable=1
+        where roa.is_delete = 0 and org.company_id=#{companyId} and org.org_id is not NULL
+        and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() >
+        ur.trusteeship_end_time) )
+        and ur.is_delete = 0
+        )
 
-  </select>
-  <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
+    </select>
+    <select id="getUserArchiveListCustom" parameterType="String" resultType="java.util.LinkedHashMap">
         <if test="baseSql != null">
             ${baseSql}
         </if>
 
         <if test="order != null">
-        order by ${order}
+            order by ${order}
         </if>
-  </select>
-<select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
+    </select>
+    <select id="selectArchiveIdByOrgId" resultType="java.lang.Integer">
   select archive_id
     from t_user_archive
     where company_id=#{companyId}
   AND is_delete=0
 </select>
-  <select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo" resultMap="downloadVo">
-    SELECT
-    arc.archive_id,
-    arc.user_name,
-    arc.employee_number,
-    orga.org_name AS business_unit_name,
-    org.org_name,
-    post.post_name,
-    arc.hire_date,
-    arc.probation_due_date,
-    arch.user_name AS supervisor_user_name,
-    arc.phone,
-    relation.employment_type
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization org ON org.org_id = arc.org_id AND org.is_enable = 1
-    LEFT JOIN t_organization orga ON orga.org_id = arc.business_unit_id AND orga.is_enable = 1
-    LEFT JOIN t_post post ON arc.post_id = post.post_id AND post.is_delete = 0 AND post.is_enable = 1
-    LEFT JOIN t_user_archive_post_relation relation ON arc.archive_id = relation.archive_id AND relation.is_delete = 0
-    LEFT JOIN t_user_archive arch ON arc.supervisor_id = arch.archive_id AND arch.is_delete = 0
-    WHERE
-    arc.is_delete = 0
-    and arc.archive_id in
-    <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
-    #{item}
- </foreach>
-      group by arc.archive_id
-</select>
-  <select id="selectEmployNumber" resultType="java.lang.String">
+    <select id="selectDownLoadVoList" resultType="com.qinjee.masterdata.model.vo.staff.export.ExportArcVo"
+            resultMap="downloadVo">
+        SELECT
+        arc.archive_id,
+        arc.user_name,
+        arc.employee_number,
+        orga.org_name AS business_unit_name,
+        org.org_name,
+        post.post_name,
+        arc.hire_date,
+        arc.probation_due_date,
+        arch.user_name AS supervisor_user_name,
+        arc.phone,
+        relation.employment_type
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization org ON org.org_id = arc.org_id AND org.is_enable = 1
+        LEFT JOIN t_organization orga ON orga.org_id = arc.business_unit_id AND orga.is_enable = 1
+        LEFT JOIN t_post post ON arc.post_id = post.post_id AND post.is_delete = 0 AND post.is_enable = 1
+        LEFT JOIN t_user_archive_post_relation relation ON arc.archive_id = relation.archive_id AND relation.is_delete =
+        0
+        LEFT JOIN t_user_archive arch ON arc.supervisor_id = arch.archive_id AND arch.is_delete = 0
+        WHERE
+        arc.is_delete = 0
+        and arc.archive_id in
+        <foreach collection="archiveIdList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by arc.archive_id
+    </select>
+    <select id="selectEmployNumber" resultType="java.lang.String">
     select employee_number
     from  t_user_archive
     where  archive_id=#{businessId}
     and is_delete=0
   </select>
-  <select id="selectDateByStatus" resultType="java.util.Date">
+    <select id="selectDateByStatus" resultType="java.util.Date">
     select
     con.contract_end_date from
     t_labor_contract con
@@ -1171,79 +1264,75 @@
     where archive_status = #{string}
     and arc.is_delete=0
   </select>
-  <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-      SELECT
-      arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-      arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-      maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      arc. probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-      professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-      arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-      orga.org_name as org_name ,
-      post.post_name as post_name ,
-      org.org_name as business_unit_name,
-      arch.user_name as supervisor_user_name
-      FROM
-      t_user_archive arc
-      LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-      left join t_organization org on org.org_id=arc.business_unit_id
-      LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-      left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+    <select id="selectByOrgAndAuth" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        select * from(
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+        and arc.archive_status='SERVICE'
+        <if test="orgId !=null and orgId.size()>0">
+            and arc.org_id in
+            <foreach collection="orgId" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and arc.org_id in(
+        select org.org_id from t_user_org_auth oa
+        left join t_organization org on org.org_id=oa.org_id and org.is_enable=1
+        where oa.archive_id = #{archiveId}
+        and (oa.is_trusteeship = 0
+        or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time)and oa.is_delete
+        = 0
+        UNION
+        select org.org_id from t_role_org_auth roa
+        left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
+        left join t_organization org on org.org_id=roa.org_id and org.is_enable=1
+        where roa.is_delete = 0 and org.company_id=#{companyId} and org.org_id is not NULL
+        and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() >
+        ur.trusteeship_end_time) )and ur.is_delete = 0
+        )
+        and arc.company_id=#{companyId}
+        <if test="message !=null">
+            or (arc.org_id is null and arc.is_delete=0 and arc.company_id=#{companyId})
+        </if>
+        )t
+        where 1=1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        group by t.archive_id
+        <if test="orderSql !=null">t
+            order by
+            ${orderSql}
+        </if>
+    </select>
 
-      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-
-      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
-
-      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
-
-      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
-
-      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
-
-      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
-
-      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
-
-      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
-
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
-
-      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
-
-      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-      WHERE arc.is_delete = 0
-     and arc.archive_status='SERVICE'
-     <if test="orgId !=null and orgId.size()>0">
-         and arc.org_id in
-         <foreach collection="orgId" item="item" open="(" separator="," close=")">
-             #{item}
-         </foreach>
-     </if>
-    and arc.org_id in(
-    select org.org_id from t_user_org_auth oa
-    left join  t_organization org on org.org_id=oa.org_id and org.is_enable=1
-    where oa.archive_id = #{archiveId}
-    and (oa.is_trusteeship = 0
-    or (oa.trusteeship_begin_time <![CDATA[<]]> CURDATE()) and CURDATE() > oa.trusteeship_end_time
-    )
-    and oa.is_delete = 0
-    UNION
-    select org.org_id from t_role_org_auth roa
-    left join t_user_role ur on roa.role_id = ur.role_id and ur.archive_id = #{archiveId}
-    left join  t_organization org on org.org_id=roa.org_id  and org.is_enable=1
-    where roa.is_delete = 0 and org.company_id=#{companyId}	and org.org_id is not NULL
-      and (ur.is_trusteeship =0 or (ur.trusteeship_begin_time <![CDATA[<]]> CURDATE() and CURDATE() > ur.trusteeship_end_time) )
-      and ur.is_delete = 0
-    )
-    <if test="message !=null">
-        or (arc.org_id is null and arc.is_delete=0)
-    </if>
-    and arc.company_id=#{companyId}
-    order by arc.archive_id
-  </select>
-
-  <select id="countUserArchiveByOrgId" resultType="java.lang.Integer">
+    <select id="countUserArchiveByOrgId" resultType="java.lang.Integer">
     SELECT COUNT(org_id) FROM t_user_archive WHERE org_id =#{orgId} AND is_delete =0
 
   </select>
@@ -1254,24 +1343,25 @@
         and archive_status='SERVICE'
         and company_id=#{companyId}
         <if test="employ !=null">
-            and  employee_number=#{employ}
+            and employee_number=#{employ}
         </if>
         <if test="number !=null">
             and id_number=#{number}
         </if>
     </select>
 
-  <select id="countUserArchiveByPostId" resultType="java.lang.Integer">
+    <select id="countUserArchiveByPostId" resultType="java.lang.Integer">
     SELECT COUNT(post_id) FROM t_user_archive WHERE post_id =#{postId} AND is_delete =0
 
   </select>
- <update id="deleteArchiveById">
+    <update id="deleteArchiveById">
    update t_user_archive
    set is_delete=1
    where archive_id=#{businessId}
  </update>
 
-    <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive" resultMap="BaseResultMap">
+    <select id="selectBeforeFilter" resultType="com.qinjee.masterdata.model.entity.UserArchive"
+            resultMap="BaseResultMap">
     select arc.*
     from t_user_archive arc
     left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id
@@ -1281,81 +1371,86 @@
 
 
   </select>
-  <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-    select  <include refid="Base_Column_List"/>
-    from t_user_archive
-    where 1=1
-     <if test="name != null"> >
-       user_name LIKE
-       CONCAT(CONCAT('%', #{name}), '%')
-      </if>
-    and is_delete=0
-    and company_id=#{companyId}
-  </select>
-
-
-  <select id="listUserArchiveByPostIds" resultMap="BaseResultMap">
-    select  archive_id
-    from t_user_archive
-    where archive_status ='SERVICE' and is_delete =0 and post_id in
-    <foreach collection="postIds" item="item" close=")" open="(" separator=",">
-      #{item}
-    </foreach>
-  </select>
-    <select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+    <select id="selectUserArchiveByName" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
         select
-        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-        arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-        maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-        arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-        professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
+        <include refid="Base_Column_List"/>
+        from t_user_archive
+        where 1=1
+        <if test="name != null">>
+            user_name LIKE
+            CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        and is_delete=0
+        and company_id=#{companyId}
+    </select>
+
+
+    <select id="listUserArchiveByPostIds" resultMap="BaseResultMap">
+        select archive_id
+        from t_user_archive
+        where archive_status ='SERVICE' and is_delete =0 and post_id in
+        <foreach collection="postIds" item="item" close=")" open="(" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectArcByNotCon" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        select * from (
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
-        arch.user_name as supervisor_user_name
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
         FROM
         t_user_archive arc
-        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
         left join t_organization org on org.org_id=arc.business_unit_id
-        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-
-        left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
-
-        left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
-
-        left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
-
-        left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
-
-        left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
-
-        left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
-
-        left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
-
-        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
-
-        left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
-
-        left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-      where  arc.is_delete=0
-      and orga.company_id=#{companyId}
-      and  arc.archive_id not in(
-      select tlc.archive_id from t_labor_contract tlc
-      )
-      and arc.org_id in
-      <foreach collection="orgId" item='item' open="(" close=")" separator=",">
-        #{item}
-      </foreach>
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+        and arc.archive_id not in(
+        select tlc.archive_id from t_labor_contract tlc
+        )
+        <if test="orgId !=null">
+            and arc.org_id in
+            <foreach collection="orgId" item='item' open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            AND NOT EXISTS (SELECT 1 FROM t_labor_contract WHERE archive_id IN
+            <foreach collection="orgId" item='item' open="(" close=")" separator=",">
+                #{item}
+            </foreach>)
+        </if>
         and arc.archive_status='SERVICE'
-        AND NOT EXISTS (SELECT 1 FROM t_labor_contract  WHERE archive_id IN (SELECT archive_id FROM t_user_archive WHERE org_id IN (1105) AND archive_status='SERVICE' ) )
-        group by arc.archive_id
-  </select>
+        )t
+        where 1=1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        group by t.archive_id
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
+    </select>
 
-  <select id="selectTransMessage" resultType="java.util.LinkedHashMap">
+    <select id="selectTransMessage" resultType="java.util.LinkedHashMap">
       SELECT
 	 org.org_name AS org_name,
      arch.user_name AS supervisor_user_name,
@@ -1371,81 +1466,77 @@
     AND arc.is_delete = 0
     where arc.archive_id = #{key}
   </select>
-  <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
- SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-    maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-   arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-    professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-    orga.org_name as org_name ,
-    post.post_name as post_name ,
-    org.org_name as business_unit_name,
-    arch.user_name as supervisor_user_name
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-    left join t_organization org on org.org_id=arc.business_unit_id
-    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-
-    left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-
-        left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
-
-        left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
-
-        left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
-
-        left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
-
-        left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
-
-        left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
-
-        left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
-
-        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
-
-        left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
-
-        left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-    where arc.id_number=#{s}
-     and orga.company_id=#{companyId}
-    and arc.is_delete=0
-    and arc.archive_status='SERVICE'
+    <select id="selectByIdNumber" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+    SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id,  arc.user_category, arc.business_unit_id, arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality , arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email, arc.address,
+        arc. professional_certification,  arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+       and arc.id_number=#{s}
+       and arc.archive_status='SERVICE'
      group by arc.archive_id
   </select>
-  <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-    SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, dict2.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, arc.id_type, arc.id_number, dict.dict_value as gender, arc.birth_date, arc.age, arc.nationality, arc.birthplace, arc.political_status,
-    arc.marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc. probation_due_date,
-    arc.probation_period, arc.converse_date, arc.first_degree, arc.highest_degree, arc.phone, arc.email, arc.address,
-    arc.professional_certification, arc.professional_title, arc.professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-    orga.org_name as org_name ,
-    post.post_name as post_name ,
-    org.org_name as business_unit_name,
-    arch.user_name as supervisor_user_name
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-    left join t_organization org on org.org_id=arc.business_unit_id
-    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-    left join t_sys_dict dict on dict.dict_code=arc.gender AND dict.is_delete=0
-    left join t_sys_dict dict2 on  dict2.dict_code=arc.user_category AND dict2.is_delete=0
-    where arc.org_id in
-    <foreach collection="orgId" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    and arc.is_delete=1
-    group by arc.archive_id
-  </select>
-  <select id="selectByPhoneAndCompanyId" resultType="java.lang.Integer">
+    <select id="selectArchiveDelete" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=1 and orga.company_id=#{companyId}
+        and arc.org_id in
+        <foreach collection="orgId" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        group by arc.archive_id
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
+    </select>
+    <select id="selectByPhoneAndCompanyId" resultType="java.lang.Integer">
     select archive_id
     from t_user_archive
     where phone=#{phone}
@@ -1462,56 +1553,43 @@
     AND archive_status = 'SERVICE'
     AND is_delete = 0
   </select>
-  <select id="selectUserArchiveVo" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-   SELECT
-    arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-    arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-    maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-      arc.probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-    professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-    arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
-    orga.org_name as org_name ,
-    post.post_name as post_name ,
-    org.org_name as business_unit_name,
-    arch.user_name as supervisor_user_name
-    FROM
-    t_user_archive arc
-    LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
-    left join t_organization org on org.org_id=arc.business_unit_id
-    LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-    left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-
-      left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-
-      left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
-
-      left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
-
-      left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
-
-      left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
-
-      left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
-
-      left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
-
-      left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
-
-      left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
-
-      left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
-
-      left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-      where arc.org_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-        #{item}
-    </foreach>
-    and arc.is_delete=0 and orga.company_id=#{companyId}
-    and arc.archive_status='SERVICE'
-    group by arc.archive_id
-  </select>
-  <select id="selectEmployNumberByCompanyId" resultType="java.lang.Integer">
+    <select id="selectUserArchiveVo" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+        and arc.archive_status='SERVICE'
+        and arc.org_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by arc.archive_id
+    </select>
+    <select id="selectEmployNumberByCompanyId" resultType="java.lang.Integer">
     select archive_id
     from t_user_archive
     where company_id=#{companyId}
@@ -1520,57 +1598,47 @@
     and archive_status='SERVICE'
 
   </select>
-  <select id="getByCompanyId" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"></include>
-    from t_user_archive where company_id =#{companyId} and is_delete =0
-  </select>
+    <select id="getByCompanyId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_user_archive where company_id =#{companyId} and is_delete =0
+    </select>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"></include>
-    from t_user_archive where company_id =#{companyId} and  user_id =#{userId} and is_delete =0
-  </select>
-    <select id="selectPartTimeArchive" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_user_archive where company_id =#{companyId} and user_id =#{userId} and is_delete =0
+    </select>
+    <select id="selectPartTimeArchive" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
         SELECT
-        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, userCategory.dict_value as user_category, arc.business_unit_id, arc.org_id, arc.post_id,
-        arc.user_name, idType.dict_value as id_type, arc.id_number, gender.dict_value as gender, arc.birth_date, arc.age, nationality.dict_value as nationality, arc.birthplace, politicalStatus.dict_value as political_status,
-        maritalStatus.dict_value as marital_status, arc.first_work_date, arc.hire_date, arc.serving_age, arc.working_period,arc.probation_due_date,
-        arc.  probation_period, arc.converse_date, firstDegree.dict_value as first_degree, highestDegree.dict_value as highest_degree, arc.phone, arc.email, arc.address,
-        professionalCertification.dict_value as professional_certification, professionalTitle.dict_value as professional_title, professionalLevel.dict_value as professional_level, arc.attrition_date,
-        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time, arc.update_time,arc.is_delete,arc.headimgurl,
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
         orga.org_name as org_name ,
         post.post_name as post_name ,
         org.org_name as business_unit_name,
-        arch.user_name as supervisor_user_name
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
         FROM
         t_user_archive arc
-        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
         left join t_organization org on org.org_id=arc.business_unit_id
-        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-        left join t_user_archive_post_relation relation on relation.archive_id=arc.archive_id and relation.is_delete=0
-        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
-
-        left join t_sys_dict idType on  idType.dict_code=arc.id_type and idType.dict_type='CARD_TYPE' AND idType.is_delete=0
-
-        left join t_sys_dict gender on gender.dict_code=arc.gender and gender.dict_type='SEX_TYPE' AND gender.is_delete=0
-
-        left join t_sys_dict nationality on nationality.dict_code=arc.nationality  and nationality.dict_type='NATIONALITY' AND nationality.is_delete=0
-
-        left join t_sys_dict politicalStatus on politicalStatus.dict_code=arc.political_status  and politicalStatus.dict_type='POLITICAL_AFFILIATION' AND politicalStatus.is_delete=0
-
-        left join t_sys_dict maritalStatus on maritalStatus.dict_code=arc.marital_status  and maritalStatus.dict_type='MARITAL_STATUS' AND maritalStatus.is_delete=0
-
-        left join t_sys_dict firstDegree on firstDegree.dict_code=arc.first_degree  and firstDegree.dict_type='DEGREE' AND firstDegree.is_delete=0
-
-        left join t_sys_dict highestDegree on highestDegree.dict_code=arc.highest_degree  and highestDegree.dict_type='DEGREE' AND highestDegree.is_delete=0
-
-        left join t_sys_dict professionalCertification on professionalCertification.dict_code=arc.professional_certification  and professionalCertification.dict_type='PROFESSIONAL_CERTIFICATION' AND professionalCertification.is_delete=0
-
-        left join t_sys_dict professionalTitle on professionalTitle.dict_code=arc.professional_title  and professionalTitle.dict_type='PROFESSIONAL_TITLE' AND professionalTitle.is_delete=0
-
-        left join t_sys_dict professionalLevel on professionalLevel.dict_code=arc.professional_level  and professionalLevel.dict_type='PROFESSIONAL_LEVEL' AND professionalLevel.is_delete=0
-
-        where arc.is_delete=0  and orga.company_id=#{companyId}
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+        and arc.archive_status='SERVICE'
         <choose>
             <when test='integerList != null and integerList.size()>0'>
                 and relation.archive_id in
@@ -1591,26 +1659,93 @@
         and company_id=#{companyId}
         and is_delete=0
     </select>
-    <select id="selectIsExist" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
-        select archive_id  from t_user_archive
+    <select id="selectIsExist" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
+        select archive_id from t_user_archive
         where is_delete=0
         and archive_status= 'SERVICE'
         <if test="idNumber!=null">
-           or (id_number=#{idNumber} and is_delete=0)
+            or (id_number=#{idNumber} and is_delete=0)
         </if>
         <if test="userId!=null">
-           or (user_id=#{userId}and is_delete=0)
+            or (user_id=#{userId}and is_delete=0)
         </if>
         limit 1
     </select>
-    <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo" resultMap="BaseResultMap">
+
+    <update id="batchUpdateBusunessUnitId">
+        update t_user_archive set business_unit_id =#{targetBusunessUnitId}
+        where is_delete =0 and org_id in
+        <foreach collection="orgIds" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+
+    </update>
+    <update id="moveToNewOrg">
+        update t_user_archive set org_id =#{newOrgId}
+        where is_delete =0 and org_id in
+        <foreach collection="orgIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+
+    </update>
+
+    <select id="getCompanyCreator" parameterType="integer" resultMap="BaseResultMap">
+        SELECT
+         tua.archive_id,tua.user_id,tua.user_name
+        FROM
+        t_user_archive tua
+        LEFT JOIN t_user_role tur
+         ON tur.archive_id = tua.archive_id
+        LEFT JOIN t_role tr
+         ON tur.role_id = tr.role_id
+         AND tur.is_delete = 0
+        WHERE tr.is_system_define = 1 AND tua.company_id =#{companyId} AND tua.is_delete = 0 LIMIT 1
+    </select>
+
+    <select id="selectArchiveByHead" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo">
+        SELECT
+        arc.archive_id, arc.user_id, arc.employee_number, arc.company_id, arc.user_category, arc.business_unit_id,
+        arc.org_id, arc.post_id,
+        arc.user_name, arc.id_type , arc.id_number, arc.gender , arc.birth_date, arc.age, arc.nationality ,
+        arc.birthplace, arc.political_status ,
+        arc.marital_status , arc.first_work_date, arc.hire_date, arc.serving_age,
+        arc.working_period,arc.probation_due_date,
+        arc. probation_period, arc.converse_date, arc. first_degree, arc. highest_degree, arc.phone, arc.email,
+        arc.address,
+        arc. professional_certification, arc. professional_title, arc. professional_level, arc.attrition_date,
+        arc.attrition_type, arc.supervisor_id, arc.operator_id, arc.create_time,
+        arc.update_time,arc.is_delete,arc.position_grade_id,arc.position_level_id,
+        orga.org_name as org_name ,
+        post.post_name as post_name ,
+        org.org_name as business_unit_name,
+        arch.user_name as supervisor_user_name,
+        grade.position_grade_name as position_grade_name,
+        level.position_level_name as position_level_name
+        FROM
+        t_user_archive arc
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
+        left join t_organization org on org.org_id=arc.business_unit_id
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_position_level level on arc.position_level_id=level.position_level_id and level.is_delete=0
+        left join t_position_grade grade on arc.position_grade_id=grade.position_grade_id and grade.is_delete=0
+        where arc.is_delete=0 and orga.company_id=#{companyId}
+        and arc.archive_status='SERVICE'
+        <if test="whereSql!=null">
+            ${whereSql}
+        </if>
+    </select>
+    <select id="selectByIdNumberOrEmploy" resultType="com.qinjee.masterdata.model.vo.staff.UserArchiveVo"
+            resultMap="BaseResultMap">
         select *
         from t_user_archive
         where is_delete=0
         and company_id=#{companyId}
         and (id_number=#{idnumber}or employee_number=#{idnumber})
     </select>
-    <select id="selectNoConArcByIdList" resultType="com.qinjee.masterdata.model.vo.staff.export.NoConArc" resultMap="noconarc">
+    <select id="selectNoConArcByIdList" resultType="com.qinjee.masterdata.model.vo.staff.export.NoConArc"
+            resultMap="noconarc">
         SELECT
         arc.archive_id,
         arc.user_name,
@@ -1624,11 +1759,12 @@
         userCategory.dict_value as user_category
         FROM
         t_user_archive arc
-        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id  AND orga.is_enable = 1
+        LEFT JOIN t_organization orga ON orga.org_id = arc.org_id AND orga.is_enable = 1
         left join t_organization org on org.org_id=arc.business_unit_id
-        LEFT JOIN t_post post ON post.post_id = arc.post_id  AND post.is_delete = 0
-        left join t_user_archive arch on arc.supervisor_id=arch.archive_id  AND arch.is_delete = 0
-        left join t_sys_dict userCategory on  userCategory.dict_code=arc.user_category and userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
+        LEFT JOIN t_post post ON post.post_id = arc.post_id AND post.is_delete = 0
+        left join t_user_archive arch on arc.supervisor_id=arch.archive_id AND arch.is_delete = 0
+        left join t_sys_dict userCategory on userCategory.dict_code=arc.user_category and
+        userCategory.dict_type='USER_CATEGORY' AND userCategory.is_delete=0
         where arc.archive_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}

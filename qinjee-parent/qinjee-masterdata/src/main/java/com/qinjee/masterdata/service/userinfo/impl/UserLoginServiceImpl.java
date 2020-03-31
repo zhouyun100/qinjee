@@ -11,11 +11,14 @@
 package com.qinjee.masterdata.service.userinfo.impl;
 
 import com.qinjee.exception.ExceptionCast;
+import com.qinjee.masterdata.dao.userinfo.UserInfoDao;
 import com.qinjee.masterdata.dao.userinfo.UserLoginDao;
 import com.qinjee.masterdata.model.entity.UserInfo;
 import com.qinjee.masterdata.model.vo.auth.MenuVO;
 import com.qinjee.masterdata.model.vo.auth.RequestLoginVO;
 import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatBindParamVO;
+import com.qinjee.masterdata.model.vo.userinfo.WechatLoginResultVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.userinfo.UserLoginService;
 import com.qinjee.model.response.CommonCode;
@@ -23,9 +26,11 @@ import com.qinjee.utils.MD5Utils;
 import com.qinjee.utils.RegexpUtils;
 import com.qinjee.utils.WeChatUtils;
 import entity.WeChatToken;
+import entity.WeChatUserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -46,6 +51,9 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Autowired
     private RoleAuthService roleAuthService;
+
+    @Autowired
+    private UserInfoDao userInfoDao;
 
     @Override
     public List<UserInfoVO> searchUserInfoByAccountAndPassword(String account, String password) {
@@ -89,9 +97,17 @@ public class UserLoginServiceImpl implements UserLoginService {
     public int updateUserPasswordByUserIdAndPassword(Integer userId, String oldPassword, String newPassword) {
         RequestLoginVO userLoginVO = new RequestLoginVO();
         userLoginVO.setUserId(userId);
-        userLoginVO.setPassword(oldPassword);
-        userLoginVO.setNewPassword(newPassword);
+        userLoginVO.setPassword(MD5Utils.getMd5(oldPassword));
+        userLoginVO.setNewPassword(MD5Utils.getMd5(newPassword));
         return userLoginDao.updateUserPasswordByUserIdAndPassword(userLoginVO);
+    }
+
+    @Override
+    public int updateUserPasswordByUserId(Integer userId, String newPassword) {
+        RequestLoginVO userLoginVO = new RequestLoginVO();
+        userLoginVO.setUserId(userId);
+        userLoginVO.setNewPassword(MD5Utils.getMd5(newPassword));
+        return userLoginDao.updateUserPasswordByUserId(userLoginVO);
     }
 
     @Override
@@ -140,6 +156,8 @@ public class UserLoginServiceImpl implements UserLoginService {
         return firstLevelMenuList;
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int getUserIdByPhone(String phone, Integer companyId) {
         int userId = 0;
@@ -148,6 +166,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             UserInfoVO userInfoVO = userLoginDao.searchUserCompanyByUserIdAndCompanyId(userInfo.getUserId(),companyId);
             if(userInfoVO == null){
                 userLoginDao.addCompanyUserInfo(companyId,userInfo.getUserId());
+                userInfoDao.setUserCompanyDefaultLogin(userInfo.getUserId(),companyId);
             }
             userId = userInfo.getUserId();
         }else{
@@ -168,24 +187,32 @@ public class UserLoginServiceImpl implements UserLoginService {
     }
 
     @Override
-    public UserInfoVO searchUserInfoByWeChatCode(String code) {
-        UserInfoVO userInfoVO = null;
+    public WechatLoginResultVO searchWechatUserInfoByWeChatCode(String code) {
+        WechatLoginResultVO wechatLoginResultVO = new WechatLoginResultVO();
         WeChatToken weChatToken = WeChatUtils.getWeChatToken(code);
         if(weChatToken != null){
+            WeChatUserInfo weChatUserInfo = WeChatUtils.getWeChatUserInfo(weChatToken);
+            wechatLoginResultVO.setBindInfo(weChatUserInfo);
 
-            userInfoVO = userLoginDao.searchUserInfoByOpenId(weChatToken.getOpenid());
-
-            if(userInfoVO == null){
-                ExceptionCast.cast(CommonCode.WECHAT_NO_BIND);
+            if(weChatUserInfo != null){
+                UserInfoVO userInfoVO = userLoginDao.searchUserInfoByOpenId(weChatToken.getOpenid());
+                if(userInfoVO != null){
+                    wechatLoginResultVO.setLoginInfo(userInfoVO);
+                }
             }
         }else{
             ExceptionCast.cast(CommonCode.WECHAT_ACCESS_TOKEN);
         }
-        return userInfoVO;
+        return wechatLoginResultVO;
     }
 
     @Override
     public UserInfo searchUserInfoDetailByPhone(String phone) {
         return userLoginDao.searchUserInfoDetailByPhone(phone);
+    }
+
+    @Override
+    public int updateUserWechatBindByPhone(WechatBindParamVO wechatBindParamVO) {
+        return userLoginDao.updateUserWechatBindByPhone(wechatBindParamVO);
     }
 }

@@ -1,62 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao">
-  <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.LaborContract">
-    <result column="contract_id" jdbcType="INTEGER" property="contractId" />
-    <result column="archive_id" jdbcType="INTEGER" property="archiveId" />
-    <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId" />
-    <result column="org_id" jdbcType="INTEGER" property="orgId" />
-    <result column="post_id" jdbcType="INTEGER" property="postId" />
-    <result column="probation_period" jdbcType="INTEGER" property="probationPeriod" />
-    <result column="contract_sign_date" jdbcType="DATE" property="contractSignDate" />
-    <result column="contract_begin_date" jdbcType="DATE" property="contractBeginDate" />
-    <result column="contract_end_date" jdbcType="DATE" property="contractEndDate" />
-    <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth" />
-    <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType" />
-    <result column="contract_subject" jdbcType="VARCHAR" property="contractSubject" />
-    <result column="contract_number" jdbcType="VARCHAR" property="contractNumber" />
-    <result column="contract_state" jdbcType="VARCHAR" property="contractState" />
-    <result column="contract_remark" jdbcType="VARCHAR" property="contractRemark" />
-    <result column="sign_number" jdbcType="INTEGER" property="signNumber" />
-    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <resultMap id="ExportCon" type="com.qinjee.masterdata.model.vo.staff.export.ContractVo">
-    <id column="contract_id" jdbcType="INTEGER" property="id" />
-    <id column="archive_id" jdbcType="INTEGER" property="archive_id" />
-    <result column="id_number" jdbcType="VARCHAR" property="id_number" />
-    <result column="employment_number" jdbcType="VARCHAR" property="employee_number" />
-    <result column="contract_period_type" jdbcType="VARCHAR" property="contract_number" />
-    <result column="contract_sign_date" jdbcType="TIMESTAMP" property="contract_period_type" />
-    <result column="contract_number" jdbcType="VARCHAR" property="contract_sign_date" />
-    <result column="contract_begin_date" jdbcType="TIMESTAMP" property="contract_begin_date" />
-    <result column="contract_end_date" jdbcType="TIMESTAMP" property="contract_end_date" />
-    <result column="contract_number" jdbcType="VARCHAR" property="contract_number" />
-    <result column="contract_period_month" jdbcType="INTEGER" property="contract_period_month" />
-    <result column="contract_number" jdbcType="VARCHAR" property="contract_number" />
-    <result column="contract_subject" jdbcType="VARCHAR" property="contract_subject" />
-    <result column="sign_number" jdbcType="INTEGER" property="sign_number" />
-    <result column="contract_remark" jdbcType="VARCHAR" property="contract_remark" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.qinjee.masterdata.model.entity.LaborContract">
+        <result column="contract_id" jdbcType="INTEGER" property="contractId"/>
+        <result column="archive_id" jdbcType="INTEGER" property="archiveId"/>
+        <result column="business_unit_id" jdbcType="INTEGER" property="businessUnitId"/>
+        <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="post_id" jdbcType="INTEGER" property="postId"/>
+        <result column="probation_period" jdbcType="INTEGER" property="probationPeriod"/>
+        <result column="contract_sign_date" jdbcType="DATE" property="contractSignDate"/>
+        <result column="contract_begin_date" jdbcType="DATE" property="contractBeginDate"/>
+        <result column="contract_end_date" jdbcType="DATE" property="contractEndDate"/>
+        <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth"/>
+        <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType"/>
+        <result column="contract_subject" jdbcType="VARCHAR" property="contractSubject"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_state" jdbcType="VARCHAR" property="contractState"/>
+        <result column="contract_remark" jdbcType="VARCHAR" property="contractRemark"/>
+        <result column="sign_number" jdbcType="INTEGER" property="signNumber"/>
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="update_time" jdbcType="DATE" property="updateTime"/>
+    </resultMap>
+    <resultMap id="ExportCon" type="com.qinjee.masterdata.model.vo.staff.export.ContractVo">
+        <id column="contract_id" jdbcType="INTEGER" property="id"/>
+        <id column="archive_id" jdbcType="INTEGER" property="archive_id"/>
+        <result column="id_number" jdbcType="VARCHAR" property="id_number"/>
+        <result column="employment_number" jdbcType="VARCHAR" property="employee_number"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contract_number"/>
+        <result column="contract_period_type" jdbcType="VARCHAR" property="contract_period_type"/>
+        <result column="contract_sign_date" jdbcType="DATE" property="contract_sign_date"/>
+        <result column="contract_begin_date" jdbcType="DATE" property="contract_begin_date"/>
+        <result column="contract_end_date" jdbcType="DATE" property="contract_end_date"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contract_number"/>
+        <result column="contract_period_month" jdbcType="INTEGER" property="contract_period_month"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contract_number"/>
+        <result column="contract_subject" jdbcType="VARCHAR" property="contract_subject"/>
+        <result column="sign_number" jdbcType="INTEGER" property="sign_number"/>
+        <result column="contract_remark" jdbcType="VARCHAR" property="contract_remark"/>
+    </resultMap>
+    <resultMap id="ExportConWithArc" type="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
+        <id column="contract_id" jdbcType="INTEGER" property="contractId"/>
+        <id column="archive_id" jdbcType="INTEGER" property="archiveId"/>
+        <result column="id_number" jdbcType="VARCHAR" property="idNumber"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="business_unit_name" jdbcType="VARCHAR" property="businessUnitName"/>
+        <result column="employment_number" jdbcType="VARCHAR" property="employeeNumber"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_period_type" jdbcType="VARCHAR" property="contractPeriodType"/>
+        <result column="contract_sign_date" jdbcType="DATE" property="contractSignDate"/>
+        <result column="contract_begin_date" jdbcType="DATE" property="contractBeginDate"/>
+        <result column="contract_end_date" jdbcType="DATE" property="contractEndDate"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_period_month" jdbcType="INTEGER" property="contractPeriodMonth"/>
+        <result column="contract_number" jdbcType="VARCHAR" property="contractNumber"/>
+        <result column="contract_subject" jdbcType="VARCHAR" property="contractSubject"/>
+        <result column="contract_state" jdbcType="VARCHAR" property="contractState"/>
+        <result column="sign_number" jdbcType="INTEGER" property="signNumber"/>
+        <result column="contract_remark" jdbcType="VARCHAR" property="contractRemark"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     contract_id, archive_id,
     contract_sign_date, contract_begin_date, contract_end_date, contract_period_month,
     contract_period_type, contract_subject, contract_number, contract_state, contract_remark,
     sign_number, operator_id, create_time, update_time
 --     business_unit_id,org_id,post_id,
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_labor_contract
-    where contract_id = #{contractId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_labor_contract
+        where contract_id = #{contractId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_labor_contract
     where contract_id = #{contractId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="contract_id" keyProperty="contractId"
+            parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
     insert into t_labor_contract (id,archive_id,
     business_unit_id,org_id,post_id,
      contract_sign_date, contract_begin_date,
@@ -72,296 +93,298 @@
       #{contractRemark,jdbcType=VARCHAR}, #{signNumber,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
   </insert>
-  <insert id="insertSelective" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
-    insert into t_labor_contract
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="archiveId != null">
-        archive_id,
-      </if>
-      <if test="businessUnitId != null">
-        business_unit_id,
-      </if>
-      <if test="orgId != null">
-        org_id,
-      </if>
-      <if test="postId != null">
-        post_id,
-      </if>
-      <if test="contractSignDate != null">
-        contract_sign_date,
-      </if>
-      <if test="contractBeginDate != null">
-        contract_begin_date,
-      </if>
-      <if test="contractEndDate != null">
-        contract_end_date,
-      </if>
-      <if test="contractPeriodMonth != null">
-        contract_period_month,
-      </if>
-      <if test="contractPeriodType != null">
-        contract_period_type,
-      </if>
-      <if test="contractSubject != null">
-        contract_subject,
-      </if>
-      <if test="contractNumber != null">
-        contract_number,
-      </if>
-      <if test="contractState != null">
-        contract_state,
-      </if>
-      <if test="contractRemark != null">
-        contract_remark,
-      </if>
-      <if test="signNumber != null">
-        sign_number,
-      </if>
-      <if test="operatorId != null">
-        operator_id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="probationPeriod != null">
-        probation_period,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="archiveId != null">
-        #{archiveId,jdbcType=INTEGER},
-      </if>
-      <if test="businessUnitId != null">
-        #{businessUnitId,jdbcType=INTEGER},
-      </if>
-      <if test="orgId != null">
-        #{orgId,jdbcType=INTEGER},
-      </if>
-      <if test="postId != null">
-        #{postId,jdbcType=INTEGER},
-      </if>
-      <if test="contractSignDate != null">
-        #{contractSignDate,jdbcType=DATE},
-      </if>
-      <if test="contractBeginDate != null">
-        #{contractBeginDate,jdbcType=DATE},
-      </if>
-      <if test="contractEndDate != null">
-        #{contractEndDate,jdbcType=DATE},
-      </if>
-      <if test="contractPeriodMonth != null">
-        #{contractPeriodMonth,jdbcType=INTEGER},
-      </if>
-      <if test="contractPeriodType != null">
-        #{contractPeriodType,jdbcType=VARCHAR},
-      </if>
-      <if test="contractSubject != null">
-        #{contractSubject,jdbcType=VARCHAR},
-      </if>
-      <if test="contractNumber != null">
-        #{contractNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="contractState != null">
-        #{contractState,jdbcType=VARCHAR},
-      </if>
-      <if test="contractRemark != null">
-        #{contractRemark,jdbcType=VARCHAR},
-      </if>
-      <if test="signNumber != null">
-        #{signNumber,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="probationPeriod != null">
-        #{probationPeriod},
-      </if>
-    </trim>
-  </insert>
-  <insert id="insertBatch" keyColumn="contract_id" keyProperty="contractId" parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
-    <foreach collection="laborContractList" item="item" separator=";" >
-      insert into t_labor_contract
-      <trim prefix="(" suffix=")" suffixOverrides=",">
-        <if test="item.archiveId != null">
-          archive_id,
-        </if>
-        <if test="item.businessUnitId != null">
-          business_unit_id,
-        </if>
-        <if test="item.orgId != null">
-          org_id,
-        </if>
-        <if test="item.postId != null">
-          post_id,
-        </if>
-        <if test="item.contractSignDate != null">
-          contract_sign_date,
-        </if>
-        <if test="item.contractBeginDate != null">
-          contract_begin_date,
-        </if>
-        <if test="item.contractEndDate != null">
-          contract_end_date,
-        </if>
-        <if test="item.contractPeriodMonth != null">
-          contract_period_month,
-        </if>
-        <if test="item.contractPeriodType != null">
-          contract_period_type,
-        </if>
-        <if test="item.contractSubject != null">
-          contract_subject,
-        </if>
-        <if test="item.contractNumber != null">
-          contract_number,
-        </if>
-        <if test="item.contractState != null">
-          contract_state,
-        </if>
-        <if test="item.contractRemark != null">
-          contract_remark,
-        </if>
-        <if test="item.signNumber != null">
-          sign_number,
-        </if>
-        <if test="item.operatorId != null">
-          operator_id,
-        </if>
-        <if test="item.createTime != null">
-          create_time,
-        </if>
-        <if test="item.updateTime != null">
-          update_time,
-        </if>
-        <if test="item.probationPeriod != null">
-          probation_period,
-        </if>
-      </trim>
-      <trim prefix="values (" suffix=")" suffixOverrides=",">
-        <if test="item.archiveId != null">
-          #{item.archiveId,jdbcType=INTEGER},
-        </if>
-        <if test="item.businessUnitId != null">
-          #{item.businessUnitId,jdbcType=INTEGER},
-        </if>
-        <if test="item.orgId != null">
-          #{item.orgId,jdbcType=INTEGER},
-        </if>
-        <if test="item.postId != null">
-          #{item.postId,jdbcType=INTEGER},
-        </if>
-        <if test="item.contractSignDate != null">
-          #{item.contractSignDate,jdbcType=DATE},
-        </if>
-        <if test="item.contractBeginDate != null">
-          #{item.contractBeginDate,jdbcType=DATE},
-        </if>
-        <if test="item.contractEndDate != null">
-          #{item.contractEndDate,jdbcType=DATE},
-        </if>
-        <if test="item.contractPeriodMonth != null">
-          #{item.contractPeriodMonth,jdbcType=INTEGER},
-        </if>
-        <if test="item.contractPeriodType != null">
-          #{item.contractPeriodType,jdbcType=VARCHAR},
-        </if>
-        <if test="item.contractSubject != null">
-          #{item.contractSubject,jdbcType=VARCHAR},
-        </if>
-        <if test="item.contractNumber != null">
-          #{item.contractNumber,jdbcType=VARCHAR},
-        </if>
-        <if test="item.contractState != null">
-          #{item.contractState,jdbcType=VARCHAR},
-        </if>
-        <if test="item.contractRemark != null">
-          #{item.contractRemark,jdbcType=VARCHAR},
-        </if>
-        <if test="item.signNumber != null">
-          #{item.signNumber,jdbcType=INTEGER},
-        </if>
-        <if test="item.operatorId != null">
-          #{item.operatorId,jdbcType=INTEGER},
-        </if>
-        <if test="item.createTime != null">
-          #{item.createTime,jdbcType=TIMESTAMP},
-        </if>
-        <if test="item.updateTime != null">
-          #{item.updateTime,jdbcType=TIMESTAMP},
-        </if>
-        <if test="item.probationPeriod != null">
-          #{item.probationPeriod},
-        </if>
-      </trim>
-    </foreach>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.LaborContract">
-    update t_labor_contract
-    <set>
-      <if test="archiveId != null">
-        archive_id = #{archiveId,jdbcType=INTEGER},
-      </if>
-      <if test="businessUnitId != null">
-        business_unit_id = #{businessUnitId,jdbcType=INTEGER},
-      </if>
-      <if test="orgId != null">
-        org_id = #{orgId,jdbcType=INTEGER},
-      </if>
-      <if test="postId != null">
-        post_id = #{postId,jdbcType=INTEGER},
-      </if>
-      <if test="contractSignDate != null">
-        contract_sign_date = #{contractSignDate,jdbcType=DATE},
-      </if>
-      <if test="contractBeginDate != null">
-        contract_begin_date = #{contractBeginDate,jdbcType=DATE},
-      </if>
-      <if test="contractEndDate != null">
-        contract_end_date = #{contractEndDate,jdbcType=DATE},
-      </if>
-      <if test="contractPeriodMonth != null">
-        contract_period_month = #{contractPeriodMonth,jdbcType=INTEGER},
-      </if>
-      <if test="contractPeriodType != null">
-        contract_period_type = #{contractPeriodType,jdbcType=VARCHAR},
-      </if>
-      <if test="contractSubject != null">
-        contract_subject = #{contractSubject,jdbcType=VARCHAR},
-      </if>
-      <if test="contractNumber != null">
-        contract_number = #{contractNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="contractState != null">
-        contract_state = #{contractState,jdbcType=VARCHAR},
-      </if>
-      <if test="contractRemark != null">
-        contract_remark = #{contractRemark,jdbcType=VARCHAR},
-      </if>
-      <if test="signNumber != null">
-        sign_number = #{signNumber,jdbcType=INTEGER},
-      </if>
-      <if test="operatorId != null">
-        operator_id = #{operatorId,jdbcType=INTEGER},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="probationPeriod != null">
-        probation_period = #{probationPeriod,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where contract_id = #{contractId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.LaborContract">
+    <insert id="insertSelective" keyColumn="contract_id" keyProperty="contractId"
+            parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
+        insert into t_labor_contract
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="archiveId != null">
+                archive_id,
+            </if>
+            <if test="businessUnitId != null">
+                business_unit_id,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="postId != null">
+                post_id,
+            </if>
+            <if test="contractSignDate != null">
+                contract_sign_date,
+            </if>
+            <if test="contractBeginDate != null">
+                contract_begin_date,
+            </if>
+            <if test="contractEndDate != null">
+                contract_end_date,
+            </if>
+            <if test="contractPeriodMonth != null">
+                contract_period_month,
+            </if>
+            <if test="contractPeriodType != null">
+                contract_period_type,
+            </if>
+            <if test="contractSubject != null">
+                contract_subject,
+            </if>
+            <if test="contractNumber != null">
+                contract_number,
+            </if>
+            <if test="contractState != null">
+                contract_state,
+            </if>
+            <if test="contractRemark != null">
+                contract_remark,
+            </if>
+            <if test="signNumber != null">
+                sign_number,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="probationPeriod != null">
+                probation_period,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="archiveId != null">
+                #{archiveId,jdbcType=INTEGER},
+            </if>
+            <if test="businessUnitId != null">
+                #{businessUnitId,jdbcType=INTEGER},
+            </if>
+            <if test="orgId != null">
+                #{orgId,jdbcType=INTEGER},
+            </if>
+            <if test="postId != null">
+                #{postId,jdbcType=INTEGER},
+            </if>
+            <if test="contractSignDate != null">
+                #{contractSignDate,jdbcType=DATE},
+            </if>
+            <if test="contractBeginDate != null">
+                #{contractBeginDate,jdbcType=DATE},
+            </if>
+            <if test="contractEndDate != null">
+                #{contractEndDate,jdbcType=DATE},
+            </if>
+            <if test="contractPeriodMonth != null">
+                #{contractPeriodMonth,jdbcType=INTEGER},
+            </if>
+            <if test="contractPeriodType != null">
+                #{contractPeriodType,jdbcType=VARCHAR},
+            </if>
+            <if test="contractSubject != null">
+                #{contractSubject,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNumber != null">
+                #{contractNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="contractState != null">
+                #{contractState,jdbcType=VARCHAR},
+            </if>
+            <if test="contractRemark != null">
+                #{contractRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="signNumber != null">
+                #{signNumber,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="probationPeriod != null">
+                #{probationPeriod},
+            </if>
+        </trim>
+    </insert>
+    <insert id="insertBatch" keyColumn="contract_id" keyProperty="contractId"
+            parameterType="com.qinjee.masterdata.model.entity.LaborContract" useGeneratedKeys="true">
+        <foreach collection="laborContractList" item="item" separator=";">
+            insert into t_labor_contract
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.archiveId != null">
+                    archive_id,
+                </if>
+                <if test="item.businessUnitId != null">
+                    business_unit_id,
+                </if>
+                <if test="item.orgId != null">
+                    org_id,
+                </if>
+                <if test="item.postId != null">
+                    post_id,
+                </if>
+                <if test="item.contractSignDate != null">
+                    contract_sign_date,
+                </if>
+                <if test="item.contractBeginDate != null">
+                    contract_begin_date,
+                </if>
+                <if test="item.contractEndDate != null">
+                    contract_end_date,
+                </if>
+                <if test="item.contractPeriodMonth != null">
+                    contract_period_month,
+                </if>
+                <if test="item.contractPeriodType != null">
+                    contract_period_type,
+                </if>
+                <if test="item.contractSubject != null">
+                    contract_subject,
+                </if>
+                <if test="item.contractNumber != null">
+                    contract_number,
+                </if>
+                <if test="item.contractState != null">
+                    contract_state,
+                </if>
+                <if test="item.contractRemark != null">
+                    contract_remark,
+                </if>
+                <if test="item.signNumber != null">
+                    sign_number,
+                </if>
+                <if test="item.operatorId != null">
+                    operator_id,
+                </if>
+                <if test="item.createTime != null">
+                    create_time,
+                </if>
+                <if test="item.updateTime != null">
+                    update_time,
+                </if>
+                <if test="item.probationPeriod != null">
+                    probation_period,
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.archiveId != null">
+                    #{item.archiveId,jdbcType=INTEGER},
+                </if>
+                <if test="item.businessUnitId != null">
+                    #{item.businessUnitId,jdbcType=INTEGER},
+                </if>
+                <if test="item.orgId != null">
+                    #{item.orgId,jdbcType=INTEGER},
+                </if>
+                <if test="item.postId != null">
+                    #{item.postId,jdbcType=INTEGER},
+                </if>
+                <if test="item.contractSignDate != null">
+                    #{item.contractSignDate,jdbcType=DATE},
+                </if>
+                <if test="item.contractBeginDate != null">
+                    #{item.contractBeginDate,jdbcType=DATE},
+                </if>
+                <if test="item.contractEndDate != null">
+                    #{item.contractEndDate,jdbcType=DATE},
+                </if>
+                <if test="item.contractPeriodMonth != null">
+                    #{item.contractPeriodMonth,jdbcType=INTEGER},
+                </if>
+                <if test="item.contractPeriodType != null">
+                    #{item.contractPeriodType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.contractSubject != null">
+                    #{item.contractSubject,jdbcType=VARCHAR},
+                </if>
+                <if test="item.contractNumber != null">
+                    #{item.contractNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="item.contractState != null">
+                    #{item.contractState,jdbcType=VARCHAR},
+                </if>
+                <if test="item.contractRemark != null">
+                    #{item.contractRemark,jdbcType=VARCHAR},
+                </if>
+                <if test="item.signNumber != null">
+                    #{item.signNumber,jdbcType=INTEGER},
+                </if>
+                <if test="item.operatorId != null">
+                    #{item.operatorId,jdbcType=INTEGER},
+                </if>
+                <if test="item.createTime != null">
+                    #{item.createTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="item.updateTime != null">
+                    #{item.updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="item.probationPeriod != null">
+                    #{item.probationPeriod},
+                </if>
+            </trim>
+        </foreach>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.qinjee.masterdata.model.entity.LaborContract">
+        update t_labor_contract
+        <set>
+            <if test="archiveId != null">
+                archive_id = #{archiveId,jdbcType=INTEGER},
+            </if>
+            <if test="businessUnitId != null">
+                business_unit_id = #{businessUnitId,jdbcType=INTEGER},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId,jdbcType=INTEGER},
+            </if>
+            <if test="postId != null">
+                post_id = #{postId,jdbcType=INTEGER},
+            </if>
+            <if test="contractSignDate != null">
+                contract_sign_date = #{contractSignDate,jdbcType=DATE},
+            </if>
+            <if test="contractBeginDate != null">
+                contract_begin_date = #{contractBeginDate,jdbcType=DATE},
+            </if>
+            <if test="contractEndDate != null">
+                contract_end_date = #{contractEndDate,jdbcType=DATE},
+            </if>
+            <if test="contractPeriodMonth != null">
+                contract_period_month = #{contractPeriodMonth,jdbcType=INTEGER},
+            </if>
+            <if test="contractPeriodType != null">
+                contract_period_type = #{contractPeriodType,jdbcType=VARCHAR},
+            </if>
+            <if test="contractSubject != null">
+                contract_subject = #{contractSubject,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNumber != null">
+                contract_number = #{contractNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="contractState != null">
+                contract_state = #{contractState,jdbcType=VARCHAR},
+            </if>
+            <if test="contractRemark != null">
+                contract_remark = #{contractRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="signNumber != null">
+                sign_number = #{signNumber,jdbcType=INTEGER},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="probationPeriod != null">
+                probation_period = #{probationPeriod,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where contract_id = #{contractId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.qinjee.masterdata.model.entity.LaborContract">
     update t_labor_contract
     set archive_id = #{archiveId,jdbcType=INTEGER},
     business_unit_id = #{businessUnitId,jdbcType=INTEGER},
@@ -383,83 +406,113 @@
       probation_period = #{probationPeriod,jdbcType=TIMESTAMP},
     where contract_id = #{contractId,jdbcType=INTEGER}
   </update>
-  <select id="seleltByArcId" resultType="java.lang.Integer">
-    select archive_id
-    from  t_labor_contract
-    where
-    archive_id not in
-    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-      #{arcList}
-    </foreach>
-  </select>
+    <select id="seleltByArcId" resultType="java.lang.Integer">
+        select archive_id
+        from t_labor_contract
+        where
+        archive_id not in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{arcList}
+        </foreach>
+    </select>
+
+    <select id="listRelieveContract"
+            resultType="com.qinjee.masterdata.model.vo.staff.archiveInfo.RelieveContractInfoVo">
+        SELECT user_name userName ,
+        gender,id_number idNumber,
+        arc.hire_date hireDate ,
+        t_post.post_name postName,
+        contract.contract_begin_date contractBeginDate,
+        contract.contract_end_date contractEndDate,
+        contract_change.change_reason changeReason,
+        contract_change.change_date changeDate
+        FROM t_user_archive arc
+        LEFT JOIN t_post
+        ON t_post.post_id =arc.post_id AND t_post.is_delete =0
+        LEFT JOIN t_labor_contract contract
+        ON contract.archive_id=arc.archive_id AND ( #{now} >= contract.contract_begin_date AND contract.contract_end_date
+        >= #{now} )
+        LEFT JOIN t_labor_contract_change contract_change
+        ON contract_change.contract_id = contract.contract_id AND contract_change.change_type ='解除更改'
+        WHERE arc.archive_id IN
+        <foreach collection="archiveIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        AND arc.is_delete =0
+        ORDER BY contract.create_time DESC
+    </select>
+
+    <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_labor_contract
+        where org_id
+        in
+        <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 
+    <select id="selectConByArcId" resultType="java.lang.Integer">
+        select contract_id
+        from t_labor_contract
+        where archive_id
+        in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectContractByarcIdList" resultType="com.qinjee.masterdata.model.entity.LaborContract"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_labor_contract
+        where archive_id
+        in
+        <foreach collection="arcList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
-  <select id="selectLabByorgId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from t_labor_contract
-    where org_id
-    in <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
-    #{item}
-  </foreach>
-  </select>
-
-
-  <select id="selectConByArcId" resultType="java.lang.Integer">
-    select contract_id
-    from t_labor_contract
-    where archive_id
-    in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
-  <select id="selectContractByarcIdList" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
-    from t_labor_contract
-    where archive_id
-    in
-    <foreach collection="arcList" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
-
-  <select id="selectExportConList" resultType="hashmap" >
-    select arc.user_name,arc.id_number,arc.employee_number,con.contract_number,con.contract_period_type,
-    con.contract_sign_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
-    con.contract_subject,con.sign_number,con.contract_remark,con.probation_period,con.contract_id,con.contract_state
-    from t_labor_contract con
-    left join t_user_archive arc on arc.archive_id = con.archive_id
-    where con.contract_id in
-    <foreach collection="list" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    and arc.is_delete=0
-  </select>
-  <select id="selectByarcIdAndStatus" resultType="java.lang.Integer">
+    <select id="selectExportConList" resultType="hashmap">
+        select arc.user_name,arc.id_number,arc.employee_number,con.contract_number,con.contract_period_type,
+        con.contract_sign_date,con.contract_begin_date,con.contract_end_date,con.contract_period_month,
+        con.contract_subject,con.sign_number,con.contract_remark,con.probation_period,con.contract_id,con.contract_state
+        from t_labor_contract con
+        left join t_user_archive arc on arc.archive_id = con.archive_id
+        where con.contract_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and arc.is_delete=0
+    </select>
+    <select id="selectByarcIdAndStatus" resultType="java.lang.Integer">
     select MAX(sign_number)
     from t_labor_contract
     where archive_id=#{archiveId}
     and  contract_state=#{renewagree}
   </select>
-  <select id="selectContractByArchiveId" resultType="com.qinjee.masterdata.model.entity.LaborContract" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"/> from
-    t_labor_contract
-    where archive_id=#{archiveId}
-  </select>
-  <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
-    SELECT
-    o2.orgName,
-    o2.orgId,
-    o2.businessUnitName,
-    COUNT(DISTINCT (o2.archive_id)) staffCount,
-    COUNT(DISTINCT (o2.contract_archive_id)) signCount,
-    SUM(o2.noSignCount) noSignCount,
-    COUNT(IF(o2.delineCount > 0, 1, NULL)) delineCount
-    FROM
-    (SELECT
+    <select id="selectContractByArchiveId" resultType="com.qinjee.masterdata.model.entity.LaborContract"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        t_labor_contract
+        where archive_id=#{archiveId}
+    </select>
+    <select id="selectContractForm" resultType="com.qinjee.masterdata.model.vo.staff.ContractFormVo">
+        SELECT
+        o2.orgName,
+        o2.orgId,
+        o2.businessUnitName,
+        COUNT(DISTINCT (o2.archive_id)) staffCount,
+        COUNT(DISTINCT (o2.contract_archive_id)) signCount,
+        SUM(o2.noSignCount) noSignCount,
+        COUNT(IF(o2.delineCount > 0, 1, NULL)) delineCount
+        FROM
+        (SELECT
         o.orgName,
         o.orgId,
         o.businessUnitName,
@@ -467,7 +520,7 @@
         o.contract_archive_id,
         o.noSignCount,
         SUM(o.delineCount) delineCount
-         FROM
+        FROM
         (SELECT
         v.orgName,
         v.orgId orgId,
@@ -476,118 +529,144 @@
         v.archive_id,
         v.contract_archive_id,
         CASE
-            WHEN v.noSignCount > 0
-            THEN 1
-            ELSE 0
-            END noSignCount,
+        WHEN v.noSignCount > 0
+        THEN 1
+        ELSE 0
+        END noSignCount,
         CASE
-            WHEN
-            (SELECT
-            remember_days
-            FROM
-            t_contract_param
-            WHERE company_id = #{companyId}
-            LIMIT 1) > DATEDIFF(v.contract_end_date, CURDATE())
-            AND DATEDIFF(v.contract_end_date, CURDATE()) >= 0
-            THEN 1
-            ELSE 0
-            END delineCount
+        WHEN
+        (SELECT
+        remember_days
+        FROM
+        t_contract_param
+        WHERE company_id = #{companyId}
+        LIMIT 1) > DATEDIFF(v.contract_end_date, CURDATE())
+        AND DATEDIFF(v.contract_end_date, CURDATE()) >= 0
+        THEN 1
+        ELSE 0
+        END delineCount
         FROM
         (SELECT
-            org.org_id orgId,
-            a.archive_id,
-            contract.archive_id contract_archive_id,
-            contract.contract_id,
-            orga.org_name businessUnitName,
-            contract.contract_end_date,
-            org.org_name orgName,
-            COUNT(a.archive_id) - COUNT(contract.archive_id) noSignCount
-            FROM
-            t_user_archive a
-            LEFT JOIN t_organization org
-            ON org.org_id = a.org_id
-            LEFT JOIN t_organization orga
-            ON orga.org_id = a.business_unit_id
-            LEFT JOIN t_labor_contract contract
-            ON a.archive_id = contract.archive_id
-            AND contract.contract_state != '解除'
-            WHERE a.is_delete = 0
-            AND a.archive_status = 'service'
-            AND a.org_id IN
-            <foreach collection="list" item="orgId" open="(" close=")" separator=",">
-              #{orgId}
-            </foreach>
-            GROUP BY a.org_id,a.archive_id,contract.contract_id) v
+        org.org_id orgId,
+        a.archive_id,
+        contract.archive_id contract_archive_id,
+        contract.contract_id,
+        orga.org_name businessUnitName,
+        contract.contract_end_date,
+        org.org_name orgName,
+        COUNT(a.archive_id) - COUNT(contract.archive_id) noSignCount
+        FROM
+        t_user_archive a
+        LEFT JOIN t_organization org
+        ON org.org_id = a.org_id
+        LEFT JOIN t_organization orga
+        ON orga.org_id = a.business_unit_id
+        LEFT JOIN t_labor_contract contract
+        ON a.archive_id = contract.archive_id
+        AND contract.contract_state != '解除'
+        WHERE a.is_delete = 0
+        AND a.archive_status = 'service'
+        AND a.org_id IN
+        <foreach collection="list" item="orgId" open="(" close=")" separator=",">
+            #{orgId}
+        </foreach>
+        GROUP BY a.org_id,a.archive_id,contract.contract_id) v
         GROUP BY v.orgId,v.archive_id,v.contract_id) o
         GROUP BY o.orgId,o.archive_id) o2
-    GROUP BY o2.orgId
-  </select>
-  <select id="selectHasPowerContract" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
-    select
-    org.org_name as orgName,
-    orga.org_name as businessUnitName,
-    arch.employee_number as employeeNumber,
-    arch.id_number as idNumber,
-    arch.user_name as userName,
-    contract.archive_id as archiveId,
-    contract.contract_id as contractId,
-    contract.contract_number as contractNumber,
-    contract.contract_begin_date as contractBeginDate,
-    contract.contract_sign_date as contractSignDate,
-    contract.contract_end_date as contractEndDate,
-    contract.contract_period_type as contractPeriodType,
-    contract.contract_period_month as contractPeriodMonth,
-    contract.sign_number as signNumber,
-    contract.contract_subject as contractSubject,
-    contract.contract_state as contractState,
-    contract.contract_remark as contractRemark
-    from t_labor_contract contract
-    left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
-    left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
-    left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
-    where  contract.archive_id in
-    (select archive_id from t_user_archive where org_id in
-    <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-    )
-    <if test="status != null and status.size() > 0">
-      and contract.contract_state in
-      <foreach collection="status" item="item" open="(" separator="," close=")">
-        #{item}
-      </foreach>
-    </if>
-  </select> <select id="selectAboutToExpireContracts" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
-    select
-    org.org_name as orgName,
-    orga.org_name as businessUnitName,
-    arch.employee_number as employeeNumber,
-    arch.id_number as idNumber,
-    arch.user_name as userName,
-    contract.archive_id as archiveId,
-    contract.contract_id as contractId,
-    contract.contract_number as contractNumber,
-    contract.contract_begin_date as contractBeginDate,
-    contract.contract_sign_date as contractSignDate,
-    contract.contract_end_date as contractEndDate,
-    contract.contract_period_type as contractPeriodType,
-    contract.contract_period_month as contractPeriodMonth,
-    contract.sign_number as signNumber,
-    contract.contract_subject as contractSubject,
-    contract.contract_state as contractState,
-    contract.contract_remark as contractRemark
-    from t_labor_contract contract
-    left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
-    left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
-    left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
-    where  contract.archive_id in
-    (select archive_id from t_user_archive WHERE org_id IN
-    <foreach collection="orgIds" item="item" open="(" separator="," close=")">
-        #{item}
-    </foreach>
-    ) AND (SELECT remember_days
+        GROUP BY o2.orgId
+    </select>
+    <select id="selectHasPowerContract" resultMap="ExportConWithArc" >
+        select
+         *
+        from (
+        select
+        org.org_name,
+        orga.org_name as bussiness_unit_name ,
+        arch.employee_number,
+        arch.id_number ,
+        arch.user_name ,
+        contract.archive_id ,
+        contract.contract_id,
+        contract.contract_number ,
+        contract.contract_begin_date ,
+        contract.contract_sign_date ,
+        contract.contract_end_date ,
+        contract.contract_period_type ,
+        contract.contract_period_month ,
+        contract.sign_number ,
+        contract.contract_subject ,
+        contract.contract_state ,
+        contract.contract_remark
+        from t_labor_contract contract
+        left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
+        left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
+        left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
+        where 1=1
+        <if test="orgIdList !=null and orgIdList.size()>0">
+        and contract.archive_id in
+        (select archive_id from t_user_archive where org_id in
+        <foreach collection="orgIdList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+        </if>
+        <if test="status != null and status.size() > 0">
+            and contract.contract_state in
+            <foreach collection="status" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="mark !=0">
+            and (SELECT remember_days
+            FROM t_contract_param
+            WHERE company_id = #{companyId}
+            LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE())
+            >= 0 and contract.contract_state != '解除' and contract.contract_state !='终止'
+        </if>
+
+        )t
+        where 1=1
+        <if test="whereSql !=null">
+            ${whereSql}
+        </if>
+        group by t.contract_id
+        <if test="orderSql !=null">
+            order by
+            ${orderSql}
+        </if>
+    </select>
+    <select id="selectAboutToExpireContracts" resultType="com.qinjee.masterdata.model.vo.staff.ContractWithArchiveVo">
+        select
+        org.org_name as orgName,
+        orga.org_name as businessUnitName,
+        arch.employee_number as employeeNumber,
+        arch.id_number as idNumber,
+        arch.user_name as userName,
+        contract.archive_id as archiveId,
+        contract.contract_id as contractId,
+        contract.contract_number as contractNumber,
+        contract.contract_begin_date as contractBeginDate,
+        contract.contract_sign_date as contractSignDate,
+        contract.contract_end_date as contractEndDate,
+        contract.contract_period_type as contractPeriodType,
+        contract.contract_period_month as contractPeriodMonth,
+        contract.sign_number as signNumber,
+        contract.contract_subject as contractSubject,
+        contract.contract_state as contractState,
+        contract.contract_remark as contractRemark
+        from t_labor_contract contract
+        left join t_user_archive arch on contract.archive_id=arch.archive_id and arch.is_delete=0
+        left join t_organization org on arch.org_id=org.org_id and org.is_enable=1
+        left join t_organization orga on orga.org_id=arch.business_unit_id and orga.is_enable=1
+        where contract.archive_id in
+        (select archive_id from t_user_archive WHERE org_id IN
+        <foreach collection="orgIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ) AND (SELECT remember_days
         FROM t_contract_param
         WHERE company_id = #{companyId}
-        LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE()) >= 0 and contract.contract_state != '解除'
-</select>
+        LIMIT 1) > DATEDIFF( contract.contract_end_date, CURDATE()) and DATEDIFF( contract.contract_end_date, CURDATE())
+        >= 0 and contract.contract_state != '解除' and contract.contract_state !='终止'
+    </select>
 </mapper>

@@ -2,19 +2,28 @@ package com.qinjee.masterdata.service.staff.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.dao.organation.OrganizationDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.ContractRenewalIntentionDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractChangeDao;
 import com.qinjee.masterdata.dao.staffdao.contractdao.LaborContractDao;
 import com.qinjee.masterdata.dao.staffdao.userarchivedao.UserArchiveDao;
+import com.qinjee.masterdata.dao.sys.SysDictDao;
 import com.qinjee.masterdata.model.entity.ContractRenewalIntention;
 import com.qinjee.masterdata.model.entity.LaborContract;
 import com.qinjee.masterdata.model.entity.LaborContractChange;
+import com.qinjee.masterdata.model.entity.SysDict;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RelieveContractInfoVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.RenewalContractInfoVo;
 import com.qinjee.masterdata.service.employeenumberrule.IEmployeeNumberRuleService;
 import com.qinjee.masterdata.service.staff.IStaffContractService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
+import com.qinjee.masterdata.utils.export.TransCustomFieldMapHelper;
 import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +35,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -59,19 +69,22 @@ public class StaffContractServiceImpl implements IStaffContractService {
     private IEmployeeNumberRuleService employeeNumberRuleService;
     @Autowired
     private OrganizationDao organizationDao;
+    @Autowired
+    private SysDictDao sysDictDao;
 
     /**
      * 展示未签合同的人员信息
-     *
-     * @param orgId
-     * @param pageSize
      * @return
      */
     @Override
-    public PageResult < UserArchiveVo > selectNoLaborContract(List < Integer > orgId, Integer currentPage, Integer pageSize,Integer companyId) {
-        PageHelper.startPage ( currentPage, pageSize );
+    public PageResult < UserArchiveVo > selectNoLaborContract(RequestUserarchiveVo requestUserarchiveVo,Integer companyId) {
+        List<SysDict> sysDicts = sysDictDao.searchSomeSysDictList();
+        PageHelper.startPage ( requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
         //根据合同id找到没有合同的档案
-        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( orgId,companyId );
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"t.");
+        List < UserArchiveVo > arcList = userArchiveDao.selectArcByNotCon ( requestUserarchiveVo.getOrgId(),companyId ,whereSql,orderSql);
+        new TransCustomFieldMapHelper<UserArchiveVo>().transBatchToDict(arcList,sysDicts);
         return new PageResult <> ( arcList );
     }
 
@@ -79,11 +92,13 @@ public class StaffContractServiceImpl implements IStaffContractService {
     /**
      * 展示全量未签合同人员
      *
-     * @param orgId
+     * @param exportArcParamVo
      * @return
      */
-    public List < Integer > selectNoLaborContractAll(List < Integer > orgId,Integer companyId) {
-        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( orgId,companyId );
+    public List < Integer > selectNoLaborContractAll(ExportArcParamVo exportArcParamVo,Integer companyId) {
+        String whereSql = DealHeadParamUtil.getWhereSql(exportArcParamVo.getSearchList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportArcParamVo.getSearchList(), "t.");
+        List < UserArchiveVo > userArchiveVos = userArchiveDao.selectArcByNotCon ( exportArcParamVo.getOrgIdList(),companyId,whereSql,orderSql );
         List < Integer > integers = new ArrayList <> ();
         for (UserArchiveVo userArchiveVo : userArchiveVos) {
             integers.add ( userArchiveVo.getArchiveId () );
@@ -116,21 +131,29 @@ public class StaffContractServiceImpl implements IStaffContractService {
      */
 
     @Override
-    public PageResult < ContractWithArchiveVo > selectLaborContractserUser(List < Integer > orgIdList, Integer currentPage,
-                                                                   Integer pageSize, List < String > status,UserSession userSession) {
-        PageHelper.startPage (currentPage,pageSize );
-        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( orgIdList, status ,userSession.getCompanyId());
+    public PageResult < ContractWithArchiveVo > selectLaborContractserUser(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
+        PageHelper.startPage (requestUserarchiveVo.getCurrentPage(),requestUserarchiveVo.getPageSize() );
+        String whereSql = DealHeadParamUtil.getWhereSql(requestUserarchiveVo.getList(), "t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(requestUserarchiveVo.getList(),"t.");
+        List < ContractWithArchiveVo > list = getContractWithArchiveVos ( requestUserarchiveVo.getOrgId(), requestUserarchiveVo.getStatus() ,userSession.getCompanyId(),
+                whereSql,orderSql);
         return new PageResult <> ( list );
     }
 
-    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId) {
-        String contain=null;
-        if(status.contains("即将到期")){
-          contain="contain";
+    private List < ContractWithArchiveVo > getContractWithArchiveVos(List < Integer > orgIdList, List < String > status,Integer companyId,String
+                                                                     whereSql,String orderSql) {
+        short mark=0;
+        if(CollectionUtils.isNotEmpty ( status )&& status.contains ( "即将到期" )){
+            mark=1;
+            status.clear ();
         }
-        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,contain,companyId );
+
+        List < ContractWithArchiveVo > list=laborContractDao.selectHasPowerContract ( orgIdList,status,companyId,whereSql,orderSql,mark );
         for (ContractWithArchiveVo contractWithArchiveVo : list) {
-              if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ()) ){
+              if(ENDEMARK.equals ( contractWithArchiveVo.getContractState ()) || LOOSEMARK.equals ( contractWithArchiveVo.getContractState ())
+              ||contractWithArchiveVo.getContractEndDate()==null || contractWithArchiveVo.getContractBeginDate()==null || contractWithArchiveVo.getContractBeginDate().after(new Date()) ||
+                      contractWithArchiveVo.getContractEndDate().before(new Date())
+              ){
                   contractWithArchiveVo.setIsEnable ( ( short ) 0 );
               }else {
                   contractWithArchiveVo.setIsEnable ( ( short ) 1 );
@@ -141,12 +164,12 @@ public class StaffContractServiceImpl implements IStaffContractService {
 
     /**
      * 展示全量已签合同人员id
-     *
-     * @param orgIdList
-     * @param status
+     * @param exportReadyConVo
      */
-    public List < ContractWithArchiveVo > selectLaborContractserUserAll(List < Integer > orgIdList, List < String > status,Integer companyId) {
-        return getContractWithArchiveVos ( orgIdList, status,companyId );
+    public List < ContractWithArchiveVo > selectLaborContractserUserAll(ExportReadyConVo exportReadyConVo,Integer companyId) {
+        String whereSql = DealHeadParamUtil.getWhereSql(exportReadyConVo.getSearchList(),"t.");
+        String orderSql = DealHeadParamUtil.getOrderSql(exportReadyConVo.getSearchList(), "t.");
+        return getContractWithArchiveVos ( exportReadyConVo.getOrgIdList(), exportReadyConVo.getStatus(),companyId,whereSql,orderSql);
     }
 
     /**
@@ -209,8 +232,21 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContract(ContractVo contractVo, UserSession userSession) {
-        //新增续签
-        insertContinue ( contractVo, userSession, contractVo.getList ().get ( 0 ),contractVo.getLaborContractVo().getContractNumber() );
+        List<LaborContract> laborContracts = laborContractDao.selectContractByArchiveId(contractVo.getList().get(0));
+        List<LaborContract> collect = laborContracts.stream().filter(a ->a.getContractBeginDate()!=null && a.getContractBeginDate().before(new Date()) &&
+                a.getContractEndDate()!=null && a.getContractEndDate().after(new Date())).collect(Collectors.toList());
+        //获得开始与终止日期
+        //判定当前合同起止时间是否合法
+        if(CollectionUtils.isNotEmpty(collect)) {
+            if (!contractVo.getLaborContractVo().getContractBeginDate().before(contractVo.getLaborContractVo().getContractEndDate())
+                    || !contractVo.getLaborContractVo().getContractBeginDate().after(collect.get(0).getContractEndDate())) {
+                ExceptionCast.cast(CommonCode.DATE_IS_WRONG);
+            }
+            //新增续签
+            insertContinue(contractVo, userSession, contractVo.getList().get(0), contractVo.getLaborContractVo().getContractNumber());
+        }else{
+            ExceptionCast.cast(CommonCode.NO_POWER_CONTRACT);
+        }
         //增加更改记录（经过确认续签不用更改记录）
 //         change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, contractVo.getList ().get ( 0 ), userSession.getArchiveId());
     }
@@ -230,22 +266,33 @@ public class StaffContractServiceImpl implements IStaffContractService {
     @Transactional(rollbackFor = Exception.class)
     public void insertReNewLaborContractBatch(ContractVo contractVo, UserSession userSession) throws Exception {
         for (int i = 0; i < contractVo.getList().size(); i++) {
-    //新增续签
+            //找到当前续签合同的上一份有效合同
+            List<LaborContract> laborContracts = laborContractDao.selectContractByArchiveId(contractVo.getList().get(i));
+            List<LaborContract> collect = laborContracts.stream().filter(a -> a.getContractBeginDate().before(new Date()) && a.getContractEndDate().after(new Date())).collect(Collectors.toList());
+            //获得开始与终止日期
+            //判定当前合同起止时间是否合法
+            if(!contractVo.getLaborContractVo().getContractBeginDate().before(contractVo.getLaborContractVo().getContractEndDate())
+            || !contractVo.getLaborContractVo().getContractBeginDate().after(collect.get(0).getContractEndDate())){
+                ExceptionCast.cast(CommonCode.DATE_IS_WRONG);
+            }
+           //新增续签
+            //新增续签
             String empNumber = employeeNumberRuleService.createConNumber(userSession.getCompanyId());
             insertContinue ( contractVo, userSession, contractVo.getList().get(i),empNumber );
+            insertContinue(contractVo, userSession, contractVo.getList().get(i), empNumber);
             //增加更改记录
 //            change(contractVo.getLaborContractChangeVo (), RENEWCHANGE, integer, userSession.getArchiveId());
         }
     }
 
-    private void insertContinue(ContractVo contractVo, UserSession userSession, Integer id,String contractNumber) {
-        LaborContract laborContract = new LaborContract ();
+    private void insertContinue(ContractVo contractVo, UserSession userSession, Integer id, String contractNumber) {
+        LaborContract laborContract = new LaborContract();
         //设置其余字段
-        BeanUtils.copyProperties ( contractVo.getLaborContractVo (), laborContract );
+        BeanUtils.copyProperties(contractVo.getLaborContractVo(), laborContract);
         laborContract.setContractNumber(contractNumber);
-        laborContract.setArchiveId ( id );
-        laborContract.setOperatorId ( userSession.getArchiveId () );
-        laborContract.setContractState ( RENEWMARK );
+        laborContract.setArchiveId(id);
+        laborContract.setOperatorId(userSession.getArchiveId());
+        laborContract.setContractState(RENEWMARK);
         //新增续签次数
         laborContract.setSignNumber ( getSignNumber ( id  ) +1);
         laborContractDao.insertSelective ( laborContract );
@@ -308,6 +355,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
             BeanUtils.copyProperties ( laborContract, cri );
             cri.setCompanyId ( userSession.getCompanyId () );
             cri.setOperatorId ( userSession.getArchiveId () );
+            cri.setCreateTime(new Date());
+            cri.setCreateTime ( new Date (  ) );
             cri.setIntentionStatus ( NOTCONFIRM );
             contractRenewalIntentions.add ( cri );
         }
@@ -319,6 +368,39 @@ public class StaffContractServiceImpl implements IStaffContractService {
         return contractRenewalIntentionDao.selectByArchiveId ( id );
 
     }
+    @Override
+    public List<RenewIntionAboutUser> getRenewalContract(Integer archiveId) {
+        return contractRenewalIntentionDao.getRenewalContract ( archiveId);
+    }
+
+    @Override
+    public void insertMessqge(InsertRenewContractMessage insertRenewContractMessage) {
+        ContractRenewalIntention contractRenewalIntention=new ContractRenewalIntention();
+        contractRenewalIntention.setRenewalIntentionId(insertRenewContractMessage.getId());
+        contractRenewalIntention.setIsAgree ( insertRenewContractMessage.getIsAgree () );
+        contractRenewalIntention.setRenewalOpinion(insertRenewContractMessage.getMessage());
+        contractRenewalIntention.setIntentionStatus ( CONFIRM );
+        contractRenewalIntention.setUpdateTime(new Date());
+        contractRenewalIntentionDao.updateByPrimaryKeySelective(contractRenewalIntention);
+    }
+
+    @Override
+    public List<RenewalContractInfoVo> listContractRenewalInfo(List<Integer> archiveIds) {
+        //TODO 未完成
+        return contractRenewalIntentionDao.listContractRenewalInfo(archiveIds,new Date());
+    }
+
+    @Override
+    public List<RelieveContractInfoVo> listRelieveContract(List<Integer> archiveIds) {
+        //TODO 未完成
+        List<RelieveContractInfoVo> relieveContractInfoVos = laborContractDao.listRelieveContract(archiveIds,new Date());
+        relieveContractInfoVos.stream().forEach(vo -> {
+            String reason = sysDictDao.selectByCode(vo.getChangeReason());
+            vo.setChangeReason(reason);
+        });
+
+        return relieveContractInfoVos;
+    }
 
     @Override
     public void agreeRenew(Integer xuqianId) {
@@ -329,6 +411,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         contractRenewalIntention.setRenewalOpinion ( RENEWAGREE );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
         contractRenewalIntention.setIsAgree ( ( short ) 1 );
+        contractRenewalIntention.setUpdateTime(new Date());
         //TODO 还剩续签意见还未设置
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
     }
@@ -341,6 +424,7 @@ public class StaffContractServiceImpl implements IStaffContractService {
         //更改续签意向表
         contractRenewalIntention.setRenewalOpinion ( RENEWREJECT );
         contractRenewalIntention.setIntentionStatus ( CONFIRM );
+        contractRenewalIntention.setUpdateTime ( new Date (  ) );
         contractRenewalIntention.setIsAgree ( ( short ) 0 );
         contractRenewalIntentionDao.updateByPrimaryKey ( contractRenewalIntention );
         //前端跳转至解除合同页面
@@ -352,9 +436,11 @@ public class StaffContractServiceImpl implements IStaffContractService {
     }
 
     @Override
-    public PageResult < ContractRenewalIntention > selectContractRenewalIntentionByOrg(List < Integer > orgId, Integer pageSize, Integer currentPage) {
-        PageHelper.startPage ( currentPage, pageSize );
-        List < ContractRenewalIntention > list = contractRenewalIntentionDao.selectByorgId ( orgId );
+    public PageResult < RenewIntentionVo > selectContractRenewalIntentionByOrg(RequestUserarchiveVo requestUserarchiveVo,UserSession userSession) {
+        PageHelper.startPage ( requestUserarchiveVo.getCurrentPage (), requestUserarchiveVo.getPageSize () );
+        String whereSql = DealHeadParamUtil.getWhereSql ( requestUserarchiveVo.getList (), "t." );
+        String orderSql = DealHeadParamUtil.getOrderSql ( requestUserarchiveVo.getList (), "t." );
+        List < RenewIntentionVo > list = contractRenewalIntentionDao.selectByorgId ( requestUserarchiveVo.getOrgId (),whereSql,orderSql,userSession.getArchiveId (),userSession.getCompanyId () );
         return new PageResult <> ( list );
     }
 
@@ -365,6 +451,8 @@ public class StaffContractServiceImpl implements IStaffContractService {
         List < ContractWithArchiveVo > list =  laborContractDao.selectAboutToExpireContracts(orgIds,companyId);
         return new PageResult <> ( list );
     }
+
+
 
     private void mark(LaborContractVo laborContractVo, Integer id, Integer archiveId, String state,String contractNumber)  {
         //新增合同

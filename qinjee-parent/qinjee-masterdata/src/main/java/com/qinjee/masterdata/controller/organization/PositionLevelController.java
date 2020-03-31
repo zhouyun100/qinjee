@@ -1,23 +1,21 @@
 package com.qinjee.masterdata.controller.organization;
 
+import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.PositionLevel;
 import com.qinjee.masterdata.model.vo.organization.PositionLevelVo;
 import com.qinjee.masterdata.service.organation.PositionLevelService;
 import com.qinjee.model.request.PageVo;
+import com.qinjee.model.request.UserSession;
+import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 彭洪思
@@ -30,45 +28,99 @@ import java.util.Map;
 @Api(tags = "【机构管理】职级接口")
 public class PositionLevelController extends BaseController {
 
-  @Autowired
-  private PositionLevelService positionLevelService;
+    @Autowired
+    private PositionLevelService positionLevelService;
 
-  @ApiOperation(value = "按职级 展示职位体系", notes = "彭洪思")
-  @GetMapping("/showByPositionLevel")
-  public ResponseResult<Map<String, Object>> showByPositionLevel() {
-    return positionLevelService.showByPositionLevel(getUserSession());
-  }
+    private Boolean checkParam(Object... params) {
+        for (Object param : params) {
+            if (param instanceof UserSession) {
+                if (null == param || "".equals(param)) {
+                    ExceptionCast.cast(CommonCode.INVALID_SESSION);
+                    return false;
+                }
+            }
+            if (null == param || "".equals(param)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-  @ApiOperation(value = "按职位 展示职位体系", notes = "彭洪思")
-  @GetMapping("/showByPosition")
-  public ResponseResult<List<PositionLevel>> showByPosition() {
-    return positionLevelService.showByPosition(getUserSession());
-  }
+    @GetMapping("/get{id}")
+    @ApiOperation(value = "根据id查询职级", notes = "彭洪思")
+    public ResponseResult<PositionLevelVo> get(@PathVariable("id") Integer id) {
+        if (!checkParam( id)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        PositionLevelVo positionLevelVo = positionLevelService.getPositionLevelById(id);
+        return new ResponseResult<>(positionLevelVo);
+    }
+    @GetMapping("/list")
+    @ApiOperation(value = "分页查询职级列表", notes = "彭洪思")
+    public ResponseResult<PageResult<PositionLevelVo>> list( PageVo pageVo) {
+        if (!checkParam(getUserSession(), pageVo)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        PageResult<PositionLevelVo> positionLevelList = positionLevelService.listPositionLevel(pageVo, getUserSession());
+        return new ResponseResult<>(positionLevelList);
+    }
+    @GetMapping("/listByPositionGradeId/{id}")
+    @ApiOperation(value = "根据职等id查询职级列表", notes = "彭洪思")
+    public ResponseResult<List<PositionLevelVo>> listByPositionGradeId(@PathVariable("id") Integer id) {
+        if (!checkParam( id)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        List<PositionLevelVo> positionLevelList = positionLevelService.listByPositionGradeId(id);
+        return new ResponseResult<>(positionLevelList);
+    }
 
-  @GetMapping("/getPositionLevelList")
-  @ApiOperation(value = "分页查询职级列表", notes = "彭洪思")
-  public ResponseResult<PageResult<PositionLevel>> getPositionLevelList(PageVo pageVo) {
-    return positionLevelService.getPositionLevelList(pageVo);
-  }
+    @PostMapping("/add")
+    @ApiOperation(value = "新增职级", notes = "彭洪思")
+    public ResponseResult add(@RequestBody PositionLevel positionLevel) {
+        if (!checkParam(getUserSession(), positionLevel)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        int i = positionLevelService.addPositionLevel(positionLevel, getUserSession());
+        if (i > 0) {
+            return new ResponseResult(i);
+        }
+        return new ResponseResult(CommonCode.SERVER_ERROR);
+    }
 
-  @PostMapping("/addPositionLevel")
-  @ApiOperation(value = "新增职级", notes = "彭洪思")
-  public ResponseResult addPositionLevel(PositionLevelVo positionLevelVo) {
-    return positionLevelService.addPositionLevel(positionLevelVo, getUserSession());
-  }
+    @PostMapping("/edit")
+    @ApiOperation(value = "编辑职级", notes = "彭洪思")
+    public ResponseResult edit(@RequestBody PositionLevel positionLevel) {
+        if (!checkParam(getUserSession(), positionLevel)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        int i = positionLevelService.editPositionLevel(getUserSession(), positionLevel);
+        if (i > 0) {
+            return new ResponseResult(i);
+        }
+        return new ResponseResult(CommonCode.SERVER_ERROR);
+    }
 
-  @PostMapping("/editPositionLevel")
-  @ApiOperation(value = "编辑职级", notes = "彭洪思")
-  public ResponseResult editPositionLevel(PositionLevelVo positionLevelVo) {
-    return positionLevelService.editPositionLevel(getUserSession(), positionLevelVo);
-  }
+    @PostMapping("/delete")
+    @ApiOperation(value = "删除职级", notes = "彭洪思")
+    public ResponseResult delete(@RequestBody List<Integer> positionLevelIds) {
+        if (!checkParam(getUserSession(), positionLevelIds)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        int i = positionLevelService.batchDeletePositionLevel(positionLevelIds, getUserSession());
+        if (i > 0) {
+            return new ResponseResult(i);
+        }
+        return new ResponseResult(CommonCode.SERVER_ERROR);
+    }
 
-  @GetMapping("/deletePositionLevel")
-  @ApiOperation(value = "删除职级", notes = "彭洪思")
-  @ApiImplicitParam(name = "positionLevelIds", value = "职级id", paramType = "query", dataType = "int", allowMultiple = true, required = true)
-  public ResponseResult deletePositionLevel(List<Integer> positionLevelIds) {
-    return positionLevelService.deletePositionLevel(positionLevelIds, getUserSession());
-  }
-
+    @PostMapping("/sort")
+    @ApiOperation(value = "职级排序", notes = "彭洪思")
+    public ResponseResult sort(@RequestBody List<Integer> positionLevelIds) {
+        if (!checkParam(getUserSession(), positionLevelIds)) {
+            return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
+        }
+        int i = positionLevelService.sortPositionLevel(positionLevelIds, getUserSession());
+        return new ResponseResult(i);
+    }
 
 }

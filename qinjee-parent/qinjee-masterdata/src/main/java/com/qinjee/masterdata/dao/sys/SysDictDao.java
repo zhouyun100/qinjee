@@ -11,10 +11,12 @@
 package com.qinjee.masterdata.dao.sys;
 
 import com.qinjee.masterdata.model.entity.SysDict;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 系统字典表
@@ -42,4 +44,9 @@ public interface SysDictDao {
     SysDict searchSysDictByTypeAndCode(SysDict sysDict);
 
     String searchCodeByTypeAndValue(@Param("dictType") String dictType, @Param("dictValue") String dictValue);
+
+    List<SysDict> selectMoreDict(@Param("dictType") String dictType);
+
+    String selectByCode(@Param("code") String code);
 }
+

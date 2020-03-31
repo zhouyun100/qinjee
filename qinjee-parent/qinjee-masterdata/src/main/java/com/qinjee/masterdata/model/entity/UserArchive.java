@@ -301,10 +301,17 @@ public class UserArchive implements Serializable {
      * 档案状态(默认在职)
      */
     private String  archiveStatus;
-    /**
-     * 用户头像
-     */
+
     private String  headImgUrl;
+    /**
+     * 职级id
+     */
+    private Integer positionLevelId;
+    /**
+     * 职等id
+     */
+    private Integer positionGradeId;
+
     private static final long serialVersionUID = 1L;
 
 }

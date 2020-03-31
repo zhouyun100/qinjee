@@ -86,23 +86,20 @@ public class StaffStandingBookController extends BaseController {
 
     /**
      * 展示黑名单表
-     * //TODO 需要session
      */
-    @RequestMapping(value = "/selectBalckList", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectBalckList", method = RequestMethod.POST)
     @ApiOperation(value = "展示黑名单表", notes = "hkt")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "currentPage", value = "当前页", paramType = "query", required = true),
 //            @ApiImplicitParam(name = "pagesize", value = "页大小", paramType = "form", required = true)
 //    })
-    public ResponseResult<List<Blacklist>> selectBalckList() {
-        Boolean b = checkParam(getUserSession ());
-        if (b) {
-                List < Blacklist > blacklistList = staffStandingBookService.selectBalckList ( getUserSession () );
-                    return new ResponseResult<>(blacklistList, CommonCode.SUCCESS);
+    public ResponseResult<List<Blacklist>> selectBalckList(@RequestBody List<FieldValueForSearch> list) {
 
+                List < Blacklist > blacklistList = staffStandingBookService.selectBalckList ( getUserSession (),list );
+                    return new ResponseResult<>(blacklistList, CommonCode.SUCCESS);
         }
-        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
-    }
+
+
 
 
     /**

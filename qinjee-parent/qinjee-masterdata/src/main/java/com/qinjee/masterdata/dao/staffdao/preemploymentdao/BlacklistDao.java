@@ -31,9 +31,12 @@ public interface BlacklistDao {
     List<Blacklist> selectByPhone(@Param("phoneList") List<String> phoneList);
 
     @MapKey("blacklist_id")
-    Map< Integer, Map< String, Object>> selectExportBlackList(@Param("list") List< Integer> list, @Param("companyId") Integer companyId);
+    Map< Integer, Map< String, Object>> selectExportBlackList(@Param("list") List< Integer> list, @Param("companyId") Integer companyId,
+                                                              @Param("wheresql") String wheresql, @Param("orderSql") String orderSql);
 
     void insertBatch(@Param("blacklistList") List< Blacklist> blacklistList);
 
     List<Blacklist> selectByIdNumberAndPhone(@Param("idNumber") String idNumber, @Param("phone") String phone, @Param("companyId") Integer companyId);
+
+    List<Blacklist> selectByPageAndHead(@Param("companyId") Integer companyId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 }

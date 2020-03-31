@@ -17,7 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 周赟
@@ -54,5 +56,14 @@ public class SysDictServiceImpl implements SysDictService {
     @Override
     public String searchCodeByTypeAndValue(String dictType, String dictValue) {
         return  sysDictDao.searchCodeByTypeAndValue(dictType,dictValue);
+    }
+
+    @Override
+    public Map<String, List<SysDict>> selectMoreDict(List<String> dictCodeList) {
+        Map<String, List<SysDict>> map = new HashMap<>();
+        for (String s : dictCodeList) {
+            map.put(s,sysDictDao.selectMoreDict(s));
+        }
+        return map;
     }
 }

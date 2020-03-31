@@ -2,11 +2,9 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.dao.organation.PostDao;
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
-import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
-import com.qinjee.masterdata.service.organation.PositionGroupService;
+import com.qinjee.masterdata.model.vo.organization.bo.PositionPageBO;
 import com.qinjee.masterdata.service.organation.PositionService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
@@ -17,15 +15,17 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author 彭洪思
- * @version 1.0.0
- * @Description TODO
+ * @version 1.0.1
+ * @Description
  * @createTime 2020年02月28日 10:23:00
  */
 @Api(tags = "【机构管理】职位接口")
@@ -55,28 +55,14 @@ public class PositionController extends BaseController {
 
     @ApiOperation(value = "ok，分页查询职位信息", notes = "彭洪思")
     @PostMapping("/getPositionPage")
-    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageVo positionPageVo) {
-        if (checkParam(positionPageVo, getUserSession())) {
+    public ResponseResult<PageResult<Position>> getPositionPage(@RequestBody PositionPageBO positionPageBO) {
+        if (checkParam(positionPageBO, getUserSession())) {
             long start = System.currentTimeMillis();
-            ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(positionPageVo);
+            ResponseResult<PageResult<Position>> positionPage = positionService.getPositionPage(positionPageBO);
             logger.info("分页查询职位信息耗时:" + (System.currentTimeMillis() - start));
             return positionPage;
         }
         return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
-    }
-
-    @ApiOperation(value = "ok，查询所有职位", notes = "彭洪思")
-    @GetMapping("/getAllPositions")
-    public ResponseResult<List<Position>> getAllPositions() {
-        if (checkParam(getUserSession())) {
-            long start = System.currentTimeMillis();
-            ResponseResult<List<Position>> allPositions = positionService.getAllPositions(getUserSession());
-            logger.info("查询所有职位耗时:" + (System.currentTimeMillis() - start));
-            return allPositions;
-        }
-        return new ResponseResult<>(null, CommonCode.INVALID_PARAM);
-
     }
 
     @ApiOperation(value = "ok，新增职位", notes = "ok")
@@ -135,8 +121,8 @@ public class PositionController extends BaseController {
 
 
     @PostMapping("/sortPosition")
-    @ApiOperation(value = "ok，职位排序，只能同一级别下机构排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
-    public ResponseResult sortOrganizationInOrg(@RequestBody LinkedList<Integer> positionIds) {
+    @ApiOperation(value = "ok，职位排序，只能同一级别下排序（需要将该级下所有职位的id按顺序传参）", notes = "ok")
+    public ResponseResult sortOrganizationInOrg(@RequestBody List<Integer> positionIds) {
         //参数校验
         if (checkParam(positionIds)) {
             long start = System.currentTimeMillis();

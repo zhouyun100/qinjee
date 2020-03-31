@@ -4,6 +4,9 @@ import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
 import com.qinjee.masterdata.model.entity.QueryScheme;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.ArchiveRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.DimissionCertificateVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.masterdata.service.staff.impl.StaffArchiveServiceImpl;
@@ -16,7 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -38,6 +40,35 @@ public class StaffArchiveController extends BaseController {
 
     @Autowired
     private StaffArchiveServiceImpl archiveService;
+
+
+    /**
+     * 员工登记表打印的数据查询接口
+     */
+    @PostMapping(value = "/getArchiveRegisterInfo")
+    @ApiOperation(value = "员工登记表打印的数据查询接口", notes = "phs")
+    public ResponseResult<List<PreRegistVo>> getEmploymentRegisterInfo(@RequestBody List<Integer> archiveIds ) throws Exception {
+        Boolean b = checkParam(archiveIds,getUserSession());
+        if(b){
+            List<ArchiveRegistVo> preRegistList= staffArchiveService.getArchiveRegisterInfo(archiveIds,getUserSession());
+            return new ResponseResult(preRegistList);
+        }
+        return  failResponseResult("参数错误");
+    }
+    /**
+     * 员工登记表打印的数据查询接口
+     */
+    @PostMapping(value = "/listDimissionCertificate")
+    @ApiOperation(value = "员工离职证明的数据查询接口", notes = "phs")
+    public ResponseResult<List<DimissionCertificateVo>> listDimissionCertificate(@RequestBody List<Integer> archiveIds )  {
+        Boolean b = checkParam(archiveIds,getUserSession());
+        if(b){
+            List<DimissionCertificateVo> dimissionCertificateList= staffArchiveService.listDimissionCertificate(archiveIds,getUserSession());
+            return new ResponseResult(dimissionCertificateList);
+        }
+        return  failResponseResult("参数错误");
+    }
+
 
     /**
      * 新增档案表
@@ -71,14 +102,12 @@ public class StaffArchiveController extends BaseController {
     /**
      *展示部门下已经删除的档案
      */
-    @RequestMapping(value = "/selectArchiveDelete", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectArchiveDelete", method = RequestMethod.POST)
     @ApiOperation(value = "展示部门下已经删除的档案", notes = "hkt")
-    public ResponseResult<PageResult<UserArchiveVo>> selectArchiveDelete(@RequestParam List<Integer> orgId,
-                                                                         @RequestParam Integer pageSize,
-                                                                         @RequestParam Integer currentPage) {
-        Boolean b = checkParam(orgId,pageSize,currentPage);
+    public ResponseResult<PageResult<UserArchiveVo>> selectArchiveDelete(@RequestBody RequestUserarchiveVo requestUserarchiveVo) {
+        Boolean b = checkParam(requestUserarchiveVo);
         if(b){
-                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveDelete ( orgId,pageSize,currentPage );
+                PageResult < UserArchiveVo > userArchiveVoPageResult = staffArchiveService.selectArchiveDelete (requestUserarchiveVo);
                     return new ResponseResult <> ( userArchiveVoPageResult, CommonCode.SUCCESS );
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
@@ -204,8 +233,7 @@ public class StaffArchiveController extends BaseController {
         if(b){
             UserArchiveVoAndHeader userArchiveVoAndHeader=new UserArchiveVoAndHeader ();
             PageResult < UserArchiveVo > userArchiveVoPageResult;
-            userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo.getOrgId (),
-                       requestUserarchiveVo.getPageSize (), requestUserarchiveVo.getCurrentPage () );
+            userArchiveVoPageResult = staffArchiveService.selectArchivebatch ( getUserSession (), requestUserarchiveVo );
                 userArchiveVoAndHeader.setPageResult ( userArchiveVoPageResult );
                 userArchiveVoAndHeader.setHeads ( archiveService.setDefaultHead ( getUserSession (), requestUserarchiveVo.getQuerySchemaId() ) );
                 return new ResponseResult<>(userArchiveVoAndHeader, CommonCode.SUCCESS);
@@ -479,8 +507,45 @@ public class StaffArchiveController extends BaseController {
         }
         return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
     }
-
-
+    /**
+     * 自定义表头获取动态表头（档案需要传参）
+     */
+    @RequestMapping(value = "/selectFieldListByqueryId", method = RequestMethod.GET)
+    @ApiOperation(value = "自定义表头获取动态表头（档案需要传参）", notes = "hkt")
+    public ResponseResult<List<CustomFieldForHead>> selectFieldListByqueryId(Integer queryschemaId) {
+        Boolean b = checkParam(getUserSession ());
+        if(b){
+            List<CustomFieldForHead> list=staffArchiveService. selectFieldListByqueryId(queryschemaId,getUserSession ());
+            return new ResponseResult <> ( list,CommonCode.SUCCESS );
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 自定义表头获取动态表头（预入职不需传参）
+     */
+    @RequestMapping(value = "/selectFieldListForPre", method = RequestMethod.GET)
+    @ApiOperation(value = "自定义表头获取动态表头（预入职不需传参）", notes = "hkt")
+    public ResponseResult<List<CustomFieldForHead>> selectFieldListForPre() {
+        Boolean b = checkParam(getUserSession ());
+        if(b){
+            List<CustomFieldForHead> list=staffArchiveService. selectFieldListForPre(getUserSession ());
+            return new ResponseResult <> ( list,CommonCode.SUCCESS );
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
+    /**
+     * 自定义表头查询数据（档案）
+     */
+    @RequestMapping(value = "/selectArchiveByHead", method = RequestMethod.POST)
+    @ApiOperation(value = "自定义表头查询数据（档案）", notes = "hkt")
+    public ResponseResult<PageResult<UserArchiveVo>> selectArchiveByHead(@RequestBody List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage) {
+        Boolean b = checkParam(getUserSession (),fieldValueForSearch,pageSize,currentPage);
+        if(b){
+            PageResult<UserArchiveVo> pageResult=staffArchiveService. selectArchiveByHead(fieldValueForSearch,pageSize,currentPage,getUserSession ());
+            return new ResponseResult <> ( pageResult,CommonCode.SUCCESS );
+        }
+        return new ResponseResult<>(null,CommonCode.INVALID_PARAM);
+    }
 
     private Boolean checkParam(Object... params) {
         for (Object param : params) {

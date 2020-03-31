@@ -8,6 +8,7 @@ import com.qinjee.masterdata.model.Thread.SendSmsAndMail;
 import com.qinjee.masterdata.model.entity.PreEmployment;
 import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.custom.EntryRegistrationTableVO;
+import com.qinjee.masterdata.model.vo.staff.AboutMobileMessage;
 import com.qinjee.masterdata.model.vo.staff.PreRegistVo;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTableListWithValueVo;
 import com.qinjee.masterdata.model.vo.staff.entryregistration.EntryTemplateValueVo;
@@ -104,6 +105,25 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void commitHr(Integer preId, Integer templateId, Integer companyId) {
+        //判断preId是否存在
+        PreEmployment preEmployment1 = preEmploymentDao.selectByPrimaryKey(preId);
+        if(preEmployment1!=null){
+            //将状态更改为审核中，将预入职模板id更新
+            preEmployment1.setEmploymentRegister("审核中");
+            preEmployment1.setTemplateId(templateId);
+            preEmploymentDao.updateByPrimaryKey(preEmployment1);
+        }else {
+            PreEmployment preEmployment = new PreEmployment();
+            preEmployment.setEmploymentRegister("审核中");
+            preEmployment.setTemplateId(templateId);
+            preEmployment.setEmploymentId(preId);
+            preEmploymentDao.insert(preEmployment);
+        }
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -125,12 +145,12 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
 
 
     @Override
-    public List < EntryTableListWithValueVo > handlerCustomTableGroupFieldList(Integer companyId, Integer preId, Integer templateId)
+    public AboutMobileMessage handlerCustomTableGroupFieldList(Integer companyId, Integer preId, Integer templateId)
             throws IllegalAccessException {
+        AboutMobileMessage aboutMobileMessage=new AboutMobileMessage();
         Map < Integer, String > map = new HashMap <> ();
         List < Integer > integers = new ArrayList <> ();
         List < EntryTableListWithValueVo > entryTableListWithValueVos = new ArrayList <> ();
-
         //根据模板id获取模板数据
         List < EntryRegistrationTableVO > entryRegistrationTableVOList =
                 templateCustomTableFieldService.searchCustomTableListByTemplateId ( templateId );
@@ -179,7 +199,15 @@ public class PreTemplateServiceImpl implements IPreTemplateService {
                 }
             }
         }
-        return entryTableListWithValueVos;
+        //通过preId与companyId查询判断是否已经提交hr
+        Boolean isCommit=false;
+        PreEmployment preEmployment=preEmploymentDao.selectemploymentRegisterByPreId(preId,companyId);
+        if(preEmployment!=null){
+            isCommit=true;
+        }
+        aboutMobileMessage.setIsCommitHr(isCommit);
+        aboutMobileMessage.setList(entryTableListWithValueVos);
+        return aboutMobileMessage;
     }
 }
 

@@ -50,10 +50,17 @@
     <result column="sort" jdbcType="INTEGER" property="sort" />
   </resultMap>
 
+    <!-- 根据手机号查询注册的企业数量 -->
+    <select id="searchRegistCompanyCountByPhone"  resultType="java.lang.Integer">
+        select count(1) from t_user_info ui,t_company_info ci
+        where ui.phone = #{phone,jdbcType=VARCHAR}
+        and ui.user_id = ci.regist_user_id
+    </select>
+
   <!-- 新增企业 -->
   <insert id="addCompany" keyColumn="company_id" keyProperty="companyId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.CompanyInfo">
-      INSERT INTO t_company_info (company_name, user_number, valid_end_date)
-      VALUES (#{companyName}, #{userNumber}, #{validEndDate});
+      INSERT INTO t_company_info (company_name, company_type, regist_user_id, user_number, valid_end_date)
+      VALUES (#{companyName}, #{companyType}, #{registUserId}, #{userNumber}, #{validEndDate})
   </insert>
 
   <!-- 新增登录用户 -->
@@ -82,17 +89,17 @@
 
   <!-- 新增企业机构信息 -->
   <insert id="addOrganization" keyColumn="org_id" keyProperty="orgId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.Organization">
-      INSERT INTO t_organization (org_code, org_name, org_type, org_parent_id, company_id, operator_id) VALUES ('1', #{orgName}, 'GROUP', 0,  #{companyId}, 1);
+      INSERT INTO t_organization (org_code, org_name, org_type, org_parent_id, org_full_name, company_id, operator_id) VALUES ('1', #{orgName}, 'GROUP', 0, #{orgName},  #{companyId}, 1);
   </insert>
 
   <!-- 新增角色信息 -->
   <insert id="addRole" keyColumn="role_id" keyProperty="roleId" useGeneratedKeys="true" parameterType="com.qinjee.masterdata.model.entity.Role">
-      INSERT INTO t_role (role_name,is_auto_auth_child_org, company_id, is_system_define, operator_id) VALUES ('系统管理员', 1, #{companyId}, 1, 1);
+      INSERT INTO t_role (role_name,is_auto_auth_child_org, company_id, is_system_define, operator_id) VALUES ('系统管理员', 1, #{companyId}, 1, #{operatorId});
   </insert>
 
   <!-- 新增用户角色信息 -->
   <insert id="addUserRole" parameterType="com.qinjee.masterdata.model.entity.UserRole">
-      INSERT INTO t_user_role (role_id, archive_id, operator_id) VALUES (#{roleId}, #{archiveId}, 1);
+      INSERT INTO t_user_role (role_id, archive_id, operator_id) VALUES (#{roleId}, #{archiveId}, #{operatorId});
   </insert>
 
   <!-- 初始化角色机构权限 -->

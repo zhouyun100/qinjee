@@ -20,12 +20,23 @@ public class PositionLevel implements Serializable {
      */
     @ApiModelProperty("职级ID")
     private Integer positionLevelId;
+    /**
+     * 企业ID
+     */
+    @ApiModelProperty("企业ID")
+    private Integer companyId;
 
     /**
      * 职级名称
      */
     @ApiModelProperty("职级名称")
     private String positionLevelName;
+
+    /**
+     * 职等ID
+     */
+    @ApiModelProperty("职等ID")
+    private Integer positionGradeId;
 
     /**
      * 排序ID
@@ -56,45 +67,6 @@ public class PositionLevel implements Serializable {
      */
     @ApiModelProperty("是否删除")
     private Short isDelete;
-
-    /**
-     * 职位族名称
-     */
-    @ApiModelProperty("职位族名称")
-    private String positionGroupName;
-
-    /**
-     * 职位族名称合并行
-     */
-    @ApiModelProperty("职位族名称合并行")
-    private Integer positionGroupNameRowSpan;
-
-    /**
-     * 职位名称
-     */
-    @ApiModelProperty("职位名称")
-    private String positionName;
-
-    /**
-     * 职位名称合并行
-     */
-    @ApiModelProperty("职位名称合并行")
-    private Integer positionNameRowSpan;
-
-    /**
-     * 职等名称
-     */
-    @ApiModelProperty("职等名称")
-    private String positionGradeName;
-
-    /**
-     * 职等名称合并行
-     */
-    @ApiModelProperty("职等名称合并行")
-    private Integer positionGradeNameRowSpan;
-
-    private List<PositionGroup> positionGroups;
-
 
     private static final long serialVersionUID = 1L;
 

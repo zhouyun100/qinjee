@@ -10,6 +10,7 @@ public class FieldToProperty {
      * @param field
      * @return
      */
+    public static final char UNDERLINE_CHAR = '_';
     public static String fieldToProperty(String field) {
         if (null == field) {
             return "";
@@ -29,5 +30,32 @@ public class FieldToProperty {
             }
         }
         return sb.toString ();
+    }
+    /**
+     * 驼峰转下划线
+     *
+     * @param camelStr
+     * @return
+     */
+    public static String propertyTofield(String camelStr) {
+
+        if (StringUtils.isEmpty(camelStr)) {
+            return StringUtils.EMPTY;
+        }
+
+        int len = camelStr.length();
+        StringBuilder strb = new StringBuilder(len + len >> 1);
+        for (int i = 0; i < len; i++) {
+
+            char c = camelStr.charAt(i);
+            if (Character.isUpperCase(c)) {
+                strb.append(UNDERLINE_CHAR);
+                strb.append(Character.toLowerCase(c));
+            } else {
+
+                strb.append(c);
+            }
+        }
+        return strb.toString();
     }
 }

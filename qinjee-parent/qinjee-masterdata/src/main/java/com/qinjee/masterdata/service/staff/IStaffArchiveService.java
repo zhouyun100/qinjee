@@ -1,10 +1,14 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.QueryScheme;
+import com.qinjee.masterdata.model.vo.custom.CustomFieldVO;
 import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.ArchiveRegistVo;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.DimissionCertificateVo;
 import com.qinjee.masterdata.model.vo.staff.export.ExportFile;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
+import org.apache.commons.math3.analysis.function.Exp;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -101,7 +105,7 @@ public interface IStaffArchiveService {
     /**
      * 查看档案（查询某个组织部门下的档案）
      */
-    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, List<Integer> orgId, Integer pageSize, Integer currentPage);
+    PageResult<UserArchiveVo>  selectArchivebatch(UserSession userSession, RequestUserarchiveVo requestUserarchiveVo);
     /**
      * 通过id找到人员姓名与工号
      */
@@ -158,11 +162,21 @@ public interface IStaffArchiveService {
      QuerySchemeList selectQuerySchemeMessage(Integer id);
 
 
-    PageResult< UserArchiveVo> selectArchiveDelete(List<Integer> orgId, Integer pageSize, Integer currentPage);
+    PageResult< UserArchiveVo> selectArchiveDelete(RequestUserarchiveVo requestUserarchiveVo);
 
-    List<UserArchiveVo> selectByOrgList(List<Integer> list,UserSession userSession);
+    List<UserArchiveVo> selectByOrgList(ExportArcParamVo exportArcParamVo, UserSession userSession);
 
     UserArchiveVo selectById(Integer id);
 
+
+    List<CustomFieldForHead> selectFieldListByqueryId(Integer queryschemaId, UserSession userSession);
+
+    List<CustomFieldForHead> selectFieldListForPre(UserSession userSession);
+
+    PageResult<UserArchiveVo> selectArchiveByHead(List<FieldValueForSearch> fieldValueForSearch,Integer pageSize,Integer currentPage,UserSession userSession);
     void deleteCareerTrack(Integer id);
+
+    List<ArchiveRegistVo> getArchiveRegisterInfo(List<Integer> archiveIds, UserSession userSession) throws Exception;
+
+    List<DimissionCertificateVo> listDimissionCertificate(List<Integer> archiveIds, UserSession userSession);
 }

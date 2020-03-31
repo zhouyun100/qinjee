@@ -56,7 +56,7 @@ public class RoleAuthController extends BaseController{
             return responseResult;
         }
         try{
-            List<RoleGroupVO> roleGroupList = archiveAuthService.searchRoleTree(userSession.getCompanyId());
+            List<RoleGroupVO> roleGroupList = roleAuthService.searchRoleTree(userSession.getCompanyId(),userSession.getArchiveId());
             if(CollectionUtils.isEmpty(roleGroupList)){
                 logger.info("searchRoleTree fail！companyId={},roleGroupList={}", userSession.getCompanyId(), roleGroupList);
                 responseResult = ResponseResult.FAIL();
@@ -71,6 +71,38 @@ public class RoleAuthController extends BaseController{
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("当前登录用户角色树查询异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="查询角色权限下的角色树", notes="角色树查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", required = true, dataType = "int")
+    })
+    @RequestMapping(value = "/searchRoleTreeByRoleId",method = RequestMethod.GET)
+    public ResponseResult<RoleGroupVO> searchRoleTreeByRoleId(Integer roleId) {
+        userSession = getUserSession();
+        if(roleId == null){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色ID为空！");
+            return responseResult;
+        }
+        try{
+            List<RoleGroupVO> roleGroupList = roleAuthService.searchRoleTreeByRoleId(userSession.getCompanyId(),userSession.getArchiveId(),roleId);
+            if(CollectionUtils.isEmpty(roleGroupList)){
+                logger.info("searchRoleTreeByRoleId is empty！archiveId={},roleId={}", userSession.getArchiveId(), roleId);
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("查询角色权限下的角色树结果为空！");
+            }else{
+                logger.info("searchRoleTreeByRoleId success！archiveId={},roleId={}", userSession.getArchiveId(), roleId);
+                responseResult = ResponseResult.SUCCESS();
+                responseResult.setResult(roleGroupList);
+            }
+        }catch (Exception e){
+            logger.info("searchRoleTreeByRoleId exception! archiveId={},roleId={},exception={}", userSession.getArchiveId(), roleId, e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("查询角色权限下的角色树！");
         }
         return responseResult;
     }
@@ -506,9 +538,9 @@ public class RoleAuthController extends BaseController{
     @ApiOperation(value="修改角色机构权限", notes="修改角色机构权限")
     @RequestMapping(value = "/updateRoleOrgAuth",method = RequestMethod.POST)
     public ResponseResult updateRoleOrgAuth(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\norgIdList：机构ID集合")RequestRoleAuthVO requestRoleAuthVO) {
-        if(null == requestRoleAuthVO.getRoleId() || CollectionUtils.isEmpty(requestRoleAuthVO.getOrgIdList())){
+        if(null == requestRoleAuthVO.getRoleId()){
             responseResult = ResponseResult.FAIL();
-            responseResult.setMessage("角色ID或机构ID不能为空!");
+            responseResult.setMessage("角色ID不能为空!");
             return responseResult;
         }
         try{
@@ -534,6 +566,35 @@ public class RoleAuthController extends BaseController{
             e.printStackTrace();
             responseResult = ResponseResult.FAIL();
             responseResult.setMessage("修改角色机构权限异常！");
+        }
+        return responseResult;
+    }
+
+    @ApiOperation(value="角色授权角色", notes="角色授权角色")
+    @RequestMapping(value = "/roleAuthByRoleId",method = RequestMethod.POST)
+    public ResponseResult roleAuthByRoleId(@RequestBody @ApiParam(value = "请求参数：\nroleId：角色ID\nroleIdList：角色子集ID集合")RequestRoleAuthVO requestRoleAuthVO) {
+        if(null == requestRoleAuthVO.getRoleId()){
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色不能为空!");
+            return responseResult;
+        }
+        try{
+            userSession = getUserSession();
+            if(userSession == null){
+                responseResult = ResponseResult.FAIL();
+                responseResult.setMessage("Session失效！");
+                return responseResult;
+            }
+            roleAuthService.roleAuthByRoleId(requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getRoleIdList(), userSession.getArchiveId());
+            logger.info("roleAuthByRoleId success！roleId={}, menuIdList={}, operatorId={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), userSession.getArchiveId());
+            responseResult = ResponseResult.SUCCESS();
+
+
+        }catch (Exception e){
+            logger.info("roleAuthByRoleId exception！roleId={}, menuIdList={}, exception={}", requestRoleAuthVO.getRoleId(), requestRoleAuthVO.getMenuIdList(), e.toString());
+            e.printStackTrace();
+            responseResult = ResponseResult.FAIL();
+            responseResult.setMessage("角色授权角色异常！");
         }
         return responseResult;
     }

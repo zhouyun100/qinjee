@@ -2,10 +2,9 @@ package com.qinjee.masterdata.controller.organization;
 
 import com.qinjee.exception.ExceptionCast;
 import com.qinjee.masterdata.controller.BaseController;
-import com.qinjee.masterdata.model.vo.organization.page.UserArchivePageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.UserArchivePageBO;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.masterdata.service.organation.UserArchiveService;
-import com.qinjee.masterdata.service.staff.IStaffArchiveService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.CommonCode;
 import com.qinjee.model.response.PageResult;
@@ -56,7 +55,7 @@ public class UserArchiveController extends BaseController {
 
     @PostMapping("/getUserArchiveList")
     @ApiOperation(value = "根据条件分页查询员工信息")
-    public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(@RequestBody UserArchivePageVo pageQueryVo) {
+    public ResponseResult<PageResult<UserArchiveVo>> getUserArchiveList(@RequestBody UserArchivePageBO pageQueryVo) {
         if (checkParam(pageQueryVo, getUserSession())) {
             return userArchiveService.getUserArchiveList(pageQueryVo, getUserSession());
         }
@@ -74,11 +73,11 @@ public class UserArchiveController extends BaseController {
 
     @PostMapping("/uploadAndCheck")
     @ApiOperation(value = "ok,导入用户信息excel并校验", notes = "ok")
-    public ResponseResult uploadAndCheck(MultipartFile multfile, HttpServletResponse response) throws Exception {
+    public ResponseResult uploadAndCheck(MultipartFile multfile) throws Exception {
         //参数判空校验
         if (checkParam(multfile, getUserSession())) {
             long start = System.currentTimeMillis();
-            ResponseResult responseResult = userArchiveService.uploadAndCheck(multfile, getUserSession(), response);
+            ResponseResult responseResult = userArchiveService.uploadAndCheck(multfile, getUserSession());
             logger.info("导入用户信息excel并校验耗时："+(System.currentTimeMillis()-start)+"ms");
             return  responseResult;
         }

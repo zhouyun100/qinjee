@@ -1,7 +1,7 @@
 package com.qinjee.masterdata.dao.organation;
 
 import com.qinjee.masterdata.model.entity.Position;
-import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PositionPageBO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -48,7 +48,7 @@ public interface PositionDao {
      * @param pageVo
      * @return
      */
-    List<Position> getPositionPage(@Param("pageVo") PositionPageVo pageVo);
+    List<Position> getPositionPage(@Param("pageVo") PositionPageBO pageVo, String whereSql, String orderSql);
 
     Position getPositionByNameAndCompanyId(String positionName,Integer companyId);
 

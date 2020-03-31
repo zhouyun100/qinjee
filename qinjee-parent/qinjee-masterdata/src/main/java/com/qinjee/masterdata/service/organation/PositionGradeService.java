@@ -16,34 +16,22 @@ import java.util.List;
  * @createTime 2019年09月18日 15:41:00
  */
 public interface PositionGradeService {
-    /**
-     * 根据职位id获取职等
-     * @param positionId
-     * @return
-     */
-    List<PositionGrade> getPositionGradeListByPositionId(Integer positionId);
 
-    /**
-     * 分页查询职等列表
-     * @param pageVo
-     * @return
-     */
-    ResponseResult<PageResult<PositionGrade>> getPositionLevelList(PageVo pageVo);
 
     /**
      * 新增职等
-     * @param positionGradeVo
+     * @param positionGrade
      * @return
      */
-    ResponseResult addPositionGrade(PositionGradeVo positionGradeVo, UserSession userSession);
+    int addPositionGrade(PositionGrade positionGrade, UserSession userSession);
 
     /**
      * 编辑职等
-     * @param positionGradeVo
+     * @param positionGrade
      * @param userSession
      * @return
      */
-    ResponseResult editPositionGrade(PositionGradeVo positionGradeVo, UserSession userSession);
+    int editPositionGrade(PositionGrade positionGrade, UserSession userSession);
 
     /**
      * 删除职等
@@ -51,5 +39,14 @@ public interface PositionGradeService {
      * @param positionGradeIds
      * @return
      */
-    ResponseResult deletePositionGrade(UserSession userSession, List<Integer> positionGradeIds);
+    int batchDeletePositionGrade(UserSession userSession, List<Integer> positionGradeIds);
+    /**
+     * 职等排序
+     * @param userSession
+     * @param positionGradeIds
+     * @return
+     */
+    int sortPositionGrade(UserSession userSession, List<Integer> positionGradeIds);
+
+    PageResult<PositionGrade> listPositionGrade(PageVo pageVo, UserSession userSession);
 }

@@ -63,11 +63,30 @@ public class AuthFilter extends ZuulFilter{
 	public AuthFilter() {
 		super();
 		paths = new ArrayList<>();
+
+		//账号密码或手机号验证码登录
 		paths.add("/api/masterdata/userLogin/loginByAccountAndPassword");
 		paths.add("/api/masterdata/userLogin/loginByPhoneAndCode");
-		paths.add("/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId");
+//		paths.add("/api/masterdata/userLogin/searchUserInfoByUserIdAndCompanyId");
 		paths.add("/api/masterdata/userLogin/sendCodeByPhone");
 		paths.add("/api/masterdata/userLogin/verifyCode");
+
+		//微信扫码绑定登录
+		paths.add("/api/masterdata/userLogin/qrCode");
+		paths.add("/api/masterdata/userLogin/wechatAndPhoneBind");
+		paths.add("/api/masterdata/userLogin/sendWechatBindCodeByPhone");
+
+		//登录忘记密码
+		paths.add("/api/masterdata/userLogin/sendForgetPwdCodeByPhone");
+		paths.add("/api/masterdata/userLogin/checkForgetPwdByPhoneCode");
+		paths.add("/api/masterdata/userLogin/forgetPwdToSetNewPwd");
+
+		//注册
+		paths.add("/api/masterdata/regist/registCompany");
+		paths.add("/api/masterdata/regist/sendRegistCodeByPhone");
+		paths.add("/api/masterdata/regist/checkPhoneCode");
+
+		//插件（druid、swagger）
 		paths.add("/api/masterdata/druid/**");
 		paths.add("/api/masterdata/webjars/**");
 		paths.add("/api/masterdata/swagger**/**");

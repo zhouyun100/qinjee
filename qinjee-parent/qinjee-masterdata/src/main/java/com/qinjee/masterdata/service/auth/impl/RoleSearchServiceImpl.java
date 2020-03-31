@@ -19,6 +19,7 @@ import com.qinjee.masterdata.model.vo.auth.RequestArchivePageVO;
 import com.qinjee.masterdata.model.vo.auth.RoleGroupVO;
 import com.qinjee.masterdata.service.auth.RoleAuthService;
 import com.qinjee.masterdata.service.auth.RoleSearchService;
+import com.qinjee.masterdata.utils.DealHeadParamUtil;
 import com.qinjee.model.response.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,9 @@ public class RoleSearchServiceImpl implements RoleSearchService {
             PageHelper.startPage(archivePageVO.getCurrentPage(),archivePageVO.getPageSize());
         }
         archivePageVO.setCurrentDateTime(new Date());
-        List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO,orgIdList);
+        String whereSql = DealHeadParamUtil.getWhereSql(archivePageVO.getTableHeadParamList(), "lastTable.");
+        String orderSql = DealHeadParamUtil.getOrderSql(archivePageVO.getTableHeadParamList(), "lastTable.");
+        List<ArchiveInfoVO> archiveInfoList = roleSearchDao.searchArchiveListByUserName(archivePageVO,orgIdList,whereSql,orderSql);
         PageResult<ArchiveInfoVO> pageResult = new PageResult<>(archiveInfoList);
         return pageResult;
     }

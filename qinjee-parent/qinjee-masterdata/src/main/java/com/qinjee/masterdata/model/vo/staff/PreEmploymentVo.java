@@ -3,6 +3,7 @@ package com.qinjee.masterdata.model.vo.staff;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.TransDictAnno;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -39,6 +40,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 性别
      */
+    @TransDictAnno(dictType = "SEX_TYPE")
     private String gender;
 
     /**
@@ -49,7 +51,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 证件类型
      */
-
+    @TransDictAnno(dictType = "CARD_TYPE")
     private String idType;
     /**
      * 证件类型名称
@@ -75,6 +77,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 婚姻状况
      */
+    @TransDictAnno(dictType = "MARITAL_STATUS")
     private String maritalStatus;
 
     /**
@@ -115,6 +118,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 血型
      */
+    @TransDictAnno(dictType = "BLOOD_TYPE")
     private String bloodType;
 
     /**
@@ -125,6 +129,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 民族
      */
+    @TransDictAnno(dictType = "NATIONALITY")
     private String nationality;
 
     /**
@@ -136,6 +141,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 政治面貌
      */
+    @TransDictAnno(dictType = "POLITICAL_AFFILIATION")
     private String politicalStatus;
 
     /**
@@ -151,6 +157,7 @@ public class PreEmploymentVo implements Serializable {
     /**
      * 试用期限(月)
      */
+    @TransDictAnno(dictType = "PROBATION_PERIOD")
     private Integer probationPeriod;
 
     /**
@@ -238,4 +245,28 @@ public class PreEmploymentVo implements Serializable {
      * 岗位编码
      */
     private String postCode;
+    /**
+     * 职级id
+     */
+    private Integer positionLevelId;
+    /**
+     * 职等id
+     */
+    private Integer positionGradeId;
+    /**
+     * 职级名称
+     */
+    private String positionLevelName;
+    /**
+     * 职等名称
+     */
+    private String positionGradeName;
+    /**
+     * 模板id
+     */
+    private Integer templateId;
+    /**
+     * 现住址
+     */
+    private String address;
 }

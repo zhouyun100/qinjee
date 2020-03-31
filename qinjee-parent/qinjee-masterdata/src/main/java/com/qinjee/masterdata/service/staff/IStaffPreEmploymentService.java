@@ -1,8 +1,8 @@
 package com.qinjee.masterdata.service.staff;
 
 import com.qinjee.masterdata.model.entity.PreEmployment;
-import com.qinjee.masterdata.model.vo.staff.PreEmploymentVo;
-import com.qinjee.masterdata.model.vo.staff.StatusChangeVo;
+import com.qinjee.masterdata.model.vo.staff.*;
+import com.qinjee.masterdata.model.vo.staff.archiveInfo.PreRegistVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 
@@ -25,12 +25,9 @@ public interface IStaffPreEmploymentService {
 
     /**
      * 根据机构展示预入职表
-     * @param userSession
-     * @param currentPage
-     * @param pageSize
      * @return
      */
-    PageResult<PreEmploymentVo> selectPreEmployment(UserSession userSession, Integer currentPage, Integer pageSize);
+    PageResult<PreEmploymentVo> selectPreEmployment(UserSession userSession, RequestUserarchiveVo requestUserarchiveVo);
 
     /**
      * 逻辑删除预入职表
@@ -64,4 +61,12 @@ public interface IStaffPreEmploymentService {
     PreEmployment selectPreEmploymentSingle(Integer employeeId);
 
     void confirmEmployment(List<Integer> list,UserSession userSession) throws Exception;
+
+    DetailCount getReadyCount(UserSession userSession);
+
+    PageResult<PreEmploymentVo> searchByHead(UserSession userSession, Integer currentPage, Integer pageSize, List<FieldValueForSearch> list);
+
+    List<PreRegistVo> getEmploymentRegisterInfo(List<Integer> employmentIds,UserSession userSession) ;
+
+    PageResult<PreEmploymentVo> getReadyPreEmployment(UserSession userSession, RequestUserarchiveVo requestUserarchiveVo);
 }

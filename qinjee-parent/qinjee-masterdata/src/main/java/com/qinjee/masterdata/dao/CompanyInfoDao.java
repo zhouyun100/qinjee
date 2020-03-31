@@ -3,6 +3,8 @@ package com.qinjee.masterdata.dao;
 import com.qinjee.masterdata.model.entity.CompanyInfo;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CompanyInfoDao {
     int deleteByPrimaryKey(Integer companyId);
@@ -16,4 +18,6 @@ public interface CompanyInfoDao {
     int updateByPrimaryKeySelective(CompanyInfo record);
 
     int updateByPrimaryKey(CompanyInfo record);
+
+    List<Integer> selectCompanyIds();
 }

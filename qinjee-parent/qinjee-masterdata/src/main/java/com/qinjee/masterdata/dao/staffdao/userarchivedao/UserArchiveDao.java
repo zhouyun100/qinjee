@@ -25,7 +25,8 @@ public interface UserArchiveDao {
 
     int insertSelective(UserArchive record);
 
-    UserArchiveVo selectByPrimaryKey(Integer archiveId);
+    UserArchiveVo selectBasicById(Integer archiveId);
+    UserArchiveVo selectFullById(Integer archiveId);
 
     int updateByPrimaryKeySelective(UserArchive record);
 
@@ -42,7 +43,7 @@ public interface UserArchiveDao {
      *
      * @return
      */
-    List<UserArchiveVo> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList, boolean isContains);
+    List<UserArchiveVo> getUserArchiveList(@Param("orgIdList") List<Integer> orgIdList, boolean isContains,String whereSql,String orderSql);
 
     Map<String,String> selectNameAndNumber(@Param("id") Integer id);
 
@@ -71,7 +72,7 @@ public interface UserArchiveDao {
     Date selectDateByStatus(@Param("string") String string);
 
     List< UserArchiveVo > selectByOrgAndAuth(@Param("orgId") List<Integer> orgId, @Param("archiveId") Integer archiveId, @Param("companyId") Integer companyId
-    , @Param("message") String message);
+    , @Param("message") String message, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     Integer countUserArchiveByOrgId(@Param("orgId") Integer orgId);
 
@@ -89,13 +90,14 @@ public interface UserArchiveDao {
 
     List<UserArchiveVo> listUserArchiveByPostIds(@Param("postIds")List<Integer> postIds);
 
-    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") List<Integer> orgId, @Param("companyId") Integer companyId);
+    List< UserArchiveVo> selectArcByNotCon(@Param("orgId") List<Integer> orgId, @Param("companyId") Integer companyId,
+                                           @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     Map< String, Object> selectTransMessage(@Param("key") Integer key);
 
     List<UserArchiveVo> selectByIdNumber(@Param("s") String s, @Param("companyId") Integer companyId);
 
-    List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId);
+    List< UserArchiveVo> selectArchiveDelete(@Param("orgId") List<Integer> orgId, @Param("whereSql") String whereSql, @Param("orderSql") String orderSql);
 
     List<Integer> selectByPhoneAndCompanyId(@Param("phone") String phone, @Param("companyId") Integer companyId);
 
@@ -121,4 +123,12 @@ public interface UserArchiveDao {
     List<NoConArc> selectNoConArcByIdList(@Param("list") List<Integer> list);
 
     UserArchiveVo selectByPrimaryKeyAndIsDelete(@Param("integer") Integer integer);
+
+    List<UserArchiveVo> selectArchiveByHead(@Param("whereSql") String whereSql, @Param("companyId") Integer companyId);
+
+    int batchUpdateBusunessUnitId(List<Integer> orgIds,Integer targetBusunessUnitId);
+
+    int moveToNewOrg(List<Integer> orgIds, Integer newOrgId);
+
+    UserArchiveVo getCompanyCreator(Integer companyId);
 }

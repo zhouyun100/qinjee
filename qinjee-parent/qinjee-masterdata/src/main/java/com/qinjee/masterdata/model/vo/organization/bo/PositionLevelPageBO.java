@@ -1,4 +1,4 @@
-package com.qinjee.masterdata.model.vo.organization.page;
+package com.qinjee.masterdata.model.vo.organization.bo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,8 +13,8 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
-@ApiModel(description = "机构实体分页Vo类")
-public class OrganizationPageVo  implements Serializable {
+@ApiModel(description = "职级实体分页Vo类")
+public class PositionLevelPageBO implements Serializable {
 
     private Integer currentPage;
     private Integer pageSize;

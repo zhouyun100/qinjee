@@ -1,7 +1,10 @@
 package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.vo.organization.OrganizationVO;
-import com.qinjee.masterdata.model.vo.organization.page.OrganizationPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationExportBO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationMergeBO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationPageBO;
+import com.qinjee.masterdata.model.vo.organization.bo.OrganizationTransferBO;
 import com.qinjee.masterdata.model.vo.staff.UserArchiveVo;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
@@ -30,11 +33,11 @@ public interface OrganizationService  {
   /**
    * 按条件分页查询机构（直属下级）
    *
-   * @param organizationPageVo
+   * @param organizationPageBO
    * @param userSession
    * @return
    */
-  PageResult<OrganizationVO> getDirectOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
+  PageResult<OrganizationVO> getDirectOrganizationPageList(OrganizationPageBO organizationPageBO, UserSession userSession);
 
 
   /**
@@ -63,21 +66,11 @@ public interface OrganizationService  {
    * 需要维护历史机构表
    * 需要维护相关联的权限、用户之间的关系
    *
-   * @param newOrgName
-   * @param targetOrgId
-   * @param orgIds
    * @return
    */
   @Transactional
-  void mergeOrganization(String newOrgName, Integer targetOrgId, List<Integer> orgIds, UserSession userSession);
+  void mergeOrganization(OrganizationMergeBO orgMergeBO, UserSession userSession);
 
-  /**
-   * 机构负责人查询
-   *
-   * @param userName
-   * @return
-   */
-  List< UserArchiveVo > getUserArchiveListByUserName(String userName,UserSession userSession);
 
   /**
    * 机构排序
@@ -93,13 +86,12 @@ public interface OrganizationService  {
    * 需要维护历史机构表
    * 需要维护相关联的权限、用户之间的关系
    *
-   * @param orgIds
-   * @param targetOrgId
+   * @param orgTransferBO
    * @param userSession
    * @return
    */
   @Transactional
-  void transferOrganization(List<Integer> orgIds, Integer targetOrgId, UserSession userSession);
+  void transferOrganization(OrganizationTransferBO orgTransferBO, UserSession userSession);
 
   /**
    * 获取机构岗位树，默认查询未封存的机构
@@ -170,14 +162,14 @@ public interface OrganizationService  {
 
   List<OrganizationVO> getOrganizationGraphics(UserSession userSession, Integer layer, boolean isContainsCompiler, boolean isContainsActualMembers, Integer orgId, Short isEnable);
 
-  List<OrganizationVO> exportOrganization(Integer orgId, List<Integer> orgIds, Integer archiveId);
+  List<OrganizationVO> exportOrganization(OrganizationExportBO orgExportBO, Integer archiveId);
 
-  PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageVo organizationPageVo, UserSession userSession);
+  PageResult<OrganizationVO> getAllOrganizationPageList(OrganizationPageBO organizationPageBO, UserSession userSession);
 
   @Transactional
   void importToDatabase(String orgExcelRedisKey, UserSession userSession);
 
-  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession, HttpServletResponse response) throws Exception;
+  ResponseResult uploadAndCheck(MultipartFile multfile, UserSession userSession) throws Exception;
 
 
   void cancelImport(String redisKey, String errorInfoKey);

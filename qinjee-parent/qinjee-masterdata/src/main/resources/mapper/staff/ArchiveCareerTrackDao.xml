@@ -38,7 +38,7 @@
         SELECT distinct
             arc.archive_id AS archiveId,
             userCategory.dict_value AS userCategory,
-            orga.org_name AS businssUnitName,
+            orga.org_name AS businessUnitName,
             org.org_name AS orgName,
             pos.position_name AS positionName,
             post.post_name AS postName,

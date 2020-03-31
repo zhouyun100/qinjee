@@ -32,6 +32,24 @@ public interface SmsRecordService {
     void sendSmsLoginCode(String phone);
 
     /**
+     * 发送企业注册手机号验证码
+     * @param phone
+     */
+    void sendSmsRegistCode(String phone);
+
+    /**
+     * 发送微信绑定手机号验证码
+     * @param phone
+     */
+    void sendSmsWechatBindCode(String phone);
+
+    /**
+     * 发送忘记密码手机号验证码
+     * @param phone
+     */
+    void sendSmsForgetPasswordCode(String phone);
+
+    /**
      * 发送预入职登录短信验证码
      * @param phone
      */

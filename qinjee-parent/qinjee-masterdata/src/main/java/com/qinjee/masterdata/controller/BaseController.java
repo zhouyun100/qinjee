@@ -13,6 +13,7 @@ package com.qinjee.masterdata.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qinjee.consts.ResponseConsts;
+import com.qinjee.masterdata.model.vo.auth.UserInfoVO;
 import com.qinjee.masterdata.redis.RedisClusterService;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.ResponseResult;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author 周赟
@@ -61,6 +63,21 @@ public class BaseController {
         }
         return null;
     }
+
+
+    protected void setSessionAndCookie(HttpServletResponse response, UserInfoVO userInfo){
+        StringBuffer loginKey = new StringBuffer();
+        loginKey.append(ResponseConsts.SESSION_KEY).append("_").append(userInfo.getUserId());
+
+        //设置redis登录缓存时间，120分钟过期，与前端保持一致
+        redisClusterService.setex(loginKey.toString(), ResponseConsts.SESSION_INVALID_SECOND, JSON.toJSONString(userInfo));
+        Cookie cookie = new Cookie(ResponseConsts.SESSION_KEY, loginKey.toString());
+        cookie.setMaxAge(ResponseConsts.SESSION_INVALID_SECOND);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+    }
+
     public static ResponseResult getResponseResult(Integer integer, String message){
         if(integer>1){
             return ResponseResult.SUCCESS();

@@ -2,18 +2,17 @@ package com.qinjee.masterdata.service.organation;
 
 import com.qinjee.masterdata.model.entity.Position;
 import com.qinjee.masterdata.model.vo.organization.PositionVo;
-import com.qinjee.masterdata.model.vo.organization.page.PositionPageVo;
+import com.qinjee.masterdata.model.vo.organization.bo.PositionPageBO;
 import com.qinjee.model.request.UserSession;
 import com.qinjee.model.response.PageResult;
 import com.qinjee.model.response.ResponseResult;
-import io.swagger.models.auth.In;
 
 import java.util.List;
 
 /**
  * @author 彭洪思
- * @version 1.0.0
- * @Description TODO
+ * @version 1.0.1
+ * @Description
  * @createTime 2019年09月18日 15:32:00
  */
 public interface PositionService {
@@ -29,7 +28,7 @@ public interface PositionService {
      * @param pageVo
      * @return
      */
-    ResponseResult<PageResult<Position>> getPositionPage( PositionPageVo pageVo);
+    ResponseResult<PageResult<Position>> getPositionPage( PositionPageBO pageVo);
 
     /**
      * 新增职位
@@ -54,14 +53,7 @@ public interface PositionService {
 
 
     void sortPosition(List<Integer> positionIds);
-    ResponseResult<List<Position>> getAllPositions(UserSession userSession);
 
     void determinePositionNameIsOnly(String positionName, UserSession userSession);
 
-    /**
-     * 新增岗位选择职位时带出职级职等
-     * @param positionId
-     * @return
-     */
-   // ResponseResult<Position> getPositionLevelAndGrade(Integer positionId);
 }
